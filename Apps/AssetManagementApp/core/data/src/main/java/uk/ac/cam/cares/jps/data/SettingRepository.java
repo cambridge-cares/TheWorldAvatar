@@ -29,7 +29,7 @@ public class SettingRepository {
         this.settingLocalSource = settingLocalSource;
     }
 
-    public void getSettings(RepositoryCallback callback) {
+    public void getSettings(RepositoryCallback<Map<String, Integer>> callback) {
         if (!settings.isEmpty()) {
             callback.onSuccess(settings);
             return;

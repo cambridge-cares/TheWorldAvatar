@@ -20,8 +20,8 @@ import uk.ac.cam.cares.jps.data.SettingRepository;
 @HiltViewModel
 public class SettingViewModel extends ViewModel {
     private Map<String, MutableLiveData<Integer>> settings = new HashMap<>();
-    private SettingRepository repository;
-    private Logger LOGGER = Logger.getLogger(SettingViewModel.class);
+    private final SettingRepository repository;
+    private final Logger LOGGER = Logger.getLogger(SettingViewModel.class);
 
     @Inject
     public SettingViewModel(SettingRepository repository) {
@@ -34,10 +34,10 @@ public class SettingViewModel extends ViewModel {
     }
 
     public void initSettings() {
-        repository.getSettings(new RepositoryCallback() {
+        repository.getSettings(new RepositoryCallback<Map<String, Integer>>() {
             @Override
-            public void onSuccess(Object result) {
-                for (Map.Entry<String, Integer> entry : ((Map<String, Integer>) result).entrySet()) {
+            public void onSuccess(Map<String, Integer> result) {
+                for (Map.Entry<String, Integer> entry : result.entrySet()) {
                     getSettingByKey(entry.getKey()).postValue(entry.getValue());
                 }
             }

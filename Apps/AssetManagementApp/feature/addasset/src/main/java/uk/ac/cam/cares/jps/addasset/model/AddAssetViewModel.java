@@ -104,7 +104,7 @@ public class AddAssetViewModel extends ViewModel {
     }
 
     public void requestAllDropDownOptionsFromRepository() {
-        Map<String, RepositoryCallback> callbacks = new HashMap<>();
+        Map<String, RepositoryCallback<List<OtherInfoModel>>> callbacks = new HashMap<>();
         for (String key : otherInfoFromAssetAgentKeys) {
             callbacks.put(key, getRepositoryCallbackForKey(key));
         }
@@ -112,13 +112,13 @@ public class AddAssetViewModel extends ViewModel {
         otherInfoRepository.getAllOtherInfo(callbacks);
     }
 
-    private RepositoryCallback getRepositoryCallbackForKey(String key) {
-        return new RepositoryCallback() {
+    private RepositoryCallback<List<OtherInfoModel>> getRepositoryCallbackForKey(String key) {
+        return new RepositoryCallback<List<OtherInfoModel>>() {
             @Override
-            public void onSuccess(Object result) {
+            public void onSuccess(List<OtherInfoModel> result) {
                 Pair<String, Integer> indexes = findIndexForFieldByKey(key);
-                ((DropDownDataModel) inputFieldsBySection.get(indexes.first).get(indexes.second)).setLabelsToIri((List<OtherInfoModel>) result);
-                dropDownOptionsMap.get(key).postValue((List<OtherInfoModel>) result);
+                ((DropDownDataModel) inputFieldsBySection.get(indexes.first).get(indexes.second)).setLabelsToIri(result);
+                dropDownOptionsMap.get(key).postValue(result);
             }
 
             @Override

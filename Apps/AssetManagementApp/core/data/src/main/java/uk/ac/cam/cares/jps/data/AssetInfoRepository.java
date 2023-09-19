@@ -31,17 +31,17 @@ public class AssetInfoRepository {
         this.settingRepository = settingRepository;
     }
 
-    public void getAssetInfoByIri(String iri, RepositoryCallback callback) {
+    public void getAssetInfoByIri(String iri, RepositoryCallback<AssetInfo> callback) {
         Completable assetNetworkCall = Completable.create(emitter -> assetInfoNetworkSource.getAssetInfoByIri(iri, asset -> {
             assetInfo = new AssetInfo(asset);
             emitter.onComplete();
         }, emitter::onError));
 
-        Completable settingLocalCall = Completable.create(emitter -> settingRepository.getSettings(new RepositoryCallback() {
+        Completable settingLocalCall = Completable.create(emitter -> settingRepository.getSettings(new RepositoryCallback<Map<String, Integer>>() {
             @Override
-            public void onSuccess(Object result) {
+            public void onSuccess(Map<String, Integer> result) {
                 visibleProperties.clear();
-                for (Map.Entry<String, Integer> entry : ((Map<String, Integer>) result).entrySet()) {
+                for (Map.Entry<String, Integer> entry : result.entrySet()) {
                     if (entry.getValue() == 1) {
                         visibleProperties.add(entry.getKey());
                     }

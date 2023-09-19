@@ -34,7 +34,7 @@ public class OtherInfoRepository {
         }
     }
 
-    public void getAllOtherInfo(Map<String, RepositoryCallback> callbacks) {
+    public void getAllOtherInfo(Map<String, RepositoryCallback<List<OtherInfoModel>>> callbacks) {
         Response.Listener<Map<String, HashMap<String, String>>> onSuccess = response -> {
             for (String key : response.keySet()) {
                 // compare whether network is different from cache

@@ -37,10 +37,10 @@ public class AssetInfoViewModel extends ViewModel {
     }
 
     void getAssetInfoByIri(String assetUri) {
-        RepositoryCallback callback = new RepositoryCallback() {
+        RepositoryCallback<AssetInfo> callback = new RepositoryCallback<AssetInfo>() {
             @Override
-            public void onSuccess(Object response) {
-                assetInfo.postValue((AssetInfo) response);
+            public void onSuccess(AssetInfo response) {
+                assetInfo.postValue(response);
             }
 
             @Override
