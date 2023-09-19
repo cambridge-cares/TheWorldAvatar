@@ -86,7 +86,7 @@ public class PanelModel {
                         thresholdMap.containsKey(measure) ? thresholdMap.get(measure) : new String[]{};
                 // Create the panel objects and add it to the queue
                 Gauge gaugePanel = new Gauge(measure, itemGroup, unit, databaseID, itemMeasures.get(measure), thresholds);
-                TimeSeriesChart tsChart = new TimeSeriesChart(measure, itemGroup, unit, databaseID, itemMeasures.get(measure));
+                TimeSeriesChart tsChart = new TimeSeriesChart(measure, itemGroup, unit, databaseID, itemMeasures.get(measure), thresholds);
                 // If this row is created for the rooms
                 if (itemGroup.equals(StringHelper.ROOM_KEY)) {
                     // It should have an additional gauge panel displaying the average of all time series
