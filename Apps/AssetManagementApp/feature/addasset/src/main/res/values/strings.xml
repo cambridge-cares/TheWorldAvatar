@@ -5,7 +5,6 @@
     <string name="upload_document">Upload Document</string>
     <string name="description">Description</string>
     <string name="save">Save as draft</string>
-    <string name="done">Done</string>
     <string name="field_is_required">This field is required.</string>
     <string name="not_allow_new_instance">Please choose from the available options.</string>
 </resources>

@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.addasset;
 
+import static uk.ac.cam.cares.jps.utils.SerializationUtils.serializeObjectToString;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -19,6 +23,8 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,6 +70,24 @@ public class AddAssetFragment extends Fragment {
             if (viewModel.checkDisallowNewInstanceInputField()) {
                 return;
             }
+
+            // show summary page
+            Bundle bundle = new Bundle();
+            // todo: check whether AssetInfo is serializable
+            bundle.putSerializable("assetinfo", (Serializable) viewModel.getAssetInfo());
+
+
+            NavDeepLinkRequest request = null;
+            try {
+                request = NavDeepLinkRequest.Builder
+                        .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/new_asset_summary?assetinfo=" + serializeObjectToString(viewModel.getAssetInfo())))
+                        .build();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            NavHostFragment.findNavController(this).navigate(request);
         });
     }
+
+
 }

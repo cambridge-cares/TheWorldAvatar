@@ -6,9 +6,27 @@
     xmlns:shimmer="http://schemas.android.com/tools"
     android:theme="@style/Theme.AssetManagementApp.NoActionBar">
 
-    <include layout="@layout/app_bar"
-        android:id="@+id/app_bar"
-        app:layout_constraintTop_toTopOf="parent"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/relativeLayout">
+        <include layout="@layout/app_bar"
+            android:id="@+id/app_bar"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </RelativeLayout>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/done_bt"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/relativeLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/appbar_padding"
+        android:background="@drawable/ripple_done_24"
+        android:contentDescription="@string/done"
+        android:visibility="gone"/>
 
 
     <com.facebook.shimmer.ShimmerFrameLayout
@@ -17,7 +35,7 @@
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/app_bar"
+        app:layout_constraintTop_toBottomOf="@id/relativeLayout"
         app:layout_constraintBottom_toBottomOf="parent"
         shimmer:duration="800">
         <LinearLayout
@@ -67,7 +85,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/app_bar"
+        app:layout_constraintTop_toBottomOf="@id/relativeLayout"
         app:layout_constraintBottom_toBottomOf="parent">
         <LinearLayout
             android:layout_width="match_parent"
@@ -98,7 +116,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/error_view"
-        app:layout_constraintTop_toBottomOf="@id/app_bar"
+        app:layout_constraintTop_toBottomOf="@id/relativeLayout"
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical"
         android:visibility="gone">

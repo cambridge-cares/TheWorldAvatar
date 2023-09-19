@@ -9,4 +9,5 @@
     <string name="unable_to_open_bms_app">Unable to open BMSQueryApp</string>
     <string name="check_bms_installation">Please check whether you have the latest BMSQueryApp installed.</string>
     <string name="ok">OK</string>
+    <string name="add_asset">Add Asset</string>
 </resources>

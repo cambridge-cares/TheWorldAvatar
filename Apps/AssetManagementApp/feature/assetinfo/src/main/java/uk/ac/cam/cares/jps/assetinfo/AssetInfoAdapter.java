@@ -32,11 +32,13 @@ import uk.ac.cam.cares.jps.data.AssetInfo;
 public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.ViewHolder>{
     // todo: remove space and case when comparing/searching for the key?
     Map<String, List<Pair<String, String>>> propertiesBySections = new LinkedHashMap<>();
+    boolean skipEmptyField = true;
 
     Context context;
     public AssetInfoAdapter() { }
 
-    public AssetInfoAdapter(AssetInfo assetInfo) {
+    public AssetInfoAdapter(AssetInfo assetInfo, boolean skipEmptyField) {
+        this.skipEmptyField = skipEmptyField;
         buildAllPropertiesList(assetInfo);
     }
 
@@ -63,6 +65,7 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
             propertiesBySections.put(SUPPLIER_SECTION_TITLE, supplierPropertyLists);
         }
 
+        // merge item info and docline info to purchase section
         List<Pair<String, String>> purchasePropertyLists = getItemAndDocLineOrderedPropertiesList(map);
         if (purchasePropertyLists.size() != 0) {
             propertiesBySections.put(PURCHASE_SECTION_TITLE, purchasePropertyLists);
@@ -84,9 +87,14 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
         List<Pair<String, String>> result = new ArrayList<>();
         if (orderList != null) {
             for (String key : orderList) {
-                if (map.containsKey(key) && !map.get(key).isEmpty()) {
-                    result.add(new Pair<>(key, map.get(key)));
-                    map.remove(key);
+                if (map.containsKey(key)) {
+                    if (skipEmptyField && !map.get(key).isEmpty()) {
+                        result.add(new Pair<>(key, map.get(key)));
+                        map.remove(key);
+                    } else if (!skipEmptyField) {
+                        result.add(new Pair<>(key, map.get(key)));
+                        map.remove(key);
+                    }
                 }
             }
             return result;
@@ -121,7 +129,11 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
         itemAndDocLineKeys.addAll(docLineInfoOrder);
 
         for (String key : itemAndDocLineKeys) {
-            if (!map.containsKey(key) || (map.containsKey(key) && map.get(key).isEmpty())) {
+            if (!map.containsKey(key)) {
+                continue;
+            }
+
+            if (skipEmptyField && map.get(key).isEmpty()) {
                 continue;
             }
 

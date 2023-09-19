@@ -144,7 +144,7 @@ public class AddAssetViewModel extends ViewModel {
 
     // todo: show summary
 
-    public void addNewAsset() {
+    public AssetInfo getAssetInfo() {
         AssetInfo assetInfo = new AssetInfo();
         for (AssetPropertyDataModel field : inputFieldModels.values()) {
             if (field instanceof DropDownDataModel) {
@@ -156,6 +156,6 @@ public class AddAssetViewModel extends ViewModel {
             }
         }
 
-        assetInfoRepository.createNewAsset(assetInfo);
+        return assetInfo;
     }
 }

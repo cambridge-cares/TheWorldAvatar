@@ -9,12 +9,23 @@
         android:name="uk.ac.cam.cares.jps.assetinfo.AssetInfoFragment"
         android:label="@string/asset_info"
         tools:layout="@layout/fragment_asset_info">
-        <argument
-            android:name="uri"
-            app:argType="string"
-            />
+
         <deepLink
-            app:uri="android-app://uk.ac.cam.cares.jps.app/info_page?uri={uri}" />
+            app:uri="android-app://uk.ac.cam.cares.jps.app/info_page?uri={uri}">
+            <argument
+                android:name="uri"
+                app:argType="string"
+                />
+        </deepLink>
+
+
+        <deepLink
+            app:uri="android-app://uk.ac.cam.cares.jps.app/new_asset_summary?assetinfo={assetinfo}">
+            <argument
+                android:name="assetinfo"
+                app:argType="string"
+                />
+        </deepLink>
 
     </fragment>
 
