@@ -39,9 +39,8 @@ public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
         // todo: what if user typed the full name, but not click item?
         // todo: another way will be when collecting the field's value, check in **VM** whether the option dict has this name. But name is not the identifier of the object, so not 100% gauranteed
         editText.setOnItemClickListener((adapterView, view, i, l) -> {
-            OtherInfoModel selected = (OtherInfoModel) adapterView.getItemAtPosition(i);
-            property.setValueIri(selected.getIri());
-            property.setFieldValue(selected.getName());
+            String selected = (String) adapterView.getItemAtPosition(i);
+            property.setFieldValue(selected);
         });
 
 //        if (property.isDisallowNewItem()) {
@@ -49,7 +48,7 @@ public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
 //        }
     }
 
-    public void updateAdapterList(List<OtherInfoModel> options) {
+    public void updateAdapterList(List<String> options) {
         // may be a bug with AutoCompleteTextView, the arrayAdapter.addAll() and notifyDatasetChanged() do not work
         editText.setAdapter(new ArrayAdapter<>(context, R.layout.list_item, options));
     }

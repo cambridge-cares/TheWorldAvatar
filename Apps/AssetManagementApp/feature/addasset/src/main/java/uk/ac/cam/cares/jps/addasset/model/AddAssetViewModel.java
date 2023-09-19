@@ -2,9 +2,6 @@ package uk.ac.cam.cares.jps.addasset.model;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
 
-import android.util.Pair;
-
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import org.apache.log4j.BasicConfigurator;
@@ -23,7 +20,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.AssetInfo;
 import uk.ac.cam.cares.jps.data.AssetInfoRepository;
-import uk.ac.cam.cares.jps.data.OtherInfoModel;
 import uk.ac.cam.cares.jps.data.OtherInfoRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 
@@ -34,13 +30,17 @@ public class AddAssetViewModel extends ViewModel {
     OtherInfoRepository otherInfoRepository;
     AssetInfoRepository assetInfoRepository;
 
-    public Map<String, List<AssetPropertyDataModel>> getInputFieldsBySection() {
-        return inputFieldsBySection;
+    public Map<String, List<String>> getInputFieldNamesBySection() {
+        return inputFieldNamesBySection;
     }
 
-    private final Map<String, List<AssetPropertyDataModel>> inputFieldsBySection = new LinkedHashMap<>();
-    private final Map<String, MutableLiveData<List<OtherInfoModel>>> dropDownOptionsMap = new HashMap<>();
+    public Map<String, AssetPropertyDataModel> getInputFieldModels() {
+        return inputFieldModels;
+    }
 
+    // define UI grouping
+    private final Map<String, List<String>> inputFieldNamesBySection = new LinkedHashMap<>();
+    private final Map<String, AssetPropertyDataModel> inputFieldModels = new HashMap<>();
 
     // use field keys to define each field view's appearance and behaviour
     private final List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, LOCATED_IN);
@@ -54,32 +54,25 @@ public class AddAssetViewModel extends ViewModel {
     AddAssetViewModel(OtherInfoRepository otherInfoRepository, AssetInfoRepository assetInfoRepository) {
         BasicConfigurator.configure();
         initInputFieldsDataModel();
-        initDropDownLiveData();
 
         this.otherInfoRepository = otherInfoRepository;
         this.assetInfoRepository = assetInfoRepository;
     }
 
     private void initInputFieldsDataModel() {
-        inputFieldsBySection.put(BASIC_SECTION_TITLE, getInputFieldListForSection(basicInfoOrder));
-        inputFieldsBySection.put(LOCATION_SECTION_TITLE, getInputFieldListForSection(locationInfoOrder));
-        inputFieldsBySection.put(SUPPLIER_SECTION_TITLE, getInputFieldListForSection(supplierInfoOrder));
-        inputFieldsBySection.put(PURCHASE_SECTION_TITLE, getInputFieldListForSection(docLineInfoOrder));
-        inputFieldsBySection.put(ITEM_SECTION_TITLE, getInputFieldListForSection(itemInfoOrder));
+        inputFieldNamesBySection.put(BASIC_SECTION_TITLE, initFields(basicInfoOrder));
+        inputFieldNamesBySection.put(LOCATION_SECTION_TITLE, initFields(locationInfoOrder));
+        inputFieldNamesBySection.put(SUPPLIER_SECTION_TITLE, initFields(supplierInfoOrder));
+        inputFieldNamesBySection.put(PURCHASE_SECTION_TITLE, initFields(docLineInfoOrder));
+        inputFieldNamesBySection.put(ITEM_SECTION_TITLE, initFields(itemInfoOrder));
 
         // assume only 1 spec sheet and 1 manual
-        inputFieldsBySection.put(SPEC_SHEET_SECTION_TITLE, getInputFieldListForSection(Collections.singletonList(SPEC_SHEET_SECTION_TITLE)));
-        inputFieldsBySection.put(MANUAL_SECTION_TITLE, getInputFieldListForSection(Collections.singletonList(MANUAL_SECTION_TITLE)));
+        inputFieldNamesBySection.put(SPEC_SHEET_SECTION_TITLE, initFields(Collections.singletonList(SPEC_SHEET_SECTION_TITLE)));
+        inputFieldNamesBySection.put(MANUAL_SECTION_TITLE, initFields(Collections.singletonList(MANUAL_SECTION_TITLE)));
     }
 
-    private void initDropDownLiveData() {
-        for (String key : dropDownFieldKeys) {
-            dropDownOptionsMap.put(key, new MutableLiveData<>());
-        }
-    }
-
-    private List<AssetPropertyDataModel> getInputFieldListForSection(List<String> fieldKeys) {
-        List<AssetPropertyDataModel> results = new ArrayList<>();
+    private List<String> initFields(List<String> fieldKeys) {
+        List<String> fieldNames = new ArrayList<>();
         for (String key : fieldKeys) {
             if (skippedFieldKeys.contains(key)) {
                 continue;
@@ -98,13 +91,14 @@ public class AddAssetViewModel extends ViewModel {
             assetPropertyDataModel.setRequired(mandatoryFieldKeys.contains(key));
             assetPropertyDataModel.setMultiLine(multiLineInputFieldKeys.contains(key));
 
-            results.add(assetPropertyDataModel);
+            inputFieldModels.put(key, assetPropertyDataModel);
+            fieldNames.add(key);
         }
-        return results;
+        return fieldNames;
     }
 
     public void requestAllDropDownOptionsFromRepository() {
-        Map<String, RepositoryCallback<List<OtherInfoModel>>> callbacks = new HashMap<>();
+        Map<String, RepositoryCallback<Map<String, String>>> callbacks = new HashMap<>();
         for (String key : otherInfoFromAssetAgentKeys) {
             callbacks.put(key, getRepositoryCallbackForKey(key));
         }
@@ -112,13 +106,11 @@ public class AddAssetViewModel extends ViewModel {
         otherInfoRepository.getAllOtherInfo(callbacks);
     }
 
-    private RepositoryCallback<List<OtherInfoModel>> getRepositoryCallbackForKey(String key) {
-        return new RepositoryCallback<List<OtherInfoModel>>() {
+    private RepositoryCallback<Map<String, String>> getRepositoryCallbackForKey(String key) {
+        return new RepositoryCallback<Map<String, String>>() {
             @Override
-            public void onSuccess(List<OtherInfoModel> result) {
-                Pair<String, Integer> indexes = findIndexForFieldByKey(key);
-                ((DropDownDataModel) inputFieldsBySection.get(indexes.first).get(indexes.second)).setLabelsToIri(result);
-                dropDownOptionsMap.get(key).postValue(result);
+            public void onSuccess(Map<String, String> result) {
+                ((DropDownDataModel) inputFieldModels.get(key)).getMutableLabelsToIri().postValue(result);
             }
 
             @Override
@@ -128,38 +120,16 @@ public class AddAssetViewModel extends ViewModel {
         };
     }
 
-    private Pair<String, Integer> findIndexForFieldByKey(String key) throws RuntimeException {
-        if (basicInfoOrder.contains(key)) {
-            return new Pair<>(BASIC_SECTION_TITLE, basicInfoOrder.indexOf(key));
-        } else if (locationInfoOrder.contains(key)) {
-            return new Pair<>(LOCATION_SECTION_TITLE, locationInfoOrder.indexOf(key));
-        } else if (supplierInfoOrder.contains(key)) {
-            return new Pair<>(SUPPLIER_SECTION_TITLE, supplierInfoOrder.indexOf(key));
-        } else if (docLineInfoOrder.contains(key)) {
-            return new Pair<>(PURCHASE_SECTION_TITLE, docLineInfoOrder.indexOf(key));
-        }
-
-        LOGGER.error("Key: " + key + "not found in any sections. Should not reach here!");
-        throw new RuntimeException("Key: " + key + "not found in any sections. Should not reach here!");
-    }
-
-    public MutableLiveData<List<OtherInfoModel>> getDropDownLiveDataByKey(String key) {
-        return dropDownOptionsMap.get(key);
-    }
-
     public void addNewAsset() {
         AssetInfo assetInfo = new AssetInfo();
-        for (List<AssetPropertyDataModel> fields : inputFieldsBySection.values()) {
-            fields.forEach(field -> {
-
-                if (field instanceof DropDownDataModel) {
-                    assetInfo.addProperties(field.getFieldName(), ((DropDownDataModel) field).getValueIri());
-                } else if (field instanceof DataSheetDataModel) {
-                    // todo
-                } else {
-                    assetInfo.addProperties(field.getFieldName(), field.getFieldValue());
-                }
-            });
+        for (AssetPropertyDataModel field : inputFieldModels.values()) {
+            if (field instanceof DropDownDataModel) {
+                assetInfo.addProperties(field.getFieldName(), ((DropDownDataModel) field).getValueIri());
+            } else if (field instanceof DataSheetDataModel) {
+                // todo
+            } else {
+                assetInfo.addProperties(field.getFieldName(), field.getFieldValue());
+            }
         }
 
         assetInfoRepository.createNewAsset(assetInfo);

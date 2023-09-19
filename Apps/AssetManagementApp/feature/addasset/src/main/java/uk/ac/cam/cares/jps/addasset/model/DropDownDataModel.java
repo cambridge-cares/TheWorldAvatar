@@ -1,14 +1,18 @@
 package uk.ac.cam.cares.jps.addasset.model;
 
+import androidx.lifecycle.MutableLiveData;
+
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import uk.ac.cam.cares.jps.data.OtherInfoModel;
 
 public class DropDownDataModel extends AssetPropertyDataModel{
     boolean disallowNewItem;
-    String valueIri = "";
+    MutableLiveData<Map<String, String>> mutableLabelsToIri = new MutableLiveData<>();
     Map<String, String> labelsToIri = new HashMap<>();
 
     DropDownDataModel(String fieldName) {
@@ -22,14 +26,7 @@ public class DropDownDataModel extends AssetPropertyDataModel{
     }
 
     public String getValueIri() {
-        if (!valueIri.isEmpty()) {
-            return valueIri;
-        }
-        return labelsToIri.getOrDefault(this.fieldValue, "");
-    }
-
-    public void setValueIri(String valueIri) {
-        this.valueIri = valueIri;
+        return mutableLabelsToIri.getValue().getOrDefault(this.fieldValue, "");
     }
 
     // NOTICE: Assume no duplication in names, and each name has only one corresponding iri
@@ -37,5 +34,13 @@ public class DropDownDataModel extends AssetPropertyDataModel{
         for (OtherInfoModel model : options) {
             labelsToIri.put(model.getName(), model.getIri());
         }
+    }
+
+    public MutableLiveData<Map<String, String>> getMutableLabelsToIri() {
+        return mutableLabelsToIri;
+    }
+
+    public List<String> getOrderedOptionList() {
+        return mutableLabelsToIri.getValue().keySet().stream().sorted(Comparator.comparing(String::toLowerCase)).collect(Collectors.toList());
     }
 }

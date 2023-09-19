@@ -63,6 +63,12 @@ public class OtherInfoNetworkSource {
                 results.put(DELIVERY_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("DeliveryOrder").toString(), type), DELIVERY_ORDER_NUMBER));
                 results.put(PURCHASE_REQUEST_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseRequest").toString(), type), PURCHASE_REQUEST_NUMBER));
 
+                // todo: test data
+//                results.put(ITEM_NAME, keyConversion(gson.fromJson(resultJson.getJSONArray("Items").toString(), type), ITEM_NAME));
+                results.put(LOCATED_IN, keyConversion(gson.fromJson(resultJson.getJSONArray("Rooms").toString(), type), LOCATED_IN));
+                results.put(SEAT_LOCATION, keyConversion(gson.fromJson(resultJson.getJSONArray("Seats").toString(), type), SEAT_LOCATION));
+//                results.put(STORED_IN, keyConversion(gson.fromJson(resultJson.getJSONArray("Containers").toString(), type), STORED_IN));
+
                 onSuccessUpper.onResponse(results);
             } catch (JSONException e) {
                 throw new RuntimeException(e);

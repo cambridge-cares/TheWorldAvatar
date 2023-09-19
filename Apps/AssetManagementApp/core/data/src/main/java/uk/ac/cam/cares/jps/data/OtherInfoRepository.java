@@ -6,7 +6,6 @@ import com.android.volley.Response;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class OtherInfoRepository {
         }
     }
 
-    public void getAllOtherInfo(Map<String, RepositoryCallback<List<OtherInfoModel>>> callbacks) {
+    public void getAllOtherInfo(Map<String, RepositoryCallback<Map<String, String>>> callbacks) {
         Response.Listener<Map<String, HashMap<String, String>>> onSuccess = response -> {
             for (String key : response.keySet()) {
                 // compare whether network is different from cache
@@ -50,7 +49,7 @@ public class OtherInfoRepository {
                     otherInfoByKey.get(key).putAll(response.get(key));
                 }
 
-                callbacks.get(key).onSuccess(convertToModelList(response.get(key)));
+                callbacks.get(key).onSuccess(convertToLabelToIriMap(response.get(key)));
             }
         };
         Response.ErrorListener onFailure = error -> {
@@ -63,7 +62,7 @@ public class OtherInfoRepository {
         for (String key : otherInfoByKey.keySet()) {
             if (!otherInfoByKey.get(key).isEmpty()) {
                 synchronized (otherInfoByKey.get(key)) {
-                    callbacks.get(key).onSuccess(convertToModelList(otherInfoByKey.get(key)));
+                    callbacks.get(key).onSuccess(convertToLabelToIriMap(otherInfoByKey.get(key)));
                 }
                 return;
             }
@@ -75,7 +74,7 @@ public class OtherInfoRepository {
                         synchronized (otherInfoByKey.get(key)) {
                             otherInfoByKey.get(key).putAll(stringMap);
                         }
-                        callbacks.get(key).onSuccess(convertToModelList(stringMap));
+                        callbacks.get(key).onSuccess(convertToLabelToIriMap(stringMap));
                     },
                     error -> {
                         LOGGER.error(error.getMessage());
@@ -90,17 +89,11 @@ public class OtherInfoRepository {
 
     }
 
-    private List<OtherInfoModel> convertToModelList(Map<String, String> map) {
-        List<OtherInfoModel> results = new ArrayList<>();
+    private Map<String, String> convertToLabelToIriMap(Map<String, String> map) {
+        Map<String, String> results = new HashMap<>();
         for (String key : map.keySet()) {
-            results.add(new OtherInfoModel(key, map.get(key)));
+            results.put(map.get(key), key);
         }
-        return results.stream().sorted((otherInfoModel, t1) -> {
-            if (otherInfoModel.getName() != null && t1.getName() != null)
-            {
-                return otherInfoModel.getName().compareToIgnoreCase(t1.getName());
-            }
-            return 0;
-        }).collect(Collectors.toList());
+        return results;
     }
 }

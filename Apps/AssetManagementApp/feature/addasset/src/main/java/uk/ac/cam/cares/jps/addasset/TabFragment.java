@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
@@ -30,7 +29,6 @@ import uk.ac.cam.cares.jps.addasset.model.DropDownDataModel;
 import uk.ac.cam.cares.jps.addasset.view.DataSheetItemView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyAutoCompleteTextView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyGeneralInputTextView;
-import uk.ac.cam.cares.jps.data.OtherInfoModel;
 
 @AndroidEntryPoint
 public class TabFragment extends Fragment {
@@ -76,13 +74,17 @@ public class TabFragment extends Fragment {
         ((TextView) sectionView.findViewById(R.id.section_label)).setText(section);
 
         LinearLayout linearLayout = sectionView.findViewById(R.id.linear_layout);
-        for (AssetPropertyDataModel property : viewModel.getInputFieldsBySection().get(section)) {
+        for (String fieldName : viewModel.getInputFieldNamesBySection().get(section)) {
+            AssetPropertyDataModel property = viewModel.getInputFieldModels().get(fieldName);
             View inputText;
             if (property instanceof DropDownDataModel) {
                 inputText = new PropertyAutoCompleteTextView(requireContext(), (DropDownDataModel) property);
-                viewModel.getDropDownLiveDataByKey(property.getFieldName()).observe(this.getViewLifecycleOwner(), options -> {
-                    ((PropertyAutoCompleteTextView) inputText).updateAdapterList(options);
+                ((DropDownDataModel) property).getMutableLabelsToIri().observe(this.getViewLifecycleOwner(), labelsToIriMap -> {
+                    ((PropertyAutoCompleteTextView) inputText).updateAdapterList(((DropDownDataModel) property).getOrderedOptionList());
                 });
+//                viewModel.getDropDownLiveDataByKey(property.getFieldName()).observe(this.getViewLifecycleOwner(), options -> {
+//                    ((PropertyAutoCompleteTextView) inputText).updateAdapterList(options);
+//                });
             } else {
                 inputText = new PropertyGeneralInputTextView(requireContext(), property);
             }
@@ -97,8 +99,8 @@ public class TabFragment extends Fragment {
         ((TextView) sectionView.findViewById(R.id.section_label)).setText(section);
 
         LinearLayout linearLayout = sectionView.findViewById(R.id.linear_layout);
-        for (AssetPropertyDataModel property : viewModel.getInputFieldsBySection().get(section)) {
-            View dataSheetItem = new DataSheetItemView(requireContext(), property);
+        for (String fieldName : viewModel.getInputFieldNamesBySection().get(section)) {
+            View dataSheetItem = new DataSheetItemView(requireContext(), viewModel.getInputFieldModels().get(fieldName));
             linearLayout.addView(dataSheetItem);
         }
         return sectionView;
