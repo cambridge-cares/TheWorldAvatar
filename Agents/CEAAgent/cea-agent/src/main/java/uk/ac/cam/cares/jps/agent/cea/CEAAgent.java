@@ -83,13 +83,13 @@ public class CEAAgent extends JPSAgent {
     private String defaultWeatherLabel;
     private String ceaRoute;
     private String openmeteoagentUrl;
-
-    private Map<String, String> accessAgentRoutes = new HashMap<>();
+    private String ontopUrl;
 
     public CEAAgent() {
         readConfig();
         ontologyUriHelper = new OntologyURIHelper("CEAAgentConfig");
         geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
+        ontopUrl = endpointConfig.getOntopUrl();
         stackName = StackClient.getStackName();
         stackAccessAgentBase =  stackAccessAgentBase.replace(STACK_NAME, stackName);
         openmeteoagentUrl = openmeteoagentUrl.replace(STACK_NAME, stackName);
@@ -126,9 +126,9 @@ public class CEAAgent extends JPSAgent {
                     // Will not be necessary if namespace is passed in request params
                     if (i == 0) {
                         // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
-                        geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : getRoute(uri);
+                        geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : ontopUrl;
                         // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
-                        usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : stackAccessAgentBase + defaultUsageLabel;
+                        usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : ontopUrl;
                         weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER) : stackAccessAgentBase + defaultWeatherLabel;
                         ceaRoute = requestParams.has(KEY_CEA) ? requestParams.getString(KEY_CEA) : stackAccessAgentBase + defaultCeaLabel;
                         terrainDb = requestParams.has(KEY_TERRAIN_DB) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainDb;
@@ -145,23 +145,23 @@ public class CEAAgent extends JPSAgent {
 
                     uriStringArray.add(uri);
 
-                    String height = geometryQueryHelper.getBuildingGeometry(uri, geometryRoute, "height");
+                    String height = geometryQueryHelper.getBuildingGeometry(uri, ontopUrl, "height");
 
                     // Get footprint from ground thematic surface or find from surface geometries depending on data
-                    String footprint = geometryQueryHelper.getBuildingGeometry(uri, geometryRoute, "footprint");
+                    String footprint = geometryQueryHelper.getBuildingGeometry(uri, ontopUrl, "footprint");
 
                     // Get building usage, set default usage of MULTI_RES if not available in knowledge graph
                     Map<String, Double> usage = usageHelper.getBuildingUsages(uri, usageRoute);
 
-                    ArrayList<CEAInputData> surrounding = surroundingsHelper.getSurroundings(uri, geometryRoute, uniqueSurrounding, surroundingCoordinates);
-
                     //just get crs once - assuming all iris in same namespace
                     if (i == 0) {
-                        crs = geometryQueryHelper.getBuildingGeometry(uri, geometryRoute, "crs");
+                        crs = geometryQueryHelper.getBuildingGeometry(uri, ontopUrl, "crs");
                         if (crs.isEmpty()) {
                             crs = BuildingURIHelper.getNamespace(uri).split("EPSG").length == 2 ? BuildingURIHelper.getNamespace(uri).split("EPSG")[1].split("/")[0] : "27700";
                         }
                     }
+
+                    ArrayList<CEAInputData> surrounding = surroundingsHelper.getSurroundings(footprint, ontopUrl, uniqueSurrounding, surroundingCoordinates, crs);
 
                     List<Object> weather = new ArrayList<>();
 
@@ -214,7 +214,7 @@ public class CEAAgent extends JPSAgent {
                     if(building != null && building.equals("")){
                         // Check if bot:Building IRI has already been created in another endpoint
                         building = dataManager.checkBuildingInitialised(uri, geometryRoute);
-                        building = dataManager.initialiseBuilding(uri, building, ceaRoute);
+                        building = dataManager.initialiseBuilding(uri, ceaRoute);
                     }
                     if(!dataManager.checkDataInitialised(building, tsIris, scalarIris, ceaRoute)) {
                         tsHelper.createTimeSeries(tsIris, ontologyUriHelper);
@@ -415,15 +415,8 @@ public class CEAAgent extends JPSAgent {
      */
     private void readConfig() {
         ResourceBundle config = ResourceBundle.getBundle("CEAAgentConfig");
-        accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/berlin/sparql/", config.getString("berlin.targetresourceid"));
-        accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/singaporeEPSG24500/sparql/", config.getString("singaporeEPSG24500.targetresourceid"));
-        accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/singaporeEPSG4326/sparql/", config.getString("singaporeEPSG4326.targetresourceid"));
-        accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG3857/sparql/", config.getString("kingslynnEPSG3857.targetresourceid"));
-        accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG27700/sparql/", config.getString("kingslynnEPSG27700.targetresourceid"));
-        accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/", config.getString("pirmasensEPSG32633.targetresourceid"));
         stackAccessAgentBase = config.getString("access.url");
         defaultCeaLabel = config.getString("cea.label");
-        defaultUsageLabel = config.getString("usage.label");
         defaultWeatherLabel = config.getString("weather.label");
         openmeteoagentUrl = config.getString("url.openmeteoagent");
         defaultTerrainDb = config.getString("postgis.database");
@@ -448,16 +441,5 @@ public class CEAAgent extends JPSAgent {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-    }
-
-    /**
-     * Returns route for use with AccessAgent
-     * @param iriString iri of object to be queried
-     * @return route of endpoint that iri belongs to
-     */
-    private String getRoute(String iriString) {
-        String namespaceEndpoint = BuildingURIHelper.getNamespace(iriString);
-        String route = accessAgentRoutes.get(namespaceEndpoint);
-        return route;
     }
 }
