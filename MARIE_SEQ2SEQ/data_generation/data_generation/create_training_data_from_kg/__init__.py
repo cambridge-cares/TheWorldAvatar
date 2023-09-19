@@ -17,7 +17,7 @@ class DatasetFromKgMaker:
         self.subgraph_retriever = SubgraphRetriever()
         self.example_maker_head2tail = ExampleMakerHead2Tail()
 
-    def make_examples_factoid_single(self):
+    def make_examples_1h_to_1t(self):
         """Covers all properties, identifiers, some uses, and some chemical classes"""
         examples: List[dict] = []
         missing_entries = defaultdict(list)
@@ -57,12 +57,14 @@ class DatasetFromKgMaker:
             else:
                 examples.append(example)
 
-        print("Missing entries: ")
-        print(missing_entries)
+        if len(missing_entries) > 0:
+            print("Missing entries: ")
+            for k, v in missing_entries.items():
+                print(k, ": ", v)
 
         return examples
 
-    def make_examples_factoid_double(self):
+    def make_examples_1h_to_2t(self):
         examples: List[dict] = []
 
         for _ in PROPERTY_NAMES:
@@ -90,7 +92,7 @@ class DatasetFromKgMaker:
 
         return examples
 
-    def make_examples_factoid_triple(self):
+    def make_examples_1h_to_3t(self):
         examples: List[dict] = []
 
         for _ in range((len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)) // 6):
