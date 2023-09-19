@@ -80,12 +80,22 @@ public class TabFragment extends Fragment {
             PropertyBaseInputTextView inputText;
             if (property instanceof DropDownDataModel) {
                 inputText = new PropertyAutoCompleteTextView(requireContext(), (DropDownDataModel) property);
+
                 ((DropDownDataModel) property).getMutableLabelsToIri().observe(this.getViewLifecycleOwner(), labelsToIriMap -> {
                     ((PropertyAutoCompleteTextView) inputText).updateAdapterList(((DropDownDataModel) property).getOrderedOptionList());
+                });
+
+                ((DropDownDataModel) property).getShowDisallowError().observe(this.getViewLifecycleOwner(), showDisallowError -> {
+                    if (showDisallowError) {
+                        inputText.setInputLayoutError(getResources().getText(R.string.not_allow_new_instance));
+                    } else {
+                        inputText.setInputLayoutError(null);
+                    }
                 });
             } else {
                 inputText = new PropertyGeneralInputTextView(requireContext(), property);
             }
+
             property.getIsMissingField().observe(this.getViewLifecycleOwner(), isMissing -> {
                 if (isMissing) {
                     inputText.setInputLayoutError(getResources().getText(R.string.field_is_required));

@@ -46,7 +46,7 @@ public class AddAssetViewModel extends ViewModel {
     private final List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, LOCATED_IN);
     private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, LOCATED_IN, SEAT_LOCATION, STORED_IN, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, ITEM_NAME, SERVICE_CODE, SERVICE_CATEGORY);
     private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_SECTION_TITLE, MANUAL_SECTION_TITLE);
-    private final List<String> disallowInputForDropDown = Arrays.asList(TYPE, ASSIGNED_TO);
+    private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, ASSIGNED_TO);
     private final List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
     private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SERVICE_CODE_DESCRIPTION, SERVICE_CATEGORY_DESCRIPTION);
 
@@ -81,7 +81,6 @@ public class AddAssetViewModel extends ViewModel {
             AssetPropertyDataModel assetPropertyDataModel;
             if (dropDownFieldKeys.contains(key)) {
                 assetPropertyDataModel = new DropDownDataModel(key);
-                ((DropDownDataModel) assetPropertyDataModel).setDisallowNewItem(disallowInputForDropDown.contains(key));
             } else if (dataSheetFieldKeys.contains(key)) {
                 assetPropertyDataModel = new DataSheetDataModel(key);
             } else {
@@ -120,23 +119,27 @@ public class AddAssetViewModel extends ViewModel {
         };
     }
 
-    public void checkMissingInput() {
+    public boolean checkMissingInput() {
+        boolean hasError = false;
         for (String key : mandatoryFieldKeys) {
             if (inputFieldModels.get(key).getFieldValue().isEmpty()) {
                 inputFieldModels.get(key).getIsMissingField().setValue(true);
+                hasError = true;
             }
         }
+        return hasError;
     }
 
-    public List<String> checkDisallowInputField() {
-        List<String> newInstanceForDisallowInputField = new ArrayList<>();
-        for (String key : disallowInputForDropDown) {
-            if (((DropDownDataModel)inputFieldModels.get(key)).getValueIri().isEmpty()) {
-                newInstanceForDisallowInputField.add(key);
+    public boolean checkDisallowNewInstanceInputField() {
+        boolean hasError = false;
+        for (String key : disallowNewInstanceInputForDropDown) {
+            // if field value is empty, then no need to check whether have a mathced iri
+            if (!inputFieldModels.get(key).getFieldValue().isEmpty() && ((DropDownDataModel)inputFieldModels.get(key)).getValueIri().isEmpty()) {
+                ((DropDownDataModel) inputFieldModels.get(key)).getShowDisallowError().setValue(true);
+                hasError = true;
             }
         }
-
-        return newInstanceForDisallowInputField;
+        return hasError;
     }
 
     // todo: show summary

@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.addasset.view;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -36,16 +38,25 @@ public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
 
         editText = (AutoCompleteTextView) super.editText;
         editText.setAdapter(new ArrayAdapter<>(context, R.layout.list_item));
-        // todo: what if user typed the full name, but not click item?
-        // todo: another way will be when collecting the field's value, check in **VM** whether the option dict has this name. But name is not the identifier of the object, so not 100% gauranteed
+
         editText.setOnItemClickListener((adapterView, view, i, l) -> {
             String selected = (String) adapterView.getItemAtPosition(i);
             property.setFieldValue(selected);
         });
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {;}
 
-//        if (property.isDisallowNewItem()) {
-//            editText.setInputType(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
-//        }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {;}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                property.getShowDisallowError().setValue(false);
+                property.getIsMissingField().setValue(false);
+                property.setFieldValue(editable.toString());
+            }
+        });
     }
 
     public void updateAdapterList(List<String> options) {

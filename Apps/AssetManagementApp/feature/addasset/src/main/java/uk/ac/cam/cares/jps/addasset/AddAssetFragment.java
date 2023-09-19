@@ -57,7 +57,13 @@ public class AddAssetFragment extends Fragment {
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabNames.get(position))).attach();
 
         binding.doneBt.setOnClickListener(view1 -> {
-            viewModel.checkMissingInput();
+            if (viewModel.checkMissingInput()) {
+                return;
+            }
+
+            if (viewModel.checkDisallowNewInstanceInputField()) {
+                return;
+            }
         });
     }
 }
