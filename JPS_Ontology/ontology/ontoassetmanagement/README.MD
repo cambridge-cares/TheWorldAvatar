@@ -58,7 +58,6 @@ The ontology can be divided into these respective domains:
     "p2p-doc:E-Invoice" ||--o{ "p2p-docLine:InvoiceLine" : "p2p-invoice:hasInvoiceLine"
 ```
 #### 2.3 Payment Terms
-
 ```mermaid
     erDiagram
     "p2p-doc:PurchaseOrder" ||--o{ "PaymentTerms" : hasPaymentTerms
@@ -72,7 +71,6 @@ The ontology can be divided into these respective domains:
     "fibo-currencyamount:MonetaryAmount" ||--o{ "om:AmountOfMoney" : hasAmount
 ```
 #### 2.4 Delivery Details
-
 ```mermaid
     erDiagram
     "p2p-doc:PurchaseOrder" ||--o{ "DeliveryDetails" : hasDeliveryDetails
@@ -83,7 +81,6 @@ The ontology can be divided into these respective domains:
     "DeliveryDetails" ||--o{ "time:Instant" : estimatedDateOfDelivery
     "DeliveryDetails" ||--o{ "time:Instant" : actualDateOfDelivery
     "DeliveryDetails" ||--o{ "ImportDuties" : hasImportDuties
-    "Tax" }|--|| "ImportDuties" : "rdfs:subClassOf"
     "DeliveryDetails" ||--o{ "DeliveryMethod" : hasDeliveryMethod
     "DeliveryModeFreight" ||--o{ "DeliveryMethod" : a
     "DeliveryModeMail" ||--o{ "DeliveryMethod" : a
@@ -105,6 +102,7 @@ The ontology can be divided into these respective domains:
     "om:Percentage" }|--|| "TaxRate" : "rdfs:subClassOf"
     "PriceDetails" ||--o{ "Tax" : hasTax
     "om:AmountOfMoney" }|--|| "Tax" : "rdfs:subClassOf"
+    "Tax" }|--|| "ImportDuties" : "rdfs:subClassOf"
     "PriceDetails" ||--o{ "Discount" : hasDiscount
     "om:AmountOfMoney" }|--|| "Discount" : "rdfs:subClassOf"
     "PriceDetails" ||--o{ "Price" : hasPrice
@@ -145,7 +143,7 @@ The ontology can be divided into these respective domains:
         hasCurrentLocation string
     }
 ```
-#### 2.7 Furniture and Workspaces
+#### 2.7 Furniture and Workspace
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "Workspace" : isLocatedAt
@@ -162,7 +160,7 @@ The ontology can be divided into these respective domains:
     "Cabinet" }|--|| "BuiltInCabinet" : "rdfs:subClassOf"
     "Cabinet" }|--|| "PedestalCabinet" : "rdfs:subClassOf"
 ```
-#### 2.8 Project, Research Grant, Budget and Budget Categories
+#### 2.8 Project, Research Grant, Budget and Budget Category
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "Project" : allocatedTo
@@ -184,4 +182,5 @@ The ontology can be divided into these respective domains:
         hasServiceCategoryIdentifier string
     }
     "p2p-item:Item" ||--o{ "BudgetCategory" : purchasedUnder
+    "BudgetCategory" ||--o{ "om:AmountOfMoney" : hasRemainingAmount
 ```
