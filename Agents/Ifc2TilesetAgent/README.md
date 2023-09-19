@@ -97,10 +97,14 @@ Please modify the following properties in `config/properties.yaml`:
 ^*Endpoints are required to query for metadata in tileset and interactions during visualisation*
 
 In `config/properties.yaml`, there are also optional properties for appending IRI and name for the solar panel or sewage tileset. If required, please ensure both IRI and name are populated for the corresponding tileset. When not in use, please leave an empty string.
+- bim_tileset_iri* : IRI appended to default tileset generated
+- bim_tileset_name* : Name appended to default tileset generated
 - solar_panel_tileset_iri
 - solar_panel_tileset_name
 - sewage_tileset_iri
 - sewage_tileset_name
+
+**Note that this will be ignored if there are no root contents or a `building.glb` is generated.*
 
 If you are deploying this on the stack, ensure that your `properties.yaml` and IFC file is placed at the corresponding bind mount location. A sample stack-based properties is available in `config/properties.yaml_stack` but requires editing for the name of your stack, desired namespaces, and optional IRIs or names.
 
@@ -112,10 +116,6 @@ A brief overview is as follows:
     1. `assetUrl`  
     - Sets the file path to directory or url holding the glb assets in the tilesets generated.
     - Valid formats include `"."`, `"./file/path"`, `"../../file/path"`, and `"http://www.example.com"`. Please do not add an ending `/`, which will be generated in the code itself.
-    2. `rootIri`  
-    - An optional parameter to set an IRI for the root contents in the tileset when there is no building. Note that this will be ignored if there are no root contents or a `building.glb` is generated.
-    3. `rootName`  
-    - An optional parameter to set a name for the root contents in the tileset when there is no building. Note that this will be ignored if there are no root contents or a `building.glb` is generated.
 
 ```
 /api
@@ -125,9 +125,6 @@ A brief overview is as follows:
 Run the agent by sending a POST request with the required JSON Object to the necessary endpoint. A sample request in `curl` syntax is as follows:
 ```
 curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{"assetUrl":"./glb"}'  
-
-# Including optional parameters
-curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{"assetUrl":"./glb", "rootIri":"name", "rootName":"name"}'  
 
 # For VSCode's powershell, please append \ to the " for parameters
 curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"assetUrl\":\"./glb\"}'  
