@@ -74,8 +74,7 @@ def test_api_simple(init_assets, expected_assets, expected_root_content, expecte
     gen_sample_ifc_file("./data/ifc/sample.ifc", assets=init_assets)
     request_params = {"assetUrl": "./glb"}
     if requires_optional_params:
-        request_params["rootIri"] = C.SAMPLE_ROOT_IRI
-        request_params["rootName"] = C.SAMPLE_ROOT_NAME
+        overwrite_yaml(C.SAMPLE_ROOT_IRI, C.SAMPLE_ROOT_NAME)
 
     # Act
     response = flaskapp.post(route, json=request_params)
@@ -202,7 +201,7 @@ def test_api_solar_sewage_tileset(init_item, expected_item, expected_bbox, solar
     route = "/api"
     init_kg_client(kg_client, init_item)
     gen_sample_ifc_file("./data/ifc/sample.ifc", assets=init_item)
-    overwrite_yaml(solar_metadata[0], solar_metadata[1],
+    overwrite_yaml("", "", solar_metadata[0], solar_metadata[1],
                    sewage_metadata[0], sewage_metadata[1])
 
     # Act
@@ -346,26 +345,6 @@ def test_api_invalid_request_param(asset_url, flaskapp):
     assert response.status_code == 400
     assert response.json == expected_response
 
-
-@pytest.mark.parametrize(
-    "includedParam, paramVal, missingParam",
-    [("rootIri", "http://www.test.com/example", "rootName"),
-     ("rootName", "Test name", "rootIri")]
-)
-def test_api_invalid_optional_request_param(includedParam, paramVal, missingParam, flaskapp):
-    """Tests that only rootIri or rootName is passed and returns the Bad request status code."""
-    # Arrange
-    route = "/api"
-    expected_response = {
-        "Error": f"Detected {includedParam} parameter but {missingParam} is missing in request!"}
-
-    # Act
-    response = flaskapp.post(
-        route, json={"assetUrl": "./glb", includedParam: paramVal})
-
-    # Assert
-    assert response.status_code == 400
-    assert response.json == expected_response
 
 
 def test_api_no_ifc(flaskapp):

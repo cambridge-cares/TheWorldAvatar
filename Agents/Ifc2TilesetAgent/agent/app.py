@@ -50,16 +50,6 @@ def create_app():
             logger.error("Missing `assetUrl` parameter in request!")
             return jsonify({"Error": "Missing `assetUrl` parameter in request!"}), 400
 
-        # Verify if optional parameters are sent. If so, both must be sent
-        if "rootIri" in data and "rootName" not in data:
-            iri_name_error = "Detected rootIri parameter but rootName is missing in request!"
-            logger.error(iri_name_error)
-            return jsonify({"Error": iri_name_error}), 400
-        if "rootIri" not in data and "rootName" in data:
-            iri_name_error = "Detected rootName parameter but rootIri is missing in request!"
-            logger.error(iri_name_error)
-            return jsonify({"Error": iri_name_error}), 400
-
         if not validate_asset_url(data["assetUrl"]):
             url_error_msg = f"`assetUrl` parameter <{data['assetUrl']}> is invalid. " \
                             f"It must start with `.`, `..`, or `http://`, and must not end with `/`"
@@ -70,13 +60,8 @@ def create_app():
         global asset_url
         asset_url = data["assetUrl"] + "/"
 
-        if "rootIri" in data and "rootName" in data:
-            root_data = [data["rootIri"], data["rootName"]]
-        else:
-            root_data = []
-
         logger.info("Retrieving properties from yaml...")
-        query_endpoint, update_endpoint, solar_panel_tileset, sewage_tileset = load_properties(
+        query_endpoint, update_endpoint, solar_panel_tileset, sewage_tileset, root_tileset_data = load_properties(
             './config/properties.yaml')
 
         logger.info("Cleaning the data directory...")
@@ -103,7 +88,8 @@ def create_app():
             ifc_filepath, query_endpoint, update_endpoint)
 
         logger.info("Generating the tilesets...")
-        gen_tilesets(asset_data, building_data, solar_panel_tileset, sewage_tileset, root_data)
+        gen_tilesets(asset_data, building_data, solar_panel_tileset,
+                     sewage_tileset, root_tileset_data)
 
         # Return the result in JSON format
         return jsonify(

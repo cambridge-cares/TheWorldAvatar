@@ -165,6 +165,8 @@ def flaskapp():
     data = dict(
         query_endpoint=C.KG_ENDPOINT,
         update_endpoint=C.KG_ENDPOINT,
+        bim_tileset_iri="",
+        bim_tileset_name="",
         solar_panel_tileset_iri="",
         solar_panel_tileset_name="",
         sewage_tileset_iri="",

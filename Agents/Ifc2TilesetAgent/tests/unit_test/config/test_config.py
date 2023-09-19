@@ -13,7 +13,7 @@ import agent.config.config as properties
 ENDPOINT = "http://www.example.org/test"
 
 
-def gen_test_yaml_file(output_path, solar_iri="", solar_name="", sewage_iri="", sewage_name=""):
+def gen_test_yaml_file(output_path, bim_iri="", bim_name="", solar_iri="", solar_name="", sewage_iri="", sewage_name=""):
     """
     Generates a sample yaml file with required properties for retrieval
 
@@ -23,6 +23,8 @@ def gen_test_yaml_file(output_path, solar_iri="", solar_name="", sewage_iri="", 
     data = dict(
         query_endpoint=ENDPOINT,
         update_endpoint=ENDPOINT,
+        bim_tileset_iri=bim_iri,
+        bim_tileset_name=bim_name,
         solar_panel_tileset_iri=solar_iri,
         solar_panel_tileset_name=solar_name,
         sewage_tileset_iri=sewage_iri,
@@ -48,7 +50,7 @@ def test_load_properties():
                        sewage_name=sample_sewage_name)
 
     # Execute method
-    res_query_endpoint, res_update_endpoint, solar_panel_tileset, sewage_tileset = properties.load_properties(
+    res_query_endpoint, res_update_endpoint, solar_panel_tileset, sewage_tileset, bim_tileset = properties.load_properties(
         yaml_path)
     assert ENDPOINT == res_query_endpoint
     assert ENDPOINT == res_update_endpoint
@@ -74,7 +76,7 @@ def test_load_properties_for_solar_panel():
                        solar_name=sample_solar_name)
 
     # Execute method
-    res_query_endpoint, res_update_endpoint, solar_panel_tileset, sewage_tileset = properties.load_properties(
+    res_query_endpoint, res_update_endpoint, solar_panel_tileset, sewage_tileset, bim_tileset = properties.load_properties(
         yaml_path)
     assert ENDPOINT == res_query_endpoint
     assert ENDPOINT == res_update_endpoint
@@ -98,7 +100,7 @@ def test_load_properties_for_sewage():
                        sewage_name=sample_sewage_name)
 
     # Execute method
-    res_query_endpoint, res_update_endpoint, solar_panel_tileset, sewage_tileset = properties.load_properties(
+    res_query_endpoint, res_update_endpoint, solar_panel_tileset, sewage_tileset, bim_tileset = properties.load_properties(
         yaml_path)
     assert ENDPOINT == res_query_endpoint
     assert ENDPOINT == res_update_endpoint
@@ -119,7 +121,7 @@ def test_load_properties_no_optional_values():
     gen_test_yaml_file(yaml_path)
 
     # Execute method
-    res_query_endpoint, res_update_endpoint, solar_panel_tileset, sewage_tileset = properties.load_properties(
+    res_query_endpoint, res_update_endpoint, solar_panel_tileset, sewage_tileset, bim_tileset = properties.load_properties(
         yaml_path)
     assert ENDPOINT == res_query_endpoint
     assert ENDPOINT == res_update_endpoint

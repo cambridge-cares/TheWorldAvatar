@@ -46,12 +46,15 @@ def assert_df_equal(left: pd.DataFrame, right: pd.DataFrame):
     return assert_frame_equal(_sort_and_reset_index(left), _sort_and_reset_index(right), check_dtype=False)
 
 
-def overwrite_yaml(sample_solar_iri="", sample_solar_name="", sample_sewage_iri="", sample_sewage_name=""):
+def overwrite_yaml(sample_bim_iri="", sample_bim_name="", sample_solar_iri="", 
+                   sample_solar_name="", sample_sewage_iri="", sample_sewage_name=""):
     # Create a sample yaml file with required properties for retrieval
     yaml_path = C.SAMPLE_YAML_PATH
     data = dict(
         query_endpoint=C.KG_ENDPOINT,
         update_endpoint=C.KG_ENDPOINT,
+        bim_tileset_iri=sample_bim_iri,
+        bim_tileset_name=sample_bim_name,
         solar_panel_tileset_iri=sample_solar_iri,
         solar_panel_tileset_name=sample_solar_name,
         sewage_tileset_iri=sample_sewage_iri,
