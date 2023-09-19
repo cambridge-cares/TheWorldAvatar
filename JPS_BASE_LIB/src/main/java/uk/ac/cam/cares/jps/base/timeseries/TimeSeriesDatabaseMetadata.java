@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.jooq.impl.DefaultDataType;
@@ -108,12 +107,12 @@ class TimeSeriesDatabaseMetadata {
             }
             sqlDataType = String.format("%s,%d", clas.getSimpleName(), srid).toUpperCase();
         } else {
-            sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, clas).getTypeName();
+            sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClientWithReducedTables.DIALECT, clas).getTypeName();
             if (!dataTypeColumn.containsKey(sqlDataType)) {
                 // alternative, one of these is guaranteed to match due to the way class sets
                 // were matched
-                sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, clas).getSQLDataType()
-                        .getName();
+                sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClientWithReducedTables.DIALECT, clas)
+                        .getSQLDataType().getName();
             }
         }
         return dataTypeColumn.get(sqlDataType).remove(0);
@@ -124,8 +123,10 @@ class TimeSeriesDatabaseMetadata {
         classes.stream().forEach(newClassToAdd -> {
             List<String> classSet = new ArrayList<>();
             if (!Geometry.class.isAssignableFrom(newClassToAdd)) {
-                String typeName = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, newClassToAdd).getTypeName();
-                String sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, newClassToAdd)
+                String typeName = DefaultDataType
+                        .getDataType(TimeSeriesRDBClientWithReducedTables.DIALECT, newClassToAdd).getTypeName();
+                String sqlDataType = DefaultDataType
+                        .getDataType(TimeSeriesRDBClientWithReducedTables.DIALECT, newClassToAdd)
                         .getSQLDataType().getName();
 
                 if (!typeName.contentEquals(sqlDataType)) {

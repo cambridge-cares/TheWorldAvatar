@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -13,7 +12,6 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,7 +69,7 @@ import org.apache.logging.log4j.Logger;
 public class TimeSeriesClient<T> {
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesClient.class);
 	// Associated RDB and RDF/SPARQL clients
-	private TimeSeriesRDBClient<T> rdbClient;
+	private TimeSeriesRDBClientInterface<T> rdbClient;
 	private TimeSeriesSparql rdfClient;
 	// Exception prefix
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
@@ -101,6 +99,11 @@ public class TimeSeriesClient<T> {
 		this.rdfClient = new TimeSeriesSparql(kbClient);
 		// Initialise RDB client
 		this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
+	}
+
+	public TimeSeriesClient(TripleStoreClientInterface kbClient, TimeSeriesRDBClientInterface<T> rdbClient) {
+		this.rdfClient = new TimeSeriesSparql(kbClient);
+		this.rdbClient = rdbClient;
 	}
 
 	/**
@@ -362,7 +365,7 @@ public class TimeSeriesClient<T> {
 		// Delete RDB time series table rows between lower and upper Bound
 		// Checks whether all dataIRIs are instantiated as time series are conducted
 		// within rdb client (due to performance reasons)
-		rdbClient.deleteRows(dataIRI, lowerBound, upperBound, conn);
+		rdbClient.deleteTimeSeriesHistory(dataIRI, lowerBound, upperBound, conn);
 	}
 
 	/**
@@ -496,7 +499,7 @@ public class TimeSeriesClient<T> {
 		// series table in relational database
 		try {
 			// Retrieve example dataIRI needed to delete RDB related information
-			rdbClient.deleteTimeSeriesTable(dataIRIs.get(0), conn);
+			rdbClient.deleteEntireTimeSeries(dataIRIs.get(0), conn);
 		} catch (JPSRuntimeException eRdbDelete) {
 			// For exceptions thrown when deleting RDB elements in relational database,
 			// try to revert previous knowledge base deletion
@@ -898,63 +901,6 @@ public class TimeSeriesClient<T> {
 	}
 
 	/**
-	 * Constructor with pre-defined kbClient and only RDB client to be created
-	 * according to properties file
-	 * 
-	 * @param kbClient  knowledge base client used to query and update the knowledge
-	 *                  base containing timeseries information (potentially with
-	 *                  already specified endpoint (triplestore/owl file))
-	 * @param timeClass class type for the time values, e.g. Timestamp etc. (to
-	 *                  initialise RDB table)
-	 * @param filepath  absolute path to file with RDB configs (URL, username,
-	 *                  password)
-	 */
-	public TimeSeriesClient(TripleStoreClientInterface kbClient, Class<T> timeClass, String filepath)
-			throws IOException {
-		// Initialise Sparql client with pre-defined kbClient
-		this.rdfClient = new TimeSeriesSparql(kbClient);
-		// Initialise RDB client according to properties file
-		this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
-		loadRdbConfigs(filepath);
-	}
-
-	/**
-	 * Constructor with both RDB and Sparql clients to be created according to
-	 * properties file
-	 * 
-	 * @param timeClass class type for the time values (to initialise RDB table)
-	 * @param filepath  absolute path to file with RDB and KB configs (RDB: URL,
-	 *                  username, password; KB: endpoints)
-	 */
-	public TimeSeriesClient(Class<T> timeClass, String filepath) throws IOException {
-		// Initialise Sparql client according to properties file
-		RemoteStoreClient kbClient = new RemoteStoreClient();
-		this.rdfClient = new TimeSeriesSparql(kbClient);
-		loadSparqlConfigs(filepath);
-		// Initialise RDB client according to properties file
-		this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
-		loadRdbConfigs(filepath);
-	}
-
-	/**
-	 * Load properties for RDF/SPARQL client
-	 * 
-	 * @param filepath absolute path to properties file with respective information
-	 */
-	private void loadSparqlConfigs(String filepath) throws IOException {
-		rdfClient.loadSparqlConfigs(filepath);
-	}
-
-	/**
-	 * Load properties for RDB client
-	 * 
-	 * @param filepath absolute path to properties file with respective information
-	 */
-	private void loadRdbConfigs(String filepath) throws IOException {
-		rdbClient.loadRdbConfigs(filepath);
-	}
-
-	/**
 	 * Setter for URL and credentials for the relational database (in RDB Client)
 	 * 
 	 * @param rdbURL   URL to relational database (e.g. postgreSQL)
@@ -1080,7 +1026,7 @@ public class TimeSeriesClient<T> {
 		// Checks whether all dataIRIs are instantiated as time series are conducted
 		// within rdb client (due to performance reasons)
 		try (Connection conn = rdbClient.getConnection()) {
-			rdbClient.deleteRows(dataIRI, lowerBound, upperBound, conn);
+			rdbClient.deleteTimeSeriesHistory(dataIRI, lowerBound, upperBound, conn);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}
