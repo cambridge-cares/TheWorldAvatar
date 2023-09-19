@@ -57,8 +57,8 @@ abstract public class PropertyBaseInputTextView extends RelativeLayout {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                property.getIsMissingField().setValue(false);
                 property.setFieldValue(editable.toString());
-                // todo: how to get iri from the editable? for searchable field, supposed to have iri and leave the fieldValue empty... or to have both, so the input mandatory check is easier?
             }
         });
     }
@@ -67,5 +67,9 @@ abstract public class PropertyBaseInputTextView extends RelativeLayout {
         SpannableString hint = new SpannableString(propertyFieldName + " *");
         hint.setSpan(new ForegroundColorSpan(Color.RED), hint.length() - 1, hint.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return hint;
+    }
+
+    public void setInputLayoutError(CharSequence error) {
+        inputLayout.setError(error);
     }
 }

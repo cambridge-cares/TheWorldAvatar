@@ -28,6 +28,7 @@ import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
 import uk.ac.cam.cares.jps.addasset.model.DropDownDataModel;
 import uk.ac.cam.cares.jps.addasset.view.DataSheetItemView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyAutoCompleteTextView;
+import uk.ac.cam.cares.jps.addasset.view.PropertyBaseInputTextView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyGeneralInputTextView;
 
 @AndroidEntryPoint
@@ -76,18 +77,22 @@ public class TabFragment extends Fragment {
         LinearLayout linearLayout = sectionView.findViewById(R.id.linear_layout);
         for (String fieldName : viewModel.getInputFieldNamesBySection().get(section)) {
             AssetPropertyDataModel property = viewModel.getInputFieldModels().get(fieldName);
-            View inputText;
+            PropertyBaseInputTextView inputText;
             if (property instanceof DropDownDataModel) {
                 inputText = new PropertyAutoCompleteTextView(requireContext(), (DropDownDataModel) property);
                 ((DropDownDataModel) property).getMutableLabelsToIri().observe(this.getViewLifecycleOwner(), labelsToIriMap -> {
                     ((PropertyAutoCompleteTextView) inputText).updateAdapterList(((DropDownDataModel) property).getOrderedOptionList());
                 });
-//                viewModel.getDropDownLiveDataByKey(property.getFieldName()).observe(this.getViewLifecycleOwner(), options -> {
-//                    ((PropertyAutoCompleteTextView) inputText).updateAdapterList(options);
-//                });
             } else {
                 inputText = new PropertyGeneralInputTextView(requireContext(), property);
             }
+            property.getIsMissingField().observe(this.getViewLifecycleOwner(), isMissing -> {
+                if (isMissing) {
+                    inputText.setInputLayoutError(getResources().getText(R.string.field_is_required));
+                } else {
+                    inputText.setInputLayoutError(null);
+                }
+            });
 
             linearLayout.addView(inputText);
         }

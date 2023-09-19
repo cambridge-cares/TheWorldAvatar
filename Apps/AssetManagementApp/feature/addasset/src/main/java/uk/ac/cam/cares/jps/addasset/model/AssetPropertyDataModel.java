@@ -1,16 +1,20 @@
 package uk.ac.cam.cares.jps.addasset.model;
 
+import androidx.lifecycle.MutableLiveData;
+
 public class AssetPropertyDataModel {
     // data
-    String fieldValue;
+    String fieldValue = "";
 
-    String fieldName;
+    String fieldName = "";
     // ui related
 
-    boolean isRequired;
+    boolean isRequired = false;
 
-    boolean isMultiLine;
-    String helperText;
+    boolean isMultiLine = false;
+    String helperText = "";
+
+    MutableLiveData<Boolean> isMissingField = new MutableLiveData<>();
 
     AssetPropertyDataModel(String fieldName) {
         this.fieldName = fieldName;
@@ -48,5 +52,7 @@ public class AssetPropertyDataModel {
         return isMultiLine;
     }
 
-
+    public MutableLiveData<Boolean> getIsMissingField() {
+        return isMissingField;
+    }
 }

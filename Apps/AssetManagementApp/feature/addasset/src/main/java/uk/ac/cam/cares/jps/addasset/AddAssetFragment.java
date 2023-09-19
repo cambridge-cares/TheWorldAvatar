@@ -56,6 +56,8 @@ public class AddAssetFragment extends Fragment {
         List<String> tabNames = Arrays.asList("General", "Purchase", "Documents");
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabNames.get(position))).attach();
 
-        binding.doneBt.setOnClickListener(view1 -> viewModel.addNewAsset());
+        binding.doneBt.setOnClickListener(view1 -> {
+            viewModel.checkMissingInput();
+        });
     }
 }

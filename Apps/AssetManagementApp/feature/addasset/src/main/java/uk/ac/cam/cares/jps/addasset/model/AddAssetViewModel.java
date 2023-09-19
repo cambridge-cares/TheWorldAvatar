@@ -120,6 +120,27 @@ public class AddAssetViewModel extends ViewModel {
         };
     }
 
+    public void checkMissingInput() {
+        for (String key : mandatoryFieldKeys) {
+            if (inputFieldModels.get(key).getFieldValue().isEmpty()) {
+                inputFieldModels.get(key).getIsMissingField().setValue(true);
+            }
+        }
+    }
+
+    public List<String> checkDisallowInputField() {
+        List<String> newInstanceForDisallowInputField = new ArrayList<>();
+        for (String key : disallowInputForDropDown) {
+            if (((DropDownDataModel)inputFieldModels.get(key)).getValueIri().isEmpty()) {
+                newInstanceForDisallowInputField.add(key);
+            }
+        }
+
+        return newInstanceForDisallowInputField;
+    }
+
+    // todo: show summary
+
     public void addNewAsset() {
         AssetInfo assetInfo = new AssetInfo();
         for (AssetPropertyDataModel field : inputFieldModels.values()) {
