@@ -23,7 +23,7 @@ Tier,Class,,,,,,"Individual tier within the tiered unit price, i.e., unit price 
 UnitPrice,Class,UnitRate,IS-A,,,,"Unit price for specific purchase window (i.e., tier)",https://www.theworldavatar.com/kg/ontoheatnetwork/,Unit price
 IncinerationPlant,Class,HeatProvider,IS-A,,,,"Plant which creates heat from municipal solid waste, also known as energy-from-waste (EfW) plant",https://www.theworldavatar.com/kg/ontoheatnetwork/,Incineration plant
 UnitRate,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Hypernym of unit cost and unit price,https://www.theworldavatar.com/kg/ontoheatnetwork/,Unit rate
-GridCharges,Class,UnitRate,IS-A,,,,Saved grid charges for each “avoided” MWh electricity sourced from the grid,https://www.theworldavatar.com/kg/ontoheatnetwork/,Grid charges
+GridCharges,Class,UnitRate,IS-A,,,,Saved grid charges for each avoided MWh electricity sourced from the grid,https://www.theworldavatar.com/kg/ontoheatnetwork/,Grid charges
 ElectricitySpotPrice,Class,UnitRate,IS-A,,,,Electricity spot price for sold electricity,https://www.theworldavatar.com/kg/ontoheatnetwork/,Electricity spot price
 CHPBonus,Class,UnitRate,IS-A,,,,"Bonus from combined-heat-and-power gas turbine, i.e., subsidy",https://www.theworldavatar.com/kg/ontoheatnetwork/,CHP bonus
 CO2CertificatePrice,Class,UnitRate,IS-A,,,,Unit cost of CO2 emission certificates,https://www.theworldavatar.com/kg/ontoheatnetwork/,CO2 certificate price
@@ -46,7 +46,7 @@ EnergyInTimeInterval,Class,http://www.ontology-of-units-of-measure.org/resource/
 CostInTimeInterval,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Cost,IS-A,,,,Cost in a particular time interval,https://www.theworldavatar.com/kg/ontoheatnetwork/,Cost in time interval
 DurationInTimeInterval,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Duration,IS-A,,,,Operating duration in a particular time interval,https://www.theworldavatar.com/kg/ontoheatnetwork/,Duration in time interval
 CO2EmissionInTimeInterval,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,CO2 emission generated in specific time interval,https://www.theworldavatar.com/kg/ontoheatnetwork/,CO2 emission in time interval
-CalendarEffect,Class,,,,,,"Specifics of date, i.e., weekday,weekend, vacation,…",https://www.theworldavatar.com/kg/ontoheatnetwork/,Calendar effects
+CalendarEffect,Class,,,,,,"Specifics of date, i.e., weekday,weekend, vacation, etc.",https://www.theworldavatar.com/kg/ontoheatnetwork/,Calendar effects
 http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,A phase system property that can serve as an intensive thermodynamic state variable,https://www.theworldavatar.com/kg/ontoheatnetwork/,Thermodynamic state property
 http://www.ontology-of-units-of-measure.org/resource/om-2/Cost,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Costs,EQUIVALENT-TO,,,,Includes all costs associated with heat generation,https://www.theworldavatar.com/kg/ontoheatnetwork/,Cost
 http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure,Class,http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty,IS-A,,,,,https://www.theworldavatar.com/kg/ontoheatnetwork/,Pressure 

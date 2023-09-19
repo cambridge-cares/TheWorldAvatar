@@ -9,7 +9,7 @@
      xmlns:ontoheatnetwork="https://www.theworldavatar.com/kg/ontoheatnetwork/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">18 September 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 September 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology defined for representing the district heating network </rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -851,7 +851,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/CalendarEffect">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifics of date, i.e., weekday,weekend, vacation,…</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifics of date, i.e., weekday,weekend, vacation, etc.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Calendar effects</rdfs:label>
     </owl:Class>
@@ -1113,7 +1113,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/GridCharges">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoheatnetwork/UnitRate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saved grid charges for each “avoided” MWh electricity sourced from the grid</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saved grid charges for each avoided MWh electricity sourced from the grid</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Grid charges</rdfs:label>
     </owl:Class>
