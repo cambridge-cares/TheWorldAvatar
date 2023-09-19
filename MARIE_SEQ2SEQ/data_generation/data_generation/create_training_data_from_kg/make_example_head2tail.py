@@ -47,17 +47,17 @@ WHERE {{{"".join(where_clauses_compact)}
 
     def resolve_tail_helper(self, tail: Dict[str, str]):
         if tail["type"] == "property":
-            tail_helper = ExampleH2TQueryConstructorHelperProperty(
+            tail_helper = ExampleH2TQueryConstructorHelperTailProperty(
                 property_name=tail["PropertyName"]
             )
         elif tail["type"] == "identifier":
-            tail_helper = ExampleH2TQueryConstructorHelperIdentifier(
+            tail_helper = ExampleH2TQueryConstructorHelperTailIdentifier(
                 identifier_name=tail["IdentifierName"]
             )
         elif tail["type"] == "use":
-            tail_helper = ExampleH2TQueryConstructorHelperUse()
+            tail_helper = ExampleH2TQueryConstructorHelperTailUse()
         elif tail["type"] == "chemicalclass":
-            tail_helper = ExampleH2TQueryConstructorHelperChemicalClass()
+            tail_helper = ExampleH2TQueryConstructorHelperTailChemicalClass()
         else:
             raise ValueError("Unexpected tail type: " + tail["type"])
         return tail_helper
@@ -138,7 +138,7 @@ class ExampleH2TQueryConstructorHelperTail(
     pass
 
 
-class ExampleH2TQueryConstructorHelperProperty(ExampleH2TQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperTailProperty(ExampleH2TQueryConstructorHelperTail):
     def __init__(self, property_name: str):
         self.property_name = property_name
 
@@ -172,7 +172,7 @@ class ExampleH2TQueryConstructorHelperProperty(ExampleH2TQueryConstructorHelperT
         return random.choice(PROPERTY_LABELS[self.property_name])
 
 
-class ExampleH2TQueryConstructorHelperIdentifier(ExampleH2TQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperTailIdentifier(ExampleH2TQueryConstructorHelperTail):
     def __init__(self, identifier_name: str):
         self.identifier_name = identifier_name
 
@@ -200,7 +200,7 @@ class ExampleH2TQueryConstructorHelperIdentifier(ExampleH2TQueryConstructorHelpe
         return random.choice(IDENTIFIER_LABELS[self.identifier_name])
 
 
-class ExampleH2TQueryConstructorHelperUse(ExampleH2TQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperTailUse(ExampleH2TQueryConstructorHelperTail):
     def get_select_variables(self):
         return "?UseValue"
 
@@ -221,7 +221,7 @@ class ExampleH2TQueryConstructorHelperUse(ExampleH2TQueryConstructorHelperTail):
         return "use"
 
 
-class ExampleH2TQueryConstructorHelperChemicalClass(
+class ExampleH2TQueryConstructorHelperTailChemicalClass(
     ExampleH2TQueryConstructorHelperTail
 ):
     def get_select_variables(self):

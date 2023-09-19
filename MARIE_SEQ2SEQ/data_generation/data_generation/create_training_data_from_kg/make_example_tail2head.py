@@ -19,7 +19,7 @@ class ExampleMakerTail2Head:
             return None
         
         random.shuffle(tails)
-        tail_helper_resolver = TailHelperResolver()
+        tail_helper_resolver = T2HTailHelperResolver()
         tail_helpers: List[ExampleT2HQueryConstructorHelperTail] = [
             tail_helper_resolver.resolve(tail) for tail in tails 
         ]
@@ -74,7 +74,7 @@ WHERE {{{"".join(where_clauses_compact)}
         return "".join(tokens)
 
 
-class TailHelperResolver:
+class T2HTailHelperResolver:
     def __init__(self):
         self.use_num = 0
         self.chemicalclass_num = 0
