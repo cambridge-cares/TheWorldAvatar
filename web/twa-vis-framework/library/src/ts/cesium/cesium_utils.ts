@@ -52,6 +52,8 @@ class CesiumUtils {
                 if(dataSource instanceof Cesium.WebMapServiceImageryProvider) {
                     // 2D data, need to find imageryLayers using this provider
                     let layers = MapHandler.MAP.imageryLayers;
+                    if(layers == null) continue;
+
                     for(let j = 0; j < layers.length; j++) {
                         if(layers.get(j).imageryProvider === dataSource) {
                             layers.get(j).show = visible;

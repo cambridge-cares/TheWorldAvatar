@@ -177,6 +177,10 @@ class TreeHandler {
 
                     if(dataSources == null || dataSources.length === 0) {
                         let visibility = csLayer.definition["visibility"];
+                        if(visibility == null && csLayer.definition.hasOwnProperty("layout")) {
+                            visibility = csLayer.definition["layout"]["visibility"];
+                        }
+            
                         if(visibility == null || visibility === "visible") preCheck.push(dataID);
                     } else {
                         if(csLayer.getVisibility()) preCheck.push(dataID);
