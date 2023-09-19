@@ -3,18 +3,9 @@ import pprint
 import random
 from typing import Dict, List, Optional, Union
 
-from data_generation.utils import add_space_and_lower
+from data_generation.constants import PROPERTY_LABELS
+from .utils_numerical import FloatConversionError, get_value_around, get_value_higher, get_value_lower
 
-
-class FloatConversionError(ValueError):
-    pass
-
-def convert_to_float(number: str):
-    try:
-        return float(number)
-    except ValueError as e:
-        raise FloatConversionError(e.args)
-    
 
 class ExampleMakerTail2Head:
     def make_example(self, subgraph: Optional[Dict[str, Union[dict, List[dict]]]]):
@@ -193,8 +184,9 @@ class ExampleT2HQueryConstructorHelperTailProperty(
 """
 
     def get_where_clauses_compact(self):
+        PropertyName = self.property_name
         return f"""
-    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue ."""
+    ?SpeciesIRI os:has{PropertyName} ?{PropertyName}IRI .{self.get_filter_clause()}"""
 
     def get_ask_item(self) -> str:
         if self.ask_item is None:
@@ -210,38 +202,36 @@ class ExampleT2HQueryConstructorHelperTailProperty(
         PropertyName = self.property_name
         PropertyValue = self.property_value
         numerical_clause = self.numerical_clause
-        property_verbalised = add_space_and_lower(PropertyName)
+        property_verbalised = random.choice(PROPERTY_LABELS[PropertyName])
 
         if numerical_clause == "higher":
-            value = self.get_value_lower(PropertyValue)
+            value = get_value_lower(PropertyValue)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value > {value} )"""
             ask_item = f"{property_verbalised} is higher than {value}"
         elif numerical_clause == "lower":
-            value = self.get_value_higher(PropertyValue)
+            value = get_value_higher(PropertyValue)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value < {value} )"""
             ask_item = f"{property_verbalised} is lower than {value}"
         elif numerical_clause == "outside":
             if random.getrandbits(1):
-                high = self.get_value_lower(PropertyValue)
-                low = self.get_value_lower(high)
+                high = get_value_lower(PropertyValue)
+                low = get_value_lower(high)
             else:
-                low = self.get_value_higher(PropertyValue)
-                high = self.get_value_higher(low)
+                low = get_value_higher(PropertyValue)
+                high = get_value_higher(low)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value < {low} || ?{PropertyName}Value > {high} )"""
             ask_item = f"{property_verbalised} is outside the range between {low} and {high}"
         elif numerical_clause == "inside":
-            low = self.get_value_lower(PropertyValue)
-            high = self.get_value_higher(PropertyValue)
+            low = get_value_lower(PropertyValue)
+            high = get_value_higher(PropertyValue)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value > {low} && ?{PropertyName}Value < {high} )"""
             ask_item = f"{property_verbalised} is between {low} and {high}"
         elif numerical_clause == "around":
-            value = convert_to_float(PropertyValue)
-            if random.getrandbits(1):
-                value = round(value)
+            value = get_value_around(PropertyValue)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value > {value}*0.9 && ?{PropertyName}Value < {value}*1.1 )"""
             ask_item = f"{property_verbalised} is around {value}"
@@ -252,22 +242,6 @@ class ExampleT2HQueryConstructorHelperTailProperty(
 
         self.filter_clause = filter_clause
         self.ask_item = ask_item
-
-    def get_value_lower(self, value_str: str, eps=1e-6):
-        value = convert_to_float(value_str) * 0.9
-        if abs(value) < eps:
-            value = -0.5
-        elif random.getrandbits(1):
-            value = round(value)
-        return value
-
-    def get_value_higher(self, value_str: str, eps=1e-6):
-        value = convert_to_float(value_str) * 1.1
-        if abs(value) < eps:
-            value = 0.5
-        elif random.getrandbits(1):
-            value = round(value)
-        return value
 
 
 class ExampleT2HQueryConstructorHelperTailUse(ExampleT2HQueryConstructorHelperTail):

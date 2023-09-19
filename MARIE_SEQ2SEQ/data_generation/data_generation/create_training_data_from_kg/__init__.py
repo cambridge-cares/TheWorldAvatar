@@ -1,4 +1,5 @@
 from collections import defaultdict
+import itertools
 import random
 from typing import Dict, Iterable, List, Optional
 
@@ -10,52 +11,81 @@ from data_generation.constants import (
 )
 from .retrieve_subgraph import SubgraphRetriever
 from .make_example_head2tail import ExampleMakerHead2Tail
+from .make_example_tail2head import ExampleMakerTail2Head
 
 
 class DatasetFromKgMaker:
+    QUERY_PATHS = ["h2t", "t2h"]
+    # SubstructureKeysFingerprint is not a numerical value for comparison.
+    # We thus exclude it from tail-to-head queries.
+    PROPERTY_NAMES_FOR_T2H = [x for x in PROPERTY_NAMES if x != "SubStructureKeysFingerprint"]
+
     def __init__(self):
         self.subgraph_retriever = SubgraphRetriever()
         self.example_maker_head2tail = ExampleMakerHead2Tail()
+        self.example_maker_tail2head = ExampleMakerTail2Head()
 
-    def make_examples_1h_to_1t(self):
-        """Covers all properties, identifiers, some uses, and some chemical classes"""
+    def make_examples_1h_1t(
+        self, query_path: str, tail_class: str, sampling_size: int = 1
+    ):
         examples: List[dict] = []
-        missing_entries = defaultdict(list)
+        missing_entries = defaultdict(set)
 
-        for p in PROPERTY_NAMES:
-            example = self.make_example(
-                property_names=[p], tail_nums=dict(property_num=1)
+        if tail_class == "property":
+            sampling_frame = self.PROPERTY_NAMES_FOR_T2H if query_path == "t2h" else PROPERTY_NAMES
+            for p in random.sample(sampling_frame, k=sampling_size):
+                example = self.make_example(
+                    property_names=[p],
+                    tail_nums=dict(property_num=1),
+                    query_path=query_path,
+                )
+
+                if example is None:
+                    missing_entries["property"].add(p)
+                else:
+                    examples.append(example)
+
+        elif tail_class == "identifier":
+            for i in random.sample(IDENTIFIER_NAMES, k=sampling_size):
+                example = self.make_example(
+                    identifier_names=[i],
+                    tail_nums=dict(identifier_num=1),
+                    query_path="h2t",
+                )
+
+                if example is None:
+                    missing_entries["identifier"].add(i)
+                else:
+                    examples.append(example)
+
+        elif tail_class == "use":
+            for u in random.sample(USES, k=sampling_size or 1):
+                example = self.make_example(
+                    uses=[u], tail_nums=dict(use_num=1), query_path=query_path
+                )
+
+                if example is None:
+                    missing_entries["use"].append(u)
+                else:
+                    examples.append(example)
+
+        elif tail_class == "chemicalclass":
+            for c in random.sample(CHEMICALCLASSES, k=sampling_size):
+                example = self.make_example(
+                    chemicalclasses=[c],
+                    tail_nums=dict(chemicalclass_num=1),
+                    query_path=query_path,
+                )
+
+                if example is None:
+                    missing_entries["chemicalclass"].add(c)
+                else:
+                    examples.append(example)
+
+        else:
+            raise ValueError(
+                f"Unexpected value for argument `tail_class`: {tail_class}."
             )
-            if example is None:
-                missing_entries["property"].append(p)
-            else:
-                examples.append(example)
-
-        for i in IDENTIFIER_NAMES:
-            example = self.make_example(
-                identifier_names=[i], tail_nums=dict(identifier_num=1)
-            )
-            if example is None:
-                missing_entries["identifier"].append(i)
-            else:
-                examples.append(example)
-
-        sampling_size = (len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)) // 4
-        for u in random.sample(USES, sampling_size):
-            example = self.make_example(uses=[u], tail_nums=dict(use_num=1))
-            if example is None:
-                missing_entries["use"].append(u)
-            else:
-                examples.append(example)
-
-        for c in random.sample(CHEMICALCLASSES, sampling_size):
-            example = self.make_example(
-                chemicalclasses=[c], tail_nums=dict(chemicalclass_num=1)
-            )
-            if example is None:
-                missing_entries["chemicalclass"].append(c)
-            else:
-                examples.append(example)
 
         if len(missing_entries) > 0:
             print("Missing entries: ")
@@ -64,44 +94,75 @@ class DatasetFromKgMaker:
 
         return examples
 
-    def make_examples_1h_to_2t(self):
+    def make_examples_1h_2t(
+        self, query_path: str, tail_class: Optional[str] = None, sampling_size: int = 1
+    ):
         examples: List[dict] = []
 
-        for _ in PROPERTY_NAMES:
-            p_pair = random.sample(PROPERTY_NAMES, 2)
-            example = self.make_example(property_names=p_pair, tail_nums=dict(property_num=2))
-            if example is not None:
-                examples.append(example)
+        if tail_class == "property":
+            sampling_frame = self.PROPERTY_NAMES_FOR_T2H if query_path == "t2h" else PROPERTY_NAMES
+            for p_pair in random.sample(
+                itertools.combinations(sampling_frame, r=2), k=sampling_size
+            ):
+                example = self.make_example(
+                    property_names=p_pair,
+                    tail_nums=dict(property_num=2),
+                    query_path=query_path,
+                )
+                if example is not None:
+                    examples.append(example)
 
-        for _ in IDENTIFIER_NAMES:
-            i_pair = random.sample(IDENTIFIER_NAMES, 2)
-            example = self.make_example(identifier_names=i_pair, tail_nums=dict(identifier_num=2))
-            if example is not None:
-                examples.append(example)
+        elif tail_class == "identifier":
+            if query_path == "t2h":
+                raise ValueError(
+                    "Since a species' identifier is used to detect the head entity, tail-to-head query is not applicable when the tail is an identifier."
+                )
 
-        for _ in range((len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)) // 4):
-            try_num = 0
-            example = None
+            for i_pair in random.sample(
+                itertools.combinations(IDENTIFIER_NAMES, r=2), k=sampling_size
+            ):
+                example = self.make_example(
+                    identifier_names=i_pair,
+                    tail_nums=dict(identifier_num=2),
+                    query_path="h2t",
+                )
+                if example is not None:
+                    examples.append(example)
 
-            while example is None and try_num < 3:
-                tail_nums = self.get_tail_nums_total2()
-                example = self.make_example(tail_nums)
+        elif tail_class is None:
+            for _ in range(sampling_size):
+                try_num = 0
+                example = None
 
-            if example is not None:
-                examples.append(example)
+                while example is None and try_num < 3:
+                    tail_nums = self.get_tail_nums_total2(
+                        identifier_num=0 if query_path == "t2h" else None
+                    )
+
+                    example = self.make_example(
+                        tail_nums=tail_nums, query_path=query_path
+                    )
+
+                if example is not None:
+                    examples.append(example)
+
+        else:
+            raise ValueError(
+                f"Unexpected value for argument `tail_class`: {tail_class}."
+            )
 
         return examples
 
-    def make_examples_1h_to_3t(self):
+    def make_examples_1h_3t(self, query_path: str, sampling_size: int = 1):
         examples: List[dict] = []
-
-        for _ in range((len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)) // 6):
+        
+        for _ in range(sampling_size):
             try_num = 0
             example = None
 
             while example is None and try_num < 3:
-                tail_nums = self.get_tail_nums_total3()
-                example = self.make_example(tail_nums=tail_nums)
+                tail_nums = self.get_tail_nums_total3(identifier_num=0 if query_path == "t2h" else None)
+                example = self.make_example(tail_nums=tail_nums, query_path=query_path)
                 try_num += 1
 
             if example is not None:
@@ -111,16 +172,19 @@ class DatasetFromKgMaker:
 
     def make_example(
         self,
+        query_path: str,
         property_names: Optional[Iterable[str]] = None,
         identifier_names: Optional[Iterable[str]] = None,
         uses: Optional[Iterable[str]] = None,
         chemicalclasses: Optional[Iterable[str]] = None,
         tail_nums: Dict[str, int] = dict(),
     ):
+        property_sampling_frame = self.PROPERTY_NAMES_FOR_T2H if query_path == "t2h" else PROPERTY_NAMES
         if property_names is None:
             property_names = random.sample(
-                PROPERTY_NAMES, tail_nums.get("property_num", 0)
+                property_sampling_frame, tail_nums.get("property_num", 0)
             )
+
         if identifier_names is None:
             identifier_names = random.sample(
                 IDENTIFIER_NAMES, tail_nums.get("identifier_num", 0)
@@ -155,11 +219,20 @@ class DatasetFromKgMaker:
                 **chemicalclassvalue_bindings,
             },
         )
-        return self.example_maker_head2tail.make_example(subgraph)
 
-    def get_tail_nums_total2(self):
+        if query_path == "h2t":
+            return self.example_maker_head2tail.make_example(subgraph)
+
+        if query_path == "t2h":
+            return self.example_maker_tail2head.make_example(subgraph)
+
+        raise ValueError(f"Unexpected value for `query_path`: {query_path}.")
+
+    def get_tail_nums_total2(self, identifier_num: Optional[int] = None):
         property_num = random.randint(0, 2)
-        identifier_num = random.randint(property_num, 2) - property_num
+        if identifier_num is None:
+            identifier_num = random.randint(property_num, 2) - property_num
+
         p_i_num = property_num + identifier_num
         if p_i_num == 0:
             use_num, chemicalclass_num = 1, 1
@@ -167,6 +240,7 @@ class DatasetFromKgMaker:
             use_num, chemicalclass_num = random.choice([(0, 1), (1, 0)])
         else:
             use_num, chemicalclass_num = 0, 0
+
         return dict(
             property_num=property_num,
             identifier_num=identifier_num,
@@ -174,7 +248,7 @@ class DatasetFromKgMaker:
             chemicalclass_num=chemicalclass_num,
         )
 
-    def get_tail_nums_total3(self):
+    def get_tail_nums_total3(self, identifier_num: Optional[int] = None):
         sampling_space_p_i = [
             (0, 1),
             (0, 2),
@@ -186,6 +260,9 @@ class DatasetFromKgMaker:
             (2, 1),
             (3, 0),
         ]
+        if identifier_num is not None:
+            sampling_space_p_i = [(p, i) for p, i in sampling_space_p_i if i == identifier_num]
+
         property_num, identifier_num = random.choice(sampling_space_p_i)
         p_i_num = property_num + identifier_num
         if p_i_num == 1:
