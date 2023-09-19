@@ -33,11 +33,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
           
-      # Get the version of the TWA-VF
-      - name: Get TWA-VF version
+      # Get the version, split, and store as variables
+      - name: Get TWA-VF versions
         id: versioner
-        run: |
-          echo version=$(cat web/twa-vis-framework/library/VERSION) >> $GITHUB_ENV
+        run: ./.github/scripts/twa-vf/make-versions.sh
           
       # Compile the TWA-VF and ZIP results
       - name: Compile the TWA-VF
@@ -63,8 +62,10 @@ jobs:
           push: true
           context: ./web/twa-vis-framework/library
           tags: |
-            ghcr.io/cambridge-cares/twa-vf:${{ env.version }}
             ghcr.io/cambridge-cares/twa-vf:latest
+            ghcr.io/cambridge-cares/twa-vf:${{ env.VERSION_FULL }}
+            ghcr.io/cambridge-cares/twa-vf:${{ env.VERSION_MAJOR }}
+            ghcr.io/cambridge-cares/twa-vf:${{ env.VERSION_MINOR }}
          
       # Generate the release body text
       - name: Generate release text
@@ -79,8 +80,8 @@ jobs:
       - name: Make release
         uses: ncipollo/release-action@v1
         with:
-          name: "twa-vf-${{ env.version }}"
-          tag: "twa-vf-${{ env.version }}"
+          name: "twa-vf-${{ env.VERSION_FULL }}"
+          tag: "twa-vf-${{ env.VERSION_FULL }}"
           commit: "main"
           bodyFile: "${{ env.body }}"
           artifacts: "${{ env.zip }}"
@@ -109,7 +110,7 @@ jobs:
           secure: true
           username: ${{secrets.CMCL_MAIL_USERNAME}}
           password: ${{secrets.CMCL_MAIL_PASSWORD}}
-          subject: "New TWA release: TWA-VF ${{ env.version }}"
+          subject: "New TWA release: TWA-VF ${{ env.VERSION_FULL }}"
           to: cares-twa@lists.cam.ac.uk,all@cmcl.io
           from: Automated TWA action
           html_body: "file://${{ env.email }}"
