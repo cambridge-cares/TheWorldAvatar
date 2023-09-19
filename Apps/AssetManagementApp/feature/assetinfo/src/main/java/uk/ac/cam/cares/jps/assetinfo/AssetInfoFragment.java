@@ -70,7 +70,15 @@ public class AssetInfoFragment extends Fragment {
                         bmsIntent.putExtra("equipmentType", assetInfo.getProperties().get(TYPE));
                         bmsIntent.setType("text/plain");
 
-                        startActivity(bmsIntent);
+                        try {
+                            startActivity(bmsIntent);
+                        } catch (Exception e) {
+                            new MaterialAlertDialogBuilder(requireActivity())
+                                    .setTitle(R.string.unable_to_open_bms_app)
+                                    .setMessage(R.string.check_bms_installation)
+                                    .setPositiveButton(R.string.ok, (dialogInterface1, i1) -> {})
+                                    .show();
+                        }
                     })
                     .setNegativeButton(R.string.no, null)
                     .show());
