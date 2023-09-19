@@ -10,7 +10,7 @@ class PopupHandler {
     /**
      * Popup element.
      */
-    private static POPUP = this.buildPopup();
+    private static POPUP;
     
     /**
      * Cache of currently shown metadata.
@@ -26,8 +26,10 @@ class PopupHandler {
         container.classList.add("popup");
         container.id = "popup";
 
-        // Add movement listener
-        document.addEventListener('mousemove', function(e) {
+        // Add movement listeners
+        let mapElement = document.getElementById("map");
+
+        mapElement.addEventListener('mousemove', function(e) {
             if(container.style.display !== "none") {
                 let left = e.offsetX;
                 let top = e.offsetY;
@@ -35,20 +37,14 @@ class PopupHandler {
                 container.style.top = top + 'px';
             }
         });
-
-        // Auto build on document load
-        window.addEventListener("load", (event) => {
-            document.body.appendChild(container);
+        mapElement.addEventListener('mouseleave', function(e) {
+            if(container.style.display !== "none") {
+                PopupHandler.POPUP.style.display = "none";
+            }
         });
 
-
-        // Remove old Cesium element if present
-        if(Manager.PROVIDER === MapProvider.CESIUM) {
-            let oldElement = document.getElementById("cesiumMetaBox");
-            if(oldElement != null) document.body.removeChild(oldElement);
-        }
-        
-        return container;
+        document.body.appendChild(container);
+        this.POPUP = container;
     }
 
     /**
@@ -58,6 +54,7 @@ class PopupHandler {
      */
     public static updatePopup(featureMetadata) {
         if(featureMetadata === this.CACHED_META) return;
+        if(this.POPUP == null) this.buildPopup();
 
         // Running content string
         let html = "";
@@ -105,6 +102,8 @@ class PopupHandler {
      * @param visible desired state.
      */
     public static setVisibility(visible) {
+        if(this.POPUP == null) this.buildPopup();
+
         if(visible && this.POPUP.classList.contains("empty")) return;
         this.POPUP.style.display = (visible) ? "block" : "none";
     }
