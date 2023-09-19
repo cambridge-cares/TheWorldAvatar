@@ -128,8 +128,9 @@ public class StackClient {
      * @return A map: {assetType: {assets:[asset name list], measure[[measureDetails],[measureDetails]]}, room : {measure: [[measureDetails],[measureDetails]]}}.
      */
     public Map<String, Map<String, List<String[]>>> getAllTimeSeries(String spatialZone) {
-        LOGGER.debug("Retrieving the time series metadata from PostGIS...");
+        LOGGER.debug("Retrieving the spatial zone metadata...");
         Map<String, Queue<String[]>> measures = this.SPARQL_CLIENT.getAllSpatialZoneMetaData(spatialZone);
+        LOGGER.debug("Retrieving the time series metadata from PostGIS...");
         return this.POSTGIS_CLIENT.getMeasureColAndTableName(measures);
     }
 }
