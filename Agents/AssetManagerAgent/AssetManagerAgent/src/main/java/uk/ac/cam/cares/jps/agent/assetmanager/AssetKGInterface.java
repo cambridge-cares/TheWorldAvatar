@@ -388,16 +388,12 @@ public class AssetKGInterface {
         Iri ManufacturerNameIRI = iri(data.getString("ManufacturerNameIRI"));
         String ManufacturerNameLiteral = data.getString("ManufacturerName");
 
-        //Projects
-        Iri assignedProjectIRI = iri(data.getString("assignedProject"));
-
 
         /*
          * INSTANTIATE QUERY
          */
         query.insert(deviceIRIVar.isA(deviceTypeIRI));
         query.insert(itemIRIVar.isA(Item));
-        query.insert(itemIRIVar.has(allocatedTo, assignedProjectIRI));
 
         //Device
         query.insert(deviceIRIVar.has(hasItemInventoryIdentifier, Rdf.literalOf(ID)));

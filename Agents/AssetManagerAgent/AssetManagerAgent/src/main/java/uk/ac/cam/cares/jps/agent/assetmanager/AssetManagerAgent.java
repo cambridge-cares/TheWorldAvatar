@@ -98,26 +98,26 @@ public class AssetManagerAgent extends JPSAgent{
             }
             
             if (urlPath.contains("retrievebydocs")){
-                JSONObject docsIRI = requestParams.getJSONObject("ID");
+                JSONObject docsIRI = requestParams.getJSONObject("assetData").getJSONObject("ID");
                 jsonMessage = getItemsByDocs(docsIRI);
             }
-            if (urlPath.contains("retrieve")){
+            else if (urlPath.contains("retrieve")){
                 String ID = requestParams.getString("ID");
                 jsonMessage = retrieveAssetInstance(args, ID);
             }
 
-            if (urlPath.contains("getuidata")){
+            else if (urlPath.contains("getuidata")){
                 jsonMessage = getDataForUI();
             }
-            if (urlPath.contains("instantiate")){
+            else if (urlPath.contains("instantiate")){
                 jsonMessage = instantiateAsset(args, assetData);
             }
             
-            if (urlPath.contains("printbulk")){
+            else if (urlPath.contains("printbulk")){
                 String[] IRI = assetData.getJSONArray("IRI").toList().toArray(new String[0]);
                 jsonMessage = contactPrintServer(args, IRI);
             }
-            if (urlPath.contains("print")){
+            else if (urlPath.contains("print")){
                 String IRI = assetData.getString("IRI");
                 jsonMessage = contactPrintServer(args, IRI);
             }
@@ -274,13 +274,9 @@ public class AssetManagerAgent extends JPSAgent{
         return message;
     }
 
-    
-    
     //retrieve
     public JSONObject retrieveAssetInstance (String[] arg, String ID){
         JSONObject message = new JSONObject();
-        // create query  
-        // display result
         return message;
     }
 
