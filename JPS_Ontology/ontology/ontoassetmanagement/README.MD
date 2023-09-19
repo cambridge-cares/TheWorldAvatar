@@ -10,6 +10,7 @@ OntoApplication is developed to represent assets and its related information (e.
 | [time](https://www.w3.org/TR/owl-time/)                      | `http://www.w3.org/2006/time#` |
 | [bot](https://w3c-lbd-cg.github.io/bot/)                      | `https://w3id.org/bot#` |
 | [om](https://github.com/HajoRijgersberg/OM)                      | `http://www.ontology-of-units-of-measure.org/resource/om-2/` |
+| [icontact](http://ontology.eil.utoronto.ca/icontact.html)                      | `http://ontology.eil.utoronto.ca/icontact.owl#` |
 | [fibo-parties](https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/` |
 | [fibo-clientandaccounts](https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/)                      | `https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/` |
 | [fibo-paymentsandschedules](https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/` |
@@ -26,7 +27,7 @@ OntoApplication is developed to represent assets and its related information (e.
 ## 3. Data Model
 The ontology can be divided into these respective domains:
 
-#### 3.1 Purchase Document
+### 3.1. Purchase Document
 ```mermaid
     erDiagram
     "foaf:Document" ||--o{ "time:Instant" : createdOn
@@ -63,7 +64,7 @@ The ontology can be divided into these respective domains:
     "p2p-doc:E-Invoice" ||--o{ "fibo-clientandaccounts:Account" : "hasReferenceAccount"
     "p2p-doc:PurchaseOrder" ||--o{ "fibo-clientandaccounts:Account" : "hasReferenceAccount"
 ```
-#### 3.2 Document Line
+### 3.2. Document Line
 ```mermaid
     erDiagram
     "p2p-docline:DocumentLine" }|--|| "p2p-docline:InvoiceLine" : "rdfs:subClassOf"
@@ -77,7 +78,7 @@ The ontology can be divided into these respective domains:
     "DeliveryOrder" ||--o{ "DeliveryOrderLine" : hasDeliveryOrderLine
     "p2p-doc:E-Invoice" ||--o{ "p2p-docline:InvoiceLine" : "p2p-invoice:hasInvoiceLine"
 ```
-#### 3.3 Payment Terms
+### 3.3. Payment Terms
 ```mermaid
     erDiagram
     "p2p-doc:PurchaseOrder" ||--o{ "PaymentTerms" : hasPaymentTerms
@@ -90,7 +91,7 @@ The ontology can be divided into these respective domains:
     "fibo-paymentsandschedules:Payment" ||--o{ "fibo-currencyamount:MonetaryAmount" : "fibo-paymentsandschedules:hasPaymentAmount"
     "fibo-currencyamount:MonetaryAmount" ||--o{ "om:AmountOfMoney" : hasAmount
 ```
-#### 3.4 Delivery Details
+### 3.4. Delivery Details
 ```mermaid
     erDiagram
     "p2p-doc:PurchaseOrder" ||--o{ "DeliveryDetails" : hasDeliveryDetails
@@ -102,6 +103,9 @@ The ontology can be divided into these respective domains:
     "DeliveryDetails" ||--o{ "time:Instant" : actualDateOfDelivery
     "DeliveryDetails" ||--o{ "ImportDuties" : hasImportDuties
     "DeliveryDetails" ||--o{ "DeliveryMethod" : hasDeliveryMethod
+    "DeliveryDetails" {
+        trackingNumber string
+    }
     "DeliveryModeFreight" ||--o{ "DeliveryMethod" : a
     "DeliveryModeMail" ||--o{ "DeliveryMethod" : a
     "DeliveryModeOwnFleet" ||--o{ "DeliveryMethod" : a
@@ -115,7 +119,7 @@ The ontology can be divided into these respective domains:
     "DeliveryDetails" ||--o{ "icontact:Address" : deliverTo
     "DeliveryDetails" ||--o{ "icontact:Address" : deliverFrom
 ```
-#### 3.5 Price Details
+### 3.5. Price Details
 ```mermaid
     erDiagram
     "DeliveryDetails" ||--o{ "PriceDetails" : hasPriceDetails
@@ -132,23 +136,40 @@ The ontology can be divided into these respective domains:
     "Price" }|--|| "UnitPrice" : "rdfs:subClassOf"
     "Price" }|--|| "DiscountedUnitPrice" : "rdfs:subClassOf"
     "Price" }|--|| "TotalDiscountedPretaxPrice" : "rdfs:subClassOf"
-    "Price" }|--|| "DiscountedHomeTotalAfterTaxPrice" : "rdfs:subClassOf"
+    "Price" }|--|| "HomeTotalDiscountedAfterTaxPrice" : "rdfs:subClassOf"
 ```
-#### 3.6 Item and Element
+### 3.6. Item
 ```mermaid
     erDiagram
     "p2p-docline:DocumentLine" ||--o{ "p2p-item:Item" : "p2p-docline:hasItem"
     "p2p-item:Item" ||--o{ "bot:Element" : references
     "p2p-item:Item" ||--o{ "fibo-organizations:Organization" : isSuppliedBy
     "p2p-item:Item" ||--o{ "fibo-organizations:Organization" : isManufacturedBy
-    "bot:Element" ||--o{ "fibo-organizations:Organization" : isSuppliedBy
-    "bot:Element" ||--o{ "fibo-organizations:Organization" : isManufacturedBy
     "fibo-organizations:Organization" ||--o{ "icontact:Address" : hasAddress
+    "p2p-item:Item" ||--o{ "DataSheet" : hasDataSheet
+    "foaf:Document" }|--|| "DataSheet" : "rdfs:subClassOf"
+    "DataSheet" }|--|| "SpecSheet" : "rdfs:subClassOf"
+    "DataSheet" }|--|| "Manual" : "rdfs:subClassOf"
+    "DataSheet" {
+        availableAt anyURI
+    }
+```
+### 3.7. Element
+```mermaid
+    erDiagram
     "bot:Element" ||--o{ "bot:Element" : isStoredAt
     "bot:Element" ||--o{ "fibo-parties:IndependentParty" : assignedTo
     "bot:Element" ||--o{ "fibo-parties:IndependentParty" : previouslyAssignedTo
     "bot:Element" ||--o{ "Workspace" : isLocatedAt
     "bot:Element" ||--o{ "MaintenanceSchedule" : hasMaintenanceSchedule
+    "bot:Element" ||--o{ "fibo-organizations:Organization" : isSuppliedBy
+    "bot:Element" ||--o{ "fibo-organizations:Organization" : isManufacturedBy
+    "bot:Element" ||--o{ "DataSheet" : hasDataSheet
+    "DataSheet" }|--|| "SpecSheet" : "rdfs:subClassOf"
+    "DataSheet" }|--|| "Manual" : "rdfs:subClassOf"
+    "DataSheet" {
+        availableAt anyURI
+    }
     "MaintenanceSchedule" ||--o{ "MaintenanceTask" : hasTask
     "MaintenanceTask" ||--o{ "time:Instant" : performedAt
     "MaintenanceTask" ||--o{ "time:Instant" : scheduledFor
@@ -165,7 +186,7 @@ The ontology can be divided into these respective domains:
         hasCurrentLocation string
     }
 ```
-#### 3.7 Furniture and Workspace
+### 3.8. Furniture and Workspace
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "Workspace" : isLocatedAt
@@ -182,7 +203,7 @@ The ontology can be divided into these respective domains:
     "Cabinet" }|--|| "BuiltInCabinet" : "rdfs:subClassOf"
     "Cabinet" }|--|| "PedestalCabinet" : "rdfs:subClassOf"
 ```
-#### 3.8 Project, Research Grant, Budget and Budget Category
+### 3.9. Project, Research Grant, Budget and Budget Category
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "Project" : allocatedTo
