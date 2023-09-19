@@ -33,10 +33,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
           
-      # Get the version, split, and store as variables
-      - name: Get TWA-VF versions
+      # Get the versions of the TWA-VF
+      - name: Get TWA-VF version
         id: versioner
-        run: ./.github/scripts/twa-vf/make-versions.sh
+        run: |
+          VERSION=$(cat web/twa-vis-framework/library/VERSION)
+          echo versionFull=$VERSION >> $GITHUB_ENV
+          echo versionMajor=$(echo $VERSION | cut -d. -f1) >> $GITHUB_ENV
+          echo versionMinor=$(echo $VERSION | cut -d. -f1).$(echo $VERSION | cut -d. -f2) >> $GITHUB_ENV
           
       # Compile the TWA-VF and ZIP results
       - name: Compile the TWA-VF
@@ -63,9 +67,9 @@ jobs:
           context: ./web/twa-vis-framework/library
           tags: |
             ghcr.io/cambridge-cares/twa-vf:latest
-            ghcr.io/cambridge-cares/twa-vf:${{ env.VERSION_FULL }}
-            ghcr.io/cambridge-cares/twa-vf:${{ env.VERSION_MAJOR }}
-            ghcr.io/cambridge-cares/twa-vf:${{ env.VERSION_MINOR }}
+            ghcr.io/cambridge-cares/twa-vf:${{ env.versionFull }}
+            ghcr.io/cambridge-cares/twa-vf:${{ env.versionMajor }}
+            ghcr.io/cambridge-cares/twa-vf:${{ env.versionMinor }}
          
       # Generate the release body text
       - name: Generate release text
@@ -80,8 +84,8 @@ jobs:
       - name: Make release
         uses: ncipollo/release-action@v1
         with:
-          name: "twa-vf-${{ env.VERSION_FULL }}"
-          tag: "twa-vf-${{ env.VERSION_FULL }}"
+          name: "twa-vf-${{ env.versionFull }}"
+          tag: "twa-vf-${{ env.versionFull }}"
           commit: "main"
           bodyFile: "${{ env.body }}"
           artifacts: "${{ env.zip }}"
@@ -110,7 +114,7 @@ jobs:
           secure: true
           username: ${{secrets.CMCL_MAIL_USERNAME}}
           password: ${{secrets.CMCL_MAIL_PASSWORD}}
-          subject: "New TWA release: TWA-VF ${{ env.VERSION_FULL }}"
+          subject: "New TWA release: TWA-VF ${{ env.versionFull }}"
           to: cares-twa@lists.cam.ac.uk,all@cmcl.io
           from: Automated TWA action
           html_body: "file://${{ env.email }}"
