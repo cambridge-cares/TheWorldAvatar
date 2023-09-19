@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Optional
 
 from data_generation.constants import (
     CHEMICALCLASSES,
@@ -8,12 +8,8 @@ from data_generation.constants import (
     PROPERTY_NAMES,
     USES,
 )
-from data_generation.create_training_data_from_kg.retrieve_subgraph import (
-    SubgraphRetriever,
-)
-from data_generation.create_training_data_from_kg.make_example_head2tail import (
-    ExampleMakerHead2Tail,
-)
+from .retrieve_subgraph import SubgraphRetriever
+from .make_example_head2tail import ExampleMakerHead2Tail
 
 
 class DatasetFromKgMaker:
@@ -27,29 +23,35 @@ class DatasetFromKgMaker:
         missing_entries = defaultdict(list)
 
         for p in PROPERTY_NAMES:
-            example = self.make_example_from_properties([p])
+            example = self.make_example(
+                property_names=[p], tail_nums=dict(property_num=1)
+            )
             if example is None:
                 missing_entries["property"].append(p)
             else:
                 examples.append(example)
 
         for i in IDENTIFIER_NAMES:
-            example = self.make_example_from_identifiers([i])
+            example = self.make_example(
+                identifier_names=[i], tail_nums=dict(identifier_num=1)
+            )
             if example is None:
                 missing_entries["identifier"].append(i)
             else:
                 examples.append(example)
 
-        sampling_size = (len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)) // 2
+        sampling_size = (len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)) // 4
         for u in random.sample(USES, sampling_size):
-            example = self.make_example_use_single(u)
+            example = self.make_example(uses=[u], tail_nums=dict(use_num=1))
             if example is None:
                 missing_entries["use"].append(u)
             else:
                 examples.append(example)
 
         for c in random.sample(CHEMICALCLASSES, sampling_size):
-            example = self.make_example_chemicalclass_single(c)
+            example = self.make_example(
+                chemicalclasses=[c], tail_nums=dict(chemicalclass_num=1)
+            )
             if example is None:
                 missing_entries["chemicalclass"].append(c)
             else:
@@ -65,23 +67,23 @@ class DatasetFromKgMaker:
 
         for _ in PROPERTY_NAMES:
             p_pair = random.sample(PROPERTY_NAMES, 2)
-            example = self.make_example_from_properties(p_pair)
+            example = self.make_example(property_names=p_pair, tail_nums=dict(property_num=2))
             if example is not None:
                 examples.append(example)
 
         for _ in IDENTIFIER_NAMES:
             i_pair = random.sample(IDENTIFIER_NAMES, 2)
-            example = self.make_example_from_identifiers(i_pair)
+            example = self.make_example(identifier_names=i_pair, tail_nums=dict(identifier_num=2))
             if example is not None:
                 examples.append(example)
 
-        for _ in range(len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)):
+        for _ in range((len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)) // 4):
             try_num = 0
             example = None
 
             while example is None and try_num < 3:
                 tail_nums = self.get_tail_nums_total2()
-                example = self.make_example_factoid_from_tail_nums(tail_nums)
+                example = self.make_example(tail_nums)
 
             if example is not None:
                 examples.append(example)
@@ -91,68 +93,65 @@ class DatasetFromKgMaker:
     def make_examples_factoid_triple(self):
         examples: List[dict] = []
 
-        for _ in range((len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)) * 2):
+        for _ in range((len(PROPERTY_NAMES) + len(IDENTIFIER_NAMES)) // 6):
             try_num = 0
             example = None
 
             while example is None and try_num < 3:
                 tail_nums = self.get_tail_nums_total3()
-                example = self.make_example_factoid_from_tail_nums(tail_nums)
+                example = self.make_example(tail_nums=tail_nums)
+                try_num += 1
 
             if example is not None:
                 examples.append(example)
 
         return examples
 
-    def make_example_from_properties(self, property_names: Iterable[str]):
-        subgraph = self.subgraph_retriever.get_subgraph(
-            tail_nums=dict(property_num=len(property_names)),
-            bindings={
-                f"hasProperty{i + 1}": "os:has" + property_name
-                for i, property_name in enumerate(property_names)
-            },
-        )
-        return self.example_maker_head2tail.make_example(subgraph)
+    def make_example(
+        self,
+        property_names: Optional[Iterable[str]] = None,
+        identifier_names: Optional[Iterable[str]] = None,
+        uses: Optional[Iterable[str]] = None,
+        chemicalclasses: Optional[Iterable[str]] = None,
+        tail_nums: Dict[str, int] = dict(),
+    ):
+        if property_names is None:
+            property_names = random.sample(
+                PROPERTY_NAMES, tail_nums.get("property_num", 0)
+            )
+        if identifier_names is None:
+            identifier_names = random.sample(
+                IDENTIFIER_NAMES, tail_nums.get("identifier_num", 0)
+            )
+        if uses is None:
+            uses = random.sample(USES, tail_nums.get("use_num", 0))
+        if chemicalclasses is None:
+            chemicalclasses = random.sample(
+                CHEMICALCLASSES, tail_nums.get("chemicalclass_num", 0)
+            )
 
-    def make_example_from_identifiers(self, identifier_names: Iterable[str]):
-        subgraph = self.subgraph_retriever.get_subgraph(
-            tail_nums=dict(identifier_num=len(identifier_names)),
-            bindings={
-                f"hasIdentifier{i + 1}": "os:has" + identifier_name
-                for i, identifier_name in enumerate(identifier_names)
-            },
-        )
-        return self.example_maker_head2tail.make_example(subgraph)
-
-    def make_example_use_single(self, use: str):
-        subgraph = self.subgraph_retriever.get_subgraph(
-            tail_nums=dict(use_num=1),
-            bindings=dict(UseValue=use),
-        )
-        return self.example_maker_head2tail.make_example(subgraph)
-
-    def make_example_chemicalclass_single(self, chemicalclass: str):
-        subgraph = self.subgraph_retriever.get_subgraph(
-            tail_nums=dict(chemicalclass_num=1),
-            bindings=dict(ChemicalClassValue=chemicalclass),
-        )
-        return self.example_maker_head2tail.make_example(subgraph)
-
-    def make_example_factoid_from_tail_nums(self, tail_nums: Dict[str, int]):
-        property_names = random.sample(PROPERTY_NAMES, tail_nums["property_num"])
         property_bindings = {
             f"hasProperty{i + 1}": "os:has" + property_name
             for i, property_name in enumerate(property_names)
         }
-        identifier_names = random.sample(IDENTIFIER_NAMES, tail_nums["identifier_num"])
         identifier_bindings = {
             f"hasIdentifier{i + 1}": "os:has" + identifier_name
             for i, identifier_name in enumerate(identifier_names)
         }
+        usevalue_bindings = {f"UseValue{i + 1}": use for i, use in enumerate(uses)}
+        chemicalclassvalue_bindings = {
+            f"ChemicalClassValue{i + 1}": chemicalclass
+            for i, chemicalclass in enumerate(chemicalclasses)
+        }
 
         subgraph = self.subgraph_retriever.get_subgraph(
             tail_nums=tail_nums,
-            bindings={**property_bindings, **identifier_bindings},
+            bindings={
+                **property_bindings,
+                **identifier_bindings,
+                **usevalue_bindings,
+                **chemicalclassvalue_bindings,
+            },
         )
         return self.example_maker_head2tail.make_example(subgraph)
 
@@ -174,7 +173,17 @@ class DatasetFromKgMaker:
         )
 
     def get_tail_nums_total3(self):
-        sampling_space_p_i = [(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (3, 0)]
+        sampling_space_p_i = [
+            (0, 1),
+            (0, 2),
+            (0, 3),
+            (1, 0),
+            (1, 1),
+            (1, 2),
+            (2, 0),
+            (2, 1),
+            (3, 0),
+        ]
         property_num, identifier_num = random.choice(sampling_space_p_i)
         p_i_num = property_num + identifier_num
         if p_i_num == 1:
@@ -184,7 +193,9 @@ class DatasetFromKgMaker:
         elif p_i_num == 3:
             use_num, chemicalclass_num = 0, 0
         else:
-            raise Exception(f"Unexpected `property_num` value of {property_num} and `identifier_num` value of {identifier_num}.")
+            raise Exception(
+                f"Unexpected `property_num` value of {property_num} and `identifier_num` value of {identifier_num}."
+            )
 
         return dict(
             property_num=property_num,
