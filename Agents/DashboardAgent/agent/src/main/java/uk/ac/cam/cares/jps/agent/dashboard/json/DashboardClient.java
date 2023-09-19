@@ -163,7 +163,7 @@ public class DashboardClient {
         String title = "Overview for " + spatialZone;
         // Retrieve all time series for the model
         Map<String, Map<String, List<String[]>>> timeSeries = this.SERVICE_CLIENT.getAllTimeSeries(spatialZone);
-        // Generate JSON model syntax
+        LOGGER.debug("Generating JSON model syntax...");
         String jsonSyntax;
         try {
             jsonSyntax = new GrafanaModel(title, this.DATABASE_CONNECTION_MAP, timeSeries).construct();
@@ -171,6 +171,7 @@ public class DashboardClient {
             LOGGER.fatal("Failed to construct grafana model syntax. See error message for more details: " + e.getMessage());
             throw new JPSRuntimeException("Failed to construct grafana model syntax. See error message for more details: " + e.getMessage());
         }
+        LOGGER.debug("Sending request to create dashboard...");
         // Create a new dashboard based on the JSON model using a POST request with security token
         HttpResponse response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
         // WIP: Retrieve the required information to form the URL
