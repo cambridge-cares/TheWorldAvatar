@@ -173,11 +173,6 @@ public class DashboardClient {
         }
         LOGGER.debug("Sending request to create dashboard...");
         // Create a new dashboard based on the JSON model using a POST request with security token
-        HttpResponse response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
-        // WIP: Retrieve the required information to form the URL
-        // URL key is available as /EXPOSED_URL_NAME/d/DASHBOARD_ID/DASHBOARD_TITLE
-        JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
-        String dashboardId = responseBody.get("uid").getAsString();
-        String dashboardTitle = responseBody.get("slug").getAsString();
+        AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
     }
 }
