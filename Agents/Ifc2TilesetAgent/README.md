@@ -94,10 +94,15 @@ Place only one IFC file in `<root>\data\ifc\`. This directory is directly linked
 Please modify the following properties in `config/properties.yaml`:
 - `query_endpoint`^ : SPARQL endpoint for Query operations
 - `update_endpoint`^ : SPARQL endpoint for UPDATE operations
-
 ^*Endpoints are required to query for metadata in tileset and interactions during visualisation*
 
-If you are deploying this on the stack, ensure that your `properties.yaml` and IFC file is placed at the corresponding bind mount location. A sample stack-based properties is available in `config/properties.yaml_stack` but requires editing for the name of your stack and desired namespaces.
+In `config/properties.yaml`, there are also optional properties for appending IRI and name for the solar panel or sewage tileset. If required, please ensure both IRI and name are populated for the corresponding tileset. When not in use, please leave an empty string.
+- solar_panel_tileset_iri
+- solar_panel_tileset_name
+- sewage_tileset_iri
+- sewage_tileset_name
+
+If you are deploying this on the stack, ensure that your `properties.yaml` and IFC file is placed at the corresponding bind mount location. A sample stack-based properties is available in `config/properties.yaml_stack` but requires editing for the name of your stack, desired namespaces, and optional IRIs or names.
 
 ### 2.2 API
 Instructions for the agent and its various API routes can be found at the API root `http://localhost:5105/`. Users can visit this route in any browser to verify if the agent is running.
