@@ -133,8 +133,9 @@ class GaugeTest {
             colorMode = "thresholds";
             colorSteps = "{\"color\":\"green\",\"value\":" + thresholds[0] + "},{\"color\":\"red\",\"value\":" + thresholds[1] + "}";
             // Ensure that the gauge can see past the max threshold to allow user to the limits
+            double minValue = Float.parseFloat(thresholds[0]) - 1.0;
             double maxValue = Float.parseFloat(thresholds[1]) + 1.0;
-            minMax = "\"min\":" + thresholds[0] + ",\"max\":" + maxValue + ",";
+            minMax = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
         }
         StringBuilder sb = new StringBuilder();
         sb.append("{").append(TemplatePanelTest.genExpectedCommonJsonBase(titleContent, description, metadata, geometryPositions, itemDetails, query))

@@ -84,9 +84,10 @@ class Gauge extends TemplatePanel {
             this.COLOR_MODE = "thresholds";
             // Color steps should be from min (green) to max (red) threshold
             this.COLOR_STEPS = "{\"color\":\"green\",\"value\":" + thresholds[0] + "},{\"color\":\"red\",\"value\":" + thresholds[1] + "}";
-            // Ensure that the gauge can see past the max threshold to allow user to the limits
+            // Ensure that the gauge can see past the min and max threshold to allow user to recognise the limits
+            double minValue = Float.parseFloat(thresholds[0]) - 1.0;
             double maxValue = Float.parseFloat(thresholds[1]) + 1.0;
-            this.MIN_MAX_VALS = "\"min\":" + thresholds[0] + ",\"max\":" + maxValue + ",";
+            this.MIN_MAX_VALS = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
         }
     }
 
