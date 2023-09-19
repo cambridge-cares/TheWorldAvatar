@@ -23,6 +23,8 @@ class TimeSeriesChart extends TemplatePanel {
      */
     public TimeSeriesChart(String measure, String itemGroup, String unit, String databaseId, List<String[]> timeSeriesMetadata) {
         super(measure, itemGroup, databaseId, timeSeriesMetadata);
+        // Sets the unit for retrieval
+        super.setUnit(unit);
         // Set Title for panel
         // Title is: Measure of Item Group [Unit]
         String titleContent = StringHelper.addSpaceBetweenCapitalWords(measure) + " of " + StringHelper.addSpaceBetweenCapitalWords(itemGroup);

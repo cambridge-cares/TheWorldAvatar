@@ -43,6 +43,8 @@ class Gauge extends TemplatePanel {
      */
     public Gauge(String measure, String itemGroup, String unit, String databaseId, List<String[]> timeSeriesMetadata, String[] thresholds, boolean calcAverage) {
         super(measure, itemGroup, databaseId, timeSeriesMetadata);
+        // Sets the unit for retrieval
+        super.setUnit(unit);
         // Title and description depends on requirements
         if (calcAverage) {
             // Set Title for panel

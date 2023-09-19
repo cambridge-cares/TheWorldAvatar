@@ -133,6 +133,9 @@ public class PanelModel {
             // Retrieve the current room panels and their measure names
             TemplatePanel[] roomPanels = panelQueue.poll();
             String measureName = roomPanels[0].getMeasure();
+            // Generate a row title, which may include unit if available
+            String title = StringHelper.addSpaceBetweenCapitalWords(measureName);
+            title = roomPanels[2].getUnit().equals("null") ? title : title + "[" + roomPanels[2].getUnit() +"]";
             // Populate a new empty queue with only one array for this measure
             Queue<TemplatePanel[]> intermediateQueue = new ArrayDeque<>();
             intermediateQueue.offer(roomPanels);
@@ -142,7 +145,7 @@ public class PanelModel {
             this.PANEL_SYNTAX.append("{")
                     .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
                     // Title should be the measure name of these rooms
-                    .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(measureName)).append("\",")
+                    .append("\"title\": \"").append(title).append("\",")
                     .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
                     .append(",\"x\": 0,\"y\": ").append(rowNumber).append("},")
                     .append("\"panels\": [").append(genPanelSyntax(rowNumber, intermediateQueue))

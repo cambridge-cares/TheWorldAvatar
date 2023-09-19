@@ -43,6 +43,7 @@ class TimeSeriesChartTest {
         String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
         assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
+        assertEquals("null", chart.getUnit());
     }
 
     @Test
@@ -56,6 +57,7 @@ class TimeSeriesChartTest {
         String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
         assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
+        assertEquals(SAMPLE_UNIT, chart.getUnit());
     }
 
     @Test

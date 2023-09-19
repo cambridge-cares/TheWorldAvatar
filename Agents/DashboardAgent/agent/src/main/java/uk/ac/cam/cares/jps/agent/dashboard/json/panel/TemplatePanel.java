@@ -16,6 +16,7 @@ class TemplatePanel {
     private final String MEASURE;
     private String TITLE;
     private String DESCRIPTION;
+    private String UNIT = "null";
     private final String DATABASE_CONNECTION_ID;
     private StringBuilder QUERY_SYNTAX = new StringBuilder();
     private final StringBuilder FIELD_COLUMN_INDEX = new StringBuilder();
@@ -56,30 +57,23 @@ class TemplatePanel {
     /**
      * Gets the measure of this panel.
      */
-    protected String getMeasure() {
-        return this.MEASURE;
-    }
-
+    protected String getMeasure() {return this.MEASURE;}
+    protected String getUnit() {return this.UNIT;}
+    protected void setUnit(String unit) {this.UNIT = unit;}
     /**
      * Sets the title.
      */
-    protected void setTitle(String title) {
-        this.TITLE = title;
-    }
+    protected void setTitle(String title) {this.TITLE = title;}
 
     /**
      * Sets the description.
      */
-    protected void setDescription(String description) {
-        this.DESCRIPTION = description;
-    }
+    protected void setDescription(String description) {this.DESCRIPTION = description;}
 
     /**
      * Sets the query syntax.
      */
-    protected void setQuery(StringBuilder query) {
-        this.QUERY_SYNTAX = query;
-    }
+    protected void setQuery(StringBuilder query) {this.QUERY_SYNTAX = query;}
 
     /**
      * Construct the common JSON parts for panel as a StringBuilder which will continue to append specific syntax for different query types.
