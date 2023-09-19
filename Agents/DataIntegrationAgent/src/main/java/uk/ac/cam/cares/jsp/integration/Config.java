@@ -13,19 +13,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Config extends ContainerClient {
-    // private static boolean initialised = false;
-    // public static PostGISEndpointConfig postGISEndpointConfig = null;
-    // public static String dburl;
-    // public static String dbuser;
-    // public static String dbpassword;
 
-//    private static BlazegraphEndpointConfig blazegraphEndpointConfig;
-//    public static String kgurl;
-//    public static String kguser;
-//    public static String kgpassword;
-//    public static String ontop_url;
-
-//    private static OntopEndpointConfig ontopEndpointConfig;
     public static String DATABASE = System.getenv("DATABASE");
     private static final String PROPERTIES_FILEPATH = System.getProperty("user.dir") + "/src/resources/endpoint.properties";
     private static final String NO_PROPERTIES_MSG = "No endpoint.properties file detected! Please place the file in the config directory.";
@@ -51,14 +39,15 @@ public class Config extends ContainerClient {
             if(input != null){
                 LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");   
                 prop.load(input);
-            }else{
-                prop.setProperty(SRC_DB_URL, "jdbc:postgresql://dataintegrationagent-postgis:5432");
-                prop.setProperty(SRC_DB_USER, "postgres");
-                prop.setProperty(SRC_DB_PASSWORD, "postgis");
-                prop.setProperty(SRC_DB_3D, "ntu_nus");
-                prop.setProperty(SRC_DB_2D, "pirmasens_2d");
-                prop.setProperty(SRC_TABLE_2D, "pirmasens_2d");
             }
+            // else{
+            //     prop.setProperty(SRC_DB_URL, "jdbc:postgresql://dataintegrationagent-postgis:5432");
+            //     prop.setProperty(SRC_DB_USER, "postgres");
+            //     prop.setProperty(SRC_DB_PASSWORD, "postgis");
+            //     prop.setProperty(SRC_DB_3D, "ntu_nus");
+            //     prop.setProperty(SRC_DB_2D, "pirmasens_2d");
+            //     prop.setProperty(SRC_TABLE_2D, "pirmasens_2d");
+            // }
 
             ContainerClient client = new ContainerClient();
             PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
