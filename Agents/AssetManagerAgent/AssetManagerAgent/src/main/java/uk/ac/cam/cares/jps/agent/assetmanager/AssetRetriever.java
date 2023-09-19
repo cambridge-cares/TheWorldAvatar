@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.sparqlbuilder.core.GroupBy;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
@@ -441,13 +442,16 @@ public class AssetRetriever {
         Variable SupplierOrgIRI = SparqlBuilder.var("SupplierOrgIRI");
         Variable SupplierNameIRI = SparqlBuilder.var("SupplierNameIRI");
         Variable SupplierNameLiteral = SparqlBuilder.var("SupplierName");
-        SelectQuery query = Queries.SELECT();
+        SelectQuery query = Queries.SELECT(SupplierOrgIRI, SupplierNameIRI, SupplierNameLiteral);
+        GroupBy group = SparqlBuilder.groupBy();
+        group.by(SupplierNameLiteral, SupplierOrgIRI, SupplierNameIRI);
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(query.var().has(isSuppliedBy, SupplierOrgIRI));
         query.where(SupplierOrgIRI.has(hasName, SupplierNameIRI));
         query.where(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral));
+        query.groupBy(group);
 
         return storeClientPurchDoc.executeQuery(query.getQueryString());
 
@@ -456,36 +460,44 @@ public class AssetRetriever {
         Variable ManufacturerOrgIRI = SparqlBuilder.var("ManufacturerIRI");
         Variable ManufacturerNameIRI = SparqlBuilder.var("ManufacturerNameIRI");
         Variable ManufacturerNameLiteral = SparqlBuilder.var("ManufacturerName");
-        SelectQuery query = Queries.SELECT();
+        GroupBy group = SparqlBuilder.groupBy();
+        group.by(ManufacturerNameLiteral, ManufacturerOrgIRI, ManufacturerNameIRI);
+
+        SelectQuery query = Queries.SELECT(ManufacturerOrgIRI, ManufacturerNameIRI, ManufacturerNameLiteral);
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(query.var().has(isManufacturedBy, ManufacturerOrgIRI));
         query.where(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
         query.where(ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral));
+        query.groupBy(group);
 
         return storeClientPurchDoc.executeQuery(query.getQueryString());
 
     }
 
     public JSONArray getItemListByDocIRI (String InvoiceIRI, String POiri, String DOiri){
-        return getItemListByDocIRI(iri(InvoiceIRI), iri(POiri), iri(DOiri));
-    }
 
-    public JSONArray getItemListByDocIRI (Iri InvoiceIRI, Iri POiri, Iri DOiri){
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         Variable itemIRI = SparqlBuilder.var("itemIRI");
-        if(InvoiceIRI != null){
-            query.where(InvoiceIRI.has(hasItem, itemIRI));
+        Variable InvoiceLineIRI = SparqlBuilder.var("invoiceLineIRI");
+        Variable POLineIRI = SparqlBuilder.var("POLineIRI");
+        Variable DOLineIRI = SparqlBuilder.var("DOLineIRI");
+
+        if(!(InvoiceIRI == null || InvoiceIRI.isBlank())){
+            query.where(iri(InvoiceIRI).has(hasInvoiceLine, InvoiceLineIRI));
+            query.where(InvoiceLineIRI.has(hasItem, itemIRI));
         }
-        if(POiri != null){
-            query.where(POiri.has(hasItem, itemIRI));
+        if(!(POiri == null || POiri.isBlank())){
+            query.where(iri(POiri).has(hasPurchaseOrderLine, POLineIRI));
+            query.where(POLineIRI.has(hasItem, itemIRI));
         }
-        if(DOiri != null){
-            query.where(DOiri.has(hasItem, itemIRI));
+        if(!(DOiri == null || DOiri.isBlank())){
+            query.where(iri(DOiri).has(hasDeliveryOrderLine, DOLineIRI));
+            query.where(DOLineIRI.has(hasItem, itemIRI));
         }
 
         return storeClientPurchDoc.executeQuery(query.getQueryString());
