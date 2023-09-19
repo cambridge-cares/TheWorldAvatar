@@ -1,8 +1,31 @@
 # Triton inference server
 
+## Local setup
+
+1. Place the model weights under the directory `model_repository/translation/1/model/`, which should include the following files.
+
+   ```
+   config.json
+   decoder_model.onnx
+   decoder_with_past_model.onnx
+   encoder_model.onnx
+   generation_config.json
+   special_tokens_map.json
+   spiece.model
+   tokenizer_config.json
+   tokenizer.json
+   ```
+
+1. Build the docker image and run the container.
+
+   ```
+   docker build -t triton:0.1.0 .
+   docker run -d -p 8000:8000 --shm-size=256m --name inference_server triton:0.1.0
+   ```
+
 ## Development
 
-For development from NVIDIA's base image
+For development on NVIDIA's base image
 
 ```
 # Launch container for model serving
@@ -15,22 +38,9 @@ pip install torch transformers optimum[onnxruntime]
 tritonserver --model-repository=/models
 ```
 
-Build and run docker image
-
-```
-docker build -t triton:0.1.0 .
-docker run -d -p 8000:8000 --shm-size=256m --name inference_server triton:0.1.0
-```
-
 Test inference server with a sample client script.
 
 ```
 docker run -it --net=host -v ${PWD}:/workspace/ nvcr.io/nvidia/tritonserver:23.08-py3-sdk bash
 python3 client.py
 ```
-
-
-
-## Deployment
-
-See [Deployment for Marie](../README.md#deployment-for-marie).

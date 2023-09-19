@@ -1,24 +1,17 @@
 # Flask app
 
-## Development
+## Local setup 
 
-Create a virtual environment for dependency management and activate it.
+1. Create a virtual environment for dependency management and activate it.
 
-```
-python3 -m venv .venv
-. .venv/bin/activate
-```
+   ```
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
 
-Install the application
+1. Install the application `pip install -e .`.
 
-```
-pip install -e .
-```
-
-Start the development server at `localhost:5000` in debug mode (app is automatically reloaded upon code changes)
-```
-flask --app marie run --debug
-```
+1. Start the development server in debug mode (app is automatically reloaded upon code changes) `flask --app marie run --debug`. The app will be running at `localhost:5000`.
 
 ## Test
 
@@ -34,7 +27,3 @@ coverage run -m pytest
 coverage report
 coverage html  # open htmlcov/index.html in a browser
 ```
-
-## Deployment
-
-See [Deployment for Marie](../README.md#deployment-for-marie).
