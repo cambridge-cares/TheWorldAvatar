@@ -13,7 +13,7 @@ import numpy as np
 
 # Self imports
 from . import testconsts as C
-from .testutils import init_kg_client, read_json_file, assert_assets_present
+from .testutils import init_kg_client, read_json_file, assert_assets_present, overwrite_yaml
 
 
 def test_default(flaskapp):
@@ -60,10 +60,10 @@ def assert_child_tile_compulsory_fields(tile: dict):
     "init_assets, expected_assets, expected_root_content, expected_bim_bbox, requires_optional_params",
     [(["building", "wall"], ["building"], {"uri": "./glb/building.glb", "metadata": C.SAMPLE_BUILDING_METADATA},
       [2.5, 0.1, 1.5, 2.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5], False),
-      (["chair", "table"], ["furniture"], {"uri": "./glb/furniture.glb"},
+     (["chair", "table"], ["furniture"], {"uri": "./glb/furniture.glb"},
       [1.75, 1.0, 1.75, 1.75, 0, 0, 0, 1.0, 0, 0, 0, 1.75], False),
-      (["chair", "table"], ["furniture"], {"uri": "./glb/furniture.glb", "metadata": C.SAMPLE_ROOT_METADATA},
-       [1.75, 1.0, 1.75, 1.75, 0, 0, 0, 1.0, 0, 0, 0, 1.75], True)]
+     (["chair", "table"], ["furniture"], {"uri": "./glb/furniture.glb", "metadata": C.SAMPLE_ROOT_METADATA},
+      [1.75, 1.0, 1.75, 1.75, 0, 0, 0, 1.0, 0, 0, 0, 1.75], True)]
 )
 def test_api_simple(init_assets, expected_assets, expected_root_content, expected_bim_bbox, requires_optional_params,
                     kg_client, flaskapp, gen_sample_ifc_file):
@@ -179,6 +179,66 @@ def test_api_complex(init_assets, expected_assets, expected_root_kvs, expected_c
     assert np.allclose(solar_root["boundingVolume"]
                        ["box"], expected_solar_panel_bbox)
     assert solar_root["content"] == {"uri": "./glb/solarpanel.glb"}
+
+
+@pytest.mark.parametrize(
+    "init_item, expected_item, expected_bbox, solar_metadata, sewage_metadata",
+    [   # Simple solar panel with no metadata
+        (["solar_panel"], "solarpanel", [1.5, 1.5, 6.25, 1.5, 0, 0, 0, 1.5, 0, 0, 0, 0.25],
+         ["", ""], ["", ""]),
+        # Solar panel with metadata
+        (["solar_panel"], "solarpanel", [1.5, 1.5, 6.25, 1.5, 0, 0, 0, 1.5, 0, 0, 0, 0.25],
+         [C.SAMPLE_SOLAR_IRI, C.SAMPLE_SOLAR_NAME], ["", ""]),
+        # Simple sewage network with no metadata
+        (["sewage_network"], "sewagenetwork", [2.0, 2.0, 1.0, 1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0],
+         ["", ""], ["", ""]),
+        # Sewage network with metadata
+        (["sewage_network"], "sewagenetwork", [2.0, 2.0, 1.0, 1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0],
+         ["", ""], [C.SAMPLE_SEWAGE_IRI, C.SAMPLE_SEWAGE_NAME])
+    ]
+)
+def test_api_solar_sewage_tileset(init_item, expected_item, expected_bbox, solar_metadata, sewage_metadata, kg_client, flaskapp, gen_sample_ifc_file):
+    # Arrange
+    route = "/api"
+    init_kg_client(kg_client, init_item)
+    gen_sample_ifc_file("./data/ifc/sample.ifc", assets=init_item)
+    overwrite_yaml(solar_metadata[0], solar_metadata[1],
+                   sewage_metadata[0], sewage_metadata[1])
+
+    # Act
+    response = flaskapp.post(route, json={"assetUrl": "./glb"})
+
+    # Assert
+    assert response.status_code == 200
+    assert response.json["result"] == C.SUCCESSFUL_API_RESPONSE
+
+    # Assert that the tilesets and geometry files are generated
+    if expected_item == "sewagenetwork":
+        tileset_file = os.path.join("data", "tileset_sewage.json")
+    else:
+        tileset_file = os.path.join(
+            "data", "tileset_" + expected_item + ".json")
+    assert os.path.isfile(tileset_file)
+
+    tileset_content = read_json_file(tileset_file)
+    assert "root" in tileset_content
+
+    tileset_root = tileset_content["root"]
+    assert_root_tile_compulsory_fields(tileset_root)
+    assert np.allclose(tileset_root["boundingVolume"]
+                       ["box"], expected_bbox)
+    if solar_metadata[0] or sewage_metadata[0]:
+        assert tileset_content["schema"] == C.CONTENT_METADATA_SCHEMA
+        if solar_metadata[0]:
+            metadata = C.SAMPLE_SOLAR_METADATA
+        else:
+            metadata = C.SAMPLE_SEWAGE_METADATA
+        assert tileset_root["content"] == {"metadata": metadata,
+                                           "uri": "./glb/"+expected_item+".glb"}
+    else:
+        assert "schema" not in tileset_content
+        assert tileset_root["content"] == {
+            "uri": "./glb/"+expected_item+".glb"}
 
 
 def test_api_no_building_structure_no_assets(kg_client, gen_sample_ifc_file, flaskapp):

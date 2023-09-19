@@ -162,8 +162,11 @@ def compute_bbox(gltf: Union[PathLike, Iterable[PathLike]], offset: float = 0):
     ]
 
 
-def gen_solarpanel_tileset():
+def gen_solarpanel_tileset(solar_panel_data: list[str]):
     """Generates and write the tileset for solar panel into 3D Tiles Next format if it exists.
+
+    Args:
+        solar_panel_data: A list containing the data IRI and name of the solar panel in this order.
     """
     solarpanel_file_path = "./data/glb/solarpanel.glb"
     solarpath = Path(solarpanel_file_path)
@@ -174,14 +177,17 @@ def gen_solarpanel_tileset():
     bbox = compute_bbox(solarpath)
     # No building data should be created
     root_tile = make_root_tile(
-        bbox=bbox, geometry_file_paths=[state.asset_url + "solarpanel.glb"])
+        bbox=bbox, geometry_file_paths=[state.asset_url + "solarpanel.glb"], root_metadata=solar_panel_data)
     tileset = make_tileset(root_tile)
 
     jsonwriter(tileset, "tileset_solarpanel")
 
 
-def gen_sewagenetwork_tileset():
+def gen_sewagenetwork_tileset(sewage_data: list[str]):
     """Generates and writes the tileset for sewage network into 3D Tiles Next format if it exists.
+
+    Args:
+        sewage_data: A list containing the data IRI and name of the sewage network in this order.
     """
     sewage_file_path = "./data/glb/sewagenetwork.glb"
     sewagepath = Path(sewage_file_path)
@@ -192,7 +198,7 @@ def gen_sewagenetwork_tileset():
     bbox = compute_bbox(sewagepath)
     # No building data should be created
     root_tile = make_root_tile(
-        bbox=bbox,  geometry_file_paths=[state.asset_url + "sewagenetwork.glb"])
+        bbox=bbox,  geometry_file_paths=[state.asset_url + "sewagenetwork.glb"], root_metadata=sewage_data)
     tileset = make_tileset(root_tile)
 
     jsonwriter(tileset, "tileset_sewage")

@@ -205,11 +205,37 @@ def test_jsonwriter():
 def test_gen_solarpanel_tileset_no_solarpanel():
     """Tests gen_solarpanel_tileset() when there is no solarpanel geometry output detected."""
     # Act
-    gen_solarpanel_tileset()
+    gen_solarpanel_tileset([])
 
     # Assert
     json_filepath = os.path.join("data", "tileset_solarpanel.json")
     assert not os.path.exists(json_filepath)
+
+
+def test_gen_solarpanel_tileset_with_metadata():
+    """Tests gen_solarpanel_tileset() when there is a solarpanel geometry output and metadata inputs."""
+    # Arrange
+    solarpanel_glb = os.path.join("data", "glb", "solarpanel.glb")
+    m = C.sample_box_gen()
+    m.export(solarpanel_glb)
+
+    # Act
+    gen_solarpanel_tileset([C.sample_solar_iri, C.sample_solar_name])
+
+    # Assert
+    json_filepath = os.path.join("data", "tileset_solarpanel.json")
+    assert os.path.exists(json_filepath)
+
+    tileset = read_json(json_filepath)
+    assert "root" in tileset
+    assert tileset["schema"] == C.expected_content_metadata_schema
+
+    root_tile = tileset["root"]
+    assert "content" in root_tile
+    assert root_tile["content"] == {"metadata": gen_content_metadata(C.sample_solar_iri, C.sample_solar_name),
+                                    "uri": "./glb/solarpanel.glb"}
+    assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
+        and np.allclose(root_tile["boundingVolume"]["box"], C.sample_box_bbox)
 
 
 def test_gen_solarpanel_tileset():
@@ -220,7 +246,7 @@ def test_gen_solarpanel_tileset():
     m.export(solarpanel_glb)
 
     # Act
-    gen_solarpanel_tileset()
+    gen_solarpanel_tileset([])
 
     # Assert
     json_filepath = os.path.join("data", "tileset_solarpanel.json")
@@ -241,9 +267,35 @@ def test_gen_sewagenetwork_tileset_no_sewage():
     Tests gen_sewagenetwork_tileset() when there is no sewagenetwork geometry output detected
     """
     # Execute method
-    gen_sewagenetwork_tileset()
+    gen_sewagenetwork_tileset([])
     json_filepath = os.path.join("data", "tileset_sewage.json")
     assert not os.path.exists(json_filepath)
+
+
+def test_gen_sewagenetwork_tileset_with_metadata():
+    """Tests gen_sewagenetwork_tileset() when there is a sewagenetwork geometry output and metadata input."""
+    # Arrange
+    sewage_glb = os.path.join("data", "glb", "sewagenetwork.glb")
+    m = C.sample_cone_gen()
+    m.export(sewage_glb)
+
+    # Act
+    gen_sewagenetwork_tileset([C.sample_sewage_iri, C.sample_sewage_name])
+
+    # Assert
+    json_filepath = os.path.join("data", "tileset_sewage.json")
+    assert os.path.exists(json_filepath)
+
+    tileset = read_json(json_filepath)
+    assert "root" in tileset
+    assert tileset["schema"] == C.expected_content_metadata_schema
+
+    root_tile = tileset["root"]
+    assert "content" in root_tile
+    assert root_tile["content"] == {"metadata": gen_content_metadata(C.sample_sewage_iri, C.sample_sewage_name),
+                                    "uri": "./glb/sewagenetwork.glb"}
+    assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
+        and np.allclose(root_tile["boundingVolume"]["box"], C.sample_cone_bbox)
 
 
 def test_gen_sewagenetwork_tileset():
@@ -254,7 +306,7 @@ def test_gen_sewagenetwork_tileset():
     m.export(sewage_glb)
 
     # Act
-    gen_sewagenetwork_tileset()
+    gen_sewagenetwork_tileset([])
 
     # Assert
     json_filepath = os.path.join("data", "tileset_sewage.json")

@@ -23,13 +23,17 @@ TEST_BUILDING_NAME = "Building A"
 TEST_ROOT_IRI = "http://www.example.org/sample/Test_21471"
 TEST_ROOT_NAME = "Shelter"
 
+
 @pytest.mark.parametrize(
-    "root_iri, root_name",
-    [("", ""),
+    ("root_iri", "root_name", "solar_iri", "solar_name"),
+    [("", "", "", ""),
      # Ensure that input parameters will not override in solar panel tileset
-     (TEST_ROOT_IRI, TEST_ROOT_NAME)]
+     (TEST_ROOT_IRI, TEST_ROOT_NAME, "", ""),
+     # Verify that solar iri and name are generated
+     ("", "", C.sample_solar_iri, C.sample_solar_name),
+     (TEST_ROOT_IRI, TEST_ROOT_NAME, C.sample_solar_iri, C.sample_solar_name)]
 )
-def test_gen_tilesets_solarpanel(root_iri, root_name):
+def test_gen_tilesets_solarpanel(root_iri, root_name, solar_iri, solar_name):
     """Asserts gen_tilesets() for generating only solarpanel tileset."""
     # Arrange
     solarpanel_glb = os.path.join("data", "glb", "solarpanel.glb")
@@ -39,14 +43,19 @@ def test_gen_tilesets_solarpanel(root_iri, root_name):
     bim_json_filepath = os.path.join("data", "tileset_bim.json")
     solar_json_filepath = os.path.join("data", "tileset_solarpanel.json")
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
-    
+
     if root_iri and root_name:
-            root_data = [root_iri, root_name]
+        root_data = [root_iri, root_name]
     else:
-        root_data =[]
+        root_data = []
+
+    if solar_iri and solar_name:
+        solar_data = [solar_iri, solar_name]
+    else:
+        solar_data = []
 
     # Act
-    gen_tilesets(pd.DataFrame(), [], root_data)
+    gen_tilesets(pd.DataFrame(), [], solar_data, [], root_data)
 
     # Assert
     # Assert that only tileset for solar panel is generated
@@ -57,21 +66,31 @@ def test_gen_tilesets_solarpanel(root_iri, root_name):
     # Test content of tileset
     solar_tileset = read_json(solar_json_filepath)
     assert "root" in solar_tileset
-    assert "schema" not in solar_tileset
 
     root_tile = solar_tileset["root"]
-    assert "content" in root_tile and root_tile["content"] == {
-        "uri": "./glb/solarpanel.glb"}
+    assert "content" in root_tile
+    if solar_iri and solar_name:
+        assert solar_tileset["schema"] == C.expected_content_metadata_schema
+        assert root_tile["content"] == {"metadata": gen_content_metadata(C.sample_solar_iri, C.sample_solar_name),
+                                        "uri": "./glb/solarpanel.glb"}
+    else:
+        assert "schema" not in solar_tileset
+        assert root_tile["content"] == {
+            "uri": "./glb/solarpanel.glb"}
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_box_bbox)
 
+
 @pytest.mark.parametrize(
-    "root_iri, root_name",
-    [("", ""),
+    ("root_iri", "root_name", "sewage_iri", "sewage_name"),
+    [("", "", "", ""),
      # Ensure that input parameters will not override in sewage tileset
-     (TEST_ROOT_IRI, TEST_ROOT_NAME)]
+     (TEST_ROOT_IRI, TEST_ROOT_NAME, "", ""),
+     # Verify that solar iri and name are generated
+     ("", "", C.sample_sewage_iri, C.sample_sewage_name),
+     (TEST_ROOT_IRI, TEST_ROOT_NAME, C.sample_sewage_iri, C.sample_sewage_name)]
 )
-def test_gen_tilesets_sewage(root_iri, root_name):
+def test_gen_tilesets_sewage(root_iri, root_name, sewage_iri, sewage_name):
     """Asserts gen_tilesets() for generating only sewage tileset."""
     # Arrange
     sewage_glb = os.path.join("data", "glb", "sewagenetwork.glb")
@@ -83,12 +102,17 @@ def test_gen_tilesets_sewage(root_iri, root_name):
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
     if root_iri and root_name:
-            root_data = [root_iri, root_name]
+        root_data = [root_iri, root_name]
     else:
-        root_data =[]
+        root_data = []
+
+    if sewage_iri and sewage_name:
+        sewage_data = [sewage_iri, sewage_name]
+    else:
+        sewage_data = []
 
     # Act
-    gen_tilesets(pd.DataFrame(), [], root_data)
+    gen_tilesets(pd.DataFrame(), [], [], sewage_data, root_data)
 
     # Assert
     # Assert that only sewage tileset is generated
@@ -99,18 +123,26 @@ def test_gen_tilesets_sewage(root_iri, root_name):
     # Test content of tileset
     sewage_tileset = read_json(sewage_json_filepath)
     assert "root" in sewage_tileset
-    assert "schema" not in sewage_tileset
 
     root_tile = sewage_tileset["root"]
-    assert "content" in root_tile and root_tile["content"] == {
-        "uri": "./glb/sewagenetwork.glb"}
+    assert "content" in root_tile
+    if sewage_iri and sewage_name:
+        assert sewage_tileset["schema"] == C.expected_content_metadata_schema
+        assert root_tile["content"] == {"metadata": gen_content_metadata(C.sample_sewage_iri, C.sample_sewage_name),
+                                        "uri": "./glb/sewagenetwork.glb"}
+    else:
+        assert "schema" not in sewage_tileset
+        assert root_tile["content"] == {
+            "uri": "./glb/sewagenetwork.glb"}
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_cone_bbox)
+
 
 @pytest.mark.parametrize(
     "geometry, root_iri, root_name, expected_iri, expected_name",
     [("building.glb", "", "", TEST_BUILDING_IRI, TEST_BUILDING_NAME),
-     ("building.glb", TEST_ROOT_IRI, TEST_ROOT_NAME, TEST_BUILDING_IRI, TEST_BUILDING_NAME),
+     ("building.glb", TEST_ROOT_IRI, TEST_ROOT_NAME,
+      TEST_BUILDING_IRI, TEST_BUILDING_NAME),
      # Ensure that input parameters will not override in sewage tileset
      ("furniture.glb", "", "", "", ""),
      ("furniture.glb", TEST_ROOT_IRI, TEST_ROOT_NAME, TEST_ROOT_IRI, TEST_ROOT_NAME)
@@ -128,13 +160,14 @@ def test_gen_tilesets_bim_no_assets(geometry, root_iri, root_name, expected_iri,
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
     if root_iri and root_name:
-            root_data = [root_iri, root_name]
+        root_data = [root_iri, root_name]
     else:
-        root_data =[]
+        root_data = []
     expected_content = {"uri": "./glb/" + geometry}
 
     # Act
-    gen_tilesets(pd.DataFrame(), [TEST_BUILDING_IRI, TEST_BUILDING_NAME], root_data)
+    gen_tilesets(pd.DataFrame(), [TEST_BUILDING_IRI,
+                 TEST_BUILDING_NAME], [], [], root_data)
 
     # Assert
     # Assert that only bim tileset is generated
@@ -149,7 +182,8 @@ def test_gen_tilesets_bim_no_assets(geometry, root_iri, root_name, expected_iri,
         # verify that schema exists
         assert tileset["schema"] == C.expected_content_metadata_schema
         # add the metadata to the expected content
-        expected_content["metadata"] = gen_content_metadata(expected_iri, expected_name)
+        expected_content["metadata"] = gen_content_metadata(
+            expected_iri, expected_name)
     assert "root" in tileset
 
     root_tile = tileset["root"]
@@ -184,7 +218,7 @@ def test_gen_tilesets_3_assets():
     }
 
     # Act
-    gen_tilesets(sample_asset_df, [])
+    gen_tilesets(sample_asset_df, [], [], [])
 
     # Assert
     # Assert that only bim tileset is generated

@@ -28,6 +28,10 @@ expected_content_metadata_schema = {"classes":
                                      }
                                     }
 
+sample_solar_iri = "http://www.example.org/Test/Panel_123"
+sample_solar_name = "Solar panels"
+sample_sewage_iri = "http://www.example.org/Test/Sewage_123"
+sample_sewage_name = "Sewage city network"
 
 def sample_box_gen():
     z_up_coordinates = -4, -6, -10, 6, 4, 10

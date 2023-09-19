@@ -103,7 +103,7 @@ def create_app():
             ifc_filepath, query_endpoint, update_endpoint)
 
         logger.info("Generating the tilesets...")
-        gen_tilesets(asset_data, building_data, root_data)
+        gen_tilesets(asset_data, building_data, solar_panel_tileset, sewage_tileset, root_data)
 
         # Return the result in JSON format
         return jsonify(
