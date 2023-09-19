@@ -1,8 +1,8 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
 import org.apache.jena.query.Query;
@@ -12,6 +12,10 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
+import org.locationtech.jts.geom.Geometry;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class GeometryQueryHelper {
     private String ontopUrl = "http://stackNAME-ontop:8080/sparql";
@@ -80,8 +84,8 @@ public class GeometryQueryHelper {
         JSONArray queryResultArray = storeClient.executeQuery(q.toString());
 
         if(!queryResultArray.isEmpty()){
-            if (value.equals("FootprintThematicSurface")) {
-                result = GeometryHandler.extractFootprint(queryResultArray);
+            if (value.equals("CRS")) {
+                result = queryResultArray.getJSONObject(0).get(value).toString().split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
             }
             else{
                 result = queryResultArray.getJSONObject(0).get(value).toString();
@@ -99,8 +103,6 @@ public class GeometryQueryHelper {
      */
     private Query getQuery(String uriString, String value) {
         switch(value) {
-            case "Lod0Footprint":
-                return getLod0FootprintQuery(uriString);
             case "FootprintThematicSurface":
                 return getGeometryQueryThematicSurface(uriString);
             case "HeightMeasuredHeight":
@@ -135,24 +137,6 @@ public class GeometryQueryHelper {
     }
 
     /**
-     * Builds a SPARQL query for a specific URI to retrieve ground surface geometry from Lod0FootprintId
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getLod0FootprintQuery(String uriString) {
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addWhere("?building", "ocgml:hasLod0Footprint", "?Lod0Footprint");
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?Lod0Footprint");
-        sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
-
-        Query query = sb.build();
-
-        return query;
-    }
-
-    /**
      * Builds a SPARQL query for a specific URI to retrieve ground surface geometries for building linked to thematic surfaces with ocgml:objectClassId 35
      * @param uriString city object id
      * @return returns a query string
@@ -184,13 +168,50 @@ public class GeometryQueryHelper {
      * @return returns a query string
      */
     private Query getCrsQuery(String uriString) {
+        try {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addWhere("?s", "ocgml:srid", "?CRS");
+                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
+                .addPrefix("geof", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geof))
+                .addWhere("?building", "ocgml:lod0Footprint", "?Lod0Footprint")
+                .addBind("geof:getSRID(?Lod0Footprint)", "CRS");
+
         SelectBuilder sb = new SelectBuilder()
-                .addVar("?CRS")
+
+                .addVar("CRS")
                 .addWhere(wb);
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getNamespace(uriString)));
+
+        sb.setVar( Var.alloc( "building" ), NodeFactory.createURI(uriString));
         return sb.build();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Geometry> getLod0Footprint(String uriString, String endpoint) {
+        RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
+
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
+                .addWhere("?building", "ocgml:lod0Footprint", "?Lod0Footprint");
+        SelectBuilder sb = new SelectBuilder()
+                .addWhere(wb)
+                .addVar("?Lod0Footprint");
+        sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
+
+        Query query = sb.build();
+
+        JSONArray queryResultArray = storeClient.executeQuery(query.toString());
+
+        List<Geometry> result = new ArrayList<>();
+
+
+        for (int i = 0; i < queryResultArray.length(); i++) {
+            String wkt = queryResultArray.getJSONObject(i).getString("Lod0Footprint").split("> ")[1];
+            result.add(GeometryHandler.toGeometry(wkt));
+        }
+
+        return result;
     }
 }
