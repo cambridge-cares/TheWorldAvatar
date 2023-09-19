@@ -188,12 +188,12 @@ class ExampleT2HQueryConstructorHelperTailProperty(
         return f"""
     ?SpeciesIRI os:has{PropertyName} ?{PropertyName}IRI .{self.get_filter_clause()}"""
 
-    def get_ask_item(self) -> str:
+    def get_ask_item(self):
         if self.ask_item is None:
             self.populate_property_filter_and_ask_item()
         return self.ask_item
 
-    def get_filter_clause(self) -> str:
+    def get_filter_clause(self):
         if self.filter_clause is None:
             self.populate_property_filter_and_ask_item()
         return self.filter_clause
