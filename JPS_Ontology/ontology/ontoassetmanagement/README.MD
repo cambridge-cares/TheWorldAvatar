@@ -15,11 +15,13 @@ OntoApplication is developed to represent assets and its related information (e.
 | [fibo-paymentsandschedules](https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/` |
 | [fibo-currencyamount](https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/` |
 | [fibo-organizations](https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/` |
+| [fibo-formalorganizations](https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/` |
 | [fibo-people](https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/` |
 | [p2p-doc](https://purl.org/p2p-o/document)                      | `https://purl.org/p2p-o/document#` |
-| [p2p-docLine](https://purl.org/p2p-o/documentline)                      | `https://purl.org/p2p-o/documentline#` |
+| [p2p-docline](https://purl.org/p2p-o/documentline)                      | `https://purl.org/p2p-o/documentline#` |
 | [p2p-invoice](https://purl.org/p2p-o/invoice)                      | `https://purl.org/p2p-o/invoice#` |
 | [p2p-item](https://purl.org/p2p-o/item)                      | `https://purl.org/p2p-o/item#` |
+| [ontobim](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobim)                      | `https://www.theworldavatar.com/kg/ontobim/` |
 
 ## 3. Data Model
 The ontology can be divided into these respective domains:
@@ -64,16 +66,16 @@ The ontology can be divided into these respective domains:
 #### 3.2 Document Line
 ```mermaid
     erDiagram
-    "p2p-docLine:DocumentLine" }|--|| "p2p-docLine:InvoiceLine" : "rdfs:subClassOf"
-    "p2p-docLine:DocumentLine" }|--|| "p2p-docLine:PurchaseOrderLine" : "rdfs:subClassOf"
-    "p2p-docLine:DocumentLine" }|--|| "QuotationLine" : "rdfs:subClassOf"
-    "p2p-docLine:DocumentLine" }|--|| "PurchaseRequisitionLine" : "rdfs:subClassOf"
-    "p2p-docLine:DocumentLine" }|--|| "DeliveryOrderLine" : "rdfs:subClassOf"
+    "p2p-docline:DocumentLine" }|--|| "p2p-docline:InvoiceLine" : "rdfs:subClassOf"
+    "p2p-docline:DocumentLine" }|--|| "p2p-docline:PurchaseOrderLine" : "rdfs:subClassOf"
+    "p2p-docline:DocumentLine" }|--|| "QuotationLine" : "rdfs:subClassOf"
+    "p2p-docline:DocumentLine" }|--|| "PurchaseRequisitionLine" : "rdfs:subClassOf"
+    "p2p-docline:DocumentLine" }|--|| "DeliveryOrderLine" : "rdfs:subClassOf"
     "Quotation" ||--o{ "QuotationLine" : hasQuotationLine
-    "p2p-doc:PurchaseOrder" ||--o{ "p2p-docLine:PurchaseOrderLine" : hasPurchaseOrderLine
+    "p2p-doc:PurchaseOrder" ||--o{ "p2p-docline:PurchaseOrderLine" : hasPurchaseOrderLine
     "PurchaseRequisition" ||--o{ "PurchaseRequisitionLine" : hasPurchaseRequisitionLine
     "DeliveryOrder" ||--o{ "DeliveryOrderLine" : hasDeliveryOrderLine
-    "p2p-doc:E-Invoice" ||--o{ "p2p-docLine:InvoiceLine" : "p2p-invoice:hasInvoiceLine"
+    "p2p-doc:E-Invoice" ||--o{ "p2p-docline:InvoiceLine" : "p2p-invoice:hasInvoiceLine"
 ```
 #### 3.3 Payment Terms
 ```mermaid
@@ -105,9 +107,11 @@ The ontology can be divided into these respective domains:
     "DeliveryModeOwnFleet" ||--o{ "DeliveryMethod" : a
     "DeliveryModePickUp" ||--o{ "DeliveryMethod" : a
     "DeliveryDetails" ||--o{ "fibo-parties:IndependentParty" : hasCourier
-    "DHL" ||--o{ "fibo-parties:IndependentParty" : a
-    "FederalExpress" ||--o{ "fibo-parties:IndependentParty" : a
-    "UnitedParcelService" ||--o{ "fibo-parties:IndependentParty" : a
+    "fibo-parties:IndependentParty" }|--|| "fibo-organizations:Organization" : "rdfs:subClassOf"
+    "fibo-organizations:Organization" }|--|| "fibo-formalorganizations:FormalOrganization" : "rdfs:subClassOf"
+    "DHL" ||--o{ "fibo-formalorganizations:FormalOrganization" : a
+    "FederalExpress" ||--o{ "fibo-formalorganizations:FormalOrganization" : a
+    "UnitedParcelService" ||--o{ "fibo-formalorganizations:FormalOrganization" : a
     "DeliveryDetails" ||--o{ "icontact:Address" : deliverTo
     "DeliveryDetails" ||--o{ "icontact:Address" : deliverFrom
 ```
@@ -115,7 +119,7 @@ The ontology can be divided into these respective domains:
 ```mermaid
     erDiagram
     "DeliveryDetails" ||--o{ "PriceDetails" : hasPriceDetails
-    "p2p-docLine:DocumentLine" ||--o{ "PriceDetails" : hasPriceDetails
+    "p2p-docline:DocumentLine" ||--o{ "PriceDetails" : hasPriceDetails
     "PriceDetails" ||--o{ "TaxRate" : hasTaxRate
     "om:Percentage" }|--|| "TaxRate" : "rdfs:subClassOf"
     "PriceDetails" ||--o{ "Tax" : hasTax
@@ -133,7 +137,7 @@ The ontology can be divided into these respective domains:
 #### 3.6 Item and Element
 ```mermaid
     erDiagram
-    "p2p-docLine:DocumentLine" ||--o{ "p2p-item:Item" : "p2p-docLine:hasItem"
+    "p2p-docline:DocumentLine" ||--o{ "p2p-item:Item" : "p2p-docline:hasItem"
     "p2p-item:Item" ||--o{ "bot:Element" : references
     "p2p-item:Item" ||--o{ "fibo-organizations:Organization" : isSuppliedBy
     "p2p-item:Item" ||--o{ "fibo-organizations:Organization" : isManufacturedBy
