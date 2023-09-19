@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import tritonclient.http as httpclient
 
@@ -15,10 +16,14 @@ class TranslationClient:
                 if self.client.is_model_ready("translation"):
                     print("Translation server is ready.")
                     is_ready = True
-                else:
-                    try_num += 1
+                    break
             except ConnectionRefusedError:
-                try_num += 1
+                pass
+            try_num += 1
+            print(f"Attempt number {try_num} to connect to the translation server fails.")
+            if try_num < try_limit:
+                print("Sleep for 5 seconds")
+                time.sleep(5)
         if not is_ready:
             raise Exception(
                 "There are issues connecting to translation server. Please ensure that the translation server is running and restart the app."
