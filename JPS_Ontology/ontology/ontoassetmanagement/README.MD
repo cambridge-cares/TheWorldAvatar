@@ -2,11 +2,29 @@
 ## 1. Introduction
 OntoApplication is developed to represent assets and its related information (e.g. purchase documents, location).
 
-## 2. Data Model
+## 2. Legend
+| Prefix                                                                                                                  | Namespace                                           |
+|---------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| [foaf](http://xmlns.com/foaf/0.1/) | `http://xmlns.com/foaf/0.1/`     |
+| [rdfs](https://www.w3.org/TR/rdf12-schema/)                      | `http://www.w3.org/2000/01/rdf-schema#` |
+| [time](https://www.w3.org/TR/owl-time/)                      | `http://www.w3.org/2006/time#` |
+| [bot](https://w3c-lbd-cg.github.io/bot/)                      | `https://w3id.org/bot#` |
+| [om](https://github.com/HajoRijgersberg/OM)                      | `http://www.ontology-of-units-of-measure.org/resource/om-2/` |
+| [fibo-parties](https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/` |
+| [fibo-clientandaccounts](https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/)                      | `https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/` |
+| [fibo-paymentsandschedules](https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/` |
+| [fibo-currencyamount](https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/` |
+| [fibo-organizations](https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/` |
+| [fibo-people](https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/)                      | `https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/` |
+| [p2p-doc](https://purl.org/p2p-o/document)                      | `https://purl.org/p2p-o/document#` |
+| [p2p-docLine](https://purl.org/p2p-o/documentline)                      | `https://purl.org/p2p-o/documentline#` |
+| [p2p-invoice](https://purl.org/p2p-o/invoice)                      | `https://purl.org/p2p-o/invoice#` |
+| [p2p-item](https://purl.org/p2p-o/item)                      | `https://purl.org/p2p-o/item#` |
+
+## 3. Data Model
 The ontology can be divided into these respective domains:
 
-#### 2.1 Purchase Document
-
+#### 3.1 Purchase Document
 ```mermaid
     erDiagram
     "foaf:Document" ||--o{ "time:Instant" : createdOn
@@ -43,7 +61,7 @@ The ontology can be divided into these respective domains:
     "p2p-doc:E-Invoice" ||--o{ "fibo-clientandaccounts:Account" : "hasReferenceAccount"
     "p2p-doc:PurchaseOrder" ||--o{ "fibo-clientandaccounts:Account" : "hasReferenceAccount"
 ```
-#### 2.2 Document Line
+#### 3.2 Document Line
 ```mermaid
     erDiagram
     "p2p-docLine:DocumentLine" }|--|| "p2p-docLine:InvoiceLine" : "rdfs:subClassOf"
@@ -57,7 +75,7 @@ The ontology can be divided into these respective domains:
     "DeliveryOrder" ||--o{ "DeliveryOrderLine" : hasDeliveryOrderLine
     "p2p-doc:E-Invoice" ||--o{ "p2p-docLine:InvoiceLine" : "p2p-invoice:hasInvoiceLine"
 ```
-#### 2.3 Payment Terms
+#### 3.3 Payment Terms
 ```mermaid
     erDiagram
     "p2p-doc:PurchaseOrder" ||--o{ "PaymentTerms" : hasPaymentTerms
@@ -70,7 +88,7 @@ The ontology can be divided into these respective domains:
     "fibo-paymentsandschedules:Payment" ||--o{ "fibo-currencyamount:MonetaryAmount" : "fibo-paymentsandschedules:hasPaymentAmount"
     "fibo-currencyamount:MonetaryAmount" ||--o{ "om:AmountOfMoney" : hasAmount
 ```
-#### 2.4 Delivery Details
+#### 3.4 Delivery Details
 ```mermaid
     erDiagram
     "p2p-doc:PurchaseOrder" ||--o{ "DeliveryDetails" : hasDeliveryDetails
@@ -93,7 +111,7 @@ The ontology can be divided into these respective domains:
     "DeliveryDetails" ||--o{ "icontact:Address" : deliverTo
     "DeliveryDetails" ||--o{ "icontact:Address" : deliverFrom
 ```
-#### 2.5 Price Details
+#### 3.5 Price Details
 ```mermaid
     erDiagram
     "DeliveryDetails" ||--o{ "PriceDetails" : hasPriceDetails
@@ -112,7 +130,7 @@ The ontology can be divided into these respective domains:
     "Price" }|--|| "TotalDiscountedPretaxPrice" : "rdfs:subClassOf"
     "Price" }|--|| "DiscountedHomeTotalAfterTaxPrice" : "rdfs:subClassOf"
 ```
-#### 2.6 Item and Element
+#### 3.6 Item and Element
 ```mermaid
     erDiagram
     "p2p-docLine:DocumentLine" ||--o{ "p2p-item:Item" : "p2p-docLine:hasItem"
@@ -143,12 +161,12 @@ The ontology can be divided into these respective domains:
         hasCurrentLocation string
     }
 ```
-#### 2.7 Furniture and Workspace
+#### 3.7 Furniture and Workspace
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "Workspace" : isLocatedAt
     "Workspace" ||--o{ "ontobim:Room" : isLocatedin
-    "fibo-person:Person" ||--o{ "Workspace" : hasAllocatedWorkspace
+    "fibo-people:Person" ||--o{ "Workspace" : hasAllocatedWorkspace
     "Workspace" {
         hasWorkspaceIdentifier string
     }
@@ -160,7 +178,7 @@ The ontology can be divided into these respective domains:
     "Cabinet" }|--|| "BuiltInCabinet" : "rdfs:subClassOf"
     "Cabinet" }|--|| "PedestalCabinet" : "rdfs:subClassOf"
 ```
-#### 2.8 Project, Research Grant, Budget and Budget Category
+#### 3.8 Project, Research Grant, Budget and Budget Category
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "Project" : allocatedTo
