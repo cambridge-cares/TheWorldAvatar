@@ -1,9 +1,20 @@
 from abc import ABC, abstractmethod
+import pprint
 import random
 from typing import Dict, List, Optional, Union
 
 from data_generation.utils import add_space_and_lower
 
+
+class FloatConversionError(ValueError):
+    pass
+
+def convert_to_float(number: str):
+    try:
+        return float(number)
+    except ValueError as e:
+        raise FloatConversionError(e.args)
+    
 
 class ExampleMakerTail2Head:
     def make_example(self, subgraph: Optional[Dict[str, Union[dict, List[dict]]]]):
@@ -25,15 +36,22 @@ class ExampleMakerTail2Head:
         all_helpers: List[ExampleT2HQueryConstructorHelper] = [
             head_helper
         ] + tail_helpers
-
+        
         select_variables = [helper.get_select_variables() for helper in all_helpers]
         select_variables_compact = [
             helper.get_select_variables_compact() for helper in all_helpers
         ]
-        where_clauses = [helper.get_where_clauses() for helper in all_helpers]
-        where_clauses_compact = [
-            helper.get_where_clauses_compact() for helper in all_helpers
-        ]
+        try:
+            where_clauses = [helper.get_where_clauses() for helper in all_helpers]
+            where_clauses_compact = [
+                helper.get_where_clauses_compact() for helper in all_helpers
+            ]
+        except FloatConversionError as e:
+            print("A float conversion error is encountered while making an example for the following subgraph.")
+            pprint.pprint(subgraph)
+            raise e
+
+
         ask_items = [helper.get_ask_item() for helper in tail_helpers]
         bindings = {
             k: v for helper in tail_helpers for k, v in helper.get_binding().items()
@@ -221,7 +239,7 @@ class ExampleT2HQueryConstructorHelperTailProperty(
     FILTER ( ?{PropertyName}Value > {low} && ?{PropertyName}Value < {high} )"""
             ask_item = f"{property_verbalised} is between {low} and {high}"
         elif numerical_clause == "around":
-            value = float(PropertyValue)
+            value = convert_to_float(PropertyValue)
             if random.getrandbits(1):
                 value = round(value)
             filter_clause = f"""
@@ -236,7 +254,7 @@ class ExampleT2HQueryConstructorHelperTailProperty(
         self.ask_item = ask_item
 
     def get_value_lower(self, value_str: str, eps=1e-6):
-        value = float(value_str) * 0.9
+        value = convert_to_float(value_str) * 0.9
         if abs(value) < eps:
             value = -0.5
         elif random.getrandbits(1):
@@ -244,7 +262,7 @@ class ExampleT2HQueryConstructorHelperTailProperty(
         return value
 
     def get_value_higher(self, value_str: str, eps=1e-6):
-        value = float(value_str) * 1.1
+        value = convert_to_float(value_str) * 1.1
         if abs(value) < eps:
             value = 0.5
         elif random.getrandbits(1):
