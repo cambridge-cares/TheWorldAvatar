@@ -1,17 +1,28 @@
 #!/bin/bash
 
 #
-# Use this script to run the example visualisation. Note that this uses the version of the
-# TWA-VF currently listed in the "../library/VERSION" file, which may mean you have to
-# build and push the "twa-vf" first.
+# Use this script to run the example visualisation. It expects a single parameter
+# (named "TAG") that lists the tag to be used for the "ghcr.io/cambridge-cares/twa-vf"
+# that hosts the visualisation.
 #
 
-# Read the version
-VERSION=`cat -s "../library/VERSION" 2>/dev/null`
-echo "Determined TWA-VF version as: $VERSION"
+# Parse arguments
+for ARGUMENT in "$@"
+do
+   KEY=$(echo $ARGUMENT | cut -f1 -d=)
+   KEY_LENGTH=${#KEY}
+   VALUE="${ARGUMENT:$KEY_LENGTH+1}"
+   export "$KEY"="$VALUE"
+done
+
+# Check for required arguments
+if [[ ! -v TAG ]]; then 
+    echo "No TAG argument supplied, cannot continue."
+    exit -1
+fi
 
 # Write the '.env' file
-echo "TAG=$VERSION" > .env
+echo "TAG=$TAG" > .env
 echo "Written .env file"
 
 # Run docker compose build command

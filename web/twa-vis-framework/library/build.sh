@@ -17,3 +17,6 @@ docker compose -f docker-compose.yml build
 # Update tags
 docker tag ghcr.io/cambridge-cares/twa-vf:latest ghcr.io/cambridge-cares/twa-vf:local
 docker rmi ghcr.io/cambridge-cares/twa-vf:latest
+
+echo "Image now available as ghcr.io/cambridge-cares/twa-vf:local"
+echo "Only use for local testing, do not push it."
