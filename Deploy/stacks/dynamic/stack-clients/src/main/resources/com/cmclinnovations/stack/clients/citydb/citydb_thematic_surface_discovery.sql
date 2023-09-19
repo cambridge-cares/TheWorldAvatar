@@ -3,9 +3,9 @@ SET search_path TO public,citydb;
 DROP TABLE IF EXISTS "public"."true_surface_1d9b061a";
 CREATE TABLE "public"."true_surface_1d9b061a" AS (
 SELECT "id","gmlid",box2envelope(Box3D("geometry")) AS "envelope", "parent_id", "root_id", "cityobject_id", CASE
-    WHEN public.ST_3DArea(public.ST_MakeValid(geometry)) != 0 AND public.ST_Orientation(geometry) = 1 AND public.ST_Area(geometry)/public.ST_3DArea(public.ST_MakeValid(geometry))>0.8 THEN 35
+    WHEN public.ST_3DArea(public.ST_MakeValid(geometry)) != 0 AND public.ST_Orientation(geometry) = 1 AND public.ST_Area(geometry)/public.ST_3DArea(public.ST_MakeValid(geometry))>{critAreaRatio} THEN 35
     ELSE CASE 
-        WHEN public.ST_3DArea(public.ST_MakeValid(geometry)) != 0 AND public.ST_Orientation(geometry) = -1 AND public.ST_Area(geometry)/public.ST_3DArea(public.ST_MakeValid(geometry))>0.8 THEN 33
+        WHEN public.ST_3DArea(public.ST_MakeValid(geometry)) != 0 AND public.ST_Orientation(geometry) = -1 AND public.ST_Area(geometry)/public.ST_3DArea(public.ST_MakeValid(geometry))>{critAreaRatio} THEN 33
         ELSE 34 END
 END AS "class"
 FROM "surface_geometry"
@@ -114,3 +114,4 @@ WHERE "thematic_surface"."objectclass_id" = '35' GROUP BY "building_id") AS "zg"
 JOIN "surface_geometry" ON "surface_geometry"."parent_id"="thematic_surface"."lod2_multi_surface_id"
 WHERE "thematic_surface"."objectclass_id" = '33' GROUP BY "building_id") AS "zr" 
 ON "zg"."building_id" = "zr"."building_id") AS "zz") AS "condition";
+DROP TABLE IF EXISTS "public"."true_surface_1d9b061a";

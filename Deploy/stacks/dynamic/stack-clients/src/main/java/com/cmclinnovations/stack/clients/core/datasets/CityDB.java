@@ -31,6 +31,8 @@ public class CityDB extends GeoServerDataSubset {
     private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
     @JsonProperty
     private boolean augmentData = true;
+    @JsonProperty
+    private double critAreaRatio = 0.8;
 
     @JsonIgnore
     private String lineage;
@@ -91,7 +93,7 @@ public class CityDB extends GeoServerDataSubset {
 
     protected void augmentData(String database) {
         CityDBClient.getInstance().addBuildingHeight(database);
-        CityDBClient.getInstance().discoverThematicSurface(database);
+        CityDBClient.getInstance().discoverThematicSurface(database,critAreaRatio);
         CityDBClient.getInstance().addFootprint(database);
     }
 
@@ -108,11 +110,11 @@ public class CityDB extends GeoServerDataSubset {
 
     public void createLayer(String database) {
 
-        long[] shiftedThmaticSurfaceIDs = new long[0];
+        long[] shiftedThematicSurfaceIDs = new long[0];
         long[] fudgedThematicSurfaceIDs = new long[0];
 
         if (!skipThematicSurfacesFudge) {
-            shiftedThmaticSurfaceIDs = CityDBClient.getInstance().applyThematicSurfacesShift(database);
+            shiftedThematicSurfaceIDs = CityDBClient.getInstance().applyThematicSurfacesShift(database);
             fudgedThematicSurfaceIDs = CityDBClient.getInstance().applyThematicSurfacesFix(database);
         }
 
@@ -121,8 +123,8 @@ public class CityDB extends GeoServerDataSubset {
         if (!skipThematicSurfacesFudge && 0 != fudgedThematicSurfaceIDs.length) {
             CityDBClient.getInstance().revertThematicSurfacesFix(database, fudgedThematicSurfaceIDs);
         }
-        if (!skipThematicSurfacesFudge && 0 != shiftedThmaticSurfaceIDs.length) {
-            CityDBClient.getInstance().revertThematicSurfacesShift(database, shiftedThmaticSurfaceIDs);
+        if (!skipThematicSurfacesFudge && 0 != shiftedThematicSurfaceIDs.length) {
+            CityDBClient.getInstance().revertThematicSurfacesShift(database, shiftedThematicSurfaceIDs);
         }
     }
 

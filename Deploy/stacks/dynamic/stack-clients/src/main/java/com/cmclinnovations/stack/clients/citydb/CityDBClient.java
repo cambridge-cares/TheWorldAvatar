@@ -170,8 +170,8 @@ public class CityDBClient extends ContainerClient {
         return applySQLFileReturnID(database,"citydb_shift_thematic_surfaces.sql");
     }
 
-    public void revertThematicSurfacesShift(String database, long[] shiftedThmaticSurfaceIDs) {
-        applySQLFileByID(database,"citydb_remove_shifted_thematic_surfaces.sql",shiftedThmaticSurfaceIDs);
+    public void revertThematicSurfacesShift(String database, long[] shiftedThematicSurfaceIDs) {
+        applySQLFileByID(database,"citydb_remove_shifted_thematic_surfaces.sql",shiftedThematicSurfaceIDs);
     }
 
     public void writeOutToCityGML(String database, String filePath, String lineage) {
@@ -292,8 +292,14 @@ public class CityDBClient extends ContainerClient {
         applySQLFile(database,"citydb_add_building_height.sql");
     }
 
-    public void discoverThematicSurface(String database) {
-        applySQLFile(database,"citydb_thematic_surface_discovery.sql");
+    public void discoverThematicSurface(String database, double critAreaRatio) {
+        String sqlFilename = "citydb_thematic_surface_discovery.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes()).replace("{critAreaRatio}", String.valueOf(critAreaRatio));
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
     }
     
     public void addFootprint(String database) {
