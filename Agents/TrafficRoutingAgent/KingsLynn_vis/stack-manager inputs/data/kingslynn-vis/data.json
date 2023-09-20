@@ -1,5 +1,5 @@
 {
-    "name": "King's Lynn",
+    "name": "Flood Routing Tool",
     "groups": [
         {
             "name": "Flood",
@@ -418,7 +418,7 @@
             "layers": [
                 {
                     "id": "tspNodeLayer",
-                    "name": "Flooded power stations in King's Lynn",
+                    "name": "Flooded power stations",
                     "source": "tspNodes",
                     "type": "symbol",
                     "order": 50,
@@ -743,7 +743,7 @@
                 },
                 {
                     "id": "aoi-layer",
-                    "name": "This layer is the area of interest, i.e. greater King's Lynn area",
+                    "name": "This layer is the area of interest",
                     "source": "area-of-interest",
                     "type": "circle",
                     "treeable": false,

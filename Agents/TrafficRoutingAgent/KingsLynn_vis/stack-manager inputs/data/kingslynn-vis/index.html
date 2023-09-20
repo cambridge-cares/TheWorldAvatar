@@ -1,8 +1,8 @@
-<html>
+<!DOCTYPE html lang="en">
 
 <head>
     <!-- ===== CUSTOMISABLE ===== -->
-    <title>King's Lynn Flood Router</title>
+    <title>Flood Routing Tool</title>
     <!-- ===== CUSTOMISABLE ===== -->
 
     <!-- JS -->
@@ -16,7 +16,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-    <!-- <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.js" charset="UTF-8"></script> -->
 
 
     <!-- ===== CUSTOMISABLE ===== -->
@@ -27,7 +26,6 @@
     <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css"
         rel="stylesheet">
     <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-    <!-- <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.css" rel="stylesheet" /> -->
     <script src="./dtvf.min.js" charset="UTF-8"></script>
     <link href="./dtvf.min.css" rel="stylesheet" />
 
@@ -54,7 +52,6 @@
 
     <!-- ===== CUSTOMISABLE ===== -->
     <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
-    <!-- <script src="./app.js"></script> -->
 
     <!-- Element for depth of field overlay -->
     <div id="tiltShift"></div>
@@ -100,7 +97,7 @@
                     <p>Layers</p>
                     <div class="tooltip" id="placenameContainer">
                         <label class="switch"><input type="checkbox" onclick="MapboxUtils.setPlacenames(this.checked)"
-                                checked><span class="slider round">
+                                ><span class="slider round">
                                 <p>PNs</p></label>
                         <span class="tooltiptext">Toggle place names, labels, and roads </span>
                     </div>
@@ -243,9 +240,9 @@
 
             // ===== CUSTOMISABLE =====
             // Set the default content in the "General" tab of the side panel
-            manager.getPanelHandler().setTitle("<h1>King's Lynn Flood Router</h1>");
+            manager.getPanelHandler().setTitle("<h1>Flood Routing tool</h1>");
             manager.getPanelHandler().setContent(`
-                <p>This visualisation of King's Lynn, UK, is based on data instantiated in the World Avatar. <br><br>
+                <p>This visualisation of a region in the UK, is based on data instantiated in the World Avatar. <br><br>
                     It combines flood data, elevation raster data, isochrone map from hospital, street network data, building data. 
                     <br><br>
 
