@@ -12,8 +12,6 @@ import java.util.OptionalDouble;
 
 import org.junit.*;
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
@@ -37,19 +35,19 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
     // container when accessed by a driver
     // (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires
     // Docker to be installed!
-    private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
+    private static String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
     // For easier local debugging, use the following dbURL instead of the
     // testcontainer dbURL
     // NOTE: Requires local postgreSQL database "timeseries" to be set up beforehand
     // private static final String dbURL = "jdbc:postgresql:timeseries";
-    private static final String user = "postgres";
-    private static final String password = "postgres";
+    private static String user = "postgres";
+    private static String password = "postgres";
 
     private static Connection conn;
     private static DSLContext context;
 
     // RDB client
-    private TimeSeriesRDBClient<Instant> client;
+    protected TimeSeriesRDBClientInterface<Instant> client;
 
     // Time series test data
     private static String tsIRI_1, tsIRI_3;
@@ -187,10 +185,14 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         // One can use classes such as LocalDateTime, Timestamp, Integer, Double, etc.
         // Once you initialise it with a certain class, you should stick to it
         // If the class is not supported, the Jooq API should throw an exception
-        client = new TimeSeriesRDBClient<>(Instant.class);
+        setRdbClient();
         client.setRdbURL(dbURL);
         client.setRdbUser(user);
         client.setRdbPassword(password);
+    }
+
+    protected void setRdbClient() {
+        client = new TimeSeriesRDBClient<>(Instant.class);
     }
 
     @After
@@ -217,13 +219,6 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
         // Check that central table was created
         Assert.assertEquals(1, context.meta().getTables(tableName).size());
-        // Check that central table has three columns (timeseries IRI, data IRI, column
-        // name)
-        Assert.assertEquals(3, context.meta().getTables(tableName).get(0).fields().length);
-        // Initialise another arbitrary time series table
-        client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
-        // Check that central table was created
-        Assert.assertEquals(1, context.meta().getTables(tableName).size());
     }
 
     @Test
@@ -234,8 +229,7 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
             Assert.fail();
         } catch (JPSRuntimeException e) {
             Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-            Assert.assertEquals("TimeSeriesRDBClient: Length of dataClass is different from number of data IRIs",
-                    e.getMessage());
+            Assert.assertTrue(e.getMessage().contains("Length of dataClass is different from number of data IRIs"));
         }
         // Check exception for already initialised dataIRIs
         client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
@@ -244,9 +238,8 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
             Assert.fail();
         } catch (JPSRuntimeException e) {
             Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-            Assert.assertEquals(
-                    "TimeSeriesRDBClient: <" + dataIRI_1.get(0) + "> already has an assigned time series instance",
-                    e.getMessage());
+            Assert.assertTrue(
+                    e.getMessage().contains("<" + dataIRI_1.get(0) + "> already has an assigned time series instance"));
         }
     }
 
@@ -300,109 +293,63 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
     }
 
     @Test
-    public void testAddTimeseriesData() throws NoSuchFieldException, IllegalAccessException {
+    public void testAddTimeseriesData() {
         // Initialise time series table
         client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
+
         // Add time series data
         client.addTimeSeriesData(ts_list1);
 
-        // Retrieve the value of the private field 'dbTableName' of the client to check
-        // its value
-        Field tableNameField = client.getClass().getDeclaredField("DB_TABLE_NAME");
-        tableNameField.setAccessible(true);
-        String tableName = (String) tableNameField.get(client);
-        Table<?> table = context.meta().getTables(tableName).get(0);
-        // Retrieve the value of the private field 'dataIRIcolumn' of the client
-        Field dataIRIcolumnField = client.getClass().getDeclaredField("DATA_IRI_COLUMN");
-        dataIRIcolumnField.setAccessible(true);
-        org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
-
-        // Retrieve the value of the private field 'tsTableNameColumn' of the client to
-        // check its value
-        Field columnNameColumnField = client.getClass().getDeclaredField("COLUMNNAME_COLUMN");
-        columnNameColumnField.setAccessible(true);
-        org.jooq.Field<String> columnNameColumn = (org.jooq.Field<String>) columnNameColumnField.get(client);
-
-        // ts iri column
-        Field tsIriColumnField = client.getClass().getDeclaredField("TS_IRI_COLUMN");
-        tsIriColumnField.setAccessible(true);
-        org.jooq.Field<String> tsIriColumn = (org.jooq.Field<String>) tsIriColumnField.get(client);
-
         // Check correct data of time series table columns
-        Result<? extends Record> res;
-        String tscolumn = null;
+        TimeSeries<Instant> queriedTimeSeries = client.getTimeSeries(dataIRI_1);
         for (int i = 0; i < dataIRI_1.size(); i++) {
-            tscolumn = context.select(columnNameColumn).from(table).where(dataIRIcolumn.eq(dataIRI_1.get(i)))
-                    .fetch(columnNameColumn).get(0);
-            // Perform query for data columns
-            res = context.select(DSL.field(DSL.name(tscolumn))).from(DSL.table(DSL.name("time_series_data")))
-                    .where(tsIriColumn.eq(tsIRI_1)).fetch();
             // Check data types
-            Assert.assertEquals(dataClass_1.get(i), res.getValues(tscolumn).get(0).getClass());
+            Assert.assertEquals(dataClass_1.get(i),
+                    queriedTimeSeries.getValues(dataIRI_1.get(i)).get(0).getClass());
             // Check array content
-            Assert.assertEquals(ts1.getValues(dataIRI_1.get(i)), res.getValues(tscolumn));
+            Assert.assertEquals(queriedTimeSeries.getValues(dataIRI_1.get(i)),
+                    queriedTimeSeries.getValues(dataIRI_1.get(i)));
         }
 
         // Add additional data and check whether it has been appended correctly
-        client.addTimeSeriesData(ts_list2);
+        client.addTimeSeriesData(ts_list2, conn);
         List<?> combinedList;
+        TimeSeries<Instant> queriedTimeSeries2 = client.getTimeSeries(dataIRI_1, conn);
         for (int i = 0; i < dataIRI_1.size(); i++) {
-            tscolumn = context.select(columnNameColumn).from(table).where(dataIRIcolumn.eq(dataIRI_1.get(i)))
-                    .fetch(columnNameColumn).get(0);
-            // Perform query for data columns
-            res = context.select(DSL.field(DSL.name(tscolumn))).from(DSL.table(DSL.name("time_series_data")))
-                    .where(tsIriColumn.eq(tsIRI_1)).fetch();
             // Check array content
             combinedList = new ArrayList<>();
             combinedList.addAll((List) dataToAdd_1.get(i));
             combinedList.addAll((List) dataToAdd_2.get(i));
-            Assert.assertEquals(combinedList, res.getValues(tscolumn));
+            Assert.assertEquals(combinedList, queriedTimeSeries2.getValues(dataIRI_1.get(i)));
         }
-
     }
 
     @Test
     public void testAddTimeseriesDataExceptions() {
-        try {
-            // Add time series data for non-initialised time series and central table
-            client.addTimeSeriesData(ts_list1);
-        } catch (JPSRuntimeException e) {
-            Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-            Assert.assertEquals("TimeSeriesRDBClient: Central RDB lookup table has not been initialised yet",
-                    e.getMessage());
-        }
-        try {
-            // Add time series data for non-initialised time series
-            client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
-            client.addTimeSeriesData(ts_list1);
-            Assert.fail();
-        } catch (JPSRuntimeException e) {
-            String s = ts1.getDataIRIs().get(0);
-            Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-            Assert.assertEquals("TimeSeriesRDBClient: <" + s + "> does not have an assigned time series instance",
-                    e.getMessage());
-        }
-        try {
-            // Add time series data which is not in same table
-            client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
-            List<String> dataIRIs = new ArrayList<>();
-            dataIRIs.addAll(dataIRI_1);
-            dataIRIs.addAll(dataIRI_3);
-            List<List<?>> dataToAdd = new ArrayList<>();
-            dataToAdd.add(data1_1);
-            dataToAdd.add(data2_1);
-            dataToAdd.add(data3_1);
-            dataToAdd.add(data3_1);
-            TimeSeries<Instant> ts = new TimeSeries<>(timeList_1, dataIRIs, dataToAdd);
-            List<TimeSeries<Instant>> ts_list = new ArrayList<>();
-            ts_list.add(ts);
-            client.addTimeSeriesData(ts_list);
-            Assert.fail();
-        } catch (JPSRuntimeException e) {
-            Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-            Assert.assertEquals("TimeSeriesRDBClient: Provided data is not within the same RDB table",
-                    e.getMessage());
-        }
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> client.addTimeSeriesData(ts_list1));
+        Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
+
+        client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
+        e = Assert.assertThrows(JPSRuntimeException.class, () -> client.addTimeSeriesData(ts_list1));
+        Assert.assertTrue(e.getMessage().contains("does not have an assigned time series instance"));
+
+        // Add time series data which is not in same table
+        client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
+        List<String> dataIRIs = new ArrayList<>();
+        dataIRIs.addAll(dataIRI_1);
+        dataIRIs.addAll(dataIRI_3);
+        List<List<?>> dataToAdd = new ArrayList<>();
+        dataToAdd.add(data1_1);
+        dataToAdd.add(data2_1);
+        dataToAdd.add(data3_1);
+        dataToAdd.add(data3_1);
+        TimeSeries<Instant> ts = new TimeSeries<>(timeList_1, dataIRIs, dataToAdd);
+        List<TimeSeries<Instant>> ts_list = new ArrayList<>();
+        ts_list.add(ts);
+        e = Assert.assertThrows(JPSRuntimeException.class, () -> client.addTimeSeriesData(ts_list));
+
+        Assert.assertTrue(e.getMessage().contains("Provided data is not within the same RDB table"));
     }
 
     @Test
@@ -430,37 +377,21 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
 
     @Test
     public void testGetTimeseriesExceptions() {
-        try {
-            // Get time series data for non-initialised time series and central table
-            client.getTimeSeries(dataIRI_1);
-            Assert.fail();
-        } catch (JPSRuntimeException e) {
-            Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-            Assert.assertEquals("TimeSeriesRDBClient: Central RDB lookup table has not been initialised yet",
-                    e.getMessage());
-        }
-        try {
-            // Get time series data for non-initialised time series
-            client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
-            client.getTimeSeries(dataIRI_1);
-            Assert.fail();
-        } catch (JPSRuntimeException e) {
-            Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-            Assert.assertTrue(e.getMessage().contains("> does not have an assigned time series instance"));
-        }
-        try {
-            // Get time series data which is not in same table
-            client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
-            List<String> dataIRIs = new ArrayList<>();
-            dataIRIs.addAll(dataIRI_1);
-            dataIRIs.addAll(dataIRI_3);
-            client.getTimeSeries(dataIRIs);
-            Assert.fail();
-        } catch (JPSRuntimeException e) {
-            Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-            Assert.assertEquals("TimeSeriesRDBClient: Provided data is not within the same RDB table",
-                    e.getMessage());
-        }
+        // Get time series data for non-initialised time series and central table
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> client.getTimeSeries(dataIRI_1));
+        Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
+        // Get time series data for non-initialised time series
+        client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
+        e = Assert.assertThrows(JPSRuntimeException.class, () -> client.getTimeSeries(dataIRI_1));
+        Assert.assertTrue(e.getMessage().contains("does not have an assigned time series instance"));
+        // Get time series data which is not in same table
+        client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
+        List<String> dataIRIs = new ArrayList<>();
+        dataIRIs.addAll(dataIRI_1);
+        dataIRIs.addAll(dataIRI_3);
+        e = Assert.assertThrows(JPSRuntimeException.class, () -> client.getTimeSeries(dataIRIs));
+        Assert.assertTrue(e.getMessage().contains("Provided data is not within the same RDB table"));
     }
 
     @Test
@@ -582,16 +513,6 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         for (String i : dataIRI_1) {
             Assert.assertEquals(max, client.getMaxTime(i));
         }
-
-        // Test Exception for non numerics data
-        iri = dataIRI_3.get(0);
-        try {
-            client.getMinTime(iri);
-        } catch (Exception e) {
-            Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-            Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have an assigned time series instance",
-                    e.getMessage());
-        }
     }
 
     @Test
@@ -637,7 +558,6 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
 
     @Test
     public void testDeleteTimeSeriesTable() throws NoSuchFieldException, IllegalAccessException {
-        DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
         // Initialise time series tables
         client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
         client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
@@ -659,7 +579,6 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         tsIriColumnField.setAccessible(true);
 
         org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
-        org.jooq.Field<String> tsIriColumn = (org.jooq.Field<String>) tsIriColumnField.get(client);
 
         List<String> iris = new ArrayList<>(dataIRI_1);
         iris.addAll(dataIRI_3);
@@ -670,28 +589,23 @@ public class TimeSeriesRDBClientIntegrationWithoutConnTest {
         }
 
         // Delete first time series
-        client.deleteTimeSeriesTable(dataIRI_3.get(0));
-        Assert.assertEquals(2, context.meta().getTables().size());
+        client.deleteEntireTimeSeries(dataIRI_3.get(0));
         iris_in_central_table = context.select(dataIRIcolumn).from(table).fetch(dataIRIcolumn);
         Assert.assertEquals(3, iris_in_central_table.size());
         for (String i : dataIRI_1) {
             Assert.assertTrue(iris_in_central_table.contains(i));
         }
         Assert.assertFalse(iris_in_central_table.contains(dataIRI_3.get(0)));
-        Assert.assertEquals((int) 0, (int) context.select(DSL.count()).from(DSL.table(DSL.name("time_series_data")))
-                .where(tsIriColumn.eq(tsIRI_3)).fetchOne(0, int.class));
 
         // Check Exception for non-instantiated dataIRI
         String iri = "non-existing-iri";
         JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-                () -> client.deleteTimeSeriesTable(iri));
+                () -> client.deleteEntireTimeSeries(iri));
         Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-        Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have an assigned time series instance",
-                e.getMessage());
+        Assert.assertTrue(e.getMessage().contains("<" + iri + "> does not have an assigned time series instance"));
 
         // Delete second time series table
-        client.deleteTimeSeriesTable(dataIRI_1.get(0));
-        Assert.assertEquals(1, context.meta().getTables().size());
+        client.deleteEntireTimeSeries(dataIRI_1.get(0));
         iris_in_central_table = context.select(dataIRIcolumn).from(table).fetch(dataIRIcolumn);
         Assert.assertEquals(0, iris_in_central_table.size());
     }

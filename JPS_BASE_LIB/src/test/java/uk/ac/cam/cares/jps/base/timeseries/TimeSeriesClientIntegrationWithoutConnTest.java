@@ -32,12 +32,12 @@ import static org.mockito.Mockito.*;
 @Testcontainers
 public class TimeSeriesClientIntegrationWithoutConnTest {
     // TimeSeries client (with RDB and Sparql client)
-    private static TimeSeriesClient<Instant> tsClient;
+    protected TimeSeriesClient<Instant> tsClient;
 
     // Time series test data
-    private static List<String> dataIRI_1, dataIRI_2;
-    private static List<Class<?>> dataClass_1, dataClass_2;
-    private static String timeUnit;
+    private List<String> dataIRI_1, dataIRI_2;
+    private List<Class<?>> dataClass_1, dataClass_2;
+    private String timeUnit;
 
     // Will create two Docker containers for Blazegraph and postgreSQL
     // NOTE: requires access to the docker.cmclinnovations.com registry from the
@@ -109,11 +109,14 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         kbClient.setUpdateEndpoint(endpoint);
         kbClient.setQueryEndpoint(endpoint);
 
-        // Initialise TimeSeriesClient client with pre-configured kb client
-        tsClient = new TimeSeriesClient<>(kbClient, Instant.class, null, null, null);
+        setTsClient(kbClient);
 
         // Configure database access
         tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+    }
+
+    protected void setTsClient(RemoteStoreClient remoteStoreClient) {
+        tsClient = new TimeSeriesClient<>(remoteStoreClient, Instant.class);
     }
 
     // Cleaning up containers after each test, otherwise unused containers will
@@ -251,8 +254,10 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         RDFClient.setAccessible(true);
         TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
-        // Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-        // Spy's behave exactly like normal instances, except for particularly stubbed methods
+        // Create a spy object of the real rdfClient and substitute the initial
+        // rdfClient with it
+        // Spy's behave exactly like normal instances, except for particularly stubbed
+        // methods
         TimeSeriesSparql rdfClient_spy = spy(rdfClient);
         RDFClient.set(tsClient, rdfClient_spy);
         // Throw error when removal of time series in KG is intended

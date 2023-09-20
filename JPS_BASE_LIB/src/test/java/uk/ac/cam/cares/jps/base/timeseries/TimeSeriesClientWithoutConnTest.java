@@ -9,18 +9,17 @@ import org.junit.Test;
 import org.mockito.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.mocks.PostgresMock;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This class provides unit tests for the TimeSeriesClient class, particularly
@@ -47,8 +46,10 @@ public class TimeSeriesClientWithoutConnTest {
 
     @Before
     public void setUpClient() throws URISyntaxException, IOException {
-        testClientWithMocks = new TimeSeriesClient<>(Instant.class,
-                Paths.get(Objects.requireNonNull(getClass().getResource("/timeseries.properties")).toURI()).toString());
+        String kgEndpoint = "http://localhost:9999/blazegraph/namespace/timeseries/sparql";
+        RemoteStoreClient remoteStoreClient = new RemoteStoreClient(kgEndpoint, kgEndpoint);
+        TimeSeriesRDBClient<Instant> timeSeriesRDBClient = new TimeSeriesRDBClient<>(Instant.class);
+        testClientWithMocks = new TimeSeriesClient<>(remoteStoreClient, timeSeriesRDBClient);
     }
 
     @Before
@@ -197,7 +198,7 @@ public class TimeSeriesClientWithoutConnTest {
                 .thenReturn(TimeSeriesSparql.TIMESERIES_NAMESPACE + "TimeSeries");
         Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
         setRDFMock();
-        Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeriesTable(dataIRIs.get(0),
+        Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteEntireTimeSeries(dataIRIs.get(0),
                 conn);
         setRDBMock();
 
@@ -223,7 +224,8 @@ public class TimeSeriesClientWithoutConnTest {
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient)
                 .initTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
                         Mockito.any(), Mockito.any());
-        Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeriesTable(dataIRIs.get(0));
+        Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient)
+                .deleteEntireTimeSeries(dataIRIs.get(0));
 
         try {
             testClientWithMocks.deleteTimeSeries(tsIRI);

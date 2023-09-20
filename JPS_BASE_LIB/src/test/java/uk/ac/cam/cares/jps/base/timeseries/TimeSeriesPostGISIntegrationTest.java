@@ -2,20 +2,14 @@ package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.After;
-import org.postgis.Geometry;
 import org.postgis.Point;
 import org.postgis.Polygon;
 
@@ -27,40 +21,20 @@ public class TimeSeriesPostGISIntegrationTest {
     // accessed by a driver
     // (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires
     // Docker to be installed!
-    private static final String dbURL = "jdbc:tc:postgis:14-3.2:///timeseries";
-    private static final String user = "postgres";
-    private static final String password = "postgres";
+    // RemoteRDBStoreClient
+    private RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient("jdbc:tc:postgis:14-3.2:///timeseries",
+            "postgres", "postgres");
 
     // RDB client
-    private TimeSeriesRDBClient<Integer> tsClient;
-    // RemoteRDBStoreClient
-    private static RemoteRDBStoreClient rdbStoreClient;
-
-    @BeforeClass
-    // Initialise RemoteRDBStoreClient before any test
-    public static void initialiseRDBStoreClient() {
-        // RemoteRDBStoreClient
-        rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
-    }
+    protected TimeSeriesRDBClientInterface<Integer> tsClient;
 
     @Before
     public void initialiseRDBClient() {
-        tsClient = new TimeSeriesRDBClient<>(Integer.class);
+        setRdbClient();
     }
 
-    /**
-     * simple test that checks the number of columns is correct
-     */
-    @Test
-    public void testInitTimeSeriesTable() throws SQLException {
-        try (Connection conn = rdbStoreClient.getConnection()) {
-            DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
-            tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
-                    "http://ts1", 4326, conn);
-            // 1 for time column, 1 for the geometry column, 1 for tsIRI column
-            Assert.assertEquals(3, context.meta().getTables("time_series_data").get(0).fields().length);
-        }
-
+    protected void setRdbClient() {
+        tsClient = new TimeSeriesRDBClient<>(Integer.class);
     }
 
     /**

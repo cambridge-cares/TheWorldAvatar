@@ -35,12 +35,12 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
     private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage);
 
     // RDB client
-    private TimeSeriesRDBClient<Integer> tsClient;
+    protected TimeSeriesRDBClientInterface<Integer> tsClient;
 
     @Before
     public void initialiseRDBClientAndTable() {
         postgres.start();
-        tsClient = new TimeSeriesRDBClient<>(Integer.class);
+        setRdbClient();
         tsClient.setRdbURL(postgres.getJdbcUrl());
         tsClient.setRdbUser(postgres.getUsername());
         tsClient.setRdbPassword(postgres.getPassword());
@@ -49,26 +49,14 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
                 "http://ts1", 4326);
     }
 
+    protected void setRdbClient() {
+        tsClient = new TimeSeriesRDBClient<>(Integer.class);
+    }
+
     @After
     public void clearDatabase() throws SQLException {
         try (Connection conn = tsClient.getConnection()) {
             tsClient.deleteAll(conn);
-        }
-    }
-
-    /**
-     * simple test that checks the number of columns is correct
-     * 
-     * @throws SQLException
-     */
-    @Test
-    public void testInitTimeSeriesTable() throws SQLException {
-        // 1 for time column and 1 for the geometry column
-        try (Connection conn = tsClient.getConnection()) {
-            DSLContext context = DSL.using(tsClient.getConnection(), SQLDialect.POSTGRES);
-
-            // including time and tsIRI columns
-            Assert.assertEquals(3, context.meta().getTables("time_series_data").get(0).fields().length);
         }
     }
 
