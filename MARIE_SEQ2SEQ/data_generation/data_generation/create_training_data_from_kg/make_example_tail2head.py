@@ -4,7 +4,7 @@ import random
 from typing import Dict, List, Optional, Union
 
 from data_generation.constants import PROPERTY_LABELS
-from .utils_numerical import FloatConversionError, get_value_around, get_value_higher, get_value_lower
+from .utils.numerical import FloatConversionError, get_value_around, get_value_higher, get_value_lower
 
 
 class ExampleMakerTail2Head:
