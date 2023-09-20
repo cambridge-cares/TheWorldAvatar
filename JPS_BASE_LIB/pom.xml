@@ -8,7 +8,7 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>2.0.0-904-reduce-number-of-time-series-tables-SNAPSHOT</version>
+    <version>1.40.0-904-reduce-number-of-time-series-tables-SNAPSHOT</version>
 
     <!-- Project Properties -->
     <properties>
