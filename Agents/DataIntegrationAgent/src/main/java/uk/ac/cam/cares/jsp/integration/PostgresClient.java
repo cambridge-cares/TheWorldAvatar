@@ -27,21 +27,5 @@ public class PostgresClient extends ContainerClient {
         postGISContainerId = isStack ? getContainerId("postgis") : null;
     }
 
-//    PostgresClient(String dbrul, String dbuser, String dbpassword) {
-//        this.dbrul = dbrul;
-//        this.dbuser = dbuser;
-//        this.dbpassword = dbpassword;
-//    }
-
-//    Connection getConnection() throws SQLException {
-//        try {
-//            Class.forName("org.postgresql.Driver");
-//        } catch (ClassNotFoundException e) {
-//            LOGGER.error(e.getMessage());
-//            LOGGER.error("Failed to find postgre driver");
-//        }
-//        return DriverManager.getConnection(this.dbrul, this.dbuser, this.dbpassword);
-//    }
-
 
 }

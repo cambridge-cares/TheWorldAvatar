@@ -64,7 +64,7 @@ public class SpatialLink{
     /**
      * Spatial matching 2d and 3d objects to migrate name and address from OSM to 3d building
      * 1. transform crs 
-     * 2. calculate intersection area ratio
+     * 2. calculate intersection area ratio. Ratio can be changed.
      * 3. update name and address in 3D building
      */
     public void findMatchedObjects(String[] config) throws ParseException, FactoryException, TransformException, SQLException {
@@ -101,7 +101,6 @@ public class SpatialLink{
                                 geom2D = geom2D.split(";")[1];
                                 MultiPolygon polys2D = (MultiPolygon) reader.read(geom2D);
                                 double areaRatio = 100.0*(area / polys2D.getArea());
-    //                        System.out.println("ratio: "+areaRatio + "%");
                                 if(areaRatio>60 && ((refAreaRation !=0 && refAreaRation<areaRatio) || refAreaRation==0)){
                                         object3D.setName(object2D.getName());
                                         address.setStreet(object2D.getStreet());

@@ -19,7 +19,6 @@ public class ObjectAddress {
     private String zip_code;
     private String country;
     private String city;
-    private PostgresClient postgresClient;
     private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
     private SqlConnectionPool pool;
 
@@ -45,9 +44,7 @@ public class ObjectAddress {
     public void setCity (String city) {this.city = city;}
     public void setCountry (String country) {this.country = country;}
     public void setZipCode (String zipCode) {this.zip_code = zipCode;}
-    public void setPostGISClient(PostgresClient postgresClient) {
-        this.postgresClient = postgresClient;
-    }
+    
 
     public void updateAddress (ObjectAddress address, String[] config) throws SQLException {
         String gmlid = address.getGmlId();
@@ -106,7 +103,8 @@ public class ObjectAddress {
         }    
         
     }
-
+    
+    //insert addtress to adress table and link to cityobject
     public void insertAtoB(String gmlid, String[] config) throws SQLException {
         String sqlCityObject = "SELECT id FROM cityobject WHERE cityobject.gmlid = " + "'" + gmlid + "'";
         String sqlAddress = "SELECT id FROM address WHERE address.gmlid = " + "'" + gmlid + "'";
