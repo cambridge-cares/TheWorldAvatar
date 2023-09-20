@@ -3,6 +3,7 @@ package com.cmclinnovations.stack.services;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +26,16 @@ public final class CityTilerService extends ContainerService {
 
         DockerClient dockerClient = DockerClient.getInstance();
 
-        dockerClient.executeSimpleCommand(dockerClient.getContainerId(TYPE), "cp",
-                CityTilerClient.COLOUR_CONFIG_FILE, CityTilerClient.DEFAULT_COLOUR_CONFIG_FILE);
+        try (InputStream is = CityTilerService.class
+                .getResourceAsStream("citytiler/citytiler_config_default.json")) {
+
+            dockerClient.sendFilesContent(dockerClient.getContainerId(TYPE),
+            Map.of(CityTilerClient.DEFAULT_COLOUR_CONFIG_FILE, is.readAllBytes()),
+            "/");
+
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read in default citytiler colour config file.", ex);
+        }
 
         try (InputStream is = CityTilerService.class
                 .getResourceAsStream("citytiler/0001-Added-generic_attributes.patch")) {
