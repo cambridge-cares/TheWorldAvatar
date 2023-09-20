@@ -10,6 +10,14 @@
         tools:layout="@layout/fragment_add_asset">
         <deepLink
             app:uri="android-app://uk.ac.cam.cares.jps.app/add_asset" />
+
+        <deepLink
+            app:uri="android-app://uk.ac.cam.cares.jps.app/edit_asset?assetinfo={assetinfo}" >
+            <argument
+                android:name="assetinfo"
+                app:argType="string"
+                />
+        </deepLink>
     </fragment>
 
     <fragment
@@ -18,9 +26,13 @@
         android:label="New Asset Result"
         tools:layout="@layout/fragment_new_asset_result">
         <deepLink
-            app:uri="android-app://uk.ac.cam.cares.jps.app/new_asset_result?assetinfo={assetinfo}" >
+            app:uri="android-app://uk.ac.cam.cares.jps.app/new_asset_result?assetinfo={assetinfo}&amp;operation={operation}" >
             <argument
                 android:name="assetinfo"
+                app:argType="string"
+                />
+            <argument
+                android:name="operation"
                 app:argType="string"
                 />
         </deepLink>

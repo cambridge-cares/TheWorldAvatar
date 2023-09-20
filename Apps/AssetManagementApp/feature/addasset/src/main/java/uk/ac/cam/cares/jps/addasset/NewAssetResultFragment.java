@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.addasset;
 
+import static uk.ac.cam.cares.jps.ui.UiUtils.showNotImplementedDialog;
 import static uk.ac.cam.cares.jps.utils.SerializationUtils.deserializeStringToObject;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.apache.log4j.Logger;
 
@@ -68,7 +72,13 @@ public class NewAssetResultFragment extends Fragment {
 
         try {
             AssetInfo assetInfo = (AssetInfo) deserializeStringToObject(getArguments().getString("assetinfo"));
-            viewModel.addNewAsset(assetInfo);
+            if (getArguments().getString("operation").equals("add")) {
+                viewModel.addNewAsset(assetInfo);
+            } else if (getArguments().getString("operation").equals("edit")) {
+                // todo: not implemented yet
+                showNotImplementedDialog(requireContext());
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

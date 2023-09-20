@@ -48,6 +48,7 @@ abstract public class PropertyBaseInputTextView extends RelativeLayout {
         }
 
         editText = inputLayout.findViewById(R.id.edit_text);
+        editText.setText(property.getFieldValue());
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {;}

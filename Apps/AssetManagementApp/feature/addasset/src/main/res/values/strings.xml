@@ -8,4 +8,5 @@
     <string name="field_is_required">This field is required.</string>
     <string name="not_allow_new_instance">Please choose from the available options.</string>
     <string name="network_error">Not able to create new asset, please check your network connection and try again.</string>
+    <string name="edit_asset">Edit Asset</string>
 </resources>

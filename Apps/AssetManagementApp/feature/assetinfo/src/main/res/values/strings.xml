@@ -10,4 +10,6 @@
     <string name="check_bms_installation">Please check whether you have the latest BMSQueryApp installed.</string>
     <string name="ok">OK</string>
     <string name="add_asset">Add Asset</string>
+    <string name="edit">edit</string>
+    <string name="edit_asset">Edit Asset</string>
 </resources>

@@ -16,6 +16,7 @@
             app:layout_constraintTop_toTopOf="parent"/>
     </RelativeLayout>
 
+    <!--    the button for asset summary-->
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +27,21 @@
         android:layout_marginEnd="@dimen/appbar_padding"
         android:background="@drawable/ripple_done_24"
         android:contentDescription="@string/done"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/edit_bt"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/relativeLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/appbar_padding"
+        android:background="@drawable/ripple_edit"
+        android:contentDescription="@string/edit"
+        android:visibility="gone"
+        />
 
 
     <com.facebook.shimmer.ShimmerFrameLayout
@@ -73,14 +88,6 @@
             </LinearLayout>
         </LinearLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>
-
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:id="@+id/asset_info_rv"-->
-<!--        android:visibility="gone"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/app_bar"-->
-<!--        />-->
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

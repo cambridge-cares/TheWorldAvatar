@@ -108,6 +108,7 @@ public class AddAssetViewModel extends ViewModel {
             @Override
             public void onSuccess(Map<String, String> result) {
                 ((DropDownDataModel) inputFieldModels.get(key)).getMutableLabelsToIri().postValue(result);
+                ((DropDownDataModel) inputFieldModels.get(key)).constructIriToLabel();
             }
 
             @Override
@@ -155,5 +156,16 @@ public class AddAssetViewModel extends ViewModel {
         }
 
         return assetInfo;
+    }
+
+    public void initFieldsWithAssetInfo(AssetInfo assetInfo) {
+        for (String key : assetInfo.getProperties().keySet()) {
+            // todo: haven't accounted for data sheet type
+            if (!inputFieldModels.containsKey(key)) {
+                continue;
+            }
+            AssetPropertyDataModel property = inputFieldModels.get(key);
+            property.setFieldValue(assetInfo.getProperty(key));
+        }
     }
 }

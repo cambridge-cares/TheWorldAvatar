@@ -63,13 +63,29 @@ public class AssetInfoFragment extends Fragment {
 
         if (uri.getPath().contains("/info_page")) {
             showAssetInfoForGivenUri(view, getArguments().getString("uri"));
-        } else if (uri.getPath().contains("/new_asset_summary")) {
+        } else if (uri.getPath().contains("/asset_summary")) {
             try {
                 AssetInfo assetInfo = (AssetInfo) deserializeStringToObject(getArguments().getString("assetinfo"));
-                showNewAssetSummary(view, assetInfo);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+                String operation = getArguments().getString("operation");
+
+                int appBarTitle = 0;
+                if (operation.equals("add")) {
+                    appBarTitle = R.string.add_asset;
+                } else if (operation.equals("edit")) {
+                    appBarTitle = R.string.edit_asset;
+                }
+
+                NavDeepLinkRequest request = null;
+                try {
+                    request = NavDeepLinkRequest.Builder
+                            .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/new_asset_result?assetinfo=" + serializeObjectToString(assetInfo) + "&operation=" + operation))
+                            .build();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                showAssetSummary(view, assetInfo, appBarTitle, request);
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -81,6 +97,25 @@ public class AssetInfoFragment extends Fragment {
         LOGGER.info(getArguments().getString("uri"));
 
         ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.asset_info);
+        ImageButton editButton = (ImageButton) view.findViewById(R.id.edit_bt);
+        editButton.setVisibility(View.VISIBLE);
+        editButton.setOnClickListener(view1 -> {
+            AssetInfo assetInfo = viewModel.getAssetInfo().getValue();
+            if (assetInfo == null) {
+                LOGGER.error("edit button clicked before assetinfo has been retrieved");
+                return;
+            }
+
+            NavDeepLinkRequest request = null;
+            try {
+                request = NavDeepLinkRequest.Builder
+                        .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/edit_asset?assetinfo=" + serializeObjectToString(assetInfo)))
+                        .build();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            NavHostFragment.findNavController(this).navigate(request);
+        });
 
         viewModel.getAssetInfo().observe(this.getViewLifecycleOwner(), assetInfo -> {
             assetInfoAdapter.updateProperties(assetInfo);
@@ -125,9 +160,9 @@ public class AssetInfoFragment extends Fragment {
         binding.shimmerViewContainer.startShimmer();
     }
 
-    private void showNewAssetSummary(View view, AssetInfo assetInfo) {
+    private void showAssetSummary(View view, AssetInfo assetInfo, int appBarTitle, NavDeepLinkRequest request) {
         // NOTICE: assetinfo is not hosted in ViewModel
-        ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.add_asset);
+        ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(appBarTitle);
         assetInfoAdapter = new AssetInfoAdapter(assetInfo, false);
         binding.assetInfoRv.setLayoutManager(new LinearLayoutManager(view.getContext()));
         binding.assetInfoRv.setAdapter(assetInfoAdapter);
@@ -136,17 +171,7 @@ public class AssetInfoFragment extends Fragment {
 
         ImageButton doneButton = view.findViewById(R.id.done_bt);
         doneButton.setVisibility(View.VISIBLE);
-        doneButton.setOnClickListener(v -> {
-            NavDeepLinkRequest request = null;
-            try {
-                request = NavDeepLinkRequest.Builder
-                        .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/new_asset_result?assetinfo=" + serializeObjectToString(assetInfo)))
-                        .build();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            NavHostFragment.findNavController(this).navigate(request);
-        });
+        doneButton.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(request));
     }
 
     private void hideShimmer() {
