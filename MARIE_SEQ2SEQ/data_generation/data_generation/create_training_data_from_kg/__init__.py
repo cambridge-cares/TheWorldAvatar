@@ -27,8 +27,10 @@ class DatasetFromKgMaker:
         self.example_maker_head2tail = ExampleMakerHead2Tail()
         self.example_maker_tail2head = ExampleMakerTail2Head()
         self.example_maker_tail2tail = ExampleMakerTail2Tail()
+        self.missing_entries = defaultdict(set)
 
     def make_examples(self, repeats: int = 1):
+        self.missing_entries = defaultdict(set)
         examples = []
 
         for _ in range(repeats):
@@ -99,13 +101,17 @@ class DatasetFromKgMaker:
                     self.make_examples_1h_3t(query_path=query_path, sampling_size=5)
                 )
 
+        if len(self.missing_entries) > 0:
+            print("Missing entries: ")
+            for k, v in self.missing_entries.items():
+                print(k, ": ", v)
+
         return examples
 
     def make_examples_1h_1t(
         self, query_path: str, tail_class: str, sampling_size: int = 1
     ):
         examples: List[dict] = []
-        missing_entries = defaultdict(set)
 
         if tail_class == "property":
             sampling_frame = (
@@ -119,7 +125,7 @@ class DatasetFromKgMaker:
                 )
 
                 if example is None:
-                    missing_entries["property"].add(p)
+                    self.missing_entries["property"].add(p)
                 else:
                     examples.append(example)
 
@@ -132,7 +138,7 @@ class DatasetFromKgMaker:
                 )
 
                 if example is None:
-                    missing_entries["identifier"].add(i)
+                    self.missing_entries["identifier"].add(i)
                 else:
                     examples.append(example)
 
@@ -143,7 +149,7 @@ class DatasetFromKgMaker:
                 )
 
                 if example is None:
-                    missing_entries["use"].append(u)
+                    self.missing_entries["use"].append(u)
                 else:
                     examples.append(example)
 
@@ -156,7 +162,7 @@ class DatasetFromKgMaker:
                 )
 
                 if example is None:
-                    missing_entries["chemicalclass"].add(c)
+                    self.missing_entries["chemicalclass"].add(c)
                 else:
                     examples.append(example)
 
@@ -164,11 +170,6 @@ class DatasetFromKgMaker:
             raise ValueError(
                 f"Unexpected value for argument `tail_class`: {tail_class}."
             )
-
-        if len(missing_entries) > 0:
-            print("Missing entries: ")
-            for k, v in missing_entries.items():
-                print(k, ": ", v)
 
         for example in examples:
             example["tail_num"] = 1
@@ -235,7 +236,7 @@ class DatasetFromKgMaker:
             raise ValueError(
                 f"Unexpected value for argument `tail_class`: {tail_class}."
             )
-        
+
         for example in examples:
             example["tail_num"] = 2
 
