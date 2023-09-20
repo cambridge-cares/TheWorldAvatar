@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
 from typing import Dict, Optional, Union, List
 import random
+
 from data_generation.constants import IDENTIFIER_LABELS, PROPERTY_LABELS
+from .utils import tails_to_tail_nums
 
 
 class ExampleMakerHead2Tail:
@@ -164,13 +165,7 @@ WHERE {{{"".join(where_clauses_compact)}
         subgraph1: Dict[str, Union[dict, List[dict]]],
         subgraph2: Dict[str, Union[dict, List[dict]]],
     ):
-        def subgraph_to_tail_nums(subgraph: Dict[str, Union[dict, List[dict]]]):
-            tail_nums = defaultdict(lambda: 0)
-            for tail in subgraph["tails"]:
-                tail_nums[tail["type"]] += 1
-            return tail_nums
-
-        return subgraph_to_tail_nums(subgraph1) == subgraph_to_tail_nums(subgraph2)
+        return tails_to_tail_nums(subgraph1["tails"]) == tails_to_tail_nums(subgraph2["tails"])
 
 
 class ExampleH2TQueryConstructorHelper(ABC):
@@ -301,7 +296,7 @@ class ExampleH2TQueryConstructorHelperTailUse(ExampleH2TQueryConstructorHelperTa
         return "?UseValue"
 
     def get_where_clauses(self):
-        return f"""
+        return """
     ?SpeciesIRI os:hasUse ?UseIRI .
     ?UseIRI rdfs:label ?UseValue .
 """

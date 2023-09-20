@@ -4,6 +4,7 @@ import random
 from typing import Dict, List, Optional, Union
 
 from data_generation.constants import PROPERTY_LABELS
+from .utils import tails_to_tail_nums
 from .utils.numerical import FloatConversionError, get_value_around, get_value_higher, get_value_lower
 
 
@@ -19,9 +20,11 @@ class ExampleMakerTail2Head:
             return None
         
         random.shuffle(tails)
+        tail_nums = tails_to_tail_nums(tails)
         tail_helper_resolver = T2HTailHelperResolver()
+        
         tail_helpers: List[ExampleT2HQueryConstructorHelperTail] = [
-            tail_helper_resolver.resolve(tail) for tail in tails 
+            tail_helper_resolver.resolve(tail, tail_nums=tail_nums) for tail in tails 
         ]
 
         all_helpers: List[ExampleT2HQueryConstructorHelper] = [
@@ -79,7 +82,7 @@ class T2HTailHelperResolver:
         self.use_num = 0
         self.chemicalclass_num = 0
 
-    def resolve(self, tail: Dict[str, str]):
+    def resolve(self, tail: Dict[str, str], tail_nums: Dict[str, int]):
         if tail["type"] == "property":
             tail_helper = ExampleT2HQueryConstructorHelperTailProperty(
                 property_name=tail["PropertyName"], property_value=tail["PropertyValue"]
@@ -87,12 +90,13 @@ class T2HTailHelperResolver:
         elif tail["type"] == "use":
             self.use_num += 1
             tail_helper = ExampleT2HQueryConstructorHelperTailUse(
-                tail_id=self.use_num, use_value=tail["UseValue"]
+                tail_id=self.use_num, tail_num=tail_nums["use_num"], use_value=tail["UseValue"]
             )
         elif tail["type"] == "chemicalclass":
             self.chemicalclass_num += 1
             tail_helper = ExampleT2HQueryConstructorHelperTailChemicalClass(
                 tail_id=self.chemicalclass_num,
+                tail_num=tail_nums["chemicalclass_num"],
                 chemicalclass_value=tail["ChemicalClassValue"],
             )
         else:
@@ -245,44 +249,50 @@ class ExampleT2HQueryConstructorHelperTailProperty(
 
 
 class ExampleT2HQueryConstructorHelperTailUse(ExampleT2HQueryConstructorHelperTail):
-    def __init__(self, tail_id: int, use_value: str):
+    def __init__(self, tail_id: int, tail_num: int, use_value: str):
         self.tail_id = tail_id
+        self.tail_num = tail_num
         self.use_value = use_value
 
     def get_where_clauses(self):
-        i = self.tail_id
+        i = self._i()
         UseValue = self.use_value
         return f"""
     VALUES ( ?UseValue ) {{ ( \"{UseValue}\" ) }}
     ?SpeciesIRI os:hasUse ?UseIRI{i} .
-    ?UseIRI{i} rdfs:label ?UseValue .
+    ?UseIRI{i} rdfs:label ?UseValue{i} .
 """
 
     def get_where_clauses_compact(self):
+        i = self._i()
         UseValue = self.use_value
         return f"""
-    VALUES ( ?UseValue ) {{ ( \"{UseValue}\" ) }}
-    ?SpeciesIRI os:hasUse ?UseValue ."""
+    VALUES ( ?UseValue{i} ) {{ ( \"{UseValue}\" ) }}
+    ?SpeciesIRI os:hasUse ?UseValue{i} ."""
 
     def get_ask_item(self):
-        i = self.tail_id
+        i = self._i()
         return f"use is as {{UseValue{i}}}"
 
     def get_binding(self):
-        i = self.tail_id
+        i = self._i()
         UseValue = self.use_value
         return {f"UseValue{i}": UseValue}
+    
+    def _i(self):
+        return self.tail_id if self.tail_num > 1 else ""
 
 
 class ExampleT2HQueryConstructorHelperTailChemicalClass(
     ExampleT2HQueryConstructorHelperTail
 ):
-    def __init__(self, tail_id: int, chemicalclass_value: str):
+    def __init__(self, tail_id: int, tail_num: int, chemicalclass_value: str):
         self.tail_id = tail_id
+        self.tail_num = tail_num
         self.chemicalclass_value = chemicalclass_value
 
     def get_where_clauses(self):
-        i = self.tail_id
+        i = self._i()
         ChemicalClassValue = self.chemicalclass_value
         return f"""
     VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
@@ -293,17 +303,20 @@ class ExampleT2HQueryConstructorHelperTailChemicalClass(
 """
 
     def get_where_clauses_compact(self):
-        i = self.tail_id
+        i = self._i()
         ChemicalClassValue = self.chemicalclass_value
         return f"""
     VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
     ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue{i} ."""
 
     def get_ask_item(self):
-        i = self.tail_id
+        i = self._i()
         return f"chemical class is {{ChemicalClassValue{i}}}"
 
     def get_binding(self):
-        i = self.tail_id
+        i = self._i()
         ChemicalClassValue = self.chemicalclass_value
         return {f"ChemicalClassValue{i}": ChemicalClassValue}
+    
+    def _i(self):
+        return self.tail_id if self.tail_num > 1 else ""

@@ -3,6 +3,7 @@ import random
 from typing import Dict, List, Optional, Union
 
 from data_generation.constants import PROPERTY_LABELS
+from .utils import tails_to_tail_nums
 
 
 class ExampleMakerTail2Tail:
@@ -10,22 +11,32 @@ class ExampleMakerTail2Tail:
         """Chemicalclass to properties/uses"""
         if subgraph is None:
             return None
-        
+
         tails_chemclass = [x for x in subgraph["tails"] if x["type"] == "chemicalclass"]
         if len(tails_chemclass) == 0:
             return None
-        
+
         head_helper = ExampleT2TQueryConstructorHelperHead()
 
         tails_other = [x for x in subgraph["tails"] if x["type"] != "chemicalclass"]
         if len(tails_other) == 0:
             return None
-        
+
         random.shuffle(tails_other)
         tail_helper_resolver = T2TTailHelperResolver()
-        tail_helpers: List[ExampleT2TQueryConstructorHelperTail] = [
-            tail_helper_resolver.resolve(tail) for tail in tails_chemclass + tails_other
+        tail_nums = tails_to_tail_nums(subgraph["tails"])
+
+        tail_chemclass_helpers = [
+            tail_helper_resolver.resolve(tail, tail_nums=tail_nums)
+            for tail in tails_chemclass
         ]
+        tail_other_helpers = [
+            tail_helper_resolver.resolve(tail, tail_nums=tail_nums)
+            for tail in tails_other
+        ]
+        tail_helpers: List[ExampleT2TQueryConstructorHelperTail] = (
+            tail_chemclass_helpers + tail_other_helpers
+        )
         all_helpers: List[ExampleT2TQueryConstructorHelper] = [
             head_helper
         ] + tail_helpers
@@ -40,6 +51,11 @@ class ExampleMakerTail2Tail:
         ]
         ask_items = [helper.get_ask_item() for helper in tail_helpers]
         ask_items = [x for x in ask_items if x is not None]
+        bindings = {
+            k: v
+            for helper in tail_chemclass_helpers
+            for k, v in helper.get_binding().items()
+        }
 
         sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)} 
 WHERE {{{"".join(where_clauses).rstrip()}
@@ -49,12 +65,14 @@ WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
         return dict(
-            canonical_question=self.make_canonical_question(ask_items, chemicalclass_num=len(tails_chemclass)),
-            bindings={f"ChemicalClassValue{i + 1}": val for i, val in enumerate(x["ChemicalClassValue"] for x in tails_chemclass)},
+            canonical_question=self.make_canonical_question(
+                ask_items, chemicalclass_num=len(tails_chemclass)
+            ),
+            bindings=bindings,
             sparql_query=sparql_query,
             sparql_query_compact=sparql_query_compact,
         )
-    
+
     def make_canonical_question(self, ask_items: List[str], chemicalclass_num: int):
         tokens = ["What "]
         if len(ask_items) < 2:
@@ -80,17 +98,19 @@ WHERE {{{"".join(where_clauses_compact)}
                 tokens.append(", ")
             else:
                 tokens.append(" and ")
-            tokens.append(f"{{ChemicalClassValue{i + 1}}}")
+            _i = i + 1 if chemicalclass_num > 1 else ""
+            tokens.append(f"{{ChemicalClassValue{_i}}}")
 
         tokens.append("?")
-        
+
         return "".join(tokens)
+
 
 class T2TTailHelperResolver:
     def __init__(self):
         self.chemicalclass_num = 0
 
-    def resolve(self, tail: Dict[str, str]):
+    def resolve(self, tail: Dict[str, str], tail_nums: Dict[str, int]):
         if tail["type"] == "property":
             tail_helper = ExampleT2TQueryConstructorHelperTailProperty(
                 property_name=tail["PropertyName"]
@@ -99,7 +119,11 @@ class T2TTailHelperResolver:
             tail_helper = ExampleT2TQueryConstructorHelperTailUse()
         elif tail["type"] == "chemicalclass":
             self.chemicalclass_num += 1
-            tail_helper = ExampleT2HQueryConstructorHelperTailChemicalClass(tail_id=self.chemicalclass_num, chemicalclass_value=tail["ChemicalClassValue"])
+            tail_helper = ExampleT2HQueryConstructorHelperTailChemicalClass(
+                tail_id=self.chemicalclass_num,
+                tail_num=tail_nums["chemicalclass_num"],
+                chemicalclass_value=tail["ChemicalClassValue"],
+            )
         else:
             raise ValueError(f"Unexpected tail type: {tail['type']}.")
         return tail_helper
@@ -205,12 +229,13 @@ class ExampleT2TQueryConstructorHelperTailUse(ExampleT2TQueryConstructorHelperTa
 class ExampleT2HQueryConstructorHelperTailChemicalClass(
     ExampleT2TQueryConstructorHelperTail
 ):
-    def __init__(self, tail_id: int, chemicalclass_value: str):
+    def __init__(self, tail_id: int, tail_num: int, chemicalclass_value: str):
         self.tail_id = tail_id
+        self.tail_num = tail_num
         self.chemicalclass_value = chemicalclass_value
 
     def get_where_clauses(self):
-        i = self.tail_id
+        i = self._i()
         ChemicalClassValue = self.chemicalclass_value
         return f"""
     VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
@@ -221,7 +246,7 @@ class ExampleT2HQueryConstructorHelperTailChemicalClass(
 """
 
     def get_where_clauses_compact(self):
-        i = self.tail_id
+        i = self._i()
         ChemicalClassValue = self.chemicalclass_value
         return f"""
     VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
@@ -231,6 +256,9 @@ class ExampleT2HQueryConstructorHelperTailChemicalClass(
         return None
 
     def get_binding(self):
-        i = self.tail_id
+        i = self._i()
         ChemicalClassValue = self.chemicalclass_value
         return {f"ChemicalClassValue{i}": ChemicalClassValue}
+
+    def _i(self):
+        return self.tail_id if self.tail_num > 1 else ""
