@@ -4,12 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav">
     <fragment
-        android:id="@+id/asset_info"
+        android:id="@+id/add_asset_info"
         android:name="uk.ac.cam.cares.jps.addasset.AddAssetFragment"
         android:label="@string/add_asset"
         tools:layout="@layout/fragment_add_asset">
         <deepLink
             app:uri="android-app://uk.ac.cam.cares.jps.app/add_asset" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/new_asset_result"
+        android:name="uk.ac.cam.cares.jps.addasset.NewAssetResultFragment"
+        android:label="New Asset Result"
+        tools:layout="@layout/fragment_new_asset_result">
+        <deepLink
+            app:uri="android-app://uk.ac.cam.cares.jps.app/new_asset_result?assetinfo={assetinfo}" >
+            <argument
+                android:name="assetinfo"
+                app:argType="string"
+                />
+        </deepLink>
     </fragment>
 
 </navigation>

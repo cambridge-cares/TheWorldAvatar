@@ -5,8 +5,10 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.IRI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.REFERENCE_LABEL;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.TYPE;
 import static uk.ac.cam.cares.jps.utils.SerializationUtils.deserializeStringToObject;
+import static uk.ac.cam.cares.jps.utils.SerializationUtils.serializeObjectToString;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -56,9 +59,11 @@ public class AssetInfoFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         view.findViewById(uk.ac.cam.cares.jps.ui.R.id.back_bt).setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
-        if (getArguments().getString("uri") != null) {
+        Uri uri = ((Intent) getArguments().get("android-support-nav:controller:deepLinkIntent")).getData();
+
+        if (uri.getPath().contains("/info_page")) {
             showAssetInfoForGivenUri(view, getArguments().getString("uri"));
-        } else if (getArguments().getString("assetinfo") != null) {
+        } else if (uri.getPath().contains("/new_asset_summary")) {
             try {
                 AssetInfo assetInfo = (AssetInfo) deserializeStringToObject(getArguments().getString("assetinfo"));
                 showNewAssetSummary(view, assetInfo);
@@ -121,6 +126,7 @@ public class AssetInfoFragment extends Fragment {
     }
 
     private void showNewAssetSummary(View view, AssetInfo assetInfo) {
+        // NOTICE: assetinfo is not hosted in ViewModel
         ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.add_asset);
         assetInfoAdapter = new AssetInfoAdapter(assetInfo, false);
         binding.assetInfoRv.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -131,8 +137,15 @@ public class AssetInfoFragment extends Fragment {
         ImageButton doneButton = view.findViewById(R.id.done_bt);
         doneButton.setVisibility(View.VISIBLE);
         doneButton.setOnClickListener(v -> {
-            // todo: direct back to add asset fragment
-            NavHostFragment.findNavController(this).navigateUp();
+            NavDeepLinkRequest request = null;
+            try {
+                request = NavDeepLinkRequest.Builder
+                        .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/new_asset_result?assetinfo=" + serializeObjectToString(assetInfo)))
+                        .build();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            NavHostFragment.findNavController(this).navigate(request);
         });
     }
 

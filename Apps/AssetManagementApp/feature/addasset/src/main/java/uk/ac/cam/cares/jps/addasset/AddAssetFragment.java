@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.addasset;
 
+import static uk.ac.cam.cares.jps.utils.SerializationUtils.deserializeStringToObject;
 import static uk.ac.cam.cares.jps.utils.SerializationUtils.serializeObjectToString;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDeepLinkBuilder;
 import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
@@ -31,6 +35,7 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.databinding.FragmentAddAssetBinding;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
+import uk.ac.cam.cares.jps.data.AssetInfo;
 
 @AndroidEntryPoint
 public class AddAssetFragment extends Fragment {
@@ -72,11 +77,6 @@ public class AddAssetFragment extends Fragment {
             }
 
             // show summary page
-            Bundle bundle = new Bundle();
-            // todo: check whether AssetInfo is serializable
-            bundle.putSerializable("assetinfo", (Serializable) viewModel.getAssetInfo());
-
-
             NavDeepLinkRequest request = null;
             try {
                 request = NavDeepLinkRequest.Builder
@@ -88,6 +88,5 @@ public class AddAssetFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(request);
         });
     }
-
 
 }

@@ -19,7 +19,6 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.AssetInfo;
-import uk.ac.cam.cares.jps.data.AssetInfoRepository;
 import uk.ac.cam.cares.jps.data.OtherInfoRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 
@@ -28,7 +27,7 @@ public class AddAssetViewModel extends ViewModel {
 
     private final Logger LOGGER = Logger.getLogger(AddAssetViewModel.class);
     OtherInfoRepository otherInfoRepository;
-    AssetInfoRepository assetInfoRepository;
+
 
     public Map<String, List<String>> getInputFieldNamesBySection() {
         return inputFieldNamesBySection;
@@ -51,12 +50,11 @@ public class AddAssetViewModel extends ViewModel {
     private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SERVICE_CODE_DESCRIPTION, SERVICE_CATEGORY_DESCRIPTION);
 
     @Inject
-    AddAssetViewModel(OtherInfoRepository otherInfoRepository, AssetInfoRepository assetInfoRepository) {
+    AddAssetViewModel(OtherInfoRepository otherInfoRepository) {
         BasicConfigurator.configure();
         initInputFieldsDataModel();
 
         this.otherInfoRepository = otherInfoRepository;
-        this.assetInfoRepository = assetInfoRepository;
     }
 
     private void initInputFieldsDataModel() {

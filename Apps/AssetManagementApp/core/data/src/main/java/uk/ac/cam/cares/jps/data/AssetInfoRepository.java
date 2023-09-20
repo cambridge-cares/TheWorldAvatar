@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.data;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
 
+import android.os.Handler;
+
 import com.android.volley.Response;
 
 import org.apache.log4j.Logger;
@@ -83,7 +85,11 @@ public class AssetInfoRepository {
         return  result;
     }
 
-    public void createNewAsset(AssetInfo assetInfo) {
-
+    public void createNewAsset(AssetInfo assetInfo, RepositoryCallback<Boolean> callback) {
+        //        callback.onFailure(new Exception());
+        Handler handler = new Handler();
+        handler.postDelayed((Runnable) () -> {
+            callback.onSuccess(true);
+        }, 2000);
     }
 }
