@@ -5,7 +5,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON, POST
 
 from .construct_query import RetrieveQueryConstructor
 from .parse_kg_response import KgResponseParser
-
+from .timeout import timeout
 
 class SubgraphRetriever:
     def __init__(
@@ -19,6 +19,7 @@ class SubgraphRetriever:
         self.query_constructor = RetrieveQueryConstructor()
         self.kg_response_parser = KgResponseParser()
 
+    @timeout(5, default_value=None)
     def get_subgraph(
         self,
         tail_nums: Optional[Dict[str, int]] = None,
