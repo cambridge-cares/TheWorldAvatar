@@ -32,8 +32,8 @@ class TemplatingModelTest {
         builder.append("{\"enable\": true,\"list\": [")
                 .append(CustomVariableTest.genExpectedCustomVariableSyntax(TestUtils.ASSET_TYPE_TWO, new String[]{TestUtils.ASSET_OVEN}, 0))
                 .append(",")
-                .append(PostgresVariableTest.genExpectedPostgresVarSyntax(TestUtils.MEASURE_OVEN, TestUtils.ASSET_TYPE_TWO,
-                        databaseConnectionMap.get(TestUtils.DATABASE_HEAT), assets.get(TestUtils.ASSET_TYPE_TWO).get(TestUtils.MEASURE_OVEN)))
+                .append(PostgresVariableTest.genExpectedPostgresVarSyntax(TestUtils.MEASURE_HEAT, TestUtils.ASSET_TYPE_TWO,
+                        databaseConnectionMap.get(TestUtils.DATABASE_HEAT), assets.get(TestUtils.ASSET_TYPE_TWO).get(TestUtils.MEASURE_HEAT)))
                 .append(",")
                 .append(PostgresVariableTest.genExpectedPostgresVarSyntax(TestUtils.MEASURE_COMMON, TestUtils.ASSET_TYPE_TWO,
                         databaseConnectionMap.get(TestUtils.DATABASE_ELEC), assets.get(TestUtils.ASSET_TYPE_TWO).get(TestUtils.MEASURE_COMMON)))

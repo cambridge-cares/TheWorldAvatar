@@ -40,7 +40,7 @@ class TimeSeriesChartTest {
     @Test
     void testConstructWithThresholds() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Construct the object
         TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, SAMPLE_THRESHOLDS);
@@ -53,7 +53,7 @@ class TimeSeriesChartTest {
     @Test
     void testConstructNoThresholds() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Construct the object
         TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
@@ -66,7 +66,7 @@ class TimeSeriesChartTest {
     @Test
     void testConstructNoUnit() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Construct the object
         TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
@@ -80,7 +80,7 @@ class TimeSeriesChartTest {
     @Test
     void testConstructWithUnit() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, SAMPLE_UNIT};
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, SAMPLE_UNIT, "null"};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Construct the object
         TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
@@ -99,13 +99,13 @@ class TimeSeriesChartTest {
         assertEquals(SAMPLE_MEASURE, chart.getMeasure());
     }
 
-    private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
+    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
         return genExpectedResults(metadata, geometryPositions, itemDetails, new String[]{});
     }
 
-    private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds) {
+    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds) {
         String titleContent = StringHelper.addSpaceBetweenCapitalWords(metadata[0]) + " of " + StringHelper.addSpaceBetweenCapitalWords(metadata[1]);
-        titleContent = metadata.length > 4 ? titleContent + " [" + metadata[4] + "]" : titleContent;
+        titleContent = metadata[4].equals("null") ? titleContent : titleContent + " [" + metadata[4] + "]";
         String description = "A chart displaying the time series of " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase();
         String thresholdStyle = thresholds.length == 0 ? "off" : "area";
         String thresholdSteps = thresholds.length == 0 ? "" : "\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +

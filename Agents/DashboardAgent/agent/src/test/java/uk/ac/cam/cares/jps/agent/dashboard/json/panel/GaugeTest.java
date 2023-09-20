@@ -64,7 +64,7 @@ class GaugeTest {
     @Test
     void testConstructorNoOptionalValues() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Execute the method
         Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
@@ -76,7 +76,7 @@ class GaugeTest {
     @Test
     void testConstructNoUnit() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Construct the object
         Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
@@ -109,21 +109,21 @@ class GaugeTest {
         assertEquals(SAMPLE_MEASURE, chart.getMeasure());
     }
 
-    private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
+    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
         return genExpectedResults(metadata, geometryPositions, itemDetails, new String[]{}, "");
     }
 
-    private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds) {
+    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds) {
         return genExpectedResults(metadata, geometryPositions, itemDetails, thresholds, "");
     }
 
-    private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
+    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
         return genExpectedResults(metadata, geometryPositions, itemDetails, new String[]{}, query);
     }
 
-    private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds, String query) {
+    public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds, String query) {
         String titleContent = "Latest " + StringHelper.addSpaceBetweenCapitalWords(metadata[0]);
-        titleContent = query.isEmpty() ? metadata.length > 4 ? titleContent + " [" + metadata[4] + "]" : titleContent : "Latest Average";
+        titleContent = query.isEmpty() ? metadata[4].equals("null") ? titleContent : titleContent + " [" + metadata[4] + "]" : "Latest Average";
         String description = query.isEmpty() ? "A gauge chart displaying the latest value of all individuals' " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase()
                 : "A gauge chart displaying the latest average value of " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase();
         boolean showThresholdMarkers = false;
@@ -159,7 +159,7 @@ class GaugeTest {
         return sb.toString();
     }
 
-    private static String genAverageQuery(List<String[]> itemsMetadata) {
+    public static String genAverageQuery(List<String[]> itemsMetadata) {
         int totalItems = 0;
         StringBuilder averageQuery = new StringBuilder();
         StringBuilder summation = new StringBuilder();

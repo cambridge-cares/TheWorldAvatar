@@ -11,6 +11,8 @@ import java.util.*;
  * @author qhouyee
  */
 public class PanelModel {
+    // Requires an object variable to keep track of the same number in different methods
+    private int ROW_NUMBER;
     private final StringBuilder PANEL_SYNTAX = new StringBuilder();
     private static final int CHART_HEIGHT = 8;
     private static final int CHART_WIDTH = 12;
@@ -22,21 +24,21 @@ public class PanelModel {
      * @param timeSeries            A map of all assets and rooms mapped to their time series.
      */
     public PanelModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
-        // Row numbers to compute x positions; Starts from 0
-        int rowNumber = 0; // Each row correspond to one item group
+        // Row numbers to compute y positions; Initialise from 0
+        this.ROW_NUMBER = 0; // Each row correspond to one item group
         // Generate the syntax for all room-related panels if available
         if (timeSeries.containsKey(StringHelper.ROOM_KEY)) {
             // Room-related panels are designed to be at the top based on their topological hierarchy
             // Generate all the panels and store them into a queue
             Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(StringHelper.ROOM_KEY, timeSeries.get(StringHelper.ROOM_KEY), databaseConnectionMap);
-            rowNumber = separateRoomMeasurePerRow(rowNumber, panelQueue);
+            separateRoomMeasurePerRow(panelQueue);
             // Remove the room values once it has been processed
             timeSeries.remove(StringHelper.ROOM_KEY);
         }
         // For each item group that is not a room
         for (String currentItemGroup : timeSeries.keySet()) {
             Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(currentItemGroup, timeSeries.get(currentItemGroup), databaseConnectionMap);
-            groupPanelsAsRow(rowNumber, currentItemGroup, panelQueue);
+            groupPanelsAsRow(currentItemGroup, panelQueue);
         }
     }
 
@@ -64,8 +66,8 @@ public class PanelModel {
         TemplatePanel[] panelArr;
         // For non-rooms, thresholds should be empty
         Map<String, String[]> thresholdMap = new HashMap<>();
-        // If this item group is rooms
-        if (itemGroup.equals(StringHelper.ROOM_KEY)) {
+        // If this item group is rooms and have thresholds available, process them
+        if (itemGroup.equals(StringHelper.ROOM_KEY) && itemMeasures.containsKey(StringHelper.THRESHOLD_KEY)) {
             // Retrieve the thresholds and process it for generating the charts
             List<String[]> thresholdList = itemMeasures.get(StringHelper.THRESHOLD_KEY);
             thresholdMap = processThresholdsToMap(thresholdList);
@@ -124,11 +126,10 @@ public class PanelModel {
      * Namely, it will group the panels associated with one room measure into a row. Each measure for these rooms
      * will have a separate row for improved organisation.
      *
-     * @param rowNumber  The current row number.
      * @param panelQueue A collection containing all the required charts to be appended to these rows.
      * @return row number.
      */
-    private int separateRoomMeasurePerRow(int rowNumber, Queue<TemplatePanel[]> panelQueue) {
+    private void separateRoomMeasurePerRow(Queue<TemplatePanel[]> panelQueue) {
         while (!panelQueue.isEmpty()) {
             // Retrieve the current room panels and their measure names
             TemplatePanel[] roomPanels = panelQueue.poll();
@@ -147,23 +148,21 @@ public class PanelModel {
                     // Title should be the measure name of these rooms
                     .append("\"title\": \"").append(title).append("\",")
                     .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
-                    .append(",\"x\": 0,\"y\": ").append(rowNumber).append("},")
-                    .append("\"panels\": [").append(genPanelSyntax(rowNumber, intermediateQueue))
+                    .append(",\"x\": 0,\"y\": ").append(this.ROW_NUMBER).append("},")
+                    .append("\"panels\": [").append(genPanelSyntax(this.ROW_NUMBER, intermediateQueue))
                     .append("]}");
             // Increment the row number for each measure of the rooms
-            rowNumber++;
+            this.ROW_NUMBER++;
         }
-        return rowNumber;
     }
 
     /**
      * When necessary, this method supports the grouping of panels into a row for the dashboard in JSON format.
      *
-     * @param rowNumber  The current row number.
      * @param itemGroup  The item group of interest. Should only accommodate asset types at the moment.
      * @param panelQueue A collection containing all the required charts to be appended to this row.
      */
-    private void groupPanelsAsRow(int rowNumber, String itemGroup, Queue<TemplatePanel[]> panelQueue) {
+    private void groupPanelsAsRow(String itemGroup, Queue<TemplatePanel[]> panelQueue) {
         // Append a comma before if it is not the first row
         if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
         // Generate the row panel syntax
@@ -171,11 +170,11 @@ public class PanelModel {
                 .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
                 .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(itemGroup)).append("\",")
                 .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
-                .append(",\"x\": 0,\"y\": ").append(rowNumber).append("},")
-                .append("\"panels\": [").append(genPanelSyntax(rowNumber, panelQueue))
+                .append(",\"x\": 0,\"y\": ").append(this.ROW_NUMBER).append("},")
+                .append("\"panels\": [").append(genPanelSyntax(this.ROW_NUMBER, panelQueue))
                 .append("]}");
         // Increment the row number once this row for the item group has been set up
-        rowNumber++;
+        this.ROW_NUMBER++;
     }
 
     /**
