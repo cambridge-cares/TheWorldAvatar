@@ -1445,23 +1445,22 @@ label[for="select-feature"] {
 }
 
 /* Custom popup component when hovering over features */
-.popup {
+#popup {
     display: none;
     overflow: auto;
     position: absolute;
     min-width: 50px;
     max-width: 400px;
-    transform: translate(-50%,25px);
     background-color: rgba(0,0,0,.4);
     color: #fff;
     border-radius: 8px;
     padding: 10px;
     text-align: left;
 }
-.popup b {
+#popup b {
     font-size: 11pt;
 }
-.popup p {
+#popup p {
     font-size: 10pt;
 }
 .thumbnail {

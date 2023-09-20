@@ -165,8 +165,7 @@ class MapboxUtils {
      */
     public static  changeTerrain(mode) {
         // Skip if selecting the same again
-        if(window.terrain === mode) return;
-        console.log("Changing from " + window.terrain + " to " + mode);
+        if(window.terrain.toUpperCase() === mode.toUpperCase()) return;
 
         // Get the imagery URL for the chosen setting.
         let imagerySettings = Manager.SETTINGS.getSetting("imagery");

@@ -23,7 +23,7 @@ class PopupHandler {
     private static buildPopup() {
         // Build empty element
         let container = document.createElement("div");
-        container.classList.add("popup");
+        container.style.transform = "translate(-50%,calc(100% + 20px))"
         container.id = "popup";
 
         // Add movement listeners
@@ -35,6 +35,22 @@ class PopupHandler {
                 let top = e.offsetY;
                 container.style.left = left + 'px';
                 container.style.top = top + 'px';
+
+                let translateX = "-50%";
+                if(left < 200) {
+                    translateX = "20px";
+                } else if (left > (mapElement.offsetWidth - 200)) {
+                    translateX = "calc(-100% + 20px)";
+                }
+
+                let translateY = "20px";
+                if(top < 200) {
+                    translateY = "20px";
+                } else if (top > (mapElement.offsetHeight - 200)) {
+                    translateY = "calc(-100% - 20px)";
+                }
+
+                container.style.transform = "translate(" + translateX + "," + translateY + ")";
             }
         });
         mapElement.addEventListener('mouseleave', function(e) {
@@ -62,9 +78,7 @@ class PopupHandler {
         // Add name if known
         let name = getName(featureMetadata);
         if(name != null && name !== "") {
-            if(name.length >= 50) {
-                name = name.substring(0, 30) + "-<br/>" + name.substring(50);
-            }
+            name = this.wrapString(name);
             html += "<b>" + name + "</b>";
         }
 
@@ -73,6 +87,11 @@ class PopupHandler {
         if(desc != null && desc !== "") {
             if(name != null && name !== "") {
                 html += "<br/><br/>";
+            }
+            desc = this.wrapString(desc);
+
+            if(desc.length > 250) {
+                desc = desc.substring(0, 247) + "...";
             }
             html += "<p>" + desc + "</p>";
         }
@@ -94,6 +113,35 @@ class PopupHandler {
 
         // Cache the metadata to avoid later repetition
         this.CACHED_META = featureMetadata;
+    }
+
+    /**
+     * 
+     */
+    public static wrapString(content) {
+        let oldParts = content.split(" ");
+        let newString = "";
+
+        for(let i = 0; i < oldParts.length; i++) {
+            if(oldParts[i].length > 40) {
+
+                let newParts = oldParts[i].match(new RegExp('.{1,' + 40 + '}', 'g'));
+                for(let j = 0; j < newParts.length; j++) {
+                    newString += newParts[j];
+                    if(j < (newParts.length - 1)) {
+                        newString += "-<br/>";
+                    } else {
+                        newString += " ";
+                    }
+                }
+
+            } else {
+                newString += oldParts[i];
+                if(i < (oldParts.length - 1)) newString += " ";
+            }
+        }
+
+        return newString;
     }
 
     /**
