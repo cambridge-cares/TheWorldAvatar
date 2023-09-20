@@ -1,16 +1,31 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from typing import Dict, Optional, Union, List
 import random
 from data_generation.constants import IDENTIFIER_LABELS, PROPERTY_LABELS
 
 
 class ExampleMakerHead2Tail:
-    def make_example(self, subgraph: Optional[Dict[str, Union[dict, List[dict]]]]):
-        if subgraph is None:
+    def make_example(self, subgraphs: List[Optional[Dict[str, Union[dict, List[dict]]]]]):
+        if len(subgraphs) == 0:
             return None
 
+        if len(subgraphs) == 1:
+            return self.make_example_1h(subgraphs[0])
+
+        if len(subgraphs) == 2:
+            return self.make_example_2h(subgraph1=subgraphs[0], subgraph2=subgraphs[1])
+
+        raise ValueError(
+            "Currently only construction of queries with 1 or 2 heads is supported."
+        )
+
+    def make_example_1h(self, subgraph: Optional[Dict[str, Union[dict, List[dict]]]]):
+        if subgraph is None:
+            return None
+        
         head_helper = ExampleH2TQueryConstructorHelperHead(
-            identifier_value=subgraph["head"]["IdentifierValue"]
+            identifier_values=[subgraph["head"]["IdentifierValue"]]
         )
         tails: List[dict] = list(subgraph["tails"])
         random.shuffle(tails)
@@ -45,6 +60,61 @@ WHERE {{{"".join(where_clauses_compact)}
             sparql_query_compact=sparql_query_compact,
         )
 
+    def make_example_2h(
+        self,
+        subgraph1: Optional[Dict[str, Union[dict, List[dict]]]],
+        subgraph2: Optional[Dict[str, Union[dict, List[dict]]]],
+    ):
+        if subgraph1 is None or subgraph2 is None:
+            return None
+        
+        if not self.are_subgraphs_congruent(subgraph1, subgraph2):
+            raise ValueError(
+                f"Two subgraphs provided have different set of tails.\n\nSubgraph 1:\n{subgraph1}\n\nSubgraph 2:\n{subgraph2}"
+            )
+
+        head_helper = ExampleH2TQueryConstructorHelperHead(
+            identifier_values=[
+                subgraph1["head"]["IdentifierValue"],
+                subgraph2["head"]["IdentifierValue"],
+            ]
+        )
+        tails: List[dict] = list(subgraph1["tails"])
+        random.shuffle(tails)
+        tail_helpers: List[ExampleH2TQueryConstructorHelperTail] = [
+            self.resolve_tail_helper(tail) for tail in tails
+        ]
+        all_helpers: List[ExampleH2TQueryConstructorHelper] = [
+            head_helper
+        ] + tail_helpers
+
+        select_variables = [helper.get_select_variables() for helper in all_helpers]
+        select_variables_compact = [
+            helper.get_select_variables_compact() for helper in all_helpers
+        ]
+        where_clauses = [helper.get_where_clauses() for helper in all_helpers]
+        where_clauses_compact = [
+            helper.get_where_clauses_compact() for helper in all_helpers
+        ]
+        ask_items = [helper.get_ask_item() for helper in tail_helpers]
+
+        sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)} 
+WHERE {{{"".join(where_clauses).rstrip()}
+}}"""
+        sparql_query_compact = f"""SELECT DISTINCT {" ".join(select_variables_compact)} 
+WHERE {{{"".join(where_clauses_compact)}
+}}"""
+
+        return dict(
+            canonical_question=self.make_canonical_question(ask_items, species_num=2),
+            bindings=dict(
+                species1=subgraph1["head"]["IdentifierValue"],
+                species2=subgraph2["head"]["IdentifierValue"],
+            ),
+            sparql_query=sparql_query,
+            sparql_query_compact=sparql_query_compact,
+        )
+
     def resolve_tail_helper(self, tail: Dict[str, str]):
         if tail["type"] == "property":
             tail_helper = ExampleH2TQueryConstructorHelperTailProperty(
@@ -62,7 +132,7 @@ WHERE {{{"".join(where_clauses_compact)}
             raise ValueError("Unexpected tail type: " + tail["type"])
         return tail_helper
 
-    def make_canonical_question(self, ask_items: List[str]):
+    def make_canonical_question(self, ask_items: List[str], species_num: int = 1):
         tokens = ["What "]
         if len(ask_items) < 2:
             tokens.append("is")
@@ -78,8 +148,29 @@ WHERE {{{"".join(where_clauses_compact)}
                 tokens.append(" and ")
             tokens.append(ask_item)
 
-        tokens.append(" of {species}?")
+        if species_num == 1:
+            tokens.append(" of {species}?")
+        elif species_num == 2:
+            tokens.append(" of {species1} and {species2}?")
+        else:
+            raise ValueError(
+                f"Unexpected value for argument `species_num`: {species_num}."
+            )
+
         return "".join(tokens)
+
+    def are_subgraphs_congruent(
+        self,
+        subgraph1: Dict[str, Union[dict, List[dict]]],
+        subgraph2: Dict[str, Union[dict, List[dict]]],
+    ):
+        def subgraph_to_tail_nums(subgraph: Dict[str, Union[dict, List[dict]]]):
+            tail_nums = defaultdict(lambda: 0)
+            for tail in subgraph["tails"]:
+                tail_nums[tail["type"]] += 1
+            return tail_nums
+
+        return subgraph_to_tail_nums(subgraph1) == subgraph_to_tail_nums(subgraph2)
 
 
 class ExampleH2TQueryConstructorHelper(ABC):
@@ -101,8 +192,8 @@ class ExampleH2TQueryConstructorHelper(ABC):
 
 
 class ExampleH2TQueryConstructorHelperHead(ExampleH2TQueryConstructorHelper):
-    def __init__(self, identifier_value: str):
-        self.identifier_value = identifier_value
+    def __init__(self, identifier_values: str):
+        self.identifier_values = identifier_values
 
     def get_select_variables(self):
         return "?label"
@@ -111,18 +202,16 @@ class ExampleH2TQueryConstructorHelperHead(ExampleH2TQueryConstructorHelper):
         return ""
 
     def get_where_clauses(self):
-        species = self.identifier_value
         return f"""
-    VALUES ( ?species ) {{ ( "{species}" ) }}
+    VALUES ( ?species ) {{ {" ".join([f'( "{val}" )' for val in self.identifier_values])} }}
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier ?IdentifierIRI .
     ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
     ?Identifier rdfs:subClassOf os:Identifier .
 """
 
     def get_where_clauses_compact(self):
-        species = self.identifier_value
         return f"""
-    VALUES ( ?species ) {{ ( "{species}" ) }}
+    VALUES ( ?species ) {{ {" ".join([f'( "{val}" )' for val in self.identifier_values])} }}
     ?SpeciesIRI ?hasIdentifier ?species ."""
 
 
@@ -138,7 +227,9 @@ class ExampleH2TQueryConstructorHelperTail(
     pass
 
 
-class ExampleH2TQueryConstructorHelperTailProperty(ExampleH2TQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperTailProperty(
+    ExampleH2TQueryConstructorHelperTail
+):
     def __init__(self, property_name: str):
         self.property_name = property_name
 
@@ -172,7 +263,9 @@ class ExampleH2TQueryConstructorHelperTailProperty(ExampleH2TQueryConstructorHel
         return random.choice(PROPERTY_LABELS[self.property_name])
 
 
-class ExampleH2TQueryConstructorHelperTailIdentifier(ExampleH2TQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperTailIdentifier(
+    ExampleH2TQueryConstructorHelperTail
+):
     def __init__(self, identifier_name: str):
         self.identifier_name = identifier_name
 

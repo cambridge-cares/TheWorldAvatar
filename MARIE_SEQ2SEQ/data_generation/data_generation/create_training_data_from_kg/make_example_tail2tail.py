@@ -49,13 +49,13 @@ WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
         return dict(
-            canonical_question=self.make_canonical_question(ask_items, chemicalclass_values=[x["ChemicalClassValue"] for x in tails_chemclass]),
-            bindings=dict(species=subgraph["head"]["IdentifierValue"]),
+            canonical_question=self.make_canonical_question(ask_items, chemicalclass_num=len(tails_chemclass)),
+            bindings={f"ChemicalClassValue{i + 1}": val for i, val in enumerate(x["ChemicalClassValue"] for x in tails_chemclass)},
             sparql_query=sparql_query,
             sparql_query_compact=sparql_query_compact,
         )
     
-    def make_canonical_question(self, ask_items: List[str], chemicalclass_values: List[str]):
+    def make_canonical_question(self, ask_items: List[str], chemicalclass_num: int):
         tokens = ["What "]
         if len(ask_items) < 2:
             tokens.append("is")
@@ -73,14 +73,14 @@ WHERE {{{"".join(where_clauses_compact)}
 
         tokens.append(" of chemical species classified as ")
 
-        for i, chemclass in enumerate(chemicalclass_values):
+        for i in range(chemicalclass_num):
             if i == 0:
                 pass
-            elif i < len(chemicalclass_values) - 1:
+            elif i < chemicalclass_num - 1:
                 tokens.append(", ")
             else:
                 tokens.append(" and ")
-            tokens.append(chemclass)
+            tokens.append(f"{{ChemicalClassValue{i + 1}}}")
 
         tokens.append("?")
         
@@ -215,9 +215,9 @@ class ExampleT2HQueryConstructorHelperTailChemicalClass(
         return f"""
     VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
     ?SpeciesIRI os:hasChemicalClass* ?x{i} .
-	?x{i} ?y{i} ?z{i} .
-	?z{i} rdfs:subClassOf* ?ChemicalClassIRI{i} .
-	?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue{i} .
+    ?x{i} ?y{i} ?z{i} .
+    ?z{i} rdfs:subClassOf* ?ChemicalClassIRI{i} .
+    ?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue{i} .
 """
 
     def get_where_clauses_compact(self):

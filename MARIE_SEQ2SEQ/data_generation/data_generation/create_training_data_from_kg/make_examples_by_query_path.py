@@ -30,8 +30,15 @@ class ExampleMakerByQueryPath:
         self.example_maker_tail2tail = ExampleMakerTail2Tail()
         self.missing_entries = defaultdict(set)
 
-    def make_examples_1h_1t(
-        self, query_path: str, tail_class: str, sampling_size: int = 1
+    def get_missing_entries(self):
+        return dict(self.missing_entries)
+
+    def make_examples_1t(
+        self,
+        query_path: str,
+        tail_class: str,
+        sampling_size: int = 1,
+        head_num: int = 1,
     ):
         examples: List[dict] = []
 
@@ -47,6 +54,7 @@ class ExampleMakerByQueryPath:
                     property_names=[p],
                     tail_nums=dict(property_num=1),
                     query_path=query_path,
+                    head_num=head_num,
                 )
 
                 if example is None:
@@ -63,6 +71,7 @@ class ExampleMakerByQueryPath:
                     identifier_names=[i],
                     tail_nums=dict(identifier_num=1),
                     query_path="h2t",
+                    head_num=head_num,
                 )
 
                 if example is None:
@@ -73,11 +82,14 @@ class ExampleMakerByQueryPath:
         elif tail_class == "use":
             for u in random.sample(USES, k=sampling_size or 1):
                 example = self.make_example(
-                    uses=[u], tail_nums=dict(use_num=1), query_path=query_path
+                    uses=[u],
+                    tail_nums=dict(use_num=1),
+                    query_path=query_path,
+                    head_num=head_num,
                 )
 
                 if example is None:
-                    self.missing_entries["use"].append(u)
+                    self.missing_entries["use"].add(u)
                 else:
                     examples.append(example)
 
@@ -87,6 +99,7 @@ class ExampleMakerByQueryPath:
                     chemicalclasses=[c],
                     tail_nums=dict(chemicalclass_num=1),
                     query_path=query_path,
+                    head_num=head_num,
                 )
 
                 if example is None:
@@ -99,13 +112,14 @@ class ExampleMakerByQueryPath:
                 f"Unexpected value for argument `tail_class`: {tail_class}."
             )
 
-        for example in examples:
-            example["tail_num"] = 1
-
         return examples
 
-    def make_examples_1h_2t(
-        self, query_path: str, tail_class: Optional[str] = None, sampling_size: int = 1
+    def make_examples_2t(
+        self,
+        query_path: str,
+        tail_class: Optional[str] = None,
+        sampling_size: int = 1,
+        head_num: int = 1,
     ):
         examples: List[dict] = []
 
@@ -123,6 +137,7 @@ class ExampleMakerByQueryPath:
                     property_names=p_pair,
                     tail_nums=dict(property_num=2),
                     query_path=query_path,
+                    head_num=head_num,
                 )
                 if example is not None:
                     examples.append(example)
@@ -142,6 +157,7 @@ class ExampleMakerByQueryPath:
                     identifier_names=i_pair,
                     tail_nums=dict(identifier_num=2),
                     query_path="h2t",
+                    head_num=head_num,
                 )
                 if example is not None:
                     examples.append(example)
@@ -160,6 +176,7 @@ class ExampleMakerByQueryPath:
                         tail_nums=tail_nums,
                         query_path=query_path,
                         uses=[] if query_path == "t2t" else None,
+                        head_num=head_num,
                     )
 
                 if example is not None:
@@ -170,12 +187,11 @@ class ExampleMakerByQueryPath:
                 f"Unexpected value for argument `tail_class`: {tail_class}."
             )
 
-        for example in examples:
-            example["tail_num"] = 2
-
         return examples
 
-    def make_examples_1h_3t(self, query_path: str, sampling_size: int = 1):
+    def make_examples_3t(
+        self, query_path: str, sampling_size: int = 1, head_num: int = 1
+    ):
         examples: List[dict] = []
 
         for _ in range(sampling_size):
@@ -193,14 +209,12 @@ class ExampleMakerByQueryPath:
                     tail_nums=tail_nums,
                     query_path=query_path,
                     uses=[] if query_path == "t2t" else None,
+                    head_num=head_num,
                 )
                 try_num += 1
 
             if example is not None:
                 examples.append(example)
-
-        for example in examples:
-            example["tail_num"] = 3
 
         return examples
 
@@ -212,6 +226,7 @@ class ExampleMakerByQueryPath:
         uses: Optional[Iterable[str]] = None,
         chemicalclasses: Optional[Iterable[str]] = None,
         tail_nums: Dict[str, int] = dict(),
+        head_num: int = 1,
     ):
         property_sampling_frame = (
             self.PROPERTY_NAMES_FOR_T2H if query_path == "t2h" else PROPERTY_NAMES
@@ -246,27 +261,56 @@ class ExampleMakerByQueryPath:
             for i, chemicalclass in enumerate(chemicalclasses)
         }
 
-        subgraph = self.subgraph_retriever.get_subgraph(
-            tail_nums=tail_nums,
-            bindings={
-                **property_bindings,
-                **identifier_bindings,
-                **usevalue_bindings,
-                **chemicalclassvalue_bindings,
-            },
-        )
+        if head_num not in [1, 2]:
+            raise ValueError(f"Unexpected value for argument `head_num`: {head_num}.")
+
+        def get_subgraph():
+            return self.subgraph_retriever.get_subgraph(
+                tail_nums=tail_nums,
+                bindings={
+                    **property_bindings,
+                    **identifier_bindings,
+                    **usevalue_bindings,
+                    **chemicalclassvalue_bindings,
+                },
+            )
 
         if query_path == "h2t":
-            example = self.example_maker_head2tail.make_example(subgraph)
+            if head_num == 1:
+                subgraphs = [get_subgraph()]
+            else:
+                subgraphs = [get_subgraph() for _ in range(head_num)]
+                if subgraphs[0] is not None and subgraphs[1] is not None:
+                    try_num = 0
+                    subgraph = subgraphs[1]
+
+                    while (
+                        try_num < 3
+                        and subgraph["head"]["SpeciesIRI"]
+                        == subgraphs[0]["head"]["SpeciesIRI"]
+                    ):
+                        subgraph = get_subgraph()
+                        if subgraph is None:
+                            return None
+                        try_num += 1
+
+                    if subgraph["head"]["SpeciesIRI"] == subgraphs[0]["head"]["SpeciesIRI"]:
+                        return None
+
+                    subgraphs[1] = subgraph
+            example = self.example_maker_head2tail.make_example(subgraphs=subgraphs)
+
         elif query_path == "t2h":
-            example = self.example_maker_tail2head.make_example(subgraph)
+            example = self.example_maker_tail2head.make_example(subgraph=get_subgraph())
+
         elif query_path == "t2t":
-            example = self.example_maker_tail2tail.make_example(subgraph)
+            example = self.example_maker_tail2tail.make_example(subgraph=get_subgraph())
+
         else:
             raise ValueError(f"Unexpected value for `query_path`: {query_path}.")
 
         if example is not None:
-            example["type"] = query_path
+            example["query_path"] = query_path
 
         return example
 
