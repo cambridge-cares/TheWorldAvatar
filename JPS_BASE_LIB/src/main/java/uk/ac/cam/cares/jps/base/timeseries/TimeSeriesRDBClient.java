@@ -506,7 +506,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
      * @param conn       connection to the RDB
      */
     @Override
-    public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound, Connection conn) {
+    public void deleteRows(String dataIRI, T lowerBound, T upperBound, Connection conn) {
 
         // Initialise connection and set jOOQ DSL context
         DSLContext context = DSL.using(conn, DIALECT);
@@ -1363,10 +1363,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
      * @param upperBound end timestamp until which to delete data
      */
     @Override
-    public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
+    public void deleteRows(String dataIRI, T lowerBound, T upperBound) {
         // All database interactions in try-block to ensure closure of connection
         try (Connection conn = getConnection()) {
-            deleteTimeSeriesHistory(dataIRI, lowerBound, upperBound, conn);
+            deleteRows(dataIRI, lowerBound, upperBound, conn);
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
             throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);

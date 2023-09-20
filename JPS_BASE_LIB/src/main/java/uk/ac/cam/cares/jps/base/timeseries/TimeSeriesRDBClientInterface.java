@@ -93,7 +93,7 @@ interface TimeSeriesRDBClientInterface<T> {
      * @param upperBound end timestamp until which to delete data
      * @param conn       connection to the RDB
      */
-    void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound, Connection conn);
+    void deleteRows(String dataIRI, T lowerBound, T upperBound, Connection conn);
 
     /**
      * Delete RDB time series table rows between lower and upper Bound
@@ -105,7 +105,7 @@ interface TimeSeriesRDBClientInterface<T> {
      * @param lowerBound start timestamp from which to delete data
      * @param upperBound end timestamp until which to delete data
      */
-    void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound);
+    void deleteRows(String dataIRI, T lowerBound, T upperBound);
 
     /**
      * Delete individual time series (i.e. data for one dataIRI only)
