@@ -17,8 +17,8 @@ done
 
 # Check for required arguments
 if [[ ! -v TAG ]]; then 
-    echo "No TAG argument supplied, cannot continue."
-    exit -1
+    echo "No TAG argument supplied, will pull tag from "../library/VERSION" file"
+    TAG=$(cat ../library/VERSION)
 fi
 
 # Write the '.env' file
