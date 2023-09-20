@@ -17,14 +17,14 @@ class ExampleMakerTail2Tail:
         
         head_helper = ExampleT2TQueryConstructorHelperHead()
 
-        tails = subgraph["tails"]
-        if len(tails) == 0:
+        tails_other = [x for x in subgraph["tails"] if x["type"] != "chemicalclass"]
+        if len(tails_other) == 0:
             return None
         
-        random.shuffle(tails)
+        random.shuffle(tails_other)
         tail_helper_resolver = T2TTailHelperResolver()
         tail_helpers: List[ExampleT2TQueryConstructorHelperTail] = [
-            tail_helper_resolver.resolve(tail) for tail in tails
+            tail_helper_resolver.resolve(tail) for tail in tails_chemclass + tails_other
         ]
         all_helpers: List[ExampleT2TQueryConstructorHelper] = [
             head_helper
@@ -213,16 +213,19 @@ class ExampleT2HQueryConstructorHelperTailChemicalClass(
         i = self.tail_id
         ChemicalClassValue = self.chemicalclass_value
         return f"""
+    VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
     ?SpeciesIRI os:hasChemicalClass* ?x{i} .
 	?x{i} ?y{i} ?z{i} .
 	?z{i} rdfs:subClassOf* ?ChemicalClassIRI{i} .
-	?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label \"{ChemicalClassValue}\" .
+	?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue{i} .
 """
 
     def get_where_clauses_compact(self):
+        i = self.tail_id
         ChemicalClassValue = self.chemicalclass_value
         return f"""
-    ?SpeciesIRI os:hasChemicalClass \"{ChemicalClassValue}\" ."""
+    VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue{i} ."""
 
     def get_ask_item(self):
         return None

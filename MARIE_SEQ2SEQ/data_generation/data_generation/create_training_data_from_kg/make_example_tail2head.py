@@ -253,14 +253,16 @@ class ExampleT2HQueryConstructorHelperTailUse(ExampleT2HQueryConstructorHelperTa
         i = self.tail_id
         UseValue = self.use_value
         return f"""
+    VALUES ( ?UseValue ) {{ ( \"{UseValue}\" ) }}
     ?SpeciesIRI os:hasUse ?UseIRI{i} .
-    ?UseIRI{i} rdfs:label \"{UseValue}\" .
+    ?UseIRI{i} rdfs:label ?UseValue .
 """
 
     def get_where_clauses_compact(self):
         UseValue = self.use_value
         return f"""
-    ?SpeciesIRI os:hasUse \"{UseValue}\" ."""
+    VALUES ( ?UseValue ) {{ ( \"{UseValue}\" ) }}
+    ?SpeciesIRI os:hasUse ?UseValue ."""
 
     def get_ask_item(self):
         i = self.tail_id
@@ -283,16 +285,19 @@ class ExampleT2HQueryConstructorHelperTailChemicalClass(
         i = self.tail_id
         ChemicalClassValue = self.chemicalclass_value
         return f"""
+    VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
     ?SpeciesIRI os:hasChemicalClass* ?x{i} .
 	?x{i} ?y{i} ?z{i} .
 	?z{i} rdfs:subClassOf* ?ChemicalClassIRI{i} .
-	?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label \"{ChemicalClassValue}\" .
+	?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue{i} .
 """
 
     def get_where_clauses_compact(self):
+        i = self.tail_id
         ChemicalClassValue = self.chemicalclass_value
         return f"""
-    ?SpeciesIRI os:hasChemicalClass \"{ChemicalClassValue}\" ."""
+    VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue{i} ."""
 
     def get_ask_item(self):
         i = self.tail_id
