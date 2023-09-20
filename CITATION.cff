@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+title: The World Avatar
+authors:
+  - name: Markus Kraft
+    email: mk306@cam.ac.uk
+  - name: Cambridge CARES (https://www.cares.cam.ac.uk/)
+  - name: Computational Modelling Group (https://como.ceb.cam.ac.uk/)
+  - name: Computational Modelling Cambridge Ltd (https://cmclinnovations.com/)
+license: MIT
+repository-code: https://github.com/cambridge-cares/TheWorldAvatar
+how-to-cite: |
+  To cite this software, please use the following format:
+  
+  Cambridge CARES and Computational Modelling Cambridge Ltd. (2023). The World Avatar. https://github.com/cambridge-cares/TheWorldAvatar
+
