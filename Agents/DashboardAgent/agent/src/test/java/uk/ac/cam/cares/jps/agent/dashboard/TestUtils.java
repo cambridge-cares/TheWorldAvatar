@@ -35,6 +35,9 @@ public class TestUtils {
     public static final String COLUMN_HEAT_ROOM_ONE = "column13";
     public static final String COLUMN_ELEC_ROOM_TWO = "column14";
     public static final String COLUMN_HEAT_ROOM_TWO = "column15";
+    public static final String MIN_HEAT_THRESHOLD = "1.0";
+    public static final String MAX_HEAT_THRESHOLD = "2.0";
+
     public static final int CHART_HEIGHT = 8;
     public static final int CHART_WIDTH = 12;
     public static final String[] LAMP_ONE_COMMON_MEASURE_METADATA = new String[]{ASSET_LAMP_ONE, COLUMN_ELEC_LAMP_ONE, TABLE_ELEC, DATABASE_ELEC, "null"};
@@ -70,12 +73,13 @@ public class TestUtils {
     /**
      * Generates a sample measure map containing both rooms and assets for testing. See the genSampleAssetMeasureMap() and genSampleRoomMeasureMap() format.
      *
+     * @param reqThresholds A boolean indicating if thresholds are required.
      * @return The sample complex measure map.
      */
-    public static Map<String, Map<String, List<String[]>>> genSampleComplexMeasureMap() {
+    public static Map<String, Map<String, List<String[]>>> genSampleComplexMeasureMap(boolean reqThresholds) {
         Map<String, Map<String, List<String[]>>> sampleMap = new HashMap<>();
         sampleMap.putAll(genSampleAssetMeasureMap());
-        sampleMap.putAll(genSampleRoomMeasureMap());
+        sampleMap.putAll(genSampleRoomMeasureMap(reqThresholds));
         return sampleMap;
     }
 
@@ -133,15 +137,17 @@ public class TestUtils {
     /**
      * Generates a sample asset measure map in the following format for testing:
      * { Rooms: {
-     * Rooms: [Kitchen, Bedroom],
+     * Rooms: [[Kitchen], [Bedroom]],
+     * threshold: [["Heat Consumption", min, max]], * Only generated if indicated
      * "Electricity Consumption": [[Kitchen, column12, elecTableName, electricity, kwh],[Bedroom, column14, elecTableName, electricity, kwh]],
      * "Heat Consumption": [[Kitchen, column13, heatTableName, heat, unit(null)], [Bedroom, column15, heatTableName, heat, unit(null)]],
      * }
      * }
      *
+     * @param reqThresholds A boolean indicating if thresholds are required.
      * @return The sample asset measure map.
      */
-    public static Map<String, Map<String, List<String[]>>> genSampleRoomMeasureMap() {
+    public static Map<String, Map<String, List<String[]>>> genSampleRoomMeasureMap(boolean reqThresholds) {
         // Initialise empty collections for what we need to do
         Map<String, Map<String, List<String[]>>> sampleMap = new HashMap<>();
         Map<String, List<String[]>> measures = new HashMap<>();
@@ -151,6 +157,12 @@ public class TestUtils {
         values.add(new String[]{ROOM_ONE});
         values.add(new String[]{ROOM_TWO});
         measures.put(StringHelper.ROOM_KEY, values);
+        if (reqThresholds) {
+            // Generate thresholds
+            values = new ArrayList<>(); // Clear old data
+            values.add(new String[]{MEASURE_HEAT, MIN_HEAT_THRESHOLD, MAX_HEAT_THRESHOLD});
+            measures.put(StringHelper.THRESHOLD_KEY, values);
+        }
         // Generate the related electricity consumption metadata and append it to its measure key
         values = new ArrayList<>(); // Clear old data
         values.add(new String[]{ROOM_ONE, COLUMN_ELEC_ROOM_ONE, TABLE_ELEC, DATABASE_ELEC, ELEC_UNIT});
