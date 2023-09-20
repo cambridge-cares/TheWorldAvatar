@@ -29,6 +29,7 @@ RUN mkdir /root/folderQR
 # Set the required environment variable
 ENV AGENTPROPERTIES="/root/agent.properties"
 ENV FOLDERQR="/root/folderQR"
+ENV FOLDERMANUAL = "/root/manuals"
 
 COPY --from=builder /root/AssetManagerAgent/output/asset-manager-agent##1.0.1.war $CATALINA_HOME/webapps/
 

@@ -8,3 +8,5 @@ services:
     pull_policy: if_not_present
     ports:
       - "1015:8080"
+    volumes:
+      - ./manuals:/root/manuals

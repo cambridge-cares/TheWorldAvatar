@@ -118,7 +118,7 @@ public class QRPrinter {
         try{    
             String PDFPathString = java.time.LocalDateTime.now().toString() + "_QRCodes.pdf";
             // Creating a PdfDocument object    
-            PdfWriter writer = new PdfWriter(PDFPathString);       
+            PdfWriter writer = new PdfWriter(PDFPathString);
                 
             // Creating a PdfDocument object      
             PdfDocument pdf = new PdfDocument(writer);                  

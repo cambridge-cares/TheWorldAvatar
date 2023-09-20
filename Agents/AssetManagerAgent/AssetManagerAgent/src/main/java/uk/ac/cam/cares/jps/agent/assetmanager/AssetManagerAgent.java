@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.io.FileOutputStream;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,22 +34,11 @@ public class AssetManagerAgent extends JPSAgent{
     String requestURL;
     public final String KEY_AGENTPROPERTIES = "AGENTPROPERTIES";
     public final String KEY_FOLDERqr = "FOLDERQR";
+    public final String KEY_FOLDERmanual = "FOLDERMANUAL";
 
     //Properties params
     public String ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC;
     public String ENDPOINT_PRINTER;
-
-    /*
-     * ontology enums
-     */
-    public enum OntologyList {
-        ONTODEV,
-        ONTOLAB,
-        ONTOSYSTEM,
-        ONTOINMA,
-        ONTOEPE,
-        ONTOASSET
-    }
 
     /**
      * Logger for reporting info/errors.
@@ -63,7 +53,6 @@ public class AssetManagerAgent extends JPSAgent{
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         requestURL = request.getRequestURL().toString();
-
         return getRequestParameters(requestParams, request.getServletPath());
     }
 
@@ -74,6 +63,7 @@ public class AssetManagerAgent extends JPSAgent{
             LOGGER.info("Passing request to Asset Manager Agent..");
             String agentProperties = System.getenv(KEY_AGENTPROPERTIES);
             String FOLDER_QR = System.getenv(KEY_FOLDERqr);
+            String FOLDER_MANUAL = System.getenv(KEY_FOLDERmanual);
             JSONObject assetData = requestParams.getJSONObject("assetData");
 
             try {
@@ -83,7 +73,7 @@ public class AssetManagerAgent extends JPSAgent{
             }
             
 
-            String[] args = new String[] {ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_PRINTER, FOLDER_QR};
+            String[] args = new String[] {ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_PRINTER, FOLDER_QR, FOLDER_MANUAL};
             /*
             try {
                 printerHandler = new QRPrinter(ENDPOINT_PRINTER, FOLDER_QR, 5.);
@@ -111,6 +101,9 @@ public class AssetManagerAgent extends JPSAgent{
             }
             else if (urlPath.contains("instantiate")){
                 jsonMessage = instantiateAsset(args, assetData);
+            }
+            else if (urlPath.contains("addmanualpdf")){
+                jsonMessage = addManualPDF(args, assetData.getString("encodedPDF"), assetData.getString("fileName"));
             }
             
             else if (urlPath.contains("printbulk")){
@@ -277,9 +270,22 @@ public class AssetManagerAgent extends JPSAgent{
     //retrieve
     public JSONObject retrieveAssetInstance (String[] arg, String ID){
         JSONObject message = new JSONObject();
+        message.accumulate("Result", instanceHandler.retrieve(ID));
         return message;
     }
 
-
+    public JSONObject addManualPDF(String[] arg, String encodedPDF, String fileName) {
+        JSONObject message = new JSONObject();
+        File file = new File(arg[6]+fileName);
+        try ( FileOutputStream fos = new FileOutputStream(file); ) {
+            byte[] decoder = Base64.getDecoder().decode(encodedPDF);
+            fos.write(decoder);
+            message.accumulate("Result", "PDF saved successfully");
+        } catch (Exception e) {
+            message.accumulate("Result","Failed to save PDF:"+ e);
+        }
+    
+        return message;
+    }
 
 }
