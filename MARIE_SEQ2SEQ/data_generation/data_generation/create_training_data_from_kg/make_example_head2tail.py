@@ -99,10 +99,10 @@ WHERE {{{"".join(where_clauses_compact)}
         ]
         ask_items = [helper.get_ask_item() for helper in tail_helpers]
 
-        sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)} 
+        sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)}
 WHERE {{{"".join(where_clauses).rstrip()}
 }}"""
-        sparql_query_compact = f"""SELECT DISTINCT {" ".join(select_variables_compact)} 
+        sparql_query_compact = f"""SELECT {" ".join(select_variables_compact)}
 WHERE {{{"".join(where_clauses_compact)}
 }}"""
 

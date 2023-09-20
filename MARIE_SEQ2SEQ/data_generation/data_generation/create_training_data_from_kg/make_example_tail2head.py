@@ -22,7 +22,7 @@ class ExampleMakerTail2Head:
         random.shuffle(tails)
         tail_nums = tails_to_tail_nums(tails)
         tail_helper_resolver = T2HTailHelperResolver()
-        
+
         tail_helpers: List[ExampleT2HQueryConstructorHelperTail] = [
             tail_helper_resolver.resolve(tail, tail_nums=tail_nums) for tail in tails 
         ]
@@ -54,7 +54,7 @@ class ExampleMakerTail2Head:
         sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)}
 WHERE {{{"".join(where_clauses).rstrip()}
 }}"""
-        sparql_query_compact = f"""SELECT DISTINCT {" ".join(select_variables_compact)}
+        sparql_query_compact = f"""SELECT {" ".join(select_variables_compact)}
 WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
