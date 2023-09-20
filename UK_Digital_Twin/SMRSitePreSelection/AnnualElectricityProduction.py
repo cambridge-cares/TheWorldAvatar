@@ -8,7 +8,7 @@ Data source:https://en.wikipedia.org/wiki/Electricity_sector_in_the_United_Kingd
 The Electricity production distribution in the United Kingdom
 """
 
-totalElectricityProduction = 3.12e+8 ## Unit: MGh
+totalElectricityProduction = 3.12e+8 ## Unit: MWh
 ElectricityProductionDistribution = {
     'http://www.theworldavatar.com/kb/ontoeip/WindOffshore': totalElectricityProduction * 0.131,
     'http://www.theworldavatar.com/kb/ontoeip/WindOnshore': totalElectricityProduction * 0.111,

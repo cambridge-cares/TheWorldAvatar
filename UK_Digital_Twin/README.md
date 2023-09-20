@@ -107,7 +107,7 @@ Note: For the reproducability of results reported in Preprint 312, you do not ne
 
 Similarly, you can change also year of energy consumption data.
 
-Step 3 (OPTIONAL): Ready for conducting the scenario analysis of SMR replacement with optimal power flow (OPF) analysis?
+Step 3 (OPTIONAL): How to conduct the scenario analysis of SMR replacement with optimal power flow (OPF) analysis?
 - 3.1 Pre-requirement: If you want to post-process the result produced by SMR replacement, copy all the files from the path of `Dropbox (Cambridge University)\CoMo shared\wx243\c4e-wx243-TWAPowerSystem\Codes\UK_Digital_Twin\resources\RegionalBreakdown_images` to the `UK_Digital_Twin\resources\required_images` folder.
 
 - 3.2 Conduct SMR Replacement: For reproducing the results reported in Preprint 312, you need to run `SMRReplacemenWithOptimalFlowAnalysis.py`.
@@ -254,11 +254,11 @@ Once the code execution is finished, you will find figures reported in Preprint 
 
 In this folder, you will find the figure 2,3 and 4 displayed in prepint 312.
 
-Step 4 (OPTIONAL): Ready for visulising the SMR adoption on the UK regional power output map as the carbon tax increasing?
+Step 4 (OPTIONAL): How to visulise the SMR adoption on the UK regional power output map as the carbon tax increasing?
 
-In this step, we are going to create the figure 5 in priprint 312 which is assumbled by many subfigures. The following instructions detail how to create subfigures corresponding to different conditions.
+In this step, we are going to create figure 5 reported in preprint 312 which is produced by combining multiple subfigures. The following instructions detail how to create subfigures corresponding to different conditions.
 
-- 4.1 Check the required materials and folder path structure: to conduct Step 4, please make sure that the step 3 is done as this step is also for results post processing. 
+- 4.1 Check the required materials and folder path structure: to conduct Step 4, please make sure that the step 3 is done as this step is required for post processing the results.
 
 Please check if the required files exist by going to `\UK_Digital_Twin\resources\HTML_Files\SMR_FossilPlant_output\` and make sure the following files are within this folder.
 
@@ -268,45 +268,43 @@ Please check if the required files exist by going to `\UK_Digital_Twin\resources
 
 - 4.2 Copy files into the designated path and folder.
 
-Taking the 29-bus model and the £60/MWh LCOE as an example, go to `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\` and you will find the folder structure which has been created in the Step 3 according to the configration defined in `\UK_Digital_Twin\UK_Power_System_SMR_Replacement\SMR_Replacement\config_postProcessing_LCOE60.json`.
+Taking the 29-bus model and the £60/MWh LCOE as an example, go to `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\`.
 
-In this folder you will find there are three sub-folders named as
+In this folder you will find that there are three sub-folders named as
 
-`weight0.25`,
-`weight0.5`,
-`weight0.75`.
+   `weight0.25`,
+   `weight0.5`,
+   `weight0.75`.
 
-Open each sub-folder, there are four sub-sub-folders included which is listed as 
+Open each sub-folder, there are four sub-folders included which are listed as 
 
-`carbonTax0`,
-`carbonTax40`,
-`carbonTax50`,
-`carbonTax150`.
+   `carbonTax0`,
+   `carbonTax40`,
+   `carbonTax50`,
+   `carbonTax150`.
 
-The name of the folder refering to the condition of creating the visulisation of the each subfigure in figure 5 of prepint 312.
+The name of the folder referring to the condition of creating the visulisation of the each subfigure in figure 5 of prepint 312.
 
 If we use the first subfigure as the demonstration example, which is generated under the condition as the weather condition is WBSB, weight 0.25, carbon tax 0 and 0 SMR . It is worthy to mention that the number of the SMR denoted in each subfigure in preprint 312 is the optimised result. In this example, 0 SMR means that when carbon tax set to be 0, the most economic solution is with no SMR adoption.
 
-To create this figure, there are four files are needed to be copied into the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_0\`.
+To create this figure, four files are needed to be copied into the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_0\`.
 
-The first file is the GeoJSON for the operational fossil fired plants including the power plants fueled by coal, oil and natural gas. Go to the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\fossilFuelPowerPlantGEOJSON\<TIMESTAMP>\` and find the file `fossilFuelPowerPlantGeoJSON_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson` then copy it to the scenario folder mentioned above.
+- 4.2.1 The first file is the GeoJSON for the operational fossil fired plants including the power plants fueled by coal, oil and natural gas. Go to the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\fossilFuelPowerPlantGEOJSON\<YYYYMMDD-hhmm>\` and find the file `fossilFuelPowerPlantGeoJSON_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson` then copy it to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_0\`.
 
-The next is to copy the file `TotalOutputForRegionalArea_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson` from the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\regionalOutputJSONFiles\<TIMESTAMP>\29\`.
+- 4.2.2 The next is to copy the file `TotalOutputForRegionalArea_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson` from the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\regionalOutputJSONFiles\<YYYYMMDD-hhmm>\29\` to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_0\`.
 
-Then the following step is to copy the GeoJSON file which demonstrates the SMR deployment, however for this example, there is no SMR to be introduced. Therefore, in order to aviod causing any error, please copy the empty GeoJSON file from the path `\UK_Digital_Twin\resources\HTML_Files\SMR_FossilPlant_output\SMR_EMPTY.geojson` to the scenario folder.
+- 4.2.3 Then the following step is to copy the GeoJSON file which demonstrates the SMR deployment, however for this example, there is no SMR to be introduced. Therefore, in order to aviod causing any error, please copy the empty GeoJSON file from the path `\UK_Digital_Twin\resources\HTML_Files\SMR_FossilPlant_output\SMR_EMPTY.geojson` to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_0\`.
 
-The final step is to copy the `index.html` template via `\UK_Digital_Twin\resources\HTML_Files\SMR_FossilPlant_output\index.html` into the scenario folder. In the `index.html`, please do the following modification:
+- 4.2.4 The final step is to copy the `index.html` template from `\UK_Digital_Twin\resources\HTML_Files\SMR_FossilPlant_output` into the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_0\`. In the `index.html`, please do the following modification:
 
-Change `<SMR_GEOJSON_FILE_NAME>` into the file name in the folder which is `SMR_EMPTY.geojson`,
-change `<FOSSIL_POWER_PLANT_GEOJSON_FILE_NAME>` into the file name in the folder which is `fossilFuelPowerPlantGeoJSON_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`, and
-change `<OUTPUT_POWER_PLANT_GEOJSON_FILE_NAME>` into the file name in the folder which is `TotalOutputForRegionalArea_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`.
+- 4.2.4.1 Replace `<SMR_GEOJSON_FILE_NAME>` with `SMR_EMPTY.geojson`,
+- 4.2.4.2 Replace `<FOSSIL_POWER_PLANT_GEOJSON_FILE_NAME>` with `fossilFuelPowerPlantGeoJSON_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
+- 4.2.4.3 Replace `<OUTPUT_POWER_PLANT_GEOJSON_FILE_NAME>` with `TotalOutputForRegionalArea_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`.
 
-It has to be address here that it is not always the case that this `SMR_EMPTY.geojson` is needed to be copied. For instance, the third figure of the first row of figure 5 which is created for the scenario with 28 SMR under the condition of carbon tax 55 £/t. To get the GeoJSON file for this condition, please go the path `\UK_Digital_Twin\outputs\smr_replacement_fig\GeneratorJSONFiles_29bus60LCOE\28_SMRs_55_CarbonTax\` and copy the file  `29BusModel_28_SMRs_Introduced_CarbonTax55_WeatherCondition_WBSB_weighter_0.25_SMR.geojson` to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`. 
+- 4.3 Start the http.server for the visulisation in Google mapbox.
 
-- 4.3 Initiate the http.server for the visulisation in Google mapbox.
-
-Following in the example mentioned in the item 4.2,run the following command in the terminal
-    `cd /home/wx243/TheWorldAvatar/UK_Digital_Twin/outputs/MAPBOX_files/SMR_FossilPlant_output/29bus_LCOE_60£/weather_WBSB/weight_0.25/carbonTax_0`
+Following the example mentioned in item 4.2, run the following command in the terminal
+    `cd outputs/MAPBOX_files/SMR_FossilPlant_output/29bus_LCOE_60£/weather_WBSB/weight_0.25/carbonTax_0`
 
 Then start up the http server at the port 8000 by running the command in the terminal
     `python -m http.server 8000`
@@ -314,3 +312,5 @@ Then start up the http server at the port 8000 by running the command in the ter
 When the server is initialised, please go to `http://localhost:8000/` to check the result. If you want to terminite the server, simply press the `Ctrl + C`
 
 It should be noticed that due to the random nature of genertic algorithm, the results may look slightly different from the one reported in preprint 312 as the GA algorithm cannot generate the exactly same Pareto Front every time.
+
+Step 5 (OPTIONAL): Ready for visulising the branch loss aginst the net demand?
