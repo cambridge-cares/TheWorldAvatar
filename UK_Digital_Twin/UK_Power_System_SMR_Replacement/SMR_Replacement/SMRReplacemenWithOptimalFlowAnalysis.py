@@ -1494,7 +1494,7 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
                 self.netDemandingList_regionalAreaForEachWeight.append(netDemanding_regionalArea)         
             return 
 
-##TODO: this function should be updated according to the updated version of the code   
+##TODO: this function should be updated according to the updated version of the code (using the derivation framwork for markup)   
     def ModelPythonObjectOntologiser(self):
         """
         create KG representation for all model objects
@@ -3278,20 +3278,44 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
         self.mkdirFilePath(self.fossilFuelPowerPlantGEOJSON, '')
         for cf in specifiedConfigList:
             if len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
-                geojsonPath = self.localRootFilePath + '/GeneratorJSONFiles_%s/'%(str(self.numOfBus) + 'bus' + str(self.SMR_LCOE) + 'LCOE') +  str(cf[0]) + '_SMRs_' + str(cf[1]) +'_CarbonTax/' + str(self.numOfBus) + 'BusModel_' + str(self.SMR_LCOE) + '_SMRs_Introduced_CarbonTax' + str(cf[1]) + '_WeatherCondition_' + str(cf[2]) + str(3) + '_ExtantGenerator.geojson'
+                geojsonPath = self.localRootFilePath + '/GeneratorJSONFiles_%s/'%(str(self.numOfBus) + 'bus' + str(self.SMR_LCOE) + 'LCOE') +  str(cf[0]) + '_SMRs_' + str(cf[1]) +'_CarbonTax/' + str(self.numOfBus) + 'BusModel_' + str(cf[0]) + '_SMRs_Introduced_CarbonTax' + str(cf[1]) + '_WeatherCondition_' + str(cf[2]) + '_weighter_' + str(cf[3]) + '_ExtantGenerator.geojson'
                 with open(geojsonPath) as f:
                     gj = geojson.load(f)
-                fList = gj['features'][0]
+                fList = gj['features']
                 geojson_file = """
                 {
                     "type": "FeatureCollection",
                     "features": ["""
                 # iterating over features (rows in results array)
                 for pp in fList:
-                    if pp["Fuel Type"] in ["Coal", "NaturalGas"]:
-                        geojson_file += '\n' + pp
-                    
-                geojson_file = geojson_file[:-1]
+                    if pp["properties"]["Fuel Type"] in ["Coal", "NaturalGas"]:
+                        if pp["properties"]["Fuel Type"] == "Coal":
+                            colour = "#99A3A4"
+                        else:
+                            colour = "#eb8500"
+                        feature = """{
+                                    "type": "Feature",
+                                    "properties": {
+                                    "Fuel Type": "%s",
+                                    "Capacity": %s,
+                                    "Output": %s,
+                                    "Carbon tax rate": %s,
+                                    "Status" : "%s",
+                                    "marker-color" : "%s",
+                                    "marker-size" : "%s",
+                                    "IRI": "%s"
+                                    },
+                                    "geometry": {
+                                    "type": "Point",
+                                    "coordinates": %s
+                                    }                                                                                
+                                    },"""%(pp["properties"]["Fuel Type"], pp["properties"]["Capacity"], 
+                                           pp["properties"]["Output"], pp["properties"]["Carbon tax rate"], 
+                                           pp["properties"]["Status"], colour, pp["properties"]["marker-size"], 
+                                           pp["properties"]["IRI"], pp["geometry"]["coordinates"])                                      
+                        geojson_file += '\n' + feature               
+                if not geojson_file[-1] == "[":
+                    geojson_file = geojson_file[:-1]
                 # finishing file end 
                 end_geojson = """
                     ]
@@ -4555,8 +4579,34 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
         plt.cla()
         return
 
+    """Create the folrder path for maintaining the files for Mapbox visulisation"""
+    def MAPBOX_Preparation_FolderPath(self, regionalOutputConfig, branchLossConfig):
+        ## Folder for regional output files
+        path_regional = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/MAPBOX_files/SMR_FossilPlant_output/%sbus_LCOE_%s£/"%(str(self.numOfBus), str(self.SMR_LCOE))
+        for rc in regionalOutputConfig:
+            path = path_regional + "weather_" + str(rc[2]) + "/weight_" + str(rc[3]) + "/carbonTax_" + str(rc[1]) + "/"
+            folder = os.path.exists(path)
+            if not folder:                
+                os.makedirs(path)           
+                print("---  new folder %s...  ---" % path)
+            else:
+                print("---  The folder exists! %s  ---" % path)
+        
+        ## Folder for branch losses
+        path_branchLoss = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/MAPBOX_files/BranchLoss_netDemand/%sbus_LCOE_%s£/"%(str(self.numOfBus), str(self.SMR_LCOE))
+        for bc in branchLossConfig:
+            path = path_branchLoss + "weather_" + str(rc[2]) + "/weight_" + str(bc[3]) + "/carbonTax_" + str(bc[1]) + "/"
+            folder = os.path.exists(path)
+            if not folder:                
+                os.makedirs(path)           
+                print("---  new folder %s...  ---" % path)
+            else:
+                print("---  The folder exists! %s  ---" % path)
+        return
+
+
 if __name__ == '__main__':
-    
+
     ## 1. Specify the model config, 10-bus or 29 bus 
     configName = str(input('Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): '))
     with open('./UK_Power_System_SMR_Replacement/SMR_Replacement/config%s.json'%configName, 'r') as config_file:
@@ -4591,6 +4641,8 @@ if __name__ == '__main__':
     numOfBranch = config_data["NumOfBranch"]
     rootPath = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/smr_replacements/%sbus%sbranch_LCOE_%s£/"%(str(numberOfBus), str(numOfBranch), str(SMR_LCOE))
 
+    # summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
+    
     if not ifReadLocalResults:
         folder = os.path.exists(rootPath)
         if not folder:                
@@ -4598,8 +4650,6 @@ if __name__ == '__main__':
             print("---  new folder %s...  ---" % rootPath)
         else:
             print("---  There has npy folder!  ---")
-
-    summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
 
     ## 7. Number of the round
     r = int(input('Please confirm the round of this run, ranging from 1 to 6: '))
@@ -4745,33 +4795,37 @@ if __name__ == '__main__':
         # netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
 
         """The line charts"""
-        for pickedWeight in config_data_postp["pickedWeightList"]:
-            smr_replacement_for_fossil_fuel.lineGraph_weatherImpact(pickedWeight, config_data_postp["currentYear"], config_data_postp["currentYearlyCO2Emission_Mt"], 
-                                                                    config_data_postp["estimatedCO2Emissions_Mt"], config_data_postp["calculatedCO2Emissions_Mt"],
-                                                                    config_data_postp["correspondingCarbonTax"], config_data_postp["divergedPoint"],
-                                                                    config_data_postp["SMRTransitionWindowLowerBound"], config_data_postp["SMRTransitionWindowUpperBound"],
-                                                                    config_data_postp["NonSMRTransitionLowerBound"], config_data_postp["NonSMRTransitionUpperBound"],
-                                                                    summary_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-                                                                    config_data["weatherConditionList"])
-        """Capacity figure"""
-        smr_replacement_for_fossil_fuel.stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(config_data_postp["givenNumberofSMR"], config_data_postp["reported_consumption"], config_data_postp["plannedNuclearCapacity"])
+        # for pickedWeight in config_data_postp["pickedWeightList"]:
+        #     smr_replacement_for_fossil_fuel.lineGraph_weatherImpact(pickedWeight, config_data_postp["currentYear"], config_data_postp["currentYearlyCO2Emission_Mt"], 
+        #                                                             config_data_postp["estimatedCO2Emissions_Mt"], config_data_postp["calculatedCO2Emissions_Mt"],
+        #                                                             config_data_postp["correspondingCarbonTax"], config_data_postp["divergedPoint"],
+        #                                                             config_data_postp["SMRTransitionWindowLowerBound"], config_data_postp["SMRTransitionWindowUpperBound"],
+        #                                                             config_data_postp["NonSMRTransitionLowerBound"], config_data_postp["NonSMRTransitionUpperBound"],
+        #                                                             summary_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        #                                                             config_data["weatherConditionList"])
+        # """Capacity figure"""
+        # smr_replacement_for_fossil_fuel.stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(config_data_postp["givenNumberofSMR"], config_data_postp["reported_consumption"], config_data_postp["plannedNuclearCapacity"])
 
         """WITH SPECIFIED CONFIGRATION""" 
 
-        config_data_postp["ifSpecifiedResultsForNetDemanding"]
+        if config_data_postp["ifSpecifiedResultsForNetDemanding"] in "True":
+            ifSpecifiedResultsForNetDemanding = True
+        else:
+            ifSpecifiedResultsForNetDemanding = False
 
-        # smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        #                                                             config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig"])
-        smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-                                                                    config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig_brchloss"])
-        # smr_replacement_for_fossil_fuel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        #                                                             config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig_output"])
-        smr_replacement_for_fossil_fuel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-                                                                    config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig_brchloss"])
-        smr_replacement_for_fossil_fuel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-                                                                    config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig_output"])  
-        smr_replacement_for_fossil_fuel.GeoJSONCreator_fossilFuelPowerPlant(config_data_postp["specifiedConfig_output"])
+        ##### smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        #####                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig"])
+        # smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
+        # ##### smr_replacement_for_fossil_fuel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        # #####                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_output"])
+        # smr_replacement_for_fossil_fuel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
+        # smr_replacement_for_fossil_fuel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_output"])  
+        # smr_replacement_for_fossil_fuel.GeoJSONCreator_fossilFuelPowerPlant(config_data_postp["specifiedConfig_output"])
 
+        smr_replacement_for_fossil_fuel.MAPBOX_Preparation_FolderPath(config_data_postp["specifiedConfig_output"], config_data_postp["specifiedConfig_brchloss"])
 
     print('-----Terminal-----')
 
