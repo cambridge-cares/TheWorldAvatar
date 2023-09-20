@@ -274,7 +274,7 @@ The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being
 
 Note: If you want to reference icons uploaded in this way from a GeoServer `.sld` file, you will need to use stack-internal URLs, e.g.:
 ```
-<OnlineResource xlink:type="simple" xlink:href="http://<STACK_NAME>-geoserver:8080/geoserver/www/icons/myicon.png" />
+<OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/www/icons/myicon.png" />
 ```
 Relative file-system paths containing `..` are not supported.
 
