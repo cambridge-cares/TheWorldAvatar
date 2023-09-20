@@ -16,7 +16,6 @@ from .make_example_tail2tail import ExampleMakerTail2Tail
 
 
 class DatasetFromKgMaker:
-    QUERY_PATHS = ["h2t", "t2h"]
     # SubstructureKeysFingerprint is not a numerical value for comparison.
     # We thus exclude it from tail-to-head queries.
     PROPERTY_NAMES_FOR_T2H = [
@@ -28,6 +27,79 @@ class DatasetFromKgMaker:
         self.example_maker_head2tail = ExampleMakerHead2Tail()
         self.example_maker_tail2head = ExampleMakerTail2Head()
         self.example_maker_tail2tail = ExampleMakerTail2Tail()
+
+    def make_examples(self, repeats: int = 1):
+        examples = []
+
+        for _ in range(repeats):
+            print("Generating examples with one head and one tail...")
+            for query_path in ["h2t", "t2h"]:
+                examples.extend(
+                    self.make_examples_1h_1t(
+                        query_path=query_path,
+                        tail_class="property",
+                        sampling_size=len(
+                            PROPERTY_NAMES
+                            if query_path != "t2h"
+                            else self.PROPERTY_NAMES_FOR_T2H
+                        ),
+                    )
+                )
+                examples.extend(
+                    self.make_examples_1h_1t(
+                        query_path=query_path,
+                        tail_class="identifier",
+                        sampling_size=len(IDENTIFIER_NAMES),
+                    )
+                )
+                sampling_size = 3
+                examples.extend(
+                    self.make_examples_1h_1t(
+                        query_path=query_path,
+                        tail_class="use",
+                        sampling_size=sampling_size,
+                    )
+                )
+                examples.extend(
+                    self.make_examples_1h_1t(
+                        query_path=query_path,
+                        tail_class="chemicalclass",
+                        sampling_size=sampling_size,
+                    )
+                )
+
+            print("Generating examples with one head and two tails...")
+            for query_path in ["h2t", "t2h"]:
+                examples.extend(
+                    self.make_examples_1h_2t(
+                        query_path=query_path,
+                        tail_class="property",
+                        sampling_size=len(
+                            PROPERTY_NAMES
+                            if query_path != "t2h"
+                            else self.PROPERTY_NAMES_FOR_T2H
+                        ),
+                    )
+                )
+            examples.extend(
+                self.make_examples_1h_2t(
+                    query_path="h2t",
+                    tail_class="identifier",
+                    sampling_size=len(IDENTIFIER_NAMES),
+                )
+            )
+            for query_path in ["h2t", "t2h", "t2t"]:
+                examples.extend(
+                    self.make_examples_1h_2t(query_path=query_path, sampling_size=5)
+                )
+
+            print("Generating examples with one head and three tails...")
+            for query_path in ["h2t", "t2h", "t2t"]:
+                examples.extend(
+                    self.make_examples_1h_3t(query_path=query_path, sampling_size=5)
+                )
+
+        return examples
 
     def make_examples_1h_1t(
         self, query_path: str, tail_class: str, sampling_size: int = 1
@@ -98,6 +170,9 @@ class DatasetFromKgMaker:
             for k, v in missing_entries.items():
                 print(k, ": ", v)
 
+        for example in examples:
+            example["tail_num"] = 1
+
         return examples
 
     def make_examples_1h_2t(
@@ -110,7 +185,7 @@ class DatasetFromKgMaker:
                 self.PROPERTY_NAMES_FOR_T2H if query_path == "t2h" else PROPERTY_NAMES
             )
             for p_pair in random.sample(
-                itertools.combinations(sampling_frame, r=2), k=sampling_size
+                list(itertools.combinations(sampling_frame, r=2)), k=sampling_size
             ):
                 example = self.make_example(
                     property_names=p_pair,
@@ -127,7 +202,7 @@ class DatasetFromKgMaker:
                 )
 
             for i_pair in random.sample(
-                itertools.combinations(IDENTIFIER_NAMES, r=2), k=sampling_size
+                list(itertools.combinations(IDENTIFIER_NAMES, r=2)), k=sampling_size
             ):
                 example = self.make_example(
                     identifier_names=i_pair,
@@ -160,6 +235,9 @@ class DatasetFromKgMaker:
             raise ValueError(
                 f"Unexpected value for argument `tail_class`: {tail_class}."
             )
+        
+        for example in examples:
+            example["tail_num"] = 2
 
         return examples
 
@@ -186,6 +264,9 @@ class DatasetFromKgMaker:
 
             if example is not None:
                 examples.append(example)
+
+        for example in examples:
+            example["tail_num"] = 3
 
         return examples
 
@@ -242,15 +323,18 @@ class DatasetFromKgMaker:
         )
 
         if query_path == "h2t":
-            return self.example_maker_head2tail.make_example(subgraph)
+            example = self.example_maker_head2tail.make_example(subgraph)
+        elif query_path == "t2h":
+            example = self.example_maker_tail2head.make_example(subgraph)
+        elif query_path == "t2t":
+            example = self.example_maker_tail2tail.make_example(subgraph)
+        else:
+            raise ValueError(f"Unexpected value for `query_path`: {query_path}.")
 
-        if query_path == "t2h":
-            return self.example_maker_tail2head.make_example(subgraph)
+        if example is not None:
+            example["type"] = query_path
 
-        if query_path == "t2t":
-            return self.example_maker_tail2tail.make_example(subgraph)
-
-        raise ValueError(f"Unexpected value for `query_path`: {query_path}.")
+        return example
 
     def get_tail_nums_total2(
         self,
