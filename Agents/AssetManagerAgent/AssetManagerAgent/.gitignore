@@ -4,6 +4,7 @@ target/
 !**/src/test/**/target/
 ./credentials/*
 ./config/*
+*.pdf
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
