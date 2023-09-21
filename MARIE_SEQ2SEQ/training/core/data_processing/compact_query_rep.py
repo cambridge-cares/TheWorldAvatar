@@ -70,7 +70,7 @@ ALL_PROPERTIES_PATTERNS_VERBOSE = """
 """
 ALL_IDENTIFIERS_PATTERNS_VERBOSE = """
     ?SpeciesIRI ?hasIdentifierName ?IdentifierNameIRI .
-    ?IdentifierNameIRI  rdf:type ?IdentifierName .
+    ?IdentifierNameIRI rdf:type ?IdentifierName .
     ?IdentifierName rdfs:subClassOf os:Identifier .
     ?IdentifierNameIRI os:value ?IdentifierNameValue .
 
