@@ -256,17 +256,16 @@ In this folder, you will find the figure 2,3 and 4 displayed in prepint 312.
 
 Step 4 (OPTIONAL): How to visulise the SMR adoption on the UK regional power output map as the carbon tax increasing?
 
-In this step, we are going to create figure 5 reported in preprint 312 which is produced by combining multiple subfigures. The following instructions detail how to create subfigures corresponding to different conditions.
+In this step, we are going to create one of the 16 subfigures of figure 5 reported in preprint 312 based on 29-bus model. The following instructions detail how to create a subfigure corresponding to different conditions.
 
-- 4.1 Check the required materials and folder path structure: to conduct Step 4, please make sure that the step 3 is done as this step is required for post processing the results.
+- 4.1 Check the required materials and folder path structure: to conduct Step 4, please make sure that the step 3 is done as this step is required for this post processing step.
 
 Please check if the required files exist by going to `\UK_Digital_Twin\resources\HTML_Files\SMR_FossilPlant_output\` and make sure the following files are within this folder.
 
-   `FOSSILPOWERPLANT_EMPTY.geojson`
    `SMR_EMPTY.geojson`
    `index.html`
 
-- 4.2 Copy files into the designated path and folder.
+- 4.1.1 Copy files into the designated path and folder.
 
 Taking the 29-bus model and the £60/MWh LCOE as an example, go to `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\`.
 
@@ -289,6 +288,9 @@ If we use the first subfigure as the demonstration example, which is generated u
 
 To create this figure, four files are needed to be copied into the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_0\`.
 
+If the subfigure you are going to generate corresponds to a scenario with 0 SMR, follow step 4.2. If the subfigure you are going to generate corresponds to a scenario with SMR>0, follow step 4.3.
+
+- 4.2 How to generate a subfigure of figure 5 with 0 SMR.
 - 4.2.1 The first file is the GeoJSON for the operational fossil fired plants including the power plants fueled by coal, oil and natural gas. Go to the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\fossilFuelPowerPlantGEOJSON\<YYYYMMDD-hhmm>\` and find the file `fossilFuelPowerPlantGeoJSON_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson` then copy it to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_0\`.
 
 - 4.2.2 The next is to copy the file `TotalOutputForRegionalArea_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson` from the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\regionalOutputJSONFiles\<YYYYMMDD-hhmm>\29\` to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_0\`.
@@ -301,42 +303,76 @@ To create this figure, four files are needed to be copied into the scenario fold
 - 4.2.4.2 Replace `<FOSSIL_POWER_PLANT_GEOJSON_FILE_NAME>` with `fossilFuelPowerPlantGeoJSON_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
 - 4.2.4.3 Replace `<OUTPUT_POWER_PLANT_GEOJSON_FILE_NAME>` with `TotalOutputForRegionalArea_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
 
-- 4.3 Start the http.server for the visulisation in Google mapbox.
+- 4.2.4.4 Start the http.server for the visulisation in Google mapbox.
 
-Following the example mentioned in item 4.2, run the following command in the terminal
+Run the following command in the terminal
     `cd outputs/MAPBOX_files/SMR_FossilPlant_output/29bus_LCOE_60£/weather_WBSB/weight_0.25/carbonTax_0`
 
 Then start up the http server at the port 8000 by running the command in the terminal
     `python -m http.server 8000`
 
-When the server is initialised, please go to `http://localhost:8000/` to check the result. If you want to terminite the server, simply press the `Ctrl + C`.
+When the server is initialised, please go to `http://localhost:8000/` to check the result. If you want to terminite the server, simply press `Ctrl + C`.
 
-- 4.4 Another example for creating the subfigure in figure 5 of preprint 312.
+- 4.3 How to generate a subfigure of figure 5 with SMR>0:
 
-As the example shown above is the one with 0 SMR introduced, the following example is to generate the third figure in the first row of figure to demonstrate how to create the visulisation for the scenario with SMR adoption. The instruction covered here is deliberately to be wordy and repeated under the concern that whoever reopens this work may have no direct supports from the people who used to deeply involve in this detailed level. 
+The figure generated in 4.2 had 0 SMR introduced, but the following example generates the third figure in the first row of figure 5 to demonstrate how to create the visulisation for the scenario with SMR adoption.
 
-The subfigure displayed in figure 5 (row 1 column 3) is created under the weather condition WBSB, carbon tax £55/t, weight 0.25 and the optimised number of SMR is 28 (as labeled on the conern of each subfigure in figure 5). 
+The subfigure displayed in figure 5 (row 1 column 3) is created under the weather condition WBSB, carbon tax £55/t, weight 0.25 and the optimised number of SMR is 28 (as labeled on the top-left conner of each subfigure in figure 5). 
 
 To create this figure, four files are needed to be copied into the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`.
 
-- 4.4.1 The first file is the GeoJSON for the operational fossil fired plants including the power plants fueled by coal, oil and natural gas. Go to the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\fossilFuelPowerPlantGEOJSON\<YYYYMMDD-hhmm>\` and find the file `fossilFuelPowerPlantGeoJSON_(SMR28_CarbonTax_55_weatherCondition_WBSB_weight_0.25).geojson` then copy it to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`.
+- 4.3.1 The first file is the GeoJSON for the operational fossil fired plants including the power plants fueled by coal, oil and natural gas. Go to the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\fossilFuelPowerPlantGEOJSON\<YYYYMMDD-hhmm>\` and find the file `fossilFuelPowerPlantGeoJSON_(SMR28_CarbonTax_55_weatherCondition_WBSB_weight_0.25).geojson` then copy it to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`.
 
-- 4.4.2 The next is to copy the file `TotalOutputForRegionalArea_(SMR_28_CarbonTax_55_weatherCondition_WBSB_weight_0.25).geojson` from the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\regionalOutputJSONFiles\<YYYYMMDD-hhmm>\29\` to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`.
+- 4.3.2 The next step is to copy the file `TotalOutputForRegionalArea_(SMR_28_CarbonTax_55_weatherCondition_WBSB_weight_0.25).geojson` from the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\regionalOutputJSONFiles\<YYYYMMDD-hhmm>\29\` to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`.
 
-- 4.4.3 Then the following step is to copy the GeoJSON file which demonstrates the SMR deployment, please copy the GeoJSON file from the path `\UK_Digital_Twin\outputs\smr_replacement_fig\GeneratorJSONFiles_29bus60LCOE\28_SMRs_55_CarbonTax\29BusModel_28_SMRs_Introduced_CarbonTax55_WeatherCondition_WBSB_weighter_0.25_SMR.geojson` to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`.
+- 4.3.3 Then the following step is to copy the GeoJSON file which demonstrates the SMR deployment, please copy the GeoJSON file from the path `\UK_Digital_Twin\outputs\smr_replacement_fig\GeneratorJSONFiles_29bus60LCOE\28_SMRs_55_CarbonTax\29BusModel_28_SMRs_Introduced_CarbonTax55_WeatherCondition_WBSB_weighter_0.25_SMR.geojson` to the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`.
 
-- 4.4.4 The final step is to copy the `index.html` template from `\UK_Digital_Twin\resources\HTML_Files\SMR_FossilPlant_output` into the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`. In the `index.html`, please do the following modification:
+- 4.3.4 The final step is to copy the `index.html` template from `\UK_Digital_Twin\resources\HTML_Files\SMR_FossilPlant_output` into the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`. In the `index.html`, please do the following modification:
 
-- 4.4.4.1 Replace `<SMR_GEOJSON_FILE_NAME>` with `29BusModel_28_SMRs_Introduced_CarbonTax55_WeatherCondition_WBSB_weighter_0.25_SMR.geojson`
-- 4.4.4.2 Replace `<FOSSIL_POWER_PLANT_GEOJSON_FILE_NAME>` with `fossilFuelPowerPlantGeoJSON_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
-- 4.4.4.3 Replace `<OUTPUT_POWER_PLANT_GEOJSON_FILE_NAME>` with `TotalOutputForRegionalArea_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
+- 4.3.4.1 Replace `<SMR_GEOJSON_FILE_NAME>` with `29BusModel_28_SMRs_Introduced_CarbonTax55_WeatherCondition_WBSB_weighter_0.25_SMR.geojson`
+- 4.3.4.2 Replace `<FOSSIL_POWER_PLANT_GEOJSON_FILE_NAME>` with `fossilFuelPowerPlantGeoJSON_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
+- 4.3.4.3 Replace `<OUTPUT_POWER_PLANT_GEOJSON_FILE_NAME>` with `TotalOutputForRegionalArea_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
 
-It should be noticed that due to the random nature of genertic algorithm, the results may look slightly different from the one reported in preprint 312 as the GA algorithm cannot generate the exactly same Pareto Front every time.
+- 4.3.4.4 Start the http.server for the visulisation in Google mapbox.
+
+Run the following command in the terminal
+    `cd outputs/MAPBOX_files/SMR_FossilPlant_output/29bus_LCOE_60£/weather_WBSB/weight_0.25/carbonTax_55`
+
+Then start up the http server at the port 8000 by running the command in the terminal
+    `python -m http.server 8000`
+
+When the server is initialised, please go to `http://localhost:8000/` to check the result. If you want to terminite the server, simply press `Ctrl + C`.
+
+It should be noticed that due to the random nature of genetic algorithm, the results may look slightly different from the one reported in preprint 312 as by nature genetic algorithms cannot generate the exactly same Pareto Front every time.
+
+By following the above two examples, you can now generate the rest of the subfigures of figure 5 by choosing the corresponding files based on weight (e.g., 0.25, 0.5 and 0.75), number of SMRs (0, 19, 28, 33, 32) and carbon tax (e.g., 0, 40, 50, 55, 100 and 150)
 
 Step 5 (OPTIONAL): How to visulise the branch loss and regional net demand?
 
-- 5.1 To reproduce figure 6 in preprint 312. Take the first subfigure as an exaple which is created based on the weather condition WBSB, weight 0.25 and 33 SMRs. This figure is visulised in online geojson viewer, `https://geojson.io/#map=2/0/20`. Please go this website and set the mode of the map to be light. The find the folder from `\UK_Digital_Twin\outputs\smr_replacement_fig\netDemandingGeoJSONFiles\<YYYYMMDD-hhmm>\RegionalAreaNetDemanding` and import the file `RegionalAreaNetDemanding_(SMR_33_CarbonTax_150_weatherCondition_WBSB_weight_0.25).geojson` to `https://geojson.io/#map=2/0/20`. You can simple copy the conten of `RegionalAreaNetDemanding_(SMR_33_CarbonTax_150_weatherCondition_WBSB_weight_0.25).geojson` in to this online viewer. 
+- 5.1 Reproduce the first subfigure of figure 6 in preprint 312: This figure is created based on the weather condition WBSB, weight 0.25 and 33 SMRs. You are going to visualise the subfigure in an online geojson viewer. Please go to this geojson viewer website: `https://geojson.io/#map=2/0/20`. Note: set the mode of the map to be light if it is not set already. Then go to the folder `\UK_Digital_Twin\outputs\smr_replacement_fig\netDemandingGeoJSONFiles\<YYYYMMDD-hhmm>\RegionalAreaNetDemanding`, open the file `RegionalAreaNetDemanding_(SMR_33_CarbonTax_150_weatherCondition_WBSB_weight_0.25).geojson` and copy the content to the `</>JSON` tab.
 
-- 5.2 Then go to find `\UK_Digital_Twin\outputs\smr_replacement_fig\branchLossGeoJSONFiles\<YYYYMMDD-hhmm>\29\BranchGrid_(SMR_33_CarbonTax_150_weatherCondition_WBSB_weight_0.25).geojson` and import this file into the same online viewer mentioned in iterm 5.1. Or you can copy the content from this geojson file but please only copy the "features" from line 5 to line 1588 in `BranchGrid_(SMR_33_CarbonTax_150_weatherCondition_WBSB_weight_0.25).geojson` to `</>JSON` tab after the last feature in `https://geojson.io/#map=2/0/20`. Please add `,` after the last feature that already exist in `</>JSON` tab of `https://geojson.io/#map=2/0/20` before copying the content from `BranchGrid_(SMR_33_CarbonTax_150_weatherCondition_WBSB_weight_0.25).geojson`.
+- 5.2 In this step, you will be appending additional features to the GeoJSON content of the visulaisation in `https://geojson.io/#map=2/0/20` in Item 5.1 to show the overalyed lines representing grid branches. Now open the file `\UK_Digital_Twin\outputs\smr_replacement_fig\branchLossGeoJSONFiles\<YYYYMMDD-hhmm>\29\BranchGrid_(SMR_33_CarbonTax_150_weatherCondition_WBSB_weight_0.25).geojson` and copy line 5 to line 1588 from this geojson file to the `</>JSON` tab after the last feature in `https://geojson.io/#map=2/0/20`. Add `,` after the last feature and paste the lines that you already have copied. The feature has this structure:
 
-It should be noticed that due to the random nature of genertic algorithm, the results may look slightly different from the one reported in preprint 312 as the GA algorithm cannot generate the exactly same Pareto Front every time.
+{
+	"type": "Feature",
+	"properties": {
+	...
+	},
+	"geometry":  ...             
+}
+
+After adding a `,`, it will look like the following:
+
+{
+	"type": "Feature",
+	"properties": {
+	...
+	},
+	"geometry":  ...             
+},
+
+Paste the copied lines after the last comma.
+
+It should be noticed that due to the random nature of genertic algorithm, the results may look slightly different from the one reported in preprint 312 as genetic algorithms cannot generate the exactly same Pareto Front every time.
+
+By following the above example, you now can generate the second and third subfigures of figure 6 by choosing the corresponding files with weight 0.50 and 0.75, respectively.
