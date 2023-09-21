@@ -1,6 +1,6 @@
 {
     "ServiceSpec": {
-        "Name": "dhoptimisationtrigger_agent",
+        "Name": "dhoptimisationtrigger-agent",
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/dhoptimisationtrigger-agent:1.0.0",
