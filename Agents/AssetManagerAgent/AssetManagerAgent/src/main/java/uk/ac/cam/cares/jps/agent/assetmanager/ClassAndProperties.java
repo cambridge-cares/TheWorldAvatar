@@ -39,7 +39,7 @@ public class ClassAndProperties {
     public static final Prefix Pref_EPE = SparqlBuilder.prefix("ontoelecpowerequipment",iri(ONTOEPE));
     public static final Prefix Pref_BIM = SparqlBuilder.prefix("ontobim", iri(ONTOBIM));
     public static final Prefix Pref_SAREF = SparqlBuilder.prefix("saref", iri(P_SAREF));
-    public static final Prefix Pref_OM = SparqlBuilder.prefix("saref", iri(P_OM));
+    public static final Prefix Pref_OM = SparqlBuilder.prefix("om2", iri(P_OM));
     public static final Prefix Pref_FIBO_AAP = SparqlBuilder.prefix("FIBOaap", iri(P_FIBO_AAP));
     public static final Prefix Pref_FIBO_ORG = SparqlBuilder.prefix("FIBOorg",iri(P_FIBO_ORG));
     public static final Prefix Pref_BOT = SparqlBuilder.prefix("bot", iri(P_BOT));

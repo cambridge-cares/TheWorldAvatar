@@ -93,3 +93,5 @@ def result():
 def getStatus():
     return f"<p>Printer status: {getPrinterStatus()}</p>"
 
+if __name__ == "__main__":
+    app.run()
