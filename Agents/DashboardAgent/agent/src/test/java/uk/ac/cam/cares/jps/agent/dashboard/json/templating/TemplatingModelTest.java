@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TemplatingModelTest {
+public class TemplatingModelTest {
     private static Map<String, String> SAMPLE_DB_CONNECTION_ID_MAP;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ASSETS;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ROOMS;
@@ -40,7 +40,7 @@ class TemplatingModelTest {
         assertEquals(genExpectedJsonSyntax(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleRoomMeasureMap(true)), result);
     }
 
-    private static String genExpectedJsonSyntax(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> items) {
+    public static String genExpectedJsonSyntax(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> items) {
         StringBuilder builder = new StringBuilder();
         StringBuilder tempBuilder = new StringBuilder();
         builder.append("{\"enable\": true,\"list\": [");

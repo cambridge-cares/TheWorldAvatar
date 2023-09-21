@@ -10,7 +10,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PanelModelTest {
+public class PanelModelTest {
     private static Map<String, String> SAMPLE_DB_CONNECTION_ID_MAP;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ASSETS;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ROOMS;
@@ -30,7 +30,7 @@ class PanelModelTest {
     }
 
     @Test
-    void testConstructForOnlyAssets() {
+    void testConstruct_AssetsOnly() {
         // Construct and execute the method
         String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ASSETS).construct();
         // Test outputs
@@ -38,7 +38,7 @@ class PanelModelTest {
     }
 
     @Test
-    void testConstructForOnlyRoomsNoThresholds() {
+    void testConstruct_RoomsOnlyNoThresholds() {
         // Construct and execute the method
         String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ROOMS).construct();
         // Test outputs
@@ -46,7 +46,7 @@ class PanelModelTest {
     }
 
     @Test
-    void testConstructForOnlyRoomsThresholds() {
+    void testConstruct_RoomsOnlyThresholds() {
         // This test only include thresholds for one of the room measures as thresholds are not mandatory
         // Construct and execute the method
         String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleRoomMeasureMap(true)).construct();
@@ -55,7 +55,7 @@ class PanelModelTest {
     }
 
     @Test
-    void testConstructForBothAssetsAndRoomsNoThresholds() {
+    void testConstruct_AssetsAndRoomsNoThresholds() {
         // Construct and execute the method
         String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false)).construct();
         // Test outputs
@@ -63,7 +63,7 @@ class PanelModelTest {
     }
 
     @Test
-    void testConstructForBothAssetsAndRoomsWithThreshold() {
+    void testConstruct_AssetsAndRoomsWithThreshold() {
         // This test only include thresholds for one of the room measures as thresholds are not mandatory
         // Construct and execute the method
         String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(true)).construct();
@@ -72,7 +72,8 @@ class PanelModelTest {
     }
 
 
-    private static String genExpectedRowSyntax(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> items) {
+    public static String genExpectedRowSyntax(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> items) {
+        if (items.isEmpty()) return "";
         // Initialise the settings
         StringBuilder builder = new StringBuilder();
         ROW_NUMBER = 0;
