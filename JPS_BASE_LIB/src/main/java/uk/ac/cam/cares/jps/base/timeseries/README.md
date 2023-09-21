@@ -10,7 +10,7 @@ Key properties of the **`TimeSeries`** class:
 Key properties of the **`TimeSeriesClient`** class:
 * Interact with KG and RDB to (permanently) store or retrieve time series data
 * Relies on `TimeSeriesSPARQL` to interact with KG
-* Relies on `TimeSeriesRDBClient` to interact with RDB
+* Relies on `TimeSeriesRDBClient` or `TimeSeriesRDBClientWithReducedTables` to interact with RDB
 
 Both classes support a time series to consist of several individual (but related) measures, which share the same time column. Any generic Java types (e.g. date time, integer, double etc.) are supported and a robust mapping between any dataIRI (stored in KG) and the respective values (stored in RDB) is ensured. 
 Initialising any new time series using the `TimeSeriesClient` creates all required relationships in the KG as well as corresponding table(s) in the RDB. Adding or deleting time series data only adds or deletes data points in the RDB. Deleting time series via the `TimeSeriesClient` deletes all associated relationships from the KG as well as corresponding table(s) in the RDB. Detailed descriptions of particular functions are provided in the respective docstrings. 
@@ -20,6 +20,63 @@ The TimeSeriesClient supports storing and querying geometries in PostGIS by prov
 
 ## Schema specification
 It is possible to store time series data in a separate schema through the method TimeSeriesClient.setRDBSchema(String schema). If this is not set, the TimeSeriesClient defaults to the "public" schema.
+
+## TimeSeriesRDBClientInterface
+There are two classes that extend this interface:
+1) TimeSeriesRDBClient
+    - This is the first and default version.
+    - Creates a table for every single time series
+    - May not be suitable for applications which require many tables
+
+    Usage example:
+    ```
+    TimeSeriesRDBClient<Instant> timeSeriesRdbClient = new TimeSeriesRDBClient<>(Instant.class);
+    RemoteStoreClient remoteStoreClient = new RemoteStoreClient(kgUrl, kgUrl);
+
+    TimeSeriesClient<Instant> timeSeriesClient = new TimeSeriesClient(remoteStoreClient, timeSeriesRdbClient);
+
+    RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(rdb, user, password);
+
+    try (Connection conn = rdbStoreClient.getConnection()) {
+        timeSeriesClient.initTimeSeries(dataIRIs, dataClass, timeUnit, conn);
+        timeSeriesClient.addTimeSeriesData(timeseries, conn);
+    }
+    ```
+
+2) TimeSeriesRDBClientWithReducedTables
+    - May be suitable for applications which require instantiation of new time series repetitively, when using the default option creates too many tables.
+
+    Usage example:
+    ```
+    TimeSeriesRDBClientWithReducedTables<Instant> timeSeriesRdbClient = new TimeSeriesRDBClientWithReducedTables<>(Instant.class);
+    RemoteStoreClient remoteStoreClient = new RemoteStoreClient(kgUrl, kgUrl);
+
+    TimeSeriesClient<Instant> timeSeriesClient = new TimeSeriesClient(remoteStoreClient, timeSeriesRdbClient);
+
+    RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(rdb, user, password);
+
+    try (Connection conn = rdbStoreClient.getConnection()) {
+        timeSeriesClient.initTimeSeries(dataIRIs, dataClass, timeUnit, conn);
+        timeSeriesClient.addTimeSeriesData(timeseries, conn);
+    }
+    ```
+* The connection object should be created using Java's try-with-resources block (https://www.baeldung.com/java-try-with-resources) as shown in the example above. This is to ensure the connection is closed automatically by Java.
+* Interaction with time series data should be done via the TimeSeriesClient (not TimeSeriesRDBClient or TimeSeriesRDBClientWithReducedTables).
+* The methods in the TimeSeriesClient are broadly separated into methods that receive a connection object and methods without the connection object. By using methods with the connection object, it is up to the developer to ensure that the connection is closed by using try-with-resources demonstrated.
+
+Example using TimeSeriesRDBClient's built-in connection handling:
+```
+TimeSeriesRDBClient<Instant> timeSeriesRdbClient = new TimeSeriesRDBClient<>(Instant.class);
+timeSeriesRdbClient.setRdbUrl(url); timeSeriesRdbClient.setRdbUser(user); timeSeriesRdbClient.setRdbPassword(password);
+
+RemoteStoreClient remoteStoreClient = new RemoteStoreClient(kgUrl, kgUrl);
+
+TimeSeriesClient<Instant> timeSeriesClient = new TimeSeriesClient(remoteStoreClient, timeSeriesRdbClient);
+
+timeSeriesClient.initTimeSeries(dataIRIs, dataClass, timeUnit);
+timeSeriesClient.addTimeSeriesData(timeseries);
+```
+Note the setting of RDB details in the TimeSeriesRDBClient object, the same applies to TimeSeriesRDBClientWithReducedTables. Each method call will open and close a single connection, so this may not be suitable for applications that require lots of interaction with the database.
 
 ## Time series instantiation
 The namespaces used in this document:  
@@ -99,7 +156,7 @@ where *number of Days* will be converted to the `numericDuration` according to t
 Use the following conversions when creating the Duration object:
 `1 month = 33 days` `1 year = 366 days`.
 
-### Instantiation in RDB ###
+### Instantiation in RDB using TimeSeriesRDBClient ###
 In PostgreSQL, the table and column names are restricted to 63 characters. Hence, a central **lookup table** is required to map any `dataIRI` to its corresponding location, i.e. `tableName` and `columnName`.
 
 During initialisation, each `dataIRI` is assigned a `tableName` and `columnName` to make this as robust as possible. Table names will be generated using unique identifiers (i.e. UUIDs), while column names are represented as "column <enumerator>", e.g. column 1, column 2, etc. For better reference, the `timeseriesIRI` associated with the `dataIRI` is also stored in the central table.
@@ -131,6 +188,26 @@ This table contains all information for `time series 2`.
 | t1 | ... | ... | ... |
 | t2 | ... | ... | ... |
 
+### Instantiation in RDB using TimeSeriesRDBClientWithReducedTables ###
+Instead of creating a table for each time series instance, this class will use one table per time class and reuse existing columns when a new time series instance is added. The lookup table is similar:
+| data_iri | time_series_iri | table_name | column_name |
+| :---: | :---: | :---: | :---: |
+| measure 1 | time series 1 | table 1 | column 1 |
+| measure 2 | time series 1 | table 1 | column 2 |
+| measure 3 | time series 2 | table 1 | column 1 |
+| measure 4 | time series 2 | table 1 | column 2 |
+| measure 5 | time series 2 | table 1 | column 3 |
+
+The table storing the time series data contains an extra time series IRI column to filter the time series:
+| time | column 1 | column 2 | column 3 | time series |
+| :--: | :--: | :--: | :--: | :--: |
+| t1 | ... | ... | null | time series 1 |
+| t2 | ... | ... | null | time series 1 |
+| t1 | ... | ... | ... | time series 2 |
+| t2 | ... | ... | ... | time series 2 |
+
+Due to the way different time series share the same table, there may be a lot of table entries being null if the time series have different data types or number of data.
+
 ## Examples on how to use the TimeSeriesClient ##
 - **Integration tests**:
 Detailed integration tests for the `TimeSeriesClient` as well as the (underlying) `TimeSeriesRDBClient` and `TimeSeriesSparql` are provided in the respective [test repository]. Please note that all integration tests use the Testcontainers Java library and, hence, require Docker to be installed. Furthermore, access to the `docker.cmclinnovations.com registry` is required from the machine the test is run on to pull docker images.  
@@ -142,24 +219,6 @@ You can request login details by emailing `support<at>cmclinnovations.com` with 
    * [FloodAgent] queries water level data from the Environment Agency, stores it in the KG, and retrieves it for visualisation (Java)
    * [TimeSeriesExample] provides a minimum working example on how to instantiate time series data which is attached to some geospatial reference, stores it in the KG, and retrieves it for visualisation (Python, access of JPS_BASE_LIB via py4jps)
    * [GasGridAgent] queries instantaneous gas flow data from the National Grid, stores it in the KG, and retrieves it for visualisation (Python, access of JPS_BASE_LIB via py4jps)
-
-### Updated Design ##
-The Agent examples above utilize the older version of `TimeSeriesClient`.<br> 
-The updated design to use the `TimeSeriesClient`: <br>
-- An instance of the `TimeSeriesClient` can be created with a pre-defined kbClient and the class type for the time values. 
-- The methods in `TimeSeriesClient` used to interact with the database require a **java.sql.Connection** object containing the connection to the database to be passed as an argument. 
-- To create the connection object: 
-  - Create an instance of `RemoteRDBStoreClient` and use `RemoteRDBStoreClient.getConnection()` method to obtain the connection object.
-
-**Example:**<br>
-`RDBStoreClient rdbStoreClient = new RDBStoreClient(url, user, password);`<br>
-`try (Connection conn = rdbStoreClient.getConnection()) {`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`TimeSeries ts = TimeSeriesClient.getTimeSeriesWithinBounds(dataIRIs, lowerbound, upperbound, conn);`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`TimeSeriesClient.addTimeSeriesData(ts, conn);`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`// other methods can be called similarly in this block`<br>
-`}`
-* Note: The connection object should be created using Java's try-with-resources block (https://www.baeldung.com/java-try-with-resources) as shown in the example above. This is to ensure the connection is closed automatically by Java.
-* Note: The README is to be updated to exemplify an agent that utilises the updated `TimeSeriesClient` design. 
 
 [//]: # (These are reference links used in the body)
 
