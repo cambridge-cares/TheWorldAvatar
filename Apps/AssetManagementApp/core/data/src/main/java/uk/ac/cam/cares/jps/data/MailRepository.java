@@ -33,6 +33,6 @@ public class MailRepository {
             onSuccess.onResponse(testMail);
 
             handler.removeCallbacksAndMessages(null);
-        }, 2000);
+        }, 500);
     }
 }

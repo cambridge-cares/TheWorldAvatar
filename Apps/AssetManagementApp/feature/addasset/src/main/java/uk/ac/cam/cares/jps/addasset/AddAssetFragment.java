@@ -33,6 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.databinding.FragmentAddAssetBinding;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
 import uk.ac.cam.cares.jps.data.AssetInfo;
+import uk.ac.cam.cares.jps.ui.UiUtils;
 
 @AndroidEntryPoint
 public class AddAssetFragment extends Fragment {
@@ -85,6 +86,11 @@ public class AddAssetFragment extends Fragment {
                     throw new RuntimeException(e);
                 }
                 loadUIComponent(request);
+
+                binding.doneBt.setOnClickListener(view1 -> {
+                    // todo: the check may not pass for edit function. Some mandatory fields are missing from the existing data, and in test phase the drop down list is not completed
+                    UiUtils.showNotImplementedDialog(requireContext());
+                });
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -101,6 +107,10 @@ public class AddAssetFragment extends Fragment {
         viewPager.setAdapter(adapter);
         List<String> tabNames = Arrays.asList("General", "Purchase", "Documents");
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabNames.get(position))).attach();
+
+        binding.saveBt.setOnClickListener(view -> {
+            UiUtils.showNotImplementedDialog(requireContext());
+        });
 
         binding.doneBt.setOnClickListener(view1 -> {
             // todo: the check may not pass for edit function. Some mandatory fields are missing from the existing data, and in test phase the drop down list is not completed

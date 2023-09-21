@@ -16,6 +16,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import uk.ac.cam.cares.jps.home.databinding.FragmentHomeBinding;
+import uk.ac.cam.cares.jps.ui.UiUtils;
 
 public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
@@ -60,6 +61,13 @@ public class HomeFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(request);
         });
 
+        binding.sweepCard.setOnClickListener(v -> {
+            UiUtils.showNotImplementedDialog(requireContext());
+        });
+
+        binding.scheduleCard.setOnClickListener(v -> {
+            UiUtils.showNotImplementedDialog(requireContext());
+        });
 
     }
 }

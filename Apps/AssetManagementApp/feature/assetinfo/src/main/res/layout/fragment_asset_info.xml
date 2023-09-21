@@ -30,19 +30,41 @@
         android:visibility="gone"
         />
 
-    <ImageButton
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/edit_bt"
+        android:id="@+id/info_app_bar_buttons"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/relativeLayout"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="@dimen/appbar_padding"
-        android:background="@drawable/ripple_edit"
-        android:contentDescription="@string/edit"
-        android:visibility="gone"
-        />
+        android:visibility="gone">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_bt"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/ripple_edit"
+            android:contentDescription="@string/edit"
+            android:visibility="visible"
+            />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/delete_bt"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/edit_bt"
+            android:layout_marginEnd="@dimen/component_margin_small"
+            android:background="@drawable/ripple_delete"
+            android:contentDescription="@string/delete"
+            android:visibility="visible"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_view_container"

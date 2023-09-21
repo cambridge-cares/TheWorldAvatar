@@ -35,6 +35,7 @@ import java.io.IOException;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.assetinfo.databinding.FragmentAssetInfoBinding;
 import uk.ac.cam.cares.jps.data.AssetInfo;
+import uk.ac.cam.cares.jps.ui.UiUtils;
 
 @AndroidEntryPoint
 public class AssetInfoFragment extends Fragment {
@@ -97,15 +98,11 @@ public class AssetInfoFragment extends Fragment {
         LOGGER.info(getArguments().getString("uri"));
 
         ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.asset_info);
-        ImageButton editButton = (ImageButton) view.findViewById(R.id.edit_bt);
-        editButton.setVisibility(View.VISIBLE);
+        view.findViewById(R.id.info_app_bar_buttons).setVisibility(View.VISIBLE);
+        ImageButton editButton = view.findViewById(R.id.edit_bt);
+        editButton.setEnabled(false);
         editButton.setOnClickListener(view1 -> {
             AssetInfo assetInfo = viewModel.getAssetInfo().getValue();
-            if (assetInfo == null) {
-                LOGGER.error("edit button clicked before assetinfo has been retrieved");
-                return;
-            }
-
             NavDeepLinkRequest request = null;
             try {
                 request = NavDeepLinkRequest.Builder
@@ -117,10 +114,20 @@ public class AssetInfoFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(request);
         });
 
+        ImageButton deleteButton = view.findViewById(R.id.delete_bt);
+        deleteButton.setEnabled(false);
+        deleteButton.setOnClickListener(view1 -> {
+            // todo: call repository for delete
+            UiUtils.showNotImplementedDialog(requireContext());
+        });
+
         viewModel.getAssetInfo().observe(this.getViewLifecycleOwner(), assetInfo -> {
             assetInfoAdapter.updateProperties(assetInfo);
             hideShimmer();
             binding.assetInfoRv.setVisibility(View.VISIBLE);
+
+            editButton.setEnabled(true);
+            deleteButton.setEnabled(true);
 
             binding.viewGraphBt.setOnClickListener(bt -> new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.view_status_graph)
                     .setMessage(R.string.view_status_in_bms_app).setPositiveButton(R.string.yes, (dialogInterface, i) -> {
