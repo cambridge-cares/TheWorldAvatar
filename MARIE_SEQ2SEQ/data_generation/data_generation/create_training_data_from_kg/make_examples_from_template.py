@@ -1,12 +1,13 @@
 import random
 
 from data_generation.constants import IDENTIFIER_LABELS, PROPERTY_LABELS, SPECIES
+from data_generation.create_training_data_from_kg.constants import INTERROGATIVE
 
 
 class ExampleMakerFromTemplate:
     def make_h2t_property(self, PropertyName: str):
         species = random.choice(SPECIES)
-        canonical_question = f"What is the {random.choice(PROPERTY_LABELS[PropertyName])} of {{species}}?"
+        verbalization = f"What is the {random.choice(PROPERTY_LABELS[PropertyName])} of {{species}}?"
         bindings = dict(species=species)
         sparql_query = f"""SELECT DISTINCT ?label ?{PropertyName}Value ?{PropertyName}UnitValue ?{PropertyName}ReferenceStateValue ?{PropertyName}ReferenceStateUnitValue
 WHERE {{
@@ -31,7 +32,8 @@ WHERE {{
     ?SpeciesIRI os:has{PropertyName} ?{PropertyName}Value .
 }}"""
         return dict(
-            canonical_question=canonical_question,
+            verbalization=verbalization,
+            verbalization_type=INTERROGATIVE,
             bindings=bindings,
             sparql_query=sparql_query,
             sparql_query_compact=sparql_query_compact,
@@ -41,7 +43,7 @@ WHERE {{
 
     def make_h2t_identifier(self, IdentifierName: str):
         species = random.choice(SPECIES)
-        canonical_question = f"What is the {random.choice(IDENTIFIER_LABELS[IdentifierName])} of {{species}}?"
+        verbalization = f"What is the {random.choice(IDENTIFIER_LABELS[IdentifierName])} of {{species}}?"
         bindings = dict(species=species)
         sparql_query = f"""SELECT DISTINCT ?label ?{IdentifierName}Value
 WHERE {{
@@ -60,7 +62,8 @@ WHERE {{
     ?SpeciesIRI os:has{IdentifierName} ?{IdentifierName}Value .
 }}"""
         return dict(
-            canonical_question=canonical_question,
+            verbalization=verbalization,
+            verbalization_type=INTERROGATIVE,
             bindings=bindings,
             sparql_query=sparql_query,
             sparql_query_compact=sparql_query_compact,
@@ -68,10 +71,9 @@ WHERE {{
             subgraph_type="1h_1t",
         )
 
-    
     def make_1h_propertytails(self):
         species = random.choice(SPECIES)
-        canonical_question = "What are the properties of {species}?"
+        verbalization = "What are the properties of {species}?"
         bindings = dict(species=species)
         sparql_query = f"""SELECT DISTINCT ?label ?PropertyLabel ?PropertyNameValue ?PropertyNameUnitValue ?PropertyNameReferenceStateValue ?PropertyNameReferenceStateUnitValue
 WHERE {{
@@ -100,17 +102,18 @@ WHERE {{
     ?SpeciesIRI ?hasPropertyName ?PropertyNameValue .
 }}"""
         return dict(
-                canonical_question=canonical_question,
-                bindings=bindings,
-                sparql_query=sparql_query,
-                sparql_query_compact=sparql_query_compact,
-                query_path="h2t",
-                subgraph_type="1h_nt",
-            )
+            verbalization=verbalization,
+            verbalization_type=INTERROGATIVE,
+            bindings=bindings,
+            sparql_query=sparql_query,
+            sparql_query_compact=sparql_query_compact,
+            query_path="h2t",
+            subgraph_type="1h_nt",
+        )
 
     def make_1h_identifiertails(self):
         species = random.choice(SPECIES)
-        canonical_question = "What are the identifiers of {species}?"
+        verbalization = "What are the identifiers of {species}?"
         bindings = dict(species=species)
         sparql_query = f"""SELECT DISTINCT ?label ?IdentifierLabel ?IdentifierNameValue
 WHERE {{
@@ -133,10 +136,11 @@ WHERE {{
     ?SpeciesIRI ?hasIdentifierName ?IdentifierNameValue . 
 }}"""
         return dict(
-                canonical_question=canonical_question,
-                bindings=bindings,
-                sparql_query=sparql_query,
-                sparql_query_compact=sparql_query_compact,
-                query_path="h2t",
-                subgraph_type="1h_nt",
-            )
+            verbalization=verbalization,
+            verbalization_type=INTERROGATIVE,
+            bindings=bindings,
+            sparql_query=sparql_query,
+            sparql_query_compact=sparql_query_compact,
+            query_path="h2t",
+            subgraph_type="1h_nt",
+        )
