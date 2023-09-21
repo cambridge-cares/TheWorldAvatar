@@ -34,11 +34,9 @@ class MapHandler_Cesium extends MapHandler {
      * Initialise and store a new map object.
      */
     public initialiseMap(mapOptions: Object) {
-
         MapHandler.MAP_OPTIONS = mapOptions;
 
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
-
             // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
             MapHandler.MAP = new Cesium.Viewer('map', {
                 timeline: false,
@@ -223,7 +221,7 @@ class MapHandler_Cesium extends MapHandler {
                 let properties = {};
                 let contentMetadata = feature?.content?.metadata;
     
-                // Transform properties for compatability with manager code
+                // Transform properties for compatibility with manager code
                 if (Cesium.defined(contentMetadata)) {
                     properties = {...contentMetadata["_properties"]};
 
@@ -476,6 +474,11 @@ class MapHandler_Cesium extends MapHandler {
             modelMatrix: position,
             show: layer.getVisibility()
         };
+
+        // If backFaceCulling option is present, set it
+        if(source.hasOwnProperty("backFaceCulling")) {
+            options["backFaceCulling"] = source["backFaceCulling"];
+        }
 
         // If clipping is enabled, pre-generate a clipping plane
         if(layer.definition.hasOwnProperty("clipping")) {
