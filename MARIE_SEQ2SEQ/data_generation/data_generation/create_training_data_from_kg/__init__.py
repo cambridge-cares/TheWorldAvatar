@@ -1,6 +1,7 @@
 from collections import defaultdict
+import random
 
-from data_generation.constants import PROPERTY_NAMES
+from data_generation.constants import PROPERTY_NAMES, SPECIES
 from .make_examples_by_query_path import ExampleMakerByQueryPath
 
 
@@ -20,6 +21,12 @@ class DatasetFromKgMaker:
 
             print("Generating examples with one head and three tails...")
             examples.extend(self.make_examples_1h_3t())
+
+            print("Generating examples with one head and all property tails...")
+            examples.extend(self.make_examples_1h_propertytails())
+
+            print("Generating examples with one head and all identifier tails...")
+            examples.extend(self.make_examples_1h_identifiertails())
 
             print("Generating examples with two heads and one tail...")
             examples.extend(self.make_examples_2h_1t())
@@ -138,6 +145,78 @@ class DatasetFromKgMaker:
             example["subgraph_type"] = "1h_3t"
 
         return examples
+
+    def make_examples_1h_propertytails(self):
+        species = random.choice(SPECIES)
+        canonical_question = "What are the properties of {species}"
+        bindings = dict(species=species)
+        sparql_query = f"""SELECT DISTINCT ?label ?PropertyLabel ?PropertyNameValue ?PropertyNameUnitValue ?PropertyNameReferenceStateValue ?PropertyNameReferenceStateUnitValue
+WHERE {{
+    VALUES ( ?species ) {{ ( "{species}") }}
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier ?IdentifierIRI .
+    ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
+    ?Identifier rdfs:subClassOf os:Identifier .
+
+    ?SpeciesIRI ?hasPropertyName ?PropertyNameIRI .
+    ?PropertyNameIRI rdf:type ?PropertyName .
+    ?PropertyName rdfs:subClassOf os:Property .
+    ?PropertyNameIRI os:value ?PropertyNameValue ; os:unit ?PropertyNameUnitIRI ; os:hasProvenance ?PropertyNameProvenanceIRI .
+    ?PropertyNameUnitIRI rdfs:label ?PropertyNameUnitValue .
+    OPTIONAL {{
+        ?PropertyNameIRI os:hasReferenceState ?PropertyNameReferenceStateIRI .
+        ?PropertyNameReferenceStateIRI os:value ?PropertyNameReferenceStateValue ; os:unit ?PropertyNameReferenceStateUnitIRI .
+        ?PropertyNameReferenceStateUnitIRI rdfs:label ?PropertyNameReferenceStateUnitValue .
+    }}
+
+    BIND(strafter(str(?PropertyName),'#') AS ?PropertyLabel)
+}}"""
+        sparql_query_compact = f"""SELECT ?PropertyNameValue
+WHERE {{
+    VALUES ( ?species ) {{ ( "{species}") }}
+    ?SpeciesIRI ?hasIdentifier ?species .
+    ?SpeciesIRI ?hasPropertyName ?PropertyNameValue .
+}}"""
+        return [dict(
+            canonical_question=canonical_question,
+            bindings=bindings,
+            sparql_query=sparql_query,
+            sparql_query_compact=sparql_query_compact,
+            query_path="h2t",
+            subgraph_type="1h_nt",
+        )]
+
+    def make_examples_1h_identifiertails(self):
+        species = random.choice(SPECIES)
+        canonical_question = "What are the identifiers of {species}"
+        bindings = dict(species=species)
+        sparql_query = f"""SELECT DISTINCT ?label ?IdentifierLabel ?IdentifierNameValue
+WHERE {{
+    VALUES ( ?species ) {{ ( "{species}") }}
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier ?IdentifierIRI .
+    ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
+    ?Identifier rdfs:subClassOf os:Identifier .
+
+    ?SpeciesIRI ?hasIdentifierName ?IdentifierNameIRI .
+    ?IdentifierNameIRI  rdf:type ?IdentifierName .
+    ?IdentifierName rdfs:subClassOf os:Identifier .
+    ?IdentifierNameIRI os:value ?IdentifierNameValue .
+
+    BIND(strafter(str(?IdentifierName),'#') AS ?IdentifierLabel)
+}}"""
+        sparql_query_compact = f"""SELECT ?IdentifierNameValue
+WHERE {{
+    VALUES ( ?species ) {{ ( "{species}") }}
+    ?SpeciesIRI ?hasIdentifier ?species .
+    ?SpeciesIRI ?hasIdentifierName ?IdentifierNameValue . 
+}}"""
+        return [dict(
+            canonical_question=canonical_question,
+            bindings=bindings,
+            sparql_query=sparql_query,
+            sparql_query_compact=sparql_query_compact,
+            query_path="h2t",
+            subgraph_type="1h_nt",
+        )]
 
     def make_examples_2h_1t(self):
         examples = []

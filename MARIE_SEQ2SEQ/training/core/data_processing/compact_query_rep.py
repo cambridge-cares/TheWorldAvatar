@@ -56,7 +56,7 @@ USE_PATTERNS_VERBOSE = (
 )
 ALL_PROPERTIES_PATTERNS_VERBOSE = """
     ?SpeciesIRI ?hasPropertyName ?PropertyNameIRI .
-    ?PropertyNameIRI  rdf:type ?PropertyName .
+    ?PropertyNameIRI rdf:type ?PropertyName .
     ?PropertyName rdfs:subClassOf os:Property .
     ?PropertyNameIRI os:value ?PropertyNameValue ; os:unit ?PropertyNameUnitIRI ; os:hasProvenance ?PropertyNameProvenanceIRI .
     ?PropertyNameUnitIRI rdfs:label ?PropertyNameUnitValue .
@@ -65,6 +65,7 @@ ALL_PROPERTIES_PATTERNS_VERBOSE = """
         ?PropertyNameReferenceStateIRI os:value ?PropertyNameReferenceStateValue ; os:unit ?PropertyNameReferenceStateUnitIRI .
         ?PropertyNameReferenceStateUnitIRI rdfs:label ?PropertyNameReferenceStateUnitValue .
     }
+
     BIND(strafter(str(?PropertyName),'#') AS ?PropertyLabel)
 """
 ALL_IDENTIFIERS_PATTERNS_VERBOSE = """
@@ -72,6 +73,7 @@ ALL_IDENTIFIERS_PATTERNS_VERBOSE = """
     ?IdentifierNameIRI  rdf:type ?IdentifierName .
     ?IdentifierName rdfs:subClassOf os:Identifier .
     ?IdentifierNameIRI os:value ?IdentifierNameValue .
+
     BIND(strafter(str(?IdentifierName),'#') AS ?IdentifierLabel)
 """
 
