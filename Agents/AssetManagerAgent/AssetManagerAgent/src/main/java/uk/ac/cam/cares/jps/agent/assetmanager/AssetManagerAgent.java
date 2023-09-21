@@ -206,13 +206,16 @@ public class AssetManagerAgent extends JPSAgent{
         }
         else{
             String id = data.getString("ID");
-            String[] idSplits = id.split("/");
-            if (idSplits.length!=2){
-                return false;
+            if (!(id ==null || id.isBlank())){
+                String[] idSplits = id.split("/");
+                if (idSplits.length!=2){
+                    return false;
+                }
+                if (idSplits[0].length()!=8 && idSplits[0].split("-").length!=3){
+                    return false;
+                }
             }
-            if (idSplits[0].length()!=8 && idSplits[0].split("-").length!=3){
-                return false;
-            }
+            
         }
         if (!data.has("Name")){
             return false;

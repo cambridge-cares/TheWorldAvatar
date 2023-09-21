@@ -6,6 +6,7 @@ import static uk.ac.cam.cares.jps.agent.assetmanager.ClassAndProperties.*;
 import static uk.ac.cam.cares.jps.agent.assetmanager.QueryUtil.*;
 
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.eclipse.rdf4j.sparqlbuilder.util.SparqlBuilderUtils;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -23,6 +24,9 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.bigdata.bop.Var;
 
@@ -81,7 +85,16 @@ public class AssetKGInterface {
         
         AssetData.put("deviceIRI", deviceIRIString);
         AssetData.put("deviceTypeIRI", deviceTypeIRI);
-        AssetData.put("ID", AssetDataRaw.getString("ID"));
+        String id = AssetDataRaw.getString("ID");
+        if (id.isBlank()){
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");  
+            LocalDateTime now = LocalDateTime.now();
+            String date = dtf.format(now);
+
+            String idNum = String.valueOf(getLatestIDNum() +  1);
+            id = date +"/"+ idNum;
+        }
+        AssetData.put("ID", id);
         AssetData.put("label", AssetDataRaw.getString("Name").replaceAll("(\\r|\\n)", " ").replace("\\", "\\\\"));
         AssetData.put("itemIRI", itemIRI);
         AssetData.put("itemComment", AssetDataRaw.getString("PurchaseOrderNum"));
@@ -328,6 +341,32 @@ public class AssetKGInterface {
 
         LOGGER.info(AssetData);
         createInstance(AssetData);
+    }
+
+    /*
+     * Get the latest ID number and increment by 1
+     */
+    private int getLatestIDNum() {
+        int result;
+        /*
+         * TODO Write in proper rdf4j format as any change in the triple will require manual change the way it is
+         * No, this is not written on a Friday evening... Its Thursday evening... and I'm on leave on Friday...
+         * ~MTL 
+         */
+
+        String query=
+        "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>\n"+
+        "select (STRAFTER(str(?idValue), '/')as ?idNum)\n"+
+        "WHERE {\n"+
+        "?id <"+P_ASSET+"hasItemInventoryIdentifier"+"> ?idValue .}\n"+
+        "ORDER BY DESC(xsd:integer(?idNum))";
+        JSONArray reqRes = storeClientAsset.executeQuery(query);
+        if (reqRes.length() == 0) {
+            return -1; //Added 1 above so the first ID will be 0
+        }
+        result = Integer.parseInt(reqRes.getJSONObject(0).getString("idNum"));
+
+        return result;
     }
 
 
