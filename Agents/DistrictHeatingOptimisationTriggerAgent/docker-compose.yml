@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   dhoptimisationtrigger_agent:
-    image: ghcr.io/cambridge-cares/dhoptimisationtrigger_agent:1.0.0
+    image: ghcr.io/cambridge-cares/dhoptimisationtrigger-agent:1.0.0
     # To start idle container for debugging (via Attach VSCode to container), uncomment the following line
     #command: tail -f /dev/null
     environment:
