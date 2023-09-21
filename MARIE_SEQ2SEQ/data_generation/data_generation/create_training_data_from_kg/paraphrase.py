@@ -7,6 +7,9 @@ from typing import List
 import openai
 from tqdm import tqdm
 
+from data_generation.create_training_data_from_kg.constants import KEYWORD
+
+PARAPHRASE_NUM = 5
 
 def sanitize_bulletpoint(text: str):
     text = text.strip()
@@ -22,7 +25,7 @@ def sanitize_bulletpoint(text: str):
             idx += 1
         text = text[idx:]
         text = text.strip()
-        if text[0] == ".":
+        if text[0] in [".", ")"]:
             text = text[1:]
 
     text = text.strip()
@@ -36,6 +39,7 @@ def sanitize_bulletpoint(text: str):
 
 
 def is_bulleted_line(line: str):
+    line = line.strip()
     return line.startswith("-") or (len(line) > 0 and line[0].isdigit())
 
 
@@ -44,15 +48,23 @@ def remove_opening_and_closing_statements(lines: List[str]):
 
     Example of an opening statement: "Certainly, here are 10 paraphrased versions of the statement:"
 
-    Example of a closing statement: "Note: In the original statement, "enlist" is used, but it is 
-    unclear whether it refers to including them in a list or recruiting them for a specific purpose. 
-    Therefore, the paraphrases provided focus on the understanding that a list of molecules exhibiting 
+    Example of a closing statement: "Note: In the original statement, "enlist" is used, but it is
+    unclear whether it refers to including them in a list or recruiting them for a specific purpose.
+    Therefore, the paraphrases provided focus on the understanding that a list of molecules exhibiting
     specific characteristics is being requested."
     """
-    if len(lines) > 1 and not is_bulleted_line(lines[0].strip()) and is_bulleted_line(lines[1].strip()):
+    if (
+        len(lines) > 1
+        and not is_bulleted_line(lines[0])
+        and is_bulleted_line(lines[1])
+    ):
         lines = lines[1:]
-    
-    if len(lines) > 1 and not is_bulleted_line(lines[-1].strip()) and is_bulleted_line(lines[-2].strip()):
+
+    if (
+        len(lines) > 1
+        and not is_bulleted_line(lines[-1])
+        and is_bulleted_line(lines[-2])
+    ):
         lines = lines[:-1]
 
     return lines
@@ -72,7 +84,7 @@ def get_paraphrases(text: str):
         messages=[
             {
                 "role": "user",
-                "content": "Paraphrase the following statement in 10 different ways.\n"
+                "content": f"Paraphrase the following statement in {PARAPHRASE_NUM} different ways.\n"
                 + text,
             },
         ],
@@ -81,7 +93,7 @@ def get_paraphrases(text: str):
     response_content = response["choices"][0]["message"]["content"]
     paraphrases = parse_openai_paraphrase_response_content(response_content)
 
-    if len(paraphrases) != 10:
+    if len(paraphrases) != PARAPHRASE_NUM:
         print("Unexpected OpenAI's response format of paraphrases encountered.")
         print("Text: ", text)
         print("Response content: \n", response_content)
@@ -103,15 +115,25 @@ if __name__ == "__main__":
 
     batch_size = 10
     data_out = []
+    count = 0
     for i, datum in enumerate(tqdm(data)):
-        if i < args.start_index:
+        if i < args.start_index or datum["verbalization_type"] == KEYWORD:
             continue
+        
+        count += 1
 
-        paraphrases = get_paraphrases(datum["question"])
-        data_out.append(dict(question=datum["question"], paraphrases=paraphrases))
+        paraphrases = get_paraphrases(datum["verbalization"])
+        data_out.append(
+            dict(
+                id=datum["id"],
+                verbalization=datum["verbalization"],
+                bindings=datum["bindings"],
+                paraphrases=paraphrases,
+            )
+        )
 
-        if (i + 1) % batch_size == 0 or i == len(data) - 1:
-            filename = str(i // batch_size * batch_size) + ".json"
+        if count % batch_size == 0 or i == len(data) - 1:
+            filename = str(i) + ".json"
             filepath = os.path.join(args.output_path, filename)
             with open(filepath, "w") as f:
                 json.dump(data_out, f, indent=4)

@@ -1,6 +1,6 @@
 import pytest
 
-from data_generation.paraphrase import (
+from data_generation.create_training_data_from_kg.paraphrase import (
     sanitize_bulletpoint,
     parse_openai_paraphrase_response_content,
 )
@@ -22,6 +22,10 @@ class TestParaphrase:
                 "- What are 4-piperonyl-3-(3,4,5-trimethoxybenzyl)tetrahydrofuran-2-one's fundamental properties?",
                 "What are 4-piperonyl-3-(3,4,5-trimethoxybenzyl)tetrahydrofuran-2-one's fundamental properties?",
             ),
+            (
+                "3) I would like a list of chemical entities whose monoisotopic mass does not fall within the 165 to 182.80 range.",
+                "I would like a list of chemical entities whose monoisotopic mass does not fall within the 165 to 182.80 range."
+            )
         ],
     )
     def test_sanitizeBulletpoint(self, text, expected):
