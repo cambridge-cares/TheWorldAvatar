@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="printing_list">Printing List</string>
+    <string name="edit_bt_text">Edit</string>
+    <string name="inventory_id">Inventory ID</string>
+    <string name="unprinted_items">Unprinted Items</string>
+    <string name="printed_items">Printed Items</string>
+    <string name="done">Done</string>
+</resources>

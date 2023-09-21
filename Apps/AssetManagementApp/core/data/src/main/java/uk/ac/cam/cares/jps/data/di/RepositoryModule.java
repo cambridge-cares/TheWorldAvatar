@@ -9,8 +9,10 @@ import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.data.AssetInfoRepository;
 import uk.ac.cam.cares.jps.data.MailRepository;
 import uk.ac.cam.cares.jps.data.OtherInfoRepository;
+import uk.ac.cam.cares.jps.data.QRPrintRepository;
 import uk.ac.cam.cares.jps.data.SettingRepository;
 import uk.ac.cam.cares.jps.datastore.OtherInfoLocalSource;
+import uk.ac.cam.cares.jps.datastore.QRPrintingLocalSource;
 import uk.ac.cam.cares.jps.datastore.SettingLocalSource;
 import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
@@ -41,5 +43,11 @@ public class RepositoryModule {
     @Singleton
     public SettingRepository provideSettingRepository(SettingLocalSource settingLocalSource) {
         return new SettingRepository(settingLocalSource);
+    }
+
+    @Provides
+    @Singleton
+    public QRPrintRepository provideQRPrintingRepository(QRPrintingLocalSource localSource) {
+        return new QRPrintRepository(localSource);
     }
 }

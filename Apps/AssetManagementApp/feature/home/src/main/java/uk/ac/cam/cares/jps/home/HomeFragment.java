@@ -69,5 +69,12 @@ public class HomeFragment extends Fragment {
             UiUtils.showNotImplementedDialog(requireContext());
         });
 
+        binding.printCard.setOnClickListener(v -> {
+            NavDeepLinkRequest request = NavDeepLinkRequest.Builder
+                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/qr_printing"))
+                    .build();
+            NavHostFragment.findNavController(this).navigate(request);
+        });
+
     }
 }

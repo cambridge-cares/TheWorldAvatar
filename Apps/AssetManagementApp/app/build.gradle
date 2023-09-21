@@ -47,6 +47,7 @@ dependencies {
     implementation project(path: ':feature:assetinfo')
     implementation project(path: ':feature:mailbox')
     implementation project(path: ':feature:addasset')
+    implementation project(path: ':feature:qrprint')
     implementation project(path: ':core:network')
     implementation project(path: ':core:notification')
     implementation project(path: ':core:ui')

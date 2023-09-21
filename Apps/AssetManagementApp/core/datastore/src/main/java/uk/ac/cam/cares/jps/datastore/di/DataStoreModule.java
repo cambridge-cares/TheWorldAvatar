@@ -10,6 +10,7 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.datastore.OtherInfoLocalSource;
+import uk.ac.cam.cares.jps.datastore.QRPrintingLocalSource;
 import uk.ac.cam.cares.jps.datastore.SettingLocalSource;
 
 @Module
@@ -26,5 +27,11 @@ public class DataStoreModule {
     @Singleton
     public SettingLocalSource provideSettingLocalSource(@ApplicationContext Context applicationContext) {
         return new SettingLocalSource(applicationContext);
+    }
+
+    @Provides
+    @Singleton
+    public QRPrintingLocalSource provideQRPrintingLocalSource(@ApplicationContext Context applicationContext) {
+        return new QRPrintingLocalSource(applicationContext);
     }
 }

@@ -11,5 +11,6 @@
     <include app:graph="@navigation/scan_graph"/>
     <include app:graph="@navigation/mailbox_graph"/>
     <include app:graph="@navigation/add_asset_graph"/>
+    <include app:graph="@navigation/qr_print_graph"/>
 
 </navigation>
