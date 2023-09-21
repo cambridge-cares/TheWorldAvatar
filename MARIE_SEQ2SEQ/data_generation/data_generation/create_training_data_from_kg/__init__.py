@@ -2,7 +2,7 @@ import random
 
 from tqdm import tqdm
 
-from data_generation.constants import PROPERTY_NAMES
+from data_generation.constants import IDENTIFIER_NAMES, PROPERTY_NAMES
 from .make_examples_from_template import ExampleMakerFromTemplate
 from .make_examples_by_query_path import ExampleMakerByQueryPath
 
@@ -125,26 +125,26 @@ class DatasetFromKgMaker:
                 self.example_maker_by_query_path.make_examples_2t(
                     query_path=query_path,
                     tail_class="property",
-                    sampling_size=-1,
+                    sampling_size=len(PROPERTY_NAMES) // 2,
                 )
             )
         examples.extend(
             self.example_maker_by_query_path.make_examples_2t(
                 query_path="h2t",
                 tail_class="identifier",
-                sampling_size=-1,
+                sampling_size=len(IDENTIFIER_NAMES) // 2,
             )
         )
         for query_path in ["h2t", "t2h"]:
             examples.extend(
                 self.example_maker_by_query_path.make_examples_2t(
                     query_path=query_path,
-                    sampling_size=5,
+                    sampling_size=3,
                 )
             )
         examples.extend(
             self.example_maker_by_query_path.make_examples_2t(
-                query_path="t2t", sampling_size=len(PROPERTY_NAMES)
+                query_path="t2t", sampling_size=5
             )
         )
 
@@ -160,12 +160,12 @@ class DatasetFromKgMaker:
             examples.extend(
                 self.example_maker_by_query_path.make_examples_3t(
                     query_path=query_path,
-                    sampling_size=5,
+                    sampling_size=1,
                 )
             )
         examples.extend(
             self.example_maker_by_query_path.make_examples_3t(
-                query_path="t2t", sampling_size=len(PROPERTY_NAMES)
+                query_path="t2t", sampling_size=2
             )
         )
 
