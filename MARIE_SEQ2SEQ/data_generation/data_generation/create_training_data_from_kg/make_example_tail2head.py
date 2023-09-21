@@ -4,8 +4,15 @@ import random
 from typing import Dict, List, Optional, Union
 
 from data_generation.constants import PROPERTY_LABELS
+from .constants import IMPERATIVE, INTERROGATIVE, KEYWORD, VERBALIZATION_TYPE
+from .exceptions import UnexpectedVerbalizationType
 from .utils import tails_to_tail_nums
-from .utils.numerical import FloatConversionError, get_value_around, get_value_higher, get_value_lower
+from .utils.numerical import (
+    FloatConversionError,
+    get_value_around,
+    get_value_higher,
+    get_value_lower,
+)
 
 
 class ExampleMakerTail2Head:
@@ -15,22 +22,24 @@ class ExampleMakerTail2Head:
 
         head_helper = ExampleT2HQueryConstructorHelperHead()
 
-        tails: List[dict] = [tail for tail in subgraph["tails"] if tail["type"] != "identifier"]
+        tails: List[dict] = [
+            tail for tail in subgraph["tails"] if tail["type"] != "identifier"
+        ]
         if len(tails) == 0:
             return None
-        
+
         random.shuffle(tails)
         tail_nums = tails_to_tail_nums(tails)
         tail_helper_resolver = T2HTailHelperResolver()
 
         tail_helpers: List[ExampleT2HQueryConstructorHelperTail] = [
-            tail_helper_resolver.resolve(tail, tail_nums=tail_nums) for tail in tails 
+            tail_helper_resolver.resolve(tail, tail_nums=tail_nums) for tail in tails
         ]
 
         all_helpers: List[ExampleT2HQueryConstructorHelper] = [
             head_helper
         ] + tail_helpers
-        
+
         select_variables = [helper.get_select_variables() for helper in all_helpers]
         select_variables_compact = [
             helper.get_select_variables_compact() for helper in all_helpers
@@ -41,10 +50,11 @@ class ExampleMakerTail2Head:
                 helper.get_where_clauses_compact() for helper in all_helpers
             ]
         except FloatConversionError as e:
-            print("A float conversion error is encountered while making an example for the following subgraph.")
+            print(
+                "A float conversion error is encountered while making an example for the following subgraph."
+            )
             pprint.pprint(subgraph)
             raise e
-
 
         ask_items = [helper.get_ask_item() for helper in tail_helpers]
         bindings = {
@@ -58,23 +68,36 @@ WHERE {{{"".join(where_clauses).rstrip()}
 WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
+        verbalization_type = random.choice(VERBALIZATION_TYPE)
         return dict(
-            canonical_question=self.make_canonical_question(ask_items),
+            verbalization=self.make_verbalization(
+                ask_items, verbalization_type=verbalization_type
+            ),
+            verbalization_type=verbalization_type,
             bindings=bindings,
             sparql_query=sparql_query,
             sparql_query_compact=sparql_query_compact,
         )
 
-    def make_canonical_question(self, ask_items: List[str]):
-        tokens = ["What are the chemical species whose "]
+    def make_verbalization(self, ask_items: List[str], verbalization_type: str):
+        tokens = []
         for i, ask_item in enumerate(ask_items):
             tokens.append(ask_item)
             if i < len(ask_items) - 2:
                 tokens.append(", ")
             elif i == len(ask_items) - 2:
                 tokens.append(" and ")
-        tokens.append("?")
-        return "".join(tokens)
+        ask_items_joined = "".join(tokens)
+
+        kw_search = "chemical species with " + ask_items_joined
+        if verbalization_type == INTERROGATIVE:
+            return f"What are the {kw_search}?"
+        elif verbalization_type == IMPERATIVE:
+            return f"Provide me a list of {kw_search}."
+        elif verbalization_type == KEYWORD:
+            return kw_search
+        else:
+            raise UnexpectedVerbalizationType(verbalization_type)
 
 
 class T2HTailHelperResolver:
@@ -90,7 +113,9 @@ class T2HTailHelperResolver:
         elif tail["type"] == "use":
             self.use_num += 1
             tail_helper = ExampleT2HQueryConstructorHelperTailUse(
-                tail_id=self.use_num, tail_num=tail_nums["use_num"], use_value=tail["UseValue"]
+                tail_id=self.use_num,
+                tail_num=tail_nums["use_num"],
+                use_value=tail["UseValue"],
             )
         elif tail["type"] == "chemicalclass":
             self.chemicalclass_num += 1
@@ -212,12 +237,12 @@ class ExampleT2HQueryConstructorHelperTailProperty(
             value = get_value_lower(PropertyValue)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value > {value} )"""
-            ask_item = f"{property_verbalised} is higher than {value}"
+            ask_item = f"{property_verbalised} higher than {value}"
         elif numerical_clause == "lower":
             value = get_value_higher(PropertyValue)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value < {value} )"""
-            ask_item = f"{property_verbalised} is lower than {value}"
+            ask_item = f"{property_verbalised} lower than {value}"
         elif numerical_clause == "outside":
             if random.getrandbits(1):
                 high = get_value_lower(PropertyValue)
@@ -227,18 +252,20 @@ class ExampleT2HQueryConstructorHelperTailProperty(
                 high = get_value_higher(low)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value < {low} || ?{PropertyName}Value > {high} )"""
-            ask_item = f"{property_verbalised} is outside the range between {low} and {high}"
+            ask_item = (
+                f"{property_verbalised} outside the range between {low} and {high}"
+            )
         elif numerical_clause == "inside":
             low = get_value_lower(PropertyValue)
             high = get_value_higher(PropertyValue)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value > {low} && ?{PropertyName}Value < {high} )"""
-            ask_item = f"{property_verbalised} is between {low} and {high}"
+            ask_item = f"{property_verbalised} between {low} and {high}"
         elif numerical_clause == "around":
             value = get_value_around(PropertyValue)
             filter_clause = f"""
     FILTER ( ?{PropertyName}Value > {value}*0.9 && ?{PropertyName}Value < {value}*1.1 )"""
-            ask_item = f"{property_verbalised} is around {value}"
+            ask_item = f"{property_verbalised} around {value}"
         else:
             raise ValueError(
                 f"Unexpected argument for `numerical_clause`: {numerical_clause}."
@@ -272,13 +299,13 @@ class ExampleT2HQueryConstructorHelperTailUse(ExampleT2HQueryConstructorHelperTa
 
     def get_ask_item(self):
         i = self._i()
-        return f"use is as {{UseValue{i}}}"
+        return f"use as {{UseValue{i}}}"
 
     def get_binding(self):
         i = self._i()
         UseValue = self.use_value
         return {f"UseValue{i}": UseValue}
-    
+
     def _i(self):
         return self.tail_id if self.tail_num > 1 else ""
 
@@ -311,12 +338,12 @@ class ExampleT2HQueryConstructorHelperTailChemicalClass(
 
     def get_ask_item(self):
         i = self._i()
-        return f"chemical class is {{ChemicalClassValue{i}}}"
+        return f"chemical class being {{ChemicalClassValue{i}}}"
 
     def get_binding(self):
         i = self._i()
         ChemicalClassValue = self.chemicalclass_value
         return {f"ChemicalClassValue{i}": ChemicalClassValue}
-    
+
     def _i(self):
         return self.tail_id if self.tail_num > 1 else ""

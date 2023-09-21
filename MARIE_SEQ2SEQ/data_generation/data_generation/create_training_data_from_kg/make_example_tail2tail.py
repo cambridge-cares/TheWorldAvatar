@@ -3,6 +3,8 @@ import random
 from typing import Dict, List, Optional, Union
 
 from data_generation.constants import PROPERTY_LABELS
+from .constants import IMPERATIVE, INTERROGATIVE, KEYWORD, VERBALIZATION_TYPE
+from .exceptions import UnexpectedVerbalizationType
 from .utils import tails_to_tail_nums
 
 
@@ -64,33 +66,32 @@ WHERE {{{"".join(where_clauses).rstrip()}
 WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
+        verbalization_type = random.choice(VERBALIZATION_TYPE)
         return dict(
-            canonical_question=self.make_canonical_question(
-                ask_items, chemicalclass_num=len(tails_chemclass)
+            verbalization=self.make_verbalization(
+                ask_items,
+                chemicalclass_num=len(tails_chemclass),
+                verbalization_type=verbalization_type,
             ),
+            verbalization_type=verbalization_type,
             bindings=bindings,
             sparql_query=sparql_query,
             sparql_query_compact=sparql_query_compact,
         )
 
-    def make_canonical_question(self, ask_items: List[str], chemicalclass_num: int):
-        tokens = ["What "]
-        if len(ask_items) < 2:
-            tokens.append("is")
-        else:
-            tokens.append("are")
-
+    def make_verbalization(
+        self, ask_items: List[str], chemicalclass_num: int, verbalization_type: str
+    ):
+        tokens = []
         for i, ask_item in enumerate(ask_items):
-            if i == 0:
-                tokens.append(" the ")
-            elif i < len(ask_items) - 1:
-                tokens.append(", ")
-            else:
-                tokens.append(" and ")
             tokens.append(ask_item)
+            if i < len(ask_items) - 2:
+                tokens.append(", ")
+            elif i == len(ask_items) - 2:
+                tokens.append(" and ")
+        ask_items_joined = "".join(tokens)
 
-        tokens.append(" of chemical species classified as ")
-
+        tokens = []
         for i in range(chemicalclass_num):
             if i == 0:
                 pass
@@ -100,10 +101,18 @@ WHERE {{{"".join(where_clauses_compact)}
                 tokens.append(" and ")
             _i = i + 1 if chemicalclass_num > 1 else ""
             tokens.append(f"{{ChemicalClassValue{_i}}}")
+        chemicalclass_slots_joined = "".join(tokens)
 
-        tokens.append("?")
-
-        return "".join(tokens)
+        kw_search = f"{ask_items_joined} of chemical species classified as {chemicalclass_slots_joined}"
+        if verbalization_type == INTERROGATIVE:
+            conjugated_verb = "is" if len(ask_items) < 2 else "are"
+            return f"What {conjugated_verb} the {kw_search}?"
+        elif verbalization_type == IMPERATIVE:
+            return f"Tell me about the {kw_search}."
+        elif verbalization_type == KEYWORD:
+            return kw_search
+        else:
+            raise UnexpectedVerbalizationType(verbalization_type)
 
 
 class T2TTailHelperResolver:

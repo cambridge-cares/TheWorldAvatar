@@ -3,6 +3,8 @@ from typing import Dict, Optional, Union, List
 import random
 
 from data_generation.constants import IDENTIFIER_LABELS, PROPERTY_LABELS
+from .constants import IMPERATIVE, INTERROGATIVE, KEYWORD, VERBALIZATION_TYPE
+from .exceptions import UnexpectedVerbalizationType
 from .utils import tails_to_tail_nums
 
 
@@ -54,8 +56,10 @@ WHERE {{{"".join(where_clauses).rstrip()}
 WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
+        verbalization_type = random.choice(["interrogative", "imperative", "keyword"])
         return dict(
-            canonical_question=self.make_canonical_question(ask_items),
+            verbalization=self.make_verbalization(ask_items, verbalization_type=verbalization_type),
+            verbalization_type = verbalization_type,
             bindings=dict(species=subgraph["head"]["IdentifierValue"]),
             sparql_query=sparql_query,
             sparql_query_compact=sparql_query_compact,
@@ -105,9 +109,10 @@ WHERE {{{"".join(where_clauses).rstrip()}
         sparql_query_compact = f"""SELECT {" ".join([x for x in select_variables_compact if x])}
 WHERE {{{"".join(where_clauses_compact)}
 }}"""
-
+        verbalization_type = random.choice(VERBALIZATION_TYPE)
         return dict(
-            canonical_question=self.make_canonical_question(ask_items, species_num=2),
+            verbalization=self.make_verbalization(ask_items, species_num=2, verbalization_type=verbalization_type),
+            verbalization_type=verbalization_type,
             bindings=dict(
                 species1=subgraph1["head"]["IdentifierValue"],
                 species2=subgraph2["head"]["IdentifierValue"],
@@ -133,16 +138,11 @@ WHERE {{{"".join(where_clauses_compact)}
             raise ValueError("Unexpected tail type: " + tail["type"])
         return tail_helper
 
-    def make_canonical_question(self, ask_items: List[str], species_num: int = 1):
-        tokens = ["What "]
-        if len(ask_items) < 2:
-            tokens.append("is")
-        else:
-            tokens.append("are")
-
+    def make_verbalization(self, ask_items: List[str], species_num: int = 1, verbalization_type: str = "interrogative"):
+        tokens = []
         for i, ask_item in enumerate(ask_items):
             if i == 0:
-                tokens.append(" the ")
+                pass
             elif i < len(ask_items) - 1:
                 tokens.append(", ")
             else:
@@ -150,15 +150,23 @@ WHERE {{{"".join(where_clauses_compact)}
             tokens.append(ask_item)
 
         if species_num == 1:
-            tokens.append(" of {species}?")
+            tokens.append(" of {species}")
         elif species_num == 2:
-            tokens.append(" of {species1} and {species2}?")
-        else:
-            raise ValueError(
-                f"Unexpected value for argument `species_num`: {species_num}."
-            )
+            tokens.append(" of {species1} and {species2}")
 
-        return "".join(tokens)
+        kw_search = "".join(tokens)
+        
+        if verbalization_type == INTERROGATIVE:
+            if len(ask_items) < 2:
+                return f"What is the {kw_search}?"
+            else:
+                return f"What are the {kw_search}?"
+        elif verbalization_type == IMPERATIVE:
+            return f"Tell me about the {kw_search}."
+        elif verbalization_type == KEYWORD:
+            return kw_search
+        else:
+            raise UnexpectedVerbalizationType(verbalization_type)
 
     def are_subgraphs_congruent(
         self,
