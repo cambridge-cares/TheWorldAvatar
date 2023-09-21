@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,15 +22,15 @@ class CustomVariableTest {
 
     public static StringBuilder genExpectedCustomVariableSyntax(String varName, String[] assets, Integer dashboardDisplayOption) {
         StringBuilder results = new StringBuilder();
-        results.append(TemplateVariableTest.genExpectedCommonJsonBase(varName.toLowerCase(), dashboardDisplayOption))
-                .append("\"label\": \"");
+        String itemLabel = "";
         // Only append the varName in label if it is not the generic asset class
-        if (!varName.equals("Assets")) results.append(varName).append(" ");
-        results.append("Assets\",")
-                .append("\"description\": \"Default filters for the ");
-        // Only append the varName in description if it is not the generic asset class
-        if (!varName.equals("Assets")) results.append(varName).append(" ");
-        results.append("Assets\",")
+        if (!varName.equals("Assets")) itemLabel = varName;
+        // Only append the assets if it is not a room
+        if (!varName.equals(StringHelper.ROOM_KEY)) itemLabel += " Assets";
+        // Generate syntax
+        results.append(TemplateVariableTest.genExpectedCommonJsonBase(varName.toLowerCase(), dashboardDisplayOption))
+                .append("\"label\": \"").append(itemLabel).append("\",")
+                .append("\"description\": \"Default filters for the ").append(itemLabel).append("\",")
                 .append("\"options\": [{\"selected\": true,\"text\": \"All\",\"value\": \"$__all\"},").append(genFilterOptionsForArrays(assets))
                 .append("],\"query\": \"").append(genSimpleQueryForArrays(assets))
                 .append("\",\"queryValue\": \"\",\"type\": \"custom\"}");
