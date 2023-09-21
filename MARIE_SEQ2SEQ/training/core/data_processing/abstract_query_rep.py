@@ -81,6 +81,8 @@ SPECIES_FROM_QUALIFIERS_PATTERNS_VERBOSE = [
 
 
 class AbstractQueryRep:
+    """To be deprecated. Please use CompactQueryRep instead."""
+    
     def __init__(
         self,
         result_clause: str,
