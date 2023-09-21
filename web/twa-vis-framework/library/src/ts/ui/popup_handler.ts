@@ -23,6 +23,7 @@ class PopupHandler {
     private static buildPopup() {
         // Build empty element
         let container = document.createElement("div");
+        container.style.display = "none";
         container.style.transform = "translate(-50%,calc(100% + 20px))"
         container.id = "popup";
 
@@ -30,29 +31,28 @@ class PopupHandler {
         let mapElement = document.getElementById("map");
 
         mapElement.addEventListener('mousemove', function(e) {
-            if(container.style.display !== "none") {
-                let left = e.offsetX;
-                let top = e.offsetY;
-                container.style.left = left + 'px';
-                container.style.top = top + 'px';
+            let left = e.offsetX;
+            let top = e.offsetY;
+            container.style.left = left + 'px';
+            container.style.top = top + 'px';
 
-                let translateX = "-50%";
-                if(left < 200) {
-                    translateX = "20px";
-                } else if (left > (mapElement.offsetWidth - 200)) {
-                    translateX = "calc(-100% + 20px)";
-                }
-
-                let translateY = "20px";
-                if(top < 200) {
-                    translateY = "20px";
-                } else if (top > (mapElement.offsetHeight - 200)) {
-                    translateY = "calc(-100% - 20px)";
-                }
-
-                container.style.transform = "translate(" + translateX + "," + translateY + ")";
+            let translateX = "-50%";
+            if(left < 200) {
+                translateX = "20px";
+            } else if (left > (mapElement.offsetWidth - 200)) {
+                translateX = "calc(-100% + 20px)";
             }
+
+            let translateY = "20px";
+            if(top < 200) {
+                translateY = "20px";
+            } else if (top > (mapElement.offsetHeight - 200)) {
+                translateY = "calc(-100% - 20px)";
+            }
+
+            container.style.transform = "translate(" + translateX + "," + translateY + ")";
         });
+
         mapElement.addEventListener('mouseleave', function(e) {
             if(container.style.display !== "none") {
                 PopupHandler.POPUP.style.display = "none";
@@ -104,6 +104,7 @@ class PopupHandler {
         // If empty, then append a special class
         if(html.length === 0) {
             this.POPUP.classList.add("empty");
+            this.POPUP.style.display = "none";
         } else if(this.POPUP.classList.contains("empty")) {
             this.POPUP.classList.remove("empty");
         }
@@ -151,7 +152,6 @@ class PopupHandler {
      */
     public static setVisibility(visible) {
         if(this.POPUP == null) this.buildPopup();
-
         if(visible && this.POPUP.classList.contains("empty")) return;
         this.POPUP.style.display = (visible) ? "block" : "none";
     }

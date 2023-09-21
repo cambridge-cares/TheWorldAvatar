@@ -260,7 +260,6 @@ class CesiumUtils {
 
         // Find the first feature that isn't a clipping plane
         let feature = null;
-
         if(features != null) {
             features.forEach(f => {
                 if(f?.id?._name != null) {
@@ -283,8 +282,12 @@ class CesiumUtils {
                     if(features.length > 0) {
                         // Only return the first for now
                         callback(features[0]);
+                    } else {
+                        callback(null);
                     }
                 });
+            } else {
+                callback(null);
             }
         } else {
             callback(feature);

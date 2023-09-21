@@ -201,7 +201,6 @@ class MapHandler_Cesium extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
-        PopupHandler.setVisibility(false);
         if(!MapHandler.ALLOW_CLICKS) return;
 
         // Get the feature at the click point
@@ -275,8 +274,6 @@ class MapHandler_Cesium extends MapHandler {
             return layer.source.type !== "wms" && layer.source.type !== "geoserver"; 
         });
         otherLayers.forEach(layer => this.plotLayer(null, layer));
-
-        console.log("DATA PLOTTED");
     }
 
     /**
@@ -536,7 +533,8 @@ class MapHandler_Cesium extends MapHandler {
             layers: wmsLayer,
             parameters: {
                 transparent: source.hasOwnProperty("transparency") ? source["transparency"] : false,
-                format: source.hasOwnProperty("format") ? source["format"] : "image/png"
+                format: source.hasOwnProperty("format") ? source["format"] : "image/png",
+                opacity: 0.5
             },
             credit: layer.id,
         });
