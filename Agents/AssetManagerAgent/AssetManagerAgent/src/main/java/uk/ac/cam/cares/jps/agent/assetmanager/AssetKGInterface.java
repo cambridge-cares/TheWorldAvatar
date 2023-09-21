@@ -65,7 +65,7 @@ public class AssetKGInterface {
      * =============================================================================================================================================================
      * Instantiate asset based on data from given request
      */
-    public void instantiate (JSONObject AssetDataRaw) throws Exception{
+    public JSONObject instantiate (JSONObject AssetDataRaw) throws Exception{
         //Get IRI from ID
         String deviceIRIString = existenceChecker.getIRIStringbyID(AssetDataRaw.getString("ID"));
         if(deviceIRIString != null){
@@ -341,6 +341,11 @@ public class AssetKGInterface {
 
         LOGGER.info(AssetData);
         createInstance(AssetData);
+                
+        JSONObject idPair = new JSONObject();
+        idPair.put("ID", AssetData.getString("ID"));
+        idPair.put("deviceIRI", AssetData.getString("deviceIRI"));
+        return idPair;
     }
 
     /*

@@ -183,8 +183,8 @@ public class AssetManagerAgent extends JPSAgent{
         // handle input
         if (validateAssetData(assetData)){
             try {
-                instanceHandler.instantiate(assetData);
-                message.accumulate("Result", "Instantiation succeed.");
+                JSONObject iriResult = instanceHandler.instantiate(assetData);
+                message.accumulate("Result", iriResult);
             } catch (Exception e) {
                 message.accumulate("Result", "Instantiation failed: " + e);
             }
