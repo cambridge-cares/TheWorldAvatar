@@ -290,7 +290,7 @@ public class TimeSeriesRDBClientIntegrationTest {
                 Assert.assertEquals(dataClass_1.get(i),
                         queriedTimeSeries.getValues(dataIRI_1.get(i)).get(0).getClass());
                 // Check array content
-                Assert.assertEquals(queriedTimeSeries.getValues(dataIRI_1.get(i)),
+                Assert.assertEquals(ts_list1.get(0).getValues(dataIRI_1.get(i)),
                         queriedTimeSeries.getValues(dataIRI_1.get(i)));
             }
 
