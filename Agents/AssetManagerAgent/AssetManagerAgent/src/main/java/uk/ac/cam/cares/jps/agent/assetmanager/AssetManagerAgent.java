@@ -25,7 +25,15 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
  * A class for instantiating, retrieving and printing QR code for assets in CARES.
  * Will be used for the asset manager app.
  */
-@WebServlet(urlPatterns = {"/retrieve", "/retrievebydocs", "/getuidata", "/instantiate", "/print", "/printbulk"})
+@WebServlet(urlPatterns = {
+    "/retrieve", 
+    "/retrievebydocs", 
+    "/getuidata", 
+    "/instantiate", 
+    "/print", 
+    "/printbulk",
+    "/addmanualpdf"
+})
 public class AssetManagerAgent extends JPSAgent{
     /**
      * Global params
