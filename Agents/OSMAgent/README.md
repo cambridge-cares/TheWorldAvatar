@@ -58,7 +58,7 @@ Default is set to the schema value specified in [osm.json](inputs/config/osm.jso
 Leave empty if there is no land use data available, no land use matching will be run.
 
 ### 3.3. Building Docker Image
-In the same directory as this README, run `docker-compose build`. This will build the OSMAgent Docker Image
+In the same directory as this README, run `docker compose build`. This will build the OSMAgent Docker Image
 
 ## 4. Deployment
 The agent has been implemented to work in the stack, which requires the OSMAgent Docker container to be deployed in the stack. To do so, place [osmagent.json](stack-manager-input-config/osmagent.json) in the [stack-manager config directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services). 
@@ -80,7 +80,13 @@ curl -X POST localhost:3838/osmagent/update
 ```
 
 ## 7. TWA-VF Visualization
-The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. Please find the setup instructions in [resources](osmagent/src/main/resources/FeatureInfoAgent/).
+The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. 
+
+Steps: 
+1) Upload [building_usage.obda](FeatureInfoAgent/building_usage.obda) via stack-data-uploader.
+2) Run the SPARQL Update in [building_class.sparql](FeatureInfoAgent/building_class.sparql).
+3) Place [building_usage.sparql](FeatureInfoAgent/queries/building_usage.sparql) and [fia-config.json](FeatureInfoAgent/queries/fia-config.json) into FeatureInfoAgent's [queries](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent/queries) subfolder.
+4) Spin FeatureInfoAgent up along with the [stack-manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-the-feature-info-agent).
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 [inputs]: inputs/

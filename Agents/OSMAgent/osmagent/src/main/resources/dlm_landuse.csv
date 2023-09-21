@@ -1,7 +1,7 @@
 Key,Value,Comment,OntoBuiltEnv
-OBJART_TXT,AX_FlaecheBesondererFunktionalerPraegung,Area Of Special Functional,Non-Domestic
-OBJART_TXT,AX_FlaecheGemischterNutzung,Area of Mixed Use,Domestic
+OBJART_TXT,AX_FlaecheBesondererFunktionalerPraegung,Area of special function,Non-Domestic
+OBJART_TXT,AX_FlaecheGemischterNutzung,Area of mixed use,Domestic
 OBJART_TXT,AX_Friedhof,Cemetery,ReligiousFacility
-OBJART_TXT,AX_IndustrieUndGewerbeflaeche,Industry And Commercial Area,IndustrialFacility
-OBJART_TXT,AX_SportFreizeitUndErholungsflaeche,SportLeisureAndRecreation Area,CulturalFacility
+OBJART_TXT,AX_IndustrieUndGewerbeflaeche,Industry and commercial area,IndustrialFacility
+OBJART_TXT,AX_SportFreizeitUndErholungsflaeche,Sport leisure and recreation area,CulturalFacility
 OBJART_TXT,AX_Wohnbauflaeche,Residential area,Domestic
