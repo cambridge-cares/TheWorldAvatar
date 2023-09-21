@@ -57,10 +57,10 @@ class ExampleMakerTail2Tail:
             for k, v in helper.get_binding().items()
         }
 
-        sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)}
+        sparql_query = f"""SELECT DISTINCT {" ".join([x for x in select_variables if x])}
 WHERE {{{"".join(where_clauses).rstrip()}
 }}"""
-        sparql_query_compact = f"""SELECT {" ".join(select_variables_compact)}
+        sparql_query_compact = f"""SELECT {" ".join([x for x in select_variables_compact if x])}
 WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
@@ -189,7 +189,7 @@ class ExampleT2TQueryConstructorHelperTailProperty(
     ?SpeciesIRI os:has{PropertyName} ?{PropertyName}IRI .
     ?{PropertyName}IRI os:value ?{PropertyName}Value ; os:unit ?{PropertyName}UnitIRI ; os:hasProvenance ?{PropertyName}ProvenanceIRI . 
     ?{PropertyName}UnitIRI rdfs:label ?{PropertyName}UnitValue .
-    OPTIONAL{{
+    OPTIONAL {{
         ?{PropertyName}IRI os:hasReferenceState ?{PropertyName}ReferenceStateIRI .
         ?{PropertyName}ReferenceStateIRI os:value ?{PropertyName}ReferenceStateValue ; os:unit ?{PropertyName}ReferenceStateUnitIRI .
         ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .

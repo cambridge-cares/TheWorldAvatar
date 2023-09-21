@@ -51,10 +51,10 @@ class ExampleMakerTail2Head:
             k: v for helper in tail_helpers for k, v in helper.get_binding().items()
         }
 
-        sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)}
+        sparql_query = f"""SELECT DISTINCT {" ".join([x for x in select_variables if x])}
 WHERE {{{"".join(where_clauses).rstrip()}
 }}"""
-        sparql_query_compact = f"""SELECT {" ".join(select_variables_compact)}
+        sparql_query_compact = f"""SELECT {" ".join([x for x in select_variables_compact if x])}
 WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
@@ -297,9 +297,9 @@ class ExampleT2HQueryConstructorHelperTailChemicalClass(
         return f"""
     VALUES ( ?ChemicalClassValue{i} ) {{ ( \"{ChemicalClassValue}\" ) }}
     ?SpeciesIRI os:hasChemicalClass* ?x{i} .
-	?x{i} ?y{i} ?z{i} .
-	?z{i} rdfs:subClassOf* ?ChemicalClassIRI{i} .
-	?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue{i} .
+    ?x{i} ?y{i} ?z{i} .
+    ?z{i} rdfs:subClassOf* ?ChemicalClassIRI{i} .
+    ?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue{i} .
 """
 
     def get_where_clauses_compact(self):

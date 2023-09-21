@@ -1,5 +1,5 @@
 import pytest
-from data_generation.create_training_data_from_kg.utils_numerical import get_value_higher, get_value_lower
+from data_generation.create_training_data_from_kg.utils.numerical import get_value_higher, get_value_lower
 
 
 class TestUtilsNumerical:
