@@ -10,6 +10,7 @@ from rdflib.store import NO_STORE
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery, performFederatedQuery
+from UK_Digital_Twin_Package.iris import *
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 # import numpy as np 
 from shapely.wkt import loads
@@ -41,30 +42,47 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint):
     else:
         raiseExceptions("!!!!Please provide a valid ONS_Endpoint!!!!")
     
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>  
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
-    SELECT DISTINCT ?BusNodeIRI ?BusLatLon (GROUP_CONCAT(?Capacity;SEPARATOR = '***') AS ?GenerationLinkedToBusNode)
-    WHERE
-    {
-    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?BusNodeIRI . 
-    ?BusNodeIRI rdf:type ontopowsys_PowSysRealization:BusNode . 
+    queryStr = f"""
+                SELECT DISTINCT ?BusNodeIRI ?BusLatLon (GROUP_CONCAT(?Capacity;SEPARATOR = '***') AS ?GenerationLinkedToBusNode)
+                WHERE{{
+                <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?BusNodeIRI .
+                ?BusNodeIRI <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> .
+                ?PowerGenerator <{META_MEDOL_TOPOLOGY_HASOUTPUT}> ?BusNodeIRI .
+                ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator .
+                ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREQUIREMENTSASPECT}> ?pp_capa .
+                ?pp_capa <{RDF_TYPE}> <{ONTOEIP_SYSTEM_REQUIREMENT_DESIGNCAPACITY}> .
+                ?pp_capa <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?Capacity .
+                ?BusNodeIRI <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?BusLatLon .  
+                }} GROUP BY ?BusNodeIRI ?BusLatLon
 
-    ?PowerGenerator meta_model_topology:hasOutput ?BusNodeIRI .
-    ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator .
-    ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
-    ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
-    ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
+                """
     
-    ?BusNodeIRI ontoenergysystem:hasWGS84LatitudeLongitude ?BusLatLon .  
+    #########################
+    
+    # queryStr = """
+    #             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    #             PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+    #             PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    #             PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>  
+    #             PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    #             PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    #             PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
+    #             SELECT DISTINCT ?BusNodeIRI ?BusLatLon (GROUP_CONCAT(?Capacity;SEPARATOR = '***') AS ?GenerationLinkedToBusNode)
+    #             WHERE
+    #             {
+    #             <%s> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?BusNodeIRI . 
+    #             ?BusNodeIRI <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> . 
 
-    } GROUP BY ?BusNodeIRI ?BusLatLon
-    """ % (topologyNodeIRI)
+    #             ?PowerGenerator meta_model_topology:hasOutput ?BusNodeIRI .
+    #             ?PowerPlant <{ONTOCAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator .
+    #             ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREQUIREMENTSASPECT}> ?pp_capa .
+    #             ?pp_capa <{RDF_TYPE}> ontoeip_system_requirement:DesignCapacity .
+    #             ?pp_capa <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?Capacity .
+                
+    #             ?BusNodeIRI <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?BusLatLon .  
+
+    #             } GROUP BY ?BusNodeIRI ?BusLatLon
+    #             """ % (topologyNodeIRI)
     
     print('...remoteQuery queryBusTopologicalInformation...')
     res = json.loads(performQuery(endPointIRI, queryStr))
@@ -86,23 +104,32 @@ def queryBusGPSLocation(topologyNodeIRI, endpoint):
     else:
         raiseExceptions("!!!!Please provide a valid ONS_Endpoint!!!!")
     
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>  
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
-    SELECT DISTINCT ?BusNodeIRI ?BusLatLon
-    WHERE
-    {
-    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?BusNodeIRI . 
-    ?BusNodeIRI rdf:type ontopowsys_PowSysRealization:BusNode . 
-    ?BusNodeIRI ontoenergysystem:hasWGS84LatitudeLongitude ?BusLatLon .  
-
-    }
-    """ % (topologyNodeIRI)
+    queryStr = f"""
+        SELECT DISTINCT ?BusNodeIRI ?BusLatLon (GROUP_CONCAT(?Capacity;SEPARATOR = '***') AS ?GenerationLinkedToBusNode)
+        WHERE{{
+        <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?BusNodeIRI .
+        ?BusNodeIRI <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> .
+        ?BusNodeIRI <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?BusLatLon .
+        }} 
+        """
+    
+    
+    # queryStr = """
+    # PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    # PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+    # PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    # PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>  
+    # PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    # PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    # PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
+    # SELECT DISTINCT ?BusNodeIRI ?BusLatLon
+    # WHERE
+    # {
+    # <%s> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?BusNodeIRI . 
+    # ?BusNodeIRI <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> . 
+    # ?BusNodeIRI <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?BusLatLon .  
+    # }
+    # """ % (topologyNodeIRI)
     
     print('...remoteQuery queryBusTopologicalInformation...')
     res = json.loads(performQuery(endPointIRI, queryStr))
@@ -221,22 +248,14 @@ def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime
     else:
         raiseExceptions("!!!!Please provide a valid endpoint!!!!")
 
-    queryStr_BusAndLatlon = """
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    queryStr_BusAndLatlon = f"""
     SELECT DISTINCT ?Bus_node ?Bus_lat_lon
     WHERE 
-    {   
-    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?Bus_node .
-    ?Bus_node rdf:type ontopowsys_PowSysRealization:BusNode . 
-    ?Bus_node ontoenergysystem:hasWGS84LatitudeLongitude ?Bus_lat_lon .
-    }"""% topologyNodeIRI
+    {{   
+    <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?Bus_node .
+    ?Bus_node   <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> ; 
+                <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?Bus_lat_lon .
+    }}"""
     
     ons_label = endpointList.ONS['label']
 
@@ -276,27 +295,20 @@ def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime
     if len(query_Area) == 0:
         raise Exception('The queried buses do not located in the UK, please check the bus query result.')
     
-    queryStr_electricity_consumption = """
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    queryStr_electricity_consumption = f"""
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
-    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
-    PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
     SELECT DISTINCT  ?v_TotalELecConsumption
     WHERE 
-    {   
-    ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
-    ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
-    ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
-    ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
+    {{   
+    ?Total_ele_consumption <{ONTOCAPE_DERIVED_SI_UNITS_HASTIMEPERIOD}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?TimePeriod .
+    ?TimePeriod <{ONTOECAPE_SPACE_AND_TIME_HASSTARTINGTIME}> ?startTime .
+    ?startTime <{RDF_TYPE}> <{ONTOCAPE_COORDINATE_SYSTEM_COORDINATEVALUE}> . 
+    ?startTime <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> "{startTime_of_EnergyConsumption}"^^xsd:dateTime .
     
-    ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode "%s" .
-    ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
-    }
-    """% (startTime_of_EnergyConsumption, query_Area)
+    ?Total_ele_consumption <{ONTOENERGYSYSTEM_ISOBSERVEDIN}>/<{ONTOENERGYSYSTEM_HASLOCALAUTHORITYCODE}> "{query_Area}" .
+    ?Total_ele_consumption <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?v_TotalELecConsumption .
+    }}
+    """
     
     print('remoteQuery electricity_consumption')
     res_electricity_consumption = json.loads(performQuery(endPointIRI, queryStr_electricity_consumption))
@@ -308,18 +320,14 @@ def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime
 
 # Query the located country of the Power System
 def queryPowerSystemLocation(endpoint_label, topologyNodeIRI):
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    queryStr = f"""
     SELECT DISTINCT ?Location
     WHERE
-    {
-    <%s> ontoenergysystem:isTopologyOf/ontocape_upper_level_system:isDirectSubsystemOf ?ElectricityPowerSystem .
-    ?ElectricityPowerSystem ontoenergysystem:hasRelevantPlace/owl:sameAs ?Location .
-    }
-    """% topologyNodeIRI
+    {{
+    <{topologyNodeIRI}> <{ONTOENERGYSYSTEM_ISTOPOLOGYOF}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISDIRECTSUBSYSTEMOF}> ?ElectricityPowerSystem .
+    ?ElectricityPowerSystem <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{OWL_SAMEAS}> ?Location .
+    }}
+    """
     print('...starts queryPowerSystemLocation...')
     res = json.loads(performQuery(endpoint_label, queryStr))
     qres = str(res[0]['Location'])
@@ -337,65 +345,50 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKPowerSy
         raiseExceptions("!!!!Please provide a valid query endpoint!!!!")
 
     if ifQueryONSOrigionalEndpoint is False: 
-        queryStr = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        queryStr = f"""
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-        PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
-        PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
-        PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
-        PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-        PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
         SELECT DISTINCT ?RegionOrCountry_LACode ?v_TotalELecConsumption
         WHERE 
-        {   
-        ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
-        ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
-        ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
-        ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
-        ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode ?RegionOrCountry_LACode .
-        ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
+        {{   
+        ?Total_ele_consumption <{ONTOCAPE_DERIVED_SI_UNITS_HASTIMEPERIOD}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?TimePeriod .
+        ?TimePeriod <{ONTOECAPE_SPACE_AND_TIME_HASSTARTINGTIME}> ?startTime .
+        ?startTime <{RDF_TYPE}> <{ONTOCAPE_COORDINATE_SYSTEM_COORDINATEVALUE}> . 
+        ?startTime <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> "{startTime_of_EnergyConsumption}"^^xsd:dateTime .
+        ?Total_ele_consumption <{ONTOENERGYSYSTEM_ISOBSERVEDIN}>/<{ONTOENERGYSYSTEM_HASLOCALAUTHORITYCODE}> ?RegionOrCountry_LACode .
+        ?Total_ele_consumption <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?v_TotalELecConsumption .
         
-        SERVICE <%s> {
+        SERVICE <{ONSEndPoint_iri}> {{
             ?RegionOrCountry <http://publishmydata.com/def/ontology/foi/code> ?RegionOrCountry_LACode .
-            {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .} UNION 
-            {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> .} UNION
-            {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> .} UNION
-            {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .}     
-            }
-        }"""%(startTime_of_EnergyConsumption, ONSEndPoint_iri)
+            {{ ?RegionOrCountry <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/E12> .}} UNION 
+            {{ ?RegionOrCountry <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/W92> .}} UNION
+            {{ ?RegionOrCountry <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/S92> .}} UNION
+            {{ ?RegionOrCountry <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/N92> .}}     
+            }}
+        }}"""
 
         print('...starts queryElectricityConsumption_Region...')   
         res = json.loads(performQuery(UKPowerSystemBaseWorldEndPoint_iri, queryStr))     
         print('...queryElectricityConsumption_Region is done...') 
     else:
-        queryStr = """
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        queryStr = f"""
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-        PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
-        PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
-        PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
-        PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-        PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
         SELECT DISTINCT ?RegionOrCountry_LACode ?v_TotalELecConsumption
         WHERE 
-        {   
-        ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
-        ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
-        ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
-        ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
+        {{   
+        ?Total_ele_consumption <{ONTOCAPE_DERIVED_SI_UNITS_HASTIMEPERIOD}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?TimePeriod .
+        ?TimePeriod <{ONTOECAPE_SPACE_AND_TIME_HASSTARTINGTIME}> ?startTime .
+        ?startTime <{RDF_TYPE}> <{ONTOCAPE_COORDINATE_SYSTEM_COORDINATEVALUE}> . 
+        ?startTime <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> "{startTime_of_EnergyConsumption}"^^xsd:dateTime .
         
-        ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode ?RegionOrCountry_LACode .
+        ?Total_ele_consumption <{ONTOENERGYSYSTEM_ISOBSERVEDIN}>/<{ONTOENERGYSYSTEM_HASLOCALAUTHORITYCODE}> ?RegionOrCountry_LACode .
         ?RegionOrCountry <http://publishmydata.com/def/ontology/foi/code> ?RegionOrCountry_LACode .
-        {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .} UNION 
-        {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> .} UNION
-        {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> .} UNION
-        {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .}
-        ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
-        }
-        """% (startTime_of_EnergyConsumption)
+        {{ ?RegionOrCountry <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/E12> .}} UNION 
+        {{ ?RegionOrCountry <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/W92> .}} UNION
+        {{ ?RegionOrCountry <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/S92> .}} UNION
+        {{ ?RegionOrCountry <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/N92> .}}
+        ?Total_ele_consumption <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?v_TotalELecConsumption .
+        }}
+        """
      
         print('...starts queryElectricityConsumption_Region...')   
         res = json.loads(performFederatedQuery(queryStr, [UKPowerSystemBaseWorldEndPoint_iri, ONSEndPoint_iri]))
@@ -415,43 +408,34 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKPowe
     elif not parse(ONSEndPoint_iri, rule='IRI'):
         raiseExceptions("!!!!Please provide a valid query endpoint!!!!")
 
-    queryStr = """
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    queryStr = f"""
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
-    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
-    PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
-    PREFIX ont: <http://www.opengis.net/ont/geosparql#>
     SELECT DISTINCT ?Area_LACode ?v_TotalELecConsumption (GROUP_CONCAT(?Geo_Info;SEPARATOR = '***') AS ?Geo_InfoList)
     WHERE 
-    {   
-    ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
-    ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
-    ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
-    ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
+    {{   
+    ?Total_ele_consumption <{ONTOCAPE_DERIVED_SI_UNITS_HASTIMEPERIOD}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?TimePeriod .
+    ?TimePeriod <{ONTOECAPE_SPACE_AND_TIME_HASSTARTINGTIME}> ?startTime .
+    ?startTime <{RDF_TYPE}> <{ONTOCAPE_COORDINATE_SYSTEM_COORDINATEVALUE}> . 
+    ?startTime <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> "{startTime_of_EnergyConsumption}"^^xsd:dateTime .
     
-    ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode ?Area_LACode .
+    ?Total_ele_consumption <{ONTOENERGYSYSTEM_ISOBSERVEDIN}>/<{ONTOENERGYSYSTEM_HASLOCALAUTHORITYCODE}> ?Area_LACode .
     ?Area <http://publishmydata.com/def/ontology/foi/code> ?Area_LACode . 
-    ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
-    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> . }  
-    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E13> . }  
-    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> . }
-    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> . }
-    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> . }
-    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/K03> . }
-    ## FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/K02> . }
-    FILTER NOT EXISTS { ?Area rdfs:label 'K02000001' . }
+    ?Total_ele_consumption <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?v_TotalELecConsumption .
+    FILTER NOT EXISTS {{ ?Area <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/E12> . }}  
+    FILTER NOT EXISTS {{ ?Area <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/E13> . }}  
+    FILTER NOT EXISTS {{ ?Area <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/W92> . }}
+    FILTER NOT EXISTS {{ ?Area <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/S92> . }}
+    FILTER NOT EXISTS {{ ?Area <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/N92> . }}
+    FILTER NOT EXISTS {{ ?Area <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/K03> . }}
+    ## FILTER NOT EXISTS {{ ?Area <{ONS_ENTITY_CODE}> <http://statistics.data.gov.uk/id/statistical-entity/K02> . }}
+    FILTER NOT EXISTS {{ ?Area <{RDFS_LABEL}> 'K02000001' . }}
     
-    OPTIONAL { ?Area a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
-    ?Area ont:hasGeometry ?geometry . 
-    ?geometry ont:asWKT ?Geo_Info . }      
+    OPTIONAL {{ ?Area a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    ?Area <{ONS_GEOSPARQL_HASGEOMETRY}> ?geometry . 
+    ?geometry <{ONS_GEOSPARQL_ASWKT}> ?Geo_Info . }}      
     
-    }GROUP BY ?Area_LACode ?v_TotalELecConsumption
-    """% (startTime_of_EnergyConsumption)
+    }}GROUP BY ?Area_LACode ?v_TotalELecConsumption
+    """
     
     print('...Query ElectricityConsumption_LocalArea...')
     res = json.loads(performFederatedQuery(queryStr, [UKPowerSystemBaseWorldEndPoint_iri, ONSEndPoint_iri])) 
@@ -479,49 +463,38 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKPowe
 ###############ELine#############
 # branchGeometryQueryCreator is developed to constuct a query string used to retrieve the branch's geometry information according to its parallel connection of each branch
 def branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level): 
-    PREFIX = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    PREFIX ontocape_geometry: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>
-    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    """
-    
-    SELECT_CLAUSE = """
+    ADDED = f""""""  
+    SELECT_CLAUSE = f"""
     SELECT DISTINCT ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine """
     for voltage in branch_voltage_level:
        SELECT_CLAUSE += "?Num_OHL_" + str(voltage) + " "
         
-    WHERE_CLAUSE = """
+    WHERE_CLAUSE = f"""
     WHERE
-    {
-    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?ELineNode .
-    ?ELineNode rdf:type ontopowsys_PowSysRealization:ElectricalLine .   
+    {{
+    <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?ELineNode .
+    ?ELineNode <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_ELECTRICALLINE}> .   
     
     
-    ?ELineNode ontocape_network_system:leaves ?From_Bus .
-    ?ELineNode ontocape_network_system:enters ?To_Bus .
+    ?ELineNode <{ONTOCAPE_NETWORK_SYSTEM_LEAVES}> ?From_Bus .
+    ?ELineNode <{ONTOCAPE_NETWORK_SYSTEM_ENTERS}> ?To_Bus .
 
-    ?ELineNode ontocape_geometry:hasShapeRepresentation/ontocape_geometry:has_length ?Length_ELine .
-    ?Length_ELine ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Value_Length_ELine .
-    """% topologyNodeIRI 
+    ?ELineNode <{ONTOCAPE_GEOMETRY_HASSHAPEREPRESENTATION}>/<{ONTOCAPE_GEOMETRY_HAS_LENGTH}> ?Length_ELine .
+    ?Length_ELine <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?Value_Length_ELine .
+
+    {ADDED}
+    }}""" 
     
     for voltage in branch_voltage_level: 
         OHL = "?OHL_" + str(voltage)
         Num_OHL = "?Num_OHL_" + str(voltage)
         
-        WHERE_CLAUSE += """?ELineNode ontocape_upper_level_system:isComposedOfSubsystem %s . 
-    %s rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    %s ontopowsys_PowSysRealization:hasVoltageLevel "%s" .
-    %s ontopowsys_PowSysRealization:hasNumberOfParallelLine %s .    
-    """% (OHL, OHL, OHL, voltage, OHL, Num_OHL)
-
-    WHERE_CLAUSE += "} " #ORDER BY ASC(?ELineNode)
-        
-    queryStr =  PREFIX + SELECT_CLAUSE + WHERE_CLAUSE
+        ADDED += f"""?ELineNode <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> {OHL} . 
+    {OHL} <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_OVERHEADLINE}> .
+    {OHL} <{ONTOPOWSYS_POWSYSREALIZATION_HASVOLTAGELEVEL}> "{voltage}" .
+    {OHL} <{ONTOPOWSYS_POWSYSREALIZATION_HASNUMBEROFPARALLELLINE}> {Num_OHL} .    
+    """
+    queryStr =  SELECT_CLAUSE + WHERE_CLAUSE
     return queryStr    
     
 # queryELineTopologicalInformation is developed to perform the query for branch topological information and its geometry information
@@ -534,25 +507,17 @@ def queryELineTopologicalInformation(topologyNodeIRI, endpoint):
     else:
         raiseExceptions("!!!!Please provide a valid endpoint!!!!")
     
-    query_branch_voltage_level = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    PREFIX ontocape_geometry: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>
-    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    query_branch_voltage_level = f"""
     SELECT DISTINCT ?OHL_voltage_level
     WHERE
-    {
-    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?ELineNode .
-    ?ELineNode rdf:type ontopowsys_PowSysRealization:ElectricalLine .   
-    ?ELineNode ontocape_upper_level_system:isComposedOfSubsystem ?OHL . 
-    ?OHL rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    ?OHL ontopowsys_PowSysRealization:hasVoltageLevel ?OHL_voltage_level .   
-    }
-    """ %topologyNodeIRI
+    {{
+    <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?ELineNode .
+    ?ELineNode <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_ELECTRICALLINE}> .   
+    ?ELineNode <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?OHL . 
+    ?OHL <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_OVERHEADLINE}> .
+    ?OHL <{ONTOPOWSYS_POWSYSREALIZATION_HASVOLTAGELEVEL}> ?OHL_voltage_level .   
+    }}
+    """
     
     print('...Query the branch_voltage_level...')
     res = json.loads(performQuery(endPointIRI, query_branch_voltage_level))
@@ -567,3 +532,9 @@ def queryELineTopologicalInformation(topologyNodeIRI, endpoint):
             if '\"^^' in  r[key] :
                 r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
     return res, branch_voltage_level 
+
+if __name__ == '__main__':
+    topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_926ca0b6-bad0-43cd-bf27-12d3aab1b17b"
+    endPoint = "UKPowerSystemBaseWorld"
+    eliminateClosedPlantIRIList = ['http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_d140b469-b65f-400d-be33-4f314c446250', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_5edabd1e-fcb6-4257-ac86-0b486254bfc7', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_bad581c4-21d7-47c3-8c4a-48204bb8b414', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_802ca5dd-1c45-42d2-9ca8-cac1845e2914', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_313a787c-1e7d-455b-873f-202d9a4b1db1', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_3ab168bc-20eb-4b68-a690-98af4b5f28d5', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_06606644-dd2d-4036-b054-22b0a910e40e', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_6e084c0a-5c93-4389-b6f3-32802e67d599', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_ba864332-07d7-4c50-b383-b8441e69a9f7', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_6461cc8d-fa36-4031-bddf-c07f559a87b9', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_25f2d20a-26a9-4da5-b789-6a31afd53a89']
+    queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList)

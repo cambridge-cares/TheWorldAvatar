@@ -206,6 +206,7 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
             ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
             _, self.busNodeList = query_model.queryBusTopologicalInformation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
             self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275            
+            # FIXME: queryEGenInfo is not fstring
             self.generatorNodeList = query_model.queryEGenInfo(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel, eliminateClosedPlantIRIList) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:GenerationTech 11:Extant 12:samllerLAcode
             self.capa_demand_ratio = demandAndCapacityRatioCalculator(self.generatorNodeList, self.topologyNodeIRI, startTime_of_EnergyConsumption)
             
@@ -4580,7 +4581,7 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
         return
 
     """Create the folrder path for maintaining the files for Mapbox visulisation"""
-    def MAPBOX_Preparation_FolderPath(self, regionalOutputConfig, branchLossConfig):
+    def MAPBOX_Preparation_FolderPath(self, regionalOutputConfig):
         ## Folder for regional output files
         path_regional = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/MAPBOX_files/SMR_FossilPlant_output/%sbus_LCOE_%s£/"%(str(self.numOfBus), str(self.SMR_LCOE))
         for rc in regionalOutputConfig:
@@ -4591,19 +4592,7 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
                 print("---  new folder %s...  ---" % path)
             else:
                 print("---  The folder exists! %s  ---" % path)
-        
-        ## Folder for branch losses
-        path_branchLoss = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/MAPBOX_files/BranchLoss_netDemand/%sbus_LCOE_%s£/"%(str(self.numOfBus), str(self.SMR_LCOE))
-        for bc in branchLossConfig:
-            path = path_branchLoss + "weather_" + str(rc[2]) + "/weight_" + str(bc[3]) + "/carbonTax_" + str(bc[1]) + "/"
-            folder = os.path.exists(path)
-            if not folder:                
-                os.makedirs(path)           
-                print("---  new folder %s...  ---" % path)
-            else:
-                print("---  The folder exists! %s  ---" % path)
         return
-
 
 if __name__ == '__main__':
 
@@ -4639,7 +4628,7 @@ if __name__ == '__main__':
     ## 6. Specify the path for storing the raw simulation results files
     numberOfBus = config_data["NumOfBus"]
     numOfBranch = config_data["NumOfBranch"]
-    rootPath = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/smr_replacements/%sbus%sbranch_LCOE_%s£/"%(str(numberOfBus), str(numOfBranch), str(SMR_LCOE))
+    rootPath = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/smr_replacements/%sbus%sbranch_LCOE_%s£_added/"%(str(numberOfBus), str(numOfBranch), str(SMR_LCOE))
 
     # summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
     
@@ -4825,7 +4814,7 @@ if __name__ == '__main__':
         #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_output"])  
         # smr_replacement_for_fossil_fuel.GeoJSONCreator_fossilFuelPowerPlant(config_data_postp["specifiedConfig_output"])
 
-        smr_replacement_for_fossil_fuel.MAPBOX_Preparation_FolderPath(config_data_postp["specifiedConfig_output"], config_data_postp["specifiedConfig_brchloss"])
+        smr_replacement_for_fossil_fuel.MAPBOX_Preparation_FolderPath(config_data_postp["specifiedConfig_output"])
 
     print('-----Terminal-----')
 

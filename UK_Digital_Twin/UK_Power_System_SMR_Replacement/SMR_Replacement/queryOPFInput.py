@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 11 Sept 2023         #
+# Last Update Date: 21 Sept 2023         #
 ##########################################
 
 import os, sys, json
@@ -13,6 +13,7 @@ from shapely.wkt import loads
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 from rfc3987 import parse
 from logging import raiseExceptions
+from UK_Digital_Twin_Package.iris import *
 
 """Create an object of Class CO2FactorAndGenCostFactor"""
 ukmf = ModelFactor.ModelFactor()
@@ -23,17 +24,15 @@ modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
 def queryEliminatePowerPlant(plantNameList:list, endpoint):
     ppList = []
     for ppName in plantNameList:
-        queryStr = """
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+        queryStr = f"""
+        
         SELECT DISTINCT ?powerPlantIRI
         WHERE
-        {
-        ?powerPlantIRI rdfs:label "%s" .
-        ?powerPlantIRI rdf:type ontoeip_powerplant:PowerPlant .
-        }
-        """%ppName
+        {{
+        ?powerPlantIRI <{RDFS_LABEL}> "{ppName}" .
+        ?powerPlantIRI <{RDF_TYPE}> <{ONTOEIP_POWERPLANT_POWERPLANT}> .
+        }}
+        """
 
         print('...starts queryEliminatePowerPlant...')
         ppList.append(json.loads(performQuery(endpoint, queryStr))[0]['powerPlantIRI'])
@@ -44,17 +43,14 @@ def queryTopologyIRI(numOfBus, numOfBranch, endpoint):
 
     label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
 
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    queryStr = f"""
     SELECT DISTINCT ?topologyIRI
     WHERE
-    {
-    ?topologyIRI rdfs:label "%s" .
-    ?topologyIRI rdf:type ontoenergysystem:PowerGridTopology .
-    }
-    """% label
+    {{
+    ?topologyIRI <{RDFS_LABEL}> "{label}" .
+    ?topologyIRI <{RDF_TYPE}> <{ONTOENERGYSYSTEM_POWERGRIDTOPOLOGY}> .
+    }}
+    """
 
     print('...starts queryTopologyIRI...')
     res = json.loads(performQuery(endpoint, queryStr))[0]['topologyIRI']
@@ -63,17 +59,13 @@ def queryTopologyIRI(numOfBus, numOfBranch, endpoint):
 
 def querySlackBusNode(slackBusLocation:str, endpoint):
 
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    queryStr = f"""
     SELECT DISTINCT ?slackBusNodeIRI ?latlon
     WHERE
-    {
-    ?slackBusNodeIRI ontoenergysystem:hasWGS84LatitudeLongitude ?latlon .
-    ?slackBusNodeIRI rdf:type ontopowsys_PowSysRealization:BusNode .
-    }
+    {{
+    ?slackBusNodeIRI <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?latlon .
+    ?slackBusNodeIRI <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> .
+    }}
     """
 
     print('...starts querySlackBusNode...')
@@ -87,50 +79,38 @@ def querySlackBusNode(slackBusLocation:str, endpoint):
 
 def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_label):
     results = []
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-    PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
-    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
-    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    queryStr = f"""
     SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity ?LatLon ?FuelType ?GenerationTechnology ?place
     WHERE
-    {
-    ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
-    ?GBElectricitySystemIRI ontoenergysystem:hasRelevantPlace/owl:sameAs <https://dbpedia.org/page/Great_Britain> .
+    {{
+    ?GBElectricitySystemIRI <{ONTOCAPE_UPPER_LEVEL_SYSTEM_CONTAINS}> ?PowerPlant .
+    ?GBElectricitySystemIRI <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{OWL_SAMEAS}> <https://dbpedia.org/page/Great_Britain> .
 
-    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
-    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?Bus . 
+    <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?PowerGenerator . 
+    <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?Bus . 
     
-    ?PowerGenerator meta_model_topology:hasOutput ?Bus .
-    ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .  
-    ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator . 
+    ?PowerGenerator <{META_MEDOL_TOPOLOGY_HASOUTPUT}> ?Bus .
+    ?Bus <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> .  
+    ?PowerGenerator <{RDF_TYPE}> <{ONTOEIP_POWERPLANT_POWERPLANT}> . 
 
-    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnologyIRI .
-    ?GenerationTechnologyIRI rdf:type ?GenerationTechnology .
+    ?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_USESGENERATIONTECHNOLOGY}> ?GenerationTechnologyIRI .
+    ?GenerationTechnologyIRI <{RDF_TYPE}> ?GenerationTechnology .
     
-    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?FuelTypeIRI .
-    ?FuelTypeIRI rdf:type ?FuelType . 
+    ?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_CONSUMESPRIMARYFUEL}> ?FuelTypeIRI .
+    ?FuelTypeIRI <{RDF_TYPE}> ?FuelType . 
     
-    FILTER NOT EXISTS { ?GenerationTechnologyIRI rdf:type <http://www.theworldavatar.com/kb/ontoeip/WindOffshore> .}  
+    FILTER NOT EXISTS {{ ?GenerationTechnologyIRI <{RDF_TYPE}> <http://www.theworldavatar.com/kb/ontoeip/WindOffshore> .}}  
     
-    ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator .
-    ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
-    ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
-    ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
+    ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator .
+    ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREQUIREMENTSASPECT}> ?pp_capa .
+    ?pp_capa <{RDF_TYPE}> <{ONTOEIP_SYSTEM_REQUIREMENT_DESIGNCAPACITY}> .
+    ?pp_capa <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?Capacity .
 
-    ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
-    ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .  
-    ?PowerPlant ontoenergysystem:hasRelevantPlace/owl:sameAs ?place . 
-    }
-    """% (topologyNodeIRI, topologyNodeIRI)
+    ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator . 
+    ?PowerPlant <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?LatLon .  
+    ?PowerPlant <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{OWL_SAMEAS}> ?place . 
+    }}
+    """
 
     print('...starts queryGeneratorToBeRetrofitted_AllPowerPlant...')
     res = json.loads(performQuery(endPoint_label, queryStr))
@@ -183,43 +163,31 @@ def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_la
 def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endPoint_label):
     results = []
     for gen in retrofitGenerator:
-        queryStr = """
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-        PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
-        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-        PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
-        PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
-        PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-        PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-        PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
-        PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-        PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+        queryStr = f"""
         SELECT DISTINCT ?Bus ?Capacity ?LatLon ?FuelType ?GenerationTechnology ?place
         WHERE
-        {
-        <%s> meta_model_topology:hasOutput ?Bus .
-        ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .  
-        <%s> rdf:type ontoeip_powerplant:PowerGenerator . 
+        {{
+        <{gen}> <{META_MEDOL_TOPOLOGY_HASOUTPUT}> ?Bus .
+        ?Bus <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> .  
+        <{gen}> <{RDF_TYPE}> <{ONTOEIP_POWERPLANT_POWERPLANT}> . 
         
-        ?PowerPlant ontocape_technical_system:hasRealizationAspect <%s> .
-        ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
-        ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
-        ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
+        ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> <{gen}> .
+        ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREQUIREMENTSASPECT}> ?pp_capa .
+        ?pp_capa <{RDF_TYPE}> <{ONTOEIP_SYSTEM_REQUIREMENT_DESIGNCAPACITY}> .
+        ?pp_capa <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?Capacity .
         
-        ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
-        ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
+        ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator . 
+        ?PowerPlant <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?LatLon .
 
-        ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnologyIRI .
-        ?GenerationTechnologyIRI rdf:type ?GenerationTechnology .
+        ?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_USESGENERATIONTECHNOLOGY}> ?GenerationTechnologyIRI .
+        ?GenerationTechnologyIRI <{RDF_TYPE}> ?GenerationTechnology .
         
-        ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?FuelTypeIRI .
-        ?FuelTypeIRI rdf:type ?FuelType . 
-        ?PowerPlant ontoenergysystem:hasRelevantPlace/owl:sameAs ?place . 
+        ?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_CONSUMESPRIMARYFUEL}> ?FuelTypeIRI .
+        ?FuelTypeIRI <{RDF_TYPE}> ?FuelType . 
+        ?PowerPlant <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{OWL_SAMEAS}> ?place . 
         
-        }
-        """% (gen, gen, gen)
+        }}
+        """
 
         print('...starts queryGeneratorToBeRetrofitted_SelectedGenerator...')
         res = json.loads(performQuery(endPoint_label, queryStr))[0]
@@ -308,51 +276,38 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
         else:
             CO2EmissionFactor = float(modelFactorArrays[14][4].replace('\n', ''))  
 
-        queryStr_1 = """
-        PREFIX owl: <http://www.w3.org/2002/07/owl#>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-        PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
-        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-        PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
-        PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
-        PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-        PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-        PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
-        PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-        PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+        queryStr_1 = f"""
         SELECT DISTINCT ?PowerGenerator ?Bus ?Capacity ?LatLon ?place 
         WHERE
-        {
-        ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
-        ?GBElectricitySystemIRI ontoenergysystem:hasRelevantPlace/owl:sameAs <https://dbpedia.org/page/Great_Britain> .
+        {{
+        ?GBElectricitySystemIRI <{ONTOCAPE_UPPER_LEVEL_SYSTEM_CONTAINS}> ?PowerPlant .
+        ?GBElectricitySystemIRI <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{OWL_SAMEAS}> <https://dbpedia.org/page/Great_Britain> .
 
-        <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
-        <%s> ontocape_upper_level_system:isComposedOfSubsystem ?Bus . 
+        <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?PowerGenerator . 
+        <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?Bus . 
         
-        ?PowerGenerator meta_model_topology:hasOutput ?Bus .
-        ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .  
-        ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator . 
+        ?PowerGenerator <{META_MEDOL_TOPOLOGY_HASOUTPUT}> ?Bus .
+        ?Bus <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> .  
+        ?PowerGenerator <{RDF_TYPE}> <{ONTOEIP_POWERPLANT_POWERPLANT}> . 
 
-        {?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?FuelType .
-        ?FuelType rdf:type <%s> . } UNION 
-        {?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?TechType .
-        ?TechType rdf:type <%s> . }
+        {{?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_CONSUMESPRIMARYFUEL}> ?FuelType .
+        ?FuelType <{RDF_TYPE}> <{type}> . }} UNION 
+        {{?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_USESGENERATIONTECHNOLOGY}> ?TechType .
+        ?TechType <{RDF_TYPE}> <{type}> . }}
 
-        ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnologyIRI .
+        ?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_USESGENERATIONTECHNOLOGY}> ?GenerationTechnologyIRI .
 
-        FILTER NOT EXISTS { ?GenerationTechnologyIRI rdf:type <http://www.theworldavatar.com/kb/ontoeip/WindOffshore> .}   
+        FILTER NOT EXISTS {{ ?GenerationTechnologyIRI <{RDF_TYPE}> <http://www.theworldavatar.com/kb/ontoeip/WindOffshore> .}}   
         
-        ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator .
-        ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
-        ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
-        ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
+        ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator .
+        ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREQUIREMENTSASPECT}> ?pp_capa .
+        ?pp_capa <{RDF_TYPE}> <{ONTOEIP_SYSTEM_REQUIREMENT_DESIGNCAPACITY}> .
+        ?pp_capa <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?Capacity .
         
-        ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
-        ?PowerPlant ontoenergysystem:hasRelevantPlace/owl:sameAs ?place .
-        }
-        """% (topologyNodeIRI, topologyNodeIRI, type, type)
+        ?PowerPlant <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?LatLon .
+        ?PowerPlant <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{OWL_SAMEAS}> ?place .
+        }}
+        """
 
         print('...starts queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType...')
         res = json.loads(performQuery(endPointIRI, queryStr_1))
@@ -375,23 +330,16 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
 ## Query the boundaries of the consumption areas
 ## Direct Http Request without using the query client from the py4jps
 def queryAreaBoundaries(LA_code:str):
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
-    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
-    PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
+    queryStr = f"""
     SELECT DISTINCT ?area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
     WHERE
-    {
-    # ?area ons:status "live" .
-    ?area rdf:type ons:Statistical-Geography .
-    ?area <http://publishmydata.com/def/ontology/foi/code> "%s" .
-    ?area ons_geosparql:hasGeometry ?geometry .
-    ?geometry ons_geosparql:asWKT ?areaBoundary .
-    } GROUP BY ?area
-    """% (LA_code)
-
+    {{
+    ?area <{RDF_TYPE}> <{ONS_STATISTICAL_GEOGRAPHY}> .
+    ?area <http://publishmydata.com/def/ontology/foi/code> "{LA_code}" .
+    ?area <{ONS_GEOSPARQL_HASGEOMETRY}> ?geometry .
+    ?geometry <{ONS_GEOSPARQL_ASWKT}> ?areaBoundary .
+    }} GROUP BY ?area
+    """
     ###-- The previous way of send http request to the ONS endpoint as the query interfeace in Py4jps does not work--###
     # encodedString = urllib.parse.quote(queryStr)
     # getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
@@ -426,20 +374,14 @@ def queryifWithin(LACode_toBeCheck:str, givenLACode:str, ONS_Endpoint_label:str)
     else:
         raiseExceptions("!!!!Please provide a valid query endpoint!!!!")
 
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
-    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
-    PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
-    PREFIX foi: <http://publishmydata.com/def/ontology/foi/>
+    queryStr = f"""
     ASK  
-    {
-    ?areaToBeChecked <http://publishmydata.com/def/ontology/foi/code> "%s" .
-    ?areaGiven <http://publishmydata.com/def/ontology/foi/code> "%s" .
-    ?areaToBeChecked foi:within ?areaGiven .
-    }
-    """%(str(LACode_toBeCheck), str(givenLACode))
+    {{
+    ?areaToBeChecked <http://publishmydata.com/def/ontology/foi/code> "{LACode_toBeCheck}" .
+    ?areaGiven <http://publishmydata.com/def/ontology/foi/code> "{givenLACode}" .
+    ?areaToBeChecked <{FOI_WITHIN}> ?areaGiven .
+    }}
+    """
 
     print('...query ifWithin condition...')
     res = json.loads(performQuery(endPointIRI, queryStr))  
@@ -478,16 +420,16 @@ if __name__ == '__main__':
     SELECT DISTINCT ?PowerPlant ?LatLon ?PowerPlant_LACode (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
     WHERE
     {
-    ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
-    ?GBElectricitySystemIRI ontoenergysystem:hasRelevantPlace/owl:sameAs <https://dbpedia.org/page/Great_Britain> .
-    ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
-    ?PowerPlant ontoenergysystem:hasRelevantPlace/ontoenergysystem:hasLocalAuthorityCode ?PowerPlant_LACode .
+    ?GBElectricitySystemIRI <{ONTOCAPE_UPPER_LEVEL_SYSTEM_CONTAINS}> ?PowerPlant .
+    ?GBElectricitySystemIRI <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{OWL_SAMEAS}> <https://dbpedia.org/page/Great_Britain> .
+    ?PowerPlant <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?LatLon .
+    ?PowerPlant <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/ontoenergysystem:hasLocalAuthorityCode ?PowerPlant_LACode .
 	
 	?area ons:status "live" .
-    ?area rdf:type ons:Statistical-Geography .
+    ?area <{RDF_TYPE}> <{ONS_STATISTICAL_GEOGRAPHY}> .
     ?area <http://publishmydata.com/def/ontology/foi/code> ?PowerPlant_LACode .
-    ?area ons_geosparql:hasGeometry ?geometry .
-    ?geometry ons_geosparql:asWKT ?areaBoundary .
+    ?area <{ONS_GEOSPARQL_HASGEOMETRY}>?geometry .
+    ?geometry <{ONS_GEOSPARQL_ASWKT}> ?areaBoundary .
 
 
     }GROUP BY ?PowerPlant_LACode

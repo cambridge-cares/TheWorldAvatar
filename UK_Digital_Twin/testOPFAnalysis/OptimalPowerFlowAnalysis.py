@@ -7650,7 +7650,7 @@ if __name__ == '__main__':
     numberOfGenerations = 600 
 
     ## The setting of £40
-    # NumberOfSMRUnitList = [0, 10, 12, 13,  15, 17, 18, 19,  25, 28, 29, 32,  33, 42, 43, 45,  47, 48, 49]
+    NumberOfSMRUnitList = [0, 10, 12, 13,  15, 17, 18, 19,  25, 28, 29, 32,  33, 42, 43, 45,  47, 48, 49]
     # weighterList = [0, 0.25, 0.5, 0.6, 0.75, 0.9, 1]
     # CarbonTaxForOPFList = [0, 10, 20, 30, 40, 45, 50, 55, 60, 70, 80, 100, 151, 200]
     # weatherConditionList = [[0.93, 0.78, "WHSH"], [0.93, 0.068, "WHSL"],
