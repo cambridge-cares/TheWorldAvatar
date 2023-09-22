@@ -27,6 +27,7 @@ public class AddAssetViewModel extends ViewModel {
 
     private final Logger LOGGER = Logger.getLogger(AddAssetViewModel.class);
     OtherInfoRepository otherInfoRepository;
+    private String editMode = "add";
 
 
     public Map<String, List<String>> getInputFieldNamesBySection() {
@@ -167,5 +168,13 @@ public class AddAssetViewModel extends ViewModel {
             AssetPropertyDataModel property = inputFieldModels.get(key);
             property.setFieldValue(assetInfo.getProperty(key));
         }
+    }
+
+    public String getEditMode() {
+        return editMode;
+    }
+
+    public void setEditMode(String editMode) {
+        this.editMode = editMode;
     }
 }

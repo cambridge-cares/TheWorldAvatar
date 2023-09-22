@@ -60,32 +60,15 @@ public class AddAssetFragment extends Fragment {
         Uri uri = ((Intent) getArguments().get("android-support-nav:controller:deepLinkIntent")).getData();
         if (uri.getPath().contains("/add_asset")) {
             ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.add_asset);
-
-            NavDeepLinkRequest request = null;
-            try {
-                request = NavDeepLinkRequest.Builder
-                        .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/asset_summary?assetinfo=" + serializeObjectToString(viewModel.getAssetInfo())  + "&operation=" + "add"))
-                        .build();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            loadUIComponent(request);
+            viewModel.setEditMode("add");
+            loadUIComponent();
         } else if (uri.getPath().contains("/edit_asset")) {
             ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.edit_asset);
             try {
                 AssetInfo assetInfo = (AssetInfo) deserializeStringToObject(getArguments().getString("assetinfo"));
                 viewModel.initFieldsWithAssetInfo(assetInfo);
-
-                NavDeepLinkRequest request = null;
-                try {
-                    // todo: need to create another endpoint for edit asset workflow. UI should not have much difference, but the end point called in the agent should be different
-                    request = NavDeepLinkRequest.Builder
-                            .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/asset_summary?assetinfo=" + serializeObjectToString(viewModel.getAssetInfo()) + "&operation=" + "edit"))
-                            .build();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                loadUIComponent(request);
+                viewModel.setEditMode("edit");
+                loadUIComponent();
 
                 binding.doneBt.setOnClickListener(view1 -> {
                     // todo: the check may not pass for edit function. Some mandatory fields are missing from the existing data, and in test phase the drop down list is not completed
@@ -100,7 +83,7 @@ public class AddAssetFragment extends Fragment {
 
     }
 
-    private void loadUIComponent(NavDeepLinkRequest request) {
+    private void loadUIComponent() {
         ViewPager2 viewPager = binding.viewPager;
         TabLayout tabLayout = binding.tabs;
         adapter = new TabAdapter(requireActivity().getSupportFragmentManager(), getLifecycle());
@@ -123,8 +106,20 @@ public class AddAssetFragment extends Fragment {
             }
 
             // show summary page
-            NavHostFragment.findNavController(this).navigate(request);
+            NavHostFragment.findNavController(this).navigate(getRequest());
         });
+    }
+
+    private NavDeepLinkRequest getRequest() {
+        NavDeepLinkRequest request = null;
+        try {
+            request = NavDeepLinkRequest.Builder
+                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/asset_summary?assetinfo=" + serializeObjectToString(viewModel.getAssetInfo())  + "&operation=" + viewModel.getEditMode()))
+                    .build();
+            return request;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
