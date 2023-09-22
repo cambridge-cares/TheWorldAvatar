@@ -49,7 +49,7 @@ def get_t5_trainer(
         return dict(source=sources, target=targets)
 
     def _get_tokenized_dataset(data_path: str):
-        dataset = Dataset.from_json(data_path)
+        dataset = Dataset.from_json(data_path).shuffle(seed=42)
         dataset = dataset.map(
             _preprocess_examples,
             batched=True,
