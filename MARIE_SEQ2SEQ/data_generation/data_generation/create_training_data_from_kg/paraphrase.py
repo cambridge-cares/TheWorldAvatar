@@ -113,6 +113,12 @@ if __name__ == "__main__":
 
     Path(args.output_path).mkdir(parents=True, exist_ok=True)
 
+    def save(i: int, data: List[dict]):
+        filename = str(i) + ".json"
+        filepath = os.path.join(args.output_path, filename)
+        with open(filepath, "w") as f:
+            json.dump(data, f, indent=4)
+            
     batch_size = 10
     data_out = []
     count = 0
@@ -132,9 +138,9 @@ if __name__ == "__main__":
             )
         )
 
-        if count % batch_size == 0 or i == len(data) - 1:
-            filename = str(i) + ".json"
-            filepath = os.path.join(args.output_path, filename)
-            with open(filepath, "w") as f:
-                json.dump(data_out, f, indent=4)
+        if count % batch_size == 0:
+            save(i, data=data_out)
             data_out = []
+
+    if len(data_out) > 0:
+        save(i, data=data_out)
