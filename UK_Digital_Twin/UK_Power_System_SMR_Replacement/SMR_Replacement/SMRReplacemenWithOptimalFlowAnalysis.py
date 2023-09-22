@@ -206,7 +206,6 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
             ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
             _, self.busNodeList = query_model.queryBusTopologicalInformation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
             self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275            
-            # FIXME: queryEGenInfo is not fstring
             self.generatorNodeList = query_model.queryEGenInfo(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel, eliminateClosedPlantIRIList) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:GenerationTech 11:Extant 12:samllerLAcode
             self.capa_demand_ratio = demandAndCapacityRatioCalculator(self.generatorNodeList, self.topologyNodeIRI, startTime_of_EnergyConsumption)
             

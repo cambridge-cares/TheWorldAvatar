@@ -1,35 +1,21 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 Sept 2023         #
+# Last Update Date: 22 Sept 2023         #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
 import os, sys, json
-from rdflib.graph import ConjunctiveGraph
-from rdflib.store import NO_STORE
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery, performFederatedQuery
 from UK_Digital_Twin_Package.iris import *
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
-# import numpy as np 
 from shapely.wkt import loads
-from shapely.geometry import mapping
-import geojson
-import ast
 from UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox import queryGBOrNIBoundary
 import shapely.geometry
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 from rfc3987 import parse
-import urllib.parse
-import requests
 from logging import raiseExceptions
-
-qres = []
-qres_ = []
-capa_PrimaryFuel = []
-qres_capa = []
-allCapacity = []
 
 #####UPDATED#####
 
@@ -56,33 +42,6 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint):
                 }} GROUP BY ?BusNodeIRI ?BusLatLon
 
                 """
-    
-    #########################
-    
-    # queryStr = """
-    #             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    #             PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
-    #             PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    #             PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>  
-    #             PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-    #             PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    #             PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
-    #             SELECT DISTINCT ?BusNodeIRI ?BusLatLon (GROUP_CONCAT(?Capacity;SEPARATOR = '***') AS ?GenerationLinkedToBusNode)
-    #             WHERE
-    #             {
-    #             <%s> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?BusNodeIRI . 
-    #             ?BusNodeIRI <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> . 
-
-    #             ?PowerGenerator meta_model_topology:hasOutput ?BusNodeIRI .
-    #             ?PowerPlant <{ONTOCAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator .
-    #             ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREQUIREMENTSASPECT}> ?pp_capa .
-    #             ?pp_capa <{RDF_TYPE}> ontoeip_system_requirement:DesignCapacity .
-    #             ?pp_capa <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?Capacity .
-                
-    #             ?BusNodeIRI <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?BusLatLon .  
-
-    #             } GROUP BY ?BusNodeIRI ?BusLatLon
-    #             """ % (topologyNodeIRI)
     
     print('...remoteQuery queryBusTopologicalInformation...')
     res = json.loads(performQuery(endPointIRI, queryStr))
@@ -113,24 +72,6 @@ def queryBusGPSLocation(topologyNodeIRI, endpoint):
         }} 
         """
     
-    
-    # queryStr = """
-    # PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    # PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
-    # PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    # PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>  
-    # PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-    # PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    # PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
-    # SELECT DISTINCT ?BusNodeIRI ?BusLatLon
-    # WHERE
-    # {
-    # <%s> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?BusNodeIRI . 
-    # ?BusNodeIRI <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> . 
-    # ?BusNodeIRI <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?BusLatLon .  
-    # }
-    # """ % (topologyNodeIRI)
-    
     print('...remoteQuery queryBusTopologicalInformation...')
     res = json.loads(performQuery(endPointIRI, queryStr))
     print('...queryBusTopologicalInformation is done...')
@@ -153,114 +94,57 @@ def queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList:list):
         for ppiri in eliminateClosedPlantIRIList:
             if '<' and '>' not in ppiri:
                ppiri = '<' + ppiri + '>'
-            conditionStr = "{ %s ontocape_technical_system:hasRealizationAspect ?PowerGenerator } UNION"%ppiri
+            conditionStr = f"{{ {ppiri} <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator }} UNION"
             NotIncludeStr += conditionStr
         NotIncludeStr = NotIncludeStr[:-5]
         NotIncludeStr += "}"                                         
     else:
         NotIncludeStr = ""
 
-    # queryStr = f"""
-    # SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?LatLon ?PowerPlant_LACode ?GenerationTech
-    # WHERE
-    # {{
-    # ?GBElectricitySystemIRI <{ONTOCAPE_UPPER_LEVEL_SYSTEM_CONTAINS}> ?PowerPlant .
-    # ?GBElectricitySystemIRI <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{OWL_SAMEAS}> <https://dbpedia.org/page/Great_Britain> .
-
-    # <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?PowerGenerator . 
-    # <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?Bus . 
-    
-    # ?PowerGenerator <{META_MEDOL_TOPOLOGY_HASOUTPUT}> ?Bus .
-    # ?Bus <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> .  
-    # ?PowerGenerator <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_POWERGENERATOR}> . 
-    
-    # ?PowerGenerator <{ONTOPOWSYS_POWSYSPERFORMANCE_HASFIXEDMAINTENANCECOST}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?v_FixedMO .
-    # ?v_FixedMO <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?FixedMO .
-    
-    # ?PowerGenerator <{ONTOPOWSYS_POWSYSPERFORMANCE_HASCOST}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?v_VarMO .
-    # ?v_VarMO <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?VarMO .
-    
-    # ?PowerGenerator <{ONTOPOWSYS_POWSYSPERFORMANCE_HASFUELCOST}>/ <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?v_FuelCost .
-    # ?v_FuelCost <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?FuelCost .
-    
-    # ?PowerGenerator <{ONTOEIP_POWERPLANT_HASEMISSIONFACTOR}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?v_CO2EmissionFactor .
-    # ?v_CO2EmissionFactor <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?CO2EmissionFactor .
-    
-    # ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator .
-    # ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREQUIREMENTSASPECT}> ?pp_capa .
-    # ?pp_capa <{RDF_TYPE}> <{ONTOEIP_SYSTEM_REQUIREMENT_DESIGNCAPACITY}> .
-    # ?pp_capa <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?Capacity .
-    
-    # ?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_CONSUMESPRIMARYFUEL}>/<{RDF_TYPE}> ?PrimaryFuel .
-
-    # ?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_USESGENERATIONTECHNOLOGY}>/<{RDF_TYPE}> ?GenerationTech .
-
-    # ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator . 
-    # ?PowerPlant <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?LatLon .
-
-    # ?PowerPlant <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{ONTOENERGYSYSTEM_HASLOCALAUTHORITYCODE}> ?PowerPlant_LACode .
-
-    # }}
-    # """
-
-
-    queryStr = """
-    PREFIX owl: <http://www.w3.org/2002/07/owl#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
-    PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
-    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#> 
-    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
-    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    queryStr = f"""
     SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?LatLon ?PowerPlant_LACode ?GenerationTech
     WHERE
-    {
-    ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
-    ?GBElectricitySystemIRI ontoenergysystem:hasRelevantPlace/owl:sameAs <https://dbpedia.org/page/Great_Britain> .
+    {{
+    ?GBElectricitySystemIRI <{ONTOCAPE_UPPER_LEVEL_SYSTEM_CONTAINS}> ?PowerPlant .
+    ?GBElectricitySystemIRI <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{OWL_SAMEAS}> <https://dbpedia.org/page/Great_Britain> .
 
-    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?PowerGenerator . 
-    <%s> ontocape_upper_level_system:isComposedOfSubsystem ?Bus . 
+    <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?PowerGenerator . 
+    <{topologyNodeIRI}> <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> ?Bus . 
     
-    ?PowerGenerator meta_model_topology:hasOutput ?Bus .
-    ?Bus rdf:type ontopowsys_PowSysRealization:BusNode .  
-    ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator . 
+    ?PowerGenerator <{META_MEDOL_TOPOLOGY_HASOUTPUT}> ?Bus .
+    ?Bus <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_BUSNODE}> .  
+    ?PowerGenerator <{RDF_TYPE}> <{ONTOEIP_POWERPLANT_POWERGENERATOR}> . 
     
-    ?PowerGenerator ontopowsys_PowSysPerformance:hasFixedMaintenanceCost/ontocape_upper_level_system:hasValue ?v_FixedMO .
-    ?v_FixedMO ontocape_upper_level_system:numericalValue ?FixedMO .
+    ?PowerGenerator <{ONTOPOWSYS_POWSYSPERFORMANCE_HASFIXEDMAINTENANCECOST}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?v_FixedMO .
+    ?v_FixedMO <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?FixedMO .
     
-    ?PowerGenerator ontopowsys_PowSysPerformance:hasCost/ontocape_upper_level_system:hasValue ?v_VarMO .
-    ?v_VarMO ontocape_upper_level_system:numericalValue ?VarMO .
+    ?PowerGenerator <{ONTOPOWSYS_POWSYSPERFORMANCE_HASCOST}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?v_VarMO .
+    ?v_VarMO <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?VarMO .
     
-    ?PowerGenerator ontopowsys_PowSysPerformance:hasFuelCost/ ontocape_upper_level_system:hasValue ?v_FuelCost .
-    ?v_FuelCost ontocape_upper_level_system:numericalValue ?FuelCost .
+    ?PowerGenerator <{ONTOPOWSYS_POWSYSPERFORMANCE_HASFUELCOST}>/ <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?v_FuelCost .
+    ?v_FuelCost <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?FuelCost .
     
-    ?PowerGenerator ontoeip_powerplant:hasEmissionFactor/ontocape_upper_level_system:hasValue ?v_CO2EmissionFactor .
-    ?v_CO2EmissionFactor ontocape_upper_level_system:numericalValue ?CO2EmissionFactor .
+    ?PowerGenerator <{ONTOEIP_POWERPLANT_HASEMISSIONFACTOR}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}> ?v_CO2EmissionFactor .
+    ?v_CO2EmissionFactor <{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?CO2EmissionFactor .
     
-    ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator .
-    ?PowerPlant ontocape_technical_system:hasRequirementsAspect ?pp_capa .
-    ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
-    ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
+    ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator .
+    ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREQUIREMENTSASPECT}> ?pp_capa .
+    ?pp_capa <{RDF_TYPE}> <{ONTOEIP_SYSTEM_REQUIREMENT_DESIGNCAPACITY}> .
+    ?pp_capa <{ONTOCAPE_UPPER_LEVEL_SYSTEM_HASVALUE}>/<{ONTOCAPE_UPPER_LEVEL_SYSTEM_NUMERICALVALUE}> ?Capacity .
     
-    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel/rdf:type ?PrimaryFuel .
+    ?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_CONSUMESPRIMARYFUEL}>/<{RDF_TYPE}> ?PrimaryFuel .
 
-    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology/rdf:type ?GenerationTech .
+    ?PowerGenerator <{ONTOECAPE_TECHNICAL_SYSTEM_REALIZES}>/<{ONTOEIP_POWERPLANT_USESGENERATIONTECHNOLOGY}>/<{RDF_TYPE}> ?GenerationTech .
 
-    ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
-    ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
+    ?PowerPlant <{ONTOECAPE_TECHNICAL_SYSTEM_HASREALIZATIONASPECT}> ?PowerGenerator . 
+    ?PowerPlant <{ONTOENERGYSYSTEM_HASWGS84LATITUDELONGITUDE}> ?LatLon .
 
-    ?PowerPlant ontoenergysystem:hasRelevantPlace/ontoenergysystem:hasLocalAuthorityCode ?PowerPlant_LACode .
+    ?PowerPlant <{ONTOENERGYSYSTEM_HASRELEVANTPLACE}>/<{ONTOENERGYSYSTEM_HASLOCALAUTHORITYCODE}> ?PowerPlant_LACode .
 
-    %s
+    {NotIncludeStr}
 
-    }
-    """% (topologyNodeIRI, topologyNodeIRI, NotIncludeStr)
+    }}
+    """
     
     print('...starts queryEGenInfo...')
     res = json.loads(performQuery(endPointIRI, queryStr))
@@ -565,9 +449,9 @@ def queryELineTopologicalInformation(topologyNodeIRI, endpoint):
                 r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
     return res, branch_voltage_level 
 
-if __name__ == '__main__':
-    topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_926ca0b6-bad0-43cd-bf27-12d3aab1b17b"
-    endPoint = "UKPowerSystemBaseWorld"
-    eliminateClosedPlantIRIList = ['http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_d140b469-b65f-400d-be33-4f314c446250', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_5edabd1e-fcb6-4257-ac86-0b486254bfc7', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_bad581c4-21d7-47c3-8c4a-48204bb8b414', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_802ca5dd-1c45-42d2-9ca8-cac1845e2914', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_313a787c-1e7d-455b-873f-202d9a4b1db1', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_3ab168bc-20eb-4b68-a690-98af4b5f28d5', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_06606644-dd2d-4036-b054-22b0a910e40e', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_6e084c0a-5c93-4389-b6f3-32802e67d599', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_ba864332-07d7-4c50-b383-b8441e69a9f7', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_6461cc8d-fa36-4031-bddf-c07f559a87b9', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_25f2d20a-26a9-4da5-b789-6a31afd53a89']
-    qres = queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList)
-    print(qres)
+# if __name__ == '__main__':
+#     topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_926ca0b6-bad0-43cd-bf27-12d3aab1b17b"
+#     endPoint = "UKPowerSystemBaseWorld"
+#     eliminateClosedPlantIRIList = ['http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_d140b469-b65f-400d-be33-4f314c446250', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_5edabd1e-fcb6-4257-ac86-0b486254bfc7', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_bad581c4-21d7-47c3-8c4a-48204bb8b414', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_802ca5dd-1c45-42d2-9ca8-cac1845e2914', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_313a787c-1e7d-455b-873f-202d9a4b1db1', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_3ab168bc-20eb-4b68-a690-98af4b5f28d5', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_06606644-dd2d-4036-b054-22b0a910e40e', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_6e084c0a-5c93-4389-b6f3-32802e67d599', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_ba864332-07d7-4c50-b383-b8441e69a9f7', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_6461cc8d-fa36-4031-bddf-c07f559a87b9', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_25f2d20a-26a9-4da5-b789-6a31afd53a89']
+#     qres = queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList)
+#     print(qres)
