@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -128,7 +129,7 @@ public class CityDBClient extends ContainerClient {
         addIRIs(database, baseIRI);
     }
 
-    private void updateDatabase(String database, String sridIn) {
+    public void updateDatabase(String database, String sridIn) {
 
         String containerId = getContainerId("postgis");
 
@@ -147,7 +148,7 @@ public class CityDBClient extends ContainerClient {
 
     }
 
-    private void addIRIs(String database, String baseIRI) {
+    public void addIRIs(String database, String baseIRI) {
         String sqlFilename = "citydb_add_uuids_and_iris.sql";
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
             String sqlQuery = new String(is.readAllBytes()).replace("{baseIRI}", baseIRI);
@@ -174,7 +175,7 @@ public class CityDBClient extends ContainerClient {
             String sqlQuery = new String(is.readAllBytes());
             String idList = Arrays.stream(fudgedThematicSurfaceIDs)
                     .mapToObj(Long::toString)
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.joining("','"));
             sqlQuery = sqlQuery.replaceFirst("\\{idList\\}", idList);
             PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
         } catch (IOException ex) {
@@ -232,5 +233,35 @@ public class CityDBClient extends ContainerClient {
                 .exec();
 
         handleErrors(errorStream, execId, logger);
+    }
+
+    public void populateCityDBbySQL(String database, String lineage, Map<String, String> columnMap) {
+        String sqlFilename = "citydb_populate_citydb.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes()).replace("{lineage}", lineage);
+            for (Map.Entry<String, String> entry : columnMap.entrySet()) {
+                sqlQuery = sqlQuery.replace("{" + entry.getKey() + "}", entry.getValue());
+            }
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+    }
+
+    public void preparePGforCityDB(String database, String table, String preprocessSql, double minArea,
+            Map<String, String> columnMap) {
+        if (null == preprocessSql) {
+            String sqlFilename = "citydb_preprocess_building.sql";
+            try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+                preprocessSql = new String(is.readAllBytes()).replace("{table}", String.valueOf(table))
+                        .replace("{minArea}", String.valueOf(minArea));
+                for (Map.Entry<String, String> entry : columnMap.entrySet()) {
+                    preprocessSql = preprocessSql.replace("{" + entry.getKey() + "}", entry.getValue());
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+            }
+        }
+        PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(preprocessSql);
     }
 }
