@@ -6,8 +6,8 @@ LLAMA_COMPLETION_TEMPLATE = "### \n\n"
 
 T5_INPUT_PREFIX = "translate to SPARQL: "
 T5_INPUT_ENCODINGS = {
-    "<": "ls_th",
-    ">": "gt_th",
+    "<": "&lt;",
+    ">": "&gt;",
 }
 T5_INPUT_DECODINGS = {v: k for k, v in T5_INPUT_ENCODINGS.items()}
 

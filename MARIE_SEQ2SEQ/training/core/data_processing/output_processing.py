@@ -4,11 +4,11 @@ from core.data_processing.utils import replace_multi
 
 
 T5_OUTPUT_ENCODINGS = {
-    "{": "op_br",
-    "}": "cl_br",
     "?": "var_",
-    "<": "ls_th",
-    ">": "gr_th",
+    "{": "&lcub;",
+    "}": "&rcub;",
+    "<": "&lt;",
+    ">": "&gt;",
 }
 T5_OUTPUT_DECODINGS = {v: k for k, v in T5_OUTPUT_ENCODINGS.items()}
 
