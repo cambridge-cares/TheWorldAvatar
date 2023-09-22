@@ -4,7 +4,7 @@
 
 This Feature Info Agent (FIA) acts as a single access point for [TWA Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) before display within the side panel of the visualisation.
 
-Please see the [CHANGELOG](./CHANGELOG.md) file for details on recent changes; the latest available image of the FIA can be determine by viewing its [GitHub package page](https://github.com/cambridge-cares/TheWorldAvatar/pkgs/container/feature-info-agent).
+Please see the [CHANGELOG](./CHANGELOG.md) file for details on recent changes; the latest available image of the FIA can be determined by viewing its [GitHub package page](https://github.com/cambridge-cares/TheWorldAvatar/pkgs/container/feature-info-agent).
 
 ## Overview
 
@@ -20,14 +20,14 @@ At the time of writing, the FIA has a few restrictions that all deploying develo
 
 - The FIA can only be run within a [TWA Stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 - The FIA can only report meta and time data that is contained within the same stack as the agent itself.
-- The FIA can only return time series data on series that uses the Instant class.
+- The FIA can only return time series data on series that uses the [Instant](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html) class.
   - This is due to a limitation with the underlying TimeseriesClient.
 
 ### Class discovery
 
-In addition to the above restrictions, the FIA uses a hardcoded series of SPARQL queries to ask the KG was classes the received A-Box IRI belongs to. For the FIA to detect a class, then use it to find and run the correct metadata/time series query, the data must be able to fulfil the below query.
+In addition to the above restrictions, the FIA uses a hardcoded series of SPARQL queries to ask the KG what classes the received A-Box IRI belongs to. For the FIA to detect a class, then use it to find and run the correct metadata/time series query, the data must be able to fulfil one of the below queries.
 
-If the below query returns no results, the FIA will not function; developers may need to update their triples/mapping until the query does return.
+If neither query below returns any results, then the FIA will not function; developers may need to update their triples/mapping until at least one of the queries does return something.
 
 ```
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -136,6 +136,10 @@ The FIA is currently set up with two automated GitHub actions:
 ## Examples
 
 A number of example metadata and time series queries, along with an example FIA configuration file, can be found within the [FIA Examples](./examples/README.md) document.
+
+## Tutorial
+
+A tutorial that walks through how to use the FIA can be found in the associated [FIA Tutorial document](./docs/tutorial.md).
 
 ## Troubleshooting
 

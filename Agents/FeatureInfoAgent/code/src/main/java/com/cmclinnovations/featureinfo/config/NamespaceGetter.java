@@ -6,12 +6,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,10 +21,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import org.xml.sax.SAXException;
 
 /**
  * Attempts to use the Blazegraph REST API to get a list of available
@@ -56,15 +54,6 @@ public class NamespaceGetter {
      * Initialise a new instance.
      * 
      * @param url enforced root URL for Blazegraph
-     */
-    public NamespaceGetter(String url) {
-        this(url, null, null);
-    }
-
-    /**
-     * Initialise a new instance.
-     * 
-     * @param url enforced root URL for Blazegraph
      * @param username Blazegraph username
      * @param password Blazegraph password.
      */
@@ -75,51 +64,31 @@ public class NamespaceGetter {
     }
 
     /**
-     * Return determined Blazegraph username.
-     * 
-     * @return username
-     */
-    public String getUsername() {
-        return this.username;
-    }
-
-    /**
-     * Return determined Blazegraph password.
-     * 
-     * @return password
-     */
-    public String getPassword() {
-        return this.password;
-    }
-
-    /**
-     * Use the stack client library to get the root URL of Blazegraph.
-     * 
-     * @throws IllegalStateException if root URL cannot be determined.
-     */
-    private void getRoot() throws Exception {
-        ContainerClient client = FeatureInfoAgent.CONFIG;
-        BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig(
-            "blazegraph", 
-            BlazegraphEndpointConfig.class
-        );
-
-        this.username = blazeConfig.getUsername();
-        this.password = blazeConfig.getPassword();
-        this.url = blazeConfig.getServiceUrl();
-
-        LOGGER.info("Determined base URL of Blazegraph as: {}", this.url);
-        if(this.url == null || this.url.isEmpty()) {
-            throw new IllegalStateException("Cannot determine root URL of Blazegraph.");
-        }
-    }
-
-    /**
      * Use the REST API to ask for a list of available namespaces.
+     * 
+     * @returns List of discovered endpoints.
+     * 
+     * @throws IllegalStateException if credentials are missing.
+     * @throws IOException if cannot contact Blazegraph.
      */
-    public Map<String, String> listNamespaces() throws Exception {
-        // If not already provided, then get the Blazegraph root from the stack
-        if(this.url == null) getRoot();
+    public List<StackEndpoint> discoverEndpoints() throws
+        IllegalStateException,
+        IOException,
+        InterruptedException,
+        ParserConfigurationException,
+        SAXException {
+
+        if(this.url == null) {
+            throw new IllegalArgumentException("Root URL for Blazegraph is required!");
+        }
+        if(this.username != null && this.password == null) {
+            throw new IllegalArgumentException("Must supply Blazegraph password if username is not null!");
+        } else if (this.username == null && this.password != null) {
+            throw new IllegalArgumentException("Must supply Blazegraph username if password is not null!");
+        }
+
+        // Endpoint collection
+        List<StackEndpoint> endpoints = new ArrayList<>();
 
         // Build the request URL
         String requestURL = this.url;
@@ -134,12 +103,11 @@ public class NamespaceGetter {
 
         // Create the request
         HttpRequest request = null;
-        
         if(username != null && password != null) {
             request = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(requestURL))
-                .header("Authorization", getBasicAuthHeader(username, password))
+                .header("Authorization", getBasicAuthHeader())
                 .build();
         } else {
             request = HttpRequest.newBuilder()
@@ -156,53 +124,66 @@ public class NamespaceGetter {
 
         // Parse the response
         if(response.statusCode() != 200 || response.body() == null) {
-            throw new IOException("Invalid response from Blazegraph service.");
+            throw new IOException("Invalid HTTP response from Blazegraph service!");
         }
 
-        return parseResponse(response.body());
+        // Parse the XML response
+        parseResponse(endpoints, response.body());
+        return endpoints;
     }
 
     /**
-     * Parse the response from Blazegraph
-     * @param response
-     * @return
+     * Parse the XML response from Blazegraph.
+     * 
+     * @param endpoints list of endpoints to add to.
+     * @param response raw response string.
+     * 
+     * @throws IOException if XML string cannot be loaded.
+     * @throws SAXExeption if XML is invalid
+     * @throws ParserConfigurationException if parser is invalid.
      */
-    protected Map<String, String> parseResponse(String response) throws Exception {
-         // Iterate through XML to get namespace details
-         Map<String, String> namespaces = new HashMap<>();
+    private void parseResponse(List<StackEndpoint> endpoints, String response) throws
+        IOException,
+        ParserConfigurationException,
+        SAXException {
 
-         Document xmlDoc = loadXMLFromString(response);
-         NodeList descriptions = xmlDoc.getElementsByTagName("rdf:Description");
+        Document xmlDoc = loadXMLFromString(response);
+        NodeList descriptions = xmlDoc.getElementsByTagName("rdf:Description");
  
+        // Iterate through XML to get namespace details
          for(int i = 0; i < descriptions.getLength(); i++) {
-             Element description = (Element) descriptions.item(i);
+            Element description = (Element) descriptions.item(i);
          
-             Node nameNode = description.getElementsByTagName("Namespace").item(0);
-             String namespace = nameNode.getTextContent();
+            Node nameNode = description.getElementsByTagName("Namespace").item(0);
+            String namespace = nameNode.getTextContent();
              
-             // Do not get the URL from the node here, it's unreliable. Build it instead
-             String endpoint = "";
-             if(this.url.endsWith("/")) {
-                endpoint = this.url + "namespace/" + namespace + "/sparql";
-             } else {
-                endpoint = this.url + "/namespace/" + namespace + "/sparql";
-             }
-     
-            namespaces.put(namespace, endpoint);
+             // Do not get the URL from the node here, it's unreliable; build it instead.
+            String namespaceURL = "";
+            if(this.url.endsWith("/")) {
+                namespaceURL = this.url + "namespace/" + namespace + "/sparql";
+            } else {
+                namespaceURL = this.url + "/namespace/" + namespace + "/sparql";
+            }
+
+            LOGGER.info("Have discovered a local Blazegraph endpoint: {}", namespaceURL);
+
+            // Build endpoint object
+            endpoints.add(new StackEndpoint(
+                namespaceURL,
+                this.username,
+                this.password,
+                StackEndpointType.BLAZEGRAPH
+            ));
          }
-         return namespaces;
     }
 
     /**
      * Encode username and password into base 64.
      * 
-     * @param username username 
-     * @param password password
-     * 
-     * @return encoded string
+     * @return encoded string.
      */
-    private String getBasicAuthHeader(String username, String password) {
-        String valueToEncode = username + ":" + password;
+    private String getBasicAuthHeader() {
+        String valueToEncode = this.username + ":" + this.password;
         return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
@@ -213,9 +194,15 @@ public class NamespaceGetter {
      * 
      * @return W3C document
      * 
-     * @throws Exception if string is not valid XML
+     * @throws IOException if XML string cannot be loaded.
+     * @throws SAXExeption if XML is invalid
+     * @throws ParserConfigurationException if parser is invalid.
      */
-    private Document loadXMLFromString(String xml) throws Exception {
+    private Document loadXMLFromString(String xml) throws
+        IOException, 
+        SAXException,
+        ParserConfigurationException {
+
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         InputSource is = new InputSource(new StringReader(xml));

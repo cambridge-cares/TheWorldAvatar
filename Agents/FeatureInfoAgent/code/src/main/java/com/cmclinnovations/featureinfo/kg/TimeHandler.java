@@ -25,7 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.config.StackEndpoint;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -66,7 +66,7 @@ public class TimeHandler {
     /**
      * Endpoint(s) for the KG.
      */
-    private final List<ConfigEndpoint> endpoints = new ArrayList<>();
+    private final List<StackEndpoint> endpoints = new ArrayList<>();
 
     /**
      * Connection to KG.
@@ -100,7 +100,7 @@ public class TimeHandler {
      * @param classMatch name of class for asset.
      * @param endpoint Blazegraph endpoint for the KG.
      */
-    public TimeHandler(String iri, String classMatch, ConfigEndpoint endpoint) {
+    public TimeHandler(String iri, String classMatch, StackEndpoint endpoint) {
         this(iri, classMatch, Arrays.asList(endpoint));
     }
 
@@ -111,7 +111,7 @@ public class TimeHandler {
      * @param classMatch name of class for asset
      * @param endpoints Blazegraph endpoints for the KG.
      */
-    public TimeHandler(String iri, String classMatch, List<ConfigEndpoint> endpoints) {
+    public TimeHandler(String iri, String classMatch, List<StackEndpoint> endpoints) {
         String fixedIRI = iri;
         if(!fixedIRI.startsWith("<")) fixedIRI = "<" + fixedIRI;
         if(!fixedIRI.endsWith(">")) fixedIRI = fixedIRI + ">";
@@ -429,7 +429,7 @@ public class TimeHandler {
      * @return ONTOP url.
      */
     private String getOntopURL() {
-        Optional<ConfigEndpoint> result = FeatureInfoAgent.CONFIG.getOntopEndpoint();
+        Optional<StackEndpoint> result = FeatureInfoAgent.CONFIG.getOntopEndpoint();
         if(result.isPresent()) {
             return result.get().url();
         }

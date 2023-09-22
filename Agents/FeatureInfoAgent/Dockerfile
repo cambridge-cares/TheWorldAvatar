@@ -23,7 +23,6 @@ RUN apt-get update && apt-get install -y nano
 
 WORKDIR /app
 COPY --from=builder /root/code/output/. $CATALINA_HOME/webapps/
-COPY ./tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

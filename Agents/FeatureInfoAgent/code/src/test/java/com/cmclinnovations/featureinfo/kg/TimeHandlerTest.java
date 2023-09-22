@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.config.StackEndpoint;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
-import com.cmclinnovations.featureinfo.config.EndpointType;
+import com.cmclinnovations.featureinfo.config.StackEndpointType;
 import com.cmclinnovations.featureinfo.config.NamespaceGetterTest;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -76,9 +76,9 @@ public class TimeHandlerTest {
         }
 
         // Add mock endpoints to the config
-        CONFIG.addEndpoint(new ConfigEndpoint("ONTOP", "http://my-fake-ontop.com/", null, null, EndpointType.ONTOP));
-        CONFIG.addEndpoint(new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
-        CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test", "http://fake-website.com/blazegraph/namespace/test/sparql", null, null, EndpointType.BLAZEGRAPH));
+        CONFIG.addEndpoint(new StackEndpoint("ONTOP", "http://my-fake-ontop.com/", null, null, StackEndpointType.ONTOP));
+        CONFIG.addEndpoint(new StackEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, StackEndpointType.POSTGRES));
+        CONFIG.addEndpoint(new StackEndpoint("blazegraph-test", "http://fake-website.com/blazegraph/namespace/test/sparql", null, null, StackEndpointType.BLAZEGRAPH));
 
         // Write a temporary query file
         try {

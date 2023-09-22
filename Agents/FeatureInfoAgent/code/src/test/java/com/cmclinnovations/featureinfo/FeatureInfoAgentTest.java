@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,9 +25,7 @@ import javax.ws.rs.core.Response;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hamcrest.Matchers;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,12 +33,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.hamcrest.MockitoHamcrest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.config.StackEndpoint;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
-import com.cmclinnovations.featureinfo.config.EndpointType;
+import com.cmclinnovations.featureinfo.config.StackEndpointType;
 import com.cmclinnovations.featureinfo.config.NamespaceGetterTest;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -78,7 +74,7 @@ public class FeatureInfoAgentTest {
             while ((eachStringLine = bufferReader.readLine()) != null) {
                 stringBuilder.append(eachStringLine).append("\n");
             }
-            CONFIG.loadFile(stringBuilder.toString());
+            CONFIG.parseFileContent(stringBuilder.toString());
 
         } catch(Exception exception) {
             exception.printStackTrace(System.out);
@@ -86,9 +82,9 @@ public class FeatureInfoAgentTest {
         }
 
         // Add mock endpoints to the config
-        CONFIG.addEndpoint(new ConfigEndpoint("ONTOP", "http://my-fake-ontop.com/", null, null, EndpointType.ONTOP));
-        CONFIG.addEndpoint(new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
-        CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test", "http://fake-website.com/blazegraph/namespace/test/sparql", null, null, EndpointType.BLAZEGRAPH));
+        CONFIG.addEndpoint(new StackEndpoint("ONTOP", "http://my-fake-ontop.com/", null, null, StackEndpointType.ONTOP));
+        CONFIG.addEndpoint(new StackEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, StackEndpointType.POSTGRES));
+        CONFIG.addEndpoint(new StackEndpoint("blazegraph-test", "http://fake-website.com/blazegraph/namespace/test/sparql", null, null, StackEndpointType.BLAZEGRAPH));
 
         // Write a temporary query file
         try {
@@ -551,6 +547,46 @@ public class FeatureInfoAgentTest {
     }
 
     /**
+     * Tests the FeatureInfoAgent's ability to refresh its configuration and cached endpoints
+     * when the "/refresh" route is called.
+     */
+    @Test
+    public void testRefreshRoute() throws Exception {
+        FeatureInfoAgent agent = new FeatureInfoAgent();
+
+        // Mock request
+        HttpServletRequest request = spy(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn(HttpGet.METHOD_NAME);
+        when(request.getRequestURI()).thenReturn("http://fake-website.com/feature-info-agent/refresh");
+
+        // Mock response with mocked writer
+        HttpServletResponse response = spy(MockHttpServletResponse.class);
+        StringWriter strWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(strWriter);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        // Mock AgentCaller.readJsonParameter() method
+        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+            caller.when(() -> {
+                AgentCaller.readJsonParameter(ArgumentMatchers.any());
+            }).thenReturn(
+                new JSONObject("{}")
+            );
+
+            // Run the agent
+            agent.doGet(request, response);
+
+            // Check the response code
+            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
+            
+            // Check against the expected result
+            JSONObject jsonResult = new JSONObject(strWriter.toString());
+            JSONObject expected = new JSONObject("{\"meta\": [{\"Forced\": \"Yes\"}]}");
+            Assertions.assertTrue(jsonResult.similar(expected), "JSON response did not match expected result!");
+        } 
+    }
+
+    /**
      * 
      * @return
      */
@@ -663,6 +699,7 @@ public class FeatureInfoAgentTest {
 
         return tsClient;
     }
+
 
 }
 // End of class.

@@ -1,0 +1,27 @@
+{
+    "queries": [
+        {
+            "class": "https://theworldavatar.io/mock-domain/ClassOne",
+            "metaFile": "classOneMeta.sparql"
+        },
+        {
+            "class": "https://theworldavatar.io/mock-domain/ClassTwo",
+            "metaFile": "classTwoMeta.sparql",
+            "timeFile": "classTwoTime.sparql",
+            "timeLimit": -1,
+            "databaseName": "my-database"
+        },
+        {
+            "class": "https://theworldavatar.io/mock-domain/ClassThree",
+            "metaFile": "classThreeMeta.sparql",
+            "timeFile": ""
+        },
+        {
+            "class": "https://theworldavatar.io/mock-domain/ClassThree",
+            "metaFile": "",
+            "timeFile": "classFourTime.sparql",
+            "timeLimit": 48,
+            "databaseName": "my-database"
+        }
+    ]
+}

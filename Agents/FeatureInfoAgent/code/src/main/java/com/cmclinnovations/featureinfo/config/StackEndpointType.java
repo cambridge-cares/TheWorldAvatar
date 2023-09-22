@@ -1,12 +1,12 @@
 package com.cmclinnovations.featureinfo.config;
 
 /**
- * Enumerator for types of endpoint.
+ * Enumerator for types of TWA Stack endpoints.
  */
-public enum EndpointType {
+public enum StackEndpointType {
 
     /**
-     * Knowledge graphs.
+     * Blazegraph.
      */
     BLAZEGRAPH,
 
@@ -16,7 +16,8 @@ public enum EndpointType {
     ONTOP,
 
     /**
-     * Relational database.
+     * PostgreSQL.
      */
     POSTGRES
 }
+// End of enum.

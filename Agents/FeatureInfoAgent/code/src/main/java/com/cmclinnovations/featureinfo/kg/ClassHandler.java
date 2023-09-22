@@ -14,7 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.config.StackEndpoint;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -62,7 +62,7 @@ public class ClassHandler {
     /**
      * Endpoint(s) for the KG.
      */
-    private final List<ConfigEndpoint> endpoints = new ArrayList<>();
+    private final List<StackEndpoint> endpoints = new ArrayList<>();
 
      /**
      * Connection to KG.
@@ -75,7 +75,7 @@ public class ClassHandler {
      * @param iri IRI of the asset.
      * @param endpoint Endpoint for the KG.
      */
-    public ClassHandler(String iri, ConfigEndpoint endpoint) {
+    public ClassHandler(String iri, StackEndpoint endpoint) {
         this(iri, Arrays.asList(endpoint));
     }
 
@@ -85,7 +85,7 @@ public class ClassHandler {
      * @param iri IRI of the asset.
      * @param endpoints Endpoints for the KG.
      */
-    public ClassHandler(String iri, List<ConfigEndpoint> endpoints) {
+    public ClassHandler(String iri, List<StackEndpoint> endpoints) {
         String fixedIRI = iri;
         if(!fixedIRI.startsWith("<")) fixedIRI = "<" + fixedIRI;
         if(!fixedIRI.endsWith(">")) fixedIRI = fixedIRI + ">";
@@ -220,7 +220,7 @@ public class ClassHandler {
      * @return ONTOP url.
      */
     private String getOntopURL() {
-        Optional<ConfigEndpoint> result = FeatureInfoAgent.CONFIG.getOntopEndpoint();
+        Optional<StackEndpoint> result = FeatureInfoAgent.CONFIG.getOntopEndpoint();
         if(result.isPresent()) {
             return result.get().url();
         }

@@ -1,21 +1,20 @@
 package com.cmclinnovations.featureinfo.config;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.cmclinnovations.featureinfo.FeatureInfoAgent;
+import com.cmclinnovations.featureinfo.TestUtils;
+import com.cmclinnovations.featureinfo.config.ConfigEntry.ConfigEntryBuilder;
 
 /**
  * Testing for the ConfigStore class.
@@ -28,127 +27,156 @@ public class ConfigStoreTest {
     private static final Logger LOGGER = LogManager.getLogger(ConfigStoreTest.class);
 
     /**
-     * Test config store.
+     * Temporary directory to store test data.
      */
-    private static final ConfigStore CONFIG = new ConfigStore();
+    private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
-     /**
-     * Read in mock config file before running tests.
+    /**
+     * Copy test data out from the resources directory so it can be loaded in the same
+     * manner that files are at runtime.
      */
     @BeforeAll
     public static void setup() {
-        try (InputStream is = NamespaceGetterTest.class.getResourceAsStream("/mock-config-file.json")) {
-            BufferedReader bufferReader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder stringBuilder = new StringBuilder();
+        // Copy out test data sets to the temporary directory.
+        File mockDir01 = new File(ConfigStoreTest.class.getResource("/mock-config-01").getFile());
+        Assertions.assertTrue(
+            TestUtils.copyFilesRecusively(mockDir01, TEMP_DIR.toFile()),
+            "Could not export test data from within JAR to temporary directory!"
+        );
 
-            String eachStringLine;
-            while ((eachStringLine = bufferReader.readLine()) != null) {
-                stringBuilder.append(eachStringLine).append("\n");
-            }
-            
-            CONFIG.loadFile(stringBuilder.toString());
-            FeatureInfoAgent.CONFIG = CONFIG;
-
-        } catch(Exception exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not read mock config file!");
-        }
-
-        // Write a temporary query file
-        try {
-            String tmpdir = System.getProperty("java.io.tmpdir");
-            Path tmpQuery = Paths.get(tmpdir, "ConfigStoreTest.sparql");
-            Files.writeString(tmpQuery, "SAMPLE-QUERY");
-
-            // Add to the config
-            CONFIG.addMetaQueryForClass("SAMPLE-QUERY-CLASS", tmpQuery.toString());
-            LOGGER.info("Written temporary query file for testing (" + tmpQuery.toString() + ").");
-        } catch(IOException exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not write temporary query file!");
-        }
+        File mockDir02 = new File(ConfigStoreTest.class.getResource("/mock-config-02").getFile());
+        Assertions.assertTrue(
+            TestUtils.copyFilesRecusively(mockDir02, TEMP_DIR.toFile()),
+            "Could not export test data from within JAR to temporary directory!"
+        );
     }
 
     /**
-     * Test reading the mock configuration file.
-     * 
-     * @throws Exception
+     * Clean up after tests finish.
+     */
+    @AfterAll
+    public static void cleanUp() throws Exception {
+        Path mockDir01 = TEMP_DIR.resolve("mock-config-01");
+        Files.deleteIfExists(mockDir01);
+
+        Path mockDir02 = TEMP_DIR.resolve("mock-config-02");
+        Files.deleteIfExists(mockDir02);
+    }
+
+    /**
+     * Test reading and parsing the "mock-config-01" data set.
      */
     @Test
-    public void readConfigFile() throws Exception {
+    public void loadConfig01() throws Exception {
+        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+
+        // Create store instance (skipping stack integration)
+        ConfigStore store = new ConfigStore(configFile.toString());
+        store.loadDetails(false);
+
+        // Check for expected number of entries
         Assertions.assertEquals(
             4,
-            CONFIG.metaQueries.size(), 
-            "Expected number of loaded metadata queries is not correct!"
+            store.getConfigEntries().size(),
+            "Configuration entries did not match expected number!"
+        );
+
+        // Check a sample of the configuration entries' content
+        Assertions.assertEquals(
+            "https://theworldavatar.io/mock-domain/ClassOne",
+            store.getConfigEntries().get(0).getClassIRI(),
+            "Class IRI for first entry did not match expected result!"
         );
         Assertions.assertEquals(
-            3,
-            CONFIG.timeQueries.size(), 
-            "Expected number of loaded timeseries queries is not correct!"
+            "classTwoMeta",
+            store.getConfigEntries().get(1).getMetaQueryContent(),
+            "Metadata query for second entry did not match expected result!"
         );
-        Assertions.assertTrue(
-            CONFIG.metaQueries.containsKey("com.cmclinnovations.kg.ClassOne"),
-            "Could not find expected key in registered classes!"
+        Assertions.assertEquals(
+            "classFourTime",
+            store.getConfigEntries().get(3).getTimeQueryContent(),
+            "Time series query for fourth entry did not match expected result!"
         );
-        Assertions.assertTrue(
-            CONFIG.timeQueries.containsKey("com.cmclinnovations.kg.ClassOne"),
-            "Could not find expected key in registered classes!"
+    }
+
+    /**
+     * Test reading and parsing the "mock-config-02" data set.
+     */
+    @Test
+    public void loadConfig02() throws Exception {
+        Path configFile = TEMP_DIR.resolve("mock-config-02\\config.json");
+
+        // Create store instance (skipping stack integration)
+        ConfigStore store = new ConfigStore(configFile.toString());
+        store.loadDetails(false);
+
+        // Check for expected number of entries
+        Assertions.assertEquals(
+            1,
+            store.getConfigEntries().size(),
+            "Configuration entries did not match expected number!"
+        );
+
+        // Check a sample of the configuration entry's content
+        Assertions.assertEquals(
+            "https://theworldavatar.io/mock-domain/ClassOne",
+            store.getConfigEntries().get(0).getClassIRI(),
+            "Class IRI for first entry did not match expected result!"
+        );
+        Assertions.assertEquals(
+            "Hello world",
+            store.getConfigEntries().get(0).getMetaQueryContent(),
+            "Metadata query for second entry did not match expected result!"
+        );
+        Assertions.assertEquals(
+            TimeUnit.HOURS,
+            store.getConfigEntries().get(0).getTimeLimitUnit(),
+            "Unit for time series limit did not meet expected result!"
+        );
+        Assertions.assertEquals(
+            TimeReference.LATEST,
+            store.getConfigEntries().get(0).getTimeReference(),
+            "Reference type for time series limit did not meet expected result!"
+        );
+    }
+
+    /**
+     * Tests the ability to clear and reload the configuration.
+     */
+    @Test
+    public void testReload() throws Exception {
+        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+        
+        // Create store instance (skipping stack integration)
+        ConfigStore store = new ConfigStore(configFile.toString());
+        store.loadDetails(false);
+
+        // Add new ConfigEntry instances
+        ConfigEntryBuilder builder = new ConfigEntryBuilder(configFile.getParent());
+        
+        store.getConfigEntries().add(builder.build(
+            "new-entry-01",
+            "https://theworldavatar.io/mock-domain/ClassOne",
+            "classOneMeta.sparql"
+        ));
+
+        // Assert that new entry added
+        Assertions.assertEquals(
+            5,
+            store.getConfigEntries().size(),
+            "Number of configuration entries not as expected after generating a new entry!"
+        );
+
+        // Reload configuration
+        store.loadDetails(false);
+
+        // Assert back to original number of entries
+        Assertions.assertEquals(
+            4,
+            store.getConfigEntries().size(),
+            "Number of configuration entries not as expected after refresh!"
         );
     }
     
-    /**
-     * Given a class, test that the corresponding query file can be read.
-     */
-    @Test
-    public void testReadQuery() throws IOException {
-        // Create a handler
-        String mockClass = "SAMPLE-QUERY-CLASS";
-
-        // Read the query file
-        String query = CONFIG.getMetaQuery(mockClass);
-
-        // Check result
-        Assertions.assertNotNull(query, "Expected a non-null return result!");
-        Assertions.assertFalse(query.isBlank(), "Did not expect an empty String result!");
-        Assertions.assertEquals("SAMPLE-QUERY", query, "Query read from file did not match expected result!");
-    }
-
-
-    /**
-     * Tests that the local (i.e. in-stack) Blazegraph instance can be queried to
-     * dynamically determine what namespaces are available.
-     * 
-     * @throws Exception
-     */
-    @Ignore
-    @Test
-    public void testBlazegraph() throws Exception {
-        // TODO: Will only work when the functionality to spin up a test stack instance with test data, has been implemented.
-    }
-
-    /**
-     * Tests that the local (i.e. in-stack) Ontop instance can be discovered.
-     * 
-     * @throws Exception
-     */
-    @Ignore
-    @Test
-    public void testOntop() throws Exception {
-        // TODO: Will only work when the functionality to spin up a test stack instance with test data, has been implemented.
-    }
-
-    /**
-     * Tests that the local (i.e. in-stack) PostGreSQL instance can be discovered.
-     * 
-     * @throws Exception
-     */
-    @Ignore
-    @Test
-    public void testPostgres() throws Exception {
-        // TODO: Will only work when the functionality to spin up a test stack instance with test data, has been implemented.
-    }
-
-
-
 }
 // End of class.
