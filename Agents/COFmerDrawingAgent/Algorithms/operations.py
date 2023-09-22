@@ -1,11 +1,7 @@
-from rdkit import Chem
-from rdkit.Chem import rdchem
-from rdkit.Chem import AllChem
-from collections import deque
-from copy import deepcopy
-from itertools import product
 import os
-
+from rdkit import Chem
+from copy import deepcopy
+from rdkit.Chem.MolStandardize import rdMolStandardize
 # -------------------------------------- INPUTS ----------------------------------------------
 # assemblyModel: A dictionary containing information about the molecular assembly
 # componentTypeNumber: A dictionary containing the expected number of components of each type
@@ -48,7 +44,8 @@ def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=N
             continue
         precursor_info = {
             "ConstructingMol": precursor.get("ConstructingMol", ""),
-            "BS": precursor.get("BS", [])
+            'Dentation': precursor.get("Dentation", ""),
+            "BS": precursor.get("BS", []) 
         }
         for k, v in components.items():
             if v == gbu and k not in matched_gbus:
@@ -62,6 +59,7 @@ def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=N
         gbu = linkage.get("GBU", "")
         linkage_info = {
             "ConstructingMol": linkage.get("ConstructingMol", ""),
+            'Dentation': linkage.get("Dentation", ""),
             "BS": linkage.get("BS", [])
         }
         for k, v in components.items():
@@ -94,90 +92,148 @@ def ordering_components(input_dict):
     return precursor_dict, linkage_dict
 
 def dummify_linkages(component_dict):
-    output_dict = {}
-    
-    for component_name, component_data in component_dict.items():
-        component_copies = component_data['Copies']
-        input_file = component_data[component_name]
-
-        for i in range(1, component_copies + 1):
-            copy_name = f"{component_name}_Copy_{i}"
-            output_file = f"{copy_name}.mol"
-            bs_data_list = [{'bindingSite': bs_data['bindingSite'], 'Dummies': bs_data['Dummies']} for bs_data in component_data['BS']]
-            
-            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Linkage_BS': bs_data_list}
-    return output_dict
-
-def dummify_precursors(component_dict):
-    dummies_start = 100
+    #print(component_dict)
+    dummies_start = 87
     output_dict = {}
     
     for component_name, component_data in component_dict.items():
         component_copies = component_data['Copies']
         bs_data_sorted = sorted(component_data['BS'], key=lambda x: x['bsIndex'])
         
-        # Generate dummy atoms for the first copy
-        first_copy_bs_data_list = []
-        for bs_data in bs_data_sorted:
-            bs_index = bs_data['bsIndex']
-            bs_data_copy = {'bindingSite': bs_data['bindingSite'], 'Dummies': []}
-
-            # Check if 'Dummies' exists and is not empty
-            if 'Dummies' in bs_data and bs_data['Dummies'] and isinstance(bs_data['Dummies'][0], int):
-                bs_data_copy['Dummies'] = bs_data['Dummies'][:]  # Use a slice to create a copy of the list
-            else:  # Dummies not given or empty
-                for j in range(bs_index):
-                    bs_data_copy['Dummies'].append(dummies_start)
-                    dummies_start += 1
-
-            first_copy_bs_data_list.append(bs_data_copy)
-        
         # Assign to all copies
         for i in range(1, component_copies + 1):
+            first_copy_bs_data_list = []
+
+            for bs_data in bs_data_sorted:
+                bs_index = bs_data['bsIndex']
+                bs_data_copy = {'bindingSite': bs_data['bindingSite'], 'Dentation': bs_data['Dentation'], 'Dummies': [], 'Complementaries': []}
+
+                # Check if Dummies and Complementaries are empty
+                if not bs_data['Dummies'] and not bs_data['Complementaries']:
+                    for j in range(bs_index):
+                        bs_data_copy['Dummies'].append(dummies_start)
+                        dummies_start += 1
+
+                        bs_data_copy['Complementaries'].append(dummies_start)
+                        dummies_start += 1
+
+                        # Check after each complementary number
+                        if dummies_start > 100:
+                            dummies_start = 87
+                else:
+                    bs_data_copy['Dummies'] = bs_data['Dummies']
+                    bs_data_copy['Complementaries'] = bs_data['Complementaries']
+
+                first_copy_bs_data_list.append(bs_data_copy)
+
             copy_name = f"{component_name}_Copy_{i}"
             input_file = component_data[component_name]
             output_file = f"{copy_name}.mol"
-            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Precursor_BS': first_copy_bs_data_list.copy()}
+            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Linkage_BS': first_copy_bs_data_list}
+    #print(output_dict)        
+    return output_dict
+
+def dummify_precursors(component_dict):
+    dummies_start = 101
+    output_dict = {}
+    
+    for component_name, component_data in component_dict.items():
+        component_copies = component_data['Copies']
+        bs_data_sorted = sorted(component_data['BS'], key=lambda x: x['bsIndex'])
+        
+        # Assign to all copies
+        for i in range(1, component_copies + 1):
+            first_copy_bs_data_list = []
+
+            for bs_data in bs_data_sorted:
+                bs_index = bs_data['bsIndex']
+                bs_data_copy = {'bindingSite': bs_data['bindingSite'], 'Dentation': bs_data['Dentation'], 'Dummies': [], 'Complementaries': []}
+
+                # Check if Dummies and Complementaries are empty
+                if not bs_data['Dummies'] and not bs_data['Complementaries']:
+                    for j in range(bs_index):
+                        bs_data_copy['Dummies'].append(dummies_start)
+                        dummies_start += 1
+
+                        bs_data_copy['Complementaries'].append(dummies_start)
+                        dummies_start += 1
+
+                        # Check after each complementary number
+                        if dummies_start > 116:
+                            dummies_start = 101
+                else:
+                    bs_data_copy['Dummies'] = bs_data['Dummies']
+                    bs_data_copy['Complementaries'] = bs_data['Complementaries']
+
+                first_copy_bs_data_list.append(bs_data_copy)
+
+            copy_name = f"{component_name}_Copy_{i}"
+            input_file = component_data[component_name]
+            output_file = f"{copy_name}.mol"
+            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Precursor_BS': first_copy_bs_data_list}
+    ##print(output_dict)        
     return output_dict
 
 #----------------------COMPONENT ISTANCE MOLECULIZER-------------------------
 
-def component_mol_handler(component_dict, input_dir, output_dir):
-    for component_name, component_data in component_dict.items():
-        input_file = os.path.join(input_dir, component_data['inputFile'])
-        output_file = os.path.join(output_dir, component_data['outputFile'])
-        dummies = None
-        
-        # Handle Linkage_BS by simply copying the input file to the output file
-        if 'Linkage_BS' in component_data:
-            with open(input_file, 'r') as f_in, open(output_file, 'w') as f_out:
-                f_out.write(f_in.read())
-            continue
-        
-        # Handle Precursor_BS by reading the dummies and processing the file
-        elif 'Precursor_BS' in component_data:
-            dummies = [d['Dummies'] for d in component_data['Precursor_BS']][0]
+def extract_dummies_complementariesXX(data):
+    """Extracts dummies and complementaries separately."""
+    d_list, c_list = [], []
 
-        with open(input_file, 'r') as f:
-            mol_block = f.read()
-        mol = Chem.MolFromMolBlock(mol_block)
-        
-        if dummies is not None:
-            mol = dummy_atom_replacer(mol, dummies)
-            
-        with open(output_file, 'w') as f:
-            f.write(Chem.MolToMolBlock(mol))
-        
-        component_mol_cleaner(output_dir)
+    for d in data:
+        dummies = d.get('Dummies', [])
+        complementaries = d.get('Complementaries', [])
+        d_list.extend(dummies)
+        c_list.extend(complementaries)
+    
+    return d_list, c_list
 
-def dummy_atom_replacer(mol, dummies):
-    dummy_atom_index = 0
+def extract_dummies_complementaries(data):
+    """Extracts dummies and complementaries separately."""
+    dummies = sum((item.get('Dummies', []) for item in data), [])
+    complementaries = sum((item.get('Complementaries', []) for item in data), [])
+    return dummies, complementaries
+
+def process_mol(input_file, dummies=None, complementaries=None):
+    with open(input_file, 'r') as f:
+        mol_block = f.read()
+
+    mol = Chem.MolFromMolBlock(mol_block)
+    if dummies or complementaries:
+        mol = dummy_atom_replacer(mol, dummies, complementaries)
+    return Chem.MolToMolBlock(mol)
+
+def dummy_atom_replacer(mol, dummies, complementaries):
+    dummy_atom_index, complementary_atom_index = 0, 0
+
     for atom in mol.GetAtoms():
-        if atom.GetAtomicNum() == 0:
+        if atom.GetAtomicNum() == 0 and dummies:
             atom.SetAtomicNum(dummies[dummy_atom_index % len(dummies)])
             dummy_atom_index += 1
+        elif atom.GetAtomicNum() == 118 and complementaries:
+            atom.SetAtomicNum(complementaries[complementary_atom_index % len(complementaries)])
+            complementary_atom_index += 1
 
     return mol
+
+def component_mol_handler(component_dict, input_dir, output_dir):
+    for component_name, component_data in component_dict.items():
+        print(component_name)
+        input_file = os.path.join(input_dir, component_data['inputFile'])
+        output_file = os.path.join(output_dir, component_data['outputFile'])
+
+        dummies, complementaries = [], []
+        for key in ['Linkage_BS', 'Precursor_BS']:
+            if key in component_data:
+                d, c = extract_dummies_complementaries(component_data[key])
+                dummies.extend(d)
+                complementaries.extend(c)
+
+        mol_block = process_mol(input_file, dummies or None, complementaries or None)
+        with open(output_file, 'w') as f:
+            f.write(mol_block)
+
+        component_mol_cleaner(output_dir)
 
 def component_mol_cleaner(directory):
     for filename in os.listdir(directory):
@@ -186,25 +242,21 @@ def component_mol_cleaner(directory):
             with open(file_path, 'r') as f:
                 mol_block = f.read()
 
-            # Replace 'RDKit' with 'AK-CARES'
             mol_block = mol_block.replace('RDKit', 'AK-CARES')
-
-            # Remove lines starting with V, A, or *
-            mol_lines = mol_block.split('\n')
-            cleaned_lines = [line for line in mol_lines if not line.startswith(('V', 'A', '*'))]
-            cleaned_mol_block = '\n'.join(cleaned_lines)
-
+            cleaned_lines = [line for line in mol_block.split('\n') if not line.startswith(('V', 'A', '*'))]
+            
             with open(file_path, 'w') as f:
-                f.write(cleaned_mol_block)
+                f.write('\n'.join(cleaned_lines))
+
 #----------------------PRODUCT COMPONENT HANDLER -------------------------
 
 def initial_product_instantiation(assembly_model, SingleComponent_original):
     SingleComponent = deepcopy(SingleComponent_original)
+    
     product1 = assembly_model["ConstructionSteps"]["Product_1"]
     
     component1 = product1[0]
     component2 = product1[1]
-
     outputFile = "Product_1.mol"
     inputFile = [SingleComponent[component1]['outputFile'], SingleComponent[component2]['outputFile']]
 
@@ -212,22 +264,31 @@ def initial_product_instantiation(assembly_model, SingleComponent_original):
     Linkage_BS = []
 
     matching_dummies = []
+    matching_complementaries = []
     if "Precursor_BS" in SingleComponent[component1]:
         
         Precursor_BS.extend(SingleComponent[component1]["Precursor_BS"])
     if "Linkage_BS" in SingleComponent[component2]:
         Linkage_BS.extend(SingleComponent[component2]["Linkage_BS"])
-        
+    
     if "Linkage_BS" in SingleComponent[component2] and "Precursor_BS" in SingleComponent[component1]:
         for bs1 in SingleComponent[component1]["Precursor_BS"]:
             for bs2 in SingleComponent[component2]["Linkage_BS"]:
+
                 #if bs1["bindingSite"] == bs2["bindingSite"] and bs1["Dummies"] and bs2["Dummies"]:
                 #    matching_dummies = [bs1["Dummies"].pop(0), bs2["Dummies"].pop(0)]   
                 if bs1["bindingSite"] == bs2["bindingSite"] and bs1["Dummies"] and bs2["Dummies"]:
                     matching_dummies = [bs1["Dummies"][0], bs2["Dummies"][0]]
                     bs1["Dummies"].remove(matching_dummies[0])
                     bs2["Dummies"].remove(matching_dummies[1])
-                    break
+                    if bs1["Dentation"] == 'Bidentate' or bs2["Dentation"] == 'Bidentate':
+                        matching_complementaries = [bs1["Complementaries"][0], bs2["Complementaries"][0]]
+                        bs1["Complementaries"].remove(matching_complementaries[0])
+                        bs2["Complementaries"].remove(matching_complementaries[1])
+                        break
+                    else:
+                        break
+                    
 
     # Filter out the elements where 'Dummies' list is empty
     Precursor_BS = [bs for bs in Precursor_BS if bs['Dummies']]
@@ -237,6 +298,7 @@ def initial_product_instantiation(assembly_model, SingleComponent_original):
         "outputFile": outputFile,
         "inputFile": inputFile,
         "BindingDummies": matching_dummies,
+        "BindingComplementaries": matching_complementaries,
         "Precursor_BS": Precursor_BS,
         "Linkage_BS": Linkage_BS
     }
@@ -245,14 +307,15 @@ def initial_product_instantiation(assembly_model, SingleComponent_original):
 
     return SingleComponent_original
 
-
 def product_instantiation(assembly_model, CurrentComponent, product_name):
     working_component = deepcopy(CurrentComponent)
     product1 = assembly_model["ConstructionSteps"][product_name]
     Product_1 = None 
+    
     component1 = product1[0]
     component2 = product1[1]
     matching_dummies = []
+    matching_complementaries = [] # Added this line
     outputFile = product_name+".mol"
     inputFile = [CurrentComponent[component1]['outputFile'], CurrentComponent[component2]['outputFile']]
     if "Precursor_BS" in working_component[component1] and "Linkage_BS" in working_component[component2]:
@@ -262,10 +325,28 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
                     matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]]
                     bs1["Dummies"].remove(matching_dummies[0])
                     bs3["Dummies"].remove(matching_dummies[1])                
+                    #print(bs1)
+                    #print(bs3)
+                    # Added the following block for Complementaries
+                    if bs1["Complementaries"] and bs3["Complementaries"]:
+                        matching_complementaries = [bs1["Complementaries"][0], bs3["Complementaries"][0]]
+                        bs1["Complementaries"].remove(matching_complementaries[0])
+                        bs3["Complementaries"].remove(matching_complementaries[1])
+                    else:
+                        matching_complementaries = []
+
+                    #matching_complementaries = [bs1["Complementaries"][0], bs3["Complementaries"][0]]
+                    #bs1["Complementaries"].remove(matching_complementaries[0])
+                    #bs3["Complementaries"].remove(matching_complementaries[1])
+
                     bs1_based = clean_dummies_list(working_component[component1]["Precursor_BS"])
-                    Product_1 = {"outputFile": outputFile, "inputFile": inputFile,
+                    Product_1 = {
+                        "outputFile": outputFile, 
+                        "inputFile": inputFile,
                         "BindingDummies": matching_dummies,
-                        "Precursor_BS":working_component[component1]["Precursor_BS"] }                    
+                        "BindingComplementaries": matching_complementaries, # Added this line
+                        "Precursor_BS": working_component[component1]["Precursor_BS"]
+                    }                    
                     bs2_based = clean_dummies_list(working_component[component1].get("Linkage_BS"))
                     bs3_based = clean_dummies_list(working_component[component2].get("Linkage_BS"))
                     if bs2_based is not None: 
@@ -281,6 +362,7 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
                             Product_1.setdefault("Linkage_BS", bs3_based)
                         CurrentComponent[product_name] = Product_1
                         return CurrentComponent
+
     elif "Linkage_BS" in working_component[component1] and "Precursor_BS" in working_component[component2]:
         for bs1 in working_component[component1]["Linkage_BS"]:        
             for bs3 in working_component[component2]["Precursor_BS"]:               
@@ -288,9 +370,28 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
                     matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]]
                     bs1["Dummies"].remove(matching_dummies[0])
                     bs3["Dummies"].remove(matching_dummies[1])
+                    #print(product_name)
+                    #print(bs1)
+                    #print(bs3)
+                    # Added the following block for Complementaries
+                    if bs1["Complementaries"] and bs3["Complementaries"]:
+                        matching_complementaries = [bs1["Complementaries"][0], bs3["Complementaries"][0]]
+                        bs1["Complementaries"].remove(matching_complementaries[0])
+                        bs3["Complementaries"].remove(matching_complementaries[1])
+                    else:
+                        matching_complementaries = []
+
+                    #matching_complementaries = [bs1["Complementaries"][0], bs3["Complementaries"][0]]
+                    #bs1["Complementaries"].remove(matching_complementaries[0])
+                    #bs3["Complementaries"].remove(matching_complementaries[1])
+
                     bs1_based = clean_dummies_list(working_component[component1]["Linkage_BS"])
-                    Product_1 = {"outputFile": outputFile, "inputFile": inputFile,
-                        "BindingDummies": matching_dummies}
+                    Product_1 = {
+                        "outputFile": outputFile, 
+                        "inputFile": inputFile,
+                        "BindingDummies": matching_dummies,
+                        "BindingComplementaries": matching_complementaries, # Added this line
+                    }
                     if bs1_based is not None: 
                         Product_1.setdefault("Linkage_BS", bs1_based)
                     bs2_based = clean_dummies_list(working_component[component1].get("Precursor_BS"))
@@ -308,7 +409,7 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
                             Product_1.setdefault("Precursor_BS", bs3_based)
                         CurrentComponent[product_name] = Product_1
                         return CurrentComponent
-                    
+
     return None
 
 def clean_dummies_list(input_list):
@@ -322,14 +423,17 @@ def merging_dummies(*lists_of_dicts):
         for d in dict_list:
             binding_site = d['bindingSite']
             dummies = d['Dummies']
+            complementaries = d['Complementaries']
+            dentation = d['Dentation']
 
             if not dummies:  # If 'Dummies' list is empty, continue to the next iteration.
                 continue
 
             if binding_site in merged_dicts:
                 merged_dicts[binding_site]['Dummies'].extend(dummies)
+                merged_dicts[binding_site]['Complementaries'].extend(complementaries)
             else:
-                merged_dicts[binding_site] = {'bindingSite': binding_site, 'Dummies': dummies}
+                merged_dicts[binding_site] = {'bindingSite': binding_site, 'Dummies': dummies, 'Dentation':dentation,'Complementaries': complementaries}
 
     # Convert the merged_dicts back to a list
     result_list = list(merged_dicts.values())
@@ -339,7 +443,6 @@ def merging_dummies(*lists_of_dicts):
         d['Dummies'] = sorted(d['Dummies'])
 
     return result_list
-
 
 def looping_to_cofmer(assembly_model, initiation_single_component, product_instantiation):
     result_dict = {}
@@ -355,9 +458,8 @@ def looping_to_cofmer(assembly_model, initiation_single_component, product_insta
             continue  # Skip COFmer since it's already initialized
         
         temp_dict = product_instantiation(assembly_model, current_component, product_name)
-        #print(temp_dict)
+        
         result_dict = {**result_dict, **temp_dict}
-
 
     return result_dict
 
@@ -372,96 +474,87 @@ def product_mol_handler(input_dict, output_dir):
         if "Product_" in key:
             # Extract the relevant information from the dictionary
             input_files = input_dict[key]["inputFile"]
-            #output_file = output_dir + input_dict[key]["outputFile"]
             output_file = os.path.join(output_dir, input_dict[key]["outputFile"])
             
             binding_dummies = input_dict[key]["BindingDummies"]
+            binding_complementaries = input_dict[key].get("BindingComplementaries", [])
             input_component_1 = os.path.join(output_dir, input_files[0])
             input_component_2 = os.path.join(output_dir, input_files[1])
-            binding_dummy_1 = binding_dummies[0]
-            binding_dummy_2 = binding_dummies[1]
-            product_mol_combiner(input_component_1, binding_dummy_1, input_component_2, binding_dummy_2, output_file)
+            
+            # Default values if lists are empty or do not have enough entries
+            binding_dummy_1 = None
+            binding_dummy_2 = None
+            binding_complementary_1 = None
+            binding_complementary_2 = None
+
+            # Check lengths and update values if enough entries exist
+            if len(binding_dummies) > 0:
+                binding_dummy_1 = binding_dummies[0]
+            if len(binding_dummies) > 1:
+                binding_dummy_2 = binding_dummies[1]
+            if len(binding_complementaries) > 0:
+                binding_complementary_1 = binding_complementaries[0]
+            if len(binding_complementaries) > 1:
+                binding_complementary_2 = binding_complementaries[1]
+
+            # Call the combiner function with the possibly updated values
+            product_mol_combiner(input_component_1, binding_dummy_1, binding_complementary_1, 
+                                input_component_2, binding_dummy_2, binding_complementary_2, output_file)
+
+            # Call the combiner function with both dummies and complementaries
+            #product_mol_combiner(input_component_1, binding_dummies[0], binding_complementaries[0], 
+            #                     input_component_2, binding_dummies[1], binding_complementaries[1], output_file)
             
             # Create a new dictionary to store the information for this key
-            new_dict = {"inputFile": input_files, "outputFile": output_file, 
-                        "BindingDummies": binding_dummies}
+            new_dict = {
+                "inputFile": input_files, 
+                "outputFile": output_file, 
+                "BindingDummies": binding_dummies,
+                "BindingComplementaries": binding_complementaries
+            }
             
             # Add the new dictionary to the output list
             output_list.append(new_dict)
     
     return output_list
 
-
-def product_mol_combiner(mol1_path, dummy1, mol2_path, dummy2, output_file):
+def product_mol_combiner(mol1_path, dummy1, comp1, mol2_path, dummy2, comp2, output_file):
     form_dummy1= '[#{}]'.format(dummy1)
     form_dummy2= '[#{}]'.format(dummy2)
-    # Read the input molecule files
     mol1 = Chem.MolFromMolFile(mol1_path)
     mol2 = Chem.MolFromMolFile(mol2_path)
-    try:
-        dummy_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_dummy1))[0]
-        dummy_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_dummy2))[0]
-    except IndexError:
-        dummy_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_dummy2))[0]
-        dummy_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_dummy1))[0]
+
+    dummy_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_dummy1))[0]
+    dummy_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_dummy2))[0]
     adjacent_atom1 = mol1.GetAtomWithIdx(dummy_idx1).GetNeighbors()[0]
     adjacent_atom2 = mol2.GetAtomWithIdx(dummy_idx2).GetNeighbors()[0]
-    # Combine the molecules
+
+    atoms_to_remove = [dummy_idx1, len(mol1.GetAtoms()) + dummy_idx2]
+
+    if comp1 and comp2:  # If comp1 and comp2 are not empty
+        form_comp1= '[#{}]'.format(comp1)
+        form_comp2= '[#{}]'.format(comp2)
+        comp_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_comp1))[0]
+        comp_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_comp2))[0]
+        adjacent_atom3 = mol1.GetAtomWithIdx(comp_idx1).GetNeighbors()[0]
+        adjacent_atom4 = mol2.GetAtomWithIdx(comp_idx2).GetNeighbors()[0]
+
+        atoms_to_remove.extend([comp_idx1, len(mol1.GetAtoms()) + comp_idx2])
+
     combined_mol = Chem.CombineMols(mol1, mol2)
-    # Add a bond between the atoms adjacent to the dummy atoms
+
     combined_mol_edit = Chem.EditableMol(combined_mol)
     combined_mol_edit.AddBond(adjacent_atom1.GetIdx(), len(mol1.GetAtoms()) + adjacent_atom2.GetIdx(), Chem.rdchem.BondType.SINGLE)
-    # Remove the dummy atoms from the combined molecule
-    combined_mol_edit.RemoveAtom(len(mol1.GetAtoms()) + dummy_idx2)
-    combined_mol_edit.RemoveAtom(dummy_idx1)
 
-    combined_mol = combined_mol_edit.GetMol()
-    Chem.Kekulize(combined_mol)
-    Chem.SanitizeMol(combined_mol)
+    if comp1 and comp2:
+        combined_mol_edit.AddBond(adjacent_atom3.GetIdx(), len(mol1.GetAtoms()) + adjacent_atom4.GetIdx(), Chem.rdchem.BondType.SINGLE)
 
-    with open(output_file, 'w') as f:
-        f.write(Chem.MolToMolBlock(combined_mol))
+    # Sort the indices of atoms to be removed in descending order
+    atoms_to_remove.sort(reverse=True)
 
-    return combined_mol
+    for atom_idx in atoms_to_remove:
+        combined_mol_edit.RemoveAtom(atom_idx)
 
-def product_mol_combiner1(mol1_path, dummy1, mol2_path, dummy2, output_file):
-    form_dummy1= '[#{}]'.format(dummy1)
-    form_dummy2= '[#{}]'.format(dummy2)
-    
-    # Read the input molecule files
-    mol1 = Chem.MolFromMolFile(mol1_path)
-    mol2 = Chem.MolFromMolFile(mol2_path)
-    
-    try:
-        dummy_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_dummy1))[0]
-        dummy_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_dummy2))[0]
-    except IndexError:
-        dummy_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_dummy2))[0]
-        dummy_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_dummy1))[0]
-    
-    neighbors1 = mol1.GetAtomWithIdx(dummy_idx1).GetNeighbors()
-    neighbors2 = mol2.GetAtomWithIdx(dummy_idx2).GetNeighbors()
-    adjacent_atom1 = neighbors1[0]
-    adjacent_atom2 = neighbors2[0]
-    adjacent_atom3 = neighbors2[1] if len(neighbors2) > 1 else None
-    # Combine the molecules
-    combined_mol = Chem.CombineMols(mol1, mol2)
-    # Add a bond between the atoms adjacent to the dummy atoms
-    combined_mol_edit = Chem.EditableMol(combined_mol)
-    combined_mol_edit.AddBond(adjacent_atom1.GetIdx(), len(mol1.GetAtoms()) + adjacent_atom2.GetIdx(), Chem.rdchem.BondType.SINGLE)
-    
-    if adjacent_atom3:
-        combined_mol_edit.AddBond(adjacent_atom1.GetIdx(), len(mol1.GetAtoms()) + adjacent_atom3.GetIdx(), Chem.rdchem.BondType.SINGLE)
-
-    # Remove the dummy atoms from the combined molecule
-    combined_mol_edit.RemoveAtom(len(mol1.GetAtoms()) + dummy_idx2)
-    combined_mol_edit.RemoveAtom(dummy_idx1)
-    
-    # Remove the Tm elements if present
-    tm_atoms = combined_mol_edit.GetMol().GetSubstructMatches(Chem.MolFromSmiles('[Tm]'))
-    for atom in reversed(tm_atoms):
-        combined_mol_edit.RemoveAtom(atom[0])
-        
     combined_mol = combined_mol_edit.GetMol()
     Chem.Kekulize(combined_mol)
     Chem.SanitizeMol(combined_mol)
@@ -474,7 +567,7 @@ def product_mol_combiner1(mol1_path, dummy1, mol2_path, dummy2, output_file):
 def cofmer_cleaner(directory):
     # Get a list of all files in the directory
     file_list = os.listdir(directory)
-    #print(directory)
+    
     # Find the highest integer in the Product_ filenames
     highest_int = 1
     for file in file_list:
@@ -485,7 +578,6 @@ def cofmer_cleaner(directory):
     
     # Open the highest numbered Product_ file and replace high atomic numbers with dummy atoms
     file_name = f"Product_{highest_int}.mol"
-    
     file_path = os.path.join(directory, file_name)
     mol = Chem.MolFromMolFile(file_path)
     for atom in mol.GetAtoms():
@@ -499,23 +591,31 @@ def cofmer_cleaner(directory):
         f.write(Chem.MolToMolBlock(mol))
 
     # Clean the COFmer.mol file
-    for filename in os.listdir(directory):
-        if filename == "COFmer.mol":
-            file_path = os.path.join(directory, filename)
-            with open(file_path, 'r') as f:
-                mol_block = f.read()
+    if "COFmer.mol" in os.listdir(directory):
+        file_path = os.path.join(directory, "COFmer.mol")
+        with open(file_path, 'r') as f:
+            mol_block = f.read()
 
-            # Replace 'RDKit' with 'AK-CARES'
-            mol_block = mol_block.replace('RDKit', 'AK-CARES')
-            mol_block = mol_block.replace(' R ', ' * ')
+        # Replace 'RDKit' with 'AK-CARES'
+        mol_block = mol_block.replace('RDKit', 'AK-CARES')
+        mol_block = mol_block.replace(' R ', ' * ')
 
-            # Remove lines starting with V, A, or *
-            mol_lines = mol_block.split('\n')
-            cleaned_lines = [line for line in mol_lines if not line.startswith(('V', 'A', '*'))]
-            cleaned_mol_block = '\n'.join(cleaned_lines)
+        # Remove lines starting with V, A, or *
+        mol_lines = mol_block.split('\n')
+        cleaned_lines = [line for line in mol_lines if not line.startswith(('V', 'A', '*'))]
+        cleaned_mol_block = '\n'.join(cleaned_lines)
 
-            with open(file_path, 'w') as f:
-                f.write(cleaned_mol_block)
+        with open(file_path, 'w') as f:
+            f.write(cleaned_mol_block)
+            
+    # Normalize the cleaned molecule
+    mol = Chem.MolFromMolFile(output_path)
+    normalizer = rdMolStandardize.Normalizer()
+    mol = normalizer.normalize(mol)
+
+    # Save the normalized molecule back as COFmer.mol
+    with open(output_path, 'w') as f:
+        f.write(Chem.MolToMolBlock(mol))
 
 def run_cofmer_pipeline(assemblyModel, componentTypeNumber, precursors, linkages, input_dir, output_dir):
     if not isinstance(precursors, list):
@@ -524,11 +624,12 @@ def run_cofmer_pipeline(assemblyModel, componentTypeNumber, precursors, linkages
         linkages = [linkages]
 
     SingleComponents = component_handler(assemblyModel, componentTypeNumber, precursors, linkages)
-    
+    #print(SingleComponents)
     component_mol_handler(SingleComponents, input_dir, output_dir)
     initiation_single_component = initial_product_instantiation(assemblyModel, SingleComponents)
     #print(initiation_single_component)
     looping_single_components = looping_to_cofmer(assemblyModel, initiation_single_component, product_instantiation)
+ #  print(looping_single_components)
     product_mol_handler(looping_single_components, output_dir)
     cofmer_cleaner(output_dir)
 
