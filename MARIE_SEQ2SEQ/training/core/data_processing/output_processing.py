@@ -1,5 +1,6 @@
 from core.utils import advance_ptr_thru_space, advance_ptr_to_kw
 from core.data_processing.abstract_query_rep import AbstractQueryRep
+from core.data_processing.compact_query_rep import CompactQueryRep
 from core.data_processing.utils import replace_multi
 
 
@@ -50,7 +51,8 @@ def postprocess_output(text: str, model_family: str):
         if "\n\n###\n\n" in text:
             text = text.split("\n\n###\n\n", maxsplit=1)[1]
     try:
-        return AbstractQueryRep.from_string(text).compact2verbose().to_query_string()
+        # return AbstractQueryRep.from_string(text).compact2verbose().to_query_string()
+        return CompactQueryRep.from_string(text).to_verbose()
     except:
         return None
 
