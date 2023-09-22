@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.data;
+package uk.ac.cam.cares.jps.data.setting;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_SECTION_TITLE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_SECTION_TITLE;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.disposables.Disposable;
+import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.datastore.SettingLocalSource;
 
 public class SettingRepository {

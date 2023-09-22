@@ -6,14 +6,14 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.data.PrintItemModel;
+import uk.ac.cam.cares.jps.data.qrprint.PrintItem;
 
 public class RemovablePrintItemAdapter extends PrintItemAdapter{
     private QRPrintingFragment.ListUpdate listUpdate;
     private int drawableId;
     private int currentVisibility = View.GONE;
 
-    RemovablePrintItemAdapter(List<PrintItemModel> items, QRPrintingFragment.ListUpdate listUpdate, int drawableId) {
+    RemovablePrintItemAdapter(List<PrintItem> items, QRPrintingFragment.ListUpdate listUpdate, int drawableId) {
         super(items);
         this.listUpdate = listUpdate;
         this.drawableId = drawableId;

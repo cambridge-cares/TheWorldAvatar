@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import uk.ac.cam.cares.jps.data.AssetInfo;
-import uk.ac.cam.cares.jps.data.AssetInfoRepository;
+import uk.ac.cam.cares.jps.data.assetinfo.AssetInfo;
+import uk.ac.cam.cares.jps.data.assetinfo.AssetInfoRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 
 @HiltViewModel

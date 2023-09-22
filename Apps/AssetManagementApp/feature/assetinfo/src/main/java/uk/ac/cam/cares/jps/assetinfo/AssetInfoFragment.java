@@ -34,7 +34,7 @@ import java.io.IOException;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.assetinfo.databinding.FragmentAssetInfoBinding;
-import uk.ac.cam.cares.jps.data.AssetInfo;
+import uk.ac.cam.cares.jps.data.assetinfo.AssetInfo;
 import uk.ac.cam.cares.jps.ui.UiUtils;
 
 @AndroidEntryPoint

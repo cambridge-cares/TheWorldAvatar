@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.data.PrintItemModel;
+import uk.ac.cam.cares.jps.data.qrprint.PrintItem;
 import uk.ac.cam.cares.jps.qrprint.databinding.FragmentQrPrintBinding;
 
 @AndroidEntryPoint
@@ -43,7 +43,7 @@ public class QRPrintingFragment extends Fragment {
             }
 
             if (item.getStatus()) {
-                viewModel.addPrintedItem(item);
+//                viewModel.addPrintedItem(item);
             } else {
                 viewModel.addUnprintedItem(item);
             }
@@ -53,9 +53,9 @@ public class QRPrintingFragment extends Fragment {
         binding.printingListRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.printingListRv.setAdapter(printItemAdapter);
 
-        PrintItemAdapter printedItemAdapter = new PrintItemAdapter(viewModel.getPrintedList().getValue());
-        binding.printedListRv.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.printedListRv.setAdapter(printedItemAdapter);
+//        PrintItemAdapter printedItemAdapter = new PrintItemAdapter(viewModel.getPrintedList().getValue());
+//        binding.printedListRv.setLayoutManager(new LinearLayoutManager(requireContext()));
+//        binding.printedListRv.setAdapter(printedItemAdapter);
 
         ListUpdate unprintedListUpdate = item -> {
             viewModel.removeUnprintedItem(item);
@@ -69,14 +69,14 @@ public class QRPrintingFragment extends Fragment {
         binding.editTv.setOnClickListener(getEditOnClickListener());
 
         binding.addIdBt.setOnClickListener(v -> {
-            PrintItemModel item = new PrintItemModel(binding.idEditText.getText().toString(), null, null, null);
+            PrintItem item = new PrintItem(binding.idEditText.getText().toString(), null, null, null);
             viewModel.addPrintingItem(item);
 
             binding.idEditText.setText("");
         });
 
         viewModel.getPrintingList().observe(getViewLifecycleOwner(), printItemAdapter::updateItems);
-        viewModel.getPrintedList().observe(getViewLifecycleOwner(), printedItemAdapter::updateItems);
+//        viewModel.getPrintedList().observe(getViewLifecycleOwner(), printedItemAdapter::updateItems);
         viewModel.getUnprintedList().observe(getViewLifecycleOwner(), unprintedItemAdapter::updateItems);
 
         viewModel.getAllPrintItems();
@@ -117,6 +117,6 @@ public class QRPrintingFragment extends Fragment {
     }
 
     public interface ListUpdate {
-        void removeItemFromPrintList(PrintItemModel item);
+        void removeItemFromPrintList(PrintItem item);
     }
 }

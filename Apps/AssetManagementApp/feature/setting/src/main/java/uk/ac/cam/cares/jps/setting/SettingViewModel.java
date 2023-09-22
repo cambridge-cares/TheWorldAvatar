@@ -15,7 +15,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
-import uk.ac.cam.cares.jps.data.SettingRepository;
+import uk.ac.cam.cares.jps.data.setting.SettingRepository;
 
 @HiltViewModel
 public class SettingViewModel extends ViewModel {

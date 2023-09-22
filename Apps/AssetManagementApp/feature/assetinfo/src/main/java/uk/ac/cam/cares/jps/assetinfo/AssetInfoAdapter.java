@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import uk.ac.cam.cares.jps.data.AssetInfo;
+import uk.ac.cam.cares.jps.data.assetinfo.AssetInfo;
 
 public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.ViewHolder>{
     // todo: remove space and case when comparing/searching for the key?

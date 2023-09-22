@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.data;
+package uk.ac.cam.cares.jps.data.mail;
 
 import android.os.Handler;
 

@@ -1,10 +1,8 @@
-package uk.ac.cam.cares.jps.data;
+package uk.ac.cam.cares.jps.data.assetinfo;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
 
 import android.os.Handler;
-
-import com.android.volley.Response;
 
 import org.apache.log4j.Logger;
 
@@ -16,7 +14,8 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.disposables.Disposable;
-import uk.ac.cam.cares.jps.network.assetinfo.AssetInfoModel;
+import uk.ac.cam.cares.jps.data.RepositoryCallback;
+import uk.ac.cam.cares.jps.data.setting.SettingRepository;
 import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 
 public class AssetInfoRepository {

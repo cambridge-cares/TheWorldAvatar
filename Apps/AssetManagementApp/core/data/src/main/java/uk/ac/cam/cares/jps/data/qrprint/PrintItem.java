@@ -1,12 +1,12 @@
-package uk.ac.cam.cares.jps.data;
+package uk.ac.cam.cares.jps.data.qrprint;
 
-public class PrintItemModel {
+public class PrintItem {
     String inventoryID;
     String label;
     String iri;
     Boolean status;
 
-    public PrintItemModel(String inventoryID, String label, String iri, Boolean status) {
+    public PrintItem(String inventoryID, String label, String iri, Boolean status) {
         this.inventoryID = inventoryID;
         this.label = label;
         this.iri = iri;

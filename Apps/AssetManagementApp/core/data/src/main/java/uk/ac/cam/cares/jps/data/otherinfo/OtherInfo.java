@@ -1,12 +1,12 @@
-package uk.ac.cam.cares.jps.data;
+package uk.ac.cam.cares.jps.data.otherinfo;
 
 import androidx.annotation.NonNull;
 
-public class OtherInfoModel {
+public class OtherInfo {
     String iri;
     String name;
 
-    public OtherInfoModel(String iri, String name) {
+    public OtherInfo(String iri, String name) {
         this.iri = iri;
         this.name = name;
     }

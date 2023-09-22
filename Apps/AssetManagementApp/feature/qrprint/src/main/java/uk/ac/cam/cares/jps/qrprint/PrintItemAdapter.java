@@ -9,15 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.data.PrintItemModel;
+import uk.ac.cam.cares.jps.data.qrprint.PrintItem;
 
 public class PrintItemAdapter extends RecyclerView.Adapter<PrintItemAdapter.ViewHolder>{
-    List<PrintItemModel> items;
+    List<PrintItem> items;
 
-    PrintItemAdapter(List<PrintItemModel> items) {
+    PrintItemAdapter(List<PrintItem> items) {
         this.items = items;
     }
 
@@ -31,7 +30,7 @@ public class PrintItemAdapter extends RecyclerView.Adapter<PrintItemAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        PrintItemModel currentItem = items.get(position);
+        PrintItem currentItem = items.get(position);
         holder.labelTv.setText(currentItem.getLabel());
         holder.idTv.setText(currentItem.getInventoryID());
     }
@@ -41,7 +40,7 @@ public class PrintItemAdapter extends RecyclerView.Adapter<PrintItemAdapter.View
         return items.size();
     }
 
-    public void updateItems(List<PrintItemModel> newItems) {
+    public void updateItems(List<PrintItem> newItems) {
         items = newItems;
         notifyDataSetChanged();
     }

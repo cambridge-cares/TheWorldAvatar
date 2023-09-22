@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.data;
+package uk.ac.cam.cares.jps.data.otherinfo;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.otherInfoFromAssetAgentKeys;
 
@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import io.reactivex.disposables.Disposable;
+import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.datastore.OtherInfoLocalSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
 

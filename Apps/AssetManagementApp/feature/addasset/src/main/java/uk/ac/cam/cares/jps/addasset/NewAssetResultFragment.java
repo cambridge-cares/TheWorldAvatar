@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.addasset;
 import static uk.ac.cam.cares.jps.ui.UiUtils.showNotImplementedDialog;
 import static uk.ac.cam.cares.jps.utils.SerializationUtils.deserializeStringToObject;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,15 +15,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 import uk.ac.cam.cares.jps.addasset.databinding.FragmentNewAssetResultBinding;
 import uk.ac.cam.cares.jps.addasset.model.NewAssetResultViewModel;
-import uk.ac.cam.cares.jps.data.AssetInfo;
+import uk.ac.cam.cares.jps.data.assetinfo.AssetInfo;
 
 public class NewAssetResultFragment extends Fragment {
     private FragmentNewAssetResultBinding binding;

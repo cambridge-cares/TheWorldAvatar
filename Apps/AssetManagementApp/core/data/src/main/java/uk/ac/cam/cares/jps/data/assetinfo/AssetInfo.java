@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.data;
+package uk.ac.cam.cares.jps.data.assetinfo;
 
 import java.io.Serializable;
 import java.util.HashMap;

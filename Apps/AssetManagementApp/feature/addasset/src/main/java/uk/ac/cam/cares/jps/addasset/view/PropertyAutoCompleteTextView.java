@@ -6,7 +6,6 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
 
 import org.apache.log4j.Logger;
 
@@ -14,7 +13,6 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.addasset.R;
 import uk.ac.cam.cares.jps.addasset.model.DropDownDataModel;
-import uk.ac.cam.cares.jps.data.OtherInfoModel;
 
 public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
 

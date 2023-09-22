@@ -11,17 +11,17 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import uk.ac.cam.cares.jps.data.PrintItemModel;
-import uk.ac.cam.cares.jps.data.QRPrintRepository;
+import uk.ac.cam.cares.jps.data.qrprint.PrintItem;
+import uk.ac.cam.cares.jps.data.qrprint.QRPrintRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 
 @HiltViewModel
 public class QRPrintingViewModel extends ViewModel {
 
     private Logger LOGGER = Logger.getLogger(QRPrintingViewModel.class);
-    private MutableLiveData<List<PrintItemModel>> printingList = new MutableLiveData<>(new ArrayList<>());
-    private MutableLiveData<List<PrintItemModel>> unprintedList = new MutableLiveData<>(new ArrayList<>());
-    private MutableLiveData<List<PrintItemModel>> printedList = new MutableLiveData<>(new ArrayList<>());
+    private MutableLiveData<List<PrintItem>> printingList = new MutableLiveData<>(new ArrayList<>());
+    private MutableLiveData<List<PrintItem>> unprintedList = new MutableLiveData<>(new ArrayList<>());
+//    private MutableLiveData<List<PrintItemModel>> printedList = new MutableLiveData<>(new ArrayList<>());
 
     private QRPrintRepository repository;
 
@@ -30,64 +30,64 @@ public class QRPrintingViewModel extends ViewModel {
         this.repository = repository;
     }
 
-    public MutableLiveData<List<PrintItemModel>> getPrintingList() {
+    public MutableLiveData<List<PrintItem>> getPrintingList() {
         return printingList;
     }
 
-    public MutableLiveData<List<PrintItemModel>> getUnprintedList() {
+    public MutableLiveData<List<PrintItem>> getUnprintedList() {
         return unprintedList;
     }
 
-    public MutableLiveData<List<PrintItemModel>> getPrintedList() {
-        return printedList;
-    }
+//    public MutableLiveData<List<PrintItemModel>> getPrintedList() {
+//        return printedList;
+//    }
 
-    public void addPrintingItem(PrintItemModel item) {
-        List<PrintItemModel> newList = printingList.getValue();
+    public void addPrintingItem(PrintItem item) {
+        List<PrintItem> newList = printingList.getValue();
         newList.add(item);
         printingList.setValue(newList);
     }
 
-    public void removePrintingItem(PrintItemModel item) {
-        List<PrintItemModel> newList = printingList.getValue();
+    public void removePrintingItem(PrintItem item) {
+        List<PrintItem> newList = printingList.getValue();
         newList.remove(item);
         printingList.setValue(newList);
     }
 
-    public void addPrintedItem(PrintItemModel item) {
-        List<PrintItemModel> newList = printedList.getValue();
-        newList.add(item);
-        printedList.setValue(newList);
-    }
+//    public void addPrintedItem(PrintItemModel item) {
+//        List<PrintItemModel> newList = printedList.getValue();
+//        newList.add(item);
+//        printedList.setValue(newList);
+//    }
 
-    public void addUnprintedItem(PrintItemModel item) {
-        List<PrintItemModel> newList = unprintedList.getValue();
+    public void addUnprintedItem(PrintItem item) {
+        List<PrintItem> newList = unprintedList.getValue();
         newList.add(item);
         unprintedList.setValue(newList);
     }
 
-    public void removeUnprintedItem(PrintItemModel item) {
-        List<PrintItemModel> newList = unprintedList.getValue();
+    public void removeUnprintedItem(PrintItem item) {
+        List<PrintItem> newList = unprintedList.getValue();
         newList.remove(item);
         unprintedList.setValue(newList);
     }
 
     public void getAllPrintItems() {
-        RepositoryCallback<List<PrintItemModel>> callback = new RepositoryCallback<List<PrintItemModel>>() {
+        RepositoryCallback<List<PrintItem>> callback = new RepositoryCallback<List<PrintItem>>() {
             @Override
-            public void onSuccess(List<PrintItemModel> result) {
-                List<PrintItemModel> newPrintingList = new ArrayList<>();
-                List<PrintItemModel> newPrintedList = new ArrayList<>();
+            public void onSuccess(List<PrintItem> result) {
+                List<PrintItem> newPrintingList = new ArrayList<>();
+//                List<PrintItemModel> newPrintedList = new ArrayList<>();
 
-                for (PrintItemModel item : result) {
+                for (PrintItem item : result) {
                     if (item.getStatus()) {
-                        newPrintedList.add(item);
+//                        newPrintedList.add(item);
                     } else {
                         newPrintingList.add(item);
                     }
                 }
                 printingList.postValue(newPrintingList);
-                printedList.postValue(newPrintedList);
+//                printedList.postValue(newPrintedList);
             }
 
             @Override

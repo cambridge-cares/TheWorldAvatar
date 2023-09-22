@@ -18,8 +18,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import uk.ac.cam.cares.jps.data.AssetInfo;
-import uk.ac.cam.cares.jps.data.OtherInfoRepository;
+import uk.ac.cam.cares.jps.data.assetinfo.AssetInfo;
+import uk.ac.cam.cares.jps.data.otherinfo.OtherInfoRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 
 @HiltViewModel

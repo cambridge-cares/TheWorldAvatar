@@ -15,6 +15,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:text="@string/send_to_printer"
+                android:layout_margin="@dimen/component_margin_small"
+                android:id="@+id/print_bt"/>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,28 +115,28 @@
                     android:layout_marginTop="@dimen/component_margin_small"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/unprinted_list"
-                android:layout_margin="@dimen/component_margin_small"
-                android:paddingTop="@dimen/component_margin_small"
-                android:id="@+id/printed_section">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:text="@string/printed_items"
-                    android:id="@+id/printed_list_tv"
-                    android:textAppearance="?attr/textAppearanceHeadline6"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/printed_list_rv"
-                    app:layout_constraintTop_toBottomOf="@id/printed_list_tv"
-                    android:layout_marginTop="@dimen/component_margin_small"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/unprinted_list"-->
+<!--                android:layout_margin="@dimen/component_margin_small"-->
+<!--                android:paddingTop="@dimen/component_margin_small"-->
+<!--                android:id="@+id/printed_section">-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    android:text="@string/printed_items"-->
+<!--                    android:id="@+id/printed_list_tv"-->
+<!--                    android:textAppearance="?attr/textAppearanceHeadline6"/>-->
+<!--                <androidx.recyclerview.widget.RecyclerView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:id="@+id/printed_list_rv"-->
+<!--                    app:layout_constraintTop_toBottomOf="@id/printed_list_tv"-->
+<!--                    android:layout_marginTop="@dimen/component_margin_small"/>-->
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

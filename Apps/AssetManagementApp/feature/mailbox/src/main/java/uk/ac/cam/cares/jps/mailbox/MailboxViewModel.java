@@ -12,9 +12,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import uk.ac.cam.cares.jps.data.AssetInfo;
-import uk.ac.cam.cares.jps.data.Mail;
-import uk.ac.cam.cares.jps.data.MailRepository;
+import uk.ac.cam.cares.jps.data.mail.Mail;
+import uk.ac.cam.cares.jps.data.mail.MailRepository;
 
 @HiltViewModel
 public class MailboxViewModel extends ViewModel {
