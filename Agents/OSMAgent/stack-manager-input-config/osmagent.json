@@ -4,6 +4,13 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "osmagent:1.0.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/OSMAgent/osmagent/src/main/resources",
+                        "Target": "/usr/local/tomcat/data"
+                    }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"

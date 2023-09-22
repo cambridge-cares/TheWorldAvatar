@@ -7,6 +7,13 @@
                 "Env": [
                     "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
                 ],
+                "Mounts": [
+                  {
+                    "Type": "bind",
+                    "Source": "/home/common/Codes/TheWorldAvatar/Agents/OSMAgent/osmagent/src/main/resources",
+                    "Target": "/usr/local/tomcat/data"
+                  }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
