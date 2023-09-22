@@ -199,11 +199,14 @@ Each data subset must have the following values specified:
 
 | Key                               | Required? | Default value                             | Description                                                                              |
 | --------------------------------- | --------- | ----------------------------------------- | ---------------------------------------------------------------------------------------- |
-| [`"name"`](#name)                 | No        | Name of layer in source                   | The name of the data subset                                                              |
+| [`"name"`](#name-1)               | No        | Name of layer in source                   | The name of the data subset                                                              |
 | [`"type"`](#type)                 | Yes       | N/A                                       | The type of the data                                                                     |
 | [`"subdirectory"`](#subdirectory) | No        | [`"datasetDirectory"`](#datasetDirectory) | The subdirectory within the dataset directory that contains the data in this data subset |
 | `"skip"`                          | No        | `false`                                   | If set to `true` this data subset will be ignored by the data uploader                   |
 | `"sql"`                           | No        | N/A                                       | If the data is being loaded into the PostgreSQL database then the query provided here is run straight after the data is loaded [:open_file_folder:](#value-by-file-name) |
+
+#### `"name"`
+This is the name of the data subset.
 
 ##### `"type"`
 This controls which functions are used to load the data.
