@@ -2,12 +2,12 @@ package uk.ac.cam.cares.jps.agent.osmagent.usage;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import uk.ac.cam.cares.jps.agent.osmagent.OSMAgent;
+import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
 import uk.ac.cam.cares.jps.agent.osmagent.geometry.object.GeoObject;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * UsageShareCalculator contains 3 parts that run using SQL query
@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
  */
 
 public class UsageShareCalculator {
+        private static final String LANDUSE_PATH = "/usr/local/tomcat/resources/dlm_landuse.csv";
+
         private RemoteRDBStoreClient rdbStoreClient;
 
         /**
@@ -44,42 +46,42 @@ public class UsageShareCalculator {
 
                 // assign usageshare and propertyusage_iri
                 String assignUsageShare =
-                                "UPDATE " + usageTable + " AS p\n" +
-                                                "SET UsageShare = c.instances / c.total_instances::float,\n" +
-                                                "    propertyusage_iri = 'https://www.theworldavatar.com/kg/' || c.ontobuilt || '_' || uuid_generate_v4()::text\n"
-                                                +
-                                                "FROM (\n" +
-                                                "    SELECT building_iri,\n" +
-                                                "           ontobuilt,\n" +
-                                                "           COUNT(*) AS instances,\n" +
-                                                "           SUM(COUNT(*)) OVER (PARTITION BY building_iri) AS total_instances\n"
-                                                +
-                                                "    FROM " + usageTable + " \n" +
-                                                "    GROUP BY building_iri, ontobuilt\n" +
-                                                ") AS c\n" +
-                                                "WHERE p.building_iri = c.building_iri\n" +
-                                                "  AND p.ontobuilt = c.ontobuilt;";
+                        "UPDATE " + usageTable + " AS p\n" +
+                                "SET UsageShare = c.instances / c.total_instances::float,\n" +
+                                "    propertyusage_iri = 'https://www.theworldavatar.com/kg/' || c.ontobuilt || '_' || uuid_generate_v4()::text\n"
+                                +
+                                "FROM (\n" +
+                                "    SELECT building_iri,\n" +
+                                "           ontobuilt,\n" +
+                                "           COUNT(*) AS instances,\n" +
+                                "           SUM(COUNT(*)) OVER (PARTITION BY building_iri) AS total_instances\n"
+                                +
+                                "    FROM " + usageTable + " \n" +
+                                "    GROUP BY building_iri, ontobuilt\n" +
+                                ") AS c\n" +
+                                "WHERE p.building_iri = c.building_iri\n" +
+                                "  AND p.ontobuilt = c.ontobuilt;";
 
                 // ensures that for the same building_iri with the same ontobuilt, propertyusage_iri is the same
                 String updatePropertyUsageStatement =
-                                "UPDATE " + usageTable + " AS p\n" +
-                                                "SET propertyusage_iri = subquery.min_propertyusage_iri\n" +
-                                                "FROM (\n" +
-                                                "    SELECT p.building_iri, p.ontobuilt, MIN(propertyusage_iri) AS min_propertyusage_iri\n"
-                                                +
-                                                "    FROM " + usageTable + " AS p\n" +
-                                                "    INNER JOIN (\n" +
-                                                "        SELECT building_iri, ontobuilt\n" +
-                                                "        FROM " + usageTable + " \n" +
-                                                "            WHERE ontobuilt IS NOT NULL AND building_iri IS NOT NULL\n"
-                                                +
-                                                "    ) AS cd ON p.building_iri = cd.building_iri AND p.ontobuilt = cd.ontobuilt\n"
-                                                +
-                                                "    GROUP BY p.building_iri, p.ontobuilt\n" +
-                                                "    HAVING COUNT(*) > 1\n" +
-                                                ") AS subquery\n" +
-                                                "WHERE p.building_iri = subquery.building_iri\n" +
-                                                "    AND p.ontobuilt = subquery.ontobuilt;";
+                        "UPDATE " + usageTable + " AS p\n" +
+                                "SET propertyusage_iri = subquery.min_propertyusage_iri\n" +
+                                "FROM (\n" +
+                                "    SELECT p.building_iri, p.ontobuilt, MIN(propertyusage_iri) AS min_propertyusage_iri\n"
+                                +
+                                "    FROM " + usageTable + " AS p\n" +
+                                "    INNER JOIN (\n" +
+                                "        SELECT building_iri, ontobuilt\n" +
+                                "        FROM " + usageTable + " \n" +
+                                "            WHERE ontobuilt IS NOT NULL AND building_iri IS NOT NULL\n"
+                                +
+                                "    ) AS cd ON p.building_iri = cd.building_iri AND p.ontobuilt = cd.ontobuilt\n"
+                                +
+                                "    GROUP BY p.building_iri, p.ontobuilt\n" +
+                                "    HAVING COUNT(*) > 1\n" +
+                                ") AS subquery\n" +
+                                "WHERE p.building_iri = subquery.building_iri\n" +
+                                "    AND p.ontobuilt = subquery.ontobuilt;";
 
                 // execute the SQL statement
                 rdbStoreClient.executeUpdate(add_uuid_ossp_Extension);
@@ -94,36 +96,45 @@ public class UsageShareCalculator {
          * @param usageTable centralised table to store usage information
          * @param landUseTable table containing DLM land use data
          */
-        public void updateLandUse(String usageTable, String landUseTable) throws IOException {
-                InputStreamReader inputStreamReader = new InputStreamReader(
-                                UsageMatcher.class.getResourceAsStream("/dlm_landuse.csv"));
-                CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
-                String[] line;
+        public void updateLandUse(String usageTable, String landUseTable) {
+                try (InputStream input = FileReader.getStream(LANDUSE_PATH)) {
+                        InputStreamReader inputStreamReader = new InputStreamReader(input);
+                        CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
+                        String[] line;
 
-                while ((line = csvReader.readNext()) != null) {
-                        String ontobuilt = line[3];
-                        String key = line[0];
-                        String value = line[1];
+                        while ((line = csvReader.readNext()) != null) {
+                                String ontobuilt = line[3];
+                                String key = line[0];
+                                String value = line[1];
 
-                        String updateLandUse = "INSERT INTO " + usageTable + " (building_iri, ontobuilt) \n" +
-                                "SELECT q2.iri, \'" + ontobuilt + "\' FROM \n" +
-                                "(SELECT q.urival AS iri, q.geometry AS geo, q.srid AS srid FROM \n" +
-                                "(" + GeoObject.getQuery() + ") AS q \n" +
-                                "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
-                                "WHERE u.building_iri IS NULL) AS q2 \n" +
-                                "WHERE ST_Intersects(q2.geo, ST_Transform(\n" +
-                                "(SELECT ST_Collect(wkb_geometry) AS g FROM " + landUseTable + " \n" +
-                                "WHERE \"" + key + "\" = \'" + value +"\'), q2.srid))";
+                                String updateLandUse = "INSERT INTO " + usageTable + " (building_iri, ontobuilt) \n" +
+                                        "SELECT q2.iri, \'" + ontobuilt + "\' FROM \n" +
+                                        "(SELECT q.urival AS iri, q.geometry AS geo, q.srid AS srid FROM \n" +
+                                        "(" + GeoObject.getQuery() + ") AS q \n" +
+                                        "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
+                                        "WHERE u.building_iri IS NULL) AS q2 \n" +
+                                        "WHERE ST_Intersects(q2.geo, ST_Transform(\n" +
+                                        "(SELECT ST_Collect(wkb_geometry) AS g FROM " + landUseTable + " \n" +
+                                        "WHERE \"" + key + "\" = \'" + value + "\'), q2.srid))";
 
-                        rdbStoreClient.executeUpdate(updateLandUse);
-                        System.out.println(
+                                rdbStoreClient.executeUpdate(updateLandUse);
+                                System.out.println(
                                         "Untagged buildings with building_iri are assigned for " + key + " with value:"
-                                                        + value + " under the ontobuiltenv:" + ontobuilt
-                                                        + " category.");
-                }
+                                                + value + " under the ontobuiltenv:" + ontobuilt
+                                                + " category.");
+                        }
 
-                System.out.println(
+                        System.out.println(
                                 "Untagged building has been assigned an ontobuilt type according to the corresponding landuse.");
-                csvReader.close();
+                        csvReader.close();
+                }
+                catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        throw new JPSRuntimeException("dlm_landuse.csv file not found");
+                }
+                catch (IOException e) {
+                        e.printStackTrace();
+                        throw new JPSRuntimeException(e);
+                }
         }
 }

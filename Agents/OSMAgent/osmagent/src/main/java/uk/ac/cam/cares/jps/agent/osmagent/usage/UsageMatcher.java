@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.osmagent.usage;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -13,12 +12,13 @@ import java.util.List;
 import java.util.Map;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import uk.ac.cam.cares.jps.agent.osmagent.OSMAgent;
-import uk.ac.cam.cares.jps.agent.osmagent.geometry.object.GeoObject;
+import uk.ac.cam.cares.jps.agent.osmagent.FileReader;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class UsageMatcher {
+    private static final String OSM_CSV_PATH = "/usr/local/tomcat/resources/osm_tags.csv";
+
     RemoteRDBStoreClient rdbStoreClient;
 
     /**
@@ -39,11 +39,8 @@ public class UsageMatcher {
         List<String> tableNames = Arrays.asList(polygonTable, pointTable);
 
         for (String tableName : tableNames) {
-
-            try {
-
-                InputStreamReader inputStreamReader = new InputStreamReader(
-                        UsageMatcher.class.getResourceAsStream("/osm_tags.csv"));
+            try (InputStream input = FileReader.getStream(OSM_CSV_PATH)){
+                InputStreamReader inputStreamReader = new InputStreamReader(input);
                 CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
                 String[] line;
 
@@ -87,8 +84,14 @@ public class UsageMatcher {
                     // Execute the SQL statement
                     rdbStoreClient.executeUpdate(sql);
                 }
-            } catch (IOException e) {
+            }
+            catch (FileNotFoundException e) {
                 e.printStackTrace();
+                throw new JPSRuntimeException("osm_tags.csv file not found");
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                throw new JPSRuntimeException(e);
             }
         }
     }

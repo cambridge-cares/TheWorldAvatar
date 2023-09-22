@@ -7,6 +7,10 @@ import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageMatcher;
 import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageShareCalculator;
 
 import javax.servlet.annotation.WebServlet;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 import org.json.JSONObject;
@@ -14,6 +18,7 @@ import org.json.JSONObject;
 @WebServlet(urlPatterns = "/update")
 
 public class OSMAgent extends JPSAgent {
+    private static final String PROPETIES_PATH = "/usr/local/tomcat/resources/config.properties";
     private EndpointConfig endpointConfig = new EndpointConfig();
 
     private String dbName;
@@ -36,10 +41,21 @@ public class OSMAgent extends JPSAgent {
     }
 
     public void readConfig() {
-        ResourceBundle config = ResourceBundle.getBundle("config");
-        this.dbName = config.getString("db.name");
-        this.osmSchema = config.getString("osm.schema");
-        this.landUseTable = config.getString("landuse.table");
+        try (InputStream input = FileReader.getStream(PROPETIES_PATH)) {
+            Properties prop = new Properties();
+            prop.load(input);
+            this.dbName = prop.getProperty("db.name");
+            this.osmSchema = prop.getProperty("osm.schema");
+            this.landUseTable = prop.getProperty("landuse.table");
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException("config.properties file not found");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
     }
 
     @Override
