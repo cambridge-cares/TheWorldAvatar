@@ -156,7 +156,7 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, a
 # Assuming the CSV file is located at 'data.csv'
 linkage_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\LinkagesTEST.csv'
 precursor_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\PrecursorsTEST.csv'
-COFs_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\COFs_bad.csv'
+COFs_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\COFs_CLEAN.csv'
 output_dir = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\'
 #print(initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir))
 
