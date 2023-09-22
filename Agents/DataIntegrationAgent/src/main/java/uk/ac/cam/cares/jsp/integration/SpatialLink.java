@@ -215,25 +215,6 @@ public class SpatialLink{
         return fac.createPolygon(coord);     
     }
 
-    // public Geometry reproject(Geometry geom, int srcSRID, int dstSRID) {
-
-    //     GeometryFactory fac = new GeometryFactory();
-    //     // Geometry sourceGeometry = fac.createGeometry(geom);
-
-    //     Geometry targetGeometry = null;
-    //     try {
-    //         CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:" + srcSRID);
-    //         CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:" + dstSRID);
-    //         MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-    //         targetGeometry = JTS.transform(geom, transform);
-    //         targetGeometry.setSRID(dstSRID);
-
-    //     } catch (FactoryException | TransformException e) {
-    //         e.printStackTrace();
-    //     }
-    //     return targetGeometry;
-    // }
-
     public List<GeoObject3D> reprojectPost(List<GeoObject3D> allObject3D, int dstSRID){
          if(this.pool == null){
             this.pool = new SqlConnectionPool(this.config);
