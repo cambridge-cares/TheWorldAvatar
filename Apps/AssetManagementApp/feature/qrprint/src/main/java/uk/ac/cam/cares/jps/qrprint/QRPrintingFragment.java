@@ -76,7 +76,6 @@ public class QRPrintingFragment extends Fragment {
         });
 
         binding.printBt.setOnClickListener(v -> viewModel.printSelectedItems());
-        binding.addTestBt.setOnClickListener(v -> viewModel.addTestData());
 
         viewModel.getPrintingList().observe(getViewLifecycleOwner(), printItemAdapter::updateItems);
 //        viewModel.getPrintedList().observe(getViewLifecycleOwner(), printedItemAdapter::updateItems);

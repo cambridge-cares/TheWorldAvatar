@@ -72,15 +72,6 @@ public class QRPrintingViewModel extends ViewModel {
         unprintedList.setValue(newList);
     }
 
-    public void addTestData() {
-        List<PrintItem> items = new ArrayList<>();
-        items.add(new PrintItem("1", "1", "1", false));
-        items.add(new PrintItem("2", "2", "2", false));
-        items.add(new PrintItem("3", "3", "3", false));
-        items.add(new PrintItem("4", "4", "4", false));
-        repository.updatePrintList(items);
-    }
-
     public void getAllPrintItems() {
         RepositoryCallback<List<PrintItem>> callback = new RepositoryCallback<List<PrintItem>>() {
             @Override

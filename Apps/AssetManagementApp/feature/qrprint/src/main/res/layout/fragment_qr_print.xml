@@ -23,14 +23,6 @@
                 android:layout_margin="@dimen/component_margin_small"
                 android:id="@+id/print_bt"/>
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:text="Add test data"
-                android:layout_margin="@dimen/component_margin_small"
-                android:id="@+id/add_test_bt"/>
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

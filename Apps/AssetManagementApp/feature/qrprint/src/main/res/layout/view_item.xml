@@ -11,26 +11,32 @@
         android:text="2021-02-08/961"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:textAppearance="?attr/textAppearanceBody1"/>
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/label_tv"
         android:text="monitor"
         app:layout_constraintStart_toEndOf="@id/id_tv"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:textAppearance="?attr/textAppearanceBody2"
         android:paddingStart="@dimen/component_margin_small"
-        android:gravity="center"
+        android:gravity="start"
+        android:maxLines="5"
+        android:singleLine="false"
         />
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:background="@color/transparent"
+        android:src="@drawable/ripple_add_circle"
         android:id="@+id/remove_bt"
-        android:visibility="gone"
+        android:visibility="visible"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
