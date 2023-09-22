@@ -65,6 +65,7 @@ In the same directory as this README, run `docker compose build`. This will buil
 
 ## 4. Deployment
 The agent has been implemented to work in the stack, which requires the OSMAgent Docker container to be deployed in the stack. To do so, place [osmagent.json](stack-manager-input-config/osmagent.json) in the [stack-manager config directory]. 
+The agent container makes use of bind mounts to read in configuration details, please ensure that ```Source``` under ```Mounts``` in [osmagent.json](stack-manager-input-config/osmagent.json) is replaced with the absolute path to [resources folder](osmagent/src/main/resources).
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 Please ensure that the stack the agent is spun up in is the same stack where the OSM and DLM data were uploaded.
 
