@@ -54,11 +54,11 @@ class _HfTranslationModelBase(TranslationModel):
         self.max_new_tokens = max_new_tokens
 
     def _translate(self, question: str):
-        input_ids = self.tokenizer(question, return_tensors="pt").input_ids.to(
+        encoded_input = self.tokenizer(question, return_tensors="pt").to(
             self.model.device
         )
         output_ids = self.model.generate(
-            input_ids=input_ids, max_new_tokens=self.max_new_tokens
+            **encoded_input, max_new_tokens=self.max_new_tokens
         )
         return self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
 

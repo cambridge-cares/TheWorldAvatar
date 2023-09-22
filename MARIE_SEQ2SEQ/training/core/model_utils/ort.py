@@ -1,4 +1,3 @@
-
 import os
 
 from optimum.onnxruntime import ORTModelForSeq2SeqLM, ORTQuantizer
@@ -99,7 +98,9 @@ def load_ort_model_seq2seq_quantized_cpu(model_args: ModelArguments):
     )
 
 
-def load_ort_model_with_tensorrt(model_args: ModelArguments, tokenizer: PreTrainedTokenizer):
+def load_ort_model_with_tensorrt(
+    model_args: ModelArguments, tokenizer: PreTrainedTokenizer
+):
     trt_engine_cache_path = os.path.join(model_args.model_path, "trt_cache")
     os.makedirs(trt_engine_cache_path, exist_ok=True)
 
@@ -124,21 +125,21 @@ def load_ort_model_with_tensorrt(model_args: ModelArguments, tokenizer: PreTrain
         print("-----TensorRT engine cache not found-----")
         print("-----Building TensorRT engine-----")
         for example in [SHORT_INPUT_EXAMPLE, LONG_INPUT_EXAMPLE]:
-            input_ids = tokenizer(
+            encoded_input = tokenizer(
                 preprocess_input(example, model_family=model_args.model_family),
                 return_tensors="pt",
-            ).input_ids.to("cuda")
-            model(input_ids)
+            ).to("cuda")
+            model(**encoded_input)
 
     print("-----Performing engine warm-up-----")
-    input_ids = tokenizer(
+    encoded_inputs = tokenizer(
         preprocess_input(SHORT_INPUT_EXAMPLE, model_family=model_args.model_family),
         return_tensors="pt",
-    ).input_ids.to("cuda")
+    ).to("cuda")
 
     for _ in range(3):
-        model.generate(input_ids=input_ids, max_new_tokens=256)
-    
+        model.generate(**encoded_inputs, max_new_tokens=256)
+
     return model
 
 
