@@ -5,10 +5,13 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
 import android.os.Handler;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -25,6 +28,7 @@ public class AssetInfoRepository {
     SettingRepository settingRepository;
     List<String> visibleProperties = new ArrayList<>();
     AssetInfo assetInfo;
+    Random random = new Random();
 
     @Inject
     public AssetInfoRepository(AssetNetworkSource assetInfoNetworkSource, SettingRepository settingRepository) {
@@ -84,11 +88,21 @@ public class AssetInfoRepository {
         return  result;
     }
 
-    public void createNewAsset(AssetInfo assetInfo, RepositoryCallback<Boolean> callback) {
+    public void createNewAsset(AssetInfo assetInfo, RepositoryCallback<JSONObject> callback) {
         //        callback.onFailure(new Exception());
+
+        // test data for qr code printing
         Handler handler = new Handler();
         handler.postDelayed((Runnable) () -> {
-            callback.onSuccess(true);
+            JSONObject successMessage = new JSONObject();
+            try {
+                successMessage.put("iri", "iri");
+                successMessage.put("inventoryID", random.nextInt());
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
+            callback.onSuccess(successMessage);
         }, 2000);
     }
 }

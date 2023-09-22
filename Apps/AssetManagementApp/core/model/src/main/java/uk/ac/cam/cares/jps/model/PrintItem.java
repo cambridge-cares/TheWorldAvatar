@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.data.qrprint;
+package uk.ac.cam.cares.jps.model;
 
 public class PrintItem {
     String inventoryID;

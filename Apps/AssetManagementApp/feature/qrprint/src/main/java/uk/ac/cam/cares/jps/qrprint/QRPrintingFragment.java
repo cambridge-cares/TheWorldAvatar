@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.data.qrprint.PrintItem;
+import uk.ac.cam.cares.jps.model.PrintItem;
 import uk.ac.cam.cares.jps.qrprint.databinding.FragmentQrPrintBinding;
 
 @AndroidEntryPoint
@@ -74,6 +74,9 @@ public class QRPrintingFragment extends Fragment {
 
             binding.idEditText.setText("");
         });
+
+        binding.printBt.setOnClickListener(v -> viewModel.printSelectedItems());
+        binding.addTestBt.setOnClickListener(v -> viewModel.addTestData());
 
         viewModel.getPrintingList().observe(getViewLifecycleOwner(), printItemAdapter::updateItems);
 //        viewModel.getPrintedList().observe(getViewLifecycleOwner(), printedItemAdapter::updateItems);

@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.data.qrprint.PrintItem;
+import uk.ac.cam.cares.jps.model.PrintItem;
+
 
 public class PrintItemAdapter extends RecyclerView.Adapter<PrintItemAdapter.ViewHolder>{
     List<PrintItem> items;

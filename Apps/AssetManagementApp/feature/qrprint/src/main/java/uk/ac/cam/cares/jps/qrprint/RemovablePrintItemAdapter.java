@@ -5,8 +5,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-
-import uk.ac.cam.cares.jps.data.qrprint.PrintItem;
+import uk.ac.cam.cares.jps.model.PrintItem;
 
 public class RemovablePrintItemAdapter extends PrintItemAdapter{
     private QRPrintingFragment.ListUpdate listUpdate;

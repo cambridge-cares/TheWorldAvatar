@@ -1,12 +1,9 @@
 plugins {
     id 'com.android.library'
-    id 'kotlin-android'
-    id 'kotlin-kapt'
-    id 'com.google.dagger.hilt.android'
 }
 
 android {
-    namespace 'uk.ac.cam.cares.jps.data'
+    namespace 'uk.ac.cam.cares.jps.model'
     compileSdk 33
 
     defaultConfig {
@@ -33,25 +30,7 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
-    implementation project(path: ':core:network')
-    implementation project(path: ':core:datastore')
-    implementation project(path: ':core:utils')
-    implementation project(path: ':core:model')
-    implementation 'androidx.datastore:datastore-rxjava2:1.0.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.android.volley:volley:1.2.1'
-    implementation 'log4j:log4j:1.2.17'
-    implementation "com.google.dagger:hilt-android:2.44"
-    kapt "com.google.dagger:hilt-compiler:2.44"
-
-    implementation "androidx.datastore:datastore-preferences-core:1.0.0"
-    implementation "androidx.datastore:datastore-core:1.0.0"
-
-    implementation 'org.apache.commons:commons-collections4:4.4'
-}
-
-kapt {
-    correctErrorTypes true
 }

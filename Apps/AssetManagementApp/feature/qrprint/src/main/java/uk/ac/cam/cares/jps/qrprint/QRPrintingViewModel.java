@@ -11,9 +11,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import uk.ac.cam.cares.jps.data.qrprint.PrintItem;
 import uk.ac.cam.cares.jps.data.qrprint.QRPrintRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
+import uk.ac.cam.cares.jps.model.PrintItem;
 
 @HiltViewModel
 public class QRPrintingViewModel extends ViewModel {
@@ -72,6 +72,15 @@ public class QRPrintingViewModel extends ViewModel {
         unprintedList.setValue(newList);
     }
 
+    public void addTestData() {
+        List<PrintItem> items = new ArrayList<>();
+        items.add(new PrintItem("1", "1", "1", false));
+        items.add(new PrintItem("2", "2", "2", false));
+        items.add(new PrintItem("3", "3", "3", false));
+        items.add(new PrintItem("4", "4", "4", false));
+        repository.updatePrintList(items);
+    }
+
     public void getAllPrintItems() {
         RepositoryCallback<List<PrintItem>> callback = new RepositoryCallback<List<PrintItem>>() {
             @Override
@@ -96,5 +105,13 @@ public class QRPrintingViewModel extends ViewModel {
             }
         };
         repository.getAllPrintItems(callback);
+    }
+
+    public void printSelectedItems() {
+        // todo: send request to agent to print the list of qr codes
+
+        // update the local storage for unprinted items
+        repository.updatePrintList(unprintedList.getValue());
+        printingList.setValue(new ArrayList<>());
     }
 }
