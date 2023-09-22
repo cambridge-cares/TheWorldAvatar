@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">13 June 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">22 September 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ontology for urban building energy modelling (UBEM) and master planning (MP) data</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -36,7 +36,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
                 </owl:unionOf>
             </owl:Class>
@@ -103,7 +103,7 @@
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship linking the building&apos;s roof or wall fa�ade with their area that is suitable for receiving solar energy.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship linking the building's roof or wall façade with their area that is suitable for receiving solar energy.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
