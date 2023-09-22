@@ -36,26 +36,12 @@ public class QRPrintingFragment extends Fragment {
 
         ListUpdate printListUpdate = item -> {
             viewModel.removePrintingItem(item);
-
-            if (item.getStatus() == null) {
-                // item is added by input box
-                return;
-            }
-
-            if (item.getStatus()) {
-//                viewModel.addPrintedItem(item);
-            } else {
-                viewModel.addUnprintedItem(item);
-            }
+            viewModel.addUnprintedItem(item);
         };
         RemovablePrintItemAdapter printItemAdapter = new RemovablePrintItemAdapter(viewModel.getPrintingList().getValue(), printListUpdate, R.drawable.ripple_remove_circle);
         printItemAdapter.setCurrentVisibility(View.GONE);
         binding.printingListRv.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.printingListRv.setAdapter(printItemAdapter);
-
-//        PrintItemAdapter printedItemAdapter = new PrintItemAdapter(viewModel.getPrintedList().getValue());
-//        binding.printedListRv.setLayoutManager(new LinearLayoutManager(requireContext()));
-//        binding.printedListRv.setAdapter(printedItemAdapter);
 
         ListUpdate unprintedListUpdate = item -> {
             viewModel.removeUnprintedItem(item);
@@ -69,7 +55,7 @@ public class QRPrintingFragment extends Fragment {
         binding.editTv.setOnClickListener(getEditOnClickListener());
 
         binding.addIdBt.setOnClickListener(v -> {
-            PrintItem item = new PrintItem(binding.idEditText.getText().toString(), null, null, null);
+            PrintItem item = new PrintItem(binding.idEditText.getText().toString(), null, null);
             viewModel.addPrintingItem(item);
 
             binding.idEditText.setText("");
@@ -78,7 +64,6 @@ public class QRPrintingFragment extends Fragment {
         binding.printBt.setOnClickListener(v -> viewModel.printSelectedItems());
 
         viewModel.getPrintingList().observe(getViewLifecycleOwner(), printItemAdapter::updateItems);
-//        viewModel.getPrintedList().observe(getViewLifecycleOwner(), printedItemAdapter::updateItems);
         viewModel.getUnprintedList().observe(getViewLifecycleOwner(), unprintedItemAdapter::updateItems);
 
         viewModel.getAllPrintItems();

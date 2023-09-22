@@ -33,7 +33,7 @@ public class QRPrintingLocalSource {
                         .stream().map(protoPrintItem ->
                         new PrintItem(protoPrintItem.getInventoryID(),
                                 protoPrintItem.getLabel(),
-                                protoPrintItem.getIri(), false))
+                                protoPrintItem.getIri()))
                         .collect(Collectors.toList()));
     }
 

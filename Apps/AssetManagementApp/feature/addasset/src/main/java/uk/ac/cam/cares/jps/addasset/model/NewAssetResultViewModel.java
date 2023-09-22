@@ -38,8 +38,7 @@ public class NewAssetResultViewModel extends ViewModel {
                     qrPrintRepository.updatePrintList(new PrintItem(
                             result.getString("inventoryID"),
                             assetInfo.getProperty(REFERENCE_LABEL),
-                            result.getString("iri"),
-                            false));
+                            result.getString("iri")));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }

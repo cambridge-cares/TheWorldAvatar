@@ -21,7 +21,6 @@ public class QRPrintingViewModel extends ViewModel {
     private Logger LOGGER = Logger.getLogger(QRPrintingViewModel.class);
     private MutableLiveData<List<PrintItem>> printingList = new MutableLiveData<>(new ArrayList<>());
     private MutableLiveData<List<PrintItem>> unprintedList = new MutableLiveData<>(new ArrayList<>());
-//    private MutableLiveData<List<PrintItemModel>> printedList = new MutableLiveData<>(new ArrayList<>());
 
     private QRPrintRepository repository;
 
@@ -38,10 +37,6 @@ public class QRPrintingViewModel extends ViewModel {
         return unprintedList;
     }
 
-//    public MutableLiveData<List<PrintItemModel>> getPrintedList() {
-//        return printedList;
-//    }
-
     public void addPrintingItem(PrintItem item) {
         List<PrintItem> newList = printingList.getValue();
         newList.add(item);
@@ -53,12 +48,6 @@ public class QRPrintingViewModel extends ViewModel {
         newList.remove(item);
         printingList.setValue(newList);
     }
-
-//    public void addPrintedItem(PrintItemModel item) {
-//        List<PrintItemModel> newList = printedList.getValue();
-//        newList.add(item);
-//        printedList.setValue(newList);
-//    }
 
     public void addUnprintedItem(PrintItem item) {
         List<PrintItem> newList = unprintedList.getValue();
@@ -77,17 +66,10 @@ public class QRPrintingViewModel extends ViewModel {
             @Override
             public void onSuccess(List<PrintItem> result) {
                 List<PrintItem> newPrintingList = new ArrayList<>();
-//                List<PrintItemModel> newPrintedList = new ArrayList<>();
-
                 for (PrintItem item : result) {
-                    if (item.getStatus()) {
-//                        newPrintedList.add(item);
-                    } else {
-                        newPrintingList.add(item);
-                    }
+                    newPrintingList.add(item);
                 }
                 printingList.postValue(newPrintingList);
-//                printedList.postValue(newPrintedList);
             }
 
             @Override
