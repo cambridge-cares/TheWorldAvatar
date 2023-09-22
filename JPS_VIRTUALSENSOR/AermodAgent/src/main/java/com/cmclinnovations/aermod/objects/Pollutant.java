@@ -36,7 +36,7 @@ public class Pollutant {
         iriToTypeMap.put(QueryClient.PM25, PollutantType.PM2_5);
     }
 
-    private static Map<PollutantType, String> typeToIriMap = new HashMap<>();
+    private static EnumMap<PollutantType, String> typeToIriMap = new EnumMap<>(PollutantType.class);
     static {
         typeToIriMap.put(PollutantType.NO_X, QueryClient.NO_X);
         typeToIriMap.put(PollutantType.UHC, QueryClient.UHC);
