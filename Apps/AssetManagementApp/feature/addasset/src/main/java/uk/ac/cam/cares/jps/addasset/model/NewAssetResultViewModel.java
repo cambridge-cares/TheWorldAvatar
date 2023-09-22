@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.addasset.model;
 
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.INVENTORY_ID;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.IRI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.REFERENCE_LABEL;
 
 import androidx.lifecycle.MutableLiveData;
@@ -13,7 +11,7 @@ import org.json.JSONObject;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import uk.ac.cam.cares.jps.data.assetinfo.AssetInfo;
+import uk.ac.cam.cares.jps.model.AssetInfo;
 import uk.ac.cam.cares.jps.data.assetinfo.AssetInfoRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.qrprint.QRPrintRepository;

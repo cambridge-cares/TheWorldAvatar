@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import uk.ac.cam.cares.jps.addasset.databinding.FragmentNewAssetResultBinding;
 import uk.ac.cam.cares.jps.addasset.model.NewAssetResultViewModel;
-import uk.ac.cam.cares.jps.data.assetinfo.AssetInfo;
+import uk.ac.cam.cares.jps.model.AssetInfo;
 
 public class NewAssetResultFragment extends Fragment {
     private FragmentNewAssetResultBinding binding;

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.data.otherinfo;
+package uk.ac.cam.cares.jps.model;
 
 import androidx.annotation.NonNull;
 

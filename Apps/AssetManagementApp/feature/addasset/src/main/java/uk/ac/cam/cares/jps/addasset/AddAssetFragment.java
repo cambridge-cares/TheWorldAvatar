@@ -32,7 +32,7 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.databinding.FragmentAddAssetBinding;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
-import uk.ac.cam.cares.jps.data.assetinfo.AssetInfo;
+import uk.ac.cam.cares.jps.model.AssetInfo;
 import uk.ac.cam.cares.jps.ui.UiUtils;
 
 @AndroidEntryPoint

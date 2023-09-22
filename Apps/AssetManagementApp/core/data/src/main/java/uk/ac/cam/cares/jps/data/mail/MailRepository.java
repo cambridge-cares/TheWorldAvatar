@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
 
+import uk.ac.cam.cares.jps.model.Mail;
 import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
 
 public class MailRepository {

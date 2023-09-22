@@ -1,15 +1,13 @@
-package uk.ac.cam.cares.jps.data.assetinfo;
+package uk.ac.cam.cares.jps.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
 
-import uk.ac.cam.cares.jps.network.assetinfo.AssetInfoModel;
-
 public class AssetInfo implements Serializable {
     HashMap<String, String> properties;
 
-    public AssetInfo(AssetInfoModel assetInfoModel) {
-        this.properties = assetInfoModel.getProperties();
+    public AssetInfo(HashMap<String, String> properties) {
+        this.properties = properties;
     }
 
     public AssetInfo() {

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.data.mail;
+package uk.ac.cam.cares.jps.model;
 
 public class Mail {
     public enum MailType {

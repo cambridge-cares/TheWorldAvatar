@@ -13,7 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.data.mail.Mail;
+import uk.ac.cam.cares.jps.model.Mail;
+
 
 public class MailboxAdapter extends RecyclerView.Adapter<MailboxAdapter.ViewHolder>{
 

@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.data.qrprint;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.datastore.QRPrintingLocalSource;
 import uk.ac.cam.cares.jps.model.PrintItem;

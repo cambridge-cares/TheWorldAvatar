@@ -19,6 +19,7 @@ import io.reactivex.Completable;
 import io.reactivex.disposables.Disposable;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.setting.SettingRepository;
+import uk.ac.cam.cares.jps.model.AssetInfo;
 import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 
 public class AssetInfoRepository {
@@ -38,7 +39,7 @@ public class AssetInfoRepository {
 
     public void getAssetInfoByIri(String iri, RepositoryCallback<AssetInfo> callback) {
         Completable assetNetworkCall = Completable.create(emitter -> assetInfoNetworkSource.getAssetInfoByIri(iri, asset -> {
-            assetInfo = new AssetInfo(asset);
+            assetInfo = new AssetInfo(asset.getProperties());
             emitter.onComplete();
         }, emitter::onError));
 
