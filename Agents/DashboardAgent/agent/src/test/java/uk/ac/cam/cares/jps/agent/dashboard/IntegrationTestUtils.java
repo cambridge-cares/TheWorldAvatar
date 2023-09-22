@@ -22,13 +22,13 @@ public class IntegrationTestUtils {
     public static final String TEST_POSTGIS_PASSWORD = "pg123";
     public static final String NAME_KEY = "name";
     public static final String SERVICE_ACCOUNT_NAME = "grafana";
-    private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
-    private static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
-    private static final String SERVICE_ACCOUNT_SEARCH_SUB_ROUTE = "/search";
-    private static final String DATA_SOURCE_ROUTE = "/api/datasources";
-    private static final String ID_KEY = "id";
+    public static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
+    public static final String SERVICE_ACCOUNT_SEARCH_SUB_ROUTE = "/search";
     public static final String DASHBOARD_ACCOUNT_USER = "admin";
     public static final String DASHBOARD_ACCOUNT_PASS = "admin";
+    private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
+    private static final String DATA_SOURCE_ROUTE = "/api/datasources";
+    private static final String ID_KEY = "id";
 
     public static Object retrieveServiceAccounts(String user, String password) {
         String route = TEST_DASHBOARD_URL + SERVICE_ACCOUNT_ROUTE;
