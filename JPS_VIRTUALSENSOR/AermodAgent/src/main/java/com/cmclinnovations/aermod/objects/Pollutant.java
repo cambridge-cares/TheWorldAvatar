@@ -30,7 +30,7 @@ public class Pollutant {
         iriToTypeMap.put(QueryClient.NO_X, PollutantType.NO_X);
         iriToTypeMap.put(QueryClient.UHC, PollutantType.UHC);
         iriToTypeMap.put(QueryClient.CO, PollutantType.CO);
-        iriToTypeMap.put(QueryClient.CO2, PollutantType.CO);
+        iriToTypeMap.put(QueryClient.CO2, PollutantType.CO2);
         iriToTypeMap.put(QueryClient.SO2, PollutantType.SO2);
         iriToTypeMap.put(QueryClient.PM10, PollutantType.PM10);
         iriToTypeMap.put(QueryClient.PM25, PollutantType.PM2_5);
@@ -41,7 +41,7 @@ public class Pollutant {
         typeToIriMap.put(PollutantType.NO_X, QueryClient.NO_X);
         typeToIriMap.put(PollutantType.UHC, QueryClient.UHC);
         typeToIriMap.put(PollutantType.CO, QueryClient.CO);
-        typeToIriMap.put(PollutantType.CO, QueryClient.CO2);
+        typeToIriMap.put(PollutantType.CO2, QueryClient.CO2);
         typeToIriMap.put(PollutantType.SO2, QueryClient.SO2);
         typeToIriMap.put(PollutantType.PM10, QueryClient.PM10);
         typeToIriMap.put(PollutantType.PM2_5, QueryClient.PM25);
