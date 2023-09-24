@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 20 Jan 2022          #
-##########################################
-
 import os, sys, json
 from rdflib.graph import ConjunctiveGraph
 from rdflib.store import NO_STORE

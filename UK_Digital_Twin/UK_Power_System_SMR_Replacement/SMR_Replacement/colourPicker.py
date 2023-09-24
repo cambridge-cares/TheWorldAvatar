@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 25 April 2023        #
-##########################################
-
 import math
 import matplotlib.pyplot as plt
 import matplotlib as mpl

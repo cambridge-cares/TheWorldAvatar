@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 07 June 2022         #
-##########################################
-
 import os
 import sys
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 Sept 2023         #
-##########################################
-
 """This module is designed to generate and update the A-box of UK energy consumption graph."""
 
 import os

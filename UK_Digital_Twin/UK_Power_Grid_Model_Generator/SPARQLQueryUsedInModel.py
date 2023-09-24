@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 22 Sept 2023         #
-##########################################
-
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
 import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

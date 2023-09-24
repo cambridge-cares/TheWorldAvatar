@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 04 May 2022          #
-##########################################
-
 """This module is designed to generate and update the A-box of UK power grid model_ELine."""
 
 import os

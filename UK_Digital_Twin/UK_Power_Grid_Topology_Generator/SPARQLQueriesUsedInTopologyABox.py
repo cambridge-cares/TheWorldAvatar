@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 Sept 2023         #
-##########################################
-
 """This module lists out the SPARQL queries used in generating the UK Grid Topology A-boxes"""
 
 from logging import raiseExceptions

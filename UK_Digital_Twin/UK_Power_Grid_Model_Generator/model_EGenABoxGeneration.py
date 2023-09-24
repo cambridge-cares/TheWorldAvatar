@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 June 2022         #
-##########################################
-
 """This module is designed to generate and update the A-box of UK power grid model_EGen."""
 # run time: around 20 mins
 

@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 Sept 2023         #
-##########################################
-
 """
 SMR replacement function
 The python class is developed to perform the SMR replacement. The Optimal Power Flow (OPF) analysis is intergarted as a part of this class. 

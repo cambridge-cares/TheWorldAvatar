@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 Sept 2023         #
-##########################################
-
 """This module is used to recored the repository labels used in the remote triple store, Blazegraph. The lables will be refered when performing queries."""
 
 """The lables of different repositories maintained in RDF4j triple store deployed in CoMo server"""

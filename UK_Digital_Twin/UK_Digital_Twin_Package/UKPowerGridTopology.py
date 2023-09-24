@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 Sept 2023         #
-##########################################
-
 """This module declare the properties of generating UK power grid topology A-boxes"""
 
 class UKPowerGridTopology:

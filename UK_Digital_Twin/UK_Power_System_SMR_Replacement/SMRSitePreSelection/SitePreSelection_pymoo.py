@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 02 Nov 2022          #
-##########################################
-
 """
 This module is used to pre-screen the protential SMR sites 
 """

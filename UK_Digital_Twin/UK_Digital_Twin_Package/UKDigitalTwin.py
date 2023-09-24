@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 15 Dec 2021          #
-##########################################
-
 """This module defines the sub-graph memebers of UK digital twin and the URI fragments used to construct the A-box"""
 
 # Level of the node is different of the level of the knowledge graph. The level of the KG is depends on the degree of data being processed, 

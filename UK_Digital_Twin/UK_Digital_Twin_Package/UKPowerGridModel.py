@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 06 Sept 2023         #
-##########################################
-
 """This module declare the properties of generating UK power grid model A-boxes"""
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

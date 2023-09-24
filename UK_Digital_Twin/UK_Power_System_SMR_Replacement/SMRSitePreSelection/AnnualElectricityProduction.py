@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 18 July 2022         #
-##########################################
-
 """
 Data source:https://en.wikipedia.org/wiki/Electricity_sector_in_the_United_Kingdom
 The Electricity production distribution in the United Kingdom

@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 22 April 2022        #
-##########################################
-
 """This class defines the properties of UK Energy Consumption data"""
 from pathlib import Path
 

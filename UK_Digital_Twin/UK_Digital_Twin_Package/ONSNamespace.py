@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 August 2021       #
-##########################################
-
 """The namespace of the ONS Geography Linked Data ontology http://statistics.data.gov.uk/home"""
 
 ons_id = "http://statistics.data.gov.uk/id/statistical-geography/"

@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 26 Sept 2022         #
-##########################################
-
 def gen_fuel_col(gen_fuel):
   #returns a colour code for each generator fuel type.
   #https://htmlcolorcodes.com/

@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 24 June 2021         #
-##########################################
-
 """This module lists out the SPARQL queries used in generating the UK top node graph"""
 
 import os

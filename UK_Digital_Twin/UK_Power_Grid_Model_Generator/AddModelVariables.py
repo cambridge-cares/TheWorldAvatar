@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 29 June 2022        #
-##########################################
-
 """This module defines the function of adding the model veriables to UK power grid knowledge graph -- EGen & EGen cost, EBus and ELine"""
 import os, sys
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

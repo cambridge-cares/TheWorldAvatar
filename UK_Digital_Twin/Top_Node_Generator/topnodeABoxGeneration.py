@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 Sept 2021         #
-##########################################
-
 """This module is designed to generate the top node of UK digital twin."""
 
 import os

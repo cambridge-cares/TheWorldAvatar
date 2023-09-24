@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 26 July 2022         #
-##########################################
-
 """
 This module is used to calculate the population within a given circle 
 """

@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 29 June 2022         #
-##########################################
-
 """This module defines the functions to store the generated owl files"""
 import os
 from tkinter import Tk

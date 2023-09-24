@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 17 June 2022         #
-##########################################
-
 """
 Power Flow Analysis and Optimal Flow Analysis
 """

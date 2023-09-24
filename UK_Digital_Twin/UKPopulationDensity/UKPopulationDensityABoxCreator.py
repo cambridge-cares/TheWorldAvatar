@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 08 Sept 2023         #
-##########################################
-
 """This module is designed to generate and update the A-box of UK population density graph."""
 import os, json
 import owlready2

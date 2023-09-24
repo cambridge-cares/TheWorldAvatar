@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 Sept 2023         #
-##########################################
-
 """This method is created for ploting multiple Pareto Front lines in the same fig with the weight"""
 
 import numpy

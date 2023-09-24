@@ -1,8 +1,3 @@
-###################################################
-# Author: Wanni Xie (wx243@cam.ac.uk)             #
-# Last Update Date: 10 Jan 2022                   #
-###################################################
-
 from shapely.geometry import shape
 from shapely.geometry.polygon import Polygon, LineString
 

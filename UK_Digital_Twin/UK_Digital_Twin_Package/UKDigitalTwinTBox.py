@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Date: 17 Nov 2021                      #
-##########################################
-
 """This class lists out the T-boxes used by UK digital twin"""
 
 class UKDigitalTwinTBox:

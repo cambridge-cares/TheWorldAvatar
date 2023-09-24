@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 20 April 2022        #
-##########################################
-
 """This class is designed to provide different initialise method for EBusModelVar"""
 
 import os, sys

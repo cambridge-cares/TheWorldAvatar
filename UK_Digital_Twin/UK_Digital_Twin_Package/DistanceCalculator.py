@@ -1,9 +1,3 @@
-#########################################################
-# Author: Wanni Xie (wx243@cam.ac.uk)                   #    
-#         modified from John Atherton (ja685@cam.ac.uk) #
-# Last Update Date: 30 August 2021                      #
-#########################################################
-
 """This module is designed to calculate the distance between two given GPS locations."""
 
 from math import sin, cos, sqrt, atan2, radians

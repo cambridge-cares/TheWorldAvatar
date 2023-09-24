@@ -4,11 +4,6 @@
 # get the jpsBaseLibGW instance from the jpsSingletons module
 # For further information, please check the jps-base_lib, py4jps
 
-###############################################
-# Extended by: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 April 2022             #
-###############################################
-
 from py4jps.resources import JpsBaseLib
 # jpsBaseLibGW = JpsBaseLib()
 # jpsBaseLibGW.launchGateway()

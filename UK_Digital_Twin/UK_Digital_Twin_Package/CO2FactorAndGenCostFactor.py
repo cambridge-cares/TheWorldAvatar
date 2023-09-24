@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 07 June 2022         #
-##########################################
-
 """This class defines the properties of Model Factors"""
 from pathlib import Path
 

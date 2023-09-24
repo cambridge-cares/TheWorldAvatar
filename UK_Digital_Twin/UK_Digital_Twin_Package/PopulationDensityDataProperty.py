@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 07 Sept 2023         #
-##########################################
-
 """This class defines the properties of PopulationDensity data"""
 from pathlib import Path
 

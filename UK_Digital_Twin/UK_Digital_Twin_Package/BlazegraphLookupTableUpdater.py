@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 10 June 2021         #
-##########################################
-
 """This module defines the function used to update the Lookup table in the Blazegraph"""
 import json
 from queryInterface import performQuery, performUpdate

@@ -1,7 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 06 Sept 2023         #
-##########################################
 """
 This python module is created for initialising the base world entities of the power system.
 The base world includes the power plant data, energy demand data, population data, and power grid topology entities.

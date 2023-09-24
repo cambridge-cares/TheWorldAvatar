@@ -1,8 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 22 Sept 2021         #
-##########################################
-
 """This class defines the properties of UK Topological Information data"""
 from pathlib import Path
 

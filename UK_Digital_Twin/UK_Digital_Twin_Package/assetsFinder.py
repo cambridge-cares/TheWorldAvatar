@@ -1,7 +1,3 @@
-##########################################
-# Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 16 Nov 2021          #
-##########################################
 
 """This module is developed as an assets finder which is able to return all assets located in a given area indicated by LA code"""
 """The geographical information is queried from ONS http://statistics.data.gov.uk/sparql"""
