@@ -266,4 +266,26 @@ class FacilityTest {
         assertEquals(THRESHOLD_MIN, metadata[1]);
         assertEquals(THRESHOLD_MAX, metadata[2]);
     }
+
+    @Test
+    void testAddThresholds_NoDuplicate() {
+        // Set up IRIs
+        String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        // Initialise object
+        Facility sample = new Facility(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        // Execute method twice
+        sample.addThresholds(THRESHOLD_NAME, THRESHOLD_MIN, THRESHOLD_MAX);
+        sample.addThresholds(THRESHOLD_NAME, THRESHOLD_MIN, THRESHOLD_MAX);
+        // Retrieve and test results
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
+        assertEquals(2, results.size()); // Expect two results - one for room, and one for threshold
+        assertTrue(results.containsKey(StringHelper.THRESHOLD_KEY));
+        Queue<String[]> thresholdMetadataResult = results.get(StringHelper.THRESHOLD_KEY);
+        assertEquals(1, thresholdMetadataResult.size()); // One threshold expected due to duplication
+        String[] metadata = thresholdMetadataResult.poll();
+        assertEquals(THRESHOLD_NAME, metadata[0]);
+        assertEquals(THRESHOLD_MIN, metadata[1]);
+        assertEquals(THRESHOLD_MAX, metadata[2]);
+    }
 }

@@ -14,6 +14,7 @@ public class Facility {
     private final Map<String, Asset> ASSETS = new HashMap<>();
     private final Map<String, Room> ROOMS = new HashMap<>();
     private final Queue<String[]> FACILITY_THRESHOLDS = new ArrayDeque<>();
+    private final Set<String> UNIQUE_THRESHOLDS = new HashSet<>();
 
     /**
      * Constructor to initialise a facility object with one room and measure.
@@ -118,6 +119,11 @@ public class Facility {
      */
     public void addThresholds(String measureName, String minThreshold, String maxThreshold) {
         String[] thresholdData = new String[]{measureName, minThreshold, maxThreshold};
-        this.FACILITY_THRESHOLDS.offer(thresholdData);
+        // Verify if this threshold has already been added for the same measure
+        if (!this.UNIQUE_THRESHOLDS.contains(String.join("", thresholdData))) {
+            // If not, add it to the queue and the set
+            this.FACILITY_THRESHOLDS.offer(thresholdData);
+            this.UNIQUE_THRESHOLDS.add(String.join("", thresholdData));
+        }
     }
 }
