@@ -5,6 +5,7 @@ from transformers import PreTrainedTokenizer
 
 from core.data_processing.input_processing import preprocess_input, preprocess_input
 from core.data_processing.output_processing import (
+    compact2verbose,
     postprocess_output,
     postprocess_output,
 )
@@ -18,7 +19,7 @@ from core.model_utils.ov import get_ov_model_and_tokenizer
 class TranslationModel(ABC):
     def __init__(self, model_family: str):
         self.model_family = model_family
-        
+
     @abstractmethod
     def _translate(self, question: str):
         pass
@@ -34,9 +35,12 @@ class TranslationModel(ABC):
         pred_postprocessed = postprocess_output(
             pred_raw, model_family=self.model_family
         )
+        pred_verbose = compact2verbose(pred_postprocessed)
 
         return dict(
-            prediction_raw=pred_raw, prediction_postprocessed=pred_postprocessed
+            prediction_raw=pred_raw,
+            prediction_postprocessed=pred_postprocessed,
+            prediction_verbose=pred_verbose,
         )
 
 
@@ -83,9 +87,16 @@ class HfTranslationModel(_HfTranslationModelBase):
 
 
 class OVHfTranslationModel(_HfTranslationModelBase):
-    def __init__(self, model_args: ModelArguments, max_input_tokens: int = 256, max_new_tokens: int = 256):
+    def __init__(
+        self,
+        model_args: ModelArguments,
+        max_input_tokens: int = 256,
+        max_new_tokens: int = 256,
+    ):
         self.max_input_tokens = 256
-        model, tokenizer = get_ov_model_and_tokenizer(model_args, max_input_tokens=max_input_tokens)
+        model, tokenizer = get_ov_model_and_tokenizer(
+            model_args, max_input_tokens=max_input_tokens
+        )
         super().__init__(
             model_family=model_args.model_family,
             model=model,

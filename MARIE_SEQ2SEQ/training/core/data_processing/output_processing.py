@@ -47,9 +47,11 @@ def preprocess_output(text: str, model_family: str):
 def postprocess_output(text: str, model_family: str):
     if model_family == "t5":
         text = t5_decode_output_special_chars(text)
-    elif model_family == "llama":
-        if "\n\n###\n\n" in text:
+    elif model_family == "llama" and "\n\n###\n\n" in text:
             text = text.split("\n\n###\n\n", maxsplit=1)[1]
+    return text
+
+def compact2verbose(text: str):
     try:
         # return AbstractQueryRep.from_string(text).compact2verbose().to_query_string()
         return CompactQueryRep.from_string(text).to_verbose()
