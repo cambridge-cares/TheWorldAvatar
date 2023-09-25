@@ -1,36 +1,26 @@
 {
-    "type": "email-agent",
     "ServiceSpec": {
-        "Name": email-agent",
+        "Name": "email-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/feature-info-agent:1.0.1",
+                "Image": "ghcr.io/cambridge-cares/email-agent:1.0.1",
                 "Env": [
-                    "LOG4J_FORMAT_MSG_NO_LOOKUPS=true",
-                    "FIA_CONFIG_FILE=/app/queries/fia-config.json"
-                ],
-                "Configs": [
+                        "LOG4J_FORMAT_MSG_NO_LOOKUPS=true",
+			            "EMAIL_AGENT_PROPERTIES=/root/data/email-agent.properties"
+				],
+                "Mounts": [
                     {
-                        "ConfigName": "blazegraph"
-                    },
-                    {
-                        "ConfigName": "ontop"
-                    },
-                    {
-                        "ConfigName": "postgis"
+                      "Type": "bind",
+                      "Source": "/mnt/c/Users/WANG01/Documents/CARES/EmailAgent/code/data/",
+                      "Target": "/root/data/"
                     }
-                ],
-                "Secrets": [
-                    {
-                        "SecretName": "postgis_password"
-                    }
-                ]
+                  ]
             }
         }
     },
     "endpoints": {
         "rest": {
-            "url": "http://localhost:8080/email-agent/",
+            "url": "http://localhost:8080/email_agent/",
             "externalPath": "/email-agent/"
         }
     }
