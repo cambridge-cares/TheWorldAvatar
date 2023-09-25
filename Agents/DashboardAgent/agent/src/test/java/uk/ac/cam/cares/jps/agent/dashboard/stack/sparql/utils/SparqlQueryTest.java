@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SparqlQueryTest {
+public class SparqlQueryTest {
 
     @Test
     void testGenSimpleFacilityQuery() {
@@ -67,7 +67,7 @@ class SparqlQueryTest {
         assertEquals(expectedQuery.toString(), SparqlQuery.genFacilityAssetMeasureQuery(endpoint));
     }
 
-    private static StringBuilder genExpectedPrefixesString() {
+    public static StringBuilder genExpectedPrefixesString() {
         StringBuilder result = new StringBuilder();
         result.append("PREFIX bot:<https://w3id.org/bot#>")
                 .append("PREFIX ontobim:<https://www.theworldavatar.com/kg/ontobim/>")

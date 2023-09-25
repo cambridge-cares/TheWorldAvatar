@@ -1,6 +1,14 @@
 package uk.ac.cam.cares.jps.agent.dashboard;
 
 import com.google.gson.*;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateRequest;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.IOException;
@@ -15,20 +23,68 @@ import java.time.Duration;
 import java.util.*;
 
 public class IntegrationTestUtils {
-    public static final String TEST_DASHBOARD_URL = "http://172.27.0.3:3000";
-    public static final String TEST_POSTGIS_JDBC = "jdbc:postgresql://172.27.0.2:5432/";
-    public static final String TEST_POSTGIS_URL = "http://172.27.0.2:5432/";
+    // Local host for docker containers is at 172.17.0.1, ports correspond to the expose ports in docker-compose.test.yml
+    public static final String SPARQL_ENDPOINT = "http://172.17.0.1:9998/blazegraph/";
+    public static final String SPATIAL_ZONE_NAMESPACE = "zone";
+    public static final String SPATIAL_ZONE_SPARQL_ENDPOINT = SPARQL_ENDPOINT + "namespace/" + SPATIAL_ZONE_NAMESPACE + "/sparql";
+    public static final String GENERAL_NAMESPACE = "asset";
+    public static final String GENERAL_SPARQL_ENDPOINT = SPARQL_ENDPOINT + "namespace/" +  GENERAL_NAMESPACE + "/sparql";
+    public static final String TEST_POSTGIS_JDBC = "jdbc:postgresql://172.27.0.1:5431/";
+    public static final String TEST_POSTGIS_URL = "http://172.27.0.1:5431/";
     public static final String TEST_POSTGIS_USER = "user";
     public static final String TEST_POSTGIS_PASSWORD = "pg123";
     public static final String NAME_KEY = "name";
+    public static final String TEST_DASHBOARD_URL = "http://172.27.0.1:3068";
     public static final String SERVICE_ACCOUNT_NAME = "grafana";
     public static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
     public static final String SERVICE_ACCOUNT_SEARCH_SUB_ROUTE = "/search";
     public static final String DASHBOARD_ACCOUNT_USER = "admin";
     public static final String DASHBOARD_ACCOUNT_PASS = "admin";
+    public static final String SPARQL_DELETE = "DELETE WHERE {?s ?p ?o}";
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final String DATA_SOURCE_ROUTE = "/api/datasources";
     private static final String ID_KEY = "id";
+
+    public static void createNamespace(String namespace) {
+        // Generate XML properties for request
+        String payload =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+                        "<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">" +
+                        "<properties>" +
+                        "  <entry key=\"com.bigdata.rdf.sail.truthMaintenance\">false</entry>" +
+                        "  <entry key=\"com.bigdata.rdf.store.AbstractTripleStore.textIndex\">false</entry>" +
+                        "  <entry key=\"com.bigdata.namespace." + namespace + ".lex.com.bigdata.btree.BTree.branchingFactor\">400</entry>" +
+                        "  <entry key=\"com.bigdata.namespace." + namespace + ".spo.com.bigdata.btree.BTree.branchingFactor\">1024</entry>" +
+                        "  <entry key=\"com.bigdata.rdf.store.AbstractTripleStore.justify\">false</entry>" +
+                        "  <entry key=\"com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers\">false</entry>" +
+                        "  <entry key=\"com.bigdata.rdf.store.AbstractTripleStore.axiomsClass\">com.bigdata.rdf.axioms.NoAxioms</entry>" +
+                        "  <entry key=\"com.bigdata.rdf.sail.namespace\">" + namespace + "</entry>" +
+                        "  <entry key=\"com.bigdata.rdf.store.AbstractTripleStore.quads\">false</entry>" +
+                        "  <entry key=\"com.bigdata.rdf.store.AbstractTripleStore.geoSpatial\">false</entry>" +
+                        "  <entry key=\"com.bigdata.rdf.sail.isolatableIndices\">false</entry>" +
+                        "</properties>";
+        StringEntity configEntity = new StringEntity(payload, ContentType.create("application/xml", "UTF-8"));
+        // Create a new post request
+        HttpPost request = new HttpPost(SPARQL_ENDPOINT);
+        request.setHeader("Accept", "application/xml");
+        request.addHeader("Content-Type", "application/xml");
+        request.setEntity(configEntity);
+        // Send request
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            httpClient.execute(request);
+        } catch (IOException e) {
+            throw new JPSRuntimeException("Unable to create namespace: " + e.getMessage());
+        }
+    }
+
+    public static void updateEndpoint(String endpoint, String updateQuery) {
+        try (RDFConnection conn = RDFConnection.connect(endpoint)) {
+            UpdateRequest update = UpdateFactory.create(updateQuery);
+            conn.update(update);
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Unable to update queries at SPARQL endpoint: " + e.getMessage());
+        }
+    }
 
     public static Object retrieveServiceAccounts(String user, String password) {
         String route = TEST_DASHBOARD_URL + SERVICE_ACCOUNT_ROUTE;
@@ -52,7 +108,7 @@ public class IntegrationTestUtils {
         String route = TEST_DASHBOARD_URL + SERVICE_ACCOUNT_ROUTE;
         List<Map<String, Object>> accountInfo = (List<Map<String, Object>>) retrieveServiceAccounts(DASHBOARD_ACCOUNT_USER, DASHBOARD_ACCOUNT_PASS);
         int accountId = -1;
-        if (accountInfo.size() > 0 && accountInfo.get(0).get(NAME_KEY).equals(SERVICE_ACCOUNT_NAME)) {
+        if (accountInfo.size() > 0) {
             Double idDoubleFormat = (Double) accountInfo.get(0).get(ID_KEY);
             accountId = idDoubleFormat.intValue();
         }
