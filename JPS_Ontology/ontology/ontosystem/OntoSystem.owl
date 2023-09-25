@@ -371,7 +371,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem">
         <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/ssn/System"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that is comprised of lab equipments.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that is comprised of lab equipments or is used to assist in/run experiments in a lab environment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lab equipment system</rdfs:label>
     </owl:Class>

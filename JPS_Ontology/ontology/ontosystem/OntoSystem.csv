@@ -3,7 +3,7 @@ OntoSystem,TBox,https://www.theworldavatar.com/kg/ontosystem/,https://www.w3.org
 OntoSystem,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoSystem,TBox,An ontology for systems.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoSystem,TBox,http://www.w3.org/ns/ssn/,http://www.w3.org/2002/07/owl#imports,,,,,,
-LabEquipmentSystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,A system that is comprised of lab equipments.,https://www.theworldavatar.com/kg/ontosystem/,Lab equipment system
+LabEquipmentSystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,A system that is comprised of lab equipments or is used to assist in/run experiments in a lab environment.,https://www.theworldavatar.com/kg/ontosystem/,Lab equipment system
 FiltrationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for filtering liquid or gas in a lab environment.,https://www.theworldavatar.com/kg/ontosystem/,Filtration system
 CrossFlowFiltrationSystem,Class,FiltrationSystem,IS-A,,,,"A system that utilizes cross-flow filtration or tangential flow filtration and it is usually used for chemical engineering, biochemical engineering and protein purification.",https://www.theworldavatar.com/kg/ontosystem/,Cross-flow filtration system
 SimulationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for simulating phenomenon in a lab environement.,https://www.theworldavatar.com/kg/ontosystem/,Simulation System
