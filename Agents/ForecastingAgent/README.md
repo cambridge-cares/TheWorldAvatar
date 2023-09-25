@@ -2,7 +2,7 @@
 
 This `Forecasting Agent` can be used to predict instantiated time series from The World Avatar (TWA), and instantiate the forecasts back into the knowledge graph (KG) using the [OntoTimeSeries] ontology. Reading and writing time series from/into the KG relies on the [TimeSeriesClient].
 
-As of version `2.0.0` the agent is implemented using the [Derived Information Framework]'s (DIF) `DerivationWithTimeSeries` concept to ensure proper data provenance. The required input instances to derive a forecast are described in the [required derivation markup](#13-required-derivation-markup) section below. The agent is designed to be deployed as a Docker container and can be deployed either as standalone version or as part of a larger Docker stack.
+As of version `2.1.0` the agent is implemented using the [Derived Information Framework]'s (DIF) `DerivationWithTimeSeries` concept to ensure proper data provenance. The required input instances to derive a forecast are described in the [required derivation markup](#13-required-derivation-markup) section below. The agent is designed to be deployed as a Docker container and can be deployed either as standalone version or as part of a larger Docker stack.
 
 The Python library [Darts] is used to create the forecasts (and similarly to define, train, and store forecasting models). It contains a variety of models, from classics such as ARIMA over [Facebook Prophet] to deep neural networks and transformers.
 
@@ -190,7 +190,7 @@ The following UML diagram provides an overview of how the agent works:
 
 ## 2.2 Usage of Custom Forecasting Models
 
-To use pre-trained/custom models, both a model loading and covariate loading funtion need to be specified in the [model mapping] file, and referenced in the `FC_MODELS` dictionary. Specify any custom loading functions following the example of the `tft_pirmasens_heat_demand` model configuration.
+To use pre-trained/custom models, both a model loading and covariate loading function need to be specified in the [model mapping] file, and referenced in the `FC_MODELS` dictionary. Specify any custom loading functions following the example of the `tft_pirmasens_heat_demand` model configuration. [Building the agent](#31-building-the-agent) again after adding custom models is not necessary since the models will be included as volume when deploying the agent locally.
 
 
 ## 2.3 Forecast Error Evaluation
@@ -210,7 +210,7 @@ The agent also provides an HTTP endpoint to assess multiple error metrics of cre
 
 ## 3.1 Building the Agent
 
-To build and publish the agent Docker image (e.g., after implementing new model/covariate loading functions) please use the following commands. Please note that both commands are bundled in the  `publish_docker_image.sh` convenience script.
+To build and publish the agent Docker image (e.g., after changing the agent) please use the following commands. Please note that both commands are bundled in the  `publish_docker_image.sh` convenience script.
 
 ```bash
 # Building the (production) image
@@ -227,7 +227,7 @@ It is recommended to pull the published Docker image from [Github container regi
 
 ```bash
 # Pull published (production) image
-docker pull ghcr.io/cambridge-cares/forecasting-agent:2.0.0
+docker pull ghcr.io/cambridge-cares/forecasting-agent:2.1.0
 ```
 
 ###  **Standalone Deployment**
