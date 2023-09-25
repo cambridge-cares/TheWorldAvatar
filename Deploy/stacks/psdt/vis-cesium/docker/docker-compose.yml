@@ -5,7 +5,7 @@ services:
 
   # Pirmasens Digital Twin visualisation
   psdt-visualisation-cesium:
-    image: ghcr.io/cambridge-cares/dtvf-base-image:latest
+    image: ghcr.io/cambridge-cares/twa-vf:4.1.0
     container_name: "psdt-visualisation-cesium"
     ports:
       - "42070:80"
