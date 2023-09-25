@@ -1,0 +1,36 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoSystem,TBox,https://www.theworldavatar.com/kg/ontosystem/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoSystem,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoSystem,TBox,An ontology for systems.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoSystem,TBox,http://www.w3.org/ns/ssn/,http://www.w3.org/2002/07/owl#imports,,,,,,
+LabEquipmentSystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,A system that is comprised of lab equipments.,https://www.theworldavatar.com/kg/ontosystem/,Lab equipment system
+FiltrationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for filtering liquid or gas in a lab environment.,https://www.theworldavatar.com/kg/ontosystem/,Filtration system
+CrossFlowFiltrationSystem,Class,FiltrationSystem,IS-A,,,,"A system that utilizes cross-flow filtration or tangential flow filtration and it is usually used for chemical engineering, biochemical engineering and protein purification.",https://www.theworldavatar.com/kg/ontosystem/,Cross-flow filtration system
+SimulationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for simulating phenomenon in a lab environement.,https://www.theworldavatar.com/kg/ontosystem/,Simulation System
+DilutionSystem,Class,LabEquipmentSystem,IS-A,,,,A system for diluting solutions in a lab environment.,https://www.theworldavatar.com/kg/ontosystem/,Dilution system
+AerosolDilutionSystem,Class,DilutionSystem,IS-A,,,,A system for diluting aerosols.,https://www.theworldavatar.com/kg/ontosystem/,Aerosol dilution system
+ServomechanismSystem,Class,LabEquipmentSystem,IS-A,,,,A system for managing connected bodies actuated by servos.,https://www.theworldavatar.com/kg/ontosystem/,Servomechanism system
+CalorimetryCoolingSystem,Class,LabEquipmentSystem,IS-A,,,,A system for managing temperature during calorimetery measurements.,https://www.theworldavatar.com/kg/ontosystem/,Calorimetry cooling system
+CellStackIntegratedSystem,Class,LabEquipmentSystem,IS-A,,,,A system for running flow cell-based experiments.,https://www.theworldavatar.com/kg/ontosystem/,Cell stack integrated system
+FlameSynthesisDiagnosticSystem,Class,LabEquipmentSystem,IS-A,,,,A system for observing flame synthesis processes.,https://www.theworldavatar.com/kg/ontosystem/,Flame synthesis diagnostic system
+CalorimetrySystem,Class,LabEquipmentSystem,IS-A,,,,A system for running calorimetry experiments.,https://www.theworldavatar.com/kg/ontosystem/,Calorimetry system
+BurnerSystem,Class,LabEquipmentSystem,IS-A,,,,A system for experiments that require burning via exposure to fire.,https://www.theworldavatar.com/kg/ontosystem/,Burner system
+MixingSystem,Class,LabEquipmentSystem,IS-A,,,,A system for mixing several different solutions or solids into 1 homogeneous mix.,https://www.theworldavatar.com/kg/ontosystem/,Mixing system
+FreezeDryerSystem,Class,LabEquipmentSystem,IS-A,,,,A system for freezing samples while removing moisture from the sample.,https://www.theworldavatar.com/kg/ontosystem/,Freeze-dryer system
+FlameImagingSystem,Class,LabEquipmentSystem,IS-A,,,,A system for capturing the composition and images of a flame.,https://www.theworldavatar.com/kg/ontosystem/,Flame imaging system
+CombustionAnalysisSystem,Class,LabEquipmentSystem,IS-A,,,,A system for analysing the properties of a combustion done by an engine.,https://www.theworldavatar.com/kg/ontosystem/,Combustion analysis system
+ChromatographySystem,Class,LabEquipmentSystem,IS-A,,,,A system for doing chromatography on a solution.,https://www.theworldavatar.com/kg/ontosystem/,Chromatography system
+EmissionDiagnosticSystem,Class,LabEquipmentSystem,IS-A,,,,A system for diagnosing the emission of an engine.,https://www.theworldavatar.com/kg/ontosystem/,Emission diagnostic system
+EyeTrackingSystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,A system for tracking eye movement and focus.,https://www.theworldavatar.com/kg/ontosystem/,Eye tracking system
+SurveillanceSystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,"A system for monitoring of behavior, many activities, or information for the purpose of information gathering, influencing, managing or directing. ",https://www.theworldavatar.com/kg/ontosystem/,Surveillance system
+CCTVSystem,Class,SurveillanceSystem,IS-A,,,,A system that provides video recordings in a closed circuit environment.,https://www.theworldavatar.com/kg/ontosystem/,CCTV system
+MedicalMonitoringSystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,A system for monitoring medical conditions of a human.,https://www.theworldavatar.com/kg/ontosystem/,Medical monitoring system
+EEGSystem,Class,MedicalMonitoringSystem,IS-A,,,,A system for running and collecting data from electroencephalogram experiments.,https://www.theworldavatar.com/kg/ontosystem/,EEG system
+ECGRespirationMonitoringSystem,Class,MedicalMonitoringSystem,IS-A,,,,A system that monitors heart and respiration conditions by detecting electrical signals in the body.,https://www.theworldavatar.com/kg/ontosystem/,ECG respiration monitoring system
+ComputerSystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,A system of computer parts working together as a computer or a computer part.,https://www.theworldavatar.com/kg/ontosystem/,Computer system
+SoundSystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,A system containing a set of equipment for the reproduction and amplification of sound. ,https://www.theworldavatar.com/kg/ontosystem/,Sound system 
+DisplaySystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,A system through which information is conveyed through visual means.,https://www.theworldavatar.com/kg/ontosystem/,Display system
+GPSSystem,Class,http://www.w3.org/ns/ssn/System,IS-A,,,,A system used to determine the location of something on Earth.,https://www.theworldavatar.com/kg/ontosystem/,GPS system
+composedOf,Object Property,,,http://www.w3.org/ns/ssn/System,https://www.theworldavatar.com/kg/ontodevice/Device,,A relationship that describes the devices that a system is composed of.,https://www.theworldavatar.com/kg/ontosystem/,composed of
+containsSystem,Object Property,,,https://w3id.org/bot#Zone,http://www.w3.org/ns/ssn/System,,A relationship that describes the systems contained in a zone.,https://www.theworldavatar.com/kg/ontosystem/,contains system
+hasID,Data Property,,,http://www.w3.org/ns/ssn/System,String,,A relationship that describes the ID assigned to a system.,https://www.theworldavatar.com/kg/ontosystem/,has ID
