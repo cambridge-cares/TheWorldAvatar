@@ -32,10 +32,15 @@ curl -X POST --header "Content-Type: application/json" -d '{"uri":"https://www.t
 
 ## Ifc2OntoBim
 curl -X POST --header "Content-Type: application/json" -d '{"uri":"https://www.theworldavatar.com/kg/ps/measurementstation-ZIMEN/BIM/", "isIfcOwl":true}' http://localhost:3838/ifc2ontobim-agent/convert
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"https://www.theworldavatar.com/kg/ps/house45/BIM/", "isIfcOwl":true}' http://localhost:3838/ifc2ontobim-agent/convert
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"https://www.theworldavatar.com/kg/ps/Leibniz/BIM/", "isIfcOwl":true}' http://localhost:3838/ifc2ontobim-agent/convert
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"https://www.theworldavatar.com/kg/ps/HugoBall/BIM/", "isIfcOwl":true}' http://localhost:3838/ifc2ontobim-agent/convert
 
 ## Ifc2Tileset
+curl -X POST --header "Content-Type: application/json" -d '{"assetUrl":"./zimen"}' http://localhost:3838/ifc2tileset-agent/api
 curl -X POST --header "Content-Type: application/json" -d '{"assetUrl":"./house45"}' http://localhost:3838/ifc2tileset-agent/api
-curl -X POST --header "Content-Type: application/json" -d '{"assetUrl":"./zimen", "rootIri":"https://www.theworldavatar.com/kg/ps/measurementstation-ZIMEN", "rootName":"ZIMEN-Messstation"}' http://localhost:3838/ifc2tileset-agent/api
+curl -X POST --header "Content-Type: application/json" -d '{"assetUrl":"./leibniz"}' http://localhost:3838/ifc2tileset-agent/api
+curl -X POST --header "Content-Type: application/json" -d '{"assetUrl":"./hugoball"}' http://localhost:3838/ifc2tileset-agent/api
 
 ## CEA
 curl -X POST --header "Content-Type: application/json" -d '{"iris":["http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG27700/sparql/cityobject/UUID_0595923a-3a83-4097-b39b-518fd23184cc/"]}' http://localhost:3838/cea-agent/run
