@@ -48,8 +48,9 @@ def postprocess_output(text: str, model_family: str):
     if model_family == "t5":
         text = t5_decode_output_special_chars(text)
     elif model_family == "llama" and "\n\n###\n\n" in text:
-            text = text.split("\n\n###\n\n", maxsplit=1)[1]
+        text = text.split("\n\n###\n\n", maxsplit=1)[1]
     return text
+
 
 def compact2verbose(text: str):
     try:
@@ -62,6 +63,5 @@ def compact2verbose(text: str):
 def normalize_query(query: str):
     # for c in [".", ",", "{", "}", "(", ")", "<", ">", "&&", "||"]:
     #     query = query.replace(c, f" {c} ")
-    query = query.replace(".", " . ")
-
+    query = query.replace(".", " .").replace('("', '( "').replace('")', '" )')
     return " ".join(query.split())
