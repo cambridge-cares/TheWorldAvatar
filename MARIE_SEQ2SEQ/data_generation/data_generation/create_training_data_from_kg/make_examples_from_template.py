@@ -11,7 +11,7 @@ class ExampleMakerFromTemplate:
         bindings = dict(species=species)
         sparql_query = f"""SELECT DISTINCT ?label ?{PropertyName}Value ?{PropertyName}UnitValue ?{PropertyName}ReferenceStateValue ?{PropertyName}ReferenceStateUnitValue
 WHERE {{
-    VALUES ( ?species ) {{ ( "{species}") }}
+    VALUES ( ?species ) {{ ( "{species}" ) }}
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier ?IdentifierIRI .
     ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
     ?Identifier rdfs:subClassOf os:Identifier .
@@ -47,7 +47,7 @@ WHERE {{
         bindings = dict(species=species)
         sparql_query = f"""SELECT DISTINCT ?label ?{IdentifierName}Value
 WHERE {{
-    VALUES ( ?species ) {{ ( "{species}") }}
+    VALUES ( ?species ) {{ ( "{species}" ) }}
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier ?IdentifierIRI .
     ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
     ?Identifier rdfs:subClassOf os:Identifier .
@@ -57,7 +57,7 @@ WHERE {{
 }}"""
         sparql_query_compact = f"""SELECT ?{IdentifierName}Value
 WHERE {{
-    VALUES ( ?species ) {{ ( "{species}") }}
+    VALUES ( ?species ) {{ ( "{species}" ) }}
     ?SpeciesIRI ?hasIdentifier ?species .
     ?SpeciesIRI os:has{IdentifierName} ?{IdentifierName}Value .
 }}"""
@@ -77,7 +77,7 @@ WHERE {{
         bindings = dict(species=species)
         sparql_query = f"""SELECT DISTINCT ?label ?PropertyLabel ?PropertyNameValue ?PropertyNameUnitValue ?PropertyNameReferenceStateValue ?PropertyNameReferenceStateUnitValue
 WHERE {{
-    VALUES ( ?species ) {{ ( "{species}") }}
+    VALUES ( ?species ) {{ ( "{species}" ) }}
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier ?IdentifierIRI .
     ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
     ?Identifier rdfs:subClassOf os:Identifier .
@@ -117,7 +117,7 @@ WHERE {{
         bindings = dict(species=species)
         sparql_query = f"""SELECT DISTINCT ?label ?IdentifierLabel ?IdentifierNameValue
 WHERE {{
-    VALUES ( ?species ) {{ ( "{species}") }}
+    VALUES ( ?species ) {{ ( "{species}" ) }}
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier ?IdentifierIRI .
     ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
     ?Identifier rdfs:subClassOf os:Identifier .
