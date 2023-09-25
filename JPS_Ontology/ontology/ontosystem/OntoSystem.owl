@@ -282,6 +282,66 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerDistributionSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerDistributionSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that is comprised of a network of electrical components deployed to distribute electric power.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrical power distribution system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerGenerationSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerGenerationSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that is comprised of a network of electrical components deployed to supply electric power.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrical power generation system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerSystem">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/ssn/System"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that is comprised of a network of electrical components deployed to supply, transfer, and use electric power.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrical power system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerTransmissionSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerTransmissionSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/ElectricalPowerSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that is comprised of a network of electrical components deployed to transmit electric power.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrical power transmission system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/EmergencySystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/EmergencySystem">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/ssn/System"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system within any given property provided for activation and occupant and/or emergency services notification for unforeseen events such as fire, medical emergency, power failure etc.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Emergency system</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontosystem/EmissionDiagnosticSystem -->
 
 
