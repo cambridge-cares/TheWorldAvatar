@@ -4,7 +4,7 @@ from core.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to
 
 
 SPECIES_FROMHEAD_PATTERN_COMPACT_PREFIX = "?SpeciesIRI ?hasIdentifier ?species"
-PROPERTY_AND_IDENTIFIER_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:has"
+ONTOSPECIES_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:has"
 CHEMCLASS_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue"
 USE_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:hasUse ?UseValue"
 ALL_PROPERTIES_PATTERN_COMPACT_PREFIX = (
@@ -187,14 +187,15 @@ class CompactQueryRep:
                 where_clauses_verbose.append(f"    {pattern}\n")
             elif pattern.startswith("VALUES"):
                 where_clauses_verbose.append("\n    " + pattern)
-            elif pattern.startswith(PROPERTY_AND_IDENTIFIER_PATTERN_COMPACT_PREFIX):
+            elif pattern.startswith(
+                ONTOSPECIES_PATTERN_COMPACT_PREFIX
+            ) and pattern.endswith("."):
                 name = pattern[
-                    len(
-                        PROPERTY_AND_IDENTIFIER_PATTERN_COMPACT_PREFIX
-                    ) : advance_ptr_to_space(
-                        pattern, len(PROPERTY_AND_IDENTIFIER_PATTERN_COMPACT_PREFIX)
+                    len(ONTOSPECIES_PATTERN_COMPACT_PREFIX) : advance_ptr_to_space(
+                        pattern, len(ONTOSPECIES_PATTERN_COMPACT_PREFIX)
                     )
                 ].strip()
+                _, i = self.split_name_and_suffix(name)
 
                 if name in PROPERTY_NAMES:
                     select_variables = select_variables.replace(
@@ -206,18 +207,8 @@ class CompactQueryRep:
                 elif name in IDENTIFIER_NAMES:
                     where_clauses_verbose.append(IDENTIFIER_PATTERNS_VERBOSE(name))
                 elif name == "Use":
-                    i = pattern[
-                        len(USE_PATTERN_COMPACT_PREFIX) : advance_ptr_to_space(
-                            pattern, len(USE_PATTERN_COMPACT_PREFIX)
-                        )
-                    ].strip()
                     where_clauses_verbose.append(USE_PATTERNS_VERBOSE(i))
                 elif name == "ChemicalClass":
-                    i = pattern[
-                        len(CHEMCLASS_PATTERN_COMPACT_PREFIX) : advance_ptr_to_space(
-                            pattern, len(CHEMCLASS_PATTERN_COMPACT_PREFIX)
-                        )
-                    ].strip()
                     where_clauses_verbose.append(CHEMCLASS_PATTERNS_VERBOSE(i))
                 else:
                     raise ValueError(f"Unrecognized relation `os:has{name}`.")
@@ -242,6 +233,12 @@ class CompactQueryRep:
         return f"""SELECT DISTINCT ?label {select_variables}
 WHERE {{{"".join(where_clauses_verbose).rstrip()}
 }}"""
+
+    def split_name_and_suffix(self, text: str):
+        i = len(text) - 1
+        while i >= 0 and text[i].isdigit():
+            i -= 1
+        return text[: i + 1], text[i + 1 :]
 
     @classmethod
     def from_string(cls, query: str):

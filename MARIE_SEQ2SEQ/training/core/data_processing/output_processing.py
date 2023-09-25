@@ -60,7 +60,8 @@ def compact2verbose(text: str):
 
 
 def normalize_query(query: str):
-    for c in [".", ",", "{", "}", "(", ")", "<", ">", "&&", "||"]:
-        query = query.replace(c, f" {c} ")
+    # for c in [".", ",", "{", "}", "(", ")", "<", ">", "&&", "||"]:
+    #     query = query.replace(c, f" {c} ")
+    query = query.replace(".", " . ")
 
     return " ".join(query.split())

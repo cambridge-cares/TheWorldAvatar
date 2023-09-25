@@ -20,7 +20,7 @@ def get_bleu_metrics(refs: List[List[str]], sys: List[str]):
 
 
 def get_translation_metrics(data: List[dict]):
-    queries = [normalize_query(remove_prefixes(datum["gt"])) for datum in data]
+    queries = [normalize_query(remove_prefixes(datum["gt_compact"])) for datum in data]
     predictions = [
         normalize_query(datum["prediction_postprocessed"])
         if datum["prediction_postprocessed"] is not None
