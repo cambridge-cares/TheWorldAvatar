@@ -318,6 +318,7 @@ def define_forecasting_inputs():
     data.columns = title_list
 
     # Set dataframe index as the dates extracted from timeseries data
+    #TODO: Localise timezone
     data = data.set_index((d.toString().replace("T", " ").replace("Z", "")) for d in dates)
 
     # Add two more columns for MHKW Temp Vorlauf (degC) and MHKW Temp Ruecklauf (degC). These columns are updated later.
