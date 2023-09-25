@@ -1,12 +1,11 @@
 import os
 
-import ctranslate2
-import pyonmttok
-
 from core.arguments_schema import ModelArguments
 
 
 def get_onmt_tokenizer(model_args: ModelArguments):
+    import pyonmttok
+
     if model_args.model_family != "t5":
         raise ValueError(
             f"Only T5 tokenizer has been tested and supported, while the model family is {model_args.model_family}."
@@ -17,6 +16,8 @@ def get_onmt_tokenizer(model_args: ModelArguments):
 
 
 def get_onmt_model_and_tokenizer(model_args: ModelArguments):
+    import ctranslate2
+
     tokenizer = get_onmt_tokenizer(model_args)
     model = ctranslate2.Translator(
         model_args.model_path, device=model_args.device_map or "auto"

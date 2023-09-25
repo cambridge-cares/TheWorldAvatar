@@ -1,17 +1,9 @@
 import os
 
 import torch
-from peft import (
-    PeftModel,
-    LoraConfig,
-    TaskType,
-    get_peft_model,
-    prepare_model_for_kbit_training,
-)
 from transformers import (
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
-    BitsAndBytesConfig,
     LlamaForCausalLM
 )
 
@@ -32,6 +24,7 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool):
         device_map = "auto"
 
     if model_args.bits is not None:
+        from transformers import BitsAndBytesConfig
         bnb_config = BitsAndBytesConfig(
             load_in_8bit=model_args.bits == 8,
             load_in_4bit=model_args.bits == 4,
@@ -60,9 +53,11 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool):
     if getattr(model, "is_loaded_in_8bit", False) or getattr(
         model, "is_loaded_in_4bit", False
     ):
+        from peft import prepare_model_for_kbit_training
         model = prepare_model_for_kbit_training(model)
 
     if model_args.lora_path is not None:
+        from peft import PeftModel
         model = PeftModel.from_pretrained(
             model, model_args.lora_path, is_trainable=is_trainable
         )
@@ -70,6 +65,8 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool):
         x is not None
         for x in (model_args.lora_r, model_args.lora_alpha, model_args.lora_dropout)
     ):
+        from peft import TaskType, LoraConfig, get_peft_model
+        
         task_type = (
             TaskType.SEQ_2_SEQ_LM
             if model_args.model_family == "t5"

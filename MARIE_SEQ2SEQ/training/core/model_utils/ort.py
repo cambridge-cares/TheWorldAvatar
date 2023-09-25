@@ -1,8 +1,5 @@
 import os
 
-from optimum.onnxruntime import ORTModelForSeq2SeqLM, ORTQuantizer
-from optimum.onnxruntime.configuration import AutoQuantizationConfig
-from optimum.utils.save_utils import maybe_load_preprocessors
 import torch
 from transformers import PreTrainedTokenizer
 from transformers.generation.configuration_utils import GenerationConfig
@@ -17,6 +14,10 @@ LONG_INPUT_EXAMPLE = "What are InChI=1S/C9H15N3O11P2/c10-5-1-2-12(9(15)11-5)8-7(
 
 
 def load_ort_model_seq2seq_quantized_cpu(model_args: ModelArguments):
+    from optimum.onnxruntime import ORTModelForSeq2SeqLM, ORTQuantizer
+    from optimum.onnxruntime.configuration import AutoQuantizationConfig
+    from optimum.utils.save_utils import maybe_load_preprocessors
+
     quantized_models_dir = os.path.join(model_args.model_path, "quantized_models")
     quantized_encoder_path = os.path.join(
         quantized_models_dir, "encoder_model_quantized.onnx"
@@ -101,6 +102,8 @@ def load_ort_model_seq2seq_quantized_cpu(model_args: ModelArguments):
 def load_ort_model_with_tensorrt(
     model_args: ModelArguments, tokenizer: PreTrainedTokenizer
 ):
+    from optimum.onnxruntime import ORTModelForSeq2SeqLM
+
     trt_engine_cache_path = os.path.join(model_args.model_path, "trt_cache")
     os.makedirs(trt_engine_cache_path, exist_ok=True)
 
@@ -144,6 +147,8 @@ def load_ort_model_with_tensorrt(
 
 
 def get_ort_model_and_tokenizer(model_args: ModelArguments):
+    from optimum.onnxruntime import ORTModelForSeq2SeqLM
+
     if model_args.model_family != "t5":
         raise ValueError("Function not implemented for :" + model_args.model_family)
 

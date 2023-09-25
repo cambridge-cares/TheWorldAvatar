@@ -14,19 +14,9 @@ Installation steps
    conda create --name marie-llama python=3.10
    conda activate marie-llama
    ```
-1. Install `torch==2.0.1+cu118`.
-   ```
-   conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-   ```
-1. Install the remaining packages required by the project.
-
-   ````
-   pip install -r requirements.txt
-   ````
-1. For access to any private models or datasets on HuggingFace (e.g. Llama2), ensure that you have the necessary read privileges. Generate an [access token](https://huggingface.co/docs/hub/security-tokens) and make this an environment variable.
-   ```
-   export HF_ACCESS_TOKEN=<huggingface-access-token>
-   ```
+1. Install `torch` with `conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia`.
+1. Install the remaining packages required by the project `pip install -r requirements.txt`.
+1. For access to any private models or datasets on HuggingFace (e.g. Llama2), ensure that you have the necessary read privileges. Generate an [access token](https://huggingface.co/docs/hub/security-tokens) and make this an environment variable: `export HF_ACCESS_TOKEN=<huggingface-access-token>`.
 
 ## Data format
 
@@ -57,6 +47,8 @@ Installation steps
 
 ### Training
 
+For access to parameter-efficient fine-tuning methods such as LoRA, `pip install bitsandbytes==0.40.2 peft==0.4.0`.
+
 See [`finetune.sh`](./scripts/finetune.sh) for example usage. The script will save the weights of the fine-tuned model in the specified `output_dir`.
 
 For a list all arguments that can be passed to the fine-tune script, see classes `arguments_schema.ModelArguments`, `arguments_schema.DatasetArguments` and `transformers.TrainingArguments`.
@@ -72,9 +64,9 @@ sh hf2onmt.sh <path-to-hf-model-directory> <path-to-output-directory>
 Install additional dependencies to run inference on different runtimes:
 
 - OpenNMT: `pip install ctranslate2 pyonmttok`
-- OpenVINO: `pip install --upgrade-strategy eager optimum[openvino,nncf]`
-- ONNX Runtime for CPU: `pip install --upgrade-strategy eager install optimum[onnxruntime]`
-- ONNX Runtime for GPU: `pip install optimum[onnxruntime-gpu]`
+- OpenVINO: `pip install optimum==1.12.0 && pip install  --upgrade-strategy eager optimum[openvino,nncf]`
+- ONNX Runtime for CPU: `pip install optimum==1.12.0 && pip install --upgrade-strategy eager install optimum[onnxruntime]`
+- ONNX Runtime for GPU: `pip install optimum==1.12.0 && pip install optimum[onnxruntime-gpu]`
 - TensorRT: 
   - [CUDA toolkit](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
   - [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html)
