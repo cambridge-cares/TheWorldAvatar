@@ -8,7 +8,7 @@ from py4jps import agentlogging
 from pyderivationagent.conf import config_derivation_agent
 
 from dhoptimisation.agent import default
-from dhoptimisation.agent import EmissionAgent
+from dhoptimisation.agent import DHOptimisationAgent
 from dhoptimisation.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 
 
@@ -20,7 +20,7 @@ def create_app():
     # Retrieve environment variables defined in `docker-compose.yml` file
     agent_config = config_derivation_agent()
 
-    agent = EmissionAgent(
+    agent = DHOptimisationAgent(
         # For details on required parameters and potential defaults, see:
         # https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/agent/derivation_agent.py
         
