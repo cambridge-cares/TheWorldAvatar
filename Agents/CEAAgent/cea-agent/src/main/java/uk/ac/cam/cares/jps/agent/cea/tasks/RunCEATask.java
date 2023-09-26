@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.agent.cea.tasks;
 
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAMetaData;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
 
 import kong.unirest.HttpResponse;
@@ -22,19 +24,19 @@ import java.util.*;
 import java.lang.Process;
 
 public class RunCEATask implements Runnable {
-    private final ArrayList<CEAInputData> inputs;
+    private final ArrayList<CEABuildingData> inputs;
     private final ArrayList<String> uris;
     private final URI endpointUri;
     private final int threadNumber;
     private final String crs;
-    private final byte[] terrain;
+    private final CEAMetaData metaData;
     private Double weather_lat;
     private Double weather_lon;
     private Double weather_elevation;
     private Double weather_offset;
     public static final String CTYPE_JSON = "application/json";
     private Boolean stop = false;
-    private Boolean noSurroundings = false;
+    private Boolean noSurroundings = true;
     private Boolean noWeather = true;
     private Boolean noTerrain = true;
     private static final String DATA_FILE = "datafile.txt";
@@ -54,13 +56,13 @@ public class RunCEATask implements Runnable {
     private static final String FS = System.getProperty("file.separator");
     private Map<String, ArrayList<String>> solarSupply = new HashMap<>();
 
-    public RunCEATask(ArrayList<CEAInputData> buildingData, URI endpointUri, ArrayList<String> uris, int thread, String crs, byte[] terrain) {
+    public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, URI endpointUri, ArrayList<String> uris, int thread, String crs) {
         this.inputs = buildingData;
         this.endpointUri = endpointUri;
         this.uris = uris;
         this.threadNumber = thread;
         this.crs = crs;
-        this.terrain = terrain;
+        this.metaData = ceaMetaData;
         setSolarSupply();
     }
 
@@ -395,55 +397,30 @@ public class RunCEATask implements Runnable {
     }
 
     /**
-     * Converts input data (except for surrounding) to CEA into text file to be read by the Python scripts
+     * Writes building geometry and usage data to text file to be read by the Python scripts
      * @param dataInputs ArrayList of the CEA input data
      * @param directory_path directory path
-     * @param file_path path to store data file, excluding surrounding data
-     * @param surrounding_path path to store surrounding data file
-     * @param weather_path path to store weather data file
+     * @param file_path path to store data file
      */
-    private void dataToFile(ArrayList<CEAInputData> dataInputs, String directory_path, String file_path, String surrounding_path, String weatherTimes_path, String weather_path) {
+    private void parseBuildingData(ArrayList<CEABuildingData> dataInputs, String directory_path, String file_path) {
         // parse input data to JSON
         String dataString = "[";
-        String weatherTimes = "";
-        String weatherData = "";
-        ArrayList<CEAInputData> surroundings = new ArrayList<>();
 
         for (int i = 0; i < dataInputs.size(); i++) {
-            if (!(dataInputs.get(i).getSurrounding() == null)) {surroundings.addAll(dataInputs.get(i).getSurrounding());}
-            if (noWeather && !(dataInputs.get(i).getWeather() == null) && !(dataInputs.get(i).getWeatherTimes() == null)) {
-                noWeather = false;
-                List<OffsetDateTime> times = dataInputs.get(i).getWeatherTimes();
-                List<Map<String, Integer>> timeMap = new ArrayList<>();
-
-                for (int j = 0; j < times.size(); j++){
-                    OffsetDateTime offsetDateTime = times.get(j);
-                    Map<String, Integer> map = new HashMap<>();
-                    map.put("year", offsetDateTime.getYear());
-                    map.put("month", offsetDateTime.getMonthValue());
-                    map.put("day", offsetDateTime.getDayOfMonth());
-                    map.put("hour", offsetDateTime.getHour());
-                    map.put("minute", offsetDateTime.getMinute());
-                    timeMap.add(map);
-                }
-
-                weatherTimes += new Gson().toJson(timeMap);
-                weatherData += new Gson().toJson(dataInputs.get(i).getWeather());
-                weather_lat = dataInputs.get(i).getWeatherMetaData().get(0);
-                weather_lon = dataInputs.get(i).getWeatherMetaData().get(1);
-                weather_elevation = dataInputs.get(i).getWeatherMetaData().get(2);
-                weather_offset = dataInputs.get(i).getWeatherMetaData().get(3);
-            }
             Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("geometry", dataInputs.get(i).getGeometry());
-            tempMap.put("height", dataInputs.get(i).getHeight());
+            tempMap.put("geometry", dataInputs.get(i).getGeometry().getFootprint());
+            tempMap.put("height", dataInputs.get(i).getGeometry().getHeight());
             tempMap.put("usage", dataInputs.get(i).getUsage());
+            tempMap.put("id", i);
             dataString += new Gson().toJson(tempMap);
-            if(i!=dataInputs.size()-1) dataString += ", ";
+            if (i != dataInputs.size() - 1) {
+                dataString += ", ";
+            }
         }
-        dataString+="]";
+        dataString += "]";
 
         File dir = new File(directory_path);
+
         if (!dir.exists() && !dir.mkdirs()) {
             throw new JPSRuntimeException(new FileNotFoundException(directory_path));
         }
@@ -456,12 +433,77 @@ public class RunCEATask implements Runnable {
         } catch (IOException e) {
             throw new JPSRuntimeException(e);
         }
+    }
 
-        if (!noWeather) {
+    /**
+     * Converts surrounding data into text file to be read by the Python scripts
+     * @param surroundings list of CEAGeometryData of the surrounding buildings
+     * @param directory_path directory path
+     * @param file_path path to store data file
+     */
+    private void parseSurroundings(List<CEAGeometryData> surroundings, String directory_path, String file_path) {
+        //Parse input data to JSON
+        String dataString = "[";
+
+        if (!surroundings.isEmpty()) {
+            noSurroundings = false;
+
+            for (int i = 0; i < surroundings.size(); i++) {
+                Map<String, Object> tempMap = new HashMap<>();
+                tempMap.put("geometry", surroundings.get(i).getFootprint());
+                tempMap.put("height", surroundings.get(i).getHeight());
+                dataString += new Gson().toJson(tempMap);
+                if (i != surroundings.size() - 1) {
+                    dataString += ", ";
+                }
+            }
+
+            dataString += "]";
+
+            File dir = new File(directory_path);
+
+            if (!dir.exists() && !dir.mkdirs()) {
+                throw new JPSRuntimeException(new FileNotFoundException(directory_path));
+            }
+
+            try {
+                BufferedWriter f_writer = new BufferedWriter(new FileWriter(file_path));
+                f_writer.write(dataString);
+                f_writer.close();
+            } catch (IOException e) {
+                throw new JPSRuntimeException(e);
+            }
+        }
+    }
+
+    private void parseWeather(List<OffsetDateTime> weatherTimes, Map<String, List<Double>> weather, List<Double> weatherMetaData, String weatherTimes_path, String weather_path) {
+        if (weatherTimes.isEmpty()) {
+            List<Map<String, Integer>> timeMap = new ArrayList<>();
+
+            noWeather = false;
+
+            for (int i = 0; i < weatherTimes.size(); i++) {
+                OffsetDateTime offsetDateTime = weatherTimes.get(i);
+                Map<String, Integer> map = new HashMap<>();
+                map.put("year", offsetDateTime.getYear());
+                map.put("month", offsetDateTime.getMonthValue());
+                map.put("day", offsetDateTime.getDayOfMonth());
+                map.put("hour", offsetDateTime.getHour());
+                map.put("minute", offsetDateTime.getMinute());
+                timeMap.add(map);
+            }
+
+            String times = new Gson().toJson(timeMap);
+            String weatherData = new Gson().toJson(weather);
+            weather_lat = weatherMetaData.get(0);
+            weather_lon = weatherMetaData.get(1);
+            weather_elevation = weatherMetaData.get(2);
+            weather_offset = weatherMetaData.get(3);
+
             // write timestamps of weather data to weatherTimes_path
             try {
                 BufferedWriter f_writer = new BufferedWriter(new FileWriter(weatherTimes_path));
-                f_writer.write(weatherTimes);
+                f_writer.write(times);
                 f_writer.close();
             } catch (IOException e) {
                 throw new JPSRuntimeException(e);
@@ -476,47 +518,6 @@ public class RunCEATask implements Runnable {
                 throw new JPSRuntimeException(e);
             }
         }
-
-        // if there is surrounding data, call dataToFile to store surrounding data as a temporary text file
-        if (surroundings.isEmpty()){
-            noSurroundings = true;
-        }
-        else{
-            dataToFile(surroundings, directory_path, surrounding_path);
-        }
-    }
-
-    /**
-     * Converts surrounding data into text file to be read by the Python scripts
-     * @param dataInputs ArrayList of the CEA input data
-     * @param directory_path directory path
-     * @param file_path path to store data file, excluding surrounding data
-     */
-    private void dataToFile(ArrayList<CEAInputData> dataInputs, String directory_path, String file_path) {
-        //Parse input data to JSON
-        String dataString = "[";
-
-        for (int i = 0; i < dataInputs.size(); i++) {
-            Map<String, String> tempMap = new HashMap<>();
-            tempMap.put("geometry", dataInputs.get(i).getGeometry());
-            tempMap.put("height", dataInputs.get(i).getHeight());
-            dataString += new Gson().toJson(tempMap);
-            if(i!=dataInputs.size()-1) dataString += ", ";
-        }
-        dataString+="]";
-
-        File dir = new File(directory_path);
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new JPSRuntimeException(new FileNotFoundException(directory_path));
-        }
-
-        try {
-            BufferedWriter f_writer = new BufferedWriter(new FileWriter(file_path));
-            f_writer.write(dataString);
-            f_writer.close();
-        } catch (IOException e) {
-            throw new JPSRuntimeException(e);
-        }
     }
 
     /**
@@ -525,14 +526,16 @@ public class RunCEATask implements Runnable {
      * @param path path of the TIF file to write to
      */
     private void bytesToTIFF(byte[] rasterData, String path) {
-        try{
-            Path filePath = Path.of(path);
-            Files.write(filePath, rasterData);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
+        if (rasterData != null) {
+            noTerrain = false;
+
+            try {
+                Path filePath = Path.of(path);
+                Files.write(filePath, rasterData);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new JPSRuntimeException(e);
+            }
         }
     }
 
@@ -710,12 +713,14 @@ public class RunCEATask implements Runnable {
                 String weatherData_path = strTmp + FS + WEATHERDATA_FILE;
                 String tempTerrain_path = strTmp + FS + TEMPTERRAIN_FILE;
 
-                dataToFile(this.inputs, strTmp, data_path, surroundings_path, weatherTimes_path, weatherData_path);
-
-                if (this.terrain != null) {
-                    bytesToTIFF(this.terrain, tempTerrain_path);
-                    noTerrain = false;
-                }
+                // write building geometry and usage data to temporary text file
+                parseBuildingData(this.inputs, strTmp, data_path);
+                // write surrounding buildings' geometry data to temporary text file
+                parseSurroundings(this.metaData.getSurrounding(), strTmp, data_path);
+                // write weather data to temporary text file
+                parseWeather(this.metaData.getWeatherTimes(), this.metaData.getWeather(), this.metaData.getWeatherMetaData(), weatherTimes_path, weatherData_path);
+                // convert terrain bytes data to TIFF
+                bytesToTIFF(this.metaData.getTerrain(), tempTerrain_path);
 
                 String surroundingsFlag = noSurroundings ? "1" : "0";
                 String weatherFlag = noWeather ? "1" : "0";
