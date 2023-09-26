@@ -18,7 +18,7 @@ import org.json.JSONObject;
 @WebServlet(urlPatterns = "/update")
 
 public class OSMAgent extends JPSAgent {
-    private static final String PROPETIES_PATH = "/usr/local/tomcat/resources/config.properties";
+    private static final String PROPERTIES_PATH = "/usr/local/tomcat/resources/config.properties";
     private EndpointConfig endpointConfig = new EndpointConfig();
 
     private String dbName;
@@ -41,18 +41,16 @@ public class OSMAgent extends JPSAgent {
     }
 
     public void readConfig() {
-        try (InputStream input = FileReader.getStream(PROPETIES_PATH)) {
+        try (InputStream input = FileReader.getStream(PROPERTIES_PATH)) {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
             this.osmSchema = prop.getProperty("osm.schema");
             this.landUseTable = prop.getProperty("landuse.table");
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
@@ -81,10 +79,10 @@ public class OSMAgent extends JPSAgent {
                 shareCalculator.updateLandUse(usageTable, landUseTable);
             }
 
-            // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage buildings
+            // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
+            // buildings
             shareCalculator.updateUsageShare(usageTable);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
