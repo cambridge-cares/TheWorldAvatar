@@ -2,7 +2,7 @@
 
 This `Forecasting Agent` can be used to predict instantiated time series from The World Avatar (TWA), and instantiate the forecasts back into the knowledge graph (KG) using the [OntoTimeSeries] ontology. Reading and writing time series from/into the KG relies on the [TimeSeriesClient].
 
-As of version `2.1.0` the agent is implemented using the [Derived Information Framework]'s (DIF) `DerivationWithTimeSeries` concept to ensure proper data provenance. The required input instances to derive a forecast are described in the [required derivation markup](#13-required-derivation-markup) section below. The agent is designed to be deployed as a Docker container and can be deployed either as standalone version or as part of a larger Docker stack.
+As of version `2.0.0` the agent is implemented using the [Derived Information Framework]'s (DIF) `DerivationWithTimeSeries` concept to ensure proper data provenance. The required input instances to derive a forecast are described in the [required derivation markup](#13-required-derivation-markup) section below. The agent is designed to be deployed as a Docker container and can be deployed either as standalone version or as part of a larger Docker stack.
 
 The Python library [Darts] is used to create the forecasts (and similarly to define, train, and store forecasting models). It contains a variety of models, from classics such as ARIMA over [Facebook Prophet] to deep neural networks and transformers.
 

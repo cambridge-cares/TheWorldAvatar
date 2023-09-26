@@ -36,8 +36,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - logs:/root/.jps
-      - ./forecastingagent/fcmodels/__init__.py:/app/forecastingagent/fcmodels/__init__.py
-      - ./forecastingagent/fcmodels/model_mapping.py:/app/forecastingagent/fcmodels/model_mapping.py
+      - ./forecastingagent/fcmodels:/app/forecastingagent/fcmodels
 
 volumes:
   logs:

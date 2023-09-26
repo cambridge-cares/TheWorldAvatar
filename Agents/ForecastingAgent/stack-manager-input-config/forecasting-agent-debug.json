@@ -4,6 +4,13 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.1.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/ForecastingAgent/forecastingagent/fcmodels",
+                        "Target": "/app/forecastingagent/fcmodels"
+                    }
+                ],
                 "Command": [
                     "tail", "-f",  "/dev/null"
                 ],
