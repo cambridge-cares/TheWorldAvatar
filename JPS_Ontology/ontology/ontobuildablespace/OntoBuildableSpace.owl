@@ -1,0 +1,570 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/aydagrisiute/ontologies/2022/11/untitled-ontology-66#"
+     xml:base="http://www.semanticweb.org/aydagrisiute/ontologies/2022/11/untitled-ontology-66"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontodebug="http://ainf.aau.at/ontodebug#"
+     xmlns:owlready_ontology="http://www.lesfleursdunormal.fr/static/_downloads/owlready_ontology.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontobuildablespace/OntoBuildableSpace.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#atStorey -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#atStorey">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Storey"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#containsStorey -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#containsStorey">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Storey"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#forZoningCase -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#forZoningCase">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#LandUse"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Programme"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedAbsoluteHeight -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedAbsoluteHeight">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AbsoluteHeight"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedBuildingEdge -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedBuildingEdge">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedFloorToFloorHeight -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedFloorToFloorHeight">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Storey"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FloorToFloorHeight"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedFootprint -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedFootprint">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Storey"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Footprint"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedGFA -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedGFA">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossFloorArea"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedGPR -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedGPR">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossPlotRatio"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedSiteCoverage -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedSiteCoverage">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteCoverage"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedStoreyAggregate -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasAllowedStoreyAggregate">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasArea"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasBuildableSpace -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasBuildableSpace">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasDepth -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasDepth">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageDepth"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasFootprintArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasFootprintArea">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasArea"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Footprint"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FootprintArea"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasNeighbour -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasNeighbour">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasRequiredPartyWall -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasRequiredPartyWall">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasRequiredSetback"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#PartyWall"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasRequiredSetback -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasRequiredSetback">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasSiteArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasSiteArea">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasArea"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasSource -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasSource">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AbsoluteHeight"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FloorToFloorHeight"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossFloorArea"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossPlotRatio"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteCoverage"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasWidth -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasWidth">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageWidth"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#atLevel -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#atLevel">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Storey"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#atLevelOfDetail -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#atLevelOfDetail">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#atResidentialFringe -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#atResidentialFringe">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasNumOfStoreys -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasNumOfStoreys">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasRoadType -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasRoadType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#isCornerPlot -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#isCornerPlot">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Area -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Depth -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Depth"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Distance -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Width -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AbsoluteHeight -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AbsoluteHeight">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment xml:lang="en">Absolute Height defines Buildable Space volume in meters. Absolute Height may be derived from number of storeys linked to Storey Aggregate and each storey&apos;s Floor To Floor Height.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageDepth -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageDepth">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Depth"/>
+        <rdfs:comment>Average depth represent average plot depth resulting from averaging sample depths along the plot&apos;s front edges</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageWidth -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageWidth">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
+        <rdfs:comment xml:lang="en">Average width represent average plot width resulting from averaging sample widths along the plot&apos;s side edges.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#BuildableSpace">
+        <rdfs:comment xml:lang="en">Buildable Space is the maximum allowable space on a plot that can built up according to relevant planning regulations. Buildable spaces may be linked to a Zone, LandUse or a particular Programme if there exist specific regulations. For instance, a plot on which flat and condominium developments are allowed, will have two buildable spaces - one for condominium and one for flat as a product of unique planning regulation combinations.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FloorToFloorHeight -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FloorToFloorHeight">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment xml:lang="en">A Floor To Floor Height defines the storey height, from current storey floor to the floor of the next storey.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Footprint -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Footprint">
+        <rdfs:comment xml:lang="en">Footprint defines a boundary within which a specific storey exist.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FootprintArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FootprintArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment xml:lang="en">Allowed Footprint Area linked to a specific storey.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FrontSetback -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FrontSetback">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#PartyWall"/>
+        <rdfs:comment xml:lang="en">Front Setback applies to plot&apos;s side that has the main entrance facing the road.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossFloorArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossFloorArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment xml:lang="en">Allowed Gross Floor Area is a sum of all allowed Footprint Areas for a specific Buildable Space.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossPlotRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossPlotRatio">
+        <rdfs:comment xml:lang="en">As defined in https://www.ura.gov.sg/-/media/Corporate/Planning/Master-Plan/MP19writtenstatement.pdf</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#PartyWall -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#PartyWall">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SideSetback"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#hasRequiredPartyWall"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#PartyWall"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#RearSetback"/>
+        <rdfs:comment xml:lang="en">PartyWall setback refers to Side setback whose buffer distance is required to be 0m.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#RearSetback -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#RearSetback">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback"/>
+        <rdfs:comment xml:lang="en">Rear Setback applies to plot side that is opposite of plot&apos;s front side.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#RoadBuffer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#RoadBuffer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback"/>
+        <rdfs:comment xml:lang="en">Road Buffer refers to setbacks related to adjecent road category instead of plot sides. Plot may have more than one road buffer if it is adjacent to multiple road plots.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance"/>
+        <rdfs:comment xml:lang="en">Setback defines distances that any development needs to be setbacked from plot boundary.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SideSetback -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SideSetback">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback"/>
+        <rdfs:comment xml:lang="en">Side Setback apply to the plots side that is not Front nor Rear.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment xml:lang="en">Site area or plot area.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteCoverage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteCoverage">
+        <rdfs:comment xml:lang="en">Site Coverage defines the ratio between Site Area And Buildable Space 1st Storeys footprint area.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Storey -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Storey">
+        <rdfs:comment xml:lang="en">Storey refers to the spaces that within Buildable Space that are at the same height and does not require vertical connections.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate">
+        <rdfs:comment xml:lang="en">Storey aggregate defines Buildable Space volume in storeys. Each buildable space will have one storey aggregate, consisting of multiple storeys.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#BuildingEdge -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#BuildingEdge">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate"/>
+        <rdfs:comment xml:lang="en">Building Edge is an uninterupted set of storeys starting from the groundfloor that share the same setback and form a uniform volume.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#LandUse -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#LandUse"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Programme -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Programme"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FrontSetback"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#RearSetback"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SideSetback"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

@@ -1,0 +1,586 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#"
+     xml:base="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontodebug="http://ainf.aau.at/ontodebug#"
+     xmlns:owlready_ontology="http://www.lesfleursdunormal.fr/static/_downloads/owlready_ontology.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontobuildablespace/OntoBuildableSpace.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#allowsGrossPlotRatio -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#allowsGrossPlotRatio">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossPlotRatio"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#allowsSiteCoverage -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#allowsSiteCoverage">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteCoverage"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forNeighbourZoneType -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forNeighbourZoneType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#ZoningType"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forPlotContainedIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forPlotContainedIn">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forProgramme -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forProgramme">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Programme"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forZoningType -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forZoningType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#ZoningType"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#inUrbanDesignArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#inUrbanDesignArea">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#UrbanDesignGuideline"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#UrbanDesignArea"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#isConstrainedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#isConstrainedBy">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#RoadCategory"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#isPartOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#isPartOf">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#PlanningBoundary"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#PlanningRegion"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#requiresDepth -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#requiresDepth">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageDepth"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#requiresRoadBuffer -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#requiresRoadBuffer">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#RoadCategory"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#RoadBuffer"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#requiresWidth -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#requiresWidth">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageWidth"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlanningRegulation.owl#allowsAbsoluteHeight -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlanningRegulation.owl#allowsAbsoluteHeight">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AbsoluteHeight"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlanningRegulation.owl#allowsGrossFloorArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlanningRegulation.owl#allowsGrossFloorArea">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossFloorArea"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#allowsBuildingEdge -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#allowsBuildingEdge">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#allowsStoreyAggregate"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#allowsStoreyAggregate -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#allowsStoreyAggregate">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#appliesTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#appliesTo">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#hasAdditionalType -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#hasAdditionalType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#requiresFloorToFloorHeight -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#requiresFloorToFloorHeight">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FloorToFloorHeight"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#requiresPartyWall -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#requiresPartyWall">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#requiresSetback"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#PartyWall"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#requiresSetback -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#requiresSetback">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#requiresSiteArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulation.owl#requiresSiteArea">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteArea"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forCornerPlot -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forCornerPlot">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forFringePlot -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#forFringePlot">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#hasExternalRef -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#hasExternalRef">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#hasName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#hasName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#plotAbuts1-3RoadCategory -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#plotAbuts1-3RoadCategory">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#plotAbutsGoodClassBungalowArea -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#plotAbutsGoodClassBungalowArea">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#plotInGoodClassBungalowArea -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#plotInGoodClassBungalowArea">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AbsoluteHeight -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AbsoluteHeight"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageDepth -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageDepth"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageWidth -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#AverageWidth"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FloorToFloorHeight -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#FloorToFloorHeight"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossFloorArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossFloorArea"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossPlotRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#GrossPlotRatio"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#PartyWall -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#PartyWall"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#Setback"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteCoverage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#SiteCoverage"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuildablespace/OntoBuildableSpace.owl#StoreyAggregate"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#GoodClassBungalowArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#GoodClassBungalowArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#LandedHousingArea"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory1 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory1">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#RoadCategory"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory2"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory3"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory4"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory5"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory2 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory2">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#RoadCategory"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory3"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory4"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory5"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory3 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory3">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#RoadCategory"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory4"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory5"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory4 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory4">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#RoadCategory"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory5"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory5 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoplanningregulations/OntoPlaninngRegulation.owl#RoadCategory5">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#RoadCategory"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Plot"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Programme -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#Programme"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#ZoningType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontozoning/OntoZoning.owl#ZoningType"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:comment xml:lang="en">Area Regulation defines URA regulations that have geospatial boundary. In other words, these are regulations whose rules apply only to entities within the regulation geospatial boundary.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#ConservationArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#ConservationArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Conservation areas as defined in https://data.gov.sg/dataset/master-plan-2019-sdcp-conservation-area-layer</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#DetailedControl -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#DetailedControl">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Detail Control area regulations may be any of the other area regulation subclasses that requires individual assessment.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#DevelopmentControlPlan -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#DevelopmentControlPlan">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#TypeRegulation"/>
+        <rdfs:comment xml:lang="en">Development Control Plan as defined by URA. Developemnt Control Plans provide development control guidelines and parameters for developments. It explains the parameters such as building setbacks, building coverage, intensity and height in detail.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#HeightControlPlan -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#HeightControlPlan">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Height Control Plan as defined in https://data.gov.sg/dataset/master-plan-2019-sdcp-building-height-control-layer</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#LandedHousingArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#LandedHousingArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Landed housing areas as  defined  by https://data.gov.sg/dataset/master-plan-2019-sdcp-landed-housing-area-layer</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#Monument -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#Monument">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Monument boudaries as defined in https://data.gov.sg/dataset/master-plan-2019-sdcp-monument-layer</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#PlanningBoundary -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#PlanningBoundary">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Planning Boundaries as defined in https://data.gov.sg/dataset/master-plan-2019-planning-area-boundary-no-sea</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#PlanningRegion -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#PlanningRegion">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Planning regions as defined in https://data.gov.sg/dataset/master-plan-2019-region-boundary-no-sea</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#RoadCategory -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#RoadCategory">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#TypeRegulation"/>
+        <rdfs:comment xml:lang="en">Road Categories as defined by URA. Each road may have a road category, that may affect the required road buffer, allowed number of storeys, allowed programmes.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#StreetBlockPlan -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#StreetBlockPlan">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Street Block Plans as defined in https://www.ura.gov.sg/Corporate/Planning/Master-Plan/Control-Plans/Street-Block-and-Envelope-Control-Plans/list-of-street-block-envelope-control-plans</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#TypeRegulation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#TypeRegulation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation"/>
+        <rdfs:comment xml:lang="en">Type regulation represent URA regulations that apply to entities based on the entities&apos; type. In other words, type regulation rules will apply to urban entity that has the same type. For instance, a Commercial development control plan will apply to plots with commercial zoning type.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#URARegulation">
+        <rdfs:comment xml:lang="en">URARegulation defines all formalised Urban Redevelopment Agency regulations, e.g. Development Control Plans, Urban Deign Guidelines, Height Control plans and others.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#UrbanDesignArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#UrbanDesignArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Urban Design Areas as defined in https://data.gov.sg/dataset/master-plan-2019-sdcp-urban-design-guideline-layer</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#UrbanDesignGuideline -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#UrbanDesignGuideline">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontoplanningregulations/OntoPlanningRegulations.owl#AreaRegulation"/>
+        <rdfs:comment xml:lang="en">Urban Design Guidelines as defined in  https://www.ura.gov.sg/Corporate/Guidelines/Urban-Design.</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
