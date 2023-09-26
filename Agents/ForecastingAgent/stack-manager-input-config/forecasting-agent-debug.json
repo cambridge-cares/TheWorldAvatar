@@ -3,7 +3,7 @@
         "Name": "forecasting-agent-debug",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.0.0",
+                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.1.0",
                 "Command": [
                     "tail", "-f",  "/dev/null"
                 ],
