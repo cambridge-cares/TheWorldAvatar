@@ -1,6 +1,6 @@
 """
-create_shapefile takes in the data retrieved from knowledge graph queries and creates a shapefile in the
-input format required by the CEA
+create_shapefile takes in the building geometry data retrieved from knowledge graph and
+creates a shapefile in the input format required by CEA
 """
 
 import shapely
@@ -11,8 +11,7 @@ import json
 from pyproj import CRS
 import os
 
-
-def create_shapefile(geometries, heights, crs, shapefile):
+def create_shapefile(data, crs, shapefile):
     """
     :param geometries: Contains string of coordinates representing building envelope
 
@@ -24,43 +23,57 @@ def create_shapefile(geometries, heights, crs, shapefile):
 
     """
 
-    geometry_values = []
+    heights = []
     floors_bg = []
     height_bg = []
     floor_height = []
     names = []
-    i = 0
     floors_ag = []
     geometry = []
 
-    # Convert geometry data to arrays of points
-    for geom in geometries:
-        geometry.append(shapely.wkt.loads(geom))
-        floors_bg.append(0)
-        height_bg.append(0)
-        floor_height.append(3.2)  # approximate floor-to-floor height
-        if "zone.shp" in shapefile:
-            initial = "B"
-        else:
-            initial = "S"
-        if i<10:
-            names.append(initial + "00" + str(i))
-        elif i<100:
-            names.append(initial + "0" + str(i))
-        else:
-            names.append(initial + str(i))
+    ind = 0
 
-        i = i+1
+    for building in data:
+        geometries = data["geometry"]
+        height = data["height"]
+        id = data["id"]
 
-    # Set floors_ag to building height divided by approximate floor-to-floor height
-    for x in range(len(heights)):
-        floors = round(heights[x] / floor_height[x])
-        if floors != 0:
-            floors_ag.append(floors)
-        else:
-            floors_ag.append(1)  # number of floors must be at least 1
-        if heights[x] <= 1.0:
-            heights[x] = 1.00001  # CEA fails if height is less than or equal to 1 so set a minimum height of 1.00001 m
+        # Convert geometry data to arrays of points
+        for geom in geometries:
+            geometry.append(shapely.wkt.loads(geom))
+
+            floors_bg.append(0)
+            height_bg.append(0)
+            floor_height.append(3.2)  # approximate floor-to-floor height
+
+            if "zone.shp" in shapefile:
+                initial = "B"
+            else:
+                initial = "S"
+
+            if ind < 100:
+                name = initial + str(ind).zfill(3)
+            else:
+                name = initial + str(ind)
+
+            name += "_" + id # to identify geometries that belong to the same building
+
+            names.append(name)
+
+            ind += 1
+
+            # calculate number of floors above ground
+            floors = round(height / floor_height[-1])
+            if floors != 0:
+                floors_ag.append(floors)
+            else:
+                floors_ag.append(1)  # number of floors must be at least 1
+
+            # CEA fails if height is less than or equal to 1 so set a minimum height of 1.00001 m
+            if height <= 1.0:
+                height = 1.00001
+
+            heights.append(height)
 
     zone_data = {'Name': names,
                  'floors_bg': floors_bg,
@@ -68,30 +81,26 @@ def create_shapefile(geometries, heights, crs, shapefile):
                  'height_bg': height_bg,
                  'height_ag': heights}
 
-    df = pd.DataFrame(data=zone_data)
+    df = pd.DataFrame(data = zone_data)
 
     # crs is ESPG coordinate reference system id
     crs = CRS.from_user_input(int(crs))
 
-    gdf = gpd.GeoDataFrame(df, crs=crs, geometry=geometry)
-    gdf.to_file(shapefile, driver='ESRI Shapefile', encoding='ISO-8859-1')
+    gdf = gpd.GeoDataFrame(df, crs = crs, geometry = geometry)
+    gdf.to_file(shapefile, driver = 'ESRI Shapefile', encoding = 'ISO-8859-1')
 
 
 def main(argv):
     shapefile_file = argv.file_name
     shapefile = argv.zone_file_location + os.sep + shapefile_file
-    with open(argv.data_file_location, "r") as f:
-        dataString = f.readlines()[0]
-    data_dictionary = json.loads(dataString)
-    geometries = []
-    heights = []
 
-    for data in data_dictionary:
-        geometries.append(data['geometry'])
-        heights.append(float(data['height']))
+    with open(argv.data_file_location, "r") as f:
+        dataString = f.read()
+
+    data_dictionary = json.loads(dataString)
 
     try:
-        create_shapefile(geometries, heights, argv.crs, shapefile)
+        create_shapefile(data_dictionary, argv.crs, shapefile)
     except IOError:
         print('Error while processing file: ' + shapefile)
 
