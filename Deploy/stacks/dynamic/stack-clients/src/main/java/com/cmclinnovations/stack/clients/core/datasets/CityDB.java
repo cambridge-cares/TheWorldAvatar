@@ -32,7 +32,9 @@ public class CityDB extends GeoServerDataSubset {
     @JsonProperty
     private boolean augmentData = true;
     @JsonProperty
-    private double critAreaRatio = 0.8;
+    private boolean discoverThematicSurface = false;
+    @JsonProperty
+    private double critAreaRatio = 0.1;
 
     @JsonIgnore
     private String lineage;
@@ -92,8 +94,10 @@ public class CityDB extends GeoServerDataSubset {
     }
 
     protected void augmentData(String database) {
+        if (discoverThematicSurface) {
+            CityDBClient.getInstance().discoverThematicSurface(database,critAreaRatio);
+        }
         CityDBClient.getInstance().addBuildingHeight(database);
-        CityDBClient.getInstance().discoverThematicSurface(database,critAreaRatio);
         CityDBClient.getInstance().addFootprint(database);
     }
 

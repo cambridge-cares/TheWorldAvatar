@@ -63,7 +63,7 @@ INSERT INTO "citydb"."surface_geometry" (
             0,
             "footprint_soup"."geometry",
             "footprint_soup"."id"
-        FROM "footprint_soup" JOIN "fp_parent" ON "footprint_soup"."id" = "fp_parent"."bid"
+        FROM "footprint_soup" JOIN "fp_parent" ON "footprint_soup"."id" = "fp_parent"."bid" WHERE public.GeometryType("geometry") = 'POLYGON'
 		);
 UPDATE "surface_geometry"
 SET "root_id" = "id" WHERE "root_id" IS NULL;
