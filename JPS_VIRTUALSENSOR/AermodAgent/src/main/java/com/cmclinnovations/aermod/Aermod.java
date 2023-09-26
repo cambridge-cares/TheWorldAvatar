@@ -13,13 +13,13 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -62,12 +62,10 @@ public class Aermod {
     private Path bpipprmDirectory;
     private Path aermetDirectory;
     private Path aermodDirectory;
-    private Path simulationDirectory;
     private Path rasterDirectory;
     private static final String AERMET_INPUT = "aermet.inp";
 
     public Aermod(Path simulationDirectory) {
-        this.simulationDirectory = simulationDirectory;
         LOGGER.info("Creating directory for simulation files");
         simulationDirectory.toFile().mkdirs();
 
@@ -85,110 +83,6 @@ public class Aermod {
 
         rasterDirectory = simulationDirectory.resolve("raster");
         rasterDirectory.toFile().mkdir();
-    }
-
-    /* Create input config and data files for AERMAP. */
-
-    public void createAERMAPInput(List<byte[]> elevData, int centreZoneNumber) {
-        int n = elevData.size();
-        StringBuilder aermapInputString = new StringBuilder();
-
-        for (int i = 0; i < n; i++) {
-            String fn = (i + 1) + ".tif";
-            aermapInputString.append("   DATAFILE " + fn);
-            aermapInputString.append(System.lineSeparator());
-            try {
-                Files.write(aermapDirectory.resolve(fn), elevData.get(i));
-            } catch (IOException e) {
-                String errmsg = "Error writing " + fn;
-                LOGGER.error(e.getMessage());
-                LOGGER.error(errmsg);
-                throw new RuntimeException(errmsg, e);
-            }
-        }
-
-        String templateContent;
-
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("aermap.inp")) {
-            templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
-            templateContent = templateContent.replace("   DATAFILE FILE_NAMES", aermapInputString.toString());
-            String simGrid = String.format("%f %f %f %f %d %d", 0.0, 0.0, 0.0, 0.0, centreZoneNumber, 0);
-            templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
-        } catch (IOException e) {
-            String errmsg = "Failed to copy aermap.inp";
-            LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to copy aermap.inp");
-            throw new RuntimeException(errmsg, e);
-        }
-
-        writeToFile(aermapDirectory.resolve("aermap.inp"), templateContent);
-    }
-
-    /* Create receptor data files for AERMAP. */
-    public void createAERMAPReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
-        List<Double> xDoubles = new ArrayList<>();
-        List<Double> yDoubles = new ArrayList<>();
-
-        for (int i = 0; i < scope.getCoordinates().length; i++) {
-            String originalSrid = "EPSG:4326";
-            double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
-            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-
-            xDoubles.add(xyTransformed[0]);
-            yDoubles.add(xyTransformed[1]);
-        }
-
-        double xlo = Collections.min(xDoubles);
-        double xhi = Collections.max(xDoubles);
-        double ylo = Collections.min(yDoubles);
-        double yhi = Collections.max(yDoubles);
-
-        double dx = (xhi - xlo) / nx;
-        double dy = (yhi - ylo) / ny;
-
-        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA ");
-        sb.append(System.lineSeparator());
-        String rec = String.format("                 XYINC %f %d %f %f %d %f", xlo, nx, dx, ylo, ny, dy);
-        sb.append(rec).append(System.lineSeparator());
-        sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
-
-        writeToFile(aermapDirectory.resolve("aermapReceptors.dat"), sb.toString());
-    }
-
-    public void runAermap() {
-        try {
-            Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMAP_EXE, "aermap.inp" }, null,
-                    aermapDirectory.toFile());
-
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-            // Read the output from the command
-            LOGGER.info("Here is the standard output of AERMAP:");
-            String s = null;
-            while ((s = stdInput.readLine()) != null) {
-                LOGGER.info(s);
-            }
-
-            // Read any errors from the attempted command
-            LOGGER.info("Here is the standard error of AERMAP (if any):");
-            while ((s = stdError.readLine()) != null) {
-                LOGGER.info(s);
-            }
-            process.waitFor();
-        } catch (IOException e) {
-            String errmsg = "Error executing aermap";
-            LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
-            throw new RuntimeException(errmsg, e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            String errmsg = "Error executing aermap";
-            LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
-            throw new RuntimeException(errmsg, e);
-        }
     }
 
     /* Write out data to BPIPPRM input file and run this program. */
@@ -367,6 +261,56 @@ public class Aermod {
         sb.append(System.lineSeparator());
         String rec = String.format("                 XYINC %f %d %f %f %d %f", xlo, nx, dx, ylo, ny, dy);
         sb.append(rec).append(System.lineSeparator());
+        sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
+
+        writeToFile(aermodDirectory.resolve("receptor.dat"), sb.toString());
+    }
+
+    public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid,
+            List<List<Double>> elevationValues) {
+        List<Double> xDoubles = new ArrayList<>();
+        List<Double> yDoubles = new ArrayList<>();
+
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+
+            String originalSrid = "EPSG:4326";
+            double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+
+            xDoubles.add(xyTransformed[0]);
+            yDoubles.add(xyTransformed[1]);
+        }
+
+        double xlo = Collections.min(xDoubles);
+        double xhi = Collections.max(xDoubles);
+        double ylo = Collections.min(yDoubles);
+        double yhi = Collections.max(yDoubles);
+
+        double dx = (xhi - xlo) / nx;
+        double dy = (yhi - ylo) / ny;
+
+        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA ");
+        sb.append(System.lineSeparator());
+        String rec = String.format("                 XYINC %f %d %f %f %d %f", xlo, nx, dx, ylo, ny, dy);
+        sb.append(rec).append(System.lineSeparator());
+
+        for (int i = 0; i < elevationValues.size(); i++) {
+            List<String> rowInString = elevationValues.get(i).stream().map(v -> String.format("%.1f", v))
+                    .collect(Collectors.toList());
+            for (int j = 0; j < rowInString.size(); j += 6) {
+                List<String> splittedRow;
+                if (j + 6 > rowInString.size()) {
+                    splittedRow = rowInString.subList(j, rowInString.size());
+                } else {
+                    splittedRow = rowInString.subList(j, j + 6);
+                }
+                String elev = String.format("                 ELEV %d %s", i + 1, String.join(" ", splittedRow));
+                String hill = String.format("                 HILL %d %s", i + 1, String.join(" ", splittedRow));
+                sb.append(elev).append(System.lineSeparator());
+                sb.append(hill).append(System.lineSeparator());
+            }
+        }
+
         sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
 
         writeToFile(aermodDirectory.resolve("receptor.dat"), sb.toString());

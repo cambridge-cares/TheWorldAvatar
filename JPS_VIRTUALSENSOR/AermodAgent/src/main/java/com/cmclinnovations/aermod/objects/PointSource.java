@@ -24,7 +24,7 @@ public class PointSource {
     private Map<PollutantType, Double> flowrateInGramsPerS;
 
     private String iri;
-    private double baseElevation;
+    private double baseElevation = 0;
 
     public PointSource(String iri) {
         this.iri = iri;

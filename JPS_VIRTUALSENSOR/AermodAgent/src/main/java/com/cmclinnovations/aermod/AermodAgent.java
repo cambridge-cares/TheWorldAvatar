@@ -152,24 +152,18 @@ public class AermodAgent extends DerivationAgent {
         }
 
         boolean usesElevation = false;
+        if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE) && queryClient.hasElevationData(scope)) {
+            usesElevation = true;
+            queryClient.setElevation(allSources, buildings, srid);
+
+            // queries elevation data for each receptor point from PostGIS
+            aermod.createAERMODReceptorInput(scope, nx, ny, srid,
+                    queryClient.getReceptorElevation(scope, nx, ny, srid));
+        } else {
+            aermod.createAERMODReceptorInput(scope, nx, ny, srid);
+        }
+
         if (citiesNamespace != null) {
-            if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE)) {
-                queryClient.setElevation(allSources, buildings, srid);
-                List<byte[]> elevData = queryClient.getScopeElevation(scope);
-
-                if (!elevData.isEmpty()) {
-                    usesElevation = true;
-                }
-
-                aermod.createAERMAPInput(elevData, centreZoneNumber);
-                aermod.createAERMAPReceptorInput(scope, nx, ny, srid);
-                aermod.runAermap();
-            } else {
-                LOGGER.warn(
-                        "The specified elevation data table {} does not exist. Base elevations of static point sources and buildings will be set to zero. ",
-                        EnvConfig.ELEVATION_TABLE);
-            }
-
             aermod.createBPIPPRMInput(allSources, buildings, srid);
             aermod.runBPIPPRM();
         }

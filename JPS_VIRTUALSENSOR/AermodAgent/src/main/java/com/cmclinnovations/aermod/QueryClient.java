@@ -32,7 +32,6 @@ import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,11 +64,8 @@ import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1113,27 +1109,23 @@ public class QueryClient {
         }
     }
 
-    List<byte[]> getScopeElevation(Polygon scope) {
-        List<byte[]> elevData = new ArrayList<>();
-
+    boolean hasElevationData(Polygon scope) {
+        boolean hasElevationData = false;
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement()) {
-
-            String sql = String.format("SELECT filename, ST_AsTiff(ST_UNION(rast)) AS rData FROM %s"
-                    + " WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast)))"
-                    + " GROUP BY 1", EnvConfig.ELEVATION_TABLE, scope.toText());
+            String sql = String.format("SELECT EXISTS (SELECT * FROM %s"
+                    + " WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))))",
+                    EnvConfig.ELEVATION_TABLE, scope.toText());
             ResultSet result = stmt.executeQuery(sql);
-            while (result.next()) {
-                byte[] rasterBytes = result.getBytes("rData");
-                elevData.add(rasterBytes);
+            if (result.next()) {
+                hasElevationData = result.getBoolean("exists");
             }
 
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
 
-        return elevData;
-
+        return hasElevationData;
     }
 
     void updateOutputs(String derivation, Map<String, DispersionOutput> zIriToOutputMap, boolean hasShips,
@@ -1293,12 +1285,62 @@ public class QueryClient {
                 EnvConfig.BUILDINGS_TABLE, new GeoServerVectorSettings());
     }
 
-    boolean buildingExists(Building building, Connection conn, String buildingsTable, boolean tableExists) {
-        boolean exists = false;
-        if (tableExists) {
-            Field<String> iriColumn = DSL.field(DSL.name("iri"), String.class);
-            exists = getContext(conn).fetchExists(DSL.table(buildingsTable), iriColumn.eq(building.getIri()));
+    List<List<Double>> getReceptorElevation(Polygon scope, int nx, int ny, int simulationSrid) {
+        List<Double> xDoubles = new ArrayList<>();
+        List<Double> yDoubles = new ArrayList<>();
+
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+
+            String originalSrid = "EPSG:4326";
+            double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+
+            xDoubles.add(xyTransformed[0]);
+            yDoubles.add(xyTransformed[1]);
         }
-        return exists;
+
+        double xlo = Collections.min(xDoubles);
+        double xhi = Collections.max(xDoubles);
+        double ylo = Collections.min(yDoubles);
+        double yhi = Collections.max(yDoubles);
+
+        double dx = (xhi - xlo) / nx;
+        double dy = (yhi - ylo) / ny;
+
+        List<List<Double>> allValues = new ArrayList<>();
+        LOGGER.info("Querying elevation data");
+        try (Connection conn = rdbStoreClient.getConnection(); Statement stmt = conn.createStatement();) {
+            int numRecWithoutElev = 0;
+
+            for (int row = 0; row < ny; row++) { // y loop
+                double y = ylo + row * dy;
+                List<Double> elevationValues = new ArrayList<>();
+                for (int column = 0; column < nx; column++) { // x loop
+                    double x = xlo + column * dx;
+                    String sqlString = String.format(
+                            "SELECT ST_Value(rast, ST_Transform(ST_SetSRID(ST_Point(%f,%f),%d),ST_SRID(rast))) AS val "
+                                    +
+                                    "FROM %s WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_Point(%f,%f),%d),ST_SRID(rast)));",
+                            x, y, simulationSrid, EnvConfig.ELEVATION_TABLE,
+                            x, y, simulationSrid);
+
+                    ResultSet result = stmt.executeQuery(sqlString);
+                    if (result.next()) {
+                        elevationValues.add(result.getDouble("val"));
+                    } else {
+                        elevationValues.add(0.0);
+                        numRecWithoutElev++;
+                    }
+                }
+                allValues.add(elevationValues);
+            }
+
+            if (numRecWithoutElev > 0) {
+                LOGGER.warn("Number of receptors without elevation values in the database: {}", numRecWithoutElev);
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return allValues;
     }
 }
