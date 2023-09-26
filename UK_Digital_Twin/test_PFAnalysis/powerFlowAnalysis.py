@@ -41,8 +41,7 @@ class powerFlowAnalysis:
         self.busToBeSwitched:int = -1
         self.ConvergeFlag:int = -1
         self.Terminate:bool = False
-        
-        #TODO: baseMVA should be written in the KG and can be quired via the iri
+
         self.baseMVA = float(baseMVA)
         self.PFOrOPFAnalysis:bool = PFOrOPFAnalysis   
         
@@ -75,8 +74,7 @@ class powerFlowAnalysis:
          ##-- create model bus, branch and generator objects dynamically --##
          ObjectSet = locals()
 # TODO: do not change the starting indiex number from 1 to 0         
-         ## query bus input and create the bus objects 
-     #    BusInput = queryModelInput.queryBusModelInput(self.BusModelTopNodeIRI)        
+         ## query bus input and create the bus objects     
          BusInput = busList
          BusNumKeyWord = UKPowerGridModel.UKEbusModel.INPUT_VARIABLE_KEYS[0]  
          for businput in BusInput:              
@@ -95,7 +93,6 @@ class powerFlowAnalysis:
          self.BusObjectList = self.SlackBusName + self.PVBusName + self.PQBusName
          
          ## query branch input
-     #    BranchInput = queryModelInput.queryBranchModelInput(self.BranchModelTopNodeIRI)
          i_branch = 0
          BranchInput = branchList 
          for branchinput in BranchInput:  
@@ -108,8 +105,8 @@ class powerFlowAnalysis:
          self.NumberOfBranch = len(BranchInput)     
             
           # query generator input
-     #    GeneratorInput = queryModelInput.queryGeneratorModelInput(self.GeneratorModelTopNodeIRI)
          i_generator = 0
+         ## FIXME: not querying the input
          GeneratorInput = queryModelInput.queryGeneratorModelInput_new(10, 14, 'ukdigitaltwin_test1')         
          for geninput in GeneratorInput:              
                ObjectSet[UKPowerGridModel.UKEGenModel.EGenKey + str(i_generator)] = UKPowerGridModel.UKEGenModel()
@@ -213,7 +210,7 @@ class powerFlowAnalysis:
          ##-- starts pf analysis --## 
          # set up numerical method: Newton's Method
          self.ppopt = ppoption(OUT_ALL = 1, VERBOSE = 2, PF_ALG = 1, PF_MAX_IT = 30, PF_TOL = 1e-8) 
-         self.results, _, _ = pf.runpf(self.ppc, self.ppopt) #TODO: use the original pypower
+         self.results, _, _ = pf.runpf(self.ppc, self.ppopt)
          
          self.ConvergeFlag = self.results["success"]
          if self.ConvergeFlag == 1:
@@ -432,14 +429,6 @@ class powerFlowAnalysis:
             print("*******************There is no more bus that is allowed to be switched to PV bus. The model is FAILED.*******************")
         return 
     
-     def ModelResultUpdater(self):
-         
-         
-         
-         
-         return 
-
-    
 if __name__ == '__main__':        
     test_PowerFlowAnalysis_1 = powerFlowAnalysis(1,1,1, 100, True)
     busList = [{'BUS': '1', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '4305.753', 'VMIN': '0.95', 'TYPE': '3'}, {'BUS': '2', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2690.713', 'VMIN': '0.95', 'TYPE': '2'}, {'BUS': '3', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '4349.411', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '4', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2997.804', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '5', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2354.482', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '6', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2730.946', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '7', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '3493.016', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '8', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '3876.755', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '9', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '1696.433', 'VMIN': '0.95', 'TYPE': '1'}, {'BUS': '10', 'BASEKV': '400', 'ZONE': '1', 'VMAX': '1.05', 'GD_INPUT': '0.0', 'VM_INPUT': '1.0', 'VA_INPUT': '0.0', 'GS': '0', 'BS': '0', 'AREA': '1', 'PD_INPUT': '2756.565', 'VMIN': '0.95', 'TYPE': '2'}]
@@ -462,13 +451,7 @@ if __name__ == '__main__':
     print("*****This are EGen results*****")
     for attr in test_PowerFlowAnalysis_1.ObjectSet.get('EGen-1134').__dir__():
         print(attr, getattr(test_PowerFlowAnalysis_1.ObjectSet.get('EGen-1134'), attr)) 
-        
-    
-    # res = test_PowerFlowAnalysis_1.PowerFlowAnalysisSimulation(busList, branchList)
-    # print(res.get('Generator_1').PG_INPUT)
-    # print(res.get('Bus_1'). __dir__()[0])
-    # print(res.get('Bus_1').BUS)
-    #print(res.get('Branch_0').R)
+
     
         
     
