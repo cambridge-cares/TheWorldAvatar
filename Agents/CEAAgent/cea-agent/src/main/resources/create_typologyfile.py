@@ -107,7 +107,7 @@ def main(argv):
     data_dictionary = json.loads(dataString)
 
     try:
-        create_typologyfile(zone_geometry_path, usage, typologyfile)
+        create_typologyfile(zone_geometry_path, data_dictionary, typologyfile)
     except IOError:
         print('Error while processing file: ' + typologyfile)
 
