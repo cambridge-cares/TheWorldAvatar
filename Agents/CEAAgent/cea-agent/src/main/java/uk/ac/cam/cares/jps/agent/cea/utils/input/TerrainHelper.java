@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTReader;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
@@ -30,13 +30,13 @@ public class TerrainHelper {
     /**
      * Gets terrain data for city object
      * @param uriString city object id
-     * @param route route to city object geometry data
-     * @param crs coordinate reference system used by route
+     * @param endpoint endpoint to city object geometry data
+     * @param crs coordinate reference system used by endpoint
      * @param surroundingCoordinates  coordinates that formed the bounding box for surrounding query
      * @param table PostGIS table name
      * @return terrain data as byte[]
      */
-    public byte[] getTerrain(String uriString, String route, String crs, List<Coordinate> surroundingCoordinates, String table, OntologyURIHelper uriHelper) {
+    public byte[] getTerrain(String uriString, String endpoint, List<CEAGeometryData> surroundings, String table, OntologyURIHelper uriHelper) {
         RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
 
         // query for the coordinate reference system used by the terrain data
@@ -46,12 +46,16 @@ public class TerrainHelper {
 
         Double radius;
 
+        String crs;
+
         try {
-            if (!surroundingCoordinates.isEmpty()) {
+            if (!surroundings.isEmpty()) {
                 Envelope envelope = new Envelope();
 
-                for (Coordinate coordinate : surroundingCoordinates) {
-                    envelope.expandToInclude(coordinate);
+                for (CEAGeometryData ceaGeometryData : surroundings) {
+                    for (Geometry geometry : ceaGeometryData.getFootprint()) {
+                        envelope.expandToInclude(geometry.getEnvelopeInternal());
+                    }
                 }
                 centerCoordinate = envelope.centre();
 
@@ -60,16 +64,22 @@ public class TerrainHelper {
 
                 radius = w > h ? w/2 : h/2;
 
+                crs = surroundings.get(0).getCrs();
+
                 radius += 30;
             }
             else {
-                String polygon = new GeometryQueryHelper(uriHelper).getValue(uriString, "footprint", route);
+                CEAGeometryData ceaGeometryData = new GeometryQueryHelper(uriHelper).getBuildingGeometry(uriString, endpoint);
 
-                Geometry envelopePolygon = GeometryHandler.toGeometry(polygon).getEnvelope();
+                Envelope envelope = new Envelope();
 
-                Point center = envelopePolygon.getCentroid();
+                for (Geometry geometry : ceaGeometryData.getFootprint()) {
+                    envelope.expandToInclude(geometry.getEnvelopeInternal());
+                }
 
-                centerCoordinate = center.getCoordinate();
+                centerCoordinate = envelope.centre();
+
+                crs = ceaGeometryData.getCrs();
 
                 radius = 160.0;
             }
