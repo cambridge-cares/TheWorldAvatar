@@ -27,15 +27,13 @@ def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=N
     if precursors is None and componentTypeNumber.get("Precursor", 0) > 0:
         return "Error: Number of Precursors does not match ComponentTypeNumber for Precursor"
     elif precursors is not None and componentTypeNumber.get("Precursor", 0) != len(precursors):
-        
         return "Error: Number of Precursors does not match ComponentTypeNumber for Precursor"
-
     # check if number of linkages match ComponentTypeNumber for Linkage
     if linkages is None and componentTypeNumber.get("Linkage", 0) > 0:
         return "Error: Number of Linkages does not match ComponentTypeNumber for Linkage"
     elif linkages is not None and componentTypeNumber.get("Linkage", 0) != 1:
         return "Error: Number of Linkages does not match ComponentTypeNumber for Linkage"
-
+    
     components = {k: v for k, v in assemblyModel.items() if "Component" in k}
     matched_gbus = set()
     for precursor in precursors:
@@ -70,7 +68,6 @@ def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=N
     return components
 
 def ordering_components(input_dict):
-    #print(input_dict)
     precursor_dict = {}
     linkage_dict = {}
     # Get all the Component_names
@@ -92,7 +89,6 @@ def ordering_components(input_dict):
     return precursor_dict, linkage_dict
 
 def dummify_linkages(component_dict):
-    #print(component_dict)
     dummies_start = 88
     output_dict = {}
     
@@ -116,7 +112,6 @@ def dummify_linkages(component_dict):
 
                         bs_data_copy['Complementaries'].append(dummies_start)
                         dummies_start += 1
-
                         # Check after each complementary number
                         if dummies_start > 100:
                             dummies_start = 88
@@ -129,8 +124,7 @@ def dummify_linkages(component_dict):
             copy_name = f"{component_name}_Copy_{i}"
             input_file = component_data[component_name]
             output_file = f"{copy_name}.mol"
-            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Linkage_BS': first_copy_bs_data_list}
-    #print(output_dict)        
+            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Linkage_BS': first_copy_bs_data_list}    
     return output_dict
 
 def dummify_precursors(component_dict):
@@ -140,7 +134,6 @@ def dummify_precursors(component_dict):
     for component_name, component_data in component_dict.items():
         component_copies = component_data['Copies']
         bs_data_sorted = sorted(component_data['BS'], key=lambda x: x['bsIndex'])
-        
         # Assign to all copies
         for i in range(1, component_copies + 1):
             first_copy_bs_data_list = []
@@ -154,10 +147,8 @@ def dummify_precursors(component_dict):
                     for j in range(bs_index):
                         bs_data_copy['Dummies'].append(dummies_start)
                         dummies_start += 1
-
                         bs_data_copy['Complementaries'].append(dummies_start)
                         dummies_start += 1
-
                         # Check after each complementary number
                         if dummies_start > 116:
                             dummies_start = 101
@@ -170,8 +161,7 @@ def dummify_precursors(component_dict):
             copy_name = f"{component_name}_Copy_{i}"
             input_file = component_data[component_name]
             output_file = f"{copy_name}.mol"
-            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Precursor_BS': first_copy_bs_data_list}
-    ##print(output_dict)        
+            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Precursor_BS': first_copy_bs_data_list}     
     return output_dict
 
 #----------------------COMPONENT ISTANCE MOLECULIZER-------------------------
@@ -193,22 +183,8 @@ def extract_dummies_complementaries(data):
     for d in data:
         dummies = d.get('Dummies', [])
         complementaries = d.get('Complementaries', [])
-        
         # Filter out 87 from dummies
         dummies = [item for item in dummies if item != 87]
-
-        d_list.extend(dummies)
-        c_list.extend(complementaries)
-    
-    return d_list, c_list
-
-def extract_dummies_complementariesXX(data):
-    """Extracts dummies and complementaries separately."""
-    d_list, c_list = [], []
-
-    for d in data:
-        dummies = d.get('Dummies', [])
-        complementaries = d.get('Complementaries', [])
         d_list.extend(dummies)
         c_list.extend(complementaries)
     
@@ -217,19 +193,15 @@ def extract_dummies_complementariesXX(data):
 def component_mol_handler(component_dict, input_dir, output_dir):
 
     for component_name, component_data in component_dict.items():
-        #print(component_name)
-        #print(component_data)
         input_file = os.path.join(input_dir, component_data['inputFile'])
         output_file = os.path.join(output_dir, component_data['outputFile'])
 
         dummies, complementaries = [], []
-        #print(dummies)
         # Check if 'Linkage_BS' or 'Precursor_BS' exist and retrieve dummies and complementaries
         if 'Linkage_BS' in component_data:
             d, c = extract_dummies_complementaries(component_data['Linkage_BS'])
             dummies.extend(d)
             complementaries.extend(c)
-            #print(dummies)
 
         if 'Precursor_BS' in component_data:
             d, c = extract_dummies_complementaries(component_data['Precursor_BS'])
@@ -266,7 +238,6 @@ def component_mol_cleaner(directory):
 
             # Replace 'RDKit' with 'AK-CARES'
             mol_block = mol_block.replace('RDKit', 'AK-CARES')
-
             # Remove lines starting with V, A, or *
             mol_lines = mol_block.split('\n')
             cleaned_lines = [line for line in mol_lines if not line.startswith(('V', 'A', '*'))]
@@ -279,21 +250,17 @@ def component_mol_cleaner(directory):
 
 def initial_product_instantiation(assembly_model, SingleComponent_original):
     SingleComponent = deepcopy(SingleComponent_original)
-    
     product1 = assembly_model["ConstructionSteps"]["Product_1"]
-    
     component1 = product1[0]
     component2 = product1[1]
     outputFile = "Product_1.mol"
     inputFile = [SingleComponent[component1]['outputFile'], SingleComponent[component2]['outputFile']]
-
     Precursor_BS = []
     Linkage_BS = []
 
     matching_dummies = []
     matching_complementaries = []
     if "Precursor_BS" in SingleComponent[component1]:
-        
         Precursor_BS.extend(SingleComponent[component1]["Precursor_BS"])
     if "Linkage_BS" in SingleComponent[component2]:
         Linkage_BS.extend(SingleComponent[component2]["Linkage_BS"])
@@ -301,16 +268,11 @@ def initial_product_instantiation(assembly_model, SingleComponent_original):
     if "Linkage_BS" in SingleComponent[component2] and "Precursor_BS" in SingleComponent[component1]:
         for bs1 in SingleComponent[component1]["Precursor_BS"]:
             for bs2 in SingleComponent[component2]["Linkage_BS"]:
-                #print(bs2)
-                #if bs1["bindingSite"] == bs2["bindingSite"] and bs1["Dummies"] and bs2["Dummies"]:
-                #    matching_dummies = [bs1["Dummies"].pop(0), bs2["Dummies"].pop(0)]   
                 if bs1["bindingSite"] == bs2["bindingSite"] and bs1["Dummies"] and bs2["Dummies"]:
                     matching_dummies = [bs1["Dummies"][0], bs2["Dummies"][0]]
                     bs1["Dummies"].remove(matching_dummies[0])
                     bs2["Dummies"].remove(matching_dummies[1])
                     if bs1["Dentation"] == 'Bidentate' or bs2["Dentation"] == 'Bidentate':
-                        #print(bs1["Complementaries"])
-                        #print(bs2["Complementaries"])
                         matching_complementaries = [bs1["Complementaries"][0], bs2["Complementaries"][0]]
                         bs1["Complementaries"].remove(matching_complementaries[0])
                         bs2["Complementaries"].remove(matching_complementaries[1])
@@ -339,7 +301,6 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
     working_component = deepcopy(CurrentComponent)
     product1 = assembly_model["ConstructionSteps"][product_name]
     Product_1 = None 
-    
     component1 = product1[0]
     component2 = product1[1]
     matching_dummies = []
@@ -353,20 +314,12 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
                     matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]]
                     bs1["Dummies"].remove(matching_dummies[0])
                     bs3["Dummies"].remove(matching_dummies[1])                
-                    #print(bs1)
-                    #print(bs3)
-                    # Added the following block for Complementaries
                     if bs1["Complementaries"] and bs3["Complementaries"]:
                         matching_complementaries = [bs1["Complementaries"][0], bs3["Complementaries"][0]]
                         bs1["Complementaries"].remove(matching_complementaries[0])
                         bs3["Complementaries"].remove(matching_complementaries[1])
                     else:
                         matching_complementaries = []
-
-                    #matching_complementaries = [bs1["Complementaries"][0], bs3["Complementaries"][0]]
-                    #bs1["Complementaries"].remove(matching_complementaries[0])
-                    #bs3["Complementaries"].remove(matching_complementaries[1])
-
                     bs1_based = clean_dummies_list(working_component[component1]["Precursor_BS"])
                     Product_1 = {
                         "outputFile": outputFile, 
@@ -398,21 +351,12 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
                     matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]]
                     bs1["Dummies"].remove(matching_dummies[0])
                     bs3["Dummies"].remove(matching_dummies[1])
-                    #print(product_name)
-                    #print(bs1)
-                    #print(bs3)
-                    # Added the following block for Complementaries
                     if bs1["Complementaries"] and bs3["Complementaries"]:
                         matching_complementaries = [bs1["Complementaries"][0], bs3["Complementaries"][0]]
                         bs1["Complementaries"].remove(matching_complementaries[0])
                         bs3["Complementaries"].remove(matching_complementaries[1])
                     else:
                         matching_complementaries = []
-
-                    #matching_complementaries = [bs1["Complementaries"][0], bs3["Complementaries"][0]]
-                    #bs1["Complementaries"].remove(matching_complementaries[0])
-                    #bs3["Complementaries"].remove(matching_complementaries[1])
-
                     bs1_based = clean_dummies_list(working_component[component1]["Linkage_BS"])
                     Product_1 = {
                         "outputFile": outputFile, 
@@ -437,7 +381,7 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
                             Product_1.setdefault("Precursor_BS", bs3_based)
                         CurrentComponent[product_name] = Product_1
                         return CurrentComponent
-
+                    
     return None
 
 def clean_dummies_list(input_list):
@@ -528,19 +472,13 @@ def product_mol_handler(input_dict, output_dir):
             # Call the combiner function with the possibly updated values
             product_mol_combiner(input_component_1, binding_dummy_1, binding_complementary_1, 
                                 input_component_2, binding_dummy_2, binding_complementary_2, output_file)
-
-            # Call the combiner function with both dummies and complementaries
-            #product_mol_combiner(input_component_1, binding_dummies[0], binding_complementaries[0], 
-            #                     input_component_2, binding_dummies[1], binding_complementaries[1], output_file)
-            
             # Create a new dictionary to store the information for this key
             new_dict = {
                 "inputFile": input_files, 
                 "outputFile": output_file, 
                 "BindingDummies": binding_dummies,
                 "BindingComplementaries": binding_complementaries
-            }
-            
+            }   
             # Add the new dictionary to the output list
             output_list.append(new_dict)
     
@@ -609,7 +547,7 @@ def cofmer_cleaner(directory):
     file_path = os.path.join(directory, file_name)
     mol = Chem.MolFromMolFile(file_path)
     for atom in mol.GetAtoms():
-        if atom.GetAtomicNum() > 89:
+        if atom.GetAtomicNum() > 86:
             atom.SetAtomicNum(0)
             atom.SetProp("_name", "*")
 
@@ -660,4 +598,3 @@ def run_cofmer_pipeline(assemblyModel, componentTypeNumber, precursors, linkages
  #  print(looping_single_components)
     product_mol_handler(looping_single_components, output_dir)
     cofmer_cleaner(output_dir)
-

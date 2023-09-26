@@ -21,8 +21,6 @@ def create_componentTypeNumber_dict(assembly_model):
 
 def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, assembly_db):
     
-    precursor_values_1 = None
-    precursor_values_2 = None
     with open(COFs_path, 'r', encoding='utf-8-sig') as cof_file:
         cof_reader = csv.DictReader(cof_file)
 
@@ -44,16 +42,11 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, a
                     linkage_reader = csv.DictReader(linkage_file)
                     for linkage_row in linkage_reader:
                         if linkage_row['Linkage'] == linkage_lfr:
-                            #print(linkage_lfr)
                             if linkage_row["Dummies"] != 'NA':
                                 dummies_value = linkage_row.get("Dummies")
                                 dummies = [int(x) for x in dummies_value.replace('"', '').split(',')] if dummies_value and dummies_value != "NA" else []
-                                #dummies = [int(x) for x in linkage_row["Dummies"].replace('"', '').split(',')] if linkage_row["Dummies"] else []
                                 complementaries_value = linkage_row.get("Complementaries")
                                 complementaries = [int(x) for x in complementaries_value.replace('"', '').split(',')] if complementaries_value and complementaries_value != "NA" else []
-
-                                
-                                #complementaries = [int(x) for x in linkage_row["Complementaries"].replace('"', '').split(',')] if linkage_row["Complementaries"] else []
                                 bs_dict = {
                                     "UnitFrom": linkage_row["UnitFrom"],
                                     "bindingSite": linkage_row["bindingSite"],
@@ -83,10 +76,7 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, a
                             linkages[linkage_lfr]["BS"].append(bs_dict) # append the bs_dict to the list of BS dictionaries
                             
                 linkage = linkages.get(linkage_lfr) # get the linkage, if it exists
-                #print(linkages)
-                #print(linkage)
-                # Processing Precursors.csv for Precursor1
-                # Processing Precursors.csv for multiple precursors.
+
                 precursors = []
                 
                 with open(precursor_path, 'r', encoding='utf-8') as precursor_file:
@@ -132,21 +122,11 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, a
                         
                
                 assembly_model_dict = assembly_db[assembly_model_string]
-                #assembly_model_dict = create_assembly_model(assembly_model_string)
-                #print(assembly_model_dict)
                 componentTypeNumber = create_componentTypeNumber_dict(assembly_model_string)
-                #precursors = [precursor_values_1]
-                #if precursor_2 is not None:
-                #    precursors.append(precursor_values_2)
             
                 input_dir = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\input_dir\\'
-                #run_cofmer_pipeline(assembly_model_dict, componentTypeNumber, precursor_values_1, precursor_values_2, linkage, input_dir, full_output_path)
-                #print(precursors)
                 run_cofmer_pipeline(assembly_model_dict, componentTypeNumber, precursors, linkage, input_dir, full_output_path)
 
-#            except Exception as e:
-#                print(f"Error processing line with COF_Nr {cof_row['COF_Nr']}: {str(e)}")
-#                continue
             except Exception as e:
                 print(f"Error processing line with COF_Nr {cof_row['COF_Nr']}: {str(e)}")
                 print(traceback.format_exc())  # This prints the traceback
