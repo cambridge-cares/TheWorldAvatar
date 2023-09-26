@@ -1,22 +1,21 @@
 package uk.ac.cam.cares.jps.agent.cea.data;
 
+import org.locationtech.jts.geom.Geometry;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class CEAInputData {
-    public String geometry;
-    public String height;
+    public CEAGeometry geometry;
     public Map<String, Double> usage;
     public ArrayList<CEAInputData> surrounding;
     public List<OffsetDateTime> weatherTimes;
     public Map<String, List<Double>> weather;
     public List<Double> weatherMetaData;
 
-    public CEAInputData(String geometry_value, String height_value, Map<String, Double> usage_value, ArrayList<CEAInputData> surrounding_value, List<OffsetDateTime> weatherTimes_value, Map<String, List<Double>> weather_value, List<Double> weatherMetaData_value) {
+    public CEAInputData(CEAGeometry geometry_value, Map<String, Double> usage_value, ArrayList<CEAInputData> surrounding_value, List<OffsetDateTime> weatherTimes_value, Map<String, List<Double>> weather_value, List<Double> weatherMetaData_value) {
         this.geometry = geometry_value;
-        this.height = height_value;
         this.usage = usage_value;
         this.surrounding = surrounding_value;
         this.weatherTimes = weatherTimes_value;
@@ -24,12 +23,8 @@ public class CEAInputData {
         this.weatherMetaData = weatherMetaData_value;
     }
 
-    public String getGeometry() {
+    public CEAGeometry getGeometry() {
         return this.geometry;
-    }
-
-    public String getHeight() {
-        return this.height;
     }
 
     public Map<String, Double> getUsage() {
@@ -46,12 +41,8 @@ public class CEAInputData {
 
     public List<Double> getWeatherMetaData() {return this.weatherMetaData;}
 
-    public void setGeometry(String geometry_value) {
+    public void setGeometry(CEAGeometry geometry_value) {
         this.geometry = geometry_value;
-    }
-
-    public  void setHeight(String height_value) {
-        this.height = height_value;
     }
 
     public void setUsage(Map<String, Double> usage_value) {
