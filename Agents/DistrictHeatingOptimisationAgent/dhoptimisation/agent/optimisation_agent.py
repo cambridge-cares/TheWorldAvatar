@@ -34,7 +34,7 @@ class DHOptimisationAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
         # Please note: Declared inputs/outputs need proper instantiation incl. 
         #              RDF TYPE declarations in the KG for the derivation to work
-        return [TS_FORECAST]
+        return [TS_FORECAST, TIME_INTERVAL]
 
 
     def agent_output_concepts(self) -> list:
@@ -75,9 +75,12 @@ class DHOptimisationAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
         """
-        This method takes multiple ts:Forecast instances, representing 1 forecasted
-        heat demand and 4 grid temperatures (i.e, flow and return temperature at 
-        municipal utility and energy from waste plant), and generates
+        This method takes 
+            multiple ts:Forecast instances, representing 1 forecasted heat demand
+              and 4 grid temperatures (i.e, flow and return temperature at municipal
+              utility and energy from waste plant)
+            1 time:Interval instance, representing the optimisation horizon
+        and generates
             1 ohn:ProvidedHeatAmount instance representing the amount of heat provided
               by the energy from waste plant
             4 ohn:GeneratedHeatAmount instances representing the amount of heat generated
