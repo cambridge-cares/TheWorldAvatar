@@ -14,17 +14,19 @@ import org.cts.registry.RegistryManager;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryFixer;
-import org.locationtech.jts.io.ParseException;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GeometryHandler {
+    private static final String EPSG_4326 = "EPSG:4326";
     private static final Integer METER_EPSG = 3395;
     private static final String METER_EPSG_STRING = "EPSG:" + METER_EPSG;
 
@@ -32,29 +34,34 @@ public class GeometryHandler {
         return WKTReader.extract(geometryString).getGeometry();
     }
 
-    public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance) throws Exception {
+    public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance)  {
         Geometry transformed;
         Integer source = Integer.parseInt(sourceCRS.replaceAll("[^0-9]", ""));
 
         geom.setSRID(source);
 
-        if (!isCRSUnitMeter(sourceCRS)) {
-            transformed = transformGeometry(geom, sourceCRS, METER_EPSG_STRING);
-            transformed.setSRID(METER_EPSG);
+        try {
+            if (!isCRSUnitMeter(sourceCRS)) {
+                transformed = transformGeometry(geom, sourceCRS, METER_EPSG_STRING);
+                transformed.setSRID(METER_EPSG);
+            } else {
+                transformed = geom;
+            }
+
+            Geometry result = buffer(transformed, distance);
+
+            if (!isCRSUnitMeter(sourceCRS)) {
+                result = transformGeometry(result, METER_EPSG_STRING, sourceCRS);
+            }
+
+            result.setSRID(source);
+
+            return result;
         }
-        else {
-            transformed = geom;
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
         }
-
-        Geometry result = buffer(transformed, distance);
-
-        if (!isCRSUnitMeter(sourceCRS)) {
-            result = transformGeometry(result, METER_EPSG_STRING, sourceCRS);
-        }
-
-        result.setSRID(source);
-
-        return result;
     }
 
     /**
@@ -140,5 +147,125 @@ public class GeometryHandler {
         else {
             return false;
         }
+    }
+
+    public static List<Geometry> extractFootprint(JSONArray surfaceArray, String crs) {
+        double distance = 0.00001;
+        double increment = 0.00001;
+        double limit = 0.0005;
+
+        List<Polygon> exteriors = new ArrayList<>();
+        List<LinearRing> holes = new ArrayList<>();
+        GeometryFactory geometryFactory = new GeometryFactory();
+        String geoType;
+
+        List<Geometry> result = new ArrayList<>();
+
+        if (surfaceArray.length() == 1) {
+            result.add(toGeometry(surfaceArray.getJSONObject(0).getString("Lod0Footprint").split("> ")[1]));
+            return result;
+        }
+        else {
+            for (int i = 0; i < surfaceArray.length(); i++) {
+                // create Polygon object from WKT string
+                Polygon polygon = (Polygon) toGeometry(surfaceArray.getJSONObject(i).getString("Lod0Footprint").split("> ")[1]);
+                LinearRing exterior = polygon.getExteriorRing();
+
+                // get exterior ring for buffering
+                exteriors.add(geometryFactory.createPolygon(exterior));
+
+                // store holes to add back in later
+                for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
+                    holes.add(polygon.getInteriorRingN(j));
+                }
+            }
+
+            // create GeometryCollection and perform union
+            GeometryCollection geoCol = geometryFactory.createGeometryCollection(exteriors.toArray(new Polygon[0]));
+
+            Geometry merged = geoCol.union();
+
+            geoType = merged.getGeometryType();
+
+            // keep on inflating, merging until either the limit is reached or a single polygon is formed
+            while (!geoType.equals("Polygon") || distance < limit) {
+                distance += increment;
+
+                for (int i = 0; i < exteriors.size(); i++) {
+                    Polygon temp = (Polygon) bufferPolygon(exteriors.get(i), crs, distance);
+                    if (!temp.isValid()) {
+                        temp = (Polygon) GeometryFixer.fix(temp);
+                    }
+                    exteriors.set(i, temp);
+                }
+
+                geoCol = (GeometryCollection) geometryFactory.buildGeometry(exteriors);
+                merged = geoCol.union();
+                geoType = merged.getGeometryType();
+            }
+
+            List<Geometry> geometries = new ArrayList<>();
+
+            // deflate geometries back
+            for (int i = 0; i < geoCol.getNumGeometries(); i++) {
+                Geometry geometry = geoCol.getGeometryN(i);
+                geometries.add(bufferPolygon(geometry, crs, -1 * distance));
+            }
+
+            // insert holes back
+            return insertHoles(geometries, holes);
+        }
+    }
+
+    public static void ensureSameCRS(List<CEAGeometryData> ceaGeometries) throws Exception {
+        if (!checkSameCRS(ceaGeometries)) {
+            for (int i = 0; i < ceaGeometries.size(); i++) {
+                CEAGeometryData ceaGeometryData = ceaGeometries.get(i);
+                List<Geometry> geometries = ceaGeometryData.getFootprint();
+                String crs = ceaGeometryData.getCrs();
+
+                for (int j = 0; j < geometries.size(); j++) {
+                    Geometry geometry = transformGeometry(geometries.get(j), "EPSG:" + crs, EPSG_4326);
+                    geometries.set(j, geometry);
+                }
+
+                ceaGeometryData.setFootprint(geometries);
+
+                // store only the integer part
+                ceaGeometryData.setCrs(EPSG_4326.replaceAll("[^0-9]", ""));
+
+                ceaGeometries.set(i, ceaGeometryData);
+            }
+        }
+    }
+
+    private static boolean checkSameCRS(List<CEAGeometryData> ceaGeometries) {
+        List<String> crsList = ceaGeometries.stream()
+                .map(CEAGeometryData::getCrs)
+                .collect(Collectors.toList());
+        return crsList.stream().allMatch(s -> s.equals(crsList.get(0)));
+    }
+
+    private static List<Geometry> insertHoles(List<Geometry>  geometries, List<LinearRing> holes) {
+        List<Geometry> result = new ArrayList<>();
+
+        for (LinearRing hole: holes) {
+            int i = 0;
+            while (i < geometries.size()) {
+                Geometry geometry = geometries.get(i);
+                if (geometry.contains(hole)) {
+                    result.add(geometry.difference(hole));
+                    geometries.remove(i);
+                    break;
+                }
+                else {
+                    i++;
+                }
+            }
+        }
+
+        result.addAll(geometries);
+
+        return result;
     }
 }
