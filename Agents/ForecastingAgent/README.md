@@ -190,7 +190,7 @@ The following UML diagram provides an overview of how the agent works:
 
 ## 2.2 Usage of Custom Forecasting Models
 
-To use pre-trained/custom models, both a model loading and covariate loading function need to be specified in the [model mapping] file, and referenced in the `FC_MODELS` dictionary. Specify any custom loading functions following the example of the `tft_pirmasens_heat_demand` model configuration. [Building the agent](#31-building-the-agent) again after adding custom models is not necessary since the models will be included as volume when deploying the agent locally.
+To use pre-trained/custom models, both a model loading and covariate loading function need to be specified in the [model mapping] file, and referenced in the `FC_MODELS` dictionary. Specify any custom loading functions following the example of the `tft_pirmasens_heat_demand` model configuration. [Building the agent](#31-building-the-agent) again after adding custom models is not necessary. However, for the agent to recognize and use these added models, the content of fcmodels must be available locally. This ensures it can be mapped correctly according to the bind mount paths, regardless of whether you're deploying the agent locally or using a pulled Docker image.
 
 
 ## 2.3 Forecast Error Evaluation

@@ -224,6 +224,7 @@ def load_ts_data(cfg, tsClient):
                             for iri, _ in cfg['fc_model']['covariates'].items()]
             # Create consolidated covariates list for the forecast
             # NOTE: The order of the covariate list does not affect the prophet model
+            #      as the model is directly trained on the covariates and produces forecast
             covariates = concatenate(
                 [TimeSeries.from_dataframe(covariate, time_col='time', value_cols="covariate")
                     for covariate in covariates],
