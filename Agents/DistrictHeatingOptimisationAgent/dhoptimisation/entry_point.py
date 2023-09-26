@@ -9,7 +9,8 @@ from pyderivationagent.conf import config_derivation_agent
 
 from dhoptimisation.agent import default
 from dhoptimisation.agent import DHOptimisationAgent
-from dhoptimisation.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
+from dhoptimisation.utils.env_configs import SPARQL_QUERY_ENDPOINT, \
+                                             SPARQL_UPDATE_ENDPOINT
 
 
 # Initialise logger instance (ensure consistent logger level`)

@@ -10,13 +10,16 @@ from contextlib import contextmanager
 
 from py4jps import agentlogging
 
-from forecastingagent.errorhandling.exceptions import TSException
-from forecastingagent.utils.baselib_gateway import jpsBaseLibGW
-from forecastingagent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
+from dhoptimisation.utils.baselib_gateway import jpsBaseLibGW
+from dhoptimisation.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
 
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
+
+
+class TSException(Exception):
+    """Raise in case of exception when using the TimeSeriesClient."""
 
 
 class TSClient:
