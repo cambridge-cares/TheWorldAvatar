@@ -27,6 +27,8 @@ public class CEAMetaData {
 
     public List<Double> getWeatherMetaData() {return this.weatherMetaData;}
 
+    public byte[] getTerrain() {return this.terrain;}
+
     public void setSurrounding(List<CEAGeometryData> surrounding_value) {this.surrounding = surrounding_value;}
 
     public void setWeatherTimes(List<OffsetDateTime> weatherTimes_value) {this.weatherTimes = weatherTimes_value;}
