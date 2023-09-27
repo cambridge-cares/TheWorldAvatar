@@ -25,11 +25,12 @@ WORKDIR /app
 # Copy in the properties file
 COPY ./config/agent.properties /root/agent.properties
 RUN mkdir /root/folderQR
+RUN mkdir /root/manuals
 
 # Set the required environment variable
 ENV AGENTPROPERTIES="/root/agent.properties"
-ENV FOLDERQR="/root/folderQR"
-ENV FOLDERMANUAL = "/root/manuals"
+ENV FOLDERQR="/root/folderQR/"
+ENV FOLDERMANUAL = "/root/manuals/"
 
 COPY --from=builder /root/AssetManagerAgent/output/asset-manager-agent##1.0.1.war $CATALINA_HOME/webapps/
 

@@ -3,35 +3,39 @@ package uk.ac.cam.cares.jps.agent.assetmanager;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.pdf.PdfDocument; 
-import com.itextpdf.kernel.pdf.PdfWriter; 
 
-import com.itextpdf.layout.Document; 
-import com.itextpdf.layout.element.Cell;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument; 
+import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.properties.UnitValue;
+
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.AreaBreak;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.*;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+
 
 
 
@@ -51,13 +55,12 @@ public class QRPrinter {
     final Double A4_PIXEL_HEIGHT = 14032.; //297 mm
     //With the given ppi, 1 cm corresponds to:
     final Double PIXEL_PER_CM = 472.44;
+    final Double POINT_PER_CM = 28.346;
     //QR per page (sticker size is targetSize x targetSize+2 cm to accomodate ID text)
     Double targetSize;
     int targetSizePX;
-    int row, col;
 
-    //IPP handler for sending request to printer
-    IPPHandler ipphandler;
+
 
     /**
      * Logger for reporting info/errors.
@@ -70,93 +73,100 @@ public class QRPrinter {
         folderQR = qrStorageFolder;
         targetSize = targetSizeCM;
         targetSizePX = new Double(PIXEL_PER_CM * targetSizeCM).intValue();
-        row = new Double(A4_PIXEL_WIDTH/(targetSize*PIXEL_PER_CM)).intValue();
-        col = new Double(A4_PIXEL_WIDTH/((targetSize+2)*PIXEL_PER_CM)).intValue();
-        ipphandler = new IPPHandler(printServerURL);
+        LOGGER.info("Starting QR printer...");
+        
     }
 
-    //Create QR code from IRI
-    //@SandraDeng
-    public static void createQR(String data, String path, String charset, int height, int width) throws WriterException, IOException {
-    BitMatrix matrix = new MultiFormatWriter().encode(
-            new String(data.getBytes(charset), charset),
-            BarcodeFormat.QR_CODE, width, height);
-
-    MatrixToImageWriter.writeToFile(
-            matrix,
-            path.substring(path.lastIndexOf('.') + 1),
-            new File(path));
-
-    }
-
-    //send print request
-    public void sendPrintingRequest (String iriString) throws Exception{       
-        String PDFPathString = java.time.LocalDateTime.now().toString() + "_QRCodes.pdf";    
-        PdfWriter writer = new PdfWriter(PDFPathString);        
-     
-        PdfDocument pdf = new PdfDocument(writer);              
-        Document document = new Document(pdf);              
-    
-        String imFile = getQRPath(iriString);       
-        ImageData data = ImageDataFactory.create(imFile);                    
-        Image image = new Image(data);                        
-    
-        document.add(image);              
-     
-        document.close();    
-
-        //Send pdf to printer
-        try {
-            ipphandler.printFile(PDFPathString);
-        } catch (Exception e) {
-            throw new Exception("Failed to print QR code.", e);
-        }
-
-    }
-
-    public void sendPrintRequest (String[] iriStringArr) throws Exception {
-        try{    
-            String PDFPathString = java.time.LocalDateTime.now().toString() + "_QRCodes.pdf";
-            // Creating a PdfDocument object    
-            PdfWriter writer = new PdfWriter(PDFPathString);
-                
-            // Creating a PdfDocument object      
-            PdfDocument pdf = new PdfDocument(writer);                  
+    public void PrintQRBulk(String[] iriStringArr)throws Exception  {
+        LOGGER.info("Started bulk printing for IRIs: " + iriStringArr);
+        String filename = "/root/QRCodes.pdf";
+        PdfDocument pdfDoc = new PdfDocument(new PdfWriter(filename));
+        try (Document document = new Document(pdfDoc, PageSize.A4)) {
+            int qrCodeSize = (int) (targetSize * POINT_PER_CM);
+            //int qrCodeSize = 200; // Size of each QR code in points (1/72 inch)
+            //int A4_HEIGHT = 842;
+            //int A4_WIDTH = 595;
+            float A4_HEIGHT = PageSize.A4.getHeight();
+            float A4_WIDTH = PageSize.A4.getWidth();
+            float marginVert = 50;
+            float marginHorz = 50;
+            LOGGER.debug("PAPER SIZE::"+A4_WIDTH+"x"+A4_HEIGHT+";");
+            int MAX_ROW = (int) ((A4_HEIGHT-marginHorz)/(qrCodeSize));
+            int MAX_COL = (int) ((A4_WIDTH-marginVert)/(qrCodeSize));
             
-            // Creating a Document object       
-            Document doc = new Document(pdf);                       
-            Table table = new Table(UnitValue.createPercentArray(col)).useAllAvailableWidth();
-            for (int i=0; i < iriStringArr.length;i++) {
-                //if row runs out create a new page.
-                if((i/col) >= row){
+            int r =0;
+            int c =0;
+            for (int counter = 0; counter < iriStringArr.length; counter ++){
+                String iriString = iriStringArr[counter];
+                float x = c * qrCodeSize + marginHorz/2;
+                float y = A4_HEIGHT - (r * qrCodeSize) - marginVert/2;
+                // x and y is the bottom left corner apparently so need move y down
+                y-=qrCodeSize;
+                LOGGER.debug("QR LOCATION::"+iriString+"::"+x+"-"+y+";");
 
+                // Generate QR code image
+                try {
+                    String filePathQR = getQRPath(iriString);
+                    LOGGER.debug("");
+                    Image qrCodeImage = new Image(ImageDataFactory.create(filePathQR));
+                    qrCodeImage.setFixedPosition(x, y);
+                    qrCodeImage.scaleToFit(qrCodeSize, qrCodeSize);
+                    document.add(qrCodeImage);
+                } catch (Exception e) {
+                    throw new Exception("Failed to create QR code for IRI:" + iriString);
                 }
-
-                String iriString = iriStringArr[i];
-                String QRPath = getQRPath(iriString);
-                //Add image 
-                Cell cell = new Cell();                   
-                ImageData data = ImageDataFactory.create(QRPath);        
-                Image img = new Image(data);              
-                cell.add(img.setAutoScale(true));              
-                table.addCell(cell);
-
-                //Add label on the next row
-                if (i % col == 0){
-                    for(int j =i-col; j % col !=0 ; j++){
-                        //add ID here
-                    }
-
+                
+                c+=1;
+                if (c==MAX_COL){
+                    c=0;
+                    r+=1;
+                }
+                if(r==MAX_ROW){
+                    document.add(new AreaBreak());
+                    r=0;
                 }
             }
-
-            doc.close();
         }
-        catch (IOException e){
-            throw new Exception("Writer failed to access QR code", e);
+        
+        LOGGER.info("Finish creating pdf for printing: "+ filename);
+
+        sendPrintRequest(filename);
+    }
+
+    private void sendPrintRequest (String filename) throws Exception {
+        LOGGER.info("Sending print request for file: " + filename);
+        //Encode pdf to base64
+        byte[] input_file;
+        try {
+            input_file = Files.readAllBytes(Paths.get(filename));
+        } catch (Exception e) {
+            throw new Exception("Failed to fetch pdf:" + filename);
         }
+        
 
+        byte[] encodedBytes = Base64.getEncoder().encode(input_file);
+        String encodedString =  new String(encodedBytes);
 
+        //Add base 64 to request and send
+        JSONObject body = new JSONObject();
+        body.put("rawPDF", encodedString);
+
+        URL url = new URL(printingURL);
+        HttpClient client = HttpClient.newHttpClient();
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .header("Content-Type", "application/json")
+            .uri(URI.create(printingURL))
+            .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
+            .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        LOGGER.debug(response);
+        if (response.statusCode()!= 200){
+            throw new JPSRuntimeException("Printing server failed to print: "  + response.body());
+        }
+        
     }
 
     String getQRPath (String iriString) throws IOException, WriterException {
@@ -169,6 +179,22 @@ public class QRPrinter {
         }
 
         return path;
+    }
+
+    //Create QR code from IRI
+    //@SandraDeng
+    public static void createQR(String data, String path, String charset, int height, int width) throws WriterException, IOException {
+        BitMatrix matrix = new MultiFormatWriter().encode(
+                new String(data.getBytes(charset), charset),
+                BarcodeFormat.QR_CODE, width, height);
+
+        MatrixToImageWriter.writeToFile(
+                matrix,
+                path.substring(path.lastIndexOf('.') + 1),
+                new File(path));
+
+        LOGGER.info("Created QR code for IRI: " + data);
+
     }
 
 

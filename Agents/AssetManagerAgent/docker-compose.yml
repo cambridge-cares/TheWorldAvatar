@@ -9,4 +9,4 @@ services:
     ports:
       - "1015:8080"
     volumes:
-      - ./manuals:/root/manuals
+      - ./manuals:/root/manuals/

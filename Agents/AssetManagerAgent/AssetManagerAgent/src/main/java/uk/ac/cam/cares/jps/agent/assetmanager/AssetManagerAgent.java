@@ -47,6 +47,7 @@ public class AssetManagerAgent extends JPSAgent{
     //Properties params
     public String ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC;
     public String ENDPOINT_PRINTER;
+    public Double TARGET_QR_SIZE;
 
     /**
      * Logger for reporting info/errors.
@@ -81,14 +82,21 @@ public class AssetManagerAgent extends JPSAgent{
             }
             
 
-            String[] args = new String[] {ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_PRINTER, FOLDER_QR, FOLDER_MANUAL};
-            /*
+            String[] args = new String[] {
+                ENDPOINT_KG_ASSET, 
+                ENDPOINT_KG_DEVICE, 
+                ENDPOINT_KG_PURCHASEDOC, 
+                ENDPOINT_PRINTER, 
+                FOLDER_QR, 
+                FOLDER_MANUAL
+            };
+            
             try {
-                printerHandler = new QRPrinter(ENDPOINT_PRINTER, FOLDER_QR, 5.);
+                printerHandler = new QRPrinter(ENDPOINT_PRINTER, FOLDER_QR, TARGET_QR_SIZE);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Failed to create QR code printer handler", e);
             }
-            */
+            
             try{
                 instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC);
             } catch(Exception e) {
@@ -146,6 +154,7 @@ public class AssetManagerAgent extends JPSAgent{
                 ENDPOINT_KG_DEVICE= prop.getProperty("endpoint.kg.device");
                 ENDPOINT_KG_PURCHASEDOC  = prop.getProperty("endpoint.kg.purchasedocs");
                 ENDPOINT_PRINTER = prop.getProperty("endpoint.printer");
+                TARGET_QR_SIZE = Double.parseDouble(prop.getProperty("target_qr_size"));
             }
             catch (Exception e) {
                 throw new IOException ("The endpoint keys cannot be retrieved from the properties file: ", e);
@@ -242,9 +251,10 @@ public class AssetManagerAgent extends JPSAgent{
     public JSONObject contactPrintServer (String[] arg, String IRI){
         JSONObject message = new JSONObject();
         message.put("Result", "Printing job initiated for IRI: " + IRI);
+        String[] iriArray = {IRI};
         // send to server
         try{
-            printerHandler.sendPrintingRequest(IRI);
+            printerHandler.PrintQRBulk(iriArray);
         }
         catch(Exception e) {
             message.accumulate("Result", "Failed to contact printer: " + e);
@@ -256,10 +266,12 @@ public class AssetManagerAgent extends JPSAgent{
     public JSONObject contactPrintServer (String[] arg, String[] IRIArray){
         JSONObject message = new JSONObject();
         message.put("Result", "Bulk printing job initiated for ID: " + IRIArray);
-        // get IRI from ID
-        
-        // get QR code
-        // send to server
+        try{
+            printerHandler.PrintQRBulk(IRIArray);
+        }
+        catch(Exception e) {
+            message.accumulate("Result", "Failed to print qr codes: " + e);
+        }
         return message;
     }
 
@@ -287,7 +299,17 @@ public class AssetManagerAgent extends JPSAgent{
 
     public JSONObject addManualPDF(String[] arg, String encodedPDF, String fileName) {
         JSONObject message = new JSONObject();
-        File file = new File(arg[6]+fileName);
+        File file = new File(arg[5]+fileName);
+        LOGGER.debug("FILENAME::"+arg[5]+fileName);
+        if(!(file.exists() && !file.isDirectory())) { 
+            try {
+                //file.getParentFile().mkdirs();
+                file.createNewFile();
+            } catch (Exception e) {
+                message.accumulate("Result", "Failed to create PDF:"+ e);
+            }
+            
+        }
         try ( FileOutputStream fos = new FileOutputStream(file); ) {
             byte[] decoder = Base64.getDecoder().decode(encodedPDF);
             fos.write(decoder);
