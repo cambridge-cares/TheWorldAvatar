@@ -179,7 +179,8 @@ public class TimeSeriesClient<T> {
             rdbURL = "";
         }
         try {
-            rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit, timeseriesType, duration, unit);
+            rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit, timeseriesType, duration, unit,
+                    rdbClient.getTimeClass(), rdbClient.getClass());
         } catch (Exception eRdfCreate) {
             throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
         }
@@ -291,7 +292,8 @@ public class TimeSeriesClient<T> {
         }
 
         try {
-            rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit, timeSeriesTypes, durations, units);
+            rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit, timeSeriesTypes, durations, units,
+                    rdbClient.getTimeClass(), rdbClient.getClass());
         } catch (Exception eRdfCreate) {
             throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
         }
@@ -509,7 +511,7 @@ public class TimeSeriesClient<T> {
             // handled
             try {
                 rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit, timeSeriesType, durIRI, numericDuration,
-                        temporalUnit);
+                        temporalUnit, rdbClient.getTimeClass(), rdbClient.getClass());
             } catch (Exception eRdfCreate) {
                 throw new JPSRuntimeException(
                         exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
@@ -1321,5 +1323,9 @@ public class TimeSeriesClient<T> {
         } catch (SQLException e) {
             throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
         }
+    }
+
+    public String getRdbUrl() {
+        return rdbClient.getRdbURL();
     }
 }

@@ -11,6 +11,10 @@ interface TimeSeriesRDBClientInterface<T> {
 
     void setSchema(String schema);
 
+    String getSchema();
+
+    Class<T> getTimeClass();
+
     /**
      * Initialise a time series
      * <p>

@@ -69,6 +69,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
     // Error message
     private static final String CONNECTION_ERROR = "Failed to connect to database";
 
+    // Java class of time values
+    private Class<T> timeClass;
+
     // Allowed aggregation function
     protected enum AggregateFunction {
         AVERAGE,
@@ -83,10 +86,26 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
      */
     public TimeSeriesRDBClient(Class<T> timeClass) {
         timeColumn = DSL.field(DSL.name("time"), timeClass);
+        this.timeClass = timeClass;
     }
 
+    @Override
+    public Class<T> getTimeClass() {
+        return timeClass;
+    }
+
+    @Override
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+
+    @Override
+    public String getSchema() {
+        if (schema == null) {
+            return "public";
+        } else {
+            return schema;
+        }
     }
 
     /**

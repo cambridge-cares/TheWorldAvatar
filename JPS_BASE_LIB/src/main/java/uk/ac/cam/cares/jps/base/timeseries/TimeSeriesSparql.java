@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
+import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
@@ -60,6 +61,8 @@ public class TimeSeriesSparql {
     private static final Iri hasAveragingPeriod = PREFIX_ONTOLOGY.iri("hasAveragingPeriod");
     private static final Iri numericDuration = PREFIX_TIME.iri("numericDuration");
     private static final Iri unitType = PREFIX_TIME.iri("unitType");
+    private static final Iri HAS_RDB_CLIENT_CLASS = PREFIX_ONTOLOGY.iri("hasRDBClientClass");
+    private static final Iri HAS_TIME_CLASS = PREFIX_ONTOLOGY.iri("hasTimeClass");
 
     // Fields for class specific exceptions
     private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
@@ -382,7 +385,7 @@ public class TimeSeriesSparql {
      */
 
     protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit, Iri type,
-            Duration duration, ChronoUnit unit) {
+            Duration duration, ChronoUnit unit, Class<?> timeClass, Class<?> rdbClientClass) {
         // Construct time series IRI
         Iri tsIRI;
         // Check whether timeseriesIRI follows IRI naming convention of namespace &
@@ -447,16 +450,14 @@ public class TimeSeriesSparql {
 
         // Check that the data IRIs are not attached to a different time series IRI
         // already
-        for (String iri : dataIRI) {
-            String ts = getTimeSeries(iri);
-            if (ts != null) {
-                throw new JPSRuntimeException(
-                        exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
-            }
+        if (hasExistingTimeSeries(dataIRI)) {
+            throw new JPSRuntimeException("One or more of the provided data IRI has an existing time series");
         }
 
-        // relational database URL
-        modify.insert(tsIRI.has(hasRDB, literalOf(dbURL)));
+        // relational database URL and classes used by TimeSeriesClientFactory
+        modify.insert(
+                tsIRI.has(hasRDB, literalOf(dbURL)).andHas(HAS_RDB_CLIENT_CLASS, rdbClientClass.getCanonicalName())
+                        .andHas(HAS_TIME_CLASS, timeClass.getCanonicalName()));
 
         // link each data to time series
         for (String data : dataIRI) {
@@ -473,7 +474,8 @@ public class TimeSeriesSparql {
     }
 
     protected void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit,
-            List<Iri> types, List<Duration> durations, List<ChronoUnit> units) {
+            List<Iri> types, List<Duration> durations, List<ChronoUnit> units, Class<?> timeClass,
+            Class<?> rdbClientClass) {
         ModifyQuery modify = Queries.MODIFY();
         // set prefix declarations
         modify.prefix(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
@@ -534,8 +536,10 @@ public class TimeSeriesSparql {
                 }
             }
 
-            // relational database URL
-            modify.insert(tsIRI.has(hasRDB, literalOf(rdbURL)));
+            // relational database URL and classes used by TimeSeriesClientFactory
+            modify.insert(
+                    tsIRI.has(hasRDB, literalOf(rdbURL)).andHas(HAS_RDB_CLIENT_CLASS, rdbClientClass.getCanonicalName())
+                            .andHas(HAS_TIME_CLASS, timeClass.getCanonicalName()));
 
             // link each data to time series
             for (String data : dataIRIs.get(i)) {
@@ -898,7 +902,7 @@ public class TimeSeriesSparql {
     }
 
     protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit, Iri type,
-            String durationIRI, Double duration, String unit) {
+            String durationIRI, Double duration, String unit, Class<?> timeClass, Class<?> rdbClientClass) {
         // Construct time series IRI
         Iri tsIRI;
         // Check whether timeseriesIRI follows IRI naming convention of namespace &
@@ -944,16 +948,14 @@ public class TimeSeriesSparql {
 
         // Check that the data IRIs are not attached to a different time series IRI
         // already
-        for (String iri : dataIRI) {
-            String ts = getTimeSeries(iri);
-            if (ts != null) {
-                throw new JPSRuntimeException(
-                        exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
-            }
+        if (hasExistingTimeSeries(dataIRI)) {
+            throw new JPSRuntimeException("One or more of the provided data IRI has an existing time series");
         }
 
-        // relational database URL
-        modify.insert(tsIRI.has(hasRDB, literalOf(dbURL)));
+        // relational database URL and classes used by TimeSeriesClientFactory
+        modify.insert(
+                tsIRI.has(hasRDB, literalOf(dbURL)).andHas(HAS_RDB_CLIENT_CLASS, rdbClientClass.getCanonicalName())
+                        .andHas(HAS_TIME_CLASS, timeClass.getCanonicalName()));
 
         // link each data to time series
         for (String data : dataIRI) {
@@ -967,5 +969,53 @@ public class TimeSeriesSparql {
         }
 
         kbClient.executeUpdate(modify.getQueryString());
+    }
+
+    List<String> getTimeClassRdbClassAndUrl(List<String> dataIriList) {
+        SelectQuery query = Queries.SELECT();
+
+        Variable dataVar = query.var();
+        Variable timeClassVar = query.var();
+        Variable rdbClientClassVar = query.var();
+        Variable rdbUrlVar = query.var();
+
+        GraphPattern queryPattern = dataVar.has(PropertyPaths.path(hasTimeSeries, HAS_TIME_CLASS), timeClassVar)
+                .andHas(PropertyPaths.path(hasTimeSeries, HAS_RDB_CLIENT_CLASS), rdbClientClassVar)
+                .andHas(PropertyPaths.path(hasTimeSeries, hasRDB), rdbUrlVar);
+        ValuesPattern valuesPattern = new ValuesPattern(dataVar,
+                dataIriList.stream().map(Rdf::iri).collect(Collectors.toList()));
+
+        query.select(timeClassVar, rdbClientClassVar, rdbUrlVar).where(queryPattern, valuesPattern).distinct()
+                .prefix(PREFIX_ONTOLOGY);
+
+        JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+
+        if (queryResult.length() != 1) {
+            throw new JPSRuntimeException("Given IRIs do not have exactly one time class/rdb client class/rdb url");
+        }
+
+        String timeClassName = queryResult.getJSONObject(0).getString(timeClassVar.getQueryString().substring(1));
+        String rdbClientClassName = queryResult.getJSONObject(0)
+                .getString(rdbClientClassVar.getQueryString().substring(1));
+        String rdbUrl = queryResult.getJSONObject(0).getString(rdbUrlVar.getQueryString().substring(1));
+
+        return Arrays.asList(timeClassName, rdbClientClassName, rdbUrl);
+    }
+
+    boolean hasExistingTimeSeries(List<String> dataIriList) {
+        SelectQuery query = Queries.SELECT();
+        Variable timeSeriesVar = query.var();
+        Variable dataVar = query.var();
+
+        ValuesPattern valuesPattern = new ValuesPattern(dataVar,
+                dataIriList.stream().map(Rdf::iri).collect(Collectors.toList()));
+
+        GraphPattern queryPattern = dataVar.has(hasTimeSeries, timeSeriesVar);
+
+        query.where(valuesPattern, queryPattern).prefix(PREFIX_ONTOLOGY).select(timeSeriesVar).distinct();
+
+        JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+
+        return queryResult.length() > 0;
     }
 }

@@ -90,8 +90,22 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     }
 
     @Override
+    public Class<T> getTimeClass() {
+        return timeClass;
+    }
+
+    @Override
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+
+    @Override
+    public String getSchema() {
+        if (schema == null) {
+            return "public";
+        } else {
+            return schema;
+        }
     }
 
     /**
