@@ -101,8 +101,18 @@
     ts:hasCovariate :Promotion_1 ;
     ts:hasCovariate :SpecialEvent_1 .
 
+:ForecastingModel_5 rdf:type ts:ForecastingModel ;
+    rdfs:label "Prophet" ;
+    ts:scaleData "False"^^xsd:boolean ;
+    ts:hasCovariate :Promotion_1 .
+
+:ForecastingModel_6 rdf:type ts:ForecastingModel ;
+    rdfs:label "Prophet" ;
+    ts:scaleData "True"^^xsd:boolean ;
+    ts:hasCovariate :Promotion_1 .
+
 :AirTemperature_1 rdf:type ems:AirTemperature .
 :IsHoliday_1 rdf:type dh:isPublicHoliday .
 
-:Promotion_1 rdf:type ems:Promotion .
-:SpecialEvent_1 rdf:type dh:SpecialEvent .
+:Promotion_1 rdf:type ems:AirTemperature .
+:SpecialEvent_1 rdf:type dh:isPublicHoliday .
