@@ -25,6 +25,13 @@
                         "Type": "volume",
                         "Source": "geotiffs",
                         "Target": "/geotiffs"
+                    },
+                    {
+                        "Type": "tmpfs",
+                        "Target": "/dev/shm",
+                        "TmpfsOptions":{
+                            "SizeBytes": 1073741824
+                        }
                     }
                 ],
                 "Secrets": [
