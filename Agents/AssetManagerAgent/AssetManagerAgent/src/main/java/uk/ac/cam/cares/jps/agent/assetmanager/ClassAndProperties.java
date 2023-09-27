@@ -109,6 +109,7 @@ public class ClassAndProperties {
     public static final Iri hasName = iri("https://www.omg.org/spec/Commons/Designators/hasName");
 
     public static final Iri containsElement = Pref_BOT.iri("containsElement");
+    public static final Iri containsSystem = Pref_SYS.iri("containsSystem");
 
     //External classes
     public static final Iri Item = Pref_P2P_ITEM.iri("Item");

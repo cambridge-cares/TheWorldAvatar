@@ -94,6 +94,7 @@ public class AssetKGInterface {
             String idNum = String.valueOf(getLatestIDNum() +  1);
             id = date +"/"+ idNum;
         }
+        AssetData.put("Prefix", devicePrefix);
         AssetData.put("ID", id);
         AssetData.put("label", AssetDataRaw.getString("Name").replaceAll("(\\r|\\n)", " ").replace("\\", "\\\\"));
         AssetData.put("itemIRI", itemIRI);
@@ -522,6 +523,8 @@ public class AssetKGInterface {
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
+        String devicePrefix = data.getString("Prefix");
+
         Iri deviceIRI = iri(data.getString("deviceIRI"));
         Iri deviceTypeIRI = iri(data.getString("deviceTypeIRI"));
         Iri roomIRI = iri(data.getString("RoomIRI"));
@@ -551,13 +554,18 @@ public class AssetKGInterface {
         //get location
         if (LocationString.equals( "Research Wing") || LocationString.equals("CREATE Tower")){
             if(roomIRI != null){
-                query.insert(roomIRI.has(containsElement, deviceIRI));
+                if (devicePrefix.equals(P_SYS)){
+                    query.insert(roomIRI.has(containsSystem, deviceIRI));
+                }
+                else{
+                    query.insert(roomIRI.has(containsElement, deviceIRI));
+                }
+                
 
                 //Workspace
                 if(!WorkspaceIDLiteral.isBlank()){
                     query.insert(WorkspaceIRI.isA(Workspace));
                     query.insert(deviceIRI.has(isLocatedAt, WorkspaceIRI));
-                    query.insert(roomIRI.has(containsElement, deviceIRI));
                     query.insert(WorkspaceIRI.has(isLocatedIn, roomIRI));
                     query.insert(WorkspaceIRI.has(hasWorkspaceIdentifier, WorkspaceIDLiteral));
                 }
