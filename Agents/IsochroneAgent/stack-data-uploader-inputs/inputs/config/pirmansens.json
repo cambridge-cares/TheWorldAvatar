@@ -1,0 +1,95 @@
+{
+    "name": "pirmasens",
+    "database": "postgres",
+    "datasetDirectory": "pirmasens",
+    "dataSubsets": [
+    {
+        "type": "raster",
+        "name": "population_total",
+        "skip": true,
+        "subdirectory": "population_total",
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "elevation"
+            }
+        }
+    }
+    ,
+    {
+        "type": "raster",
+        "name": "population_childrenU5",
+        "skip": true,
+        "subdirectory": "population_childrenU5",
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "elevation"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_elderly",
+        "skip": true,
+        "subdirectory": "population_elderly",
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "elevation"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_men",
+        "skip": true,
+        "subdirectory": "population_men",
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "elevation"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_women",
+        "skip": true,
+        "subdirectory": "population_women",
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "elevation"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_women_reproductive",
+        "skip": true,
+        "subdirectory": "population_women_reproductive",
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "elevation"
+            }
+        }
+    }
+    ,
+      
+    {
+        "type": "raster",
+        "name": "population_youth",
+        "skip": true,
+        "subdirectory": "population_youth",
+        "geoServerSettings": {
+            "layerSettings": {
+                "defaultStyle": "elevation"
+            }
+        }
+    }
+	]
+}
