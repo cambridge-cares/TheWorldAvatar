@@ -124,6 +124,14 @@ To use the default forecasting model (i.e., [Prophet] without covariates), the f
                            rdfs:label "Prophet" ;
                            ts:scaleData "False"^^xsd:boolean .
 ```
+Covariates can be added to the model (i.e., [Prophet] with 2 covariates) by adding a triple for each covariate:
+```xml
+<IRI_of_forecasting_model> rdf:type ts:ForecastingModel ; 
+                           rdfs:label "Prophet" ;
+                           ts:scaleData "False"^^xsd:boolean:
+                           ts:hasCovariate :<IRI_of_covariate1> 
+                           ts:hasCovariate :<IRI_of_covariate2> .
+```
 
 Used namespaces:
 ```xml
