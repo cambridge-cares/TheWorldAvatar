@@ -54,6 +54,9 @@ public class RunCEATask implements Runnable {
     private static final String WORKFLOW_YML2 = "workflow2_pvt_tube.yml";
     private static final String CREATE_WORKFLOW_SCRIPT = "create_cea_workflow.py";
     private static final String FS = System.getProperty("file.separator");
+    private static final String PROJECT_NAME = "testProject";
+    private static final String SCENARIO_NAME = "testScenario";
+    private static final String CEA_OUTPUT_DATA_DIRECTORY = PROJECT_NAME + FS + SCENARIO_NAME + FS + "outputs" + FS + "data";
     private Map<String, ArrayList<String>> solarSupply = new HashMap<>();
 
     public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, URI endpointUri, ArrayList<String> uris, int thread, String crs) {
@@ -98,277 +101,13 @@ public class RunCEATask implements Runnable {
      * Recursively deletes contents of a directory
      * @param file given directory
      */
-    public void deleteDirectoryContents(File file)
-    {
+    public void deleteDirectoryContents(File file) {
         for (File subFile : file.listFiles()) {
             // if it is a subfolder recursively call function to empty it
             if (subFile.isDirectory()) {
                 deleteDirectoryContents(subFile);
             }
             subFile.delete();
-        }
-    }
-
-    /**
-     * Extracts areas from excel files and add to output data, then delete excel files
-     * @param tmpDir temporary directory path
-     * @param result output data
-     * @return output data
-     */
-    public CEAOutputData extractArea(String tmpDir, CEAOutputData result) {
-        String line = "";
-        String splitBy = ",";
-        String solarDir = tmpDir + FS + "testProject" + FS + "testScenario" + FS + "outputs" + FS + "data" + FS + "potentials" + FS + "solar" + FS;
-        boolean flag = false;
-
-        try{
-            for (String generatorType : solarSupply.keySet()) {
-                String generator = generatorType;
-
-                if (generatorType.contains("PVT")) {generator = "PVT";}
-                
-                //parsing a CSV file into BufferedReader class constructor
-                FileReader solar = new FileReader(solarDir + generatorType + "_total_buildings.csv");
-                BufferedReader solarFile = new BufferedReader(solar);
-                ArrayList<String[]> solarColumns = new ArrayList<>();
-
-                while ((line = solarFile.readLine()) != null)   //returns a Boolean value
-                {
-                    String[] rows = line.split(splitBy);    // use comma as separator
-                    solarColumns.add(rows);
-                }
-
-                for (int n = 0; n < solarColumns.get(0).length; n++) {
-                    if (solarColumns.get(0)[n].equals(generator + "_roofs_top_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.RoofSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    } else if (solarColumns.get(0)[n].equals(generator + "_walls_south_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.SouthWallSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    } else if (solarColumns.get(0)[n].equals(generator + "_walls_north_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.NorthWallSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    } else if (solarColumns.get(0)[n].equals(generator + "_walls_east_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.EastWallSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    } else if (solarColumns.get(0)[n].equals(generator + "_walls_west_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.WestWallSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    }
-                }
-
-                solarFile.close();
-                solar.close();
-
-                if (flag) {break;}
-            }
-        } catch (IOException e) {
-            File file = new File(tmpDir);
-            deleteDirectoryContents(file);
-            file.delete();
-            e.printStackTrace();
-            throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
-        }
-
-        result.targetUrl=endpointUri.toString();
-        result.iris=uris;
-        File file = new File(tmpDir);
-        deleteDirectoryContents(file);
-        file.delete();
-
-        return result;
-    }
-
-    /**
-     * Extracts time series data from excel files and add to output data
-     * @param tmpDir temporary directory path
-     * @return output data
-     */
-    public CEAOutputData extractTimeSeriesOutputs(String tmpDir) {
-        String line = "";
-        String splitBy = ",";
-        String projectDir = tmpDir+FS+"testProject";
-        CEAOutputData result = new CEAOutputData();
-        boolean getTimes = true;
-
-        try{
-            for(int i=0; i<inputs.size(); i++){
-                FileReader demand;
-                if(i<10){
-                    demand = new FileReader(projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"demand"+FS+"B00"+i+".csv");
-                }
-                else if(i<100){
-                    demand = new FileReader(projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"demand"+FS+"B0"+i+".csv");
-                }
-                else{
-                    demand = new FileReader(projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"demand"+FS+"B"+i+".csv");
-                }
-                BufferedReader demand_file = new BufferedReader(demand);
-                ArrayList<String[]> demand_columns = new ArrayList<>();
-                ArrayList<String> grid_results = new ArrayList<>();
-                ArrayList<String> heating_results = new ArrayList<>();
-                ArrayList<String> cooling_results = new ArrayList<>();
-                ArrayList<String> electricity_results = new ArrayList<>();
-
-                while ((line = demand_file.readLine()) != null)   //returns a Boolean value
-                {
-                    String[] rows = line.split(splitBy);    // use comma as separator
-                    demand_columns.add(rows);
-                }
-                for(int n=0; n<demand_columns.get(0).length; n++) {
-                    if (demand_columns.get(0)[n].equals("GRID_kWh")) {
-                        for (int m = 1; m < demand_columns.size(); m++) {
-                            grid_results.add(demand_columns.get(m)[n]);
-                        }
-                    } else if (demand_columns.get(0)[n].equals("QH_sys_kWh")) {
-                        for (int m = 1; m < demand_columns.size(); m++) {
-                            heating_results.add(demand_columns.get(m)[n]);
-                        }
-                    } else if (demand_columns.get(0)[n].equals("QC_sys_kWh")) {
-                        for (int m = 1; m < demand_columns.size(); m++) {
-                            cooling_results.add(demand_columns.get(m)[n]);
-                        }
-                    } else if (demand_columns.get(0)[n].equals("E_sys_kWh")) {
-                        for (int m = 1; m < demand_columns.size(); m++) {
-                            electricity_results.add(demand_columns.get(m)[n]);
-                        }
-                    }
-                }
-                demand_file.close();
-                demand.close();
-
-                String solar;
-
-                if(i<10){
-                    solar = projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar"+FS+"B00"+i;
-                }
-                else if(i<100){
-                    solar = projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar"+FS+"B0"+i;
-                }
-                else{
-                    solar = projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar"+FS+"B"+i;
-                }
-
-                for (Map.Entry<String, ArrayList<String>> entry: solarSupply.entrySet()){
-                    result = extractSolarSupply(result, entry.getKey(), entry.getValue(), splitBy, solar + "_" + entry.getKey() + ".csv", tmpDir, getTimes);
-                    getTimes = false;
-                }
-
-                result.GridConsumption.add(grid_results);
-                result.ElectricityConsumption.add(electricity_results);
-                result.HeatingConsumption.add(heating_results);
-                result.CoolingConsumption.add(cooling_results);
-            }
-        } catch ( IOException e) {
-            File file = new File(tmpDir);
-            deleteDirectoryContents(file);
-            file.delete();
-            e.printStackTrace();
-            throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
-        }
-        return result;
-    }
-
-    /**
-     * Extracts potential energy data of solar energy generators
-     * @param result CEAOutputData to store the CEA outputs
-     * @param generatorType type of solar energy generator
-     * @param supplyTypes types of potential energy that generatorType can generate
-     * @param dataSeparator separator of the CEA output csv files
-     * @param solarFile file name of the csv storing the output data for generatorType
-     * @param tmpDir root directory of CEA files
-     * @param getTimes whether to extract timestamps
-     * @return CEAOutputData with the potential energy data of solar energy generators
-     */
-    public CEAOutputData extractSolarSupply(CEAOutputData result, String generatorType, List<String> supplyTypes, String dataSeparator, String solarFile, String tmpDir, Boolean getTimes) {
-        String line;
-        String supply;
-        String generator = generatorType;
-        List<String> timestamps = new ArrayList();
-
-        if (generatorType.contains("PVT")) {generator = "PVT";}
-        
-        try {
-            FileReader solar = new FileReader(solarFile);
-
-            BufferedReader solar_file = new BufferedReader(solar);
-            ArrayList<String[]> solar_columns = new ArrayList<>();
-
-            while ((line = solar_file.readLine()) != null)   //returns a Boolean value
-            {
-                String[] rows = line.split(dataSeparator);    // use comma as separator
-                solar_columns.add(rows);
-            }
-
-            for (int i = 0; i < supplyTypes.size(); i++) {
-                ArrayList<String> roof_results = new ArrayList<>();
-                ArrayList<String> wall_south_results = new ArrayList<>();
-                ArrayList<String> wall_north_results = new ArrayList<>();
-                ArrayList<String> wall_east_results = new ArrayList<>();
-                ArrayList<String> wall_west_results = new ArrayList<>();
-
-                supply = supplyTypes.get(i);
-
-                for (int n = 0; n < solar_columns.get(0).length; n++) {
-                    if (getTimes && solar_columns.get(0)[n].equals("Date")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            timestamps.add(solar_columns.get(m)[n].replaceAll("\\s", "T"));
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_roofs_top_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            roof_results.add(solar_columns.get(m)[n]);
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_walls_south_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            wall_south_results.add(solar_columns.get(m)[n]);
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_walls_north_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            wall_north_results.add(solar_columns.get(m)[n]);
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_walls_west_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            wall_west_results.add(solar_columns.get(m)[n]);
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_walls_east_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            wall_east_results.add(solar_columns.get(m)[n]);
-                        }
-                    }
-                }
-
-                result = addSolarSupply(result, generatorType, "roof", supply, roof_results);
-                result = addSolarSupply(result, generatorType, "wall_north", supply, wall_north_results);
-                result = addSolarSupply(result, generatorType, "wall_south", supply, wall_south_results);
-                result = addSolarSupply(result, generatorType, "wall_west", supply, wall_west_results);
-                result = addSolarSupply(result, generatorType, "wall_east", supply, wall_east_results);
-
-                if (getTimes) {
-                    result.times = timestamps;
-                }
-            }
-
-            solar_file.close();
-            solar.close();
-
-            return result;
-        }
-        catch ( IOException e) {
-            File file = new File(tmpDir);
-            deleteDirectoryContents(file);
-            file.delete();
-            e.printStackTrace();
-            throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
         }
     }
 
@@ -771,7 +510,7 @@ public class RunCEATask implements Runnable {
                         args6.add("cmd.exe");
                         args6.add("/C");
                         f_path = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(WEATHER_SCRIPT)).toURI()).getAbsolutePath();
-                        String defaultEPW_path = strTmp + FS + "testProject" + FS + "testScenario" + FS + "inputs" + FS + "weather" + FS + "weather.epw";
+                        String defaultEPW_path = strTmp + FS + PROJECT_NAME + FS + SCENARIO_NAME + FS + "inputs" + FS + "weather" + FS + "weather.epw";
                         args6.add("conda activate cea && python " + f_path + " " + weatherTimes_path + " " + weatherData_path + " " + weather_lat + " " + weather_lon + " " + weather_elevation + " " + weather_offset  + " " + strTmp + " " + "weather.epw" + " " + defaultEPW_path);
                     }
                     
@@ -816,7 +555,7 @@ public class RunCEATask implements Runnable {
                     String typologyfile = FS + "target" + FS + "classes" + FS + TYPOLOGY_SCRIPT;
                     String weatherfile = FS + "target" + FS + "classes" + FS + WEATHER_SCRIPT;
                     String terrainScript = FS + "target" + FS + "classes" + FS + TERRAIN_SCRIPT;
-                    String defaultEPW = strTmp + FS + "testProject" + FS + "testScenario" + FS + "inputs" + FS + "weather" + FS + "weather.epw";
+                    String defaultEPW = strTmp + FS + PROJECT_NAME + FS + SCENARIO_NAME + FS + "inputs" + FS + "weather" + FS + "weather.epw";
                     String createWorkflowFile = FS + "target" + FS + "classes" + FS + CREATE_WORKFLOW_SCRIPT;
                     String workflowFile = FS + "target" + FS + "classes" + FS +  WORKFLOW_YML;
                     String workflowFile1 = FS + "target" + FS + "classes" + FS + WORKFLOW_YML1;
@@ -890,7 +629,7 @@ public class RunCEATask implements Runnable {
                     runProcess(args6);
 
                     // delete the temporary CEA files that were used to create weather file
-                    File file = new File(strTmp + FS + "testProject");
+                    File file = new File(strTmp + FS + PROJECT_NAME);
                     deleteDirectoryContents(file);
                     file.delete();
                 }
@@ -903,7 +642,7 @@ public class RunCEATask implements Runnable {
                 runProcess(args8);
 
                 // rename PVT output files to PVT plate
-                renamePVT(strTmp+FS+"testProject"+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar", "FP");
+                renamePVT(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY + FS + "potentials" + FS + "solar", "FP");
 
                 // create workflow process for PVT tube collectors
                 runProcess(args9);
@@ -911,10 +650,19 @@ public class RunCEATask implements Runnable {
                 runProcess(args10);
 
                 // rename PVT output files to PVT tube
-                renamePVT(strTmp+FS+"testProject"+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar", "ET");
+                renamePVT(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY + FS + "potentials" + FS + "solar", "ET");
 
-                CEAOutputData result = extractTimeSeriesOutputs(strTmp);
-                returnOutputs(extractArea(strTmp,result));
+                try {
+                    CEAOutputData result = CEAOutputHandler.extractCEAOutputs(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY, this.uris);
+                    returnOutputs(result);
+                }
+                catch (IOException e) {
+                    File file = new File(strTmp);
+                    deleteDirectoryContents(file);
+                    file.delete();
+                    e.printStackTrace();
+                    throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
+                }
             } catch ( NullPointerException | URISyntaxException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
