@@ -49,8 +49,8 @@ WHERE {{
 }}"""
 
     def correct_spans(self, nlq: str):
-        where_clauses = self.span_corrector.correct_values_clause(
-            self.where_clauses, nlq
+        where_clauses = self.span_corrector.correct_values_clauses(
+            where_clauses=self.where_clauses, nlq=nlq
         )
         return CompactQueryRep(self.select_variables, where_clauses)
 

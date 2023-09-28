@@ -35,6 +35,7 @@ def get_translation_metrics(data: List[dict], do_correct_spans: bool):
                 except Exception as e:
                     if not isinstance(e, InvalidCompactQueryError):
                         print("An unhandled error is encountered when parsing a compact query.")
+                        print(datum)
                         print(e)
                     pred = "" 
         else:

@@ -7,22 +7,8 @@ from core.utils import advance_ptr_to_kw
 
 
 class SpanCorrector:
-    def correct_values_clause(self, where_clauses: List[str], nlq: str):
-        where_clauses = list(where_clauses)
-
-        clause_idx: Optional[int] = None
-        for i, clause in enumerate(where_clauses):
-            if clause.startswith("VALUES") and clause.endswith("}"):
-                clause_idx = i
-                break
-
-        if clause_idx is None:
-            return self
-
-        clause = where_clauses[clause_idx]
-
+    def correct_values_clause(self, clause: str, nlq: str):
         # VALUES ( ?var ) { ( "a" ) ( "b" ) }
-        
         ptr = advance_ptr_to_kw(clause, '(', len("VALUES"))
         query_var_idx_start = ptr + 1
         ptr = advance_ptr_to_kw(clause, ')', query_var_idx_start)
@@ -47,7 +33,7 @@ class SpanCorrector:
             else:
                 word_num = len(val.split())
                 if word_num > len(words):
-                    return self
+                    return clause
                 candidates = [
                     " ".join(words[i : i + word_num])
                     for i in range(0, len(words) - word_num + 1)
@@ -57,7 +43,24 @@ class SpanCorrector:
 
                 values_corrected.append(candidates[idx_min])
 
-        where_clauses[
-            clause_idx
-        ] = f"""VALUES ( {query_var} ) {{ {' '.join([f'( "{x}" )' for x in values_corrected])} }}"""
+        return f"""VALUES ( {query_var} ) {{ {' '.join([f'( "{x}" )' for x in values_corrected])} }}"""
+
+    def correct_values_clauses(self, where_clauses: List[str], nlq: str):
+        where_clauses = list(where_clauses)
+
+        values_clauses: List[str] = []
+        values_clause_idxes: List[int] = []
+
+        clause_idx: Optional[int] = None
+        for i, clause in enumerate(where_clauses):
+            if clause.startswith("VALUES") and clause.endswith("}"):
+                values_clauses.append(clause)
+                values_clause_idxes.append(i)
+
+        if len(values_clauses) == 0:
+            return where_clauses
+        
+        for clause_idx, values_clause in zip(values_clause_idxes, values_clauses):
+            where_clauses[clause_idx] = self.correct_values_clause(values_clause, nlq)
+
         return where_clauses
