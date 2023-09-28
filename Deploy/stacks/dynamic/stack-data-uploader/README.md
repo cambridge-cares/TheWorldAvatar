@@ -272,6 +272,14 @@ The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being
 }
 ```
 
+Note: If you want to reference icons uploaded in this way from a GeoServer `.sld` file, you will need to use stack-internal URLs, e.g.:
+```
+<OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/www/icons/myicon.png" />
+```
+Relative file-system paths containing `..` are not supported.
+
+> :warning: **Warning:** If you upload any static data in this way, you _must_ make sure that your `dataSubsets` are stored within their own `subdirectory`, even if you have only a single dataset. Otherwise, the data uploader will consider your static files as part of the dataset and not only upload them to GeoServer, but also attempt to upload them to PostGIS etc. and either fail or create unnecessary duplicate uploads.
+
 ## Data Types
 
 The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).

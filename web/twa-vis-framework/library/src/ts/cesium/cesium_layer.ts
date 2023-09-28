@@ -10,10 +10,5 @@ class CesiumLayer extends DataLayer {
        super(id, name, source);
     }
 
-    /**
-     * Returns true if layer is currently visible.
-     */
-    public isVisible(): boolean {
-        return CesiumUtils.isVisible(this.id);
-    }
 }
+// End of class.

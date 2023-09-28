@@ -15,23 +15,26 @@ LABEL description = "Forecasting Agent"
 ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
+# Disable pip cache to keep image size as small as possible
+ENV PIP_NO_CACHE_DIR=false
 
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy Stack-Client resource from published Docker image (potentially ensure
-# directory structure matches requirements for jpsrm to update py4jps resources)
+# Copy Stack-Client resource from published Docker image
 COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
-#TODO: revisit and replace with requirements.txt
+COPY ./requirements.txt .
 COPY ./setup.py .
 
-# Install Python package and the required libraries
+# Install Python package and the required libraries 
+# (use pinned versions from requirements.txt to avoid potential clashes before installing package itself)
 RUN python -m pip install --upgrade pip
-RUN pip install -e .
+RUN python -m pip install -r requirements.txt
+RUN python -m pip install -e .
 
 # Update py4jps resources
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
@@ -41,33 +44,67 @@ RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_j
 EXPOSE 5000
 
 #------------------------------------------------------
-# Debugging image reusing the base
-#------------------------------------------------------
-FROM base as debug
-# Install additional dependencies for debugging
-RUN pip install debugpy
-
-# Set flask app and development environment to allow for hot-reloading
-ENV FLASK_APP=app/forecasting/flaskapp/wsgi.py
-ENV FLASK_DEBUG=1
-
-# Launch application in container
-WORKDIR /app/forecasting/flaskapp/
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
-
-#------------------------------------------------------
 # Production image reusing the base
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.0.4
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
-COPY ./forecasting ./forecasting
+COPY ./forecastingagent ./forecastingagent
 
 # Set the entrypoint
 # timeout set to 30min to avoid exceptions for longer API/KG calls
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "forecasting:create_app()" --timeout 1800
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "forecastingagent:create_app()" --timeout 1800
+
+#------------------------------------------------------
+# Testing image reusing the base
+#------------------------------------------------------
+FROM base as test
+# Install additional dependencies
+RUN apt-get update
+RUN apt install libpq-dev python3-dev gcc -y
+RUN python -m pip install -e .[dev]
+RUN pip install gunicorn==20.0.4
+
+# Copy required source code (as code is not attached as volume)
+WORKDIR /app
+COPY ./forecastingagent ./forecastingagent
+COPY ./tests ./tests
+
+# Copy docker-compose-file to spin up testcontainers
+COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
+
+# Adjust the logger_name to enable more logging information for tests
+RUN sed -i "s|logger_name='prod',|logger_name='dev',|g" ./forecastingagent/entry_point.py
+
+# Start dockerised agent app as well as pytest
+# (combining commands using & ensures they are started in parallel in background)
+CMD gunicorn --bind 0.0.0.0:5000 "forecastingagent:create_app()" & pytest
+
+#------------------------------------------------------
+# Debug testing image reusing the base
+#------------------------------------------------------
+FROM base as debug_test
+# Install additional dependencies
+RUN apt-get update
+RUN apt install libpq-dev python3-dev gcc -y
+RUN python -m pip install -e .[dev]
+RUN pip install debugpy
+
+# Set flask app and development environment to allow for hot-reloading
+ENV FLASK_APP=app/forecastingagent:create_app()
+ENV FLASK_DEBUG=1
+
+# Copy docker-compose-file to spin up testcontainers (agent code and tests are mounted as volumes)
+COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
+
+# Launch pytest in container (-s flag to enable more output/logging)
+WORKDIR /app
+
+# CMD will be updated in the docker-compose-test_dockerised_debug.yml file in order to create
+# a debugpy session for the agent app and run pytest in parallel
+CMD ["/bin/bash"]
 
 #==================================================================================================
