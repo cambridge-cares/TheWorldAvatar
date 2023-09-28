@@ -22,7 +22,7 @@ public class OSMRouting extends GeoServerDataSubset {
     protected GeoServerVectorSettings poiGeoServerSettings = new GeoServerVectorSettings();
 
     @Override
-    public void loadData(Path dirPath, String database) {
+    public void loadData(Path dirPath, String database, String baseIRI) {
         PostGISClient.getInstance().uploadRoutingDataDirectoryToPostGIS(database, dirPath.toString(),
                 getTablePrefix(), osm2PGRoutingOptions, false);
     }
