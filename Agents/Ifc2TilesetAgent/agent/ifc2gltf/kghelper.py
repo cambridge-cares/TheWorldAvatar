@@ -81,7 +81,7 @@ def classify_filename(names: pd.Series):
             return "asset" + str(next(counter))
         if find_word(["Solar Panel"], name):
             return "solarpanel"
-        if find_word(["Manhole"], name):
+        if find_word(["Manhole", "Sewage"], name):
             return "sewagenetwork"
         return "furniture"
     
