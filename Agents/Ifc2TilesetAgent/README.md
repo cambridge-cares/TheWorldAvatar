@@ -184,3 +184,13 @@ As Git does not allow empty directories, `.gitignore` files have been added to t
         - Fridge
     - For new asset types, please include their name into `classify_filename()` at `agent/ifc2gltf/kghelper.py`
     - Do not include their name if they are supposed to be a background element
+
+>Classifying the solar panel
+- In generating a tileset holding solar panel, the relevant assets must include the "Solar Panel" keywords
+- Do note that when the keyword is included in the asset name, the corresponding asset will NOT be attached to other tilesets.
+
+>Classifying the sewage network
+- In generating a tileset for the sewage network, the relevant assets must include the following supported keywords:
+    - Sewage (for pipes)
+    - Manhole
+- Do note that when these keywords are included in the asset name, the corresponding asset will NOT be attached to other tilesets.
