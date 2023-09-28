@@ -1,6 +1,14 @@
-from typing import List
+from typing import List, Optional
 
-from core.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
+import Levenshtein
+from core.data_processing.exceptions import InvalidCompactQueryError
+
+from core.utils import (
+    advance_ptr_thru_space,
+    advance_ptr_to_kw,
+    advance_ptr_to_space,
+    remove_terminal_chars,
+)
 
 
 SPECIES_FROMHEAD_PATTERN_COMPACT_PREFIX = "?SpeciesIRI ?hasIdentifier ?species"
@@ -148,7 +156,9 @@ IDENTIFIER_NAMES = set(
 
 
 class CompactQueryRep:
-    def __init__(self, select_variables: str, where_clauses: List[str]):
+    def __init__(
+        self, select_variables: str, where_clauses: List[str]
+    ):
         self.select_variables = select_variables
         self.where_clauses = where_clauses
 
@@ -161,6 +171,69 @@ class CompactQueryRep:
 
     def __repr__(self):
         return repr(vars(self))
+
+    def to_string(self):
+        where_clauses = "\n    ".join(self.where_clauses)
+        return f"""SELECT {self.select_variables}
+WHERE {{
+    {where_clauses}
+}}"""
+
+
+    def correct_spans(self, nlq: str):
+        where_clauses = list(self.where_clauses)
+
+        clause_idx: Optional[int] = None
+        for i, clause in enumerate(where_clauses):
+            if clause.startswith("VALUES") and clause.endswith("}"):
+                clause_idx = i
+                break
+
+        if clause_idx is None:
+            return self
+
+        clause = where_clauses[clause_idx]
+
+        # VALUES ( ?var ) { ( "a" ) ( "b" ) }
+        
+        ptr = advance_ptr_to_kw(clause, '(', len("VALUES"))
+        query_var_idx_start = ptr + 1
+        ptr = advance_ptr_to_kw(clause, ')', query_var_idx_start)
+        query_var = clause[query_var_idx_start: ptr].strip()
+
+        values: List[str] = []
+        while ptr < len(clause) - 1:
+            ptr = advance_ptr_to_kw(clause, '"', ptr)
+            if ptr >= len(clause):
+                break
+            val_start = ptr + 1
+            ptr = advance_ptr_to_kw(clause, '"', val_start)
+            val = clause[val_start:ptr]
+            values.append(val)
+            ptr += 1
+
+        words = [remove_terminal_chars(x) for x in nlq.split()]
+        values_corrected = []
+        for val in values:
+            if val in nlq:
+                values_corrected.append(val)
+            else:
+                word_num = len(val.split())
+                if word_num > len(words):
+                    return self
+                candidates = [
+                    " ".join(words[i : i + word_num])
+                    for i in range(0, len(words) - word_num + 1)
+                ]
+                distances = [Levenshtein.distance(val, x) for x in candidates]
+                idx_min = min(range(len(distances)), key=lambda i: distances[i])
+
+                values_corrected.append(candidates[idx_min])
+
+        where_clauses[
+            clause_idx
+        ] = f"""VALUES ( {query_var} ) {{ {' '.join([f'( "{x}" )' for x in values_corrected])} }}"""
+        return CompactQueryRep(self.select_variables, where_clauses)
 
     def to_verbose(self):
         select_variables = str(self.select_variables)
@@ -180,7 +253,7 @@ class CompactQueryRep:
         elif head_pattern.startswith(SPECIES_FROMTAIL_PATTERN_COMPACT_PREFIX):
             where_clauses_verbose.append(SPECIES_FROMTAIL_PATTERNS_VERBOSE)
         else:
-            raise Exception("Unexpected pattern for head node: " + head_pattern)
+            raise InvalidCompactQueryError("Unexpected pattern for head node: " + head_pattern)
 
         for pattern in tail_patterns:
             if pattern.startswith("FILTER"):
@@ -211,7 +284,7 @@ class CompactQueryRep:
                 elif name == "ChemicalClass":
                     where_clauses_verbose.append(CHEMCLASS_PATTERNS_VERBOSE(i))
                 else:
-                    raise ValueError(f"Unrecognized relation `os:has{name}`.")
+                    raise InvalidCompactQueryError(f"Unrecognized relation `os:has{name}`.")
 
             elif pattern.startswith(ALL_PROPERTIES_PATTERN_COMPACT_PREFIX):
                 select_variables = select_variables.replace(
@@ -228,7 +301,7 @@ class CompactQueryRep:
                 where_clauses_verbose.extend(ALL_IDENTIFIERS_PATTERNS_VERBOSE)
 
             else:
-                raise Exception("Unexpected compact clause: " + pattern)
+                raise InvalidCompactQueryError("Unexpected compact clause: " + pattern)
 
         return f"""SELECT DISTINCT ?label {select_variables}
 WHERE {{{"".join(where_clauses_verbose).rstrip()}
@@ -244,7 +317,7 @@ WHERE {{{"".join(where_clauses_verbose).rstrip()}
     def from_string(cls, query: str):
         ptr = advance_ptr_thru_space(query)
         if not query.startswith("SELECT", ptr):
-            raise ValueError("SELECT keyword is missing from the query: " + query)
+            raise InvalidCompactQueryError("SELECT keyword is missing from the query: " + query)
 
         ptr += len("SELECT")
         ptr = advance_ptr_thru_space(query, ptr)
@@ -252,14 +325,14 @@ WHERE {{{"".join(where_clauses_verbose).rstrip()}
 
         ptr = advance_ptr_to_kw(query, "WHERE", ptr)
         if ptr >= len(query):
-            raise ValueError("WHERE clause is missing from the query: ", query)
+            raise InvalidCompactQueryError("WHERE clause is missing from the query: ", query)
 
         select_variables = query[select_variables_idx_start:ptr].strip()
 
         ptr += len("WHERE")
         ptr = advance_ptr_thru_space(query, ptr)
         if query[ptr] != "{":
-            raise ValueError("Missing open bracket after WHERE keyword: ", query)
+            raise InvalidCompactQueryError("Missing open bracket after WHERE keyword: ", query)
 
         ptr += 1
         # assume that WHERE clause contains only basic triple patterns, FILTER, and VALUES clauses
@@ -270,7 +343,7 @@ WHERE {{{"".join(where_clauses_verbose).rstrip()}
             if query[ptr] == "}":
                 break
             if ptr >= len(query):
-                raise ValueError(
+                raise InvalidCompactQueryError(
                     "Close curly bracket is missing from the WHERE clause: " + query
                 )
 
@@ -279,47 +352,46 @@ WHERE {{{"".join(where_clauses_verbose).rstrip()}
                 ptr += len("FILTER")
                 ptr = advance_ptr_thru_space(query, ptr)
                 if query[ptr] != "(":
-                    raise ValueError(
+                    raise InvalidCompactQueryError(
                         "Open bracket is missing from FITLER clause: "
                         + query[start_idx:]
                     )
 
                 open_brac_num = 1
-                while open_brac_num > 0:
-                    ptr += 1
+                ptr += 1
+                while open_brac_num > 0 and ptr < len(query):
                     if query[ptr] == "(":
                         open_brac_num += 1
                     elif query[ptr] == ")":
                         open_brac_num -= 1
-
-                ptr += 1
+                    ptr += 1
+                if open_brac_num > 0:
+                    raise InvalidCompactQueryError("There is an unclosed bracket in the FILTER clause: " + query)
 
             elif query.startswith("VALUES", ptr):
                 ptr += len("VALUES")
                 ptr = advance_ptr_thru_space(query, ptr)
                 if query[ptr] != "(":
-                    raise ValueError(
+                    raise InvalidCompactQueryError(
                         "Open bracket is missing from VALUES clause: " + query
                     )
                 ptr += 1
-                ptr = advance_ptr_thru_space(query, ptr)
-                ptr = advance_ptr_to_space(query, ptr)
-                ptr = advance_ptr_thru_space(query, ptr)
+                ptr = advance_ptr_to_kw(query, ")", ptr) 
                 if query[ptr] != ")":
-                    raise ValueError(
+                    raise InvalidCompactQueryError(
                         "Close bracket is missing from VALUES clause: " + query
                     )
                 ptr += 1
                 ptr = advance_ptr_thru_space(query, ptr)
                 if query[ptr] != "{":
-                    raise ValueError(
+                    raise InvalidCompactQueryError(
                         "Open curly bracket is missing from VALUES clause: " + query
                     )
                 ptr += 1
                 while True:
                     ptr = advance_ptr_thru_space(query, ptr)
                     if ptr >= len(query):
-                        raise ValueError(
+                        raise InvalidCompactQueryError(
                             "Close curly bracket is missing from VALUES clause: "
                             + query
                         )
@@ -329,31 +401,31 @@ WHERE {{{"".join(where_clauses_verbose).rstrip()}
                     elif query[ptr] == "(":
                         ptr = advance_ptr_to_kw(query, '"', ptr)
                         if ptr >= len(query):
-                            raise ValueError(
+                            raise InvalidCompactQueryError(
                                 "Value string is missing from VALUES clause: " + query
                             )
                         ptr += 1
                         ptr = advance_ptr_to_kw(query, '"', ptr)
                         if ptr >= len(query):
-                            raise ValueError(
+                            raise InvalidCompactQueryError(
                                 "Close quotation mark is missing from value string in VALUES clause: "
                                 + query
                             )
                         ptr += 1
                         ptr = advance_ptr_to_kw(query, ")", ptr)
                         if ptr >= len(query):
-                            raise ValueError(
+                            raise InvalidCompactQueryError(
                                 "Close brack is missing from value string in VALUES clause: "
                                 + query
                             )
                         ptr += 1
                     else:
-                        raise ValueError("Unexpected VALUES clause: " + query)
+                        raise InvalidCompactQueryError("Unexpected VALUES clause: " + query)
 
             else:  # assume it's the triple pattern
                 ptr = advance_ptr_to_kw(query, ".", ptr)
                 if ptr >= len(query):
-                    raise ValueError(
+                    raise InvalidCompactQueryError(
                         "Full-stop is missing from triple pattern: " + query[start_idx:]
                     )
                 ptr += 1

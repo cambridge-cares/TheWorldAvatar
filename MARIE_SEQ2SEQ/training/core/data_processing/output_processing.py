@@ -1,3 +1,4 @@
+from core.data_processing.exceptions import InvalidCompactQueryError
 from core.utils import advance_ptr_thru_space, advance_ptr_to_kw
 from core.data_processing.abstract_query_rep import AbstractQueryRep
 from core.data_processing.compact_query_rep import CompactQueryRep
@@ -56,7 +57,10 @@ def compact2verbose(text: str):
     try:
         # return AbstractQueryRep.from_string(text).compact2verbose().to_query_string()
         return CompactQueryRep.from_string(text).to_verbose()
-    except:
+    except Exception as e:
+        if not isinstance(e, InvalidCompactQueryError):
+            print("An unhandled error is encountered when parsing a compact query.")
+            print(e)
         return None
 
 

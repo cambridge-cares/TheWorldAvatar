@@ -2,6 +2,8 @@ from typing import Dict, List, Optional
 from sacrebleu.metrics import BLEU
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 from sklearn.preprocessing import MultiLabelBinarizer
+from core.data_processing.compact_query_rep import CompactQueryRep
+from core.data_processing.exceptions import InvalidCompactQueryError
 
 from core.data_processing.output_processing import normalize_query, remove_prefixes
 
@@ -19,14 +21,28 @@ def get_bleu_metrics(refs: List[List[str]], sys: List[str]):
     )
 
 
-def get_translation_metrics(data: List[dict]):
+def get_translation_metrics(data: List[dict], do_correct_spans: bool):
+    def _get_pred(datum: dict):
+        if datum["prediction_postprocessed"] is None:
+            pred = ""
+        elif do_correct_spans:
+            if "prediction_spancorrected" in datum:
+                pred = datum["prediction_spancorrected"]
+            else:
+                try:
+                    # return AbstractQueryRep.from_string(text).compact2verbose().to_query_string()
+                    pred = CompactQueryRep.from_string(datum["prediction_postprocessed"]).correct_spans(nlq=datum["question"]).to_string()
+                except Exception as e:
+                    if not isinstance(e, InvalidCompactQueryError):
+                        print("An unhandled error is encountered when parsing a compact query.")
+                        print(e)
+                    pred = "" 
+        else:
+            pred = datum["prediction_postprocessed"]
+        return normalize_query(pred)
+    
     queries = [normalize_query(remove_prefixes(datum["gt_compact"])) for datum in data]
-    predictions = [
-        normalize_query(datum["prediction_postprocessed"])
-        if datum["prediction_postprocessed"] is not None
-        else ""
-        for datum in data
-    ]
+    predictions = [_get_pred(datum) for datum in data]
 
     return dict(
         bleu=get_bleu_metrics([queries], predictions),

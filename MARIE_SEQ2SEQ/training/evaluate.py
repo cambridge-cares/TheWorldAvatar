@@ -83,13 +83,14 @@ def eval():
     parser = argparse.ArgumentParser()
     parser.add_argument("input_path", type=str)
     parser.add_argument("output_path", type=str)
+    parser.add_argument("--do_correct_spans", action='store_true')
     args = parser.parse_args()
 
     with open(args.input_path, "r") as f:
         data = json.load(f)
 
     print("***Computing translation metrics***")
-    translation_metrics = get_translation_metrics(data)
+    translation_metrics = get_translation_metrics(data, do_correct_spans=args.do_correct_spans)
     print("Translation metrics: ", translation_metrics)
 
     # gt_answers, predicted_answers = get_answer_data(data)
