@@ -4,7 +4,6 @@ from core.utils import (
     advance_ptr_thru_space,
     advance_ptr_to_kw,
     advance_ptr_to_space,
-    remove_terminal_chars,
 )
 
 
@@ -40,21 +39,3 @@ class TestStrUtils:
     )
     def test_advanceIdxToSpace(self, text, idx, expected):
         assert advance_ptr_to_space(text, idx) == expected
-
-    @pytest.mark.parametrize(
-        "text, expected",
-        [
-            ("What is the charge of benzene?", "What is the charge of benzene"),
-            (
-                "What is the boiling point of water??",
-                "What is the boiling point of water",
-            ),
-            (
-                "Tell me the heavy atom count in ethanol.",
-                "Tell me the heavy atom count in ethanol",
-            ),
-            ("air pressure", "air pressure"),
-        ],
-    )
-    def test_removeTerminalPunctuations(self, text, expected):
-        assert remove_terminal_chars(text) == expected
