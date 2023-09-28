@@ -5,11 +5,6 @@
 class MapHandler_Mapbox extends MapHandler {
 
     /**
-     * Mapbox popup element.
-     */
-    public static POPUP;
-
-    /**
      * Constructor.
      */
     constructor(manager: Manager) {
@@ -44,13 +39,6 @@ class MapHandler_Mapbox extends MapHandler {
             MapHandler.MAP.on("click", (event) => this.handleClick(event, null));
             MapHandler.MAP.on("mousemove", (event) => this.handleMouse(event));
 
-            // Create popup
-             // @ts-ignore
-            MapHandler_Mapbox.POPUP = new mapboxgl.Popup({
-                closeButton: false,
-                closeOnClick: false,
-                maxWidth: "400px"
-            });
         }  else {
             // Reinitialise state of existing map
             MapHandler.MAP.setStyle(newOptions["style"]);
@@ -210,7 +198,7 @@ class MapHandler_Mapbox extends MapHandler {
         if(features.length === 0) {
             // Mouse no longer over any features
             MapHandler.MAP.getCanvas().style.cursor = '';
-            if(MapHandler_Mapbox.POPUP !== null) MapHandler_Mapbox.POPUP.remove();
+            PopupHandler.setVisibility(false);
 
         } else if(features.length > 0) {
             // Mouse over single feature
@@ -227,7 +215,7 @@ class MapHandler_Mapbox extends MapHandler {
             MapHandler.MAP.getCanvas().style.cursor = 'pointer';
 
             if(layer != null && layer instanceof MapboxLayer) {
-                if(feature !== null) MapboxUtils.showPopup(event, feature);
+                if(feature !== null) MapboxUtils.showPopup(feature);
             } 
         } 
     }
@@ -311,7 +299,7 @@ class MapHandler_Mapbox extends MapHandler {
 
             // Add to the map
             MapHandler.MAP.addSource(source.id, options);
-            console.info("Added source to Mapbox map: " + source.id);
+            console.info("Added data source to map '" + source.id + "'.");
         }
     }
 
@@ -351,16 +339,22 @@ class MapHandler_Mapbox extends MapHandler {
                 options["metadata"]["treeable"] = true
             }
 
+            // Use the cached visibility, not the one from the original definition
+            if(!options.hasOwnProperty("layout")) {
+                options["layout"] = {};
+            }
+            options["layout"]["visibility"] = (layer.getVisibility()) ? "visible" : "none";
+            
             // Update to unique ID
             options["id"] = layer.id;
 
-            // Remove fields not required by Mapbox
+            // Remove fields not strictly required by Mapbox
             delete options["name"];
             delete options["order"];
 
             // Add to the map
             MapHandler.MAP.addLayer(options);
-            console.info("Added layer to Mapbox map '" + layer.id + "'.");
+            console.info("Added data layer to map '" + layer.id + "'.");
         }
     }
 
@@ -368,23 +362,31 @@ class MapHandler_Mapbox extends MapHandler {
      * Adds icons to the map
      */
     public addIcons(iconFile: string) {
-        return $.getJSON(iconFile, function(json) {
+        let readPromise = $.getJSON(iconFile, function(json) {
+            // Read the JSON file
             return json;
         })
         .fail(() => {
-            console.warn("Could not read icons.json, skipping.");
-        })
-        .done((json) => {
-            if(json === null || json === undefined) return;
+            console.warn("Could not read icon definition file, skipping this functionality...");
+        });
 
+        // Once JSON is read, load images
+        return readPromise.then((json) => {
             let promises = [];
             let iconHandler = new IconHandler();
+
             for (var key of Object.keys(json)) {
-                promises.push(iconHandler.loadIcon(key, json[key]));
+                let promise = new Promise<void>(function(resolve, reject) {
+
+                    iconHandler.loadIcon(key, json[key], function() {
+                        resolve();
+                    });
+                });
+                promises.push(promise);
             }
 
             return Promise.all(promises).then(() => {
-                console.info("All images have been registered.");
+                console.info("All custom image icons have been loaded and registered.");
             });
         });
     }
