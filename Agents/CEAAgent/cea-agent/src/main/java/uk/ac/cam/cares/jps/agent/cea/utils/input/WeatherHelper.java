@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
-import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.geom.*;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -9,7 +10,6 @@ import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -31,8 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -79,33 +77,53 @@ public class WeatherHelper extends JPSAgent {
     }
     /**
      * Retrieves weather data
-     * @param uriString city object id
-     * @param route route to city object geometry data
      * @param weatherRoute route to weather data
      * @param crs CRS of city object geometry
      * @param result list to add the retrieved weather data to
      * @return true if weather data retrieved, false otherwise
      */
-    public boolean getWeather(String uriString, String route, String weatherRoute, String crs, List<Object> result) {
-        GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
-        String footprint = geometryQueryHelper.getValue(uriString, "footprint", route);
-
-        try {
-            Polygon footprintPolygon = (Polygon) GeometryHandler.toGeometry(footprint);
-
-            Double elevation = footprintPolygon.getCoordinate().getZ();
-
-            if (elevation.isNaN()) {
-                elevation = 100.00;
+    public boolean getWeather(CEAGeometryData building, List<CEAGeometryData> surroundings, String weatherRoute, String crs, List<Object> result) {
+        Envelope envelope = new Envelope();
+        Coordinate centerCoordinate;
+        Double elevation = 0.0;
+        long count = 0;
+        if (surroundings != null) {
+            for (CEAGeometryData ceaGeometryData : surroundings) {
+                for (Geometry geometry : ceaGeometryData.getFootprint()) {
+                    envelope.expandToInclude(geometry.getEnvelopeInternal());
+                    elevation += Arrays.stream(geometry.getCoordinates())
+                            .mapToDouble(coordinate -> Double.isNaN(coordinate.getZ()) ? 0.0 :coordinate.z)
+                            .sum();
+                    count += Arrays.stream(geometry.getCoordinates())
+                            .filter(coordinate -> !Double.isNaN(coordinate.getZ()))
+                            .count();
+                }
             }
 
-            Point center = footprintPolygon.getCentroid();
+            elevation = elevation / count;
+        }
+        else {
+            for (Geometry geometry : building.getFootprint()) {
+                envelope.expandToInclude(geometry.getEnvelopeInternal());
+                elevation += Arrays.stream(geometry.getCoordinates())
+                        .mapToDouble(coordinate -> Double.isNaN(coordinate.getZ()) ? 0.0 :coordinate.z)
+                        .sum();
+                count += Arrays.stream(geometry.getCoordinates())
+                        .filter(coordinate -> !Double.isNaN(coordinate.getZ()))
+                        .count();
+            }
 
-            Coordinate centerCoordinate = center.getCoordinate();
+            elevation = elevation / count;
+        }
+        if (count == 0) {
+            elevation = 100.00;
+        }
 
-            crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
+        centerCoordinate = envelope.centre();
 
+        crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
 
+        try {
             // coordinate in (longitude, latitude) format
             Coordinate transformedCoordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
 
@@ -222,7 +240,6 @@ public class WeatherHelper extends JPSAgent {
         String result = "";
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
-                .addPrefix("geoliteral", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoliteral))
                 .addPrefix("ontoems", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems));
 
         wb.addWhere("?station", "geo:search", "inCircle")
