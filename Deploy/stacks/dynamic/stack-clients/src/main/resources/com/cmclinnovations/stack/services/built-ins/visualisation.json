@@ -4,7 +4,7 @@
         "Name": "visualisation",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dtvf-base-image:latest",
+                "Image": "ghcr.io/cambridge-cares/twa-vf:latest",
                 "Mounts": [
                     {
                         "Type": "volume",

@@ -213,8 +213,8 @@ public class GDALClient extends ContainerClient {
         String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
                 .withHereDocument("CREATE EXTENSION IF NOT EXISTS postgis_raster;" +
-                        "ALTER DATABASE " + database + " SET postgis.enable_outdb_rasters = True;" +
-                        "ALTER DATABASE " + database + " SET postgis.gdal_enabled_drivers = 'GTiff';")
+                        "ALTER DATABASE \"" + database + "\" SET postgis.enable_outdb_rasters = True;" +
+                        "ALTER DATABASE \"" + database + "\" SET postgis.gdal_enabled_drivers = 'GTiff';")
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
@@ -230,7 +230,7 @@ public class GDALClient extends ContainerClient {
                 "(which raster2pgsql || (apt update && apt install -y postgis && rm -rf /var/lib/apt/lists/*)) && " +
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
                 "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
-                        + geotiffFiles.stream().collect(Collectors.joining(" ", " ", " "))
+                        + geotiffFiles.stream().collect(Collectors.joining("' '", " '", "' "))
                         + layerName
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")
                 .withOutputStream(outputStream)

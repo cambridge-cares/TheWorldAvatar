@@ -7,10 +7,10 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.13.0-808-SNAPSHOT</version>
+  <version>1.16.0-808-SNAPSHOT</version>
 
   <name>Stack Clients</name>
-  <url>https://www.cmclinnovations.com</url>
+  <url>https://theworldavatar.io</url>
 
   <parent>
     <groupId>uk.ac.cam.cares.jps</groupId>
@@ -150,7 +150,7 @@
     <dependency>
       <groupId>uk.ac.cam.cares.jps</groupId>
       <artifactId>jps-base-lib</artifactId>
-      <version>1.32.0</version>
+      <version>1.39.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->

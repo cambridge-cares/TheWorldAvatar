@@ -1,0 +1,39 @@
+#
+# Checks that the version of the TWA-VF has been updated.
+#
+# Author: Michael Hillman (mdhillman<@>cmcl.io)
+#
+name: Check TWA-VF Version
+
+
+# Trigger this workflow during pull requests to the 'main' branch,
+# but ONLY when files within the TWA-VF source code are changed.
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - web/twa-vis-framework/library/**
+
+
+# Job definitions
+jobs:
+
+  # Single job to run script
+  check-version:
+  
+    # Run on latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      # Run bash script that checks the version
+      - name: Run version check script
+        working-directory: ./
+        run: |
+          chmod +x ./.github/scripts/twa-vf/check-version.sh
+          ./.github/scripts/twa-vf/check-version.sh
+  
