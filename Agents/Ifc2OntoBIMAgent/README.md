@@ -33,7 +33,7 @@ Some excluded concepts are:
 Notes:
 - In the IFC schema, only certain elements (IfcFurnishingElement, IfcBuildingElementProxy) are linked to their Spaces. 
 Other elements are always linked to their Storey, even if there is a Space defined. 
-- For all elements that are not the building structure components like walls, floors, doors, windows, roofs etc, please export them as IfcFurnishingElement or IfcBuildingElementProxy.
+- By default, only building structure components like walls, floors, doors, windows, roofs etc are instantiated. For all other assets, please export them as IfcFurnishingElement, IfcBuildingElementProxy, IfcFlowSegment or IfcFlowTerminal.
 Otherwise, they will not be instantiated.
 - In instantiating the address, please ensure the `Location` set in the Revit file follows the format: `<City, State PostalCode, Country>`. 
   - Address lines should be added to the `Project Address` field on the `Project Information` settings in Revit.
