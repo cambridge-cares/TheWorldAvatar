@@ -61,7 +61,7 @@ TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
 TBOX_TRIPLES = 7
-ABOX_TRIPLES = 51
+ABOX_TRIPLES = 71
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
@@ -112,6 +112,10 @@ IRI_TO_FORECAST_3 = TEST_TRIPLES_BASE_IRI + 'Availability_1'    #owl:Thing
 IRI_TO_FORECAST_4 = TEST_TRIPLES_BASE_IRI + 'Availability_2'    #owl:Thing
 FORECASTING_MODEL_1 = TEST_TRIPLES_BASE_IRI + 'ForecastingModel_1'
 FORECASTING_MODEL_2 = TEST_TRIPLES_BASE_IRI + 'ForecastingModel_2'
+FORECASTING_MODEL_3 = TEST_TRIPLES_BASE_IRI + 'ForecastingModel_3'
+FORECASTING_MODEL_4 = TEST_TRIPLES_BASE_IRI + 'ForecastingModel_4'
+FORECASTING_MODEL_5 = TEST_TRIPLES_BASE_IRI + 'ForecastingModel_5'
+FORECASTING_MODEL_6 = TEST_TRIPLES_BASE_IRI + 'ForecastingModel_6'
 FC_INTERVAL_1 = TEST_TRIPLES_BASE_IRI + 'OptimisationInterval_1'
 FC_INTERVAL_2 = TEST_TRIPLES_BASE_IRI + 'OptimisationInterval_2'
 FC_FREQUENCY_1 = TEST_TRIPLES_BASE_IRI + 'Frequency_1'
@@ -119,6 +123,8 @@ HIST_DURATION_1 = TEST_TRIPLES_BASE_IRI + 'Duration_1'
 HIST_DURATION_2 = TEST_TRIPLES_BASE_IRI + 'Duration_2'
 AIRTEMPERATURE_1 = TEST_TRIPLES_BASE_IRI + 'AirTemperature_1'
 ISHOLIDAY_1 = TEST_TRIPLES_BASE_IRI + 'IsHoliday_1'
+PROMOTION_1 = TEST_TRIPLES_BASE_IRI + 'Promotion_1'
+SPECIALEVENT_1 = TEST_TRIPLES_BASE_IRI + 'SpecialEvent_1'
 
 # Define derivation input sets to test
 # Prophet test cases
@@ -143,11 +149,27 @@ TEST_CASE_9 = 'TFT_OM_Quantity_with_Measure_with_Unit__overwriting'
 TEST_CASE_10 = 'TFT_OM_Quantity_with_Measure_with_Unit__no_overwriting'
 TEST_CASE_11 = 'TFT_OM_Quantity_without_Measure_with_Unit__overwriting'
 TEST_CASE_12 = 'TFT_OM_Quantity_without_Measure_with_Unit__no_overwriting'
+# Prophet with covariates test cases
+TEST_CASE_13 = 'Prophet_2_Covariates_OM_Quantity_without_scaling_without_Measure_without_Unit__overwriting'
+TEST_CASE_14 = 'Prophet_2_Covariates_OM_Quantity_with_scaling_without_Measure_without_Unit__overwriting'
+TEST_CASE_15 = 'Prophet_1_Covariates_OM_Quantity_without_scaling_without_Measure_without_Unit__overwriting'
+TEST_CASE_16 = 'Prophet_1_Covariates_OM_Quantity_with_scaling_without_Measure_without_Unit__overwriting'
+TEST_CASE_17 = 'Prophet_2_Covariates_OM_Quantity_without_scaling_without_Measure_without_Unit__overwriting_comparison'
 DERIVATION_INPUTS_5 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_2,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
 DERIVATION_INPUTS_6 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_2,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
+DERIVATION_INPUTS_7 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_3,
+                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
+DERIVATION_INPUTS_8 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_4,
+                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
+DERIVATION_INPUTS_9 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_5,
+                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
+DERIVATION_INPUTS_10 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_6,
+                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
 COVARIATES_1 = [AIRTEMPERATURE_1, ISHOLIDAY_1]
+COVARIATES_2 = [PROMOTION_1, SPECIALEVENT_1]
+COVARIATES_3 = [PROMOTION_1]
 
 # Define erroneous derivation input sets as retrieved by derivation agent
 # --> correct exceptions tested as unit tests
