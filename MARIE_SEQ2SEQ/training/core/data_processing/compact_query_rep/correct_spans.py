@@ -51,7 +51,6 @@ class SpanCorrector:
         values_clauses: List[str] = []
         values_clause_idxes: List[int] = []
 
-        clause_idx: Optional[int] = None
         for i, clause in enumerate(where_clauses):
             if clause.startswith("VALUES") and clause.endswith("}"):
                 values_clauses.append(clause)

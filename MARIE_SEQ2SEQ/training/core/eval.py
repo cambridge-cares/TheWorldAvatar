@@ -21,27 +21,60 @@ def get_bleu_metrics(refs: List[List[str]], sys: List[str]):
     )
 
 
-def get_translation_metrics(data: List[dict], do_correct_spans: bool):
+def get_translation_metrics(
+    data: List[dict], do_correct_spans: bool, do_correct_relations: bool
+):
     def _get_pred(datum: dict):
         if datum["prediction_postprocessed"] is None:
-            pred = ""
-        elif do_correct_spans:
-            if "prediction_spancorrected" in datum:
-                pred = datum["prediction_spancorrected"]
+            return ""
+        try:
+            if do_correct_spans:
+                if do_correct_relations:
+                    if "prediction_spancorrected_relationcorrected" in datum:
+                        pred = datum["prediction_spancorrected_relationcorrected"]
+                    else:
+                        pred = (
+                            CompactQueryRep.from_string(
+                                datum["prediction_postprocessed"]
+                            )
+                            .correct_spans(nlq=datum["question"])
+                            .correct_relations()
+                            .to_string()
+                        )
+                else:
+                    if "prediction_spancorrected" in datum:
+                        pred = datum["prediction_spancorrected"]
+                    else:
+                        pred = (
+                            CompactQueryRep.from_string(
+                                datum["prediction_postprocessed"]
+                            )
+                            .correct_spans(nlq=datum["question"])
+                            .to_string()
+                        )
+            elif do_correct_relations:
+                if "prediction_relationcorrected" in datum:
+                    pred = datum["prediction_relationcorrected"]
+                else:
+                    pred = (
+                        CompactQueryRep.from_string(
+                            datum["prediction_postprocessed"]
+                        )
+                        .correct_relations()
+                        .to_string()
+                    )
             else:
-                try:
-                    # return AbstractQueryRep.from_string(text).compact2verbose().to_query_string()
-                    pred = CompactQueryRep.from_string(datum["prediction_postprocessed"]).correct_spans(nlq=datum["question"]).to_string()
-                except Exception as e:
-                    if not isinstance(e, InvalidCompactQueryError):
-                        print("An unhandled error is encountered when parsing a compact query.")
-                        print(datum)
-                        print(e)
-                    pred = "" 
-        else:
-            pred = datum["prediction_postprocessed"]
+                pred = datum["prediction_postprocessed"]
+        except Exception as e:
+            if not isinstance(e, InvalidCompactQueryError):
+                print(
+                    "An unhandled error is encountered when parsing a compact query."
+                )
+                print(datum)
+                print(e)
+            return ""
         return normalize_query(pred)
-    
+
     queries = [normalize_query(remove_prefixes(datum["gt_compact"])) for datum in data]
     predictions = [_get_pred(datum) for datum in data]
 
@@ -54,7 +87,7 @@ def get_translation_metrics(data: List[dict], do_correct_spans: bool):
 def convert_kg_results_to_hashable(results: Optional[List[Dict[str, Dict[str, str]]]]):
     if results is None:
         return tuple()
-    
+
     # [
     #     Dict[
     #         str,
