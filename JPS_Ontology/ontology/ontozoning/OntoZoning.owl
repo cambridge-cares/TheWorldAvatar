@@ -448,7 +448,7 @@
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WorkersDormitory"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WorkersQuarters"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoologicalGarden"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;amp;EServices"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;EServices"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -1270,7 +1270,7 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Office"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Showroom"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/SickRoom"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;amp;Eservices"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;EServices"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -1298,7 +1298,7 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Office"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Showroom"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/SickRoom"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;amp;Eservices"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;EServices"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -13494,10 +13494,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/M&amp;amp;EServices -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/M&amp;EServices -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;amp;EServices">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;EServices">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Programme"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -13520,13 +13520,6 @@
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/M&amp;amp;Eservices -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;amp;Eservices"/>
 </rdf:RDF>
 
 
