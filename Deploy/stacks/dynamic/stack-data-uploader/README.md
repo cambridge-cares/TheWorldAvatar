@@ -417,6 +417,10 @@ The "Database connection options" are set automatically by the `stack-data-uploa
 
 This boolean flag controls whether footprint and height would be added to the existing data. It is assumed to be `true` if omitted.
 
+#### `"discoverThematicSurface"`
+
+If this boolean flag is set to `true`, the uploader will attempt to identify untagged surfaces as roof, wall or ground surfaces. It is assumed to be `false`.
+
 ### X building data
 
 The `"XtoCityDB"` data type should be used to load LoD1 (footprint with height) building data that are not CityGML or CityJSON.
