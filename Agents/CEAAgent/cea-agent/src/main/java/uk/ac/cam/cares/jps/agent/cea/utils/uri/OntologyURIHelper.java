@@ -15,8 +15,9 @@ public class OntologyURIHelper {
     public static final String ontobuiltstructure = "ontobuiltstructure";
     public static final String ontotimeseries = "ontotimeseries";
     public static final String ontoems = "ontoems";
-    public static final String geoliteral = "geoliteral";
     public static final String geo = "geo";
+    public static final String geof = "geof";
+    public static final String epsg = "epsg";
     public static Map<String, String> ontologyUriMap = new HashMap<>();
 
     /**
@@ -35,8 +36,9 @@ public class OntologyURIHelper {
         ontologyUriMap.put(ontobuiltstructure, config.getString("uri.ontology.ontobuiltstructure"));
         ontologyUriMap.put(ontotimeseries, config.getString("uri.ontology.ontotimeseries"));
         ontologyUriMap.put(ontoems, config.getString("uri.ontology.ontoems"));
-        ontologyUriMap.put(geoliteral, config.getString("uri.ontology.geoliteral"));
-        ontologyUriMap.put(geo, config.getString("uri.service.geo"));
+        ontologyUriMap.put(geo, config.getString("uri.ontology.geo"));
+        ontologyUriMap.put(geof, config.getString("uri.ontology.geofunction"));
+        ontologyUriMap.put(epsg, config.getString("uri.opengis.epsg"));
     }
 
     /**
