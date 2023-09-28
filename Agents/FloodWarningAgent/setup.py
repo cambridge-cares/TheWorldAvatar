@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='floodwarnings',
-    version='1.1.1',
+    version='1.1.2',
     author='Markus Hofmeister',
     author_email='mh807@cam.ac.uk',
     license='MIT',
