@@ -128,9 +128,9 @@ Covariates can be added to the model (i.e., [Prophet] with 2 covariates) by addi
 ```xml
 <IRI_of_forecasting_model> rdf:type ts:ForecastingModel ; 
                            rdfs:label "Prophet" ;
-                           ts:scaleData "False"^^xsd:boolean:
-                           ts:hasCovariate :<IRI_of_covariate1>: 
-                           ts:hasCovariate :<IRI_of_covariate2> .
+                           ts:scaleData "False"^^xsd:boolean ;
+                           ts:hasCovariate <IRI_of_covariate1> ; 
+                           ts:hasCovariate <IRI_of_covariate2> .
 ```
 
 Used namespaces:
