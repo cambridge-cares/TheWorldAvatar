@@ -6,7 +6,7 @@
         {
             "type": "XtoCityDB",
             "skip": false,
-            "subdirectory": "vector",
+			"subdirectory": "vector",
             "table": "raw_data",
             "ogr2ogrOptions": {
                 "otherOptions": {
@@ -15,21 +15,21 @@
                     ]
                 }
             },
-            "columnMap": {
-                "IDval": "os_topo_toid",
-                "IDname": "os_topo_toid",
-                "footprint": "polygon",
-                "elevation": "abshmin",
-                "height": "relh2"
-            },
-            "importOptions": {
-                "sridIn": "27700"
-            },
-            "name": "cambridge_gsl",
-            "geoServerSettings": {
+			"columnMap": {
+				"IDval": "os_topo_toid",
+				"IDname": "os_topo_toid",
+				"footprint": "polygon",
+				"elevation": "abshmin",
+				"height": "relh2"
+			},
+			"importOptions": {
+				"sridIn": "27700"
+			},
+			"name": "building-cambridge_gsl",
+			"geoServerSettings": {
                 "virtualTable": {
                     "name": "mapbox_layer",
-                    "sql": "@/inputs/config/building-cambridge.sql",
+                    "sql": "@/inputs/config/mapbox-footprint.sql",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geometry",

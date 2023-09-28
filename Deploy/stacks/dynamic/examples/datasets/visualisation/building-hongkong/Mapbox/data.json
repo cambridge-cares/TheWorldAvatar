@@ -9,7 +9,7 @@
                     "id": "hongkong-source",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Ahongkong_gsl&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Abuilding-hongkong_gsl&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -19,7 +19,7 @@
                     "name": "hongkong",
                     "treeable": false,
                     "source": "hongkong-source",
-                    "source-layer": "hongkong_gsl",
+                    "source-layer": "building-hongkong_gsl",
                     "type": "fill-extrusion",
                     "layout": {
                         "visibility": "visible"
