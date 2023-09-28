@@ -1,0 +1,120 @@
+#
+# Runs actions related to a new release (i.e. merged PR to main) of the
+# TWA Visualisation Framework (TWA-VF).
+#
+# Author: Michael Hillman (mdhillman<@>cmcl.io)
+#
+name: Release the TWA-VF
+
+
+# Trigger this workflow during pushes to the 'main' branch, and
+# ONLY when files within the TWA-VF source code are changed.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'web/twa-vis-framework/library/**'
+
+
+# Job definitions
+jobs:
+
+  # Make a release on the repo
+  make-release:
+  
+    # Run on latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    # Action steps
+    steps:
+    
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+          
+      # Get the versions of the TWA-VF
+      - name: Get TWA-VF version
+        id: versioner
+        run: |
+          VERSION=$(cat web/twa-vis-framework/library/VERSION)
+          echo versionFull=$VERSION >> $GITHUB_ENV
+          echo versionMajor=$(echo $VERSION | cut -d. -f1) >> $GITHUB_ENV
+          echo versionMinor=$(echo $VERSION | cut -d. -f1).$(echo $VERSION | cut -d. -f2) >> $GITHUB_ENV
+          
+      # Compile the TWA-VF and ZIP results
+      - name: Compile the TWA-VF
+        id: compiler
+        working-directory: ./web/twa-vis-framework/library
+        run: |
+          docker-compose -f docker-compose.dev.yml up compile
+          zip -r $HOME/twa-vf.zip output/
+          echo zip=$HOME/twa-vf.zip >> $GITHUB_ENV
+          
+      # Login to Docker image registry
+      - name: Login to Docker registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          USERNAME: ${{github.actor}}
+          PASSWORD: ${{github.token}}
+          
+      # Build and push the Docker image
+      - name: Build and push image
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: ./web/twa-vis-framework/library
+          tags: |
+            ghcr.io/cambridge-cares/twa-vf:latest
+            ghcr.io/cambridge-cares/twa-vf:${{ env.versionFull }}
+            ghcr.io/cambridge-cares/twa-vf:${{ env.versionMajor }}
+            ghcr.io/cambridge-cares/twa-vf:${{ env.versionMinor }}
+         
+      # Generate the release body text
+      - name: Generate release text
+        id: generate-text
+        working-directory: ./
+        run: |
+          chmod +x ./.github/scripts/twa-vf/make-release-body.sh
+          ./.github/scripts/twa-vf/make-release-body.sh > $HOME/body.md
+          echo body=$HOME/body.md >> $GITHUB_ENV
+          
+      # Make a release on the main branch
+      - name: Make release
+        uses: ncipollo/release-action@v1
+        with:
+          name: "twa-vf-${{ env.versionFull }}"
+          tag: "twa-vf-${{ env.versionFull }}"
+          commit: "main"
+          bodyFile: "${{ env.body }}"
+          artifacts: "${{ env.zip }}"
+       
+      # Setup Python installation
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+          
+      # Generate the release email content
+      - name: Generate release email
+        id: generate-email
+        working-directory: ./
+        run: |
+          pip install markdown
+          python ./.github/scripts/twa-vf/make-release-email.py
+          echo email=$HOME/email.html >> $GITHUB_ENV
+      
+      # Send a notification email
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: mail.cmclinnovations.com
+          server_port: 465
+          secure: true
+          username: ${{secrets.CMCL_MAIL_USERNAME}}
+          password: ${{secrets.CMCL_MAIL_PASSWORD}}
+          subject: "New TWA release: TWA-VF ${{ env.versionFull }}"
+          to: cares-twa@lists.cam.ac.uk,all@cmcl.io
+          from: Automated TWA action
+          html_body: "file://${{ env.email }}"

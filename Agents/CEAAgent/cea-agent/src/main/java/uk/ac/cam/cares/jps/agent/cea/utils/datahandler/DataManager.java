@@ -197,7 +197,7 @@ public class DataManager {
         // save om:Measure uris for scalars and create om:Quantity uris for scalars and time series
         // (time series om:Measure iris already created in createTimeSeries)
         for (String measurement: CEAConstants.SCALARS) {
-            String measure = measurement + UUID.randomUUID() + "/";
+            String measure = measurement + "_" + UUID.randomUUID() + "/";
             String quantity = measurement + "Quantity_" + UUID.randomUUID() + "/";
             String facade = measurement.split("SolarSuitableArea")[0] + UUID.randomUUID() + "/";
 

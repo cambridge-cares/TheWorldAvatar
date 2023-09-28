@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.cea;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import uk.ac.cam.cares.jps.agent.cea.utils.AnnualValueHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.*;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -181,6 +182,7 @@ public class CEAAgent extends JPSAgent {
             }
             else if (requestUrl.contains(URI_UPDATE)) {
                 DataManager dataManager = new DataManager(ontologyUriHelper);
+                AnnualValueHelper annualValueHelper = new AnnualValueHelper(ontologyUriHelper);
 
                 // parse times
                 List<OffsetDateTime> times = DataParser.getTimesList(requestParams, KEY_TIMES);
@@ -224,6 +226,7 @@ public class CEAAgent extends JPSAgent {
                         dataManager.updateScalars(ceaRoute, scalarIris, scalars, i);
                     }
                     tsHelper.addDataToTimeSeries(timeSeries.get(i), times, tsIris);
+                    annualValueHelper.instantiateAnnual(timeSeries.get(i), tsIris, ceaRoute);
                 }
             }
             else if (requestUrl.contains(URI_QUERY)) {
