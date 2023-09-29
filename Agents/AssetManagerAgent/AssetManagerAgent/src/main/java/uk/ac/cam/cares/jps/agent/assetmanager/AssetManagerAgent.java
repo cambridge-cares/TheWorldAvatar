@@ -301,10 +301,11 @@ public class AssetManagerAgent extends JPSAgent{
         JSONObject message = new JSONObject();
         File file = new File(arg[5]+fileName);
         LOGGER.debug("FILENAME::"+arg[5]+fileName);
-        if(!(file.exists() && !file.isDirectory())) { 
+        if(!file.exists()) { 
             try {
                 //file.getParentFile().mkdirs();
                 file.createNewFile();
+                LOGGER.debug("Created empty pdf...");
             } catch (Exception e) {
                 message.accumulate("Result", "Failed to create PDF:"+ e);
             }
