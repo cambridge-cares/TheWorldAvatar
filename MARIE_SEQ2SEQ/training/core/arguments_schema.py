@@ -60,3 +60,9 @@ class InferenceArguments:
             "help": "Whether to apply torch.compile() to the pytorch model before running inference."
         },
     )
+    do_correct: bool = field(
+        default=False,
+        metadata={
+            "help": "Whether to apply copy correction and relation correction."
+        }
+    )

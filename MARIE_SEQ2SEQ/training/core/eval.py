@@ -30,8 +30,8 @@ def get_translation_metrics(
         try:
             if do_correct_spans:
                 if do_correct_relations:
-                    if "prediction_spancorrected_relationcorrected" in datum:
-                        pred = datum["prediction_spancorrected_relationcorrected"]
+                    if datum.get("prediction_corrected") is not None:
+                        pred = datum["prediction_corrected"]
                     else:
                         pred = (
                             CompactQueryRep.from_string(
@@ -42,7 +42,7 @@ def get_translation_metrics(
                             .to_string()
                         )
                 else:
-                    if "prediction_spancorrected" in datum:
+                    if datum.get("prediction_spancorrected") is not None:
                         pred = datum["prediction_spancorrected"]
                     else:
                         pred = (
@@ -53,7 +53,7 @@ def get_translation_metrics(
                             .to_string()
                         )
             elif do_correct_relations:
-                if "prediction_relationcorrected" in datum:
+                if datum.get("prediction_relationcorrected") is not None:
                     pred = datum["prediction_relationcorrected"]
                 else:
                     pred = (

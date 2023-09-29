@@ -56,7 +56,7 @@ For a list all arguments that can be passed to the fine-tune script, see classes
 ## Conversion of Hugging Face models to the OpenNMT format
 
 ```
-sh hf2onmt.sh <path-to-hf-model-directory> <path-to-output-directory>
+python convert_model.py <path-to-hf-model-directory> <path-to-output-directory> --target_format <>
 ```
 
 ## Inference
@@ -79,7 +79,7 @@ For a list of all arguments that can be passed to the inference script, see clas
 ## Evaluation
 
 ```
-python evaluate.py predictions.json evaluation.json
+python evaluate.py predictions.json evaluation_results.json --do_correct_spans --do_correct_relations
 ```
 
 ## Running jobs on CSD3 and similar SLURM environments
@@ -95,7 +95,7 @@ See [`finetune.slurm`](./scripts/finetune.slurm) and [`inference.slurm`](./scrip
 
 ### Model sharing 
 
-For convenience, fine-tuned models can be uploaded to HuggingFace model hub as per instructions [here](https://huggingface.co/docs/hub/repositories-getting-started#getting-started-with-repositories). 
+Downloading model weights directly from CSD3 with either `scp` or `rsync` is generally slow because these utilities perform data transfer over SSH. It is therefore recommended that fine-tuned weights be uploaded over HTTP/HTTPS to a remote model store, such as the [HuggingFace hub](https://huggingface.co/docs/hub/repositories-getting-started#getting-started-with-repositories).
 
 Should `git-lfs` be required to be installed without `sudo` privileges, one can perform the installation from a tarball. Below is an example for `git-lfs-3.4.0`.
 1. `wget https://github.com/git-lfs/git-lfs/releases/download/v3.4.0/git-lfs-linux-amd64-v3.4.0.tar.gz`

@@ -27,21 +27,25 @@ def infer():
             model_args,
             max_new_tokens=infer_args.max_new_tokens,
             do_torch_compile=infer_args.do_torch_compile,
+            do_correct=infer_args.do_correct,
         )
     elif model_args.model_format == "ov":
         trans_model = OVHfTranslationModel(
             model_args,
             max_new_tokens=infer_args.max_new_tokens,
+            do_correct=infer_args.do_correct,
         )
     elif model_args.model_format == "ort":
         trans_model = OrtHfTranslationModel(
             model_args,
             max_new_tokens=infer_args.max_new_tokens,
+            do_correct=infer_args.do_correct,
         )
     elif model_args.model_format == "onmt":
         trans_model = ONmtTranslationModel(
             model_args,
             max_new_tokens=infer_args.max_new_tokens,
+            do_correct=infer_args.do_correct,
         )
     else:
         raise ValueError("Unsupported model format: " + model_args.model_format)

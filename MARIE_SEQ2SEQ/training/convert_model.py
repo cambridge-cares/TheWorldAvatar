@@ -9,9 +9,9 @@ from transformers import AutoTokenizer
 
 def convert():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_dir", type=str, required=True)
-    parser.add_argument("--output_dir", type=str, required=True)
-    parser.add_argument("--target_format", type=str, required=True)
+    parser.add_argument("input_dir", type=str)
+    parser.add_argument("output_dir", type=str)
+    parser.add_argument("--target_format", choices=["onmt", "ov", "ort"], type=str, required=True)
     args = parser.parse_args()
 
     if args.target_format == "onmt":  # OpenNMT
@@ -32,7 +32,8 @@ def convert():
         tokenizer = AutoTokenizer.from_pretrained(args.input_dir)
         model.save_pretrained(args.output_dir)
         tokenizer.save_pretrained(args.output_dir)
-
+    else:
+        raise ValueError("Unexpected target model format: " + args.target_format)
 
 if __name__ == "__main__":
     convert()
