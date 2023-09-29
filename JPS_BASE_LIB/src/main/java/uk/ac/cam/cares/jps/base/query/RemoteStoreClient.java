@@ -54,7 +54,6 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.TupleQueryResultHandlerException;
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
@@ -90,19 +89,6 @@ import uk.ac.cam.cares.jps.base.util.StoreClientHelper;
  *
  */
 public class RemoteStoreClient implements TripleStoreClientInterface {
-
-    private static final Logger LOGGER = LogManager.getLogger(RemoteStoreClient.class);
-
-    private static final String DEFAULT_REMOTE_STORE_NAME = "default";
-    private static final String HTTP_PROTOCOL = "http:";
-    private static final String HTTPS_PROTOCOL = "https:";
-
-    private String query;
-
-    Map<String, RemoteStore> remoteStores = new HashMap<>();
-    {
-        remoteStores.put(DEFAULT_REMOTE_STORE_NAME, new RemoteStore(DEFAULT_REMOTE_STORE_NAME));
-    }
 
     public static class RemoteStore {
         private final String name;
@@ -170,6 +156,19 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
             this.password = password;
         }
 
+    }
+
+    private static final Logger LOGGER = LogManager.getLogger(RemoteStoreClient.class);
+    private static final String DEFAULT_REMOTE_STORE_NAME = "default";
+    private static final String HTTP_PROTOCOL = "http:";
+
+    private static final String HTTPS_PROTOCOL = "https:";
+
+    private String query;
+
+    Map<String, RemoteStore> remoteStores = new HashMap<>();
+    {
+        remoteStores.put(DEFAULT_REMOTE_STORE_NAME, new RemoteStore(DEFAULT_REMOTE_STORE_NAME));
     }
 
     ///////////////////////////
@@ -273,10 +272,6 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         return this.query;
     }
 
-    private RemoteStore getDefaultRemoteStore() {
-        return remoteStores.get(DEFAULT_REMOTE_STORE_NAME);
-    }
-
     /**
      * Can return the URL of the query EndPoint.
      *
@@ -361,7 +356,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         getDefaultRemoteStore().setPassword(password);
     }
 
-    void addRemoteStore(RemoteStore remoteStore) {
+    public void addRemoteStore(RemoteStore remoteStore) {
         remoteStores.put(remoteStore.getName(), remoteStore);
     }
 
@@ -603,24 +598,6 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Return RDFConnection to sparql query endpoint
-     *
-     * @return
-     */
-    private RDFConnection connectQuery() {
-
-        RDFConnectionRemoteBuilder builder = null;
-        String queryEndpoint = getQueryEndpoint();
-        if (queryEndpoint != null) {
-            builder = RDFConnectionRemote.create().destination(queryEndpoint);
-        } else {
-            throw new JPSRuntimeException("RemoteStoreClient: update endpoint not specified.");
-        }
-
-        return builder.build();
-    }
-
-    /**
      * Generates the URL of the remote data repository's EndPoint, which might
      * require authentication either to perform a data retrieval or an update query.
      *
@@ -684,22 +661,6 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Puts the type of an endpoint (e.g. query and update), equal to symbol and end
-     * point URL in a string and returns the string.
-     *
-     * @param endpointType
-     * @param endpointURL
-     * @return
-     */
-    private String generateEndpointProperty(String endpointType, String endpointURL) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(endpointType);
-        sb.append("=");
-        sb.append(endpointURL);
-        return sb.toString();
-    }
-
-    /**
      * Checks the validity of the URL generated for connecting to a remote
      * repository based on user provided inputs via one of the parameterised
      * constructors or setter methods.
@@ -746,66 +707,6 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     }
 
     /**
-     * Checks the validity of a connection URL.
-     *
-     * @param connectionUrl
-     * @return
-     */
-    private boolean isConnectionUrlValid(String connectionUrl) {
-        String[] tokens = new String[] { "" };
-        if (connectionUrl.contains(HTTP_PROTOCOL)) {
-            tokens = connectionUrl.split(HTTP_PROTOCOL);
-        } else if (connectionUrl.contains(HTTPS_PROTOCOL)) {
-            tokens = connectionUrl.split(HTTPS_PROTOCOL);
-        }
-        for (String token : tokens) {
-            if (token.isEmpty()) {
-                return false;
-            }
-            if (token.length() < 3) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Returns the connection prefix and query endpoint parameter literals
-     * concatenated.
-     *
-     * @return
-     */
-    private String getQueryEndpointConnectionPrefixes() {
-        return JenaDriver.DRIVER_PREFIX
-                + RemoteEndpointDriver.REMOTE_DRIVER_PREFIX
-                + RemoteEndpointDriver.PARAM_QUERY_ENDPOINT
-                + "=";
-    }
-
-    /**
-     * Returns the connection prefix and update endpoint parameter literals
-     * concatenated.
-     *
-     * @return
-     */
-    private String getUpdateEndpointConnectionPrefixes() {
-        return JenaDriver.DRIVER_PREFIX
-                + RemoteEndpointDriver.REMOTE_DRIVER_PREFIX
-                + RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
-                + "=";
-    }
-
-    /**
-     * Returns the update endpoint parameter.
-     *
-     * @return
-     */
-    private String getUpdateEndpointConnectionParameter() {
-        return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
-                + "=";
-    }
-
-    /**
      * If a list of SPARQL endpoints and a query are passed to this method, it
      * evaluates the query against all the endpoints and returns the result in JSON
      * format.
@@ -824,59 +725,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @throws Exception
      */
     public JSONArray executeFederatedQuery(List<String> endpoints, String query) {
-        // Creates a federation with all provided endpoints.
-        Repository repository = null;
-        try {
-            repository = FedXFactory.createSparqlFederation(endpoints);
-            return executeFederatedQuery(query, repository);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            if (null != repository) {
-                repository.shutDown();
-            }
-        }
-    }
-
-    private JSONArray executeFederatedQuery(String query, Repository repository) {
-        JSONArray json = new JSONArray();
-        JSONObject obj;
-        BindingSet bSet;
-        try ( // Establishes a connection with all the endpoints.
-                RepositoryConnection conn = repository.getConnection()) {
-
-            // Prepares the query for execution against all the endpoints.
-            TupleQuery tq = conn.prepareTupleQuery(query);
-
-            // Evaluates the query against all the endpoints.
-            TupleQueryResult tqRes = tq.evaluate();
-            // Processes the result
-            while (tqRes.hasNext()) {
-                obj = new JSONObject();
-                bSet = tqRes.next();
-                for (String bindingName : bSet.getBindingNames()) {
-                    // If the value of a variable provided in the SPARQL query is found
-                    // within double quotes, they are removed as the JSON Object also adds
-                    // double quotes to the value.
-                    if (bSet.getValue(bindingName).toString().startsWith("\"")
-                            && bSet.getValue(bindingName).toString().endsWith("\"")) {
-                        obj.put(bindingName, bSet.getValue(bindingName).toString().substring(1,
-                                bSet.getValue(bindingName).toString().length() - 1));
-                    } // A value found without double quotes is codified as a JSON Object
-                      // without modification.
-                    else {
-                        obj.put(bindingName, bSet.getValue(bindingName).toString());
-
-                    }
-                }
-                json.put(obj);
-            }
-            return json;
-        } catch (TupleQueryResultHandlerException | RepositoryException ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            repository.shutDown();
-        }
+        return executeFederatedQuery(query,
+                endpoints.stream().map(EndpointFactory::loadSPARQLEndpoint).collect(Collectors.toList()));
     }
 
     public JSONArray executeFederatedQuery(String query) {
@@ -893,8 +743,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
                     return endpoint;
                 }).collect(Collectors.toList());
 
-        FedXRepository repository = FedXFactory.createFederation(endpoints);
-        return executeFederatedQuery(query, repository);
+        return executeFederatedQuery(query, endpoints);
     }
 
     /**
@@ -1081,5 +930,148 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
                 contentType = null;
         }
         return contentType;
+    }
+
+    private RemoteStore getDefaultRemoteStore() {
+        return remoteStores.get(DEFAULT_REMOTE_STORE_NAME);
+    }
+
+    /**
+     * Return RDFConnection to sparql query endpoint
+     *
+     * @return
+     */
+    private RDFConnection connectQuery() {
+
+        RDFConnectionRemoteBuilder builder = null;
+        String queryEndpoint = getQueryEndpoint();
+        if (queryEndpoint != null) {
+            builder = RDFConnectionRemote.create().destination(queryEndpoint);
+        } else {
+            throw new JPSRuntimeException("RemoteStoreClient: update endpoint not specified.");
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * Puts the type of an endpoint (e.g. query and update), equal to symbol and end
+     * point URL in a string and returns the string.
+     *
+     * @param endpointType
+     * @param endpointURL
+     * @return
+     */
+    private String generateEndpointProperty(String endpointType, String endpointURL) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(endpointType);
+        sb.append("=");
+        sb.append(endpointURL);
+        return sb.toString();
+    }
+
+    /**
+     * Checks the validity of a connection URL.
+     *
+     * @param connectionUrl
+     * @return
+     */
+    private boolean isConnectionUrlValid(String connectionUrl) {
+        String[] tokens = new String[] { "" };
+        if (connectionUrl.contains(HTTP_PROTOCOL)) {
+            tokens = connectionUrl.split(HTTP_PROTOCOL);
+        } else if (connectionUrl.contains(HTTPS_PROTOCOL)) {
+            tokens = connectionUrl.split(HTTPS_PROTOCOL);
+        }
+        for (String token : tokens) {
+            if (token.isEmpty()) {
+                return false;
+            }
+            if (token.length() < 3) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the connection prefix and query endpoint parameter literals
+     * concatenated.
+     *
+     * @return
+     */
+    private String getQueryEndpointConnectionPrefixes() {
+        return JenaDriver.DRIVER_PREFIX
+                + RemoteEndpointDriver.REMOTE_DRIVER_PREFIX
+                + RemoteEndpointDriver.PARAM_QUERY_ENDPOINT
+                + "=";
+    }
+
+    /**
+     * Returns the connection prefix and update endpoint parameter literals
+     * concatenated.
+     *
+     * @return
+     */
+    private String getUpdateEndpointConnectionPrefixes() {
+        return JenaDriver.DRIVER_PREFIX
+                + RemoteEndpointDriver.REMOTE_DRIVER_PREFIX
+                + RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
+                + "=";
+    }
+
+    /**
+     * Returns the update endpoint parameter.
+     *
+     * @return
+     */
+    private String getUpdateEndpointConnectionParameter() {
+        return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
+                + "=";
+    }
+
+    private JSONArray executeFederatedQuery(String query, List<Endpoint> endpoints) {
+
+        // Creates a federation with all provided endpoints.
+        FedXRepository repository = FedXFactory.createFederation(endpoints);
+
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        BindingSet bSet;
+        try ( // Establishes a connection with all the endpoints.
+                RepositoryConnection conn = repository.getConnection()) {
+
+            // Prepares the query for execution against all the endpoints.
+            TupleQuery tq = conn.prepareTupleQuery(query);
+
+            // Evaluates the query against all the endpoints.
+            TupleQueryResult tqRes = tq.evaluate();
+            // Processes the result
+            while (tqRes.hasNext()) {
+                obj = new JSONObject();
+                bSet = tqRes.next();
+                for (String bindingName : bSet.getBindingNames()) {
+                    // If the value of a variable provided in the SPARQL query is found
+                    // within double quotes, they are removed as the JSON Object also adds
+                    // double quotes to the value.
+                    if (bSet.getValue(bindingName).toString().startsWith("\"")
+                            && bSet.getValue(bindingName).toString().endsWith("\"")) {
+                        obj.put(bindingName, bSet.getValue(bindingName).toString().substring(1,
+                                bSet.getValue(bindingName).toString().length() - 1));
+                    } // A value found without double quotes is codified as a JSON Object
+                      // without modification.
+                    else {
+                        obj.put(bindingName, bSet.getValue(bindingName).toString());
+
+                    }
+                }
+                json.put(obj);
+            }
+            return json;
+        } catch (TupleQueryResultHandlerException | RepositoryException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            repository.shutDown();
+        }
     }
 }
