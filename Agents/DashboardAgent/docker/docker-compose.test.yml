@@ -14,7 +14,7 @@ services:
     networks:
       - test-network
   blazegraph_test:
-    image: docker.cmclinnovations.com/blazegraph:1.1.0
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     container_name: blazegraph_test
     restart: unless-stopped
     ports:

@@ -28,7 +28,7 @@ public class IntegrationTestUtils {
     public static final String SPATIAL_ZONE_NAMESPACE = "zone";
     public static final String SPATIAL_ZONE_SPARQL_ENDPOINT = SPARQL_ENDPOINT + "namespace/" + SPATIAL_ZONE_NAMESPACE + "/sparql";
     public static final String GENERAL_NAMESPACE = "asset";
-    public static final String GENERAL_SPARQL_ENDPOINT = SPARQL_ENDPOINT + "namespace/" +  GENERAL_NAMESPACE + "/sparql";
+    public static final String GENERAL_SPARQL_ENDPOINT = SPARQL_ENDPOINT + "namespace/" + GENERAL_NAMESPACE + "/sparql";
     public static final String TEST_POSTGIS_JDBC = "jdbc:postgresql://172.27.0.1:5431/";
     public static final String TEST_POSTGIS_URL = "http://172.27.0.1:5431/";
     public static final String TEST_POSTGIS_USER = "user";
@@ -65,7 +65,7 @@ public class IntegrationTestUtils {
                         "</properties>";
         StringEntity configEntity = new StringEntity(payload, ContentType.create("application/xml", "UTF-8"));
         // Create a new post request
-        HttpPost request = new HttpPost(SPARQL_ENDPOINT);
+        HttpPost request = new HttpPost(SPARQL_ENDPOINT + "namespace");
         request.setHeader("Accept", "application/xml");
         request.addHeader("Content-Type", "application/xml");
         request.setEntity(configEntity);
@@ -137,7 +137,7 @@ public class IntegrationTestUtils {
             }
         }
     }
-    
+
     public static Connection connectDatabase(String jdbc) {
         try {
             return DriverManager.getConnection(jdbc, TEST_POSTGIS_USER, TEST_POSTGIS_PASSWORD);
