@@ -187,7 +187,7 @@ public class TripleStoreProvider {
 	 * @return
 	 */
 	private GenericContainer<?> createBlazegraphTripleStore(int port) {
-		String imageName = "blazegraphtest";
+		String imageName = "ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0";
 		GenericContainer<?> tripleStore = null;
 		try {
 			tripleStore = createContainerByImage(imageName).withExposedPorts(port);
