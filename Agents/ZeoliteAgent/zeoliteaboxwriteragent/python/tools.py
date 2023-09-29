@@ -152,8 +152,49 @@ def getUUID_random( code ):
   return output
   pass # getUUID_random()
 
+def strSplit( inline, sep = " ", quotes = ["'", '"'] ):
+    words = []
+    w = []
+    #inQuote1 = False
+    #inQuote2 = False
+    inQuote = ""
 
+    for ic,c in enumerate(inline):
+      if inQuote == "":
+        #if "'" == c or '"' == c:
+        if c in quotes:
+          inQuote = c
+        elif sep == c:
+          if len(w) > 0:
+            words.append( "".join(w) )
+            w = []
+        else:
+          w.append(c)
+
+      else:
+        #if "'" == c or '"' == c:
+        if c in quotes:
+          inQuote = ""
+          words.append( "".join(w) )
+          w = []
+
+        #elif " " == c:
+        #  w.append(c)
+
+        else:
+          w.append(c)
+    else:
+      if len(w) > 0:
+        words.append( "".join(w) )
+
+    return words
+
+    #return line.split()
+    pass
+
+writeCsvErrCount = 0
 def writeCsv( filename, array ):
+  global writeCsvErrCount 
   logging.info( "writeCSV to '" + filename + "'" )
   try:
     with open( filename, "w", newline = "" ) as f:
@@ -161,8 +202,14 @@ def writeCsv( filename, array ):
       for a in array:
         csvw.writerow( a )
   except IOError:
-    print( "Error! File '" + filename + "' is protected. " + 
-           "Using temporary instead: '" + "test-tmp.csv" + "'." )
+    tmpFile = "test-tmp.csv"
+    logging.error( " File '" + filename + "' is protected. " + 
+           "Using temporary instead: '" + tmpFile + "'." )
+    writeCsvErrCount += 1
+    if 1 == writeCsvErrCount :
+      writeCsv( tmpFile, array )         
+    else:
+      logging.error( " I give up. " + "You need to close the files." )
 
   pass # writeCsv()
 
@@ -203,5 +250,11 @@ if __name__ == "__main__":
       pass
 
   saveUUID( db )
+
+  input_strings = [ "1 2 3 4 5", "1   2  3   4  5\n", "1 '2 3' 4 5", "1 2 3 '4   5'"  ]
+  for input_string in input_strings:
+    out = strSplit(input_string )
+    print( f"Input: {input_string}, Out: {str(out)}" )
+    #print( out )
 
 

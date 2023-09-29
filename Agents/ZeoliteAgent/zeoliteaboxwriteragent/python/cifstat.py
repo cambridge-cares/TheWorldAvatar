@@ -43,9 +43,8 @@ def cleanString( line ):
   else:
     tmp = line[:pos].strip()
 
-  tmp2 = tmp.replace( "<br>", "" )
+  tmp2 = tmp.replace( "<br>", "" ).strip()
   return tmp2
-
 
 
 class Entry:
@@ -198,6 +197,7 @@ _pd_meas_wavelength
 
     output = []
     f = open( filename, encoding="utf8" )
+    self.files.append( filename )
     for il, line in enumerate(f):
       #print( il, line )
       #logging.info( "  line " )
@@ -241,16 +241,38 @@ _pd_meas_wavelength
       self.entries[e].paths.append( path )
 
   # Print the statistics of the entries
-  def stat( self ):
+  def stat( self, filename = "" ):
     d = dict(sorted(self.entries.items(), key=lambda item: item[1].count, reverse=True))
     #print( d )
+    if filename != "":
+      f = open( filename, "w", encoding="utf8" )
+      #f.write( str(0) + "\t" + "None" + "\t" + str(0) + "\t" + str(0) + "\n" )
+
     print( "Total number of CIFs:", self.nCIF )
+    total = 0.0
     for k in d:
-      print( k.ljust(40), "=>", round(d[k].count * 100 / self.nCIF, 5 ), "%" ) 
+      total += d[k].count
+    print( "total = ", total )
+
+    cumul = 0.0
+    for ik,k in enumerate(d):
+      value = d[k].count
+      cumul += value
+      print( "cumul = ", cumul )
+      print( k.ljust(40), "=>", round( value * 100. / self.nCIF, 4 ), 
+                        "% =>", round( cumul * 100. / total,     4 ) ) 
       #print( "%20s => %f %" % ( k, d[k] * 100 / self.nCIF ) )
+
+      if filename != "":
+        f.write( str(ik+1) + "\t" + k + "\t" + 
+                 str(round( value * 100. / self.nCIF, 4 )) + "\t" +
+                 str(round( cumul * 100. / total,     4 )) + "\n" )
       if d[k].count < 2:
         #print( "   Less than 10 entries in dir:", d[k].paths )
         pass
+
+    if filename != "":
+      f.close()
 
   def checkValidEntries( self ):
     # Checking for correctness of the CIF:
@@ -268,10 +290,13 @@ if __name__ == "__main__":
   #cifArr.append( os.path.join( "CIF", "ABW.cif" ) )
 
   #cs.addCifArr( cifArr )
+
   cs.addDir( "CIF" )
   cs.addDir( "LI-CIF" )
-  cs.addDir( "ccdcfiles" )
-  cs.stat( )
+  #cs.addDir( "ccdcfiles" )
+  #cs.addDir( "test" )
+
+  cs.stat( filename = "stat.dat" )
 
   #cs.checkValidEntries()
 

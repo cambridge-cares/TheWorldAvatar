@@ -1,15 +1,21 @@
 
 import csv
 import os
+
+import logging
+#logging.basicConfig( level = logging.DEBUG )
+#logging.basicConfig( level = logging.INFO )
+logging.basicConfig( level = logging.WARNING )
+#logging.basicConfig( level = logging.ERROR )
+
 import tools
 import zeolist
 import tilesignature
-import logging
 import math
 import numpy
-logging.basicConfig( level = logging.INFO )
 
 from pymatgen.core.structure import Structure, Lattice
+
 
 # FIXME
 #http://www.w3.org/2000/01/rdf-schema#Literal
@@ -34,6 +40,7 @@ class CsvMaker:
 
   def prepare( self ):
     self.zeoList = zeolist.getZeoList( self.zeoOption )
+    self.zeoList = [ os.path.join( "test", "913885.cif" ) ]
     self.uuidDB = tools.loadUUID( )
 
     # May be also command line arguments here:
@@ -83,6 +90,7 @@ class CsvMaker:
     uuidDB = self.uuidDB
 
     path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
+
     #dataIn = tools.readCsv( path )
     if not os.path.isfile( path ):
       logging.error( "File not found '" + path + "'." )
@@ -272,11 +280,15 @@ class CsvMaker:
   def arrUnitCell( self, zeoname ):
     output = []
     TWOPI = 2 * math.pi
+    # TODO to add get_crystal_system(), get_space_group_number(), 
+    #      https://pymatgen.org/pymatgen.symmetry.html
 
     #uuidDB = tools.loadUUID( )
     uuidDB = self.uuidDB
 
     path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
+
+    path = os.path.join( "test", "913885.cif" ) 
     #dataIn = tools.readCsv( path )
     if not os.path.isfile( path ):
       logging.error( "File not found '" + path + "'." )
@@ -1061,6 +1073,261 @@ class CsvMaker:
     #print( trans )
     return trans
 
+  # Remove error bars from the CIF file and save the result to a temporary file
+  def splitErrorBarLoop( self, line, headers, file_line ):
+    #print( "Running error bar loop", line )
+    #words = line.split()
+    words = self.strSplit( line )
+
+    if len(words) == 0:
+      logging.error( " Empty line " + file_line )
+      return line
+
+    if len(words) != len(headers):
+      logging.error( " Number of elements on line is different from the " +
+                     "definition of the loop: " + str(len(words)) +" vs " + 
+                     str(len(headers)) + ": " + str(words) + " vs " + str(headers) +
+                     " " + file_line + "." )
+      return line
+
+    lineNew = line
+    #for i in range( len(headers) ):
+    for ih, h in enumerate(headers):
+      if h in self.entriesToCheck:
+        #logging.warning( " Found one of the entries" )
+        vOut, eOut = self.splitErrorBar( words[ih], file_line )
+        pos = line.find( words[ih] )
+        lineNew = lineNew.replace( words[ih], vOut )
+
+    print( "lineNew =", lineNew )
+    return lineNew
+
+
+  def splitStr( self, value ):
+
+    pos1 = value.find( "(" )
+    pos2 = value.find( ")" )
+    vOut = value[:pos1] + value[pos2+1:]
+    eOut = value[pos1+1:pos2]
+
+    ''' This sometimes return value like 0.007000000001, last digit round effect
+    n = len(eOut )
+    vOut = vOut
+    v = 0
+    factor = ""
+    for ix, x in enumerate(vOut):
+      if ix == len(vOut) - 1:
+        factor += "1"
+      elif "." == x:
+        factor += "."
+      else:
+        factor += "0"
+    eOut = str( float(factor) * float(eOut) )
+    '''
+
+    #iv = len(vOut) - 1
+    #ie = len(eOut) - 1
+    ie = 1
+    factor = []
+    for ix,x in enumerate(vOut[::-1]):
+      if "." == x:
+        factor.insert( 0, "." )
+      elif ie <= len( eOut ):
+        factor.insert( 0, eOut[-ie] )
+        ie += 1
+      else:
+        factor.insert( 0, "0" )
+        ie += 1
+
+    #print( factor )
+    factor = "".join( factor )
+    if factor.find( "." ) < 0:
+      eOut = str( int(factor) )
+    else:
+      eOut = str( float(factor) )
+    #for i in range( len( eOut ) ):
+      #vOut[-i-1] = eOut[-i-1]
+    return vOut, eOut
+    pass
+
+  def splitErrorBar( self, value, file_line ):
+    #print( "Starting splitErrorBar() ================== " )
+    vOut = value 
+    eOut = ""
+
+    if not isinstance( value, str ):
+      logging.error( " Impossible error: not a string " + line + " " 
+                     + file_line )
+      return vOut,eOut
+
+    pos1 = value.find( "(" )
+    pos2 = value.find( ")" )
+    if pos1 < 0 and pos2 < 0:
+      logging.info( " Brackets are not detected. " + file_line )
+    elif pos1 >= 0 and pos2 >= 0 and pos1 < pos2:
+      #print( "pos1 = ", pos1, " pos2 = ", pos2 )
+      vOut,eOut = self.splitStr(value) 
+    else:
+      logging.error( " Something is wrong with brackets: '" + line + 
+                     "' . " + file_line )
+
+    #print( "value, vOut, eOut =", value, vOut, eOut )
+    return vOut, eOut
+    pass
+
+  def cleanCif( self ):
+    fileIn  = os.path.join( "test", "913885.cif" )
+    fileOut = "after-913885.cif"
+
+    self.entriesToCheck = [ "_cell_length_a", "_cell_length_b", "_cell_length_c", 
+                  "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma",
+                  "_cell_volume", "_cell_measurement_temperature",
+                  "_diffrn_ambient_temperature",
+                  "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
+                  "_atom_site_U_iso_or_equiv",
+                  "_atom_site_aniso_U_11", "_atom_site_aniso_U_22", 
+                  "_atom_site_aniso_U_33", "_atom_site_aniso_U_23", 
+                  "_atom_site_aniso_U_13", "_atom_site_aniso_U_12", 
+                  "_geom_bond_distance", "_geom_angle", 
+                  "_refine_ls_extinction_coef"
+                  ]
+
+    if not os.path.isfile( fileIn ):
+      logging.error( " File '" + fileIn + "' does not exist in cleanCif()." )
+      return
+
+    f = open( fileIn )
+    fOut = open( fileOut, "w", encoding="utf8" )
+
+    inLoop = False
+
+    for il, line in enumerate(f):
+      file_line = "In file '" + fileIn + "' line " + str(il+1)
+      #print( file_line )
+
+      if il >= 66:
+        logging.debug( " Break after 75 lines for testing. " + file_line )
+        break
+        pass
+
+      pos1 = line.find( "#" )
+      pos2 = line.find( ";" )
+      if   0 == pos1:
+        logging.info( " Found a comment '" + line.strip() + "'. " + file_line )
+        #short = line[ :pos] + "\n"
+        fOut.write( line )
+        continue
+
+      elif 0 == pos2:
+        logging.info( " Found a comment '" + line.strip() + "'. " + file_line )
+        #short = line[ :pos] + "\n"
+        fOut.write( line )
+        continue
+
+      elif pos1 > 0 or pos2 > 0:
+        logging.error( file_line + " Comment starts not from line start. " + 
+                       "This is not supported by cleanCif()." )
+        fOut.write( line )
+        continue
+
+      #words = line.strip().split()
+      words = tools.strSplit( line )
+      #print( "on line", il, "words:", words )
+      
+      if len(words) == 0:
+        #logging.info( " Empty string " + file_line )
+        fOut.write( line )
+        inLoop = False
+        continue
+        pass
+
+      elif "loop_" == words[0]:
+        #logging.info( " In 'loop_' option" )
+        inLoop = True
+        inLoopHead = True
+        inLoopBody = False
+        self.loopHeaders = []
+        #fOut.write( "added 'loop_': " + line )
+        fOut.write( line )
+        continue
+
+      elif inLoop:
+        #logging.info( " In inLoop option" )
+        
+        if inLoopHead:
+          if "_" == words[0][0]:
+            self.loopHeaders.append( words[0] )
+            fOut.write( line )
+          else:
+            inLoopHead = False
+            inLoopBody = True
+
+        if inLoopBody:
+          if "_" == words[0][0]:
+            inLoop = False
+            logging.info( " inLoop is set to False" )
+            fOut.write( line )
+            #self.loopHeaders = []
+            
+          else:
+            lineNew = self.splitErrorBarLoop( line, self.loopHeaders, file_line )
+            fOut.write( lineNew )
+            continue
+            pass
+
+          pass
+
+        print( "headers =", self.loopHeaders )
+
+      elif len(words) > 2:
+        #logging.info( " Length of string = " + str(len(words)) + " " + file_line )
+        fOut.write( line )
+        pass
+
+      elif "_" == words[0][0]:
+        if False == inLoop:
+          if len(words) == 1:
+            #logging.info( " Only 1 entry in '" + line.strip() + "' " + file_line + ". I skip this case." )
+            fOut.write( line )
+            continue
+          elif len(words) > 2:
+            #logging.info( " More than 2 entries in '" + line.strip() + "' " + file_line + ". I skip this case." )
+            fOut.write( line )
+            continue
+            
+          elif words[0] in self.entriesToCheck:
+            #logging.info( " Found one of the entries" )
+            vOut, eOut = self.splitErrorBar( words[1], file_line )
+            pos = line.find( words[1] )
+
+            newLine = line.replace( words[1], vOut )
+            fOut.write( newLine )
+            #fOut.write( line[:pos] + vOut + "\n" )
+            continue
+
+          else:
+            logging.warning( " Unknown situation. Line = '" + line.strip() + 
+                             "'. " + file_line + "." )
+            fOut.write( line )
+        else:
+          fOut.write( line )
+
+      elif len(words) == 2:
+        #logging.warning( " Length of string = " + str(len(words)) + " " + file_line )
+        fOut.write( line )
+        pass
+
+      else:
+        #logging.warning( " default else option." )
+        fOut.write( line )
+        pass
+
+    f.close()
+    fOut.close()
+
+    pass
+
+
   def makeCsvs( self ):
     errCount = 0
 
@@ -1072,7 +1339,7 @@ class CsvMaker:
       #arr += self.arrTiles( z )
       arr += self.arrUnitCell( z )
       #arr += self.arrAtomSite( z )
-      arr += self.arrTransform( z )
+      #arr += self.arrTransform( z )
 
       #print( "arr =", arr )
       #csvWrite( arr )
@@ -1097,5 +1364,19 @@ if __name__ == "__main__":
   
   a = CsvMaker()
 
-  a.makeCsvs()
+  #a.makeCsvs()
+
+  a.cleanCif()
+
+  #input_strings = [ "123450(16)", "123450(160)", "1234.5(16)", "123.45(16)", "12.345(16)"]
+  #for input_string in input_strings:
+  #  value, error = a.splitStr( input_string )
+  #  print(f"Input: {input_string}, Value: {value}, Error: {error}")
+    
+  #input_strings = [ "1 2 3 4 5", "1   2  3   4  5\n", "1 '2 3' 4 5", "1 2 3 '4   5'"  ]
+  #for input_string in input_strings:
+  #  out = tools.strSplit(input_string )
+  #  print( f"Input: {input_string}, Out: {str(out)}" )
+  #  #print( out )
+
 
