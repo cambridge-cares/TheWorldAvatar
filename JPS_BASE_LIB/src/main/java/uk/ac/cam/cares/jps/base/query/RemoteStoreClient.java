@@ -356,6 +356,13 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         getDefaultRemoteStore().setPassword(password);
     }
 
+    /**
+     * This should be used with the
+     * {@link #executeFederatedQuery(String)} for federated
+     * queries where one or more of the endpoints requires credentials.
+     * 
+     * @param remoteStore
+     */
     public void addRemoteStore(RemoteStore remoteStore) {
         remoteStores.put(remoteStore.getName(), remoteStore);
     }
@@ -709,7 +716,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     /**
      * If a list of SPARQL endpoints and a query are passed to this method, it
      * evaluates the query against all the endpoints and returns the result in JSON
-     * format.
+     * format. The endpoints must not require credentials, if the do use the
+     * {@link #executeFederatedQuery(String)} method instead.
      * <br>
      * Endpoints should be provided as shown in the following two examples:
      * <br>
@@ -721,7 +729,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      *
      * @param endpoints a list of endpoints.
      * @param query     a SPARQL query.
-     * @return
+     * @return the query results.
      * @throws Exception
      */
     public JSONArray executeFederatedQuery(List<String> endpoints, String query) {
@@ -729,6 +737,13 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
                 endpoints.stream().map(EndpointFactory::loadSPARQLEndpoint).collect(Collectors.toList()));
     }
 
+    /**
+     * Use the {@link #addRemoteStore(RemoteStore)} method and this
+     * one if your endpoints might have credentials.
+     * 
+     * @param query a SPARQL query.
+     * @return the query results.
+     */
     public JSONArray executeFederatedQuery(String query) {
         List<Endpoint> endpoints = remoteStores.values().stream()
                 .filter(remoteStore -> null != remoteStore.getQueryEndpoint())
