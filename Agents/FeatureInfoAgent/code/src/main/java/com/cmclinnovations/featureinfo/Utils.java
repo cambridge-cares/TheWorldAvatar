@@ -7,16 +7,21 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.cmclinnovations.featureinfo.config.ConfigStore;
+import com.cmclinnovations.featureinfo.config.StackEndpoint;
+import com.cmclinnovations.featureinfo.config.StackEndpointType;
+
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * Misc utilities.
+ * Misc utilities for the FeatureInfoAgent.
  */
 public final class Utils {
     
@@ -32,78 +37,108 @@ public final class Utils {
         // No
     }
 
-    /**
-     * Combine timeseries objects into a single timeseries objects. For some reason this is
-     * required by the timeseries client before a conversion to JSON can happen.
+	/**
+	 * Injects the input IRI and Ontop endpoint into the input SPARQL query.
+	 * 
+	 * @param query SPARQL query to inject into.
+	 * @param iri feature IRI to inject.
+	 * @param ontops List of ontop endpoints for injection.
+	 * @param blazegraphs List of blazegraph endpoints for injection.
+	 * 
+	 * @return Updated SPARQL query string.
+	 */
+	public static String queryInject(String query, String iri, List<StackEndpoint> ontops, List<StackEndpoint> blazegraphs) {
+		String updatedQuery = query;
+
+		if(!iri.startsWith("<")) iri = "<" + iri;
+        if(!iri.endsWith(">")) iri += ">";
+		updatedQuery = updatedQuery.replaceAll(Pattern.quote("[IRI]"), iri);
+
+		// Build SPARQL values strings
+		StringBuilder bothBuilder = new StringBuilder();
+		StringBuilder blazegraphBuilder = new StringBuilder();
+
+		ontops.forEach(endpoint -> {
+			bothBuilder.append("<");
+			bothBuilder.append(endpoint.url());
+			bothBuilder.append("> ");
+		});
+		blazegraphs.forEach(endpoint -> {
+			bothBuilder.append("<");
+			bothBuilder.append(endpoint.url());
+			bothBuilder.append("> ");
+			blazegraphBuilder.append("<");
+			blazegraphBuilder.append(endpoint.url());
+			blazegraphBuilder.append("> ");
+		});
+
+		updatedQuery = updatedQuery.replaceAll(Pattern.quote("[ENDPOINTS-ALL]"), bothBuilder.toString());
+		updatedQuery = updatedQuery.replaceAll(Pattern.quote("[ENDPOINTS-BLAZEGRAPH]"), blazegraphBuilder.toString());
+
+		// If a single Ontop endpoint is present, inject that
+		if(ontops.size() == 1) {
+			updatedQuery = updatedQuery.replaceAll(Pattern.quote("[ONTOP]"), ontops.get(0).url());
+		}
+
+		return updatedQuery;
+	}
+
+	/**
+	 * Returns the URL of the Ontop endpoint from the input configuration store.
+	 * 
+	 * @param configStore configuration store.
+	 * 
+	 * @return Ontop URL.
+	 */
+	public static String getOntopURL(ConfigStore configStore) {
+		StackEndpoint ontopEndpoint = configStore.getStackEndpoints(StackEndpointType.ONTOP)
+			.stream()
+			.findFirst()
+			.orElse(null);
+		return (ontopEndpoint == null) ? null : ontopEndpoint.url();
+	}
+
+	/**
+     * Return a list of stack endpoints to use during KG queries.
      * 
-     * Code taken from Kok Foong.
-     * 
-     * @param tsClient time series client
-     * @param tsList list of time series instances
-     * 
-     * @return combined timeseries instance.
+	 * @param configStore configuration store.
+	 * @param enforcedEndpoint optional enforced Blazegraph URL.
+	 * 
+     * @return StackEndpoint instance
      */
-    @SuppressWarnings("all")
-    public static TimeSeries<Instant> getCombinedTimeSeries(TimeSeriesClient<Instant> tsClient, Collection<TimeSeries<Instant>> tsList) {
-    	if (tsList.size() > 1) {
-    		// this will sort in ascending order
-    		List<TimeSeries<Instant>> ts_sorted = tsList.stream().sorted(Comparator.comparing(ts -> ts.getTimes().size())).collect(Collectors.toList());
-    		List<Instant> longestTimeList = ts_sorted.get(ts_sorted.size()-1).getTimes();
-    		
-    		List<List<?>> valuesList = new ArrayList<>();
-    		List<String> dataIRIs = new ArrayList<>();
-    		
-    		for (int i = 0; i < ts_sorted.size() ; i++) {
-    			TimeSeries<Instant> ts = ts_sorted.get(i);
-    			List<Double> values = new ArrayList<>();
-    			// each time series has one column
-    			String dataIRI = ts.getDataIRIs().get(0);
-    			
-    			// need to query data from the day before
-    			Double valueBefore = null;
-    			if (ts.getTimes().get(0).isAfter(longestTimeList.get(0))) {
-    				TimeSeries<Instant> extraInfo = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRI), longestTimeList.get(0).minus(1, ChronoUnit.DAYS), longestTimeList.get(0));
-    				
-    				if (extraInfo.getTimes().size() == 0) {
-    					// could potentially implement a while loop here
-    					LOGGER.warn("getCombinedTimeSeries: no extra data obtained");
-    					valueBefore = 0.0;
-    				} else {
-    					// get final value in the list
-    					valueBefore = extraInfo.getValuesAsDouble(dataIRI).get(extraInfo.getValuesAsDouble(dataIRI).size()-1);
-    				}
-    			}
-    			for (Instant time : longestTimeList) {
-    				int index; // work out which index to extract value from
-    				if (ts.getTimes().contains(time)) {
-    					index = ts.getTimes().indexOf(time);
-    					
-    				} else if (time.isAfter(ts.getTimes().get(ts.getTimes().size()-1))) {
-    					// get final index
-    					index = ts.getTimes().size() - 1;
-    				
-    				} else {
-    					// this gives the element right after the time point
-    					Instant t1 = ts.getTimes().stream().filter(t -> t.isAfter(time)).findFirst().get();
-    					index = ts.getTimes().indexOf(t1) - 1;
-    				}
-    				
-    				if (index < 0) {
-    					values.add(valueBefore);
-    				} else {
-    					values.add(ts.getValuesAsDouble(dataIRI).get(index));
-    				}
-    			}
-    			
-    			dataIRIs.add(dataIRI);
-    			valuesList.add(values);
-    		}
-    		
-    		return new TimeSeries<>(longestTimeList, dataIRIs, valuesList);
-    	} else {
-    		return tsList.iterator().next();
-    	}
+    public static List<StackEndpoint> getBlazegraphEndpoints(ConfigStore configStore, String enforcedEndpoint) {
+        // If an endpoint is enforced, try to find it's match from the auto-discovered ones
+        if(enforcedEndpoint != null) {
+            StackEndpoint match = configStore.getStackEndpoints(StackEndpointType.BLAZEGRAPH)
+                .stream()
+                .filter(endpoint -> endpoint.url().equalsIgnoreCase(enforcedEndpoint))
+                .findFirst()
+                .orElse(null);
+
+            if(match == null) {
+                // No match, create a new temporary one.
+                match = new StackEndpoint(enforcedEndpoint, null, null, StackEndpointType.BLAZEGRAPH);
+            }
+            return new ArrayList<>(Arrays.asList(match));
+        }
+
+        return configStore.getStackEndpoints(StackEndpointType.BLAZEGRAPH);
     }
+
+	/**
+     * Return a list of stack URLs to use during KG queries.
+     * 
+	 * @param configStore configuration store.
+	 * @param enforcedEndpoint optional enforced Blazegraph URL.
+	 * 
+     * @return KG URLs.
+     */
+	public static List<String> getBlazegraphURLs(ConfigStore configStore, String enforcedEndpoint) {
+		List<StackEndpoint> endpoints = getBlazegraphEndpoints(configStore, enforcedEndpoint);
+		return endpoints.stream()
+			.map(endpoint -> endpoint.url())
+			.collect(Collectors.toList());
+	}
 
 }
 // End of class.

@@ -8,7 +8,7 @@
             "class": "https://theworldavatar.io/mock-domain/ClassTwo",
             "metaFile": "classTwoMeta.sparql",
             "timeFile": "classTwoTime.sparql",
-            "timeLimit": -1,
+            "timeLimit": 24,
             "databaseName": "my-database"
         },
         {

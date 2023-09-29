@@ -1,4 +1,7 @@
 package com.cmclinnovations.featureinfo;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -6,14 +9,27 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+
+import com.cmclinnovations.featureinfo.config.ConfigStore;
+import com.cmclinnovations.featureinfo.config.StackEndpoint;
+import com.cmclinnovations.featureinfo.config.StackEndpointType;
 
 /**
  * Misc utilities used for automated tests.
@@ -174,6 +190,70 @@ public final class TestUtils {
      */
     private static boolean ensureDirectoryExists(File f) {
         return f.exists() || f.mkdir();
+    }
+
+    /**
+     * Mocks a new ConfigStore instance based on the content of the input file.
+     * 
+     * @param configFile path to configuration file.
+     * 
+     * @return spied config store.
+     * 
+     * @throws Exception if configuration file cannot be read.
+     */
+    public static ConfigStore mockConfig(Path configFile) throws Exception {
+        // Create store instance (skipping stack integration)
+        ConfigStore configStore = new ConfigStore(configFile.toString());
+        configStore.loadDetails(false);
+
+        // Setup mocking for stack endpoints
+        ConfigStore spiedConfig = Mockito.spy(configStore);
+
+        Mockito.when(
+            spiedConfig.getStackEndpoints(
+                ArgumentMatchers.same(StackEndpointType.ONTOP)
+            )
+        ).thenReturn(
+            new ArrayList<>(Arrays.asList(
+                new StackEndpoint("https://test-stack/ontop", null, null, StackEndpointType.ONTOP)
+            ))
+        );
+
+        Mockito.when(
+            spiedConfig.getStackEndpoints(
+                ArgumentMatchers.same(StackEndpointType.POSTGRES)
+            )
+        ).thenReturn(
+            new ArrayList<>(Arrays.asList(
+                new StackEndpoint("https://test-stack/postgres", null, null, StackEndpointType.POSTGRES)
+            ))
+        );
+
+        Mockito.when(
+            spiedConfig.getStackEndpoints(
+                ArgumentMatchers.same(StackEndpointType.BLAZEGRAPH)
+            )
+        ).thenReturn(
+            new ArrayList<>(Arrays.asList(
+                new StackEndpoint("https://test-stack/blazegraph-one", null, null, StackEndpointType.BLAZEGRAPH),
+                new StackEndpoint("https://test-stack/blazegraph-two", null, null, StackEndpointType.BLAZEGRAPH)
+            ))
+        );
+
+        return spiedConfig;
+    }
+
+    /**
+     * Mock a HTTP response object.
+     * 
+     * @return mocked HTTP response.
+     */
+    public static HttpServletResponse mockResponse() throws Exception {
+        HttpServletResponse httpResponse = mock(HttpServletResponse.class);
+        StringWriter strWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(strWriter);
+        when(httpResponse.getWriter()).thenReturn(printWriter);
+        return httpResponse;
     }
 
 }

@@ -1,11 +1,13 @@
 package com.cmclinnovations.featureinfo.config;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterAll;
@@ -34,9 +36,14 @@ public class ConfigStoreTest {
     /**
      * Copy test data out from the resources directory so it can be loaded in the same
      * manner that files are at runtime.
+     * 
+     * @throws IOException if temporary test data cannot be created.
      */
     @BeforeAll
-    public static void setup() {
+    public static void setup() throws IOException {
+        FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-01").toFile());
+        FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-02").toFile());
+
         // Copy out test data sets to the temporary directory.
         File mockDir01 = new File(ConfigStoreTest.class.getResource("/mock-config-01").getFile());
         Assertions.assertTrue(
@@ -56,11 +63,8 @@ public class ConfigStoreTest {
      */
     @AfterAll
     public static void cleanUp() throws Exception {
-        Path mockDir01 = TEMP_DIR.resolve("mock-config-01");
-        Files.deleteIfExists(mockDir01);
-
-        Path mockDir02 = TEMP_DIR.resolve("mock-config-02");
-        Files.deleteIfExists(mockDir02);
+        FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-01").toFile());
+        FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-02").toFile());
     }
 
     /**

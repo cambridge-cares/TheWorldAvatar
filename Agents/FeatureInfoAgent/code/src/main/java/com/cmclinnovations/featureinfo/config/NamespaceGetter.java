@@ -142,7 +142,7 @@ public class NamespaceGetter {
      * @throws SAXExeption if XML is invalid
      * @throws ParserConfigurationException if parser is invalid.
      */
-    private void parseResponse(List<StackEndpoint> endpoints, String response) throws
+    protected void parseResponse(List<StackEndpoint> endpoints, String response) throws
         IOException,
         ParserConfigurationException,
         SAXException {

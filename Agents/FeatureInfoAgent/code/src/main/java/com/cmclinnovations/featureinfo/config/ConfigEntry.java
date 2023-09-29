@@ -302,9 +302,20 @@ public class ConfigEntry {
             entry.classIRI = classIRI;
             entry.metaQueryFile = metaQueryFile;
             entry.timeQueryFile = timeQueryFile;
-            entry.timeReference = TimeReference.valueOf(timeReference.toUpperCase());
+
+            if(timeReference == null) {
+                entry.timeReference = TimeReference.NOW;
+            } else {
+                entry.timeReference = TimeReference.valueOf(timeReference.toUpperCase());
+            }
+
+            if(timeLimitUnit == null) {
+                entry.timeLimitUnit = TimeUnit.HOURS;
+            } else {
+                entry.timeLimitUnit = TimeUnit.valueOf(timeLimitUnit.toUpperCase());
+            }
+           
             entry.timeLimitValue = timeLimitValue;
-            entry.timeLimitUnit = TimeUnit.valueOf(timeLimitUnit.toUpperCase());
             entry.timeDatabase = timeDatabase;
 
             // Populate query contents

@@ -23,6 +23,11 @@ public class StackInteractor extends ContainerClient {
     private static final Logger LOGGER = LogManager.getLogger(StackInteractor.class);
 
     /**
+     * Cache of RDB config, as we need to refer to it later.
+     */
+    private static PostGISEndpointConfig RDB_CONFIG;
+
+    /**
      * Pool of parsed endpoint entries.
      */
     private final List<StackEndpoint> endpoints;
@@ -74,15 +79,15 @@ public class StackInteractor extends ContainerClient {
     private List<StackEndpoint> discoverPostgres() {
         List<StackEndpoint> postgresEndpoints = new ArrayList<>();
 
-        PostGISEndpointConfig postgresConfig = readEndpointConfig("postgis", PostGISEndpointConfig.class);
+        RDB_CONFIG = readEndpointConfig("postgis", PostGISEndpointConfig.class);
         postgresEndpoints.add(new StackEndpoint(
-            postgresConfig.getJdbcDriverURL(),
-            postgresConfig.getUsername(),
-            postgresConfig.getPassword(),
+            RDB_CONFIG.getJdbcDriverURL(),
+            RDB_CONFIG.getUsername(),
+            RDB_CONFIG.getPassword(),
             StackEndpointType.ONTOP
         ));
 
-        LOGGER.info("Have discovered a local Ontop endpoint: {}", postgresConfig.getJdbcDriverURL());
+        LOGGER.info("Have discovered a local Ontop endpoint: {}", RDB_CONFIG.getJdbcDriverURL());
         return postgresEndpoints;
     }
 
@@ -112,6 +117,21 @@ public class StackInteractor extends ContainerClient {
             return new ArrayList<>();
         }
     }
+
+    /**
+     * Given a database name, this generates and returns the correct URL for it.
+     * 
+     * @param dbName database name
+     */
+    public static String generatePostgresURL(String dbName) {
+        try {
+            return RDB_CONFIG.getJdbcURL(dbName);
+        } catch(RuntimeException exception) {
+            // Probably not running within a stack
+            return "";
+        }
+    }
+
 
 }
 // End of class.

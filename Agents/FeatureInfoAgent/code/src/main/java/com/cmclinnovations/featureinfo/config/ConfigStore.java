@@ -57,6 +57,18 @@ public final class ConfigStore {
     }
 
     /**
+     * Returns the directory containing the configuration file.
+     * 
+     * @return directory containing the configuration file.
+     */
+    public Path getConfigurationDirectory() {
+        if(this.configurationFile != null) {
+            return this.configurationFile.getParent();
+        }
+        return null;
+    }
+
+    /**
      * Returns the loaded configuration entries.
      * 
      * @return configuration entries.
