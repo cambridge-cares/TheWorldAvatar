@@ -33,7 +33,7 @@ services:
     container_name: postgis_test
     restart: always
     environment:
-      POSTGRES_USER: user
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pg123
     ports:
       - "5431:5432"

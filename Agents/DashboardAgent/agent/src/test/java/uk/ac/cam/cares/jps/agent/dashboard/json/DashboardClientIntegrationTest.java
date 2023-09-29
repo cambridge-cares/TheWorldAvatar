@@ -112,7 +112,7 @@ class DashboardClientIntegrationTest {
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllSpatialZones()).thenReturn(new String[]{});
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
-            Mockito.when(mock.getPostGisCredentials()).thenReturn(new String[]{IntegrationTestUtils.TEST_POSTGIS_URL,
+            Mockito.when(mock.getPostGisCredentials()).thenReturn(new String[]{IntegrationTestUtils.TEST_POSTGIS_JDBC,
                     IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD});
         })) {
             StackClient mockStackClient = new StackClient();
@@ -138,7 +138,7 @@ class DashboardClientIntegrationTest {
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllSpatialZones()).thenReturn(new String[]{});
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
-            Mockito.when(mock.getPostGisCredentials()).thenReturn(new String[]{IntegrationTestUtils.TEST_POSTGIS_URL,
+            Mockito.when(mock.getPostGisCredentials()).thenReturn(new String[]{IntegrationTestUtils.TEST_POSTGIS_JDBC,
                     IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD});
         })) {
             StackClient mockStackClient = new StackClient();

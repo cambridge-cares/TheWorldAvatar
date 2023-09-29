@@ -30,8 +30,7 @@ public class IntegrationTestUtils {
     public static final String GENERAL_NAMESPACE = "asset";
     public static final String GENERAL_SPARQL_ENDPOINT = SPARQL_ENDPOINT + "namespace/" + GENERAL_NAMESPACE + "/sparql";
     public static final String TEST_POSTGIS_JDBC = "jdbc:postgresql://172.27.0.1:5431/";
-    public static final String TEST_POSTGIS_URL = "http://172.27.0.1:5431/";
-    public static final String TEST_POSTGIS_USER = "user";
+    public static final String TEST_POSTGIS_USER = "postgres";
     public static final String TEST_POSTGIS_PASSWORD = "pg123";
     public static final String NAME_KEY = "name";
     public static final String TEST_DASHBOARD_URL = "http://172.27.0.1:3068";
