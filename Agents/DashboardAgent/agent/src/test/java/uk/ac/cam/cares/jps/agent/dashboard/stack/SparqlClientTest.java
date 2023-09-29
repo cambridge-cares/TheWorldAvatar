@@ -21,27 +21,25 @@ class SparqlClientTest {
     private static final String SAMPLE_OFFICE_DIRECTOR_ROOM_INSTANCE = TestUtils.genInstance("Room");
     private static final String SAMPLE_OFFICE_DIRECTOR_ROOM_NAME = "Director's room";
     private static final String SAMPLE_OFFICE_STAFF_ROOM_INSTANCE = TestUtils.genInstance("Room");
-    private static final String SAMPLE_OFFICE_STAFF_ROOM_NAME = "Staff room";
+    public static final String SAMPLE_OFFICE_STAFF_ROOM_NAME = "Staff room";
     private static final String SAMPLE_OFFICE_STORAGE_ROOM_INSTANCE = TestUtils.genInstance("Room");
     private static final String SAMPLE_OFFICE_STORAGE_ROOM_NAME = "Staff room";
-    private static final String TEMPERATURE = "Temperature";
-    private static final String TEMPERATURE_UNIT = "degree";
-    private static final String RELATIVE_HUMIDITY = "Relative Humidity";
+    public static final String TEMPERATURE = "Temperature";
+    public static final String TEMPERATURE_UNIT = "degree";
+    public static final String RELATIVE_HUMIDITY = "Relative Humidity";
     private static final double TEMPERATURE_MIN_THRESHOLD = 21.1;
     private static final double TEMPERATURE_MAX_THRESHOLD = 25.6;
-    private static final double RELATIVE_HUMIDITY_MIN_THRESHOLD = 50.1;
-    private static final double RELATIVE_HUMIDITY_MAX_THRESHOLD = 75.7;
+    public static final double RELATIVE_HUMIDITY_MIN_THRESHOLD = 50.1;
+    public static final double RELATIVE_HUMIDITY_MAX_THRESHOLD = 75.7;
     private static final String SAMPLE_LAB_INSTANCE = TestUtils.genInstance("Laboratory");
     private static final String SAMPLE_LAB_NAME = "Generic Laboratory";
     private static final String SAMPLE_LAB_BIO_ROOM_INSTANCE = TestUtils.genInstance("Room");
-    private static final String SAMPLE_LAB_BIO_ROOM_NAME = "Biological Containment Room";
     private static final String SAMPLE_LAB_PILOT_ROOM_INSTANCE = TestUtils.genInstance("Room");
-    private static final String SAMPLE_LAB_PILOT_ROOM_NAME = "Pilot Room";
     private static final String SAMPLE_LAB_FRIDGE_NAME = "Chemical Cooling Unit";
     private static final String SAMPLE_LAB_FRIDGE_TYPE = "Fridge";
     private static final String SAMPLE_LAB_FRIDGE_INSTANCE = TestUtils.genInstance(SAMPLE_LAB_FRIDGE_TYPE);
-    private static final String SAMPLE_LAB_SMART_SENSOR_NAME = "Sample Sensor Kit";
-    private static final String SAMPLE_LAB_SMART_SENSOR_TYPE = "SmartSensor";
+    public static final String SAMPLE_LAB_SMART_SENSOR_NAME = "Sample Sensor Kit";
+    public static final String SAMPLE_LAB_SMART_SENSOR_TYPE = "SmartSensor";
     private static final String SAMPLE_LAB_SMART_SENSOR_INSTANCE = TestUtils.genInstance(SAMPLE_LAB_SMART_SENSOR_TYPE);
     private static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE = TestUtils.genInstance("TemperatureSensor");
     private static final String SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_TWO_INSTANCE = TestUtils.genInstance("StatusSensor");
@@ -137,7 +135,6 @@ class SparqlClientTest {
         verifyMetadataContents(resultQueue.poll(), ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, SAMPLE_LAB_FRIDGE_TYPE);
     }
 
-
     @Test
     void testGetAllSpatialZoneMetaData_OnlyRoomMeasures() {
         // Insert these triples into the blazegraph
@@ -221,7 +218,7 @@ class SparqlClientTest {
                 .append("ontobim:hasIfcRepresentation <").append(staffRoomRepresentation).append(">.")
                 .append("<").append(staffRoomRepresentation).append("> rdfs:label \"").append(SAMPLE_OFFICE_STAFF_ROOM_NAME).append("\".")
                 .append(genMeasureTriples(SAMPLE_OFFICE_STAFF_ROOM_INSTANCE, "hasTemperature", TEMPERATURE, TEMPERATURE_UNIT))
-                .append(genMeasureTriples(SAMPLE_OFFICE_STAFF_ROOM_INSTANCE, "hasRelativeHumidity", RELATIVE_HUMIDITY, ""))
+                .append(genMeasureTriples(SAMPLE_OFFICE_STAFF_ROOM_INSTANCE, "hasRelativeHumidity", RELATIVE_HUMIDITY, "", PostGisClientTest.SAMPLE_ROOM_HUMIDITY_INSTANCE, PostGisClientTest.SAMPLE_ROOM_HUMIDITY_TIME_SERIES_INSTANCE))
                 // Storage room has no measures
                 .append("<").append(SAMPLE_OFFICE_STORAGE_ROOM_INSTANCE).append("> rdf:type ontobim:Room;")
                 .append("ontobim:hasIfcRepresentation <").append(storageRoomRepresentation).append(">.")
@@ -241,7 +238,7 @@ class SparqlClientTest {
         builder.append("INSERT DATA {")
                 // First sub sensor pattern
                 .append("<").append(SAMPLE_LAB_SMART_SENSOR_INSTANCE).append("> ontodevice:sendsSignalTo <").append(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE).append(">.")
-                .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE, "measures", TEMPERATURE, TEMPERATURE_UNIT));
+                .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE, "measures", TEMPERATURE, TEMPERATURE_UNIT, PostGisClientTest.SAMPLE_TEMPERATURE_INSTANCE, PostGisClientTest.SAMPLE_TEMPERATURE_TIME_SERIES_INSTANCE));
         if (isComplex) {
             // Second sub sensor pattern
             builder.append("<").append(SAMPLE_LAB_SMART_SENSOR_INSTANCE).append("> ontodevice:sendsSignalTo <").append(intermediateSensorTwo).append(">.")
@@ -272,8 +269,11 @@ class SparqlClientTest {
     }
 
     private static StringBuilder genMeasureTriples(String item, String measureProperty, String measureName, String unit) {
+        return genMeasureTriples(item, measureProperty, measureName, unit, TestUtils.genInstance("Measure"), TestUtils.genTimeSeriesInstance());
+    }
+
+    private static StringBuilder genMeasureTriples(String item, String measureProperty, String measureName, String unit, String measureInst, String timeSeriesInst) {
         StringBuilder builder = new StringBuilder();
-        String measureInst = TestUtils.genInstance("Measure");
         if (measureProperty.equals("observes")) {
             builder.append("<").append(item).append("> ontodevice:").append(measureProperty).append(" <").append(measureInst).append(">.");
         } else {
@@ -283,7 +283,7 @@ class SparqlClientTest {
                     .append("<").append(quantityInst).append("> om:hasValue <").append(measureInst).append(">.");
         }
         builder.append("<").append(measureInst).append("> rdfs:label \"").append(measureName).append("\";")
-                .append("ontotimeseries:hasTimeSeries <").append(TestUtils.genTimeSeriesInstance()).append(">.");
+                .append("ontotimeseries:hasTimeSeries <").append(timeSeriesInst).append(">.");
         if (!unit.equals("")) {
             String unitInst = TestUtils.genInstance("Unit");
             builder.append("<").append(measureInst).append("> om:hasUnit <").append(unitInst).append(">.")
@@ -307,7 +307,8 @@ class SparqlClientTest {
 
     private static void verifyMetadataContents(String[] metadata, String measureName, String unit, String itemType) {
         assertEquals(measureName, metadata[0]);
-        assertTrue(metadata[1].contains(TestUtils.BASE_URI + "Measure_"));
+        assertTrue(metadata[1].contains(TestUtils.BASE_URI + "Measure_") || metadata[1].equals(PostGisClientTest.SAMPLE_TEMPERATURE_INSTANCE)
+                || metadata[1].equals(PostGisClientTest.SAMPLE_ROOM_HUMIDITY_INSTANCE));
         assertTrue(metadata[2].contains(TestUtils.BASE_URI + "TimeSeries_"));
         assertEquals(unit, metadata[3]);
         assertEquals(itemType, metadata[4]);

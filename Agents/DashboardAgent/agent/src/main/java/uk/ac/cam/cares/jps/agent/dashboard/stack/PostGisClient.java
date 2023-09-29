@@ -75,7 +75,7 @@ public class PostGisClient {
     }
 
     /**
-     * Get the column and table name corresponding with the asset type and measure from the PostGIS database.
+     * Get the column and table name corresponding with the item type and measure from the PostGIS database.
      * The returned map will have the following structure:
      * { assetType1: {
      * assets: [AssetName1, AssetName2, AssetName3],
@@ -88,13 +88,15 @@ public class PostGisClient {
      * measure2: [[AssetName5, ColName5, TableName1, Database, unit],[AssetName6, ColName6, TableName1, Database, unit],[AssetName7, ColName7, TableName1, Database, unit]],
      * },
      * rooms:{
+     * rooms: [[RoomName1], [RoomName2]],
+     * thresholds: [[measure1, minThrehold, maxThreshold]],
      * measure1: [[RoomName1, ColName1, TableName2, Database, unit],[RoomName2, ColName3, TableName2, Database, unit]],
      * measure2: [[RoomName1, ColName2, TableName2, Database, unit],[RoomName2, ColName4, TableName2, Database, unit]]
      * }
      * }
      *
-     * @param timeSeries A time series map containing the asset name and measure IRIs required.
-     * @return A map: {assetType: {assets:[asset name list], measure[[measureDetails],[measureDetails]]}}.
+     * @param timeSeries A time series map containing the item name and measure IRIs required.
+     * @return A map: {assetType: {assets:[asset name list], measure:[[measureDetails],[measureDetails]]}, rooms:{rooms:[room name list], thresholds[thresholdList], measure: [measureDetails}}.
      */
     protected Map<String, Map<String, List<String[]>>> getMeasureColAndTableName(Map<String, Queue<String[]>> timeSeries) {
         // Initialise a queue to store all results across database
@@ -230,6 +232,9 @@ public class PostGisClient {
      */
     private Queue<String[]> retrieveAllColAndTableNames(Connection conn, String database, String[] measureQuerySyntax) {
         Queue<String[]> results = new ArrayDeque<>();
+        // Exit the method if no measures are available
+        if (measureQuerySyntax[0].isEmpty()) return results;
+        // Continue the method if there are measures to process
         try (Statement stmt = conn.createStatement()) {
             // Retrieve only from dbTable of each database and try to find certain info if available
             String retrieveColAndTableNameQuery = "SELECT \"columnName\", \"tableName\", " +
