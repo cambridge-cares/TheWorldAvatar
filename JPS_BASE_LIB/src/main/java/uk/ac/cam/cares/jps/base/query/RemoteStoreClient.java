@@ -11,9 +11,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpEntity;
@@ -43,6 +47,9 @@ import org.apache.jena.update.UpdateRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.federated.FedXFactory;
+import org.eclipse.rdf4j.federated.endpoint.Endpoint;
+import org.eclipse.rdf4j.federated.endpoint.EndpointFactory;
+import org.eclipse.rdf4j.federated.repository.FedXRepository;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -50,8 +57,11 @@ import org.eclipse.rdf4j.query.TupleQueryResultHandlerException;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.google.common.base.Preconditions;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
@@ -82,15 +92,85 @@ import uk.ac.cam.cares.jps.base.util.StoreClientHelper;
 public class RemoteStoreClient implements TripleStoreClientInterface {
 
     private static final Logger LOGGER = LogManager.getLogger(RemoteStoreClient.class);
+
+    private static final String DEFAULT_REMOTE_STORE_NAME = "default";
     private static final String HTTP_PROTOCOL = "http:";
     private static final String HTTPS_PROTOCOL = "https:";
 
-    private String queryEndpoint;
-    private String updateEndpoint;
     private String query;
-    // Authentication properties
-    private String userName;
-    private String password;
+
+    Map<String, RemoteStore> remoteStores = new HashMap<>();
+    {
+        remoteStores.put(DEFAULT_REMOTE_STORE_NAME, new RemoteStore(DEFAULT_REMOTE_STORE_NAME));
+    }
+
+    public static class RemoteStore {
+        private final String name;
+
+        private String queryEndpoint;
+        private String updateEndpoint;
+        // Authentication properties
+        private String userName;
+        private String password;
+
+        public RemoteStore(String name) {
+            Preconditions.checkNotNull(name, "RemoteStore must have a name");
+            this.name = name;
+        }
+
+        public RemoteStore(String name, String queryEndpoint) {
+            this(name);
+            this.queryEndpoint = queryEndpoint;
+        }
+
+        public RemoteStore(String name, String queryEndpoint, String updateEndpoint) {
+            this(name, queryEndpoint);
+            this.updateEndpoint = updateEndpoint;
+        }
+
+        public RemoteStore(String name, String queryEndpoint, String updateEndpoint, String userName, String password) {
+            this(name, queryEndpoint, updateEndpoint);
+            this.userName = userName;
+            this.password = password;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getQueryEndpoint() {
+            return queryEndpoint;
+        }
+
+        public void setQueryEndpoint(String queryEndpoint) {
+            this.queryEndpoint = queryEndpoint;
+        }
+
+        public String getUpdateEndpoint() {
+            return updateEndpoint;
+        }
+
+        public void setUpdateEndpoint(String updateEndpoint) {
+            this.updateEndpoint = updateEndpoint;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+    }
 
     ///////////////////////////
     // Constructors
@@ -108,7 +188,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @param queryEndpoint
      */
     public RemoteStoreClient(String queryEndpoint) {
-        this.queryEndpoint = queryEndpoint;
+        getDefaultRemoteStore().setQueryEndpoint(queryEndpoint);
     }
 
     /**
@@ -119,8 +199,9 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @param updateEndpoint
      */
     public RemoteStoreClient(String queryEndpoint, String updateEndpoint) {
-        this.queryEndpoint = queryEndpoint;
-        this.updateEndpoint = updateEndpoint;
+        RemoteStore defaultRemoteStore = getDefaultRemoteStore();
+        defaultRemoteStore.setQueryEndpoint(queryEndpoint);
+        defaultRemoteStore.setUpdateEndpoint(updateEndpoint);
     }
 
     /**
@@ -132,9 +213,10 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @param password
      */
     public RemoteStoreClient(String queryEndpoint, String user, String password) {
-        this.queryEndpoint = queryEndpoint;
-        this.userName = user;
-        this.password = password;
+        RemoteStore defaultRemoteStore = getDefaultRemoteStore();
+        defaultRemoteStore.setQueryEndpoint(queryEndpoint);
+        defaultRemoteStore.setUserName(user);
+        defaultRemoteStore.setPassword(password);
     }
 
     /**
@@ -147,10 +229,11 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @param password
      */
     public RemoteStoreClient(String queryEndpoint, String updateEndpoint, String user, String password) {
-        this.queryEndpoint = queryEndpoint;
-        this.updateEndpoint = updateEndpoint;
-        this.userName = user;
-        this.password = password;
+        RemoteStore defaultRemoteStore = getDefaultRemoteStore();
+        defaultRemoteStore.setQueryEndpoint(queryEndpoint);
+        defaultRemoteStore.setUpdateEndpoint(updateEndpoint);
+        defaultRemoteStore.setUserName(user);
+        defaultRemoteStore.setPassword(password);
     }
 
     /**
@@ -164,11 +247,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @param password
      */
     public RemoteStoreClient(String queryEndpoint, String updateEndpoint, String query, String user, String password) {
+        this(queryEndpoint, updateEndpoint, user, password);
         this.query = query;
-        this.queryEndpoint = queryEndpoint;
-        this.updateEndpoint = updateEndpoint;
-        this.userName = user;
-        this.password = password;
     }
 
     /**
@@ -193,6 +273,10 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         return this.query;
     }
 
+    private RemoteStore getDefaultRemoteStore() {
+        return remoteStores.get(DEFAULT_REMOTE_STORE_NAME);
+    }
+
     /**
      * Can return the URL of the query EndPoint.
      *
@@ -200,7 +284,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public String getQueryEndpoint() {
-        return queryEndpoint;
+        return getDefaultRemoteStore().getQueryEndpoint();
     }
 
     /**
@@ -211,8 +295,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public String setQueryEndpoint(String queryEndpoint) {
-        this.queryEndpoint = queryEndpoint;
-        return this.queryEndpoint;
+        getDefaultRemoteStore().setQueryEndpoint(queryEndpoint);
+        return queryEndpoint;
     }
 
     /**
@@ -222,7 +306,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public String getUpdateEndpoint() {
-        return updateEndpoint;
+        return getDefaultRemoteStore().getUpdateEndpoint();
     }
 
     /**
@@ -233,8 +317,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public String setUpdateEndpoint(String updateEndpoint) {
-        this.updateEndpoint = updateEndpoint;
-        return this.updateEndpoint;
+        getDefaultRemoteStore().setUpdateEndpoint(updateEndpoint);
+        return updateEndpoint;
     }
 
     /**
@@ -244,7 +328,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public String getUser() {
-        return userName;
+        return getDefaultRemoteStore().getUserName();
     }
 
     /**
@@ -254,7 +338,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public void setUser(String userName) {
-        this.userName = userName;
+        getDefaultRemoteStore().setUserName(userName);
     }
 
     /**
@@ -264,7 +348,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public String getPassword() {
-        return password;
+        return getDefaultRemoteStore().getPassword();
     }
 
     /**
@@ -274,7 +358,11 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     @Override
     public void setPassword(String password) {
-        this.password = password;
+        getDefaultRemoteStore().setPassword(password);
+    }
+
+    void addRemoteStore(RemoteStore remoteStore) {
+        remoteStores.put(remoteStore.getName(), remoteStore);
     }
 
     /**
@@ -378,17 +466,21 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     public CloseableHttpResponse executeUpdateByPost(String query) {
         HttpEntity entity = new StringEntity(query, ContentType.create("application/sparql-update"));
 
+        String updateEndpoint = getUpdateEndpoint();
+        String user = getUser();
+        String password = getPassword();
+
         // below lines follow the uploadFile(File file, String extension) method
-        HttpPost postRequest = new HttpPost(this.updateEndpoint);
-        if ((this.userName != null) && (this.password != null)) {
-            String auth = this.userName + ":" + this.password;
+        HttpPost postRequest = new HttpPost(updateEndpoint);
+        if ((user != null) && (password != null)) {
+            String auth = user + ":" + password;
             String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
             postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
         }
         // add contents to the post request
         postRequest.setEntity(entity);
 
-        LOGGER.info("Executing SPARQL update to {}. SPARQL update string: {}", this.updateEndpoint, query);
+        LOGGER.info("Executing SPARQL update to {}. SPARQL update string: {}", updateEndpoint, query);
         // then send the post request
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             // the returned CloseableHttpResponse should be handled with try-with-resources
@@ -518,6 +610,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
     private RDFConnection connectQuery() {
 
         RDFConnectionRemoteBuilder builder = null;
+        String queryEndpoint = getQueryEndpoint();
         if (queryEndpoint != null) {
             builder = RDFConnectionRemote.create().destination(queryEndpoint);
         } else {
@@ -539,28 +632,34 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         boolean updateFlag = false;
         sb.append(JenaDriver.DRIVER_PREFIX);
         sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
-        if (this.queryEndpoint != null) {
+
+        String queryEndpoint = getQueryEndpoint();
+        String updateEndpoint = getUpdateEndpoint();
+        String userName = getUser();
+        String password = getPassword();
+
+        if (queryEndpoint != null) {
             queryFlag = true;
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, queryEndpoint));
         }
-        if (this.updateEndpoint != null) {
+        if (updateEndpoint != null) {
             updateFlag = true;
             if (queryFlag) {
                 sb.append("&");
             }
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, updateEndpoint));
         }
-        if (this.userName != null) {
+        if (userName != null) {
             if (queryFlag || updateFlag) {
                 sb.append("&");
             }
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_USERNAME, this.userName));
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_USERNAME, userName));
         }
-        if (this.password != null) {
+        if (password != null) {
             if (queryFlag || updateFlag) {
                 sb.append("&");
             }
-            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_PASSWORD, this.password));
+            sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_PASSWORD, password));
         }
         return sb.toString();
     }
@@ -724,52 +823,78 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * @return
      * @throws Exception
      */
-    public JSONArray executeFederatedQuery(List<String> endpoints, String query) throws Exception {
-        // Declares a JSONArray and JSONObject to produce the query output in JSON
-        // format.
+    public JSONArray executeFederatedQuery(List<String> endpoints, String query) {
+        // Creates a federation with all provided endpoints.
+        Repository repository = null;
+        try {
+            repository = FedXFactory.createSparqlFederation(endpoints);
+            return executeFederatedQuery(query, repository);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            if (null != repository) {
+                repository.shutDown();
+            }
+        }
+    }
+
+    private JSONArray executeFederatedQuery(String query, Repository repository) {
         JSONArray json = new JSONArray();
         JSONObject obj;
         BindingSet bSet;
-        // Creates a federation with all provided endpoints.
-        Repository repository = FedXFactory.createSparqlFederation(endpoints);
-        try {
-            // Establishes a connection with all the endpoints.
-            RepositoryConnection conn = repository.getConnection();
+        try ( // Establishes a connection with all the endpoints.
+                RepositoryConnection conn = repository.getConnection()) {
+
             // Prepares the query for execution against all the endpoints.
             TupleQuery tq = conn.prepareTupleQuery(query);
-            try {
-                // Evaluates the query against all the endpoints.
-                TupleQueryResult tqRes = tq.evaluate();
-                // Processes the result
-                while (tqRes.hasNext()) {
-                    obj = new JSONObject();
-                    bSet = tqRes.next();
-                    for (String bindingName : bSet.getBindingNames()) {
-                        // If the value of a variable provided in the SPARQL query is found
-                        // within double quotes, they are removed as the JSON Object also adds
-                        // double quotes to the value.
-                        if (bSet.getValue(bindingName).toString().startsWith("\"")
-                                && bSet.getValue(bindingName).toString().endsWith("\"")) {
-                            obj.put(bindingName, bSet.getValue(bindingName).toString().substring(1,
-                                    bSet.getValue(bindingName).toString().length() - 1));
-                        } // A value found without double quotes is codified as a JSON Object
-                          // without modification.
-                        else {
-                            obj.put(bindingName, bSet.getValue(bindingName).toString());
 
-                        }
+            // Evaluates the query against all the endpoints.
+            TupleQueryResult tqRes = tq.evaluate();
+            // Processes the result
+            while (tqRes.hasNext()) {
+                obj = new JSONObject();
+                bSet = tqRes.next();
+                for (String bindingName : bSet.getBindingNames()) {
+                    // If the value of a variable provided in the SPARQL query is found
+                    // within double quotes, they are removed as the JSON Object also adds
+                    // double quotes to the value.
+                    if (bSet.getValue(bindingName).toString().startsWith("\"")
+                            && bSet.getValue(bindingName).toString().endsWith("\"")) {
+                        obj.put(bindingName, bSet.getValue(bindingName).toString().substring(1,
+                                bSet.getValue(bindingName).toString().length() - 1));
+                    } // A value found without double quotes is codified as a JSON Object
+                      // without modification.
+                    else {
+                        obj.put(bindingName, bSet.getValue(bindingName).toString());
+
                     }
-                    json.put(obj);
                 }
-            } catch (TupleQueryResultHandlerException e) {
-                e.printStackTrace();
+                json.put(obj);
             }
-            conn.close();
-        } catch (RepositoryException e) {
-            e.printStackTrace();
+            return json;
+        } catch (TupleQueryResultHandlerException | RepositoryException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            repository.shutDown();
         }
-        repository.shutDown();
-        return json;
+    }
+
+    public JSONArray executeFederatedQuery(String query) {
+        List<Endpoint> endpoints = remoteStores.values().stream()
+                .filter(remoteStore -> null != remoteStore.getQueryEndpoint())
+                .map(remoteStore -> {
+                    Endpoint endpoint = EndpointFactory.loadSPARQLEndpoint(remoteStore.getName(),
+                            remoteStore.getQueryEndpoint());
+                    String userName = remoteStore.getUserName();
+                    String password = remoteStore.getPassword();
+                    if (null != userName && null != password) {
+                        ((SPARQLRepository) endpoint.getRepository()).setUsernameAndPassword(userName, password);
+                    }
+                    return endpoint;
+                }).collect(Collectors.toList());
+
+        FedXRepository repository = FedXFactory.createFederation(endpoints);
+        return executeFederatedQuery(query, repository);
     }
 
     /**
@@ -883,12 +1008,16 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         }
         FileEntity entity = new FileEntity(file, contentType);
 
+        String updateEndpoint = getUpdateEndpoint();
+        String userName = getUser();
+        String password = getPassword();
+
         // tried a few methods to add credentials, this seems to be the only way that
         // works
         // i.e. setting it manually in the header
-        HttpPost postRequest = new HttpPost(this.updateEndpoint);
-        if ((this.userName != null) && (this.password != null)) {
-            String auth = this.userName + ":" + this.password;
+        HttpPost postRequest = new HttpPost(updateEndpoint);
+        if ((userName != null) && (password != null)) {
+            String auth = userName + ":" + password;
             String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
             postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
         }
@@ -896,7 +1025,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         // add contents to the post request
         postRequest.setEntity(entity);
 
-        LOGGER.info("Uploading {} to {}", file, this.updateEndpoint);
+        LOGGER.info("Uploading {} to {}", file, updateEndpoint);
         // then send the post request
         try (CloseableHttpClient httpclient = HttpClients.createDefault();
                 CloseableHttpResponse response = httpclient.execute(postRequest)) {
