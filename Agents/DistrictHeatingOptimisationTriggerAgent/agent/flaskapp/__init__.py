@@ -63,7 +63,7 @@ def trigger_optimisation():
 @celery.task
 def trigger_optimisation_task(params):
     try:
-        # Initialise KG and derivation clients
+        # Initialise sparql and derivation clients
         kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         derivation_client = PyDerivationClient(
             derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
@@ -99,12 +99,14 @@ def trigger_optimisation_task(params):
                 kg_client.instantiate_time_duration(freq, params['timeDelta'], 
                                                     value=1, rdf_type=TS_FREQUENCY)
 
-                # Instantiate derivation markups
-                #TODO: to be implemented
-
                 # Add time stamps to pure inputs
                 derivation_client.addTimeInstanceCurrentTimestamp(
                     [sim_t, opti_int, heat_length, tmp_length, freq])
+                
+                # Add covariate links to forecasting model instances
+                
+                # Instantiate derivation markups
+                #TODO: to be implemented
 
             else:
                 t1 += params['timeDelta_unix']
@@ -117,8 +119,12 @@ def trigger_optimisation_task(params):
                 # Update time stamps of pure inputs
                 derivation_client.updateTimestamps([sim_t, opti_int])
 
-                # Request derivation update from Aermod Agent
-                #TODO: to be implemented
+
+            # Request derivation update from Aermod Agent
+            # Aermod agent itself will request update from Emission Estimation Agent,
+            # and all other derivation updates are handled by DIF as derivations
+            # are directly linked via input/output relations in the KG
+            #TODO: to be implemented
 
             # Print progress (to ensure output to console even for async tasks)
             print(f"Optimisation run {run+1}/{params['numberOfTimeSteps']} completed.")

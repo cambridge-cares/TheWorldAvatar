@@ -18,7 +18,7 @@ setup(
         'flask~=2.1.0',
         'gunicorn~=20.0.4',
         'py4jps~=1.0.36', 
-        'pyderivationagent~= 1.5.0',
+        'pyderivationagent~=1.5.0',
         'redis~=4.6.0',
     ]
 )

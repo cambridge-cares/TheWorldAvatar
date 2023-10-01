@@ -10,10 +10,16 @@
 #
 # Currently included models:
 #       1) Default Prophet (without covariates)
-#       2) Pre-trained TFT model for heat demand
-#          TODO: covariates to be added
+#       2) Prophet with covariate support
+#       3) Pre-trained TFT model for heat demand
+#
+# NOTE: covariate relationships for 2) and 3) are added in code
 
 :ForecastingModel_Prophet rdf:type ts:ForecastingModel ;
+        rdfs:label "prophet" ;
+        ts:scaleData "False"^^xsd:boolean .
+
+:ForecastingModel_Prophet_covariates rdf:type ts:ForecastingModel ;
         rdfs:label "prophet" ;
         ts:scaleData "False"^^xsd:boolean .
 
