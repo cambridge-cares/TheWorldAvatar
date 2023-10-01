@@ -76,6 +76,7 @@ Specifying a CesiumJS source in the `data.json` file is relatively easy, simply 
 | wmsLayer | (Required for `wms` sources) ID of layer to use. |
 | transparency | (Required for `wms` sources) Boolean to enable/disable transparency. |
 | format | (Required for `wms` sources) WMTS image format. |
+| backFaceFulling | (Optional for `tiles` sources) When true, back face culling is determined by the glTF material's doubleSided property; when false, back face culling is disabled. |
 
 The `id` parameter is used as an internal ID for the source. Note that it should be unique within the source's group, but does not need to be unique across all groups.
 
