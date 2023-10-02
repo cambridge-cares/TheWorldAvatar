@@ -134,10 +134,10 @@ class RelationCorrector:
 
     def correct(self, query: CompactQueryRep):
         where_clauses, name_mappings = self._correct_relations(
-            where_clauses=self.where_clauses
+            where_clauses=query.where_clauses
         )
 
-        select_variables = self.select_variables.split()
+        select_variables = query.select_variables.split()
         select_variables_corrected = []
         for x in select_variables:
             for k, v in name_mappings.items():

@@ -11,18 +11,19 @@ class TestCorrectSpans:
         [
             (
                 "Share information regarding the optical rotation of hydrogen atom.",
-                """SELECT ?OpticalRotationValue WHERE { 
+                """SELECT ?OpticalRotationValue
+WHERE { 
     VALUES ( ?species ) { ( "hydrogen atome" ) } 
     ?SpeciesIRI ?hasIdentifier ?species. 
     ?SpeciesIRI os:hasOpticalRotation ?OpticalRotationValue. 
-    }""",
+}""",
                 """SELECT ?OpticalRotationValue
 WHERE {
     VALUES ( ?species ) { ( "hydrogen atom" ) }
     ?SpeciesIRI ?hasIdentifier ?species.
     ?SpeciesIRI os:hasOpticalRotation ?OpticalRotationValue.
 }""",
-            )
+            ),
         ],
     )
     def test_correct(self, nlq, query, expected):
