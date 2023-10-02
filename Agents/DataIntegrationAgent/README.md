@@ -9,14 +9,12 @@ The agent is implemented as Docker container to be deployed to a Docker stack sp
 ## Input
 ### Database config file
 There are 6 parameters related to database connection. 
-<ol>
-  <li>URL to connect to the source postgreSQL database in Stack</li>
-  <li>Username to connect to source postgreSQL database</li>
-  <li>Password to connect to source postgreSQL database</li>
-  <li>3D database name</li>
-  <li>2D database name (For OpenStreetMap data in postgreSQL)</li>
-  <li>2D database table (For OpenStreetMap data in postgreSQL)</li>
-</ol>
+1. URL to connect to the source postgreSQL database in Stack
+2. Username to connect to source postgreSQL database
+3. Password to connect to source postgreSQL database
+4. 3D database name
+5. 2D database name (For OpenStreetMap data in postgreSQL)
+6. 2D database table (For OpenStreetMap data in postgreSQL)
 
 ### Input parameters
 The agent accepts 2 input parameters in a HTTP request. 
@@ -30,8 +28,6 @@ Example input:
 ```
 curl -X GET 'localhost:3838/data-integration/sql?function=footprint&thematic=false'
 ```
-
-
 
 ## Building the <i>Date Integration Agent</i>
 1. The Data Integration Agent is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central). You'll need to provide your credentials in single-word text files located like this:
