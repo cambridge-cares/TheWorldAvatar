@@ -6,3 +6,5 @@ services:
     build: .
     ports:
       - "10104:8080"
+    volumes:
+      - ./osmagent/src/main/resources:/usr/local/tomcat/data
