@@ -129,7 +129,7 @@ class KGClient(PySparqlClient):
         query = f"""SELECT DISTINCT ?output ?output_type
             WHERE {{
                 VALUES ?derivation_iri {{ <{'> <'.join(derivation_iris)}> }} .
-                ?output <{TS_HAS_TIME_SERIES}>/<{RDF_TYPE}> ?derivation_iri .
+                ?output <{ONTODERIVATION_BELONGSTO}> ?derivation_iri .
                 ?output a ?output_type .
             }}"""
         query = self.remove_unnecessary_whitespace(query)
