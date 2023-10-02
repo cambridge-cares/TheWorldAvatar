@@ -21,8 +21,54 @@ logger = agentlogging.get_logger('prod')
 
 class KGClient(PySparqlClient):
     #
+    # SPARQL QUERIES
+    #
+    def get_heat_demand_covariates(self):
+        """
+        Returns IRIs of ambient air temperature and public holiday time series
+        (used as covariates for heat demand forecasting)
+        NOTE: this assumes that there is only one instance of each type in the KG
+              (which is the case when using the district heating instantiation agent;
+               however, in case further data has been instantiated in the very same
+               namespace, this assumption might not hold anymore)
+
+        Returns:
+            airtemp {str} -- IRI of ambient air temperature (time series)
+            holiday {str} -- IRI of public holiday (time series)
+        """
+
+        query = f"""
+            SELECT DISTINCT ?airtemp ?holiday
+            WHERE {{   
+            ?airtemp <{RDF_TYPE}> <{EMS_AIRTEMPERATURE}> .
+            ?holiday <{RDF_TYPE}> <{OHN_ISPUBLICHOLIDAY}> .
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        
+        # Extract unique query results (otherwise exception is thrown)
+        airtemp = self.get_unique_value(res, 'airtemp')
+        holiday = self.get_unique_value(res, 'holiday')
+        
+        return airtemp, holiday
+
+
+    #
     # SPARQL UPDATES
     #
+    def instantiate_covariate_relationships(self, fcmodel_iri: str, covariates:list):
+        # Create and execute SPARQL update to connect forecasting model with covariates
+
+        update = "INSERT DATA {"
+        for cov in covariates:
+            update += f"<{fcmodel_iri}> <{TS_HASCOVARIATE}> <{cov}> . "
+        update += "}"
+
+        update = self.remove_unnecessary_whitespace(update)
+        self.performUpdate(update)
+    
+
     def instantiate_time_interval(self, interval_iri: str, beginning_iri: str, end_iri: str,
                                   unix_beginning: int, unix_end: int):
         # Instantiate new time interval instance
@@ -151,5 +197,31 @@ class KGClient(PySparqlClient):
     def remove_unnecessary_whitespace(self, query: str) -> str:
         # Remove unnecessary whitespaces
         query = ' '.join(query.split())
-
         return query
+    
+
+    def get_list_of_unique_values(self, res: list, key: str) -> list:
+        """
+        Unpacks a query result list (i.e., list of dicts) into a list of 
+        unique values for the given dict key.
+        """    
+        res_list =  list(set([r.get(key) for r in res]))
+        res_list = [v for v in res_list if v is not None]
+        return res_list
+
+
+    def get_unique_value(self, res: list, key: str) -> str:
+        """
+        Unpacks a query result list (i.e., list of dicts) into unique 
+        value for the given dict key (raise Exception if no/multiple values found)
+        """
+        res_list =  self.get_list_of_unique_values(res, key)
+        if len(res_list) == 1:
+            return res_list[0]
+        else:
+            if len(res_list) == 0:
+                msg = f"No unique IRI found for key: {key}."
+            else:
+                msg = f"Multiple IRIs found for key: {key}."
+            logger.error(msg)
+            raise ValueError(msg)

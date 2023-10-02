@@ -33,6 +33,24 @@ kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
 kg_client.initialise_namespace('./resources')
 logger.info("Successfully imported triples.")
 
+# Add covariate relationships to uploaded forecasting model instances
+# TODO: Add covariate relationships for grid temperatures if necessary
+logger.info("Adding covariate relationships to relevant forecasting models...")
+if kg_client.check_if_triple_exist(fc_model_heat_demand, RDF_TYPE, TS_FORECASTINGMODEL):
+    # Get ambient air temperature and public holiday covariate IRIs
+    # NOTE: assumes exactly one instance of each type in the KG, i.e.,
+    #       ideally instantiate district heating in separate namespace
+    temp, holi = kg_client.get_heat_demand_covariates()
+    # Add covariate relationships
+    kg_client.instantiate_covariate_relationships(fc_model_heat_demand, [temp, holi])
+    logger.info("Covariate relationships successfully added.")
+else:
+    msg = 'Heat demand forecasting model instance not found in KG. '
+    msg += 'Please ensure it is instantiated and properly referenced in iris.py'
+    logger.error(msg)
+    raise ValueError(msg)
+
+
 # Launch celery task queue
 celery = Celery(app.name, broker='redis://localhost:6379/0')
 
@@ -104,8 +122,6 @@ def trigger_optimisation_task(params):
                 # Add time stamps to pure inputs
                 derivation_client.addTimeInstanceCurrentTimestamp(
                     [sim_t, opti_int, heat_length, tmp_length, freq])
-                
-                # Add covariate links to forecasting model instances
                 
                 # Instantiate derivation markups
                 #TODO: to be implemented
