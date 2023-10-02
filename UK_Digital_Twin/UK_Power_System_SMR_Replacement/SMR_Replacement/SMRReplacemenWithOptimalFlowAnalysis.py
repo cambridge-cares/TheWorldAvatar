@@ -32,7 +32,6 @@ from UK_Digital_Twin_Package.OWLfileStorer import readFile
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from SMRSitePreSelection import SitePreSelection_pymoo as sp_pymoo
 from pypower.api import ppoption, runopf, isload ## numpy <1.23 otherwise will raise error message, if the pypower and numpy has conflicts again, try to uninstall both and `pip uninstall numpy pypower`, donwgrade the numpy to 1.22.0 and install h5py as well
-import UK_Digital_Twin_Package.PYPOWER.pypower.runpf as pf
 from numpy import False_, r_, c_, ix_, zeros, pi, ones, exp, union1d, array, linalg, where, logical_or, arange, \
                     ones, sort, exp, pi, diff, min, \
                     argmin, argmax, real, imag, any, delete
@@ -74,6 +73,10 @@ lineStyleList = ['solid', 'dotted', 'dashed', 'dashdot', (0, (3,1,1,1)), (0, (1,
 
 genTypeLabel = ['Solar', 'Wind', 'Hydro', 'Oil', 'NaturalGas', 'Coal', 'Nuclear', 'SMR', 'Others']
 
+# officialRegionNameList = ["North East", "North West", "Yorkshire & Humber", "East Midlands", "West Midlands", "East England", 
+#                           "London", "South East", "South West", "Wales", "Scotland"]
+
+officialRegionNameList = ["NE", "NW", "YH", "EM", "WM", "EE", "LDN", "SE", "SW", "WALES", "SCOT"]
 labelFontSize = 14
 legendFontSize = 12
 dotLabel = 12
@@ -330,12 +333,13 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
         self.diagramPathStack = self.localRootFilePath + '/figFiles(StackAreaGraph)/' + self.time_now + '/'
         self.netDemandingJSONPath = self.localRootFilePath + '/netDemandingGeoJSONFiles/' + self.time_now + '/'
         self.pieChartPath = self.localRootFilePath + '/regionalEnergyBreakdownPieChart/' + self.time_now + '/'
+        self.barChartOutput = self.localRootFilePath + '/regionalOutputBarChart/' + self.time_now + '/'
         self.branchLossJSONPath = self.localRootFilePath + '/branchLossGeoJSONFiles/' + self.time_now + '/'
         self.majorEnergySourceJSONPath = self.localRootFilePath + '/majorEnergySourceJSONFiles/' + self.time_now + '/'
         self.outputOfDifferentEnergySourceJSONPath = self.localRootFilePath + '/outputOfDifferentEnergySourceJSONFiles/' + self.time_now + '/'
         self.regionalOutputJSONPath = self.localRootFilePath + '/regionalOutputJSONFiles/' + self.time_now + '/'
         self.fossilFuelPowerPlantGEOJSON = self.localRootFilePath + '/fossilFuelPowerPlantGEOJSON/' + self.time_now + '/'
-
+        self.generationPerFuelType = self.localRootFilePath + '/generationPerFuelType/'
     """Find the power plants located in each demanding areas"""
     def powerPlantAndDemandingAreasMapper(self):
         for demanding in self.demandingAreaList:
@@ -2726,42 +2730,42 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
                                 genLabel_longList_withoutZero_rearrange.append('Wind')
                                 i_label = genLabel_longList_withoutZero.index('Wind')
                                 energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#13bef2")
+                                colour_longList.append("#00A5B5") # colour_longList.append("#13bef2")
                             if 'Solar' in genLabel_longList_withoutZero:
                                 genLabel_longList_withoutZero_rearrange.append('Solar')
                                 i_label = genLabel_longList_withoutZero.index('Solar')
                                 energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#ffcc33")
+                                colour_longList.append("#F39530") # colour_longList.append("#ffcc33")
                             if 'Natural Gas' in genLabel_longList_withoutZero:
                                 genLabel_longList_withoutZero_rearrange.append('Natural Gas')
                                 i_label = genLabel_longList_withoutZero.index('Natural Gas')
                                 energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#99A3A4")
+                                colour_longList.append("#98AFBA") # colour_longList.append("#99A3A4")
                             if 'Coal' in genLabel_longList_withoutZero:
                                 genLabel_longList_withoutZero_rearrange.append('Coal')
                                 i_label = genLabel_longList_withoutZero.index('Coal')
                                 energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#361b20")
+                                colour_longList.append("#344A53") # colour_longList.append("#361b20")
                             if 'Oil' in genLabel_longList_withoutZero:
                                 genLabel_longList_withoutZero_rearrange.append('Oil')
                                 i_label = genLabel_longList_withoutZero.index('Oil')
                                 energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#1B2631") 
+                                colour_longList.append("#6B441D") # colour_longList.append("#1B2631") 
                             if 'Conventional Nuclear' in genLabel_longList_withoutZero:
                                 genLabel_longList_withoutZero_rearrange.append('Conventional Nuclear')
                                 i_label = genLabel_longList_withoutZero.index('Conventional Nuclear')
                                 energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#cc3300")
+                                colour_longList.append("#97CF88") # colour_longList.append("#cc3300")
                             if 'SMR' in genLabel_longList_withoutZero:
                                 genLabel_longList_withoutZero_rearrange.append('SMR')
                                 i_label = genLabel_longList_withoutZero.index('SMR')
                                 energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#1e8700")
+                                colour_longList.append("#006E4E") # colour_longList.append("#1e8700")
                             if 'Others' in genLabel_longList_withoutZero:
                                 genLabel_longList_withoutZero_rearrange.append('Others')
                                 i_label = genLabel_longList_withoutZero.index('Others')
                                 energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#AFED8F") ##615a9e
+                                colour_longList.append("#9D6D9D") # colour_longList.append("#AFED8F")
 
                             ## colour for short list 
                             colour_shortList = []
@@ -2865,42 +2869,42 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
                             genLabel_longList_withoutZero_rearrange.append('Wind')
                             i_label = genLabel_longList_withoutZero.index('Wind')
                             energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#13bef2")
+                            colour_longList.append("#00A5B5") # colour_longList.append("#13bef2")
                         if 'Solar' in genLabel_longList_withoutZero:
                             genLabel_longList_withoutZero_rearrange.append('Solar')
                             i_label = genLabel_longList_withoutZero.index('Solar')
                             energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#ffcc33")
+                            colour_longList.append("#F39530") # colour_longList.append("#ffcc33")
                         if 'Natural Gas' in genLabel_longList_withoutZero:
                             genLabel_longList_withoutZero_rearrange.append('Natural Gas')
                             i_label = genLabel_longList_withoutZero.index('Natural Gas')
                             energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#99A3A4")
+                            colour_longList.append("#98AFBA") # colour_longList.append("#99A3A4")
                         if 'Coal' in genLabel_longList_withoutZero:
                             genLabel_longList_withoutZero_rearrange.append('Coal')
                             i_label = genLabel_longList_withoutZero.index('Coal')
                             energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#361b20")
+                            colour_longList.append("#344A53") # colour_longList.append("#361b20")
                         if 'Oil' in genLabel_longList_withoutZero:
                             genLabel_longList_withoutZero_rearrange.append('Oil')
                             i_label = genLabel_longList_withoutZero.index('Oil')
                             energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#1B2631") 
+                            colour_longList.append("#6B441D") # colour_longList.append("#1B2631") 
                         if 'Conventional Nuclear' in genLabel_longList_withoutZero:
                             genLabel_longList_withoutZero_rearrange.append('Conventional Nuclear')
                             i_label = genLabel_longList_withoutZero.index('Conventional Nuclear')
                             energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#cc3300")
+                            colour_longList.append("#97CF88") # colour_longList.append("#cc3300")
                         if 'SMR' in genLabel_longList_withoutZero:
                             genLabel_longList_withoutZero_rearrange.append('SMR')
                             i_label = genLabel_longList_withoutZero.index('SMR')
                             energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#1e8700")
+                            colour_longList.append("#006E4E") # colour_longList.append("#1e8700")
                         if 'Others' in genLabel_longList_withoutZero:
                             genLabel_longList_withoutZero_rearrange.append('Others')
                             i_label = genLabel_longList_withoutZero.index('Others')
                             energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#AFED8F")
+                            colour_longList.append("#9D6D9D") # colour_longList.append("#AFED8F")
                         
                         ## colour for short list 
                         colour_shortList = []
@@ -2988,42 +2992,42 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
                                     genLabel_longList_withoutZero_rearrange.append('Wind')
                                     i_label = genLabel_longList_withoutZero.index('Wind')
                                     energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#13bef2")
+                                    colour_longList.append("#00A5B5") # colour_longList.append("#13bef2")
                                 if 'Solar' in genLabel_longList_withoutZero:
                                     genLabel_longList_withoutZero_rearrange.append('Solar')
                                     i_label = genLabel_longList_withoutZero.index('Solar')
                                     energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#ffcc33")
+                                    colour_longList.append("#F39530") # colour_longList.append("#ffcc33")
                                 if 'Natural Gas' in genLabel_longList_withoutZero:
                                     genLabel_longList_withoutZero_rearrange.append('Natural Gas')
                                     i_label = genLabel_longList_withoutZero.index('Natural Gas')
                                     energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#99A3A4")
+                                    colour_longList.append("#98AFBA") # colour_longList.append("#99A3A4")
                                 if 'Coal' in genLabel_longList_withoutZero:
                                     genLabel_longList_withoutZero_rearrange.append('Coal')
                                     i_label = genLabel_longList_withoutZero.index('Coal')
                                     energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#361b20")
+                                    colour_longList.append("#344A53") # colour_longList.append("#361b20")
                                 if 'Oil' in genLabel_longList_withoutZero:
                                     genLabel_longList_withoutZero_rearrange.append('Oil')
                                     i_label = genLabel_longList_withoutZero.index('Oil')
                                     energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#1B2631") 
+                                    colour_longList.append("#6B441D") # colour_longList.append("#1B2631") 
                                 if 'Conventional Nuclear' in genLabel_longList_withoutZero:
                                     genLabel_longList_withoutZero_rearrange.append('Conventional Nuclear')
                                     i_label = genLabel_longList_withoutZero.index('Conventional Nuclear')
                                     energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#cc3300")
+                                    colour_longList.append("#97CF88") # colour_longList.append("#cc3300")
                                 if 'SMR' in genLabel_longList_withoutZero:
                                     genLabel_longList_withoutZero_rearrange.append('SMR')
                                     i_label = genLabel_longList_withoutZero.index('SMR')
                                     energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#1e8700")
+                                    colour_longList.append("#006E4E") # colour_longList.append("#1e8700")
                                 if 'Others' in genLabel_longList_withoutZero:
                                     genLabel_longList_withoutZero_rearrange.append('Others')
                                     i_label = genLabel_longList_withoutZero.index('Others')
                                     energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#AFED8F")
+                                    colour_longList.append("#9D6D9D") # colour_longList.append("#AFED8F")
                                 
                                 ## colour for short list 
                                 colour_shortList = []
@@ -4574,6 +4578,150 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
         plt.cla()
         return
 
+    """The multiple bar chart showing the output of the region"""
+    def barChart_outputOfRegion(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, specifiedConfigList:list):
+        weatherNameList = []
+        for weather in weatherConditionList:
+            weatherNameList.append(weather[2])
+
+        if specifiedConfigList == [] or specifiedConfigList == [[]]:
+            raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
+        for cf in specifiedConfigList:
+            if len(cf) < 3:
+                raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
+            elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
+                if not cf[0] in NumberOfSMRUnitList:
+                    raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                else:
+                    smrIndex = NumberOfSMRUnitList.index(cf[0])
+                if not cf[1] in CarbonTaxForOPFList:
+                    raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                else:
+                    carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+
+                if not cf[2] in weatherNameList:
+                    raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                else:
+                    weatherIndex = weatherNameList.index(cf[2])
+                
+                specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex]
+                baseCase_specifiedEnergyBreakdownList = energyBreakdownList[0][carbonTaxList][weatherIndex]
+                
+                for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):
+                    ## check the storage path
+                    subPath = 'SMR_'+ str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(self.weighterList[i_weight])
+                    self.mkdirFilePath(self.barChartOutput, '')
+                    outputList = [0 for i in range(len(energyBreakdown_eachWeight))]
+                    outputList_basecase = [0 for i in range(len(energyBreakdown_eachWeight))]
+                    for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
+                        LAcode = energyBreakdown_eachRegion["RegionalLACode"]
+                        if LAcode[0] == "W":
+                            outputList[9] = round(energyBreakdown_eachRegion['totalOutput']/1000, 2)
+                        elif LAcode[0] == "S":
+                            outputList[10] = round(energyBreakdown_eachRegion['totalOutput']/1000, 2)
+                        else:
+                            outputList[int(LAcode[-1]) - 1] = round(energyBreakdown_eachRegion['totalOutput']/1000, 2) 
+
+                    for eb_base in baseCase_specifiedEnergyBreakdownList[i_weight]:
+                        LAcode = eb_base["RegionalLACode"]
+                        if LAcode[0] == "W":
+                            outputList_basecase[9] = round(eb_base['totalOutput']/1000, 2)
+                        elif LAcode[0] == "S":
+                            outputList_basecase[10] = round(eb_base['totalOutput']/1000, 2)
+                        else:
+                            outputList_basecase[int(LAcode[-1]) - 1] = round(eb_base['totalOutput']/1000, 2) 
+                        
+                    ## Create bar chart
+                    bar_width = 0.35
+                    x = numpy.arange(len(officialRegionNameList))
+
+                    plt.barh(x - bar_width/2, outputList, bar_width, label='SMR adoption', color = "#1a7a4c", alpha = 0.7)
+                    plt.barh(x + bar_width/2, outputList_basecase, bar_width, label='Base case', color = "#2B493F", alpha = 0.7)
+                    plt.xlabel('Regional output (GW)')
+                    plt.ylabel('Regions/Countries')
+                    plt.yticks(x, officialRegionNameList)  # Set the y-axis labels to the categories
+                    plt.legend()
+                    plt.legend(
+                        loc="upper center",
+                        ncol=2,
+                        bbox_to_anchor=(0.5, -0.15),
+                        frameon=False
+                        ) 
+                    plt.tight_layout()
+                    file_label = 'RegionalOutput_BarChart_' + subPath + '.pdf' 
+                    plt.savefig(self.barChartOutput + file_label, dpi = 1200, bbox_inches='tight', transparent=True)
+                    plt.clf()
+                    plt.cla()                                         
+            elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
+                if not cf[0] in NumberOfSMRUnitList:
+                    raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                else:
+                    smrIndex = NumberOfSMRUnitList.index(cf[0])
+                if not cf[1] in CarbonTaxForOPFList:
+                    raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                else:
+                    carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                if not cf[2] in weatherNameList:
+                    raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                else:
+                    weatherIndex = weatherNameList.index(cf[2]) 
+                if not cf[3] in self.weighterList:
+                    raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
+                else:
+                    weightIndex = self.weighterList.index(cf[3]) 
+                
+                specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
+                baseCase_specifiedEnergyBreakdownList = energyBreakdownList[0][carbonTaxList][weatherIndex][weightIndex]
+                                
+                ## check the storage path
+                subPath = 'SMR_'+ str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(cf[3])
+                self.mkdirFilePath(self.barChartOutput, '')
+                outputList = [0 for i in range(len(specifiedEnergyBreakdownList))]
+                outputList_basecase = [0 for i in range(len(specifiedEnergyBreakdownList))]
+                for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
+                    LAcode = energyBreakdown_eachRegion["RegionalLACode"]
+                    if LAcode[0] == "W":
+                        outputList[9] = round(energyBreakdown_eachRegion['totalOutput']/1000, 2)
+                    elif LAcode[0] == "S":
+                        outputList[10] = round(energyBreakdown_eachRegion['totalOutput']/1000, 2)
+                    else:
+                        outputList[int(LAcode[-1]) - 1] = round(energyBreakdown_eachRegion['totalOutput']/1000, 2) 
+
+                for eb_base in baseCase_specifiedEnergyBreakdownList:
+                    LAcode = eb_base["RegionalLACode"]
+                    if LAcode[0] == "W":
+                        outputList_basecase[9] = round(eb_base['totalOutput']/1000, 2)
+                    elif LAcode[0] == "S":
+                        outputList_basecase[10] = round(eb_base['totalOutput']/1000, 2)
+                    else:
+                        outputList_basecase[int(LAcode[-1]) - 1] = round(eb_base['totalOutput']/1000, 2) 
+                        
+                ## Create pie chart
+
+                bar_width = 0.35
+                x = numpy.arange(len(officialRegionNameList))
+
+                plt.barh(x - bar_width/2, outputList, bar_width, label='SMR adoption', color = "#1a7a4c", alpha = 0.7)
+                plt.barh(x + bar_width/2, outputList_basecase, bar_width, label='Base case', color = "#2B493F", alpha = 0.7)
+                plt.xlabel('Regional output (GW)')
+                plt.ylabel('Regions/Countries')
+                plt.yticks(x, officialRegionNameList)  # Set the y-axis labels to the categories
+                plt.legend()
+                plt.legend(
+                    loc="upper center",
+                    ncol=2,
+                    bbox_to_anchor=(0.5, -0.15),
+                    frameon=False
+                    ) 
+                plt.tight_layout()
+                file_label = 'RegionalOutput_BarChart_' + subPath + '.pdf' 
+                plt.savefig(self.barChartOutput + file_label, dpi = 1200, bbox_inches='tight', transparent=True)
+                plt.clf()
+                plt.cla()        
+            else:
+                raise ValueError('Invailed sub list of the specifiedConfigList.')                    
+        return
+
     """Create the folrder path for maintaining the files for Mapbox visulisation"""
     def MAPBOX_Preparation_FolderPath(self, regionalOutputConfig):
         ## Folder for regional output files
@@ -4588,6 +4736,190 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
                 print("---  The folder exists! %s  ---" % path)
         return
 
+    """Create the multiple lines diagram reflecting the weather condition impact under the same weight 0.5"""
+    def lineGraph_generationByTypePerYear_BMRS(self, sattlementPeriodPerDay:int, year):  
+        ## Download the csv file from BMRS: https://www.bmreports.com/bmrs/?q=generation/fueltype/current
+
+        ## read the data from resource
+        generationByTypePath = str(Path(__file__).resolve().parent.parent.parent) + f"/resources/BMRS_GenerationDataByFuelType/{str(year)}/GenerationbyFuelType.csv"
+        generationByType = readFile(generationByTypePath)
+        header = generationByType[0]
+        del generationByType[0]
+      
+        ## if leap year
+        if int(year) % 4 == 0:
+            febdays = 29
+        else:
+            febdays = 28
+
+        monthList = [31, febdays, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+        ## calculate generation per day
+        genlist = []
+
+        index_generationByTypeList = 0
+
+        for index_m, monthDays in enumerate(monthList):
+            for i in range(monthDays):
+                dailyOutput = [f"{str(year)}/{str(index_m + 1)}/{str(i + 1)}",0,0,0,0,0,0,0,0,0]
+                for j in range(int(sattlementPeriodPerDay)):
+                    for k, output in enumerate(generationByType[index_generationByTypeList]):
+                        if k >= 2: 
+                            dailyOutput[k-1] += float(output)/48/1E3 ## Unit: GW
+                    for i_dop, dop in enumerate(dailyOutput):
+                        if i_dop >= 1:
+                            dailyOutput[i_dop] = round(dop, 2)
+                    index_generationByTypeList += 1
+                genlist.append(dailyOutput)
+
+        ## set up the clourmap
+        cmap = mpl.cm.get_cmap("viridis", len(header) - 2) # viridis RdYlGn
+        colors = cmap(numpy.linspace(0, 1, len(header) - 2))
+      
+        ##-- Plot the output by fuel type vs time --##
+        fig, ax1 = plt.subplots()
+        ax1.set_ylabel("Generation output (GW)", fontsize = labelFontSize)
+
+
+        ## Find the maximum
+        maximum = 0
+        # genlist = numpy.array(genlist)
+        for col in range(len(header) - 2):
+            row_ = [row[col + 1] for row in genlist]
+            max_ = max(row_)
+            if float(max_) > maximum:
+                maximum = float(max_)
+        maximum = (math.ceil(maximum/5)) * 5
+
+        ## plot each weather condition
+        del header[0]
+        del header[0]
+        dayList = [i + 1 for i in range(len(genlist))]
+
+        ## set the axis
+        y_major_locator = MultipleLocator(5)
+        ax1.yaxis.set_major_locator(y_major_locator)
+        plt.ylim(0, maximum)
+
+        genlist_ = numpy.array(genlist)
+        timeline = genlist_[:, 0]
+
+        for g in genlist:
+            del g[0] 
+
+        genlist = numpy.array(genlist)
+        for h, fuelType in enumerate(header):
+            ax1.plot(dayList, genlist[:, h], label = fuelType, color = colors[h], linewidth = 0.5)
+
+        ## set legend
+        pos = ax1.get_position() 
+        ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
+        ax1.legend(
+            loc="upper center",
+            fontsize = legendFontSize,
+            ncol=5,
+            bbox_to_anchor=(0.5, 0.065),
+            frameon=False,
+            bbox_transform=fig.transFigure 
+            ) 
+        plt.tight_layout()
+        self.mkdirFilePath(self.generationPerFuelType, f"{str(year)}/")
+        plt.savefig(self.generationPerFuelType + f"{str(year)}/"+ "generationPerType.pdf", dpi = 1200, bbox_inches='tight')
+        plt.clf()
+        plt.cla()          
+        return
+
+    """Create the multiple lines diagram reflecting the weather condition impact under the same weight 0.5"""
+    def lineGraph_annualGeneration_WindAndSolar_ESO(self, sattlementPeriodPerDay:int, year:int):  
+        ## Download the csv file from ESO: https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix
+        year = int(year)
+        ## read the data from resource
+        generationByTypePath = str(Path(__file__).resolve().parent.parent.parent) + "/resources/ESO_GenerationDataByFuelType/eso.csv"
+        generationByType = readFile(generationByTypePath)
+
+        ## Fuel type
+        for i_f, fuel in enumerate(generationByType[0]): 
+            if "WIND" in fuel:
+                windCOL = i_f
+            elif "SOLAR" in fuel:
+                solarCOL = i_f
+        ## Find the start and end line
+        for i, line in enumerate(generationByType):
+            if f"{str(year)}-01-01 00:00:00+00" in line:
+                startLine = i
+            elif f"{str(year + 1)}-01-01 00:00:00+00" in line:
+                endLine = i
+                break
+        
+        for line in generationByType:
+            del line[0]
+
+        generationByType = numpy.array(generationByType)
+        generationByType = generationByType[startLine:endLine]
+
+        ## if leap year
+        if int(year) % 4 == 0:
+            febdays = 29
+            daysNum = 366
+        else:
+            febdays = 28
+            daysNum = 365
+        monthList = [31, febdays, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        ## calculate generation per day
+        genlist = []
+        index_generationByTypeList = 0
+        for monthDays in monthList:
+            for i in range(monthDays):
+                dailyOutput = [0, 0]
+                for j in range(int(sattlementPeriodPerDay)):
+                    dailyOutput[0] += float(generationByType[index_generationByTypeList][windCOL])/int(sattlementPeriodPerDay)/1E3 ## Unit: GW
+                    dailyOutput[1] += float(generationByType[index_generationByTypeList][solarCOL])/int(sattlementPeriodPerDay)/1E3 ## Unit: GW
+                    for i_dop, dop in enumerate(dailyOutput):
+                        dailyOutput[i_dop] = round(dop, 2)
+                    index_generationByTypeList += 1
+                genlist.append(dailyOutput)
+
+        ##-- Plot the output by fuel type vs time --##
+        fig, ax1 = plt.subplots()
+        ax1.set_ylabel("Generation output (GW)", fontsize = labelFontSize)
+
+        ## Find the maximum
+        maximum = 0
+        for col in range(2):
+            max_ = max(genlist[:, col])
+            if float(max_) > maximum:
+                maximum = float(max_)
+        maximum = (math.ceil(maximum/5)) * 5
+
+        ## Day number list
+        dayList = [i + 1 for i in range(daysNum)]
+
+        ## set the axis
+        y_major_locator = MultipleLocator(5)
+        ax1.yaxis.set_major_locator(y_major_locator)
+        plt.ylim(0, maximum)
+
+        ax1.plot(dayList, genlist[:, 0], label = "Wind", color = "#00A5B5", linewidth = 1)
+        ax1.plot(dayList, genlist[:, 1], label = "Solar", color = "#F39530", linewidth = 1)
+
+        ## set legend
+        pos = ax1.get_position() 
+        ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
+        ax1.legend(
+            loc="upper center",
+            fontsize = legendFontSize,
+            ncol=5,
+            bbox_to_anchor=(0.5, 0.065),
+            frameon=False,
+            bbox_transform=fig.transFigure 
+            ) 
+        plt.tight_layout()
+        self.mkdirFilePath(self.generationPerFuelType, f"{str(year)}/")
+        plt.savefig(self.generationPerFuelType + f"{str(year)}/"+ "generationPerType.pdf", dpi = 1200, bbox_inches='tight')
+        plt.clf()
+        plt.cla()          
+        return
+     
 if __name__ == '__main__':
 
     ## 1. Specify the model config, 10-bus or 29 bus 
@@ -4622,9 +4954,9 @@ if __name__ == '__main__':
     ## 6. Specify the path for storing the raw simulation results files
     numberOfBus = config_data["NumOfBus"]
     numOfBranch = config_data["NumOfBranch"]
-    rootPath = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/smr_replacements/%sbus%sbranch_LCOE_%s£_added/"%(str(numberOfBus), str(numOfBranch), str(SMR_LCOE))
+    rootPath = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/smr_replacements/%sbus%sbranch_LCOE_%s£/"%(str(numberOfBus), str(numOfBranch), str(SMR_LCOE))
 
-    # summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
+    energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist() 
     
     if not ifReadLocalResults:
         folder = os.path.exists(rootPath)
@@ -4771,10 +5103,10 @@ if __name__ == '__main__':
             config_data_postp = json.load(config_file_postp)
 
         ## total cost and total emission
-        summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
-        netDemanding_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
-        energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
-        branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        # summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
+        # netDemanding_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        # energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        # branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist()
         # netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
 
         """The line charts"""
@@ -4786,7 +5118,7 @@ if __name__ == '__main__':
         #                                                             config_data_postp["NonSMRTransitionLowerBound"], config_data_postp["NonSMRTransitionUpperBound"],
         #                                                             summary_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
         #                                                             config_data["weatherConditionList"])
-        # """Capacity figure"""
+        # # """Capacity figure"""
         # smr_replacement_for_fossil_fuel.stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(config_data_postp["givenNumberofSMR"], config_data_postp["reported_consumption"], config_data_postp["plannedNuclearCapacity"])
 
         """WITH SPECIFIED CONFIGRATION""" 
@@ -4796,19 +5128,25 @@ if __name__ == '__main__':
         else:
             ifSpecifiedResultsForNetDemanding = False
 
-        ##### smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        #####                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig"])
+        #### smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        ####                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig"])
         # smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
         #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
-        # ##### smr_replacement_for_fossil_fuel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        # #####                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_output"])
         # smr_replacement_for_fossil_fuel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
         #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
         # smr_replacement_for_fossil_fuel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
         #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_output"])  
         # smr_replacement_for_fossil_fuel.GeoJSONCreator_fossilFuelPowerPlant(config_data_postp["specifiedConfig_output"])
 
-        smr_replacement_for_fossil_fuel.MAPBOX_Preparation_FolderPath(config_data_postp["specifiedConfig_output"])
+        # smr_replacement_for_fossil_fuel.MAPBOX_Preparation_FolderPath(config_data_postp["specifiedConfig_output"])
 
+        # smr_replacement_for_fossil_fuel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        #                                                                                    config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_pieChart"])
+        
+        # smr_replacement_for_fossil_fuel.barChart_outputOfRegion(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        #                                                         config_data["weatherConditionList"], config_data_postp["specifiedConfig_barChart"])
+
+        # smr_replacement_for_fossil_fuel.lineGraph_generationByTypePerYear_BMRS(48, 2022)
+        smr_replacement_for_fossil_fuel.lineGraph_annualGeneration_WindAndSolar_ESO(48, 2022)
     print('-----Terminal-----')
 

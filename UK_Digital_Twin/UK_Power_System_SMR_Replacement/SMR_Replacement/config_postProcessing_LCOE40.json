@@ -4,6 +4,8 @@
     [0, 0, "WBSB", 0.5], [0, 40, "WBSB", 0.5], [19, 50, "WBSB", 0.5], [33, 150, "WBSB", 0.5], 
     [0, 0, "WBSB", 0.75], [0, 40, "WBSB", 0.75], [32, 55, "WBSB", 0.75], [32, 150, "WBSB", 0.75]],
   "specifiedConfig_brchloss": [[33, 150, "WBSB", 0.25], [33, 150, "WBSB", 0.5], [33, 150, "WBSB", 0.75]],
+  "specifiedConfig_pieChart": [[0, 0, "WBSB", 0.5], [0, 40, "WBSB", 0.5], [0, 50, "WBSB", 0.5], [0, 150, "WBSB", 0.5], [0, 0, "WBSB", 0.5], [0, 40, "WBSB", 0.5], [19, 50, "WBSB", 0.5], [33, 150, "WBSB", 0.5]],
+  "specifiedConfig_barChart": [[0, 0, "WBSB", 0.5], [0, 40, "WBSB", 0.5], [19, 50, "WBSB", 0.5], [33, 150, "WBSB", 0.5]],
   "specifiedConfig": [[32, 150, "WBSB", 0.75]],
   "pickedWeightList": [0.25, 0.5, 0.75],
   "pickedWeight": 0.5,

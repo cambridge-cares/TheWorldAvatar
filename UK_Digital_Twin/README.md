@@ -376,3 +376,18 @@ Paste the copied lines after the last comma.
 It should be noticed that due to the random nature of genertic algorithm, the results may look slightly different from the one reported in preprint 312 as genetic algorithms cannot generate the exactly same Pareto Front every time.
 
 By following the above example, you now can generate the second and third subfigures of figure 6 by choosing the corresponding files with weight 0.50 and 0.75, respectively.
+
+
+Step 5 (optional): use the patched PYPOWER for Power Flow (PF) analysis
+
+If you're going to perform PF analysis and meet any problem about the convegence. Please install the PYPOWER with the patch as shown in following step. If you already installed PYPOWER, please uninstall it before running any commands below. 
+
+Run the following git command from `UK_Digital_Twin\UK_Digital_Twin_Package` to clone the PYPOWER repository.
+
+`git clone https://github.com/rwl/PYPOWER.git`
+
+Run the following command from `UK_Digital_Twin\UK_Digital_Twin_Package\PYPOWER` to apply patches.
+
+`git apply < ../svd_calculation.patch`
+
+Note: for SMR repleacement study, there is NO need to install this patched version as the model used in this study is OPF not PF.
