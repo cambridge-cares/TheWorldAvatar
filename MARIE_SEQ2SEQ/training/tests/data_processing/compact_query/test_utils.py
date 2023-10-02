@@ -1,6 +1,6 @@
 import pytest
 
-from core.data_processing.compact_query_rep.utils import remove_terminal_chars
+from core.data_processing.compact_query.utils import remove_terminal_chars
 
 
 class TestCompactQueryRepUtils:

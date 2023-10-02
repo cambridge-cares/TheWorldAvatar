@@ -3,7 +3,6 @@ import pytest
 from core.data_processing.output_processing import (
     t5_decode_output_special_chars,
     t5_encode_output_special_chars,
-    normalize_query,
     remove_prefixes,
 )
 

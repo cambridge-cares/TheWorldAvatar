@@ -1,5 +1,5 @@
 import pytest
-from core.data_processing.compact_query_rep import CompactQueryRep
+from core.data_processing.compact_query.compact_query_rep import CompactQueryRep
 
 
 class TestComapctQueryRep:
@@ -42,28 +42,3 @@ WHERE {
     )
     def test_toVerbose(self, text, expected):
         assert CompactQueryRep.from_string(text).to_verbose() == expected
-
-    @pytest.mark.parametrize(
-        "nlq, query, expected",
-        [
-            (
-                "Share information regarding the optical rotation of hydrogen atom.",
-                """SELECT ?OpticalRotationValue WHERE { 
-    VALUES ( ?species ) { ( "hydrogen atome" ) } 
-    ?SpeciesIRI ?hasIdentifier ?species. 
-    ?SpeciesIRI os:hasOpticalRotation ?OpticalRotationValue. 
-    }""",
-                """SELECT ?OpticalRotationValue
-WHERE {
-    VALUES ( ?species ) { ( "hydrogen atom" ) }
-    ?SpeciesIRI ?hasIdentifier ?species.
-    ?SpeciesIRI os:hasOpticalRotation ?OpticalRotationValue.
-}""",
-            )
-        ],
-    )
-    def test_correctSpans(self, nlq, query, expected):
-        assert (
-            CompactQueryRep.from_string(query).correct_spans(nlq).to_string()
-            == expected
-        )

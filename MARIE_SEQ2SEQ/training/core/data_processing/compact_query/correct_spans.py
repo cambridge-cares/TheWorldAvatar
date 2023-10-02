@@ -1,13 +1,14 @@
 from typing import List, Optional
 
 import Levenshtein
-from core.data_processing.compact_query_rep.utils import remove_terminal_chars
+from core.data_processing.compact_query.compact_query_rep import CompactQueryRep
+from core.data_processing.compact_query.utils import remove_terminal_chars
 
 from core.utils import advance_ptr_to_kw
 
 
 class SpanCorrector:
-    def correct_values_clause(self, clause: str, nlq: str):
+    def _correct_values_clause(self, clause: str, nlq: str):
         # VALUES ( ?var ) { ( "a" ) ( "b" ) }
         ptr = advance_ptr_to_kw(clause, '(', len("VALUES"))
         query_var_idx_start = ptr + 1
@@ -45,7 +46,7 @@ class SpanCorrector:
 
         return f"""VALUES ( {query_var} ) {{ {' '.join([f'( "{x}" )' for x in values_corrected])} }}"""
 
-    def correct_values_clauses(self, where_clauses: List[str], nlq: str):
+    def _correct_values_clauses(self, where_clauses: List[str], nlq: str):
         where_clauses = list(where_clauses)
 
         values_clauses: List[str] = []
@@ -60,6 +61,12 @@ class SpanCorrector:
             return where_clauses
         
         for clause_idx, values_clause in zip(values_clause_idxes, values_clauses):
-            where_clauses[clause_idx] = self.correct_values_clause(values_clause, nlq)
+            where_clauses[clause_idx] = self._correct_values_clause(values_clause, nlq)
 
         return where_clauses
+    
+    def correct(self, query: CompactQueryRep, nlq: str):
+        where_clauses = self._correct_values_clauses(
+            where_clauses=query.where_clauses, nlq=nlq
+        )
+        return CompactQueryRep(query.select_variables, where_clauses)

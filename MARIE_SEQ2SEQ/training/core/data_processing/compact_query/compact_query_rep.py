@@ -1,6 +1,6 @@
 from typing import List
 
-from core.data_processing.compact_query_rep.constants import (
+from core.data_processing.compact_query.constants import (
     ALL_IDENTIFIERS_PATTERN_COMPACT_PREFIX,
     ALL_IDENTIFIERS_PATTERNS_VERBOSE,
     ALL_PROPERTIES_PATTERN_COMPACT_PREFIX,
@@ -17,17 +17,13 @@ from core.data_processing.compact_query_rep.constants import (
     SPECIES_FROMTAIL_PATTERNS_VERBOSE,
     USE_PATTERNS_VERBOSE,
 )
-from core.data_processing.compact_query_rep.correct_relations import RelationCorrector
-from core.data_processing.compact_query_rep.correct_spans import SpanCorrector
-from core.data_processing.compact_query_rep.parser import CompactQueryParser
+from core.data_processing.compact_query.parser import CompactQueryParser
 from core.data_processing.exceptions import InvalidCompactQueryError
 from core.utils import advance_ptr_to_space
 
 
 class CompactQueryRep:
     compact_query_parser = CompactQueryParser()
-    span_corrector = SpanCorrector()
-    relation_corrector = None
 
     def __init__(self, select_variables: str, where_clauses: List[str]):
         self.select_variables = select_variables
@@ -43,58 +39,12 @@ class CompactQueryRep:
     def __repr__(self):
         return repr(vars(self))
 
-    def _get_relation_corrector(self):
-        if self.relation_corrector is None:
-            self.relation_corrector = RelationCorrector()
-        return self.relation_corrector
-
     def to_string(self):
         where_clauses = "\n    ".join(self.where_clauses)
         return f"""SELECT {self.select_variables}
 WHERE {{
     {where_clauses}
 }}"""
-
-    def correct_spans(self, nlq: str):
-        where_clauses = self.span_corrector.correct_values_clauses(
-            where_clauses=self.where_clauses, nlq=nlq
-        )
-        return CompactQueryRep(self.select_variables, where_clauses)
-
-    def correct_relations(self):
-        where_clauses, name_mappings = self._get_relation_corrector().correct_relations(
-            where_clauses=self.where_clauses
-        )
-
-        select_variables = self.select_variables.split()
-        select_variables_corrected = []
-        for x in select_variables:
-            for k, v in name_mappings.items():
-                x = x.replace(k, v)
-            select_variables_corrected.append(x)
-
-        where_clauses_corrected = []
-        for clause in where_clauses:
-            if any(clause.startswith(x) for x in ["VALUES", "FILTER"]):
-                for k, v in name_mappings.items():
-                    clause = clause.replace(k, v)
-            elif clause.endswith("."):
-                try:
-                    head, rel, tail = clause[: -len(".")].strip().split()
-                except:
-                    pass
-                for k, v in name_mappings.items():
-                    head = head.replace(k, v)
-                for k, v in name_mappings.items():
-                    tail = tail.replace(k, v)
-                clause = f"{head} {rel} {tail} ."
-            else:
-                raise InvalidCompactQueryError("Unexpected where clause: " + clause)
-            where_clauses_corrected.append(clause)
-
-        return CompactQueryRep(
-            " ".join(select_variables_corrected), where_clauses_corrected
-        )
 
     def to_verbose(self):
         select_variables = str(self.select_variables)

@@ -1,5 +1,5 @@
 import pytest
-from core.data_processing.compact_query_rep.correct_relations import tokenize
+from core.data_processing.compact_query.correct_relations import tokenize
 
 
 class TestCorrectRelations:

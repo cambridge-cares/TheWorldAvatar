@@ -1,7 +1,7 @@
 from core.data_processing.exceptions import InvalidCompactQueryError
 from core.utils import advance_ptr_thru_space, advance_ptr_to_kw
 from core.data_processing.abstract_query_rep import AbstractQueryRep
-from core.data_processing.compact_query_rep import CompactQueryRep
+from core.data_processing.compact_query.compact_query_rep import CompactQueryRep
 from core.data_processing.utils import replace_multi
 
 

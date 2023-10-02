@@ -2,7 +2,9 @@ from typing import Dict, List, Optional
 from sacrebleu.metrics import BLEU
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 from sklearn.preprocessing import MultiLabelBinarizer
-from core.data_processing.compact_query_rep import CompactQueryRep
+from core.data_processing.compact_query.compact_query_rep import CompactQueryRep
+from core.data_processing.compact_query.correct_relations import RelationCorrector
+from core.data_processing.compact_query.correct_spans import SpanCorrector
 from core.data_processing.exceptions import InvalidCompactQueryError
 
 from core.data_processing.output_processing import normalize_query, remove_prefixes
@@ -24,6 +26,9 @@ def get_bleu_metrics(refs: List[List[str]], sys: List[str]):
 def get_translation_metrics(
     data: List[dict], do_correct_spans: bool, do_correct_relations: bool
 ):
+    span_corrector = SpanCorrector()
+    relation_corrector = RelationCorrector()
+
     def _get_pred(datum: dict):
         if datum["prediction_postprocessed"] is None:
             return ""
@@ -33,43 +38,35 @@ def get_translation_metrics(
                     if datum.get("prediction_corrected") is not None:
                         pred = datum["prediction_corrected"]
                     else:
-                        pred = (
-                            CompactQueryRep.from_string(
-                                datum["prediction_postprocessed"]
-                            )
-                            .correct_spans(nlq=datum["question"])
-                            .correct_relations()
-                            .to_string()
+                        query = CompactQueryRep.from_string(
+                            datum["prediction_postprocessed"]
                         )
+                        query = span_corrector.correct(query, nlq=datum["question"])
+                        query = relation_corrector.correct(query)
+                        pred = query.to_string()
                 else:
                     if datum.get("prediction_spancorrected") is not None:
                         pred = datum["prediction_spancorrected"]
                     else:
-                        pred = (
-                            CompactQueryRep.from_string(
-                                datum["prediction_postprocessed"]
-                            )
-                            .correct_spans(nlq=datum["question"])
-                            .to_string()
+                        query = CompactQueryRep.from_string(
+                            datum["prediction_postprocessed"]
                         )
+                        query = span_corrector.correct(query, nlq=datum["question"])
+                        pred = query.to_string()
             elif do_correct_relations:
                 if datum.get("prediction_relationcorrected") is not None:
                     pred = datum["prediction_relationcorrected"]
                 else:
-                    pred = (
-                        CompactQueryRep.from_string(
-                            datum["prediction_postprocessed"]
-                        )
-                        .correct_relations()
-                        .to_string()
+                    query = CompactQueryRep.from_string(
+                        datum["prediction_postprocessed"]
                     )
+                    query = relation_corrector.correct(query)
+                    pred = query.to_string()
             else:
                 pred = datum["prediction_postprocessed"]
         except Exception as e:
             if not isinstance(e, InvalidCompactQueryError):
-                print(
-                    "An unhandled error is encountered when parsing a compact query."
-                )
+                print("An unhandled error is encountered when parsing a compact query.")
                 print(datum)
                 print(e)
             return ""

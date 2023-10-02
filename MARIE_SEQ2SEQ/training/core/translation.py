@@ -2,7 +2,9 @@ from abc import ABC, abstractmethod
 
 import torch
 from transformers import PreTrainedTokenizer
-from core.data_processing.compact_query_rep import CompactQueryRep
+from core.data_processing.compact_query.compact_query_rep import CompactQueryRep
+from core.data_processing.compact_query.correct_relations import RelationCorrector
+from core.data_processing.compact_query.correct_spans import SpanCorrector
 from core.data_processing.exceptions import InvalidCompactQueryError
 
 from core.data_processing.input_processing import preprocess_input, preprocess_input
@@ -21,6 +23,8 @@ class TranslationModel(ABC):
     def __init__(self, model_family: str, do_correct: bool):
         self.model_family = model_family
         self.do_correct = do_correct
+        self.span_corrector = SpanCorrector()
+        self.relation_corrector = RelationCorrector()
 
     @abstractmethod
     def _translate(self, question: str):
@@ -40,7 +44,8 @@ class TranslationModel(ABC):
         try:
             query = CompactQueryRep.from_string(pred_postprocessed)
             if self.do_correct:
-                query = query.correct_spans(nlq=question).correct_relations()
+                query = self.span_corrector.correct(query, nlq=question)
+                query = self.relation_corrector.correct(query)
                 pred_corrected = query.to_string()
             else:
                 pred_corrected = None

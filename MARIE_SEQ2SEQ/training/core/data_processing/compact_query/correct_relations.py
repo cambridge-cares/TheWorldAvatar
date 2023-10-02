@@ -2,10 +2,12 @@ from typing import Dict, List, Tuple
 
 from sentence_transformers import SentenceTransformer, util
 
-from core.data_processing.compact_query_rep.constants import (
+from core.data_processing.compact_query.constants import (
     IDENTIFIER_NAMES,
     PROPERTY_NAMES,
 )
+from core.data_processing.compact_query.compact_query_rep import CompactQueryRep
+from core.data_processing.exceptions import InvalidCompactQueryError
 
 special_words = ["InChIKey", "InChI", "XLogP3", "SMILES", "IUPAC", "Chebi", "CID", "ID"]
 
@@ -65,7 +67,7 @@ class RelationCorrector:
         )
         self.threshold = threshold
 
-    def correct_relation(self, clause: str) -> Tuple[str, Dict[str, str]]:
+    def _correct_relation(self, clause: str) -> Tuple[str, Dict[str, str]]:
         try:
             head, relation, tail = clause[: -len(".")].strip().split()
         except:
@@ -105,7 +107,7 @@ class RelationCorrector:
 
         return f"{head} {relation_corrected} {tail} .", name_mappings
 
-    def correct_relations(self, where_clauses: List[str]):
+    def _correct_relations(self, where_clauses: List[str]):
         where_clauses = list(where_clauses)
 
         triples: List[str] = []
@@ -121,7 +123,7 @@ class RelationCorrector:
 
         name_mappings_lst: List[Dict[str, str]] = []
         for idx, triple in zip(triple_idxes, triples):
-            where_clauses[idx], name_mappings = self.correct_relation(triple)
+            where_clauses[idx], name_mappings = self._correct_relation(triple)
             name_mappings_lst.append(name_mappings)
 
         name_mappings = {
@@ -129,3 +131,38 @@ class RelationCorrector:
         }
 
         return where_clauses, name_mappings
+
+    def correct(self, query: CompactQueryRep):
+        where_clauses, name_mappings = self._correct_relations(
+            where_clauses=self.where_clauses
+        )
+
+        select_variables = self.select_variables.split()
+        select_variables_corrected = []
+        for x in select_variables:
+            for k, v in name_mappings.items():
+                x = x.replace(k, v)
+            select_variables_corrected.append(x)
+
+        where_clauses_corrected = []
+        for clause in where_clauses:
+            if any(clause.startswith(x) for x in ["VALUES", "FILTER"]):
+                for k, v in name_mappings.items():
+                    clause = clause.replace(k, v)
+            elif clause.endswith("."):
+                try:
+                    head, rel, tail = clause[: -len(".")].strip().split()
+                except:
+                    pass
+                for k, v in name_mappings.items():
+                    head = head.replace(k, v)
+                for k, v in name_mappings.items():
+                    tail = tail.replace(k, v)
+                clause = f"{head} {rel} {tail} ."
+            else:
+                raise InvalidCompactQueryError("Unexpected where clause: " + clause)
+            where_clauses_corrected.append(clause)
+
+        return CompactQueryRep(
+            " ".join(select_variables_corrected), where_clauses_corrected
+        )
