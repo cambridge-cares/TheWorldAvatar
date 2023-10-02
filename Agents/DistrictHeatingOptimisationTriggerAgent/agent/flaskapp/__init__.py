@@ -125,9 +125,6 @@ def trigger_optimisation_task(params):
                 
                 ###   Instantiate derivation markups   ###
                 # 1) Forecast derivations
-                # NOTE: Forecast derivations are instantiated using "createSyncDerivationForNewInfo"
-                #       to ensure that derivation outputs are instantiated, which is not the case
-                #       for sole derivation updates when using derivations with time series
                 #    1) Heat demand
                 heat_demand = kg_client.get_heat_demand()
                 inputs_demand = [heat_demand, fc_model_heat_demand, opti_int, freq, heat_length]
@@ -135,8 +132,7 @@ def trigger_optimisation_task(params):
                                 inputs_demand, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
                 logger.info(f"Heat demand forecast derivation successfully instantiated: {deriv.getIri()}")
                 # Initialise list of all forecast derivation IRIs
-                deriv_iris = [deriv.getIri()]
-                
+                fc_deriv_iris = [deriv.getIri()]                
                 #    2) Grid temperatures
                 grid_temps = kg_client.get_grid_temperatures()
                 deriv_base = [fc_model_grid_temperature, opti_int, freq, tmp_length]
@@ -145,10 +141,19 @@ def trigger_optimisation_task(params):
                     deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT, 
                                 i, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
                     logger.info(f"Grid temperature forecast derivation successfully instantiated: {deriv.getIri()}")
-                    deriv_iris.append(deriv.getIri())
-
+                    fc_deriv_iris.append(deriv.getIri())                
                 
                 # 2) Optimisation derivation
+                # NOTE: Instantiated using "createSyncDerivationForNewInfo" for same
+                #       reason as above, i.e., ensure initial generation of output triples
+                # Get all forecast derivation outputs
+                fc_outputs = kg_client.get_derivation_outputs(fc_deriv_iris)
+                # Extract all created forecast instances and create list of optimisation inputs
+                inputs_opi = list(fc_outputs[TS_FORECAST]) + [opti_int]
+                deriv = derivation_client.createSyncDerivationForNewInfo(DH_OPTIMISATION_AGENT, 
+                                inputs_opi, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+                opti_deriv_iri = deriv.getIri()
+                logger.info(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri}")
                 
                 # 3) Emission estimation derivations
                 #    1) EfW emissions (ProvidedHeatAmount)

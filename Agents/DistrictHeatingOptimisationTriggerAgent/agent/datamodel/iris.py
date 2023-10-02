@@ -35,6 +35,7 @@ OD_SIMULATION_TIME = OD + 'SimulationTime'
 TS_FREQUENCY = TS + 'Frequency'
 TS_FORECASTINGMODEL = TS + "ForecastingModel"
 TS_HASCOVARIATE = TS + "hasCovariate"
+TS_FORECAST = TS + 'Forecast'
 
 ### Time ontology ###
 TIME_INTERVAL = TIME + 'Interval'

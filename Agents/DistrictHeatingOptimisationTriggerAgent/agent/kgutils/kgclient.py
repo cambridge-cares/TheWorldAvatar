@@ -118,20 +118,22 @@ class KGClient(PySparqlClient):
         return mu_temp_flow, mu_temp_return, efw_temp_flow, efw_temp_return
     
 
-    def get_derivation_outputs(self, derivation_iri: str):
+    def get_derivation_outputs(self, derivation_iris: list):
         """
-        Returns all outputs of a given derivation instance
+        Returns all output instances of a given list of derivation instances
 
         Returns:
-            outputs {dict} -- Dictionary of derivation outputs, with types as keys
-                              and instances as list of IRI strings
+            outputs {dict} -- Dictionary of derivation outputs, with rdf types 
+                              as keys and instances as list of IRI strings
         """
-        query_output = f"""SELECT ?output ?output_type
+        query = f"""SELECT DISTINCT ?output ?output_type
             WHERE {{
-                ?output <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> .
+                VALUES ?derivation_iri {{ <{'> <'.join(derivation_iris)}> }} .
+                ?output <{TS_HAS_TIME_SERIES}>/<{RDF_TYPE}> ?derivation_iri .
                 ?output a ?output_type .
             }}"""
-        response = self.performQuery(query_output)
+        query = self.remove_unnecessary_whitespace(query)
+        response = self.performQuery(query)
         if len(response) == 0:
             return None
         else:
