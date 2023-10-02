@@ -1,10 +1,15 @@
 # Provide Constants/IRIs for KG queries/updates
 
+from pyderivationagent.data_model.iris import ONTODERIVATION_ISDERIVEDFROM, \
+                                              ONTODERIVATION_BELONGSTO, \
+                                              ONTODERIVATION_DERIVATIONWITHTIMESERIES
+
  # Namespaces
 # External ontologies
 RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 XSD = "http://www.w3.org/2001/XMLSchema#"
 TIME = "http://www.w3.org/2006/time#"
+OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/"
 # CoMo / CARES ontologies
 OD =  'https://www.theworldavatar.com/kg/ontodispersion/'
 TS =  'https://www.theworldavatar.com/kg/ontotimeseries/'
@@ -14,7 +19,7 @@ KB = 'https://www.theworldavatar.com/kg/pms_dh/'
 # Derivation markup
 DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
 
-# Forecasting model instances #
+# Forecasting related instances #
 # NOTE: to be aligned with fcmodels.ttl
 fc_model_heat_demand = KB + 'ForecastingModel_TFT_heat_demand'
 fc_model_grid_temperature = KB + 'ForecastingModel_Prophet'
@@ -53,4 +58,12 @@ TIME_UNIT_SECOND = TIME + 'unitSecond'
 EMS_AIRTEMPERATURE = EMS + "AirTemperature"
 
 ### OHN ###
+OHN_HEAT_DEMAND = OHN + "HeatDemand"
+OHN_INCINERATIONPLANT = OHN + "IncinerationPlant"
+OHN_MUNICIPAL_UTILITY = OHN + "MunicipalUtility"
+OHN_HAS_DOWNSTREAM_GRIDCONNECTION = OHN + "hasDownstreamGridConnection"
+OHN_HAS_UPSTREAM_GRIDCONNECTION = OHN + "hasUpstreamGridConnection"
+OHN_HAS_OBSERVABLE_PROPERTY = OHN + "hasObservableProperty"
 OHN_ISPUBLICHOLIDAY = OHN + "isPublicHoliday"
+
+OM_TEMPERATURE = OM + "Temperature"

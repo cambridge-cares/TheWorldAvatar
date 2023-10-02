@@ -123,8 +123,37 @@ def trigger_optimisation_task(params):
                 derivation_client.addTimeInstanceCurrentTimestamp(
                     [sim_t, opti_int, heat_length, tmp_length, freq])
                 
-                # Instantiate derivation markups
-                #TODO: to be implemented
+                ###   Instantiate derivation markups   ###
+                # 1) Forecast derivations
+                # NOTE: Forecast derivations are instantiated using "createSyncDerivationForNewInfo"
+                #       to ensure that derivation outputs are instantiated, which is not the case
+                #       for sole derivation updates when using derivations with time series
+                #    1) Heat demand
+                heat_demand = kg_client.get_heat_demand()
+                inputs_demand = [heat_demand, fc_model_heat_demand, opti_int, freq, heat_length]
+                deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT, 
+                                inputs_demand, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+                logger.info(f"Heat demand forecast derivation successfully instantiated: {deriv.getIri()}")
+                # Initialise list of all forecast derivation IRIs
+                deriv_iris = [deriv.getIri()]
+                
+                #    2) Grid temperatures
+                grid_temps = kg_client.get_grid_temperatures()
+                deriv_base = [fc_model_grid_temperature, opti_int, freq, tmp_length]
+                inputs_temps = [deriv_base + [t] for t in grid_temps]
+                for i in inputs_temps:
+                    deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT, 
+                                i, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+                    logger.info(f"Grid temperature forecast derivation successfully instantiated: {deriv.getIri()}")
+                    deriv_iris.append(deriv.getIri())
+
+                
+                # 2) Optimisation derivation
+                
+                # 3) Emission estimation derivations
+                #    1) EfW emissions (ProvidedHeatAmount)
+                #    2) heating plant emissions (ConsumedGasAmount)
+                
 
             else:
                 t1 += params['timeDelta_unix']

@@ -52,6 +52,94 @@ class KGClient(PySparqlClient):
         holiday = self.get_unique_value(res, 'holiday')
         
         return airtemp, holiday
+    
+
+    def get_heat_demand(self):
+        """
+        Returns IRI of total heat demand to satisfy/forecast
+
+        Returns:
+            demand {str} -- IRI of heat demand
+        """
+
+        query = f"""
+            SELECT DISTINCT ?demand
+            WHERE {{   
+            ?demand <{RDF_TYPE}> <{OHN_HEAT_DEMAND}> .
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        
+        # Extract unique query results (otherwise exception is thrown)
+        return self.get_unique_value(res, 'demand')
+    
+
+    def get_grid_temperatures(self):
+        """
+        Returns IRIs of flow and return temperatures of municipal utility and EfW plant
+
+        Returns:
+            flow temperature of municipal utility {str}
+            return temperature of municipal utility {str}
+            flow temperature of EfW plant {str}
+            return temperature of EfW plant {str}
+        """
+
+        query = f"""
+            SELECT DISTINCT ?mu_temp_flow ?mu_temp_return ?efw_temp_flow ?efw_temp_return
+            WHERE {{   
+            ?efw_plant <{RDF_TYPE}> <{OHN_INCINERATIONPLANT}> ;
+                       <{OHN_HAS_DOWNSTREAM_GRIDCONNECTION}> ?efw_downstream ;
+                       <{OHN_HAS_UPSTREAM_GRIDCONNECTION}> ?efw_upstream .
+            ?efw_downstream <{OHN_HAS_OBSERVABLE_PROPERTY}> ?efw_temp_flow .
+            ?efw_temp_flow <{RDF_TYPE}> <{OM_TEMPERATURE}> .
+            ?efw_upstream <{OHN_HAS_OBSERVABLE_PROPERTY}> ?efw_temp_return .
+            ?efw_temp_return <{RDF_TYPE}> <{OM_TEMPERATURE}> .
+            
+            ?mu_plant <{RDF_TYPE}> <{OHN_MUNICIPAL_UTILITY}> ;
+                      <{OHN_HAS_DOWNSTREAM_GRIDCONNECTION}> ?mu_downstream ;
+                      <{OHN_HAS_UPSTREAM_GRIDCONNECTION}> ?mu_upstream .
+            ?mu_downstream <{OHN_HAS_OBSERVABLE_PROPERTY}> ?mu_temp_flow .
+            ?mu_temp_flow <{RDF_TYPE}> <{OM_TEMPERATURE}> .
+            ?mu_upstream <{OHN_HAS_OBSERVABLE_PROPERTY}> ?mu_temp_return .
+            ?mu_temp_return <{RDF_TYPE}> <{OM_TEMPERATURE}> . 
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        
+        # Extract unique query results (otherwise exception is thrown)
+        mu_temp_flow = self.get_unique_value(res, 'mu_temp_flow')
+        mu_temp_return = self.get_unique_value(res, 'mu_temp_return')
+        efw_temp_flow = self.get_unique_value(res, 'efw_temp_flow')
+        efw_temp_return = self.get_unique_value(res, 'efw_temp_return')
+        
+        return mu_temp_flow, mu_temp_return, efw_temp_flow, efw_temp_return
+    
+
+    def get_derivation_outputs(self, derivation_iri: str):
+        """
+        Returns all outputs of a given derivation instance
+
+        Returns:
+            outputs {dict} -- Dictionary of derivation outputs, with types as keys
+                              and instances as list of IRI strings
+        """
+        query_output = f"""SELECT ?output ?output_type
+            WHERE {{
+                ?output <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> .
+                ?output a ?output_type .
+            }}"""
+        response = self.performQuery(query_output)
+        if len(response) == 0:
+            return None
+        else:
+            # Derivation outputs (i.e. belongsTo)
+            key = set([x['output_type'] for x in response])
+            outputs = {k: set([x['output'] for x in response if x['output_type'] == k]) for k in key}
+        
+        return outputs
 
 
     #
