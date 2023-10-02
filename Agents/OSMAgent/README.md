@@ -57,7 +57,7 @@ In the [config.properties](osmagent/src/main/resources/config.properties) file, 
 Default is set to the database value specified in [osm.json](inputs/config/osm.json). Change `db.name` if [osm.json](inputs/config/osm.json) database value is changed.
 - `osm.schema` - Schema name containing OSM data. 
 Default is set to the schema value specified in [osm.json](inputs/config/osm.json). Change `osm.schema` and [`building_usage.obda`](FeatureInfoAgent/building_usage.obda) if [osm.json](inputs/config/osm.json) schema value is changed.
-- `landuse.table` -  Table name (inclusive of schema) containing DLM land use data as . 
+- `landuse.table` -  Table name (inclusive of schema) containing land use data. 
 Leave empty if there is no land use data available, no land use matching will be run.
 
 ### 3.3. Building Docker Image
