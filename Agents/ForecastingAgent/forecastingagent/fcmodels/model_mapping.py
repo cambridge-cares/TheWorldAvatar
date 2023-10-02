@@ -105,6 +105,8 @@ def load_pirmasens_heat_demand_covariates(covariates_dict, tsClient, lowerbound,
             logger.info(f'Loading public holiday covariate')
             df_public_holiday = get_df_of_ts(iri, tsClient, lowerbound=lowerbound, 
                                              upperbound=upperbound, column_name='covariate')
+            # NOTE: Boolean ts values are converted automatically by "scale_covariate"
+            #       into one-hot encoded values
 
     # Create consolidated (scaled) covariates list incl. time covariates for the forecast
     # NOTE: The covariate list MUST have the same order as during training
