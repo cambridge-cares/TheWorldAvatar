@@ -69,7 +69,7 @@ public class ClassHandlerTest {
      */
     @Test
     public void getClasses() throws Exception {
-        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
         // Create store instance (skipping stack integration)
         ConfigStore configStore = new ConfigStore(configFile.toString());

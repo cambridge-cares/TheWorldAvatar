@@ -76,7 +76,7 @@ public class MetaHandlerTest {
      */
     @Test
     public void testSingleMatchQuery() throws Exception {
-        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
         // Mock a config store based on the real config file
         ConfigStore configStore = TestUtils.mockConfig(configFile);
@@ -118,7 +118,7 @@ public class MetaHandlerTest {
      */
     @Test
     public void testMultipleMatchQuery() throws Exception {
-        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
         // Mock a config store based on the real config file
         ConfigStore configStore = TestUtils.mockConfig(configFile);

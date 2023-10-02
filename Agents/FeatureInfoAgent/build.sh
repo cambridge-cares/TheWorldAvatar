@@ -22,15 +22,15 @@ read -p "Is the 'xmllint' package installed (Y/N)? " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    # Build 'latest' tagged image
-    docker compose -f docker-compose.yml build
-
-    # Read the version from the pom.xml file
+	# Read the version from the pom.xml file
     VERSION="$(xmllint --xpath "//*[local-name()='project']/*[local-name()='version']/text()" ./code/pom.xml)"
     echo "Discovered version as $VERSION"
 
     # Write env file for docker
     echo "TAG=$VERSION" > .env
+	
+    # Build 'latest' tagged image
+    docker compose -f docker-compose.yml build
 
     # Add version specific tag
     docker tag "ghcr.io/cambridge-cares/feature-info-agent:latest" "ghcr.io/cambridge-cares/feature-info-agent:$VERSION"

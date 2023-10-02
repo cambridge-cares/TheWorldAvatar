@@ -77,7 +77,7 @@ public class TimeHandlerTest {
      */
     @Test
     public void testSingleMatchWithTimeSeries() throws Exception {
-        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
         // Mock a config store based on the real config file
         ConfigStore configStore = TestUtils.mockConfig(configFile);
@@ -136,7 +136,7 @@ public class TimeHandlerTest {
      */
     @Test
     public void testSingleMatch() throws Exception {
-        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
         // Mock a config store based on the real config file
         ConfigStore configStore = TestUtils.mockConfig(configFile);
@@ -195,7 +195,7 @@ public class TimeHandlerTest {
      */
     @Test
     public void testMultipleMatch() throws Exception {
-        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
         // Mock a config store based on the real config file
         ConfigStore configStore = TestUtils.mockConfig(configFile);

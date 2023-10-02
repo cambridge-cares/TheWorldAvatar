@@ -72,7 +72,7 @@ public class ConfigStoreTest {
      */
     @Test
     public void loadConfig01() throws Exception {
-        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
         // Create store instance (skipping stack integration)
         ConfigStore store = new ConfigStore(configFile.toString());
@@ -108,7 +108,7 @@ public class ConfigStoreTest {
      */
     @Test
     public void loadConfig02() throws Exception {
-        Path configFile = TEMP_DIR.resolve("mock-config-02\\config.json");
+        Path configFile = TEMP_DIR.resolve("mock-config-02/config.json");
 
         // Create store instance (skipping stack integration)
         ConfigStore store = new ConfigStore(configFile.toString());
@@ -149,7 +149,7 @@ public class ConfigStoreTest {
      */
     @Test
     public void testReload() throws Exception {
-        Path configFile = TEMP_DIR.resolve("mock-config-01\\config.json");
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
         
         // Create store instance (skipping stack integration)
         ConfigStore store = new ConfigStore(configFile.toString());
