@@ -17,12 +17,8 @@ public class QueryClient {
     QueryClient(RemoteStoreClient storeClient, RemoteStoreClient ontopStoreClient, RemoteRDBStoreClient rdbStoreClient) {
         this.storeClient = storeClient;
         this.ontopStoreClient = ontopStoreClient;
-
         this.rdbStoreClient = rdbStoreClient;
     }
-
-
-
 
     public JSONArray getPOIwkt (String sparqlQuery ) {
 

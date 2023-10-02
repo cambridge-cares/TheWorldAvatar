@@ -48,4 +48,7 @@ public class EndpointConfig {
     public String getKgurl() {
         return this.kgurl;
     }
+    public String getOntopurl() {
+        return this.ontopurl;
+    }
 }

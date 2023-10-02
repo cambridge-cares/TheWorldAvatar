@@ -3,21 +3,24 @@ package uk.ac.cam.cares.jps.agent.isochroneagent;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
-import uk.ac.cam.cares.jps.agent.isochroneagent.QueryClient;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.annotation.WebServlet;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Properties;
+import java.nio.file.Path;
+import java.util.*;
 
 @WebServlet(urlPatterns = "/update")
 
 public class IsochroneAgent extends JPSAgent {
     private static final String PROPETIES_PATH = "/usr/local/tomcat/resources/config.properties";
+    private static final Path POI_PATH = Path.of("C:/TheWorldAvatar/Agents/IsochroneAgent/inputs/15MSC/POIqueries");
+    private static final Path EDGESTABLESQL_PATH = Path.of("C:/TheWorldAvatar/Agents/IsochroneAgent/inputs/15MSC/edgesSQLTable");
+
+
     private EndpointConfig endpointConfig = new EndpointConfig();
 
     private String dbName;
@@ -26,6 +29,12 @@ public class IsochroneAgent extends JPSAgent {
     private String dbUser;
     private String dbPassword;
     private String kgEndpoint;
+
+    private RemoteStoreClient storeClient;
+
+    private RemoteRDBStoreClient remoteRDBStoreClient;
+    private QueryClient queryClient;
+    private RemoteStoreClient ontopStoreClient;
 
     public int timeThreshold;
     public int timeInterval;
@@ -38,14 +47,10 @@ public class IsochroneAgent extends JPSAgent {
         this.dbPassword = endpointConfig.getDbPassword();
         this.kgEndpoint = endpointConfig.getKgurl();
 
-        slPostGisClient = new SLPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
-                endpointConfig.getDbpassword());
-        storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
-                endpointConfig.getDbpassword());
-        tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
-        RemoteStoreClient ontopStoreClient = new RemoteStoreClient(endpointConfig.getOntopurl());
-        queryClient = new QueryClient(storeClient, ontopStoreClient, remoteRDBStoreClient);
+        this.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        this.remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName), endpointConfig.getDbUser(), endpointConfig.getDbPassword());
+        this.ontopStoreClient = new RemoteStoreClient(endpointConfig.getOntopurl());
+        this.queryClient = new QueryClient(storeClient, ontopStoreClient, remoteRDBStoreClient);
     }
 
     public void readConfig() {
@@ -71,18 +76,29 @@ public class IsochroneAgent extends JPSAgent {
         }
     }
 
+    /**
+     * Process request params
+     * @param requestParams
+     * @return
+     */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         try {
 
-            QueryClient queryClient = new QueryClient();
+            //Try to read
+            Map POImap = FileReader.readPOIsparql(POI_PATH);
+            Map EdgesTableSQL = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
+
+
+            QueryClient queryClient = new QueryClient(storeClient,ontopStoreClient,remoteRDBStoreClient);
+
+            System.out.println(EdgesTableSQL);
 
             // Execute SPARQL queries
-            QueryClient.class
+//            queryClient.getPOIwkt();
 
             // Segmentize road segments
 
-            
 
             // Retrieve nearest nodes from segmentized road segments
 
@@ -95,7 +111,8 @@ public class IsochroneAgent extends JPSAgent {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-
         return requestParams;
     }
+
+
 }

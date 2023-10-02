@@ -15,7 +15,7 @@ To prepare OSM data
 ### 2.3. Uploading population data via stack-data-uploader
 
 ## 3. Agent Configuration 
-Copy the content of the desired function - [15 Minute Smart City (15MSC)](inputs-example/15MSC/) or [Urban Resillience](inputs-example/UR/) into the [inputs](inputs/) folder. The files have been pre-configured for the agent to run.
+Copy the content of the desired function - [15 Minute Smart City (15MSC)](inputs/15MSC/) or [Urban Resillience](inputs/UR/) into the [inputs](inputs/) folder. The files have been pre-configured for the agent to run.
 
 ### 3.1 Config Properties
 Things to configure in table: 
