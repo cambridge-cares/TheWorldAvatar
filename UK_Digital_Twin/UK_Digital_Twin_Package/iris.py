@@ -114,3 +114,18 @@ ONS_GEOSPARQL_ASWKT = ONS_GEOSPARQL + "asWKT"
 FOI = "http://publishmydata.com/def/ontology/foi/"
 FOI_WITHIN = FOI + "within"
 FOI_CODE = FOI + "code"
+
+"""GEO QUERY"""
+GEO = "http://www.bigdata.com/rdf/geospatial#"
+GEOLITERAL = "http://www.bigdata.com/rdf/geospatial/literals/v1#"
+
+GEO_SEARCH = GEO + "search"
+GEO_SEARCHDATATYPE = GEO + "searchDatatype"
+GEO_PREDICATE = GEO + "predicate"
+GEO_SPATIALCIRCLECENTER = GEO + "spatialCircleCenter"
+GEO_SPATIALCIRCLERADIUS = GEO + "spatialCircleRadius"
+GEOLITERAL_LAT_LON = GEOLITERAL + "lat-lon"
+
+"""ONTOSDG"""
+ONTOSDG = "http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#"
+ONTOSDG_HASPOPULATION = ONTOSDG + "hasPopulation"

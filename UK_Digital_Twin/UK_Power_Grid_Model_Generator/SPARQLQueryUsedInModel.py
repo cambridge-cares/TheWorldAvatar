@@ -374,7 +374,16 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKPowe
 ###############ELine#############
 # branchGeometryQueryCreator is developed to constuct a query string used to retrieve the branch's geometry information according to its parallel connection of each branch
 def branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level): 
-    ADDED = f""""""  
+    ADDED = f""""""
+    for voltage in branch_voltage_level: 
+        OHL = "?OHL_" + str(voltage)
+        Num_OHL = "?Num_OHL_" + str(voltage)
+        
+        ADDED += f"""?ELineNode <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> {OHL} . 
+    {OHL} <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_OVERHEADLINE}> .
+    {OHL} <{ONTOPOWSYS_POWSYSREALIZATION_HASVOLTAGELEVEL}> "{voltage}" .
+    {OHL} <{ONTOPOWSYS_POWSYSREALIZATION_HASNUMBEROFPARALLELLINE}> {Num_OHL} .    
+    """
     SELECT_CLAUSE = f"""
     SELECT DISTINCT ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine """
     for voltage in branch_voltage_level:
@@ -395,17 +404,8 @@ def branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level):
 
     {ADDED}
     }}""" 
-    
-    for voltage in branch_voltage_level: 
-        OHL = "?OHL_" + str(voltage)
-        Num_OHL = "?Num_OHL_" + str(voltage)
-        
-        ADDED += f"""?ELineNode <{ONTOCAPE_UPPER_LEVEL_SYSTEM_ISCOMPOSEDOFSUBSYSTEM}> {OHL} . 
-    {OHL} <{RDF_TYPE}> <{ONTOPOWSYS_POWSYSREALIZATION_OVERHEADLINE}> .
-    {OHL} <{ONTOPOWSYS_POWSYSREALIZATION_HASVOLTAGELEVEL}> "{voltage}" .
-    {OHL} <{ONTOPOWSYS_POWSYSREALIZATION_HASNUMBEROFPARALLELLINE}> {Num_OHL} .    
-    """
     queryStr =  SELECT_CLAUSE + WHERE_CLAUSE
+    print(queryStr)
     return queryStr    
     
 # queryELineTopologicalInformation is developed to perform the query for branch topological information and its geometry information
@@ -443,10 +443,3 @@ def queryELineTopologicalInformation(topologyNodeIRI, endpoint):
             if '\"^^' in  r[key] :
                 r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
     return res, branch_voltage_level 
-
-# if __name__ == '__main__':
-#     topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_926ca0b6-bad0-43cd-bf27-12d3aab1b17b"
-#     endPoint = "UKPowerSystemBaseWorld"
-#     eliminateClosedPlantIRIList = ['http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_d140b469-b65f-400d-be33-4f314c446250', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_5edabd1e-fcb6-4257-ac86-0b486254bfc7', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_bad581c4-21d7-47c3-8c4a-48204bb8b414', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_802ca5dd-1c45-42d2-9ca8-cac1845e2914', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_313a787c-1e7d-455b-873f-202d9a4b1db1', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_3ab168bc-20eb-4b68-a690-98af4b5f28d5', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_06606644-dd2d-4036-b054-22b0a910e40e', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_6e084c0a-5c93-4389-b6f3-32802e67d599', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_ba864332-07d7-4c50-b383-b8441e69a9f7', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_6461cc8d-fa36-4031-bddf-c07f559a87b9', 'http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_25f2d20a-26a9-4da5-b789-6a31afd53a89']
-#     qres = queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList)
-#     print(qres)
