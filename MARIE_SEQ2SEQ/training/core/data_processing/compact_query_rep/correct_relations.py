@@ -7,13 +7,49 @@ from core.data_processing.compact_query_rep.constants import (
     PROPERTY_NAMES,
 )
 
+special_words = ["InChIKey", "InChI", "XLogP3", "SMILES", "IUPAC", "Chebi", "CID", "ID"]
+
+
+def tokenize(text: str):
+    tokens = []
+
+    ptr_prev = 0
+    ptr = 1
+
+    while ptr_prev < len(text):
+        word = None
+        for w in special_words:
+            if text.startswith(w, ptr_prev):
+                word = w
+                break
+
+        if word is not None:
+            ptr = ptr_prev + len(word)
+        else:
+            while ptr < len(text) and not text[ptr].isupper():
+                ptr += 1
+
+        tokens.append(text[ptr_prev:ptr])
+        ptr_prev = ptr
+        ptr += 1
+
+    return tokens
+
 
 class RelationCorrector:
     ABSTRACT_RELATION_NAMES = ["PropertyName", "IdentifierName"]
     USE_AND_CHEMICALCLASS_NAMES = ["Use", "ChemicalClass"]
-    RELATION_NAMES = PROPERTY_NAMES + IDENTIFIER_NAMES + USE_AND_CHEMICALCLASS_NAMES + ABSTRACT_RELATION_NAMES
+    RELATION_NAMES = (
+        PROPERTY_NAMES
+        + IDENTIFIER_NAMES
+        + USE_AND_CHEMICALCLASS_NAMES
+        + ABSTRACT_RELATION_NAMES
+    )
     VALID_RELATIONS = (
-        ["os:has" + x for x in PROPERTY_NAMES + IDENTIFIER_NAMES + USE_AND_CHEMICALCLASS_NAMES]
+        [
+            "os:has" + x
+            for x in PROPERTY_NAMES + IDENTIFIER_NAMES + USE_AND_CHEMICALCLASS_NAMES
+        ]
         + ["?has" + x for x in ABSTRACT_RELATION_NAMES]
         + ["?hasIdentifier"]
     )
@@ -25,7 +61,7 @@ class RelationCorrector:
     ):
         self.model = SentenceTransformer(model)
         self.embed_matrix = self.model.encode(
-            self.RELATION_NAMES, convert_to_tensor=True
+            [" ".join(tokenize(x)) for x in self.RELATION_NAMES], convert_to_tensor=True
         )
         self.threshold = threshold
 
@@ -46,7 +82,9 @@ class RelationCorrector:
         else:
             name = relation[len("os:has") :]
 
-        embed_name = self.model.encode([name], convert_to_tensor=True)
+        embed_name = self.model.encode(
+            [" ".join(tokenize(name))], convert_to_tensor=True
+        )
         consine_scores = util.cos_sim(self.embed_matrix, embed_name).flatten()
         closest_idx = consine_scores.argmax()
         if consine_scores[closest_idx] < self.threshold:
@@ -59,13 +97,13 @@ class RelationCorrector:
             relation_corrected = "?has" + closest_name
 
         if name in tail:
-            tail_corrected = tail.replace(name, closest_name)
+            # tail_corrected = tail.replace(name, closest_name) # correction to be done in CompactQueryRep::correct_relations
             name_mappings = {name: closest_name}
         else:
             tail_corrected = tail
             name_mappings = dict()
 
-        return f"{head} {relation_corrected} {tail_corrected} .", name_mappings
+        return f"{head} {relation_corrected} {tail} .", name_mappings
 
     def correct_relations(self, where_clauses: List[str]):
         where_clauses = list(where_clauses)

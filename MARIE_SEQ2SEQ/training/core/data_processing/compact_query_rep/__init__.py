@@ -27,8 +27,8 @@ from core.utils import advance_ptr_to_space
 class CompactQueryRep:
     compact_query_parser = CompactQueryParser()
     span_corrector = SpanCorrector()
-    relation_corrector = RelationCorrector()
-    
+    relation_corrector = None
+
     def __init__(self, select_variables: str, where_clauses: List[str]):
         self.select_variables = select_variables
         self.where_clauses = where_clauses
@@ -42,6 +42,11 @@ class CompactQueryRep:
 
     def __repr__(self):
         return repr(vars(self))
+
+    def _get_relation_corrector(self):
+        if self.relation_corrector is None:
+            self.relation_corrector = RelationCorrector()
+        return self.relation_corrector
 
     def to_string(self):
         where_clauses = "\n    ".join(self.where_clauses)
@@ -57,8 +62,10 @@ WHERE {{
         return CompactQueryRep(self.select_variables, where_clauses)
 
     def correct_relations(self):
-        where_clauses, name_mappings = self.relation_corrector.correct_relations(where_clauses=self.where_clauses)
-        
+        where_clauses, name_mappings = self._get_relation_corrector().correct_relations(
+            where_clauses=self.where_clauses
+        )
+
         select_variables = self.select_variables.split()
         select_variables_corrected = []
         for x in select_variables:
@@ -73,7 +80,7 @@ WHERE {{
                     clause = clause.replace(k, v)
             elif clause.endswith("."):
                 try:
-                    head, rel, tail = clause[:-len(".")].strip().split()
+                    head, rel, tail = clause[: -len(".")].strip().split()
                 except:
                     pass
                 for k, v in name_mappings.items():
@@ -84,8 +91,10 @@ WHERE {{
             else:
                 raise InvalidCompactQueryError("Unexpected where clause: " + clause)
             where_clauses_corrected.append(clause)
-        
-        return CompactQueryRep(" ".join(select_variables_corrected), where_clauses_corrected)
+
+        return CompactQueryRep(
+            " ".join(select_variables_corrected), where_clauses_corrected
+        )
 
     def to_verbose(self):
         select_variables = str(self.select_variables)
