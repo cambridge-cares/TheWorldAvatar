@@ -128,12 +128,6 @@ public final class FileUtils {
     }
 
     public static boolean hasFileExtension(Path file, String extension) {
-        int i = file.toString().lastIndexOf(".");
-        if (i > 0) {
-            return file.toString().substring(i + 1).equals(extension);
-        } else {
-            return false;
-        }
+        return file.toString().endsWith("." + extension);
     }
-
 }
