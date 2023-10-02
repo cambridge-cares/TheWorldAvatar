@@ -13,24 +13,27 @@ from py4jps import agentlogging
 from .stack_configs import retrieve_stack_settings
 
 # Initialise logger instance (ensure consistent logger level`)
-#logger = agentlogging.get_logger('dev')
 logger = agentlogging.get_logger('prod')
 
 
-def retrieve_connection_settings():
+def retrieve_configs():
     """
-    Reads connection settings from environment variables as global variables, 
+    Reads (connection) settings from environment variables as global variables, 
     i.e. only global within this sub-module
     """
 
     # Define global scope for global variables
-    global NAMESPACE, STACK_NAME, QUERY_ENDPOINT, UPDATE_ENDPOINT
+    global NAMESPACE, STACK_NAME, QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+           FORECASTING_AGENT, DH_OPTIMISATION_AGENT, EMISSION_ESTIMATION_AGENT
     
     # Initialise variables (to ensure working imports even if not defined in env vars)
     NAMESPACE = None
     STACK_NAME = None
     QUERY_ENDPOINT = None
     UPDATE_ENDPOINT = None
+    FORECASTING_AGENT = None
+    DH_OPTIMISATION_AGENT = None
+    EMISSION_ESTIMATION_AGENT = None
 
     # Retrieve Docker Stack name
     STACK_NAME = os.getenv('STACK_NAME')
@@ -72,6 +75,15 @@ def retrieve_connection_settings():
     logger.info(f"QUERY_ENDPOINT: {QUERY_ENDPOINT}")
     logger.info(f"UPDATE_ENDPOINT: {UPDATE_ENDPOINT}")
 
+    # Retrieve derivation agent service IRIs
+    vars_names = ['FORECASTING_AGENT', 'DH_OPTIMISATION_AGENT', 'EMISSION_ESTIMATION_AGENT']
+    for v in vars_names:
+        globals()[v] = os.getenv(v)
+        if not globals()[v]:
+            # In case variable key is missing or empty value provided
+            logger.error(f'"{v}" service IRI is missing in environment variables.')
+            raise ValueError(f'"{v}" service IRI is missing in environment variables.')
+
 
 # Run when module is imported
-retrieve_connection_settings()
+retrieve_configs()

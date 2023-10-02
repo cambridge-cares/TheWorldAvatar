@@ -1,12 +1,16 @@
 # Provide Constants/IRIs for KG queries/updates
 
  # Namespaces
+# External ontologies
 RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 XSD = "http://www.w3.org/2001/XMLSchema#"
 TIME = "http://www.w3.org/2006/time#"
-OD = 'https://www.theworldavatar.com/kg/ontodispersion/'
-TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
-KB = 'https://www.theworldavatar.com/kg/pirmasens/'
+# CoMo / CARES ontologies
+OD =  'https://www.theworldavatar.com/kg/ontodispersion/'
+TS =  'https://www.theworldavatar.com/kg/ontotimeseries/'
+EMS = "https://www.theworldavatar.com/kg/ontoems/"
+KB = 'https://www.theworldavatar.com/kg/pms_dh/'
+# Derivation markup
 DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
 
 # Data types
@@ -36,3 +40,6 @@ TIME_UNIT_DAY = TIME + 'unitDay'
 TIME_UNIT_HOUR = TIME + 'unitHour'
 TIME_UNIT_MINUTE = TIME + 'unitMinute'
 TIME_UNIT_SECOND = TIME + 'unitSecond'
+
+### ONTOEMS ###
+ONTOEMS_AIRTEMPERATURE = EMS + "AirTemperature"

@@ -5,7 +5,10 @@
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/dhoptimisationtrigger-agent:1.0.0",
                 "Env": [
-                    "NAMESPACE=kb"
+                    "NAMESPACE=kb",
+                    "FORECASTING_AGENT=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service",
+                    "DH_OPTIMISATION_AGENT=https://www.theworldavatar.com/resource/agents/Service__DHOptimisationAgent/Service",
+                    "EMISSION_ESTIMATION_AGENT=https://www.theworldavatar.com/resource/agents/Service__DHEmissionAgent/Service"
                 ],
                 "Configs": [
                     {

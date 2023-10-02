@@ -24,6 +24,10 @@ Several key environment variables need to be set in the [Docker compose file]:
 - QUERY_ENDPOINT=       # SPARQL query endpoint
 - UPDATE_ENDPOINT=      # SPARQL update endpoint
 - STACK_NAME=           # to be left blank!
+# Derivation Agent service IRIs required to establish derivation markups
+- FORECASTING_AGENT=
+- DH_OPTIMISATION_AGENT=
+- EMISSION_ESTIMATION_AGENT=
 ```
 
 The `STACK_NAME` variable is used to identify the deployment mode of the agent (and a missing one will result in an error). In case the `STACK_NAME` is left blank, Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients.
@@ -32,7 +36,7 @@ To build and publish the agent Docker image please use the following commands. P
 
 ```bash
 # Building the Docker image
-docker-compose -f docker-compose.yml  build
+docker-compose -f docker-compose.yml build
 
 # Publish the Docker image to the Github container registry
 docker image push ghcr.io/cambridge-cares/<image tag>:<version>
@@ -51,7 +55,12 @@ Several key environment variables need to be set in the [stack-manager-input-con
 
 ```bash
     "Env": [
-        "NAMESPACE=kb"      # Target Blazegraph namespace
+        # Target Blazegraph namespace
+        "NAMESPACE=kb"
+        # Derivation Agent service IRIs required to establish derivation markups
+        "FORECASTING_AGENT=<agent service iri>",
+        "DH_OPTIMISATION_AGENT=<agent service iri>",
+        "EMISSION_ESTIMATION_AGENT=<agent service iri>"
     ],
 ```
 

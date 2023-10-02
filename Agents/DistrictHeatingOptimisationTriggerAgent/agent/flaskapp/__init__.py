@@ -16,7 +16,9 @@ from pyderivationagent import PyDerivationClient
 
 from agent.datamodel import *
 from agent.kgutils.kgclient import KGClient
-from agent.utils.connection_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.agent_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+                                      FORECASTING_AGENT, DH_OPTIMISATION_AGENT, \
+                                      EMISSION_ESTIMATION_AGENT
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
