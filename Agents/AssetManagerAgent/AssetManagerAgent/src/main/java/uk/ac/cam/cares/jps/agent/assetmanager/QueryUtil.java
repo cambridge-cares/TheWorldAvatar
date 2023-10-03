@@ -84,6 +84,30 @@ public class QueryUtil {
         
     }
 
+    public static JSONArray getLiteralbyIRI (Iri subject, RemoteStoreClient storeClient) {
+        //It is assumed that the ID is unique and no duplicate ID exist
+        //Cause thats what IDs do (at least supposed to)
+        SelectQuery query = Queries.SELECT();
+        Variable object = SparqlBuilder.var("object");
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        query.where(subject.has(query.var(), object));
+        return storeClient.executeQuery(query.getQueryString());
+    }
+
+    public static JSONArray getLiteralbyIRI (Iri subject, Iri predicate, RemoteStoreClient storeClient) {
+        SelectQuery query = Queries.SELECT();
+        Variable object = SparqlBuilder.var("object");
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        query.where(subject.has(predicate, object));
+        JSONArray reqResult = storeClient.executeQuery(query.getQueryString());
+        return reqResult;
+        
+    }
+
     public static String getIRIStringbyIRIObject (Iri object, Iri predicate, RemoteStoreClient storeClient){
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,

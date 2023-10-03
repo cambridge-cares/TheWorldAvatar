@@ -43,8 +43,8 @@ import org.apache.logging.log4j.Logger;
  */
 public class AssetKGInterface {
     private RemoteStoreClient storeClientAsset, storeClientDevice, storeClientPurchDoc;
-    private AssetExistenceChecker existenceChecker;
-    private AssetRetriever assetRetriever;
+    public AssetExistenceChecker existenceChecker;
+    public AssetRetriever assetRetriever;
 
 
     /**

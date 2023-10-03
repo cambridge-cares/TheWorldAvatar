@@ -111,6 +111,18 @@ public class AssetExistenceChecker {
 
     }
 
+    public String getIDbyIRIString (String IRI){
+        JSONArray reqResult = getLiteralbyIRI (iri(IRI), hasItemInventoryIdentifier, storeClientAsset);
+        switch (reqResult.length()) {
+            case 0:
+                return null;
+            case 1:
+                return reqResult.getJSONObject(0).getString("object");
+            default:
+                throw new JPSRuntimeException("More than 1 ID for the same IRI: " + IRI + ". Check the knowledge graph for duplicates.", null);
+        }
+    }
+
     public String getWorkspaceIRIStringByName (String name) {
         return getWorkspaceIRIStringByName (name, false); 
     }

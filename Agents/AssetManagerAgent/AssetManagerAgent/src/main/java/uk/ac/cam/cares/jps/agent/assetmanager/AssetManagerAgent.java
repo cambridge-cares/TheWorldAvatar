@@ -285,26 +285,41 @@ public class AssetManagerAgent extends JPSAgent{
         message.put("Result", "Printing job initiated for IRI: " + IRI);
         String[] iriArray = {IRI};
         // send to server
-        try{
-            printerHandler.PrintQRBulk(iriArray);
-        }
-        catch(Exception e) {
-            message.accumulate("Result", "Failed to contact printer: " + e);
-        }
-        
-        return message;
+        return contactPrintServer(arg, iriArray);
     }
 
-    public JSONObject contactPrintServer (String[] arg, String[] IRIArray){
+    public JSONObject contactPrintServer (String[] arg, String[] IDArray){
         JSONObject message = new JSONObject();
-        message.put("Result", "Bulk printing job initiated for ID: " + IRIArray);
+        Map<String, String> idIRImap = new HashMap<String, String>();
+        message.put("Result", "Bulk printing job initiated for ID: " + IDArray);
+        for (String ID : IDArray){
+            String IRI;
+            if(validateID(ID)){
+                IRI = instanceHandler.existenceChecker.getIRIStringbyID(ID);
+            }else{
+                IRI = ID;
+                ID = instanceHandler.existenceChecker.getIDbyIRIString(IRI);
+            }
+            idIRImap.put(ID, IRI);
+        }
         try{
-            printerHandler.PrintQRBulk(IRIArray);
+            printerHandler.PrintQRBulk(idIRImap);
         }
         catch(Exception e) {
             message.accumulate("Result", "Failed to print qr codes: " + e);
         }
         return message;
+    }
+
+    Boolean validateID (String id) {
+        String[] idSplits = id.split("/");
+        if (idSplits.length!=2){
+            return false;
+        }
+        if (idSplits[0].length()!=8 && idSplits[0].split("-").length!=3){
+            return false;
+        }
+        return true;
     }
 
     public JSONObject getDataForUI (){

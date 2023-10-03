@@ -9,7 +9,7 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument; 
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.element.Image;
-
+import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.AreaBreak;
 
@@ -112,6 +112,68 @@ public class QRPrinter {
                     qrCodeImage.setFixedPosition(x, y);
                     qrCodeImage.scaleToFit(qrCodeSize, qrCodeSize);
                     document.add(qrCodeImage);
+                } catch (Exception e) {
+                    throw new Exception("Failed to create QR code for IRI:" + iriString);
+                }
+                
+                c+=1;
+                if (c==MAX_COL){
+                    c=0;
+                    r+=1;
+                }
+                if(r==MAX_ROW){
+                    document.add(new AreaBreak());
+                    r=0;
+                }
+            }
+        }
+        
+        LOGGER.info("Finish creating pdf for printing: "+ filename);
+
+        sendPrintRequest(filename);
+    }
+
+    public void PrintQRBulk(Map<String, String> idIRIMap)throws Exception  {
+        LOGGER.info("Started bulk printing for ID-IRIs: " + idIRIMap);
+        String filename = "/root/QRCodes.pdf";
+        PdfDocument pdfDoc = new PdfDocument(new PdfWriter(filename));
+        try (Document document = new Document(pdfDoc, PageSize.A4)) {
+            int qrCodeSize = (int) (targetSize * POINT_PER_CM);
+            //int qrCodeSize = 200; // Size of each QR code in points (1/72 inch)
+            //int A4_HEIGHT = 842;
+            //int A4_WIDTH = 595;
+            float A4_HEIGHT = PageSize.A4.getHeight();
+            float A4_WIDTH = PageSize.A4.getWidth();
+            float marginVert = 50;
+            float marginHorz = 50;
+            LOGGER.debug("PAPER SIZE::"+A4_WIDTH+"x"+A4_HEIGHT+";");
+            int MAX_ROW = (int) ((A4_HEIGHT-marginHorz)/(qrCodeSize));
+            int MAX_COL = (int) ((A4_WIDTH-marginVert)/(qrCodeSize));
+            
+            int r =0;
+            int c =0;
+            for (Map.Entry<String, String> entry : idIRIMap.entrySet()){
+                String ID = entry.getKey();
+                String iriString = entry.getValue();
+                float x = c * qrCodeSize + marginHorz/2;
+                float y = A4_HEIGHT - (r * qrCodeSize) - marginVert/2;
+                // x and y is the bottom left corner apparently so need move y down
+                y-=qrCodeSize;
+                LOGGER.debug("QR LOCATION::"+iriString+"::"+x+"-"+y+";");
+
+                // Generate QR code image
+                try {
+                    String filePathQR = getQRPath(iriString);
+                    LOGGER.debug("");
+                    Image qrCodeImage = new Image(ImageDataFactory.create(filePathQR));
+                    qrCodeImage.setFixedPosition(x, y);
+                    qrCodeImage.scaleToFit(qrCodeSize, qrCodeSize);
+                    document.add(qrCodeImage);
+
+                    Paragraph p = new Paragraph(ID);
+                    p.setFixedPosition(x, y, qrCodeSize);
+                    document.add(p);
+
                 } catch (Exception e) {
                     throw new Exception("Failed to create QR code for IRI:" + iriString);
                 }
