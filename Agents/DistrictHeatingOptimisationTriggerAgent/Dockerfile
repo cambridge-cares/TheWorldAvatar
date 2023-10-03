@@ -15,6 +15,8 @@ ENV PYTHONUNBUFFERED=1
 
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
+# Install Curl (required to test whether instantiation container has finished)
+RUN apt install -y curl
 
 # Install Redis for scheduling of background tasks using Celery (via Flask)
 RUN apt install -y redis-server
@@ -44,6 +46,7 @@ EXPOSE 5000
 # Copy required source code and resources
 COPY ./agent ./agent
 COPY ./resources ./resources
+COPY ./delayed_start.sh .
 
 # Start the Celery worker and Gunicorn server
 # Create pipeline of multiple commands using Shell Form of CMD (to perform a series of operations)

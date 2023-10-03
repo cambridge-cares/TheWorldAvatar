@@ -142,18 +142,19 @@ def trigger_optimisation_task(params):
                                 i, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
                     logger.info(f"Grid temperature forecast derivation successfully instantiated: {deriv.getIri()}")
                     fc_deriv_iris.append(deriv.getIri())                
-                
-                # 2) Optimisation derivation
-                # NOTE: Instantiated using "createSyncDerivationForNewInfo" for same
-                #       reason as above, i.e., ensure initial generation of output triples
-                # Get all forecast derivation outputs
-                fc_outputs = kg_client.get_derivation_outputs(fc_deriv_iris)
-                # Extract all created forecast instances and create list of optimisation inputs
-                inputs_opi = list(fc_outputs[TS_FORECAST]) + [opti_int]
-                deriv = derivation_client.createSyncDerivationForNewInfo(DH_OPTIMISATION_AGENT, 
-                                inputs_opi, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
-                opti_deriv_iri = deriv.getIri()
-                logger.info(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri}")
+
+                # TODO: uncomment
+                # # 2) Optimisation derivation
+                # # NOTE: Instantiated using "createSyncDerivationForNewInfo" for same
+                # #       reason as above, i.e., ensure initial generation of output triples
+                # # Get all forecast derivation outputs
+                # fc_outputs = kg_client.get_derivation_outputs(fc_deriv_iris)
+                # # Extract all created forecast instances and create list of optimisation inputs
+                # inputs_opi = list(fc_outputs[TS_FORECAST]) + [opti_int]
+                # deriv = derivation_client.createSyncDerivationForNewInfo(DH_OPTIMISATION_AGENT, 
+                #                 inputs_opi, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+                # opti_deriv_iri = deriv.getIri()
+                # logger.info(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri}")
                 
                 # TODO: uncomment
                 # # 3) Emission estimation derivations

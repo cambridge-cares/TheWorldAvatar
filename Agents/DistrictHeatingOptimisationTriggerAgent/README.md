@@ -36,7 +36,7 @@ To build and publish the agent Docker image please use the following commands. P
 
 ```bash
 # Building the Docker image
-docker-compose -f docker-compose.yml build
+docker compose -f docker-compose.yml build
 
 # Publish the Docker image to the Github container registry
 docker image push ghcr.io/cambridge-cares/<image tag>:<version>
@@ -46,7 +46,7 @@ Deploy the agent image with the following command in the same location where thi
 
 ```bash
 # Deploy the Docker image locally
-docker-compose -f docker-compose.yml up
+docker compose -f docker-compose.yml up
 ```
 
 ## 1.2. Stack Deployment
@@ -68,7 +68,7 @@ Several key environment variables need to be set in the [stack-manager-input-con
 
 If you want to spin up this agent as part of a stack, do the following:
 1) Build the Docker image using the commands provided above (do not spin up the image)
-2) Copy the `dhoptimisationtrigger_agent.json` file from the [stack-manager-input-config] folder into the `inputs/config/services` folder of the stack manager
+2) Copy the `dh-optimisation-trigger-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config/services` folder of the stack manager
 3) Add the service to a corresponding stack configuration json in `inputs/config`
 4) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
 5) The agent shall become available at `http://<HOST>:<PORT>/dhTriggerAgent/`

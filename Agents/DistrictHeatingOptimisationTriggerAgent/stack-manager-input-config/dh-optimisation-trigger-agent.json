@@ -3,7 +3,10 @@
         "Name": "dh-optimisation-trigger-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:1.0.0-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:0.0.1-SNAPSHOT",
+                "Command": [
+                    "/bin/bash", "./delayed_start.sh"
+                ],
                 "Env": [
                     "NAMESPACE=kb",
                     "FORECASTING_AGENT=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service",
