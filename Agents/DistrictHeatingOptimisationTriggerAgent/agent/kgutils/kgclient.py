@@ -33,14 +33,15 @@ class KGClient(PySparqlClient):
                namespace, this assumption might not hold anymore)
 
         Returns:
-            airtemp {str} -- IRI of ambient air temperature (time series)
-            holiday {str} -- IRI of public holiday (time series)
+            airtemp {str} -- dataIRI of ambient air temperature measure (time series)
+            holiday {str} -- dataIRI of public holiday (time series)
         """
 
         query = f"""
-            SELECT DISTINCT ?airtemp ?holiday
+            SELECT DISTINCT ?measure ?holiday
             WHERE {{   
-            ?airtemp <{RDF_TYPE}> <{EMS_AIRTEMPERATURE}> .
+            ?airtemp <{RDF_TYPE}> <{EMS_AIRTEMPERATURE}> ; 
+                     <{OM_HAS_VALUE}> ?measure . 
             ?holiday <{RDF_TYPE}> <{OHN_ISPUBLICHOLIDAY}> .
             }}
         """
@@ -48,7 +49,7 @@ class KGClient(PySparqlClient):
         res = self.performQuery(query)
         
         # Extract unique query results (otherwise exception is thrown)
-        airtemp = self.get_unique_value(res, 'airtemp')
+        airtemp = self.get_unique_value(res, 'measure')
         holiday = self.get_unique_value(res, 'holiday')
         
         return airtemp, holiday

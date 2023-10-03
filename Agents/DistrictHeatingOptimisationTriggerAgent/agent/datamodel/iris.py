@@ -70,3 +70,4 @@ OHN_PROVIDED_HEAT_AMOUNT = OHN + "ProvidedHeatAmount"
 OHN_CONSUMED_GAS_AMOUNT = OHN + "ConsumedGasAmount" 
 
 OM_TEMPERATURE = OM + "Temperature"
+OM_HAS_VALUE = OM + "hasValue"
