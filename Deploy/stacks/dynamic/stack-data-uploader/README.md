@@ -415,7 +415,7 @@ The "Database connection options" are set automatically by the `stack-data-uploa
 
 #### `"augmentData"`
 
-This boolean flag controls whether footprint and height would be added to the existing data. It is assumed to be `true` if omitted.
+This boolean flag controls whether footprint and height will be calculated and added to the existing data, if not already present. It is assumed to be `true` if omitted.
 
 #### `"discoverThematicSurface"`
 
