@@ -29,6 +29,7 @@ public class GeometryHandler {
     private static final String EPSG_4326 = "EPSG:4326";
     private static final Integer METER_EPSG = 3395;
     private static final String METER_EPSG_STRING = "EPSG:" + METER_EPSG;
+    private static final Double FLOOR_HEIGHT = 3.2;
 
     public static Geometry toGeometry(String geometryString) {
         return WKTReader.extract(geometryString).getGeometry();
@@ -141,7 +142,7 @@ public class GeometryHandler {
 
         Unit unit = crsFactory.getCRS(crs).getCoordinateSystem().getUnit(0);
 
-        if (unit.getName().equals(Unit.METER)) {
+        if (unit.getName().contains(Unit.METER.getName())) {
             return true;
         }
         else {
@@ -149,7 +150,7 @@ public class GeometryHandler {
         }
     }
 
-    public static List<Geometry> extractFootprint(JSONArray surfaceArray, String crs) {
+    public static List<Geometry> extractFootprint(JSONArray surfaceArray, String crs, Double height) {
         double distance = 0.00001;
         double increment = 0.00001;
         double limit = 0.0005;
@@ -209,7 +210,16 @@ public class GeometryHandler {
             // deflate geometries back
             for (int i = 0; i < geoCol.getNumGeometries(); i++) {
                 Geometry geometry = geoCol.getGeometryN(i);
-                geometries.add(bufferPolygon(geometry, crs, -1 * distance));
+
+                // calculate number of floors
+                int floor = (int) Math.round(height / FLOOR_HEIGHT);
+                // calculate gross floor area for the geometry, since CEA treates each geometry object as a building
+                double gfa = floor * geometry.getArea();
+
+                // CEA cannot work with geometry whose gross floor area is smaller than or equal to 100 m2
+                if (gfa > 100) {
+                    geometries.add(bufferPolygon(geometry, crs, -1 * distance));
+                }
             }
 
             // insert holes back
