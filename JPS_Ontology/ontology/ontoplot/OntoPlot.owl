@@ -182,7 +182,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasBuildableSpace">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has buildable space</rdfs:label>
@@ -194,7 +194,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasDepth">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AverageDepth"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has depth</rdfs:label>
@@ -219,8 +219,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasNeighbour">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has neighbour </rdfs:label>
     </owl:ObjectProperty>
@@ -255,7 +255,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasSiteArea">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has site area</rdfs:label>
@@ -291,7 +291,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasWidth">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AverageWidth"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has width</rdfs:label>
@@ -339,7 +339,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/atResidentialFringe">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">at residential fringe</rdfs:label>
@@ -363,7 +363,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasRoadType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has road type</rdfs:label>
@@ -375,7 +375,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/isCornerPlot">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is corner plot</rdfs:label>
@@ -578,6 +578,17 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoplot/Plot -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A plot is an area of land that is often delineated with a physical boundary to denote land ownership rights. It is frequently adopted as a basic spatial unit for a cadastre or land registration system. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plot</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoplot/RearSetback -->
 
 
@@ -675,13 +686,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Plot -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
     
 
 

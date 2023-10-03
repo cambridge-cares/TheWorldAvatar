@@ -107,7 +107,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/appliesTo">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">applies to</rdfs:label>
     </owl:ObjectProperty>
@@ -696,6 +696,13 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoplot/Plot -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoplot/RoadBuffer -->
 
 
@@ -728,13 +735,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Plot -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
     
 
 

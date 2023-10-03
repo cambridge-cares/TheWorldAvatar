@@ -18,6 +18,7 @@ RearSetback,Class,Setback,IS-A,,,,Rear Setback applies to plot side that is oppo
 RoadBuffer,Class,Setback,IS-A,,,,Road Buffer refers to setbacks related to adjecent road category instead of plot sides. Plot may have more than one road buffer if it is adjacent to multiple road plots.,https://www.theworldavatar.com/kg/ontoplot/,Road Buffer
 SideSetback,Class,Setback,IS-A,,,,Side Setback apply to the plot's side that is not Front nor Rear.,https://www.theworldavatar.com/kg/ontoplot/,Side Setback
 PartyWall,Class,SideSetback,IS-A,,,,PartyWall setback refers to Side setback whose buffer distance is required to be 0m.,https://www.theworldavatar.com/kg/ontoplot/,Party Wall
+Plot,Class,,,,,,A plot is an area of land that is often delineated with a physical boundary to denote land ownership rights. It is frequently adopted as a basic spatial unit for a cadastre or land registration system. ,https://www.theworldavatar.com/kg/ontoplot/,Plot
 SiteArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,Site area or plot area.,https://www.theworldavatar.com/kg/ontoplot/,Site Area
 SiteCoverage,Class,,,,,,Site Coverage defines the ratio between Site Area And Buildable Space 1st Storeys footprint area.,https://www.theworldavatar.com/kg/ontoplot/,Site Coverage
 Storey,Class,,,,,,Storey refers to the spaces that within Buildable Space that are at the same height and does not require vertical connections.,https://www.theworldavatar.com/kg/ontoplot/,Storey
@@ -36,17 +37,17 @@ hasAllowedSiteCoverage,Object Property,,,BuildableSpace,SiteCoverage,,,https://w
 hasAllowedStoreyAggregate,Object Property,,,BuildableSpace,StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed storey aggregate
 hasArea,Object Property,,,,,,,https://www.theworldavatar.com/kg/ontoplot/,has area
 hasFootprintArea,Object Property,hasArea,IS-A,Footprint,FootprintArea,,,https://www.theworldavatar.com/kg/ontoplot/,has footprint area
-hasBuildableSpace,Object Property,,,https://www.theworldavatar.com/kg/ontozoning/Plot,BuildableSpace,,,https://www.theworldavatar.com/kg/ontoplot/,has buildable space
-hasDepth,Object Property,,,https://www.theworldavatar.com/kg/ontozoning/Plot,AverageDepth,,,https://www.theworldavatar.com/kg/ontoplot/,has depth
-hasNeighbour ,Object Property,,,https://www.theworldavatar.com/kg/ontozoning/Plot,https://www.theworldavatar.com/kg/ontozoning/Plot,,,https://www.theworldavatar.com/kg/ontoplot/,has neighbour 
+hasBuildableSpace,Object Property,,,Plot,BuildableSpace,,,https://www.theworldavatar.com/kg/ontoplot/,has buildable space
+hasDepth,Object Property,,,Plot,AverageDepth,,,https://www.theworldavatar.com/kg/ontoplot/,has depth
+hasNeighbour ,Object Property,,,Plot,Plot,,,https://www.theworldavatar.com/kg/ontoplot/,has neighbour 
 hasRequiredPartyWall,Object Property,,,BuildableSpace,PartyWall,,,https://www.theworldavatar.com/kg/ontoplot/,has required party wall
 hasRequiredSetback,Object Property,,,BuildableSpace,Setback,,,https://www.theworldavatar.com/kg/ontoplot/,has required setback
-hasSiteArea,Object Property,,,https://www.theworldavatar.com/kg/ontozoning/Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,,https://www.theworldavatar.com/kg/ontoplot/,has site area
+hasSiteArea,Object Property,,,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,,https://www.theworldavatar.com/kg/ontoplot/,has site area
 hasSource,Object Property,,,AbsoluteHeight UNION FloorToFloorHeight UNION GrossFloorArea UNION GrossPlotRatio UNION Setback UNION SiteCoverage UNION StoreyAggregate,https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation,,,https://www.theworldavatar.com/kg/ontoplot/,has source
-hasWidth,Object Property,,,https://www.theworldavatar.com/kg/ontozoning/Plot,AverageWidth,,,https://www.theworldavatar.com/kg/ontoplot/,has width
+hasWidth,Object Property,,,Plot,AverageWidth,,,https://www.theworldavatar.com/kg/ontoplot/,has width
 atLevel,Data Property,,,Storey,integer,,,https://www.theworldavatar.com/kg/ontoplot/,at level
 atLevelOfDetail,Data Property,,,BuildableSpace,String,,,https://www.theworldavatar.com/kg/ontoplot/,at level of detail
-atResidentialFringe,Data Property,,,https://www.theworldavatar.com/kg/ontozoning/Plot,boolean,,,https://www.theworldavatar.com/kg/ontoplot/,at residential fringe
+atResidentialFringe,Data Property,,,Plot,boolean,,,https://www.theworldavatar.com/kg/ontoplot/,at residential fringe
 hasNumOfStoreys,Data Property,,,StoreyAggregate,integer,,,https://www.theworldavatar.com/kg/ontoplot/,has number of storeys
-hasRoadType,Data Property,,,https://www.theworldavatar.com/kg/ontozoning/Plot,String,,,https://www.theworldavatar.com/kg/ontoplot/,has road type
-isCornerPlot,Data Property,,,https://www.theworldavatar.com/kg/ontozoning/Plot,boolean,,,https://www.theworldavatar.com/kg/ontoplot/,is corner plot
+hasRoadType,Data Property,,,Plot,String,,,https://www.theworldavatar.com/kg/ontoplot/,has road type
+isCornerPlot,Data Property,,,Plot,boolean,,,https://www.theworldavatar.com/kg/ontoplot/,is corner plot

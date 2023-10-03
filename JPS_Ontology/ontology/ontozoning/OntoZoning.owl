@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontozoning/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28 September 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 October 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoZoning is an ontology developed to represent relationships between zoning types, land uses and programmes (more specific land uses).</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -490,7 +490,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasZone">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoningType"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has zone</rdfs:label>
@@ -506,8 +506,8 @@
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -946,6 +946,13 @@
 
 
     <owl:Class rdf:about="https://www.ontology-of-units-of-measure.org/resource/om-2/squareMetre"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/Plot -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
     
 
 
@@ -9147,17 +9154,6 @@
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plant, Factory, Heavy Goods Storage Or Handling Activities</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Plot -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Plot">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">As defined by URA Masterplan 2019.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plot</rdfs:label>
     </owl:Class>
     
 

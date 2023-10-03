@@ -5,7 +5,7 @@ OntoZoning is an ontology developed to represent relationships between zoning ty
 *Figure 1. Data model for OntoZoning*
 ```mermaid
     erDiagram 
-    "Plot" ||--o{ "ZoningType" : hasZone
+    "ontoplot:Plot" ||--o{ "ZoningType" : hasZone
     "LandUse" ||--o{ "Programme" : allowsProgramme
     "LandUse" ||--o{ "Programme" : mayAllowProgramme
     "LandUse" ||--o{ "UseQuantum" : hasMaxUseQuantum

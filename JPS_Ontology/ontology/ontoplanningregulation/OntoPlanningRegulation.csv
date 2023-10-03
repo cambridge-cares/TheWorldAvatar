@@ -40,7 +40,7 @@ allowsAbsoluteHeight,Object Property,,,URARegulation,https://www.theworldavatar.
 allowsGrossFloorArea,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows Gross Floor Area
 allowsStoreyAggregate,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows storey aggregate
 allowsBuildingEdge,Object Property,allowsStoreyAggregate,IS-A,URARegulation,https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows building edge
-appliesTo,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontozoning/Plot,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,applies to
+appliesTo,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/Plot,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,applies to
 hasAdditionalType,Object Property,,,URARegulation,URARegulation,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,has additional type
 requiresFloorToFloorHeight,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires floor to floor height
 requiresPartyWall,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/PartyWall,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires party wall
