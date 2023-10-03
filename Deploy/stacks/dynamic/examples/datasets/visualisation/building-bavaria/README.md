@@ -10,4 +10,4 @@ They can be visualised by the [TWA Visualisation Framework (TWA-VF) with Cesium]
 
 In addition, a Geoserver layer is published by the stack for visualisation in the [TWA Visualisation Framework (TWA-VF) with Mapbox](../../../../../../../web/twa-vis-framework/example-mapbox-vis).
 
-Example data.json and settings.json are provided in this folder (User will need to register with [MapTiler](https://cloud.maptiler.com/) to get an API key for settings.json; otherwise no terrain elevation in the visualisation, buildings would appear to be floating in Cesium). Please read the README.md of the DTVF for instructions of spinning up the visualisation.
+Example data.json and settings.json are provided in this folder (User will need to register with [MapTiler](https://cloud.maptiler.com/) to get an API key for settings.json; otherwise no terrain elevation in the visualisation, buildings would appear to be floating in Cesium). Please read the README.md of the TWA-VF for instructions of spinning up the visualisation.
