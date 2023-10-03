@@ -15,6 +15,7 @@
             "schema": "public",
             "table": "castles",
             "subdirectory": "aboxes",
+            "sql": "ALTER TABLE castles ADD COLUMN IF NOT EXISTS iri varchar DEFAULT 'irigoeshere'; UPDATE castles SET iri = 'https://theworldavatar.io/sample-data/Castle/' || \"ID\";",
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:4326",
                 "sridOut": "EPSG:4326",
@@ -27,7 +28,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "castles_geo",
-                    "sql": "SELECT wkb_geometry, 'http://FIATESTSTACK-blazegraph:8080/blazegraph/namespace/castles/sparql' as endpoint, \"Castle Name\" as name,  \"IRI\" as iri FROM castles",
+                    "sql": "SELECT wkb_geometry, 'http://FIATESTSTACK-blazegraph:8080/blazegraph/namespace/sample-data/sparql' as endpoint, \"Castle Name\" as name, \"Castle Type\" as type, iri FROM castles",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
@@ -37,5 +38,8 @@
                 }
             }
         }
+    ],
+    "mappings": [
+        "sample-mapping.obda"
     ]
 }

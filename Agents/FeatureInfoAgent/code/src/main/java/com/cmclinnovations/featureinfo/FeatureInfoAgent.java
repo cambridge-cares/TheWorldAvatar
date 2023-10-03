@@ -2,6 +2,7 @@ package com.cmclinnovations.featureinfo;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -10,7 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +22,8 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
  * This agent expects a HTTP request containing a JSON string with the "iri" and for an individual
@@ -84,6 +86,10 @@ public class FeatureInfoAgent extends JPSAgent {
     public QueryManager getQueryManager() {
         if(this.queryManager == null) {
             this.queryManager = new QueryManager(this.configStore);
+
+            RemoteStoreClient kgClient = new RemoteStoreClient();
+            TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(kgClient, Instant.class);
+            this.queryManager.setClients(kgClient, tsClient);
         }
         return this.queryManager;
     }
@@ -173,7 +179,13 @@ public class FeatureInfoAgent extends JPSAgent {
      * @throws IOException
      */
     protected void getRoute(JSONObject requestParams, HttpServletResponse response) throws IOException {
-        LOGGER.info("Detected request to get meta and times eries data.");
+        LOGGER.info("Detected request to get meta and times series data.");
+
+        if(!this.valid) {
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Agent is in invalid state, please check server logs.\"}");
+            return;
+        } 
 
         // Check for a valid request
         if(!this.getQueryManager().checkRequest(requestParams)) {
@@ -221,6 +233,12 @@ public class FeatureInfoAgent extends JPSAgent {
     protected void refreshRoute(JSONObject requestParams, HttpServletResponse response) throws Exception {
         LOGGER.info("Detected request to refresh cached information...");
 
+        if(!this.valid) {
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Agent is in invalid state, please check server logs.\"}");
+            return;
+        } 
+        
         // Force refresh of configuration
         this.configStore.loadDetails();
 

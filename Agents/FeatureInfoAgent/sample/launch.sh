@@ -61,6 +61,16 @@ then
     cp "./feature-info-agent.json" "$MANAGER_CONFIG/services/"
     sed -i "s|VERSION|$VERSION|g" "$MANAGER_CONFIG/services/feature-info-agent.json"
 
+    # Copy the FIA files into the special volume populator folder
+    mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries"
+    rm -rf "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/*"
+    cp -r "./fia/." "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+
+    # Copy the visualisation files into the special volume populator folder
+    mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/"
+    rm -rf "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/*"
+    cp -r "./visualisation/." "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/"
+
     # Run the stack manager to start a new stack
     cd "$ROOT/Deploy/stacks/dynamic/stack-manager"
     echo "Running the stack start up script..."

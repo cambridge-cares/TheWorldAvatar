@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -25,7 +25,6 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.ConfigStoreTest;
 import com.cmclinnovations.featureinfo.config.StackEndpoint;
 import com.cmclinnovations.featureinfo.config.StackEndpointType;
-import com.cmclinnovations.featureinfo.core.ClassHandler;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -122,7 +121,7 @@ public class ClassHandlerTest {
         ClassHandler handler = new ClassHandler(spiedConfig, kgClient);
 
         // Run class determination logic
-        Set<ConfigEntry> matchingEntries = handler.determineClassMatches(
+        List<ConfigEntry> matchingEntries = handler.determineClassMatches(
             "https://test-stack/features/feature-one",
             null
         );

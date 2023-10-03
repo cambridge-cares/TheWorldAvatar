@@ -77,7 +77,8 @@ public final class Utils {
 
 		// If a single Ontop endpoint is present, inject that
 		if(ontops.size() == 1) {
-			updatedQuery = updatedQuery.replaceAll(Pattern.quote("[ONTOP]"), ontops.get(0).url());
+			String ontopURL = "<" + ontops.get(0).url() + ">";
+			updatedQuery = updatedQuery.replaceAll(Pattern.quote("[ONTOP]"), ontopURL);
 		}
 
 		return updatedQuery;

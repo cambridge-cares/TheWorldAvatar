@@ -1,0 +1,37 @@
+[PrefixDeclaration]
+sample: https://theworldavatar.io/sample-data/
+castle: https://theworldavatar.io/ontology/ontocastle/ontocastle.owl#
+time:   https://www.theworldavatar.com/kg/ontotimeseries/OntoTimeSeries.owl#
+uom:    http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#
+geo:    http://www.bigdata.com/rdf/geospatial/literals/v1#
+rdf:    http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
+owl:    http://www.w3.org/2002/07/owl#
+
+[MappingDeclaration] @collection [[
+mappingId       castle
+target          sample:Castle/{id} a castle:{castle_type} ;
+                    castle:hasID {id}^^xsd:string ;
+                    castle:hasName {name}^^xsd:string ;
+                    castle:hasCountry {country}^^xsd:string ;
+                    castle:hasOriginalOwner {owner_original}^^xsd:string ;
+                    castle:hasCurrentOwner {owner_current}^^xsd:string ;
+                    castle:hasConstructionYear {year_constructed}^^xsd:integer ;
+                    castle:hasStructuralCondition {condition}^^xsd:string ;
+                    castle:hasPopulation sample:PopulationMeasurement/{id} ;
+                    castle:hasWorth sample:WorthMeasurement/{id} ;
+                    castle:hadFeudalLord sample:FeudalLordMeasurement/{id} ;
+                    geo:hasDefaultGeometry castle:Geometry/{id} .
+				castle:Geometry/{id} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral .
+source          SELECT
+                    "ID" as id,
+                    "Castle Name" as name,
+                    "Country" as country,
+                    "Original Owner" as owner_original,
+                    "Current Owner" as owner_current,
+                    "Construction Date" as year_constructed,
+                    "Structural Condition" as condition,
+                    "Castle Type" as castle_type,
+                    ST_AsText(wkb_geometry) AS wkt
+                FROM castles
+]]

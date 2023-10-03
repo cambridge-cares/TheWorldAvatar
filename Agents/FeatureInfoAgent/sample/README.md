@@ -8,6 +8,9 @@ To launch the sample stack, follow the below steps:
 
 1. If local changes to the FeatureInfoAgent have been made, build a local copy of its image.
    - This can be done using the `build.sh` script from the `Agents/FeatureInfoAgent` directory.
-2. Run the `launch.sh` script within this directory.
+2. Add your Mapbox API credentials to the `sample/visualisation/webspace` directory.
+   - Username in a file named `mapbox_username`.
+   - API token in file named `mapbox_api_key`. 
+3. Run the `launch.sh` script within this directory.
    - This requires a `PASSWORD` argument to set the password for GeoServer and PostGIS.
-3. The script will pause and wait for user input whilst it spins up containers, hit `ENTER` once this is complete. 
+4. The script will pause and wait for user input whilst it spins up containers, hit `ENTER` once this is complete. 

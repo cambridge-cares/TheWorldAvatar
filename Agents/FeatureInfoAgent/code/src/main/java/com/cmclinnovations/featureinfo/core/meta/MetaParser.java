@@ -40,7 +40,7 @@ public class MetaParser {
      * 
      * @return single metadata object.
      */
-    public static JSONArray formatData(List<JSONArray> rawResults) {
+    public static JSONObject formatData(List<JSONArray> rawResults) {
         // Collate under common property names
         Map<String, List<String>> parsedProperties = new LinkedHashMap<>();
 
@@ -66,20 +66,15 @@ public class MetaParser {
         });
 
         // Combine into single JSON object
-        JSONArray finalResult = new JSONArray();
+        JSONObject finalResult = new JSONObject();
         for(Map.Entry<String, List<String>> entry : parsedProperties.entrySet()) {
 
             if(entry.getValue().size() > 1) {
                 JSONArray array = new JSONArray();
                 entry.getValue().forEach(value -> array.put(value));
-
-                JSONObject object = new JSONObject();
-                object.put(entry.getKey(), array);
-                finalResult.put(object);
+                finalResult.put(entry.getKey(), array);
             } else {
-                JSONObject object = new JSONObject();
-                object.put(entry.getKey(), entry.getValue().get(0));
-                finalResult.put(object);
+                finalResult.put(entry.getKey(), entry.getValue().get(0));
             }
         }
         return finalResult;

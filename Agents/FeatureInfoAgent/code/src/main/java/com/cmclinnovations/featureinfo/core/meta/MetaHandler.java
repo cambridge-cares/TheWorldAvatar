@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.cmclinnovations.featureinfo.Utils;
 import com.cmclinnovations.featureinfo.config.ConfigEntry;
@@ -77,7 +78,7 @@ public class MetaHandler {
      * 
      * @return JSONArray of query result.
      */
-    public JSONArray getData(List<ConfigEntry> classMatches, HttpServletResponse response) {
+    public JSONObject getData(List<ConfigEntry> classMatches, HttpServletResponse response) {
         List<JSONArray> rawResults = new ArrayList<>();
         
         // Iterate through each matching query

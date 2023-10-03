@@ -84,7 +84,7 @@ public class StackInteractor extends ContainerClient {
             RDB_CONFIG.getJdbcDriverURL(),
             RDB_CONFIG.getUsername(),
             RDB_CONFIG.getPassword(),
-            StackEndpointType.ONTOP
+            StackEndpointType.POSTGRES
         ));
 
         LOGGER.info("Have discovered a local Ontop endpoint: {}", RDB_CONFIG.getJdbcDriverURL());

@@ -70,8 +70,10 @@ public class ConfigReader {
                 if(!entries.contains(configEntry)) entries.add(configEntry);
             } catch(JSONException jsonException) {
                 LOGGER.error("Could not parse configuration entry #{}.", i);
+                LOGGER.error(jsonException);
             }
         }
+        LOGGER.debug("Parsed {} configuration entries.", this.entries.size());
     }
 
     /**
@@ -96,16 +98,27 @@ public class ConfigReader {
             String clazz = jsonEntry.getString("class");
 
             // Meta details
-            JSONObject metaEntry = jsonEntry.getJSONObject("meta");
-            String metaFile = metaEntry.optString("queryFile");
+            JSONObject metaEntry = jsonEntry.optJSONObject("meta");
+            String metaFile = null;
+            if(metaEntry != null) {
+                metaFile = metaEntry.optString("queryFile");
+            }
 
             // Time details
-            JSONObject timeEntry = jsonEntry.getJSONObject("time");
-            String timeFile = timeEntry.optString("queryFile");
-            int timeLimit = timeEntry.has("limit") ? timeEntry.getInt("limit") : 0;
-            String timeUnit = timeEntry.optString("unit");
-            String timeReference = timeEntry.optString("reference");
-            String timeDatabase = timeEntry.optString("database");
+            JSONObject timeEntry = jsonEntry.optJSONObject("time");
+            String timeFile = null;
+            int timeLimit = 0;
+            String timeUnit = null;
+            String timeReference = null;
+            String timeDatabase = null;
+
+            if(timeEntry != null) {
+                timeFile = timeEntry.optString("queryFile");
+                timeLimit = timeEntry.optInt("limit");
+                timeUnit = timeEntry.optString("unit");
+                timeReference = timeEntry.optString("reference");
+                timeDatabase = timeEntry.optString("database");
+            }
 
             // Build
             return builder.build(id, clazz, metaFile, timeFile, timeReference, timeLimit, timeUnit, timeDatabase);

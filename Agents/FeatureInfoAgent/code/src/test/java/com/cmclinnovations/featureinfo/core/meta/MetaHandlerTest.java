@@ -1,21 +1,13 @@
 package com.cmclinnovations.featureinfo.core.meta;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,9 +18,6 @@ import org.mockito.Mockito;
 import com.cmclinnovations.featureinfo.TestUtils;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.ConfigStoreTest;
-import com.cmclinnovations.featureinfo.config.StackEndpoint;
-import com.cmclinnovations.featureinfo.config.StackEndpointType;
-import com.cmclinnovations.featureinfo.core.meta.MetaHandler;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -92,22 +81,22 @@ public class MetaHandlerTest {
         metaHandler.setClient(mockClient());
 
         // Attempt to get metadata
-        JSONArray result = metaHandler.getData(
+        JSONObject result = metaHandler.getData(
             configStore.getConfigEntries().subList(0, 1),
             TestUtils.mockResponse()
         );
 
         // Expected response
-        JSONArray expected = new JSONArray(
+        JSONObject expected = new JSONObject(
             """
-            [
-                {"Name":"Art Vandelay"},
-                {"Job(s)":["Architect","Importer-Exporter","Latex Manufacturer"]}
-            ]
+            {
+                "Name": "Art Vandelay",
+                "Job(s)": ["Architect","Importer-Exporter","Latex Manufacturer"]
+            }
             """
         );
 
-        Assertions.assertTrue(expected.similar(result), "Returned JSONArray did not match expected one!");
+        Assertions.assertTrue(expected.similar(result), "Returned JSONObject did not match expected one!");
     }
 
     /**
@@ -134,34 +123,23 @@ public class MetaHandlerTest {
         metaHandler.setClient(mockClient());
 
         // Attempt to get metadata
-        JSONArray result = metaHandler.getData(
+        JSONObject result = metaHandler.getData(
             configStore.getConfigEntries().subList(0, 2),
             TestUtils.mockResponse()
         );
 
         // Expected response
-        JSONArray expected = new JSONArray(
+        JSONObject expected = new JSONObject(
             """
-            [
-                {"Name":
-                    [
-                        "Art Vandelay",
-                        "Cosmo Kramer"
-                    ]
-                },
-                {"Job(s)":
-                    [
-                        "Architect",
-                        "Importer-Exporter",
-                        "Latex Manufacturer"
-                    ]
-                },
-                {"Nickname(s)": "The Assman"}
-            ]
+            {
+                "Name": ["Art Vandelay", "Cosmo Kramer"],
+                "Job(s)": ["Architect", "Importer-Exporter", "Latex Manufacturer"],
+                "Nickname(s)": "The Assman"
+            }
             """
         );
 
-        Assertions.assertTrue(expected.similar(result), "Returned JSONArray did not match expected one!");
+        Assertions.assertTrue(expected.similar(result), "Returned JSONObject did not match expected one!");
     }
 
     /**

@@ -144,7 +144,7 @@ public class MeasurableBuilder {
 
             if(FeatureInfoAgent.CONTEXT != null) {
                 // Running as a servlet
-                try (InputStream inStream =  FeatureInfoAgent.CONTEXT.getResourceAsStream("measurable-query.sparql")) {
+                try (InputStream inStream =  FeatureInfoAgent.CONTEXT.getResourceAsStream("WEB-INF/measurable-query.sparql")) {
                     QUERY_TEMPLATE = FileUtils.readWholeFileAsUTF8(inStream);
                 } catch(Exception exception) {
                     LOGGER.error("Could not read the measurement population query from its file!", exception);

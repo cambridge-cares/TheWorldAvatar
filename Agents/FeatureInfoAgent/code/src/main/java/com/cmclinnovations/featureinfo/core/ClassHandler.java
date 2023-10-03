@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.InternalServerErrorException;
 
@@ -76,7 +77,7 @@ public class ClassHandler {
      * @throws IllegalStateException if class determination returns no matches.
      * @throws InternalServerErrorException if class determination query cannot be executed.
      */
-    public Set<ConfigEntry> determineClassMatches(String iri, String enforcedEndpoint) throws IllegalStateException, InternalServerErrorException {
+    public List<ConfigEntry> determineClassMatches(String iri, String enforcedEndpoint) throws IllegalStateException, InternalServerErrorException {
         // Get the list of class IRIs from the KG
         List<String> classIRIs = null;
         try {
@@ -90,14 +91,14 @@ public class ClassHandler {
         }
 
         // Find matches, in order returned from KG
-        Set<ConfigEntry> matches = new LinkedHashSet<>();
+        List<ConfigEntry> matches = new ArrayList<>();
         classIRIs.forEach(classIRI -> {
             ConfigEntry match = configStore.getConfigWithClass(classIRI);
             if(match != null) matches.add(match);
         });
 
         if(matches.isEmpty()) {
-             throw new IllegalStateException("Class determination query had results but there were no matching IRIs in the configuration, cannot continue!");
+            throw new IllegalStateException("Class determination query had results but there were no matching IRIs in the configuration, cannot continue!");
         }
         return matches;
     }
@@ -150,7 +151,7 @@ public class ClassHandler {
 
             if(FeatureInfoAgent.CONTEXT != null) {
                 // Running as a servlet
-                try (InputStream inStream =  FeatureInfoAgent.CONTEXT.getResourceAsStream("class-query.sparql")) {
+                try (InputStream inStream =  FeatureInfoAgent.CONTEXT.getResourceAsStream("WEB-INF/class-query.sparql")) {
                     this.queryTemplate = FileUtils.readWholeFileAsUTF8(inStream);
                 } catch(Exception exception) {
                     LOGGER.error("Could not read the class determination query from its file!", exception);
@@ -182,6 +183,9 @@ public class ClassHandler {
             
             if(entry.has("class")) {
                 String classIRI = entry.getString("class");
+                classIRI = classIRI.replaceAll(Pattern.quote("<"), "");
+                classIRI = classIRI.replaceAll(Pattern.quote(">"), "");
+
                 if(classIRI.toLowerCase().startsWith("http")) {
                     classIRIs.add(classIRI);
                 }

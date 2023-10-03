@@ -59,8 +59,8 @@ public class NamespaceGetter {
      */
     public NamespaceGetter(String url, String username, String password) {
         this.url = url;
-        this.username = username;
-        this.password = password;
+        this.username = (username == null || username.isEmpty()) ? null : username;
+        this.password = (password == null || password.isEmpty()) ? null : password;
     }
 
     /**
@@ -81,6 +81,9 @@ public class NamespaceGetter {
         if(this.url == null) {
             throw new IllegalArgumentException("Root URL for Blazegraph is required!");
         }
+        LOGGER.info("Blazegraph username: {}", this.username);
+        LOGGER.info("Blazegraph password: {}", this.password);
+
         if(this.username != null && this.password == null) {
             throw new IllegalArgumentException("Must supply Blazegraph password if username is not null!");
         } else if (this.username == null && this.password != null) {

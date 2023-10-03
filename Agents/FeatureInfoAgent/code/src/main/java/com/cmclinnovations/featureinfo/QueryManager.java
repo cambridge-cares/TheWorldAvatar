@@ -129,13 +129,13 @@ public class QueryManager {
         // Determine class matches
         List<ConfigEntry> classMatches = null;
         try {
-            this.determineClasses(iri, response);
+            classMatches = this.determineClasses(iri, response);
         } catch(IOException exception) {
             return null;
         }
 
         // Get meta data
-        JSONArray metadata = getMeta(iri, classMatches, response);
+        JSONObject metadata = getMeta(iri, classMatches, response);
 
         // Get time data
         JSONArray timedata = getTime(iri, classMatches, response);
@@ -163,13 +163,11 @@ public class QueryManager {
      * 
      * @throws IOException if response cannot be written to.
      */
-    private Set<ConfigEntry> determineClasses(String iri, HttpServletResponse response) throws IOException {
+    private List<ConfigEntry> determineClasses(String iri, HttpServletResponse response) throws IOException {
         ClassHandler classHandler = new ClassHandler(this.configStore, this.kgClient);
-        Set<ConfigEntry> classMatches = null;
         
         try {
-            classMatches = classHandler.determineClassMatches(iri, this.enforcedEndpoint);
-
+            return classHandler.determineClassMatches(iri, this.enforcedEndpoint);
         } catch(IllegalStateException exception) {
             response.setStatus(Response.Status.NO_CONTENT.getStatusCode());
             response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
@@ -179,7 +177,7 @@ public class QueryManager {
             response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
         }
 
-        return classMatches;
+        return null;
     }
 
     /**
@@ -192,7 +190,7 @@ public class QueryManager {
      * 
      * @return formatted meta data.
      */
-    private JSONArray getMeta(String iri, List<ConfigEntry> classMatches, HttpServletResponse response) {
+    private JSONObject getMeta(String iri, List<ConfigEntry> classMatches, HttpServletResponse response) {
         MetaHandler metaHandler = new MetaHandler(iri, this.enforcedEndpoint, this.configStore);
         metaHandler.setClient(this.kgClient);
         return metaHandler.getData(classMatches, response);
