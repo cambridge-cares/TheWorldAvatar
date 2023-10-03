@@ -68,6 +68,8 @@ def trigger_optimisation():
         params = validate_input_params(params)
 
         # Queue the optimisation task
+        #NOTE: For debugging please switch (un-)commented in next two lines
+        #trigger_optimisation_task(params)
         task_id = trigger_optimisation_task.apply_async(args=[params])
 
         return jsonify(message=f'District heating optimisation task started with ID: {task_id}'), 200
@@ -80,6 +82,7 @@ def trigger_optimisation():
         return jsonify(message='An error occurred during optimisation. See agent log for details.'), 500
 
 
+#NOTE: For debugging please comment next line
 @celery.task
 def trigger_optimisation_task(params):
     try:

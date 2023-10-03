@@ -88,6 +88,23 @@ The agent accepts POST requests with json bodies and requires the following keys
 
 An example HTTP request is provided in the [example_opt_request] file.
 
+## Debug the agent within the stack
+
+1) Please comment/uncomment the two places in the [flaskapp init] file to avoid asynchronous deployment via Celery (highlighted with a `NOTE`)
+2) Overwrite `Command` in stack-manager config file with (i.e., to keep container alive indefinitely while doing nothing)
+    ```
+    "ContainerSpec": {
+        "Command": [
+            "tail", "-f",  "/dev/null"
+        ],
+        "Env": ...
+    ```
+3) Right click on running agent container -> select "Attach Visual Studio Code"
+4) Install required VSCode extensions inside the container (Python, REST client)
+5) Copy `debug_request.http` into the container
+6) Start local debugging session by running [flaskapp init] in debug mode
+7) Sent debug HTTP request
+
 
 &nbsp;
 # Authors #
@@ -101,6 +118,7 @@ Markus Hofmeister (mh807@cam.ac.uk), July 2023
 [specifying custom containers]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#specifying-custom-containers
 
 <!-- files -->
+[flaskapp init]: ./agent/flaskapp/__init__.py
 [resources]: ./resources/
 [example_opt_request]: ./resources/example_opt_request.http
 [Docker compose file]: ./docker-compose.yml
