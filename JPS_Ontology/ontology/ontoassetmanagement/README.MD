@@ -189,7 +189,7 @@ The ontology can be divided into these respective domains:
         hasCurrentLocation string
     }
 ```
-### 3.8. System
+### 3.8. Technical System
 ```mermaid
     erDiagram
     "ontocape_technical_system:TechnicalSystem" ||--o{ "bot:Element" : isStoredAt
