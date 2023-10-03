@@ -1,7 +1,8 @@
 import json
+import time
 
 import transformers
-from tqdm.auto import tqdm
+from tqdm import tqdm
 
 from core.arguments_schema import DatasetArguments, InferenceArguments, ModelArguments
 from core.translation import (
@@ -54,9 +55,20 @@ def infer():
         data = json.load(f)
 
     preds = []
-    for datum in tqdm(data):
-        pred = trans_model.nl2sparql(datum["question"])
-        preds.append(pred)
+
+    def f():
+        for datum in tqdm(data):
+            t_start = time.time()
+            pred = trans_model.nl2sparql(datum["question"])
+            pred["latency"] = time.time() - t_start
+            preds.append(pred)
+
+    if infer_args.do_profile:
+        import memory_profiler
+        mem_usage = memory_profiler.memory_usage(f)
+    else:
+        mem_usage = None
+        f()
 
     data_out = [
         {
@@ -69,6 +81,10 @@ def infer():
     ]
     with open(infer_args.out_file, "w") as f:
         json.dump(data_out, f, indent=4)
+    
+    if mem_usage is not None:
+        with open(infer_args.out_file.rsplit(".", maxsplit=1)[0] + "_mem.txt", "w") as f:
+            f.writelines("\n".join(str(x) for x in mem_usage))
 
 
 if __name__ == "__main__":
