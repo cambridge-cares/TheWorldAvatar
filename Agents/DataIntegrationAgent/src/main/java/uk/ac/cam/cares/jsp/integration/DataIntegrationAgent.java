@@ -19,15 +19,15 @@ public class DataIntegrationAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(DataIntegrationAgent.class);
     // Agent starts off in valid state, and will be invalid when running into exceptions
     private static boolean VALID = true;
-    private static boolean AGENT_IN_STACK = false;
-    private static final String INVALID_PARAMETER_ERROR_MSG = "Parameters are invalid, please check logs for more details.";
-    private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
-    private static final String KEY_DATABASE = "database";
-    private static final String KEY_SOURCE_DATABASE = "srcDbName";
-    private static final String DATABASE_2D = "2d";
-    private static final String DATABASE_3D = "3d";
-    private static final String TABLE_2D = "table2d";
-    private static final String KEY_VALUES = "values";
+    // private static boolean AGENT_IN_STACK = false;
+    // private static final String INVALID_PARAMETER_ERROR_MSG = "Parameters are invalid, please check logs for more details.";
+    // private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
+    // private static final String KEY_DATABASE = "database";
+    // private static final String KEY_SOURCE_DATABASE = "srcDbName";
+    // private static final String DATABASE_2D = "2d";
+    // private static final String DATABASE_3D = "3d";
+    // private static final String TABLE_2D = "table2d";
+    // private static final String KEY_VALUES = "values";
     @Override
     public synchronized void init() {
         try {
@@ -78,7 +78,8 @@ public class DataIntegrationAgent extends JPSAgent {
     public JSONObject getParameters(String requestParams, String thematicParams) throws SQLException {
         JSONObject jsonMessage = new JSONObject();
         Config c = new Config();
-        String[] config = c.retrieveSQLConfig();
+        // String[] config = c.retrieveSQLConfig();
+        String[] config = c.Config();
         if(requestParams.equals("attribute")){            
             // jsonMessage = sqlRoute(config);
             SpatialLink spatialLink = new SpatialLink();

@@ -22,16 +22,16 @@ public class SqlConnectionPool {
         db2D = new HikariDataSource();
         db2D.setDriverClassName(JDBC_DRIVER);
         db2D.setMaximumPoolSize(MAX_POOL_SIZE);
-        db2D.setJdbcUrl(config[4]);
-        db2D.setUsername(config[1]);
-        db2D.setPassword(config[2]);
+        db2D.setJdbcUrl(config[3]);
+        db2D.setUsername(config[0]);
+        db2D.setPassword(config[1]);
 
         db3D = new HikariDataSource();
         db3D.setDriverClassName(JDBC_DRIVER);
         db3D.setMaximumPoolSize(MAX_POOL_SIZE);
-        db3D.setJdbcUrl(config[3]);
-        db3D.setUsername(config[1]);
-        db3D.setPassword(config[2]);
+        db3D.setJdbcUrl(config[2]);
+        db3D.setUsername(config[0]);
+        db3D.setPassword(config[1]);
 
         configs = config;
     }
