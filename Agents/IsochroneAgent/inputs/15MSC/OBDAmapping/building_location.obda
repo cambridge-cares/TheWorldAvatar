@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+
+[MappingDeclaration] @collection [[
+mappingId	usage
+target		<{building_iri}> a bot:Building ;
+                :hasPropertyUsage <{propertyusage_iri}> ;
+                :hasFootprint {geometry}^^xsd:string.
+            <{propertyusage_iri}> a :{ontobuilt} ;
+                :hasUsageShare {usageshare}^^xsd:float ;
+                :hasUsageLabel {name}^^xsd:string .
+source      SELECT DISTINCT
+                COALESCE(p.name, o.name) AS name,
+                u.building_iri,
+                u.ontobuilt,
+                u.propertyusage_iri,
+                u.usageshare,
+                ST_Transform(sg.geometry, 4326) AS geometry
+            FROM
+                usage.usage AS u 
+            LEFT JOIN
+                osm.points AS p ON u.building_iri = p.building_iri
+            LEFT JOIN
+                osm.polygons AS o ON u.building_iri = o.building_iri
+            LEFT JOIN
+                citydb.cityobject_genericattrib AS cga ON u.building_iri = cga.urival
+            LEFT JOIN 
+                citydb.building AS b ON b.id = cga.cityobject_id -- Fix the syntax here
+            LEFT JOIN
+                citydb.surface_geometry sg ON b.lod0_footprint_id = sg.id
+]]

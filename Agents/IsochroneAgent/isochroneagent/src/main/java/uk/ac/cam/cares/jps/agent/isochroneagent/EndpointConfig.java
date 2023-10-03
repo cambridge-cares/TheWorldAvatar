@@ -7,6 +7,7 @@ import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 public class EndpointConfig {
     private PostGISEndpointConfig postGISEndpointConfig;
+    private String dburl;
     private String dbUser;
     private String dbPassword;
 
@@ -48,6 +49,7 @@ public class EndpointConfig {
     public String getKgurl() {
         return this.kgurl;
     }
+
     public String getOntopurl() {
         return this.ontopurl;
     }

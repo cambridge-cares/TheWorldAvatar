@@ -3,17 +3,21 @@ PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?building_iri ?usage
+SELECT DISTINCT ?building_iri ?type ?geometry
 WHERE {
 	{
-		# Inner query to retrieve relevant usage IRI from Ontop
+		# OntopQuery to retrieve
 		SERVICE <http://pirmasens-ontop:8080/sparql/> {
-        SELECT DISTINCT ?building_iri ?usage
+        SELECT DISTINCT ?building_iri ?type ?geometry
         WHERE {
-        ?building_iri obe:hasPropertyUsage ?usage.
-        #Insert wanted amenities 
-        VALUES ?usageType { obe:Hospital obe:Pharmacy obe:Clinic obe:School obe:Bank obe:PoliceStation obe:EatingEstablishment}
-        ?usage a ?usageType.
+            {
+                VALUES (?type ?label) {
+                    (obe:Hospital "Hospital")
+                }
+                ?building_iri obe:hasPropertyUsage ?usageiri .
+            ?building_iri obe:hasFootprint ?geometry.
+                ?usageiri rdf:type ?type .
+            }
         }
     }
 }}

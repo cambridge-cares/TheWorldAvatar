@@ -7,18 +7,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileReader {
 
-
-
     public static InputStream getStream(String path) throws FileNotFoundException {
         return new FileInputStream(path);
     }
-
 
     /**
      * Read POI SPARQL files
@@ -28,7 +24,7 @@ public class FileReader {
             // Find all available SPARQL files
             Map<String, String> sparqlFiles = files
                     .filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".sql"))
+                    .filter(path -> path.toString().endsWith(".sparql"))
                     .collect(Collectors.toMap(
                             path -> path.getFileName().toString(),
                             path -> {
@@ -38,8 +34,7 @@ public class FileReader {
                                     e.printStackTrace(); // Handle the exception as needed
                                     return null; // Or some default value for failed reads
                                 }
-                            }
-                    ));
+                            }));
 
             // Process each SPARQL file
             sparqlFiles.forEach((fileName, filePath) -> {
@@ -71,8 +66,7 @@ public class FileReader {
                                     e.printStackTrace(); // Handle the exception as needed
                                     return null; // Or some default value for failed reads
                                 }
-                            }
-                    ));
+                            }));
 
             // Process each EdgesTableSQL file
             edgesTableSQLFiles.forEach((fileName, filePath) -> {

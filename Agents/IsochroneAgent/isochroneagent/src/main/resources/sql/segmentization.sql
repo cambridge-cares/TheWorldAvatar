@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS routing_ways_segment;
+
 -- Create a new table with the same structure as the old table
 CREATE TABLE routing_ways_segment AS
 SELECT *
@@ -33,7 +35,7 @@ SELECT
     priority,
     (ST_DumpSegments(ST_Segmentize(the_geom, 0.0005))).geom AS the_geom -- Split the "the_geom" column
 FROM
-    routing_ways
+    routing_ways;
 
 -- Step 1: Create a temporary sequence
 CREATE SEQUENCE temp_sequence;
@@ -47,5 +49,4 @@ SELECT setval('temp_sequence', (SELECT max(gid) FROM routing_ways_segment) + 1);
 
 -- Step 4: Drop the temporary sequence (optional)
 DROP SEQUENCE temp_sequence;
-
 SELECT pgr_createTopology('routing_ways_segment', 0.000001, 'the_geom', 'gid', 'source', 'target', clean := true);
