@@ -9,7 +9,7 @@
      xmlns:ontoassetmanagement="https://www.theworldavatar.com/kg/ontoassetmanagement/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 September 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 October 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoAssetManagement is an ontology that is designed to represent asset and its related information (e.g. purchase documents).</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -49,7 +49,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -69,7 +69,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -284,7 +284,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://purl.org/p2p-o/item#Item"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
@@ -419,7 +419,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -658,7 +658,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -678,7 +678,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -711,7 +711,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://purl.org/p2p-o/item#Item"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
@@ -745,7 +745,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -753,7 +753,7 @@
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -772,7 +772,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://purl.org/p2p-o/item#Item"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
@@ -806,7 +806,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -842,7 +842,7 @@
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -932,7 +932,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -991,7 +991,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -1050,7 +1050,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -1122,7 +1122,7 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                 </owl:unionOf>
             </owl:Class>
@@ -1181,6 +1181,13 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
+    
+
+
     <!-- http://www.w3.org/2006/time#Instant -->
 
 
@@ -1192,13 +1199,6 @@
 
 
     <owl:Class rdf:about="http://www.w3.org/2006/time#Interval"/>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/System -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/System"/>
     
 
 
@@ -1254,7 +1254,7 @@
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://www.w3.org/ns/ssn/System"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                             <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
                         </owl:unionOf>
                     </owl:Class>
