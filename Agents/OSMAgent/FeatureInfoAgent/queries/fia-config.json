@@ -1,0 +1,9 @@
+{
+    "queries": [
+        {
+            "class": "https://w3id.org/bot#Building",
+            "metaFile": "building_usage.sparql",
+            "timeFile": ""
+        }
+    ]
+}

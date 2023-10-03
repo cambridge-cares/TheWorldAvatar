@@ -23,7 +23,7 @@ from darts.models import TFTModel
 from py4jps import agentlogging
 
 import forecastingagent.datamodel as dm
-from forecastingagent.agent.forcasting_config import DOUBLE, TIME_FORMAT, \
+from forecastingagent.agent.forcasting_config import DOUBLE, BOOLEAN, TIME_FORMAT, \
                                                      create_model_dict
 from forecastingagent.fcmodels import load_pretrained_model
 
@@ -391,18 +391,22 @@ def test_create_tft_forecast(
         df.set_index(pd.to_datetime(df['Date']).dt.strftime(TIME_FORMAT), inplace=True)
         df2 = df.loc[ts_times]
         test_data = {
-            heatDemand: df2['Waermeeinspeisung (MW)'].values.astype(float),
-            # air temprature, public holiday (one hot encoded)
-            covariates[0]: df2['Aussentemperatur (degC)'].values.astype(float),
-            covariates[1]: (df2['Holiday'] | df2['Vacation']).values.astype(float)
+            heatDemand: (df2['Waermeeinspeisung (MW)'].values.astype(float), DOUBLE),
+            # air temprature (float)
+            covariates[0]: (df2['Aussentemperatur (degC)'].values.astype(float), DOUBLE),
+            # public holiday (boolean)
+            # NOTE: Creation of py4jps/TimeSeriesClient compliant boolean type 
+            #       not straight forward;hence, this complicated expression
+            covariates[1]: (list(map(bool,(df2['Holiday'] | df2['Vacation']).values.astype(int))), BOOLEAN)
         }
     except:
         # Prio2: Create random test data in case download of actual data fails
         test_data = {
-            heatDemand: cf.generate_bounded_random_walk(5, len(ts_times), 0, 0.5, 0, 20),
-            # air temprature, public holiday (one hot encoded)
-            covariates[0]: cf.generate_bounded_random_walk(10, len(ts_times), 0, 1, -10, 30),
-            covariates[1]: [float(x) for x in np.random.randint(0, 2, len(ts_times))]
+            heatDemand: (cf.generate_bounded_random_walk(5, len(ts_times), 0, 0.5, 0, 20), DOUBLE),
+            # air temprature (float)
+            covariates[0]: (cf.generate_bounded_random_walk(10, len(ts_times), 0, 1, -10, 30), DOUBLE),
+            # public holiday (boolean)
+            covariates[1]: ([bool(x) for x in np.random.randint(0, 2, len(ts_times))], BOOLEAN)
         }
 
     # Get required clients from fixture
@@ -417,8 +421,8 @@ def test_create_tft_forecast(
 
     # Initialise time series in KG and RDB
     for k, v in test_data.items():
-        ts_client.init_timeseries(dataIRI=k, times=ts_times, values=v,
-                                  ts_type=DOUBLE, time_format=TIME_FORMAT)
+        ts_client.init_timeseries(dataIRI=k, times=ts_times, values=v[0],
+                                  ts_type=v[1], time_format=TIME_FORMAT)
     triples += len(test_data) * cf.TS_TRIPLES
     assert sparql_client.getAmountOfTriples() == triples
 
@@ -685,7 +689,7 @@ def test_create_prophet_covariates_forecast(
     print("All check passed.")
 
 
-#pytest.mark.skip(reason="")
+#@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "derivation_input_set1, derivation_input_set2, fcmodelIRI1, fcmodelIRI2, dataIRI, ts_times, covariates, case1, case2",
     [
