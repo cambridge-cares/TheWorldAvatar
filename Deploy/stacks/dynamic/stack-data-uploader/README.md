@@ -376,7 +376,7 @@ The data loader does the following things by default when uploading data:
 1. It uses the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool to read in data from CityGML and CityJSON files and output it to the PostgreSQL database in the stack using the 3DCityDB schema.
 The full list of file formats that `impexp import` supports is given [here][3dcitydb-importer-formats].
 2. Building footprints and heights are added to the uploaded data if they do not exist.
-3. It writes the processed data in PostgreSQL to a compressed CityGML file using the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool.
+3. It writes the processed data that has been uploaded to PostgreSQL out to a compressed CityGML file using the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool.
 4. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries (in Mapbox).
 5. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries (in Cesium).
 
