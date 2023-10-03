@@ -85,6 +85,7 @@ public class TimeSeriesSparqlIntegrationTest {
         List<String> dataIRI3 = Arrays.asList("http://data5", "http://data6");
 
         String dbURL = "jdbc:postgresql:timeseries";
+        String schema = "public";
         String timeUnit = "s";
 
         Class<?> timeClass = Double.class;
@@ -98,7 +99,7 @@ public class TimeSeriesSparqlIntegrationTest {
         timeSeriesKgMetadata.setDurationUnit(chronoUnit);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         // Test number of initialised time series in kb
         Assert.assertEquals(1, sparqlClient.countTS());
         // Test whether all data IRI have the time series attached
@@ -127,7 +128,7 @@ public class TimeSeriesSparqlIntegrationTest {
         timeSeriesKgMetadata2.setDuration(duration);
         timeSeriesKgMetadata2.setDurationUnit(chronoUnit);
 
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertEquals(sparqlClient.getAveragingPeriod(tsIRI1), sparqlClient.getAveragingPeriod(tsIRI2));
 
         // Initialise another time series without time unit
@@ -136,7 +137,7 @@ public class TimeSeriesSparqlIntegrationTest {
         timeSeriesKgMetadata3.setTimeUnit(null);
         timeSeriesKgMetadata3.setTimeSeriesType(Type.CUMULATIVETOTAL);
 
-        sparqlClient.initTS(timeSeriesKgMetadata3, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata3, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertNull(sparqlClient.getTimeUnit(tsIRI3));
 
         // Remove the attachment of one data IRI to a time series

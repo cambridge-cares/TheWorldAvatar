@@ -20,7 +20,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql.CustomDuration;
 
 /**
  * This class provides unit tests for the TimeSeriesSparql class
@@ -53,6 +52,7 @@ public class TimeSeriesSparqlTest {
     private final String tsIRI2 = "http://tsIRI2";
     private final List<String> dataIRI2 = Collections.singletonList("http://data4");
     private final String dbURL = "jdbc:postgresql:timeseries";
+    private final String schema = "public";
     private final String timeUnit = "http://s";
 
     private Class<?> timeClass = Double.class;
@@ -246,7 +246,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setDuration(duration1);
         timeSeriesKgMetadata.setDurationUnit(chronoUnit1);
 
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
 
@@ -311,7 +311,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setDuration(duration1);
         timeSeriesKgMetadata2.setDurationUnit(chronoUnit1);
 
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
         // check both time series is attched to the same averaging period
         Assert.assertEquals(
                 testKnowledgeBase.getIndividual(tsIRI1)
@@ -331,7 +331,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata3.setTimeSeriesType(Type.GENERAL);
 
         Exception exception = Assert.assertThrows(JPSRuntimeException.class,
-                () -> sparqlClient.initTS(timeSeriesKgMetadata3, dbURL, timeClass, rdbClientClass));
+                () -> sparqlClient.initTS(timeSeriesKgMetadata3, dbURL, schema, timeClass, rdbClientClass));
         String errorMessage = exception.getMessage();
         Assert.assertTrue(errorMessage.contains("One or more of the provided data IRI has an existing time series"));
         Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
@@ -344,7 +344,7 @@ public class TimeSeriesSparqlTest {
         // result in an exception
         timeSeriesKgMetadata2.setDuration(Duration.ofDays(-12));
         exception = Assert.assertThrows(JPSRuntimeException.class,
-                () -> sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass));
+                () -> sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass));
         errorMessage = exception.getMessage();
         Assert.assertTrue(errorMessage.contains("Numeric Duration must be a positive value"));
         Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
@@ -354,7 +354,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setDuration(Duration.ofDays(12));
         timeSeriesKgMetadata2.setDurationUnit(ChronoUnit.MICROS);
         exception = Assert.assertThrows(JPSRuntimeException.class,
-                () -> sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass));
+                () -> sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass));
         errorMessage = exception.getMessage();
         Assert.assertTrue(errorMessage.contains("Temporal Unit: Micros of invalid type"));
         Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
@@ -370,7 +370,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setTimeSeriesType(Type.INSTANTANEOUS);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
 
         Assert.assertTrue(sparqlClient.checkTimeSeriesExists(tsIRI1));
         Assert.assertFalse(sparqlClient.checkTimeSeriesExists(tsIRI2));
@@ -386,7 +386,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setTimeSeriesType(Type.INSTANTANEOUS);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
 
         Assert.assertTrue(sparqlClient.checkDataHasTimeSeries("http://data1"));
         Assert.assertFalse(sparqlClient.checkDataHasTimeSeries("http://data5"));
@@ -415,10 +415,10 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setTimeSeriesType(Type.INSTANTANEOUS);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertEquals(1, sparqlClient.countTS());
         // Initialise different time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertEquals(2, sparqlClient.countTS());
     }
 
@@ -432,7 +432,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setTimeSeriesType(Type.INSTANTANEOUS);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertNull(sparqlClient.getTimeSeries(dataIRI2.get(0)));
         for (String iri : dataIRI1) {
             Assert.assertEquals(tsIRI1, sparqlClient.getTimeSeries(iri));
@@ -461,11 +461,11 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setTimeSeriesType(Type.INSTANTANEOUS);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertNull(sparqlClient.getDbUrl(tsIRI2));
         Assert.assertEquals(dbURL, sparqlClient.getDbUrl(tsIRI1));
         // Initialise different time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL + "_2", timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL + "_2", schema, timeClass, rdbClientClass);
         Assert.assertEquals(dbURL, sparqlClient.getDbUrl(tsIRI1));
         Assert.assertEquals(dbURL + "_2", sparqlClient.getDbUrl(tsIRI2));
     }
@@ -485,11 +485,11 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setTimeSeriesType(Type.INSTANTANEOUS);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertNull(sparqlClient.getTimeUnit(tsIRI2));
         Assert.assertEquals(timeUnit, sparqlClient.getTimeUnit(tsIRI1));
         // Initialise different time series in kb without time series
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertEquals(timeUnit, sparqlClient.getTimeUnit(tsIRI1));
         Assert.assertNull(sparqlClient.getTimeUnit(tsIRI2));
     }
@@ -504,7 +504,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setTimeSeriesType(Type.INSTANTANEOUS);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
 
         Assert.assertEquals(0, sparqlClient.getAssociatedData(tsIRI2).size());
         List<String> retrievedDataIRI = sparqlClient.getAssociatedData(tsIRI1);
@@ -530,10 +530,10 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setTimeSeriesType(Type.INSTANTANEOUS);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertEquals(1, sparqlClient.getAllTimeSeries().size());
         // Initialise different time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
         List<String> retrievedTimeSeries = sparqlClient.getAllTimeSeries();
         Assert.assertEquals(2, retrievedTimeSeries.size());
         for (String iri : Arrays.asList(tsIRI1, tsIRI2)) {
@@ -552,7 +552,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setTimeSeriesType(Type.GENERAL);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
 
@@ -611,7 +611,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setDurationUnit(chronoUnit1);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
 
@@ -651,7 +651,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setTimeSeriesType(Type.GENERAL);
 
         // Initialise other time series with only one data IRI in kb
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
         // Remove association to the only attached data IRI, which will remove the whole
         // time series instance
         sparqlClient.removeTimeSeriesAssociation(dataIRI2.get(0));
@@ -673,9 +673,9 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setDurationUnit(chronoUnit1);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         // Initialise other time series with only one data IRI in kb
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
 
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
@@ -707,7 +707,7 @@ public class TimeSeriesSparqlTest {
         }
 
         // Initialise time series 1 back in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         String avgPeriod = sparqlClient.getAveragingPeriod(tsIRI2);
         Assert.assertNotNull(testKnowledgeBase.getIndividual(avgPeriod));
 
@@ -736,8 +736,8 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setDuration(duration1);
         timeSeriesKgMetadata.setDurationUnit(chronoUnit1);
 
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
         avgPeriod = sparqlClient.getAveragingPeriod(tsIRI1);
         Assert.assertNotNull(testKnowledgeBase.getIndividual(avgPeriod));
 
@@ -795,9 +795,9 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setTimeSeriesType(Type.GENERAL);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         // Initialise other time series with only one data IRI in kb
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
 
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
@@ -833,7 +833,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setDuration(Duration.ofDays(366 * 5));
         timeSeriesKgMetadata2.setDurationUnit(ChronoUnit.YEARS);
 
-        sparqlClient.bulkInitTS(Arrays.asList(timeSeriesKgMetadata, timeSeriesKgMetadata2), dbURL, timeClass,
+        sparqlClient.bulkInitTS(Arrays.asList(timeSeriesKgMetadata, timeSeriesKgMetadata2), dbURL, schema, timeClass,
                 rdbClientClass);
 
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
@@ -898,8 +898,8 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setTimeSeriesType(Type.CUMULATIVETOTAL);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
 
         TimeSeriesSparql.CustomDuration customDuration = sparqlClient.getCustomDuration(tsIRI1);
         Assert.assertEquals(customDuration.getValue(), numericDuration1, epsilon);
@@ -922,8 +922,8 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setTimeSeriesType(Type.STEPWISECUMULATIVE);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
 
         String avgPeriodIRI = sparqlClient.getAveragingPeriod(tsIRI1);
         Assert.assertTrue(avgPeriodIRI.contains(TIMESERIES_NAMESPACE + "AveragingPeriod_"));
@@ -935,7 +935,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setDuration(duration1);
         timeSeriesKgMetadata2.setDurationUnit(chronoUnit1);
 
-        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass);
         Assert.assertEquals(sparqlClient.getAveragingPeriod(tsIRI1), sparqlClient.getAveragingPeriod(tsIRI2));
     }
 
@@ -949,7 +949,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setDurationUnit(chronoUnit1);
 
         // Initialise time series in kb
-        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.initTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
 
         Assert.assertEquals(TimeSeriesSparql.AVERAGE_TYPE_STRING, sparqlClient.getTimeSeriesType(tsIRI1));
     }
@@ -969,7 +969,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata.setDurationUnitIri(temporalUnit1);
 
         // Initialise AVERAGE time series in knowledge base
-        sparqlClient.reInitTS(timeSeriesKgMetadata, dbURL, timeClass, rdbClientClass);
+        sparqlClient.reInitTS(timeSeriesKgMetadata, dbURL, schema, timeClass, rdbClientClass);
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
 
@@ -1032,7 +1032,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata2.setTimeSeriesType(TimeSeriesSparql.TIMESERIES);
 
         Exception exception = Assert.assertThrows(JPSRuntimeException.class,
-                () -> sparqlClient.reInitTS(timeSeriesKgMetadata2, dbURL, timeClass, rdbClientClass));
+                () -> sparqlClient.reInitTS(timeSeriesKgMetadata2, dbURL, schema, timeClass, rdbClientClass));
         String errorMessage = exception.getMessage();
         Assert.assertTrue(errorMessage.contains("One or more of the provided data IRI has an existing time series"));
         Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
@@ -1048,7 +1048,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata3.setDurationIri(durIRI);
 
         exception = Assert.assertThrows(JPSRuntimeException.class,
-                () -> sparqlClient.reInitTS(timeSeriesKgMetadata3, dbURL, timeClass, rdbClientClass));
+                () -> sparqlClient.reInitTS(timeSeriesKgMetadata3, dbURL, schema, timeClass, rdbClientClass));
         errorMessage = exception.getMessage();
         Assert.assertTrue(errorMessage.contains("Numeric Duration must be a positive value"));
         Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
@@ -1064,7 +1064,7 @@ public class TimeSeriesSparqlTest {
         timeSeriesKgMetadata4.setDurationUnitIri("invalidUnit");
 
         exception = Assert.assertThrows(JPSRuntimeException.class,
-                () -> sparqlClient.reInitTS(timeSeriesKgMetadata4, dbURL, timeClass, rdbClientClass));
+                () -> sparqlClient.reInitTS(timeSeriesKgMetadata4, dbURL, schema, timeClass, rdbClientClass));
         errorMessage = exception.getMessage();
         Assert.assertTrue(errorMessage.contains("Temporal Unit: invalidUnit of invalid type"));
         Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
