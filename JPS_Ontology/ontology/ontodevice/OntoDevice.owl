@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">23 June 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">22 September 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -34,9 +34,9 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasA">
-        <rdfs:domain rdf:resource="https://w3id.org/MON/person.owl#Person"/>
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a person possessing a device.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a person or organization possessing a device.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has a</rdfs:label>
     </owl:ObjectProperty>
@@ -161,6 +161,32 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasMaxThreshold -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasMaxThreshold">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Threshold"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines a maximum threshold applied to a zone (e.g. temperature of a room).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has max threshold</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasMinThreshold -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasMinThreshold">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Threshold"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines a minimum threshold applied to a zone (e.g. temperature of a room).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has min threshold</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasOperatingRange -->
 
 
@@ -226,6 +252,7 @@
                     <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Setpoint"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Threshold"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -774,10 +801,10 @@
     
 
 
-    <!-- https://w3id.org/MON/person.owl#Person -->
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty -->
 
 
-    <owl:Class rdf:about="https://w3id.org/MON/person.owl#Person"/>
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty"/>
     
 
 
@@ -1342,6 +1369,17 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of a switch.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Switch state</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Threshold -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Threshold">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A magnitude or intensity that must be exceeded for a certain reaction, phenomenon, result, or condition to occur or be manifested. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Threshold</rdfs:label>
     </owl:Class>
     
 

@@ -1,6 +1,6 @@
 # Feature Info Agent
 
-This Feature Info Agent (FIA) acts as a single access point for [DTVF Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) before display within the side panel of the visualisation.
+This Feature Info Agent (FIA) acts as a single access point for [TWA Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) before display within the side panel of the visualisation.
 
 The current version of the FIA is v2.0.1.
 
@@ -25,7 +25,7 @@ The FIA is a relatively simple HTTP agent built using the JPS Base Lib's agent f
       3. Look up corresponding meta query for that class.
          1. If none found, send a NO_CONTENT response.
       4. Run query to get metadata.
-      5. Parse resulting metadata into approved DTVF format.
+      5. Parse resulting metadata into approved TWA-VF format.
       6. Look up corresponding timeseries query for that class.
          1. If none found, log warning but continue.
          2. If found, run query.
@@ -93,7 +93,7 @@ select distinct ?class {
 
 To properly parse the metadata and timeseries queries, the agent requires the results from queries to fulfil a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
 
-- `[IRI]`: The IRI of the **feature** of interest, i.e. the feature selected within the DTVF (the IRI will be injected here into the request)
+- `[IRI]`: The IRI of the **feature** of interest, i.e. the feature selected within the TWA-VF (the IRI will be injected here into the request)
 - `[ONTOP]`: The URL of the Ontop service within the stack will be injected
 
 <ins>Queries for metadata</ins> should not concern themselves with data relating to timeseries (that can be handled within the timeseries query). Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`. **These are case sensitive and any other columns will be ignored**.

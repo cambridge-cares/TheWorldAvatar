@@ -27,9 +27,9 @@ To spin up the stack (with default settings) please follow the instructions belo
 
 1. If you haven't already, test your access to the CMCL Docker registry, simply run 
     ```console
-    docker login docker.cmclinnovations.com
+    docker login ghcr.io
     ```
-    If you are not already logged in then, when prompted, enter the username and password you were given.
+    If you are not already logged in then, when prompted, enter your GitHub username and an access token with scope to read (and write to, if developing) the container repository.
 
 2. Open the Workspace in the `Deploy/stacks/dynamic` directory in VSCode (or go to the `stack-manager` subdirectory within it in a `bash` terminal).
 
@@ -267,6 +267,7 @@ The format of the stack configuration file is as follows:
     }
 }
 ```
+> NOTE: When adding services to the `includes` and `excludes` sections, use the file name (excluding the `.json` file extension) from the stack config files, rather than the name specified in `ServiceSpec`.
 
 ## Example - including a visualisation
 
