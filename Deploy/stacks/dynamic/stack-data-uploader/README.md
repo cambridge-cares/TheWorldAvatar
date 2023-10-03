@@ -282,7 +282,7 @@ Relative file-system paths containing `..` are not supported.
 
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data), [`osmrouting`](#osm-data).
+The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data), [`tboxcsv`](#tbox-csv-data), and [`osmrouting`](#osm-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
