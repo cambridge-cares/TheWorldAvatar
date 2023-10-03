@@ -4,9 +4,9 @@ This agent is able to access a limited amount of the functionality of [the Model
 ## Deployment
 This agent is currently deployed at `https://kg.cmclinnovations.com/mods-agent` however if you require local deployment you can follow the following instructions. 
 
-Login to the CMCL Docker registry using the following command.
+Login to [TWA repo](https://github.com/cambridge-cares/TheWorldAvatar) using the following command using a token with read (and write if developing) access.
 ```bash
-docker login docker.cmclinnovations.com
+docker login ghcr.io/cambridge-cares
 ```
 To deploy the MoDS Simple Agent a `.lic` licence file is required to be placed in the [`secrets`](./secrets/) directory. 
 Running the following command will spin up the MoDS Simple Agent at port `58085`. 
@@ -36,7 +36,7 @@ This field can be replace with the `jobID` of a previous job where `"saveSurroga
 
 ## Development
 Add the following files to the [`credentials`](./credentials/) directory.
-- `cmcl_repo_username.txt` username for logging into container repo `docker.cmclinnovations.com`
-- `cmcl_repo_password.txt` password (or preferably token) for container repo `docker.cmclinnovations.com`
+- `cmcl_repo_username.txt` username for nexus on bradman repo
+- `cmcl_repo_password.txt` password for nexus on bradman repo
 - `wa_repo_username.txt` username for into [TWA repo](https://github.com/cambridge-cares/TheWorldAvatar)
 - `wa_repo_password.txt` password (or preferably token) for [TWA repo](https://github.com/cambridge-cares/TheWorldAvatar)
