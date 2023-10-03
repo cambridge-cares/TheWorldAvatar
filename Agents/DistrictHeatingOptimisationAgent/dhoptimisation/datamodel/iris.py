@@ -18,6 +18,8 @@ TS =            'https://www.theworldavatar.com/kg/ontotimeseries/'
 OHN =           'https://www.theworldavatar.com/kg/ontoheatnetwork/'
 # Knowledge base
 KB =            'https://www.theworldavatar.com/kg/pms_dh/'
+# Derivation markup
+DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
 
 
 ### OHN ###

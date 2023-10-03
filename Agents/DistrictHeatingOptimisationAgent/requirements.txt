@@ -9,6 +9,7 @@ pyderivationagent==1.5.0
 ##########################
 Flask==2.1.0
 CoolProp==6.5.0
+werkzeug==2.3.6
 
 pandas == 1.2.3
 numpy == 1.20.1
