@@ -90,8 +90,7 @@ An example HTTP request is provided in the [example_opt_request] file.
 
 ## Debug the agent within the stack
 
-1) Please comment/uncomment the two places in the [flaskapp init] file to avoid asynchronous deployment via Celery (highlighted with a `NOTE`)
-2) Overwrite `Command` in stack-manager config file with (i.e., to keep container alive indefinitely while doing nothing)
+1) Overwrite `Command` in stack-manager config file with (i.e., to keep container alive indefinitely while doing nothing)
     ```
     "ContainerSpec": {
         "Command": [
@@ -99,11 +98,12 @@ An example HTTP request is provided in the [example_opt_request] file.
         ],
         "Env": ...
     ```
-3) Right click on running agent container -> select "Attach Visual Studio Code"
-4) Install required VSCode extensions inside the container (Python, REST client)
-5) Copy `debug_request.http` into the container
+2) Right click on running agent container -> select "Attach Visual Studio Code"
+3) Install required VSCode extensions inside the container (Python, REST client)
+4) Please comment/uncomment the two places in the [flaskapp init] file to avoid asynchronous deployment via Celery (highlighted with a `NOTE`)
+5) Start redis server and Celery by running `redis-server & celery -A agent.celery worker --loglevel=info` in terminal (to avoid startup issues)
 6) Start local debugging session by running [flaskapp init] in debug mode
-7) Sent debug HTTP request
+7) Sent `resources/debug_request.http` locally from within the agent container
 
 
 &nbsp;
