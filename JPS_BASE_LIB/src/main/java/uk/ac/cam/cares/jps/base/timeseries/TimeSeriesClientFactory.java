@@ -30,15 +30,17 @@ public class TimeSeriesClientFactory {
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         TimeSeriesSparql timeSeriesSparql = new TimeSeriesSparql(storeClient);
 
-        List<String> timeRdbUrl = timeSeriesSparql.getTimeClassRdbClassAndUrl(dataIriList);
-        Class<?> timeClass = Class.forName(timeRdbUrl.get(0));
-        Class<?> rdbClientClass = Class.forName(timeRdbUrl.get(1));
-        String rdbUrl = timeRdbUrl.get(2);
+        List<String> timeRdbUrlSchema = timeSeriesSparql.getTimeClassRdbClassAndUrlAndSchema(dataIriList);
+        Class<?> timeClass = Class.forName(timeRdbUrlSchema.get(0));
+        Class<?> rdbClientClass = Class.forName(timeRdbUrlSchema.get(1));
+        String rdbUrl = timeRdbUrlSchema.get(2);
+        String schema = timeRdbUrlSchema.get(3);
         Constructor<?> constructor = rdbClientClass.getConstructor(Class.class);
 
         TimeSeriesRDBClientInterface<?> rdbClient = (TimeSeriesRDBClientInterface<?>) constructor
                 .newInstance(timeClass);
         rdbClient.setRdbURL(rdbUrl);
+        rdbClient.setSchema(schema);
 
         return new TimeSeriesClient<>(storeClient, rdbClient);
     }

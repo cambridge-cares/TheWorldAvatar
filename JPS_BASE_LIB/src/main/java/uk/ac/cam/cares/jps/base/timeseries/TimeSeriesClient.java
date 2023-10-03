@@ -176,7 +176,8 @@ public class TimeSeriesClient<T> {
         timeSeriesKgMetadata.setDurationUnit(unit);
 
         try {
-            rdfClient.initTS(timeSeriesKgMetadata, rdbURL, rdbClient.getTimeClass(), rdbClient.getClass());
+            rdfClient.initTS(timeSeriesKgMetadata, rdbURL, rdbClient.getSchema(), rdbClient.getTimeClass(),
+                    rdbClient.getClass());
         } catch (Exception eRdfCreate) {
             throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
         }
@@ -298,7 +299,8 @@ public class TimeSeriesClient<T> {
         }
 
         try {
-            rdfClient.bulkInitTS(timeSeriesKgMetadataList, rdbURL, rdbClient.getTimeClass(), rdbClient.getClass());
+            rdfClient.bulkInitTS(timeSeriesKgMetadataList, rdbURL, rdbClient.getSchema(), rdbClient.getTimeClass(),
+                    rdbClient.getClass());
         } catch (Exception eRdfCreate) {
             throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
         }
@@ -521,7 +523,8 @@ public class TimeSeriesClient<T> {
                 }
                 timeSeriesKgMetadata.setDurationIri(durIRI);
 
-                rdfClient.reInitTS(timeSeriesKgMetadata, rdbURL, rdbClient.getTimeClass(), rdbClient.getClass());
+                rdfClient.reInitTS(timeSeriesKgMetadata, rdbURL, rdbClient.getSchema(), rdbClient.getTimeClass(),
+                        rdbClient.getClass());
             } catch (Exception eRdfCreate) {
                 throw new JPSRuntimeException(
                         exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
