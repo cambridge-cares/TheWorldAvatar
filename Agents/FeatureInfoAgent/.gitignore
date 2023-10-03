@@ -2,3 +2,5 @@
 code/target
 code/output
 *.env
+mapbox_api_key
+mapbox_username
