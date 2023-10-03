@@ -1,10 +1,13 @@
 {
     "start": {
-        "center": [11.56,48.13],
+        "center": [
+            11.56,
+            48.13
+        ],
         "zoom": 14,
         "bearing": -0,
-        "pitch":60,
-		"opacity":0.8
+        "pitch": 60,
+        "opacity": 0.8
     },
     "imagery": {
         "Light": "mapbox://styles/mapbox/light-v10?optimize=true",

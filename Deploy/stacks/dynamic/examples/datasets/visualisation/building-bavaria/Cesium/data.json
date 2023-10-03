@@ -1,6 +1,6 @@
 {
 	"name": "Sample Data",
-    "stack": "http://localhost",
+	"stack": "http://localhost",
 	"sources": [
 		{
 			"id": "LOD1",
@@ -16,40 +16,52 @@
 			"id": "LOD2F",
 			"type": "tiles",
 			"uri": "http://localhost:3838/3dtiles/postgres/citydb/lod2-features/tileset.json",
-            "transparency": true,
+			"transparency": true,
 			"backFaceCulling": false
 		}
 	],
 	"layers": [
 		{
-            "id": "LOD1-layer",
-			"name": "LOD1-LOD2 Buildings", 
+			"id": "LOD1-layer",
+			"name": "LOD1-LOD2 Buildings",
 			"visibility": "false",
-            "source": "LOD1"
-        },
+			"source": "LOD1"
+		},
 		{
-            "id": "LOD2B-layer",
-			"name": "LOD2 Buildings", 
+			"id": "LOD2B-layer",
+			"name": "LOD2 Buildings",
 			"visibility": "false",
-            "source": "LOD2B"
-        },
+			"source": "LOD2B"
+		},
 		{
-            "id": "LOD2F-layer",
-			"name": "LOD2 features", 
-            "source": "LOD2F",
+			"id": "LOD2F-layer",
+			"name": "LOD2 features",
+			"source": "LOD2F",
 			"style": {
 				"defines": {
 					"st": "${feature['citygml::surface_type']}"
-				  },
-                "color": {
-                    "conditions": [
-						["${st} === 'BuildingWallSurface'", "color('#ffffff',0.6)"],
-						["${st} === 'BuildingGroundSurface'", "color('#ff0000',1.0)"],
-						["${st} === 'BuildingRoofSurface'", "color('#ffff00',1.0)"],
-                        ["true", "color('#ffffff',0.01)"]
-                    ]
-                }
-            }
-        }
+				},
+				"color": {
+					"conditions": [
+						[
+							"${st} === 'BuildingWallSurface'",
+							"color('#ffffff',0.6)"
+						],
+						[
+							"${st} === 'BuildingGroundSurface'",
+							"color('#ff0000',1.0)"
+						],
+						[
+							"${st} === 'BuildingRoofSurface'",
+							"color('#ffff00',1.0)"
+						],
+						[
+							"true",
+							"color('#ffffff',0.01)"
+						]
+					]
+				}
+			}
+		}
 	]
 }

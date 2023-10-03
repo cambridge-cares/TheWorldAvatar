@@ -29,7 +29,7 @@
                     {
                         "Type": "tmpfs",
                         "Target": "/dev/shm",
-                        "TmpfsOptions":{
+                        "TmpfsOptions": {
                             "SizeBytes": 1073741824
                         }
                     }

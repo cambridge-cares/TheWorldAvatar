@@ -159,19 +159,19 @@ public class CityDBClient extends ContainerClient {
     }
 
     public long[] applyThematicSurfacesFix(String database) {
-        return applySQLFileReturnID(database,"citydb_fudge_thematic_surfaces.sql");
+        return applySQLFileReturnID(database, "citydb_fudge_thematic_surfaces.sql");
     }
 
     public void revertThematicSurfacesFix(String database, long[] fudgedThematicSurfaceIDs) {
-        applySQLFileByID(database,"citydb_remove_fudged_thematic_surfaces.sql",fudgedThematicSurfaceIDs);
+        applySQLFileByID(database, "citydb_remove_fudged_thematic_surfaces.sql", fudgedThematicSurfaceIDs);
     }
 
     public long[] applyThematicSurfacesShift(String database) {
-        return applySQLFileReturnID(database,"citydb_shift_thematic_surfaces.sql");
+        return applySQLFileReturnID(database, "citydb_shift_thematic_surfaces.sql");
     }
 
     public void revertThematicSurfacesShift(String database, long[] shiftedThematicSurfaceIDs) {
-        applySQLFileByID(database,"citydb_remove_shifted_thematic_surfaces.sql",shiftedThematicSurfaceIDs);
+        applySQLFileByID(database, "citydb_remove_shifted_thematic_surfaces.sql", shiftedThematicSurfaceIDs);
     }
 
     public void writeOutToCityGML(String database, String filePath, String lineage) {
@@ -289,7 +289,7 @@ public class CityDBClient extends ContainerClient {
     }
 
     public void addBuildingHeight(String database) {
-        applySQLFile(database,"citydb_add_building_height.sql");
+        applySQLFile(database, "citydb_add_building_height.sql");
     }
 
     public void discoverThematicSurface(String database, double critAreaRatio) {
@@ -301,8 +301,8 @@ public class CityDBClient extends ContainerClient {
             throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
         }
     }
-    
+
     public void addFootprint(String database) {
-        applySQLFile(database,"citydb_add_footprint.sql");
+        applySQLFile(database, "citydb_add_footprint.sql");
     }
 }

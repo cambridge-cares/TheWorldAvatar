@@ -48,7 +48,7 @@ public class CityDB extends GeoServerDataSubset {
     }
 
     protected void setPreviousFile(Path previousFilePath) {
-        previousFile=previousFilePath;
+        previousFile = previousFilePath;
     }
 
     @Override
@@ -95,7 +95,7 @@ public class CityDB extends GeoServerDataSubset {
 
     protected void augmentData(String database) {
         if (discoverThematicSurface) {
-            CityDBClient.getInstance().discoverThematicSurface(database,critAreaRatio);
+            CityDBClient.getInstance().discoverThematicSurface(database, critAreaRatio);
         }
         CityDBClient.getInstance().addBuildingHeight(database);
         CityDBClient.getInstance().addFootprint(database);

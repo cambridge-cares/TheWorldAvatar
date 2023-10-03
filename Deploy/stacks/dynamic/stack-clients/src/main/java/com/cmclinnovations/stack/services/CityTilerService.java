@@ -30,8 +30,8 @@ public final class CityTilerService extends ContainerService {
                 .getResourceAsStream("citytiler/citytiler_config_default.json")) {
 
             dockerClient.sendFilesContent(dockerClient.getContainerId(TYPE),
-            Map.of(CityTilerClient.DEFAULT_COLOUR_CONFIG_FILE, is.readAllBytes()),
-            "/");
+                    Map.of(CityTilerClient.DEFAULT_COLOUR_CONFIG_FILE, is.readAllBytes()),
+                    "/");
 
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in default citytiler colour config file.", ex);

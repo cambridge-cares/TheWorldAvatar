@@ -30,8 +30,21 @@
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
-                            ["has", "building_height"],
-                            ["*", 1.0, ["to-number", ["get", "building_height"]]],
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "*",
+                                1.0,
+                                [
+                                    "to-number",
+                                    [
+                                        "get",
+                                        "building_height"
+                                    ]
+                                ]
+                            ],
                             200
                         ]
                     }

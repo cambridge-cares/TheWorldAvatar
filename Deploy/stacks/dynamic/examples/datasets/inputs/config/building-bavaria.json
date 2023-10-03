@@ -1,6 +1,6 @@
 {
     "database": "postgres",
-	"workspace": "the_world_avatar",
+    "workspace": "the_world_avatar",
     "datasetDirectory": "building-bavaria",
     "dataSubsets": [
         {
@@ -9,8 +9,8 @@
             "importOptions": {
                 "sridIn": "25832"
             },
-			"name": "building-bavaria_gsl",
-			"geoServerSettings": {
+            "name": "building-bavaria_gsl",
+            "geoServerSettings": {
                 "virtualTable": {
                     "name": "mapbox_layer",
                     "sql": "@/inputs/config/mapbox-footprint.sql",

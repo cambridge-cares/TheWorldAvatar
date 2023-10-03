@@ -73,7 +73,7 @@ inputs/
       data.csv          # Only one data subset so no need for a subdirectory
     dataset2/           # Data directory for dataset2
       datasubset1/      # Data directory for data subset1
-        polygon.geojson # Data file 
+        polygon.geojson # Data file
       datasubset2/      # Data directory for data subset2
         table.csv
 ```
@@ -251,8 +251,8 @@ The OBDA file for the cropmap example ([ontop_with_comments.obda](../examples/da
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
 #### `"staticGeoServerData"`
-A description of static data to be loaded into and served by GeoServer. 
-These are served with the base directory `GEOSERVER_URL/www/icons`. 
+A description of static data to be loaded into and served by GeoServer.
+These are served with the base directory `GEOSERVER_URL/www/icons`.
 The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being any regular files or folders) can be found at `GEOSERVER_URL/www/static_data`.
 
 | Key            | Description                                                                                                                                                                                                                   |
@@ -288,7 +288,7 @@ A description of how each is processed and a summary of the available configurat
 ### Vector Data
 
 The `"vector"` data type should be used to load 2D point, line or polygon geospatial data.
-The data loader does two things when uploading vector data: 
+The data loader does two things when uploading vector data:
 1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
 The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
 2. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries.
@@ -372,7 +372,7 @@ These are the most commonly used options, for more see the examples [here][geose
 ### CityDB Data
 
 The `"CityDB"` data type should be used to load CityGML and CityJSON data.
-The data loader does the following things by default when uploading data: 
+The data loader does the following things by default when uploading data:
 1. It uses the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool to read in data from CityGML and CityJSON files and output it to the PostgreSQL database in the stack using the 3DCityDB schema.
 The full list of file formats that `impexp import` supports is given [here][3dcitydb-importer-formats].
 2. Building footprints and heights are added to the uploaded data if they do not exist.
@@ -424,7 +424,7 @@ If this boolean flag is set to `true`, the uploader will attempt to identify unt
 ### X building data
 
 The `"XtoCityDB"` data type should be used to load LoD1 (footprint with height) building data that are not CityGML or CityJSON.
-The data loader does the following when uploading data: 
+The data loader does the following when uploading data:
 1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
 The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
 2. It uses the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool to initialise the 3DCityDB schema in the PostgreSQL database in the stack.
@@ -470,7 +470,7 @@ The second SQL script populates the 3DcityDB schema with preprocessed building d
 ### Raster Data
 
 The `"raster"` data type should be used to load raster/coverage geospatial data.
-The data loader does three things when uploading raster data: 
+The data loader does three things when uploading raster data:
 1. It uses the GDAL [`gdal_translate`][gdal-translate] tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF (COG)][raster-cog] files stored in the stack.
   This is an extension of the GeoTIFF format and both are very efficient to read.
   The full list of file formats that `gdal_translate` supports is given [here][raster-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
@@ -530,7 +530,7 @@ Within that the following nodes can be added.
 ### Tabular Data
 
 The `"tabular"` data type should be used to load non-geospatial data.
-The data loader just does one thing when uploading tabular data: 
+The data loader just does one thing when uploading tabular data:
 1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
 As the data is intended to be non-geospatial, this is most useful for reading in data from [comma separated value (.csv)][vector-csv], and Microsoft Excel's [XLS][vector-xls] and [XLSX][vector-xlsx] formatted files.
 The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
@@ -549,7 +549,7 @@ These are the same as listed in the vector [GDAL Options](#gdal-options) althoug
 
 The `"rdf"` data type should be used to load RDF data (triples or quads) from common file formats.
 The full list of file formats that are supported is given [here][RSC-uploader].
-The data loader does the following when uploading RDF data: 
+The data loader does the following when uploading RDF data:
 1. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to read in RDF triple and quad data to the Blazegraph database in the stack.
 
 There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.

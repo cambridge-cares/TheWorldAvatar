@@ -20,7 +20,7 @@ CREATE TABLE "public"."raw_data" AS (
                     SELECT
                         id,
                         TO_NUMBER(height, '99G999D9S') AS height,
-case
+                        case
                             when rel IS NOT NULL then rel
                             else id
                         end AS parent,
