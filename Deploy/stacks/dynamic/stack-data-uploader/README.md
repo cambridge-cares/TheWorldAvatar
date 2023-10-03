@@ -430,7 +430,7 @@ The full list of file formats that `ogr2ogr` supports is given [here][vector-dri
 2. It uses the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool to initialise the 3DCityDB schema in the PostgreSQL database in the stack.
 3. It uses two SQL scripts to convert the building data uploaded by GDAL and populate the 3DCityDB tables sequentially. The building data will be instantiated as LoD2 buildings with thematic surfaces.
 4. Building footprints and heights are added to the uploaded data.
-5. It writes the processed data in PostgreSQL to a compressed CityGML file using the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool.
+5. It writes the processed data that has been uploaded to PostgreSQL out to a compressed CityGML file using the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool.
 6. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries (in Mapbox).
 7. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries (in Cesium).
 
@@ -463,7 +463,7 @@ The `"raw_surface_XtoCityDB"` table has the following columns:
 3. `"class"`: an integer indicating whether a surface is a roof, wall or ground
 4. `"geom"`: the 3D polygon geometry of each surface
 
-In some cases, the original data require more sophisticated processing. User can supply a custom SQL script with `"preprocessSql"` keyword using [File by Value Name](#value-by-file-name). It have to create the `"raw_building_XtoCityDB"` and `"raw_surface_XtoCityDB"` tables in the public schema from the uploaded original data with the column names stated above. In this case, only `"IDname"` and `"IDval"` will take effect and needed to be specified in `"columnMap`.
+In some cases, the original data require more sophisticated processing. Users can supply a custom SQL script with the `"preprocessSql"` keyword using [File by Value Name](#value-by-file-name). The query must create the `"raw_building_XtoCityDB"` and `"raw_surface_XtoCityDB"` tables in the public schema from the uploaded original data with the column names stated above. In this case, only `"IDname"` and `"IDval"` will take effect and needed to be specified in `"columnMap"`.
 
 The second SQL script populates the 3DcityDB schema with preprocessed building data.
 
