@@ -67,8 +67,10 @@ public class TimeSeriesClientIntegrationTest {
             DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
             .withExposedPorts(9999);
     // Create Docker container with postgres 13.3 image from Docker Hub
+    DockerImageName myImage = DockerImageName.parse("timescale/timescaledb-ha:pg14-latest")
+            .asCompatibleSubstituteFor("postgres");
     @Container
-    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
+    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage);
 
     // Initialise 2 test time series data sets
     @Before
@@ -573,8 +575,8 @@ public class TimeSeriesClientIntegrationTest {
             TimeSeriesSparql rdfClient_spy = spy(rdfClient);
             RDFClient.set(tsClient, rdfClient_spy);
             // Throw error when removal of time series in KG is intended
-            doThrow(new JPSRuntimeException("")).when(rdfClient_spy).initTS(Mockito.any(), Mockito.any(), Mockito.any(),
-                    Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+            doThrow(new JPSRuntimeException("")).when(rdfClient_spy).reInitTS(Mockito.any(), Mockito.any(),
+                    Mockito.any(), Mockito.any());
 
             // Interrupt postgreSQL connection
             postgres.stop();
