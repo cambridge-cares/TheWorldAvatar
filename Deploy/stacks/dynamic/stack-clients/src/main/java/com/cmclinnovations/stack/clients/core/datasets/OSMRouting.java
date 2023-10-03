@@ -29,9 +29,9 @@ public class OSMRouting extends GeoServerDataSubset {
 
     @Override
     public void createLayers(String workspaceName, String database) {
-        createLayer(workspaceName, database, getTablePrefix() + "ways", waysGeoServerSettings);
-        createLayer(workspaceName, database, getTablePrefix() + "ways_vertices_pgr", verticesGeoServerSettings);
-        createLayer(workspaceName, database, getTablePrefix() + "pointsofinterest", poiGeoServerSettings);
+        createLayer(workspaceName, database, prefixTableName("ways"), waysGeoServerSettings);
+        createLayer(workspaceName, database, prefixTableName("ways_vertices_pgr"), verticesGeoServerSettings);
+        createLayer(workspaceName, database, prefixTableName("pointsofinterest"), poiGeoServerSettings);
     }
 
     private void createLayer(String workspaceName, String database, String layerName,
@@ -43,6 +43,10 @@ public class OSMRouting extends GeoServerDataSubset {
 
         GeoServerClient.getInstance()
                 .createPostGISLayer(workspaceName, database, layerName, geoServerVectorSettings);
+    }
+
+    private String prefixTableName(String tableName) {
+        return getTablePrefix() + tableName;
     }
 
     private String getTablePrefix() {
