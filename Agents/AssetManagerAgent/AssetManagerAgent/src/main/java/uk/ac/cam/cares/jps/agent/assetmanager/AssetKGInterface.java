@@ -22,11 +22,14 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import com.bigdata.bop.Var;
 
@@ -696,6 +699,119 @@ public class AssetKGInterface {
 
         storeClientPurchDoc.executeUpdate(query.getQueryString());
     }
+
+    /*
+     * Maintenance Data
+     */
+    public void addMaintenanceData(JSONObject maintenanceData){
+        String ID = maintenanceData.getString("ID");
+        String lastService = maintenanceData.getString("LastService");
+        String nextService = maintenanceData.getString("NextService");
+        String interval = maintenanceData.getString("Interval");
+        String serviceProvider = maintenanceData.getString("ServiceProvider");
+
+        LocalDate lastServiceDate, nextServiceDate;
+
+        String lastServiceIRI = "";
+        String nextServiceIRI = "";
+        String intervalIRI = "";
+        String durationIRI = "";
+        String serviceProviderIRI = "";
+        Iri serviceProviderTypeIRI;
+        String maintenanceScheduleIRI = genIRIString("MaintenanceSchedule", Pref_ASSET);
+        String maintenanceTaskIRI = genIRIString("MaintenanceTask", Pref_ASSET);
+
+        //Validation
+        String deviceIRI = existenceChecker.getIRIStringbyID(ID);
+        if (deviceIRI.isBlank()){
+            throw new JPSRuntimeException(String.format("Device is unregistered for ID:%s", ID));
+        }
+        try {
+            lastServiceDate = LocalDate.parse(lastService);
+            nextServiceDate = LocalDate.parse(nextService);
+            if(nextServiceDate.isBefore(lastServiceDate)){
+                throw new JPSRuntimeException("Next service date is before last service date. We don't allow time travel agencies when servicing assets.");
+            }
+        } catch (DateTimeParseException e) {
+            throw new JPSRuntimeException("Failed to parse service times, ensure the format is correct: dd/mm/yyyy", e);
+        }
+        
+        //preprocessing
+        if(!(lastService.isBlank() || lastService==null)){
+            lastServiceIRI = genIRIString("ServiceTime", Pref_TIME);
+        }
+
+        JSONObject existingServiceIRIs = existenceChecker.getPersonTriples(serviceProvider, false);
+        if (existingServiceIRIs == null) {
+            existingServiceIRIs = existenceChecker.getOrganizationTriples(serviceProvider);
+            if (existingServiceIRIs == null){
+                serviceProviderIRI = genIRIString("ServiceProvider", Pref_ASSET);
+                serviceProviderTypeIRI = IndependentParty;
+            }
+            else{
+                serviceProviderIRI = existingServiceIRIs.getString("OrgIRI");
+                serviceProviderTypeIRI = FormalOrganization;
+            }
+        }
+        else{
+            serviceProviderIRI = existingServiceIRIs.getString("PersonIRI");
+            serviceProviderTypeIRI = Person;
+        }
+
+        // Transport data in months?
+        if(!(interval.isBlank() || interval==null)){
+            intervalIRI = genIRIString("Interval", Pref_TIME);
+            durationIRI = genIRIString("DurationDescription", Pref_TIME);
+            if((nextService.isBlank() || nextService==null) && !(lastService.isBlank() || lastService==null)){
+                nextServiceDate = lastServiceDate.plusMonths(Long.valueOf(interval));
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/yyyy");
+                nextService = dtf.format(nextServiceDate);
+            }
+        }
+
+        if(!(nextService.isBlank() || nextService==null)){
+            nextServiceIRI = genIRIString("ServiceTime", Pref_TIME);
+        }
+        
+        int year = Integer.valueOf(interval)/12;
+        int month = Integer.valueOf(interval)%12;
+
+        //instantiate
+        ModifyQuery query = Queries.MODIFY();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+
+        query.insert(iri(deviceIRI).has(hasMaintenanceSchedule, iri(maintenanceScheduleIRI)));
+        query.insert(iri(maintenanceScheduleIRI).has(hasTask, iri(maintenanceTaskIRI)));
+        query.insert(iri(maintenanceScheduleIRI).isA(MaintenanceSchedule));
+        query.insert(iri(maintenanceTaskIRI).isA(MaintenanceTask));
+        if(!(lastService.isBlank() || lastService==null)) {
+            query.insert(iri(maintenanceTaskIRI).has(performedAt, iri(lastServiceIRI)));
+            query.insert(iri(lastServiceIRI).isA(Instant));
+            query.insert(iri(lastServiceIRI).has(inXSDDateTimeStamp, Rdf.literalOfType(lastService, XSD.DATE)));
+        }
+        if(!(nextService.isBlank() || nextService==null)) {
+            query.insert(iri(maintenanceTaskIRI).has(scheduledFor, iri(nextServiceIRI)));
+            query.insert(iri(nextServiceIRI).isA(Instant));
+            query.insert(iri(nextServiceIRI).has(inXSDDateTimeStamp, Rdf.literalOfType(nextService, XSD.DATE)));
+        }
+
+        query.insert(iri(maintenanceTaskIRI).has(isPerformedBy, iri(serviceProviderIRI)));
+        query.insert(iri(serviceProviderIRI).isA(serviceProviderTypeIRI));
+
+        if(!(interval.isBlank() || interval==null)){
+            query.insert(iri(intervalIRI).has(hasDurationDescription, iri(durationIRI)));
+            query.insert(iri(durationIRI).has(months, Rdf.literalOf(month)).andHas(years, Rdf.literalOf(year)));
+            query.insert(iri(intervalIRI).isA(Interval));
+            query.insert(iri(durationIRI).isA(DurationDescription));
+        }
+        
+        
+        storeClientDevice.executeUpdate(query.getQueryString());
+
+    }
+
     /*
      * =============================================================================================================================================================
      */

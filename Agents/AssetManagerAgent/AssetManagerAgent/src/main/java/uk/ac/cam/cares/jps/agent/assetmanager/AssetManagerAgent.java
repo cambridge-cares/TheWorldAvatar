@@ -29,7 +29,8 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
     "/retrieve", 
     "/retrievebydocs", 
     "/getuidata", 
-    "/instantiate", 
+    "/instantiate",
+    "/addmaintenance",
     "/print", 
     "/printbulk",
     "/addmanualpdf"
@@ -130,6 +131,9 @@ public class AssetManagerAgent extends JPSAgent{
                 String IRI = assetData.getString("IRI");
                 jsonMessage = contactPrintServer(args, IRI);
             }
+            else if(urlPath.contains("addmaintenance")){
+                jsonMessage = addMantainanceData(args, assetData);
+            }
 
             jsonMessage.accumulate("Result", "Command Success");
             requestParams = jsonMessage;
@@ -216,6 +220,21 @@ public class AssetManagerAgent extends JPSAgent{
         return message;
     }
 
+    public JSONObject addMantainanceData (String[] arg, JSONObject assetData){
+        JSONObject message = new JSONObject();
+        if (validateMaintenanceData(assetData)){
+            instanceHandler.addMaintenanceData(assetData);
+        }
+        else{
+            message.accumulate("Result", "Instantiation failed: " + 
+                "Maintenance data is invalid. "+
+                "Input requires minimum of ID (yyyy-mm-dd/id), service provider, and last OR next service date"
+            );
+        }
+
+        return message;
+    }
+
     //validate asset data
     private Boolean validateAssetData (JSONObject data){
         if(!data.has("ID")){
@@ -244,6 +263,19 @@ public class AssetManagerAgent extends JPSAgent{
             return false;
         }
 
+        return true;
+    }
+
+    private Boolean validateMaintenanceData (JSONObject data) {
+        if (!data.has("ID")){
+            return false;
+        }
+        if (!data.has("LastService") || !data.has("NextService")){
+            return false;
+        }
+        if(!data.has("ServiceProvider")){
+            return false;
+        }
         return true;
     }
 

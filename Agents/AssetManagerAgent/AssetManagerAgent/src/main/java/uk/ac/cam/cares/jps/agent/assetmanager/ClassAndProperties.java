@@ -29,7 +29,8 @@ public class ClassAndProperties {
     public static final String P_BOT = "https://w3id.org/bot#";
     public static final String P_P2P_ITEM ="https://purl.org/p2p-o/item#"; 
     public static final String P_P2P_DOCLINE = "https://purl.org/p2p-o/documentline#"; 
-    public static final String P_P2P_INVOICE = "https://purl.org/p2p-o/invoice#"; 
+    public static final String P_P2P_INVOICE = "https://purl.org/p2p-o/invoice#";
+    public static final String P_TIME = "http://www.w3.org/2006/time#";
     
     public static final Prefix Pref_DEV = SparqlBuilder.prefix("ontodevice",iri(ONTODEV));
     public static final Prefix Pref_LAB = SparqlBuilder.prefix("ontolab",iri(ONTOLAB));
@@ -46,7 +47,7 @@ public class ClassAndProperties {
     public static final Prefix Pref_P2P_ITEM = SparqlBuilder.prefix("P2Pitem", iri(P_P2P_ITEM)); 
     public static final Prefix Pref_P2P_DOCLINE = SparqlBuilder.prefix("P2Pdocline", iri(P_P2P_DOCLINE)); 
     public static final Prefix Pref_P2P_INVOICE = SparqlBuilder.prefix("P2Pinvoice", iri(P_P2P_INVOICE)); 
-
+    public static final Prefix Pref_TIME = SparqlBuilder.prefix("time", iri(P_TIME));
 
 
     //properties
@@ -82,6 +83,12 @@ public class ClassAndProperties {
     public static final Iri hasServiceCode = Pref_ASSET.iri("hasServiceCode");
     public static final Iri hasServiceCodeIdentifier = Pref_ASSET.iri("hasServiceCodeIdentifier");
     public static final Iri allocatedTo = Pref_ASSET.iri("allocatedTo");
+    public static final Iri hasMaintenanceSchedule = Pref_ASSET.iri("hasMaintenanceSchedule");
+    public static final Iri hasTask = Pref_ASSET.iri("hasTask");
+    public static final Iri performedAt = Pref_ASSET.iri("performedAt");
+    public static final Iri scheduledFor = Pref_ASSET.iri("scheduledFor");
+    public static final Iri isPerformedBy = Pref_ASSET.iri("isPerformedBy");
+    public static final Iri hasInverval = Pref_ASSET.iri("hasInverval");
 
     public static final Iri hasDataSheet = Pref_DEV.iri("hasDataSheet");
     public static final Iri hasPrice = Pref_DEV.iri("hasPrice");
@@ -111,6 +118,12 @@ public class ClassAndProperties {
     public static final Iri containsElement = Pref_BOT.iri("containsElement");
     public static final Iri containsSystem = Pref_SYS.iri("containsSystem");
 
+    public static final Iri hasDurationDescription = Pref_TIME.iri("hasDurationDescription");
+    public static final Iri years = Pref_TIME.iri("years");
+    public static final Iri months = Pref_TIME.iri("months");
+    public static final Iri inXSDDateTimeStamp= Pref_TIME.iri("inXSDDateTimeStamp");
+
+
     //External classes
     public static final Iri Item = Pref_P2P_ITEM.iri("Item");
     
@@ -126,21 +139,30 @@ public class ClassAndProperties {
     public static final Iri InvoiceLine = Pref_ASSET.iri("InvoiceLine");
     public static final Iri PriceDetails = Pref_ASSET.iri("PriceDetails");
     public static final Iri HomeTotalDiscountedAfterTaxPrice = Pref_ASSET.iri("HomeTotalDiscountedAfterTaxPrice");
+    public static final Iri MaintenanceSchedule = Pref_ASSET.iri("MainetenanceSchedule");
+    public static final Iri MaintenanceTask = Pref_ASSET.iri("MaintenanceTask");
 
     public static final Iri Person = Pref_FIBO_AAP.iri("Person");
     public static final Iri PersonName = Pref_FIBO_AAP.iri("PersonName");
     public static final Iri FormalOrganization = Pref_FIBO_ORG.iri("FormalOrganization");
     public static final Iri OrganizationName = Pref_FIBO_ORG.iri("OrganizationName");
+    public static final Iri IndependentParty = iri("https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty");
 
     public static final Iri AmountOfMoney = Pref_OM.iri("AmountOfMoney");
     public static final Iri Measure = Pref_OM.iri("Measure");
     public static final Iri SingaporeDollar = Pref_OM.iri("SingaporeDollar");
+
+    public static final Iri Instant = Pref_TIME.iri("Instant"); 
+    public static final Iri Interval = Pref_TIME.iri("Interval");
+    public static final Iri DurationDescription = Pref_TIME.iri("DurationDescription");
     
     public static final String BuiltInCabinetString = P_ASSET + "BuiltInCabinet";
     public static final String PedestalCabinetString = P_ASSET + "PedestalCabinet";
     public static final String CabinetString = P_ASSET + "Cabinet";
-    
+
     public static final String SingaporeDollarString = P_OM + "SingaporeDollar";
+
+     
 
     public ClassAndProperties(){
 
