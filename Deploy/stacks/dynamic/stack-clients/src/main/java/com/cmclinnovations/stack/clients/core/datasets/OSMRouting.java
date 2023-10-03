@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import com.cmclinnovations.stack.clients.core.Options;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.cmclinnovations.stack.clients.postgis.PGRoutingClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
@@ -23,7 +23,7 @@ public class OSMRouting extends GeoServerDataSubset {
 
     @Override
     public void loadData(Path dirPath, String database, String baseIRI) {
-        PostGISClient.getInstance().uploadRoutingDataDirectoryToPostGIS(database, dirPath.toString(),
+        PGRoutingClient.getInstance().uploadRoutingDataDirectoryToPostGIS(database, dirPath.toString(),
                 getTablePrefix(), osm2PGRoutingOptions, false);
     }
 
