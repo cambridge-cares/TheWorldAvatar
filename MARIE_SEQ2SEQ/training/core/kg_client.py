@@ -14,7 +14,7 @@ class KgClient:
         sparql.setMethod(POST)
         self.sparql = sparql
 
-    def query(self, query: str):
+    def query(self, query: str, limit: int = -1):
         """Queries the KG and returns the response with the following format
         {
             "head": {
@@ -23,7 +23,7 @@ class KgClient:
             "results": {
                 "bindings": [
                     Dict[
-                        str, 
+                        str,
                         {
                             "datatype": NotRequired[str],
                             "type": str
@@ -37,7 +37,8 @@ class KgClient:
         query = query.strip()
         if not query.startswith("PREFIX"):
             query = QUERY_PREFIXES + query
-            
+        if limit > 0:
+            query += f"LIMIT {limit}"
+
         self.sparql.setQuery(query)
         return self.sparql.queryAndConvert()
-    

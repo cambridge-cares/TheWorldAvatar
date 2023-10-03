@@ -23,64 +23,6 @@ def get_bleu_metrics(refs: List[List[str]], sys: List[str]):
     )
 
 
-def get_translation_metrics(
-    data: List[dict], do_correct_spans: bool, do_correct_relations: bool
-):
-    span_corrector = SpanCorrector()
-    relation_corrector = RelationCorrector()
-
-    def _get_pred(datum: dict):
-        if datum["prediction_postprocessed"] is None:
-            return ""
-        try:
-            if do_correct_spans:
-                if do_correct_relations:
-                    if datum.get("prediction_corrected") is not None:
-                        pred = datum["prediction_corrected"]
-                    else:
-                        query = CompactQueryRep.from_string(
-                            datum["prediction_postprocessed"]
-                        )
-                        query = span_corrector.correct(query, nlq=datum["question"])
-                        query = relation_corrector.correct(query)
-                        pred = query.to_string()
-                else:
-                    if datum.get("prediction_spancorrected") is not None:
-                        pred = datum["prediction_spancorrected"]
-                    else:
-                        query = CompactQueryRep.from_string(
-                            datum["prediction_postprocessed"]
-                        )
-                        query = span_corrector.correct(query, nlq=datum["question"])
-                        pred = query.to_string()
-            elif do_correct_relations:
-                if datum.get("prediction_relationcorrected") is not None:
-                    pred = datum["prediction_relationcorrected"]
-                else:
-                    query = CompactQueryRep.from_string(
-                        datum["prediction_postprocessed"]
-                    )
-                    query = relation_corrector.correct(query)
-                    pred = query.to_string()
-            else:
-                pred = datum["prediction_postprocessed"]
-        except Exception as e:
-            if not isinstance(e, InvalidCompactQueryError):
-                print("An unhandled error is encountered when parsing a compact query.")
-                print(datum)
-                print(e)
-            return ""
-        return normalize_query(pred)
-
-    queries = [normalize_query(remove_prefixes(datum["gt_compact"])) for datum in data]
-    predictions = [_get_pred(datum) for datum in data]
-
-    return dict(
-        bleu=get_bleu_metrics([queries], predictions),
-        accuracy=accuracy_score(queries, predictions),
-    )
-
-
 def convert_kg_results_to_hashable(results: Optional[List[Dict[str, Dict[str, str]]]]):
     if results is None:
         return tuple()
