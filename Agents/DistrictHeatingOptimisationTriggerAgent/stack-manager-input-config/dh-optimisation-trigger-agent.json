@@ -1,9 +1,9 @@
 {
     "ServiceSpec": {
-        "Name": "dhoptimisationtrigger-agent",
+        "Name": "dh-optimisation-trigger-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dhoptimisationtrigger-agent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:1.0.0-SNAPSHOT",
                 "Env": [
                     "NAMESPACE=kb",
                     "FORECASTING_AGENT=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service",
