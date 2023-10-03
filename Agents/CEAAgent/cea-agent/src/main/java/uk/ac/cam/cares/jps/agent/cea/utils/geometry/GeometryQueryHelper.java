@@ -1,7 +1,8 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import org.locationtech.jts.geom.Geometry;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
@@ -12,8 +13,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
-import org.locationtech.jts.geom.Geometry;
-import java.util.ArrayList;
+
 import java.util.List;
 
 
@@ -34,161 +34,46 @@ public class GeometryQueryHelper {
      * Queries for building geometry related information
      * @param uriString city object id
      * @param endpoint SPARQL endpoint
-     * @param type type of building geometry related information to be queried
      * @return building geometry related information
      */
-    public String getBuildingGeometry(String uriString, String endpoint, String type) {
-        String result;
+    public CEAGeometryData getBuildingGeometry(String uriString, String endpoint) {
+        String height = getBuildingHeight(uriString, endpoint);
 
-        switch(type) {
-            case "height":
-                // Set default value of 10m if height can not be obtained from knowledge graph
-                result = getValue(uriString, "HeightMeasuredHeight", endpoint);
-                result = result.length() == 0 ? "10.0" : result;
-                break;
+        CEAGeometryData ceaGeometryData = getLod0Footprint(uriString, endpoint, height);
 
-            case "footprint":
-                // Get footprint from ground thematic surface or find from surface geometries depending on data
-                result = getValue(uriString, "Lod0Footprint", endpoint);
-                result = result.length() == 0 ? getValue(uriString, "FootprintThematicSurface", endpoint) : result;
-                break;
-
-            case "crs":
-                result = getValue(uriString, "CRS", endpoint);
-                break;
-
-            default:
-                result = "";
-                break;
-        }
-
-        return result;
+        return ceaGeometryData;
     }
-
-    /**
-     * Executes query on SPARQL endpoint and retrieves requested value of building
-     * @param uriString city object id
-     * @param value building value requested
-     * @param endpoint SPARQL endpoint
-     * @return geometry as string
-     */
-    public String getValue(String uriString, String value, String endpoint)  {
-
-        String result = "";
-
-        Query q = getQuery(uriString, value);
-
-        RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
-
-        // Execute SPARQL query
-        JSONArray queryResultArray = storeClient.executeQuery(q.toString());
-
-        if(!queryResultArray.isEmpty()){
-            if (value.equals("CRS")) {
-                result = queryResultArray.getJSONObject(0).get(value).toString().split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
-            }
-            else{
-                result = queryResultArray.getJSONObject(0).get(value).toString();
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Calls a SPARQL query for a specific URI for height or geometry.
-     * @param uriString city object id
-     * @param value building value requested
-     * @return returns a query string
-     */
-    private Query getQuery(String uriString, String value) {
-        switch(value) {
-            case "FootprintThematicSurface":
-                return getGeometryQueryThematicSurface(uriString);
-            case "HeightMeasuredHeight":
-                return getHeightQueryMeasuredHeight(uriString);
-            case "CRS":
-                return getCrsQuery(uriString);
-        }
-        return null;
-    }
-
 
     /**
      * Builds a SPARQL query for a specific URI to retrieve the building height for data with ocgml:measuredHeight attribute
      * @param uriString city object id
      * @return returns a query string
      */
-    private Query getHeightQueryMeasuredHeight(String uriString) {
+    public String getBuildingHeight(String uriString, String endpoint) {
         try {
             WhereBuilder wb = new WhereBuilder()
                     .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                    .addWhere("?s", "ocgml:measuredHeight", "?HeightMeasuredHeight")
-                    .addFilter("!isBlank(?HeightMeasuredHeight)");
+                    .addWhere("?s", "ocgml:measuredHeight", "?height")
+                    .addFilter("!isBlank(?height)");
             SelectBuilder sb = new SelectBuilder()
-                    .addVar("?HeightMeasuredHeight")
+                    .addVar("?height")
                     .addWhere(wb);
             sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
-            return sb.build();
+
+            RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
+
+            JSONArray queryResultArray = storeClient.executeQuery(sb.build().toString());
+
+            String height = queryResultArray.getJSONObject(0).getString("height");
+
+            return height;
         } catch (ParseException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve ground surface geometries for building linked to thematic surfaces with ocgml:objectClassId 35
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getGeometryQueryThematicSurface(String uriString) {
-        try {
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                    .addWhere("?surf", "ocgml:cityObjectId", "?s")
-                    .addWhere("?surf", "ocgml:GeometryType", "?geometry")
-                    .addWhere("?surf", "ocgml:objectClassId", "?groundSurfId")
-                    .addFilter("?groundSurfId = 35") //Thematic Surface Ids are 33:roof, 34:wall and 35:ground
-                    .addFilter("!isBlank(?geometry)");
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?geometry")
-                    .addWhere(wb);
-            sb.setVar( Var.alloc( "building" ), NodeFactory.createURI(uriString));
-            return sb.build();
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Builds a SPARQL query for a CRS not in the DatabaseSRS graph using namespace from uri
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getCrsQuery(String uriString) {
-        try {
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
-                .addPrefix("geof", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geof))
-                .addWhere("?building", "ocgml:lod0Footprint", "?Lod0Footprint")
-                .addBind("geof:getSRID(?Lod0Footprint)", "CRS");
-
-        SelectBuilder sb = new SelectBuilder()
-
-                .addVar("CRS")
-                .addWhere(wb);
-
-        sb.setVar( Var.alloc( "building" ), NodeFactory.createURI(uriString));
-        return sb.build();
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<Geometry> getLod0Footprint(String uriString, String endpoint) {
+    public CEAGeometryData getLod0Footprint(String uriString, String endpoint, String height) {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
 
         WhereBuilder wb = new WhereBuilder()
@@ -204,14 +89,14 @@ public class GeometryQueryHelper {
 
         JSONArray queryResultArray = storeClient.executeQuery(query.toString());
 
-        List<Geometry> result = new ArrayList<>();
+        String crs = queryResultArray.getJSONObject(0).getString("Lod0Footprint").split(" ")[0];
 
+        crs = crs.split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
 
-        for (int i = 0; i < queryResultArray.length(); i++) {
-            String wkt = queryResultArray.getJSONObject(i).getString("Lod0Footprint").split("> ")[1];
-            result.add(GeometryHandler.toGeometry(wkt));
-        }
+        crs = crs.split(">")[0];
 
-        return result;
+        List<Geometry> geometry = GeometryHandler.extractFootprint(queryResultArray, crs, Double.parseDouble(height));
+
+        return new CEAGeometryData(geometry, crs, height);
     }
 }
