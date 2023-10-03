@@ -8,13 +8,22 @@ The agent is implemented as Docker container to be deployed to a Docker stack sp
 
 ## Input
 ### Database config file
-There are 6 parameters related to database connection. 
-1. URL to connect to the source postgreSQL database in Stack
-2. Username to connect to source postgreSQL database
-3. Password to connect to source postgreSQL database
-4. 3D database name
-5. 2D database name (For OpenStreetMap data in postgreSQL)
-6. 2D database table (For OpenStreetMap data in postgreSQL)
+There are 3 parameters related to database connection, which should be setted as environment variable in the json file of stack manager.
+1. 3D database name
+2. 2D database name (For OpenStreetMap data in postgreSQL)
+3. 2D database table (For OpenStreetMap data in postgreSQL)
+Example setting:
+```
+"Env": [
+          "STACK_NAME=${STACK_NAME}",
+          "DB_3D=pirmasens",
+          "DB_2D=pirmasens_2d",
+          "DB_2D_TABLE=pirmasens_2d",
+          "JPDA_ADDRESS=0.0.0.0:5005",
+					"JPDA_TRANSPORT=dt_socket",
+					"DEBUG=ON"
+        ]
+```
 
 ### Input parameters
 The agent accepts 2 input parameters in a HTTP request. 
