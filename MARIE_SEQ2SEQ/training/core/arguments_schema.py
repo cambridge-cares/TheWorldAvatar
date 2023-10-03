@@ -66,3 +66,4 @@ class InferenceArguments:
             "help": "Whether to apply copy correction and relation correction."
         }
     )
+    do_profile: bool = field(default=False, metadata={"help": "Whether to monitor memory usage."})

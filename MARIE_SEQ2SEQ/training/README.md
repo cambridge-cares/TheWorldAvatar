@@ -61,16 +61,17 @@ python convert_model.py <path-to-hf-model-directory> <path-to-output-directory> 
 
 ## Inference
 
-Install additional dependencies to run inference on different runtimes:
-
-- OpenNMT: `pip install ctranslate2 pyonmttok`
-- OpenVINO: `pip install optimum==1.12.0 && pip install  --upgrade-strategy eager optimum[openvino,nncf]`
-- ONNX Runtime for CPU: `pip install optimum==1.12.0 && pip install --upgrade-strategy eager install optimum[onnxruntime]`
-- ONNX Runtime for GPU: `pip install optimum==1.12.0 && pip install optimum[onnxruntime-gpu]`
-- TensorRT: 
-  - [CUDA toolkit](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
-  - [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html)
-  - [TensorRT](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html) (installation from tar ball recommended)
+Additional dependencies:
+- To run inference on different runtimes:
+  - OpenNMT: `pip install ctranslate2 pyonmttok`
+  - OpenVINO: `pip install optimum==1.12.0 && pip install  --upgrade-strategy eager optimum[openvino,nncf]`
+  - ONNX Runtime for CPU: `pip install optimum==1.12.0 && pip install --upgrade-strategy eager install optimum[onnxruntime]`
+  - ONNX Runtime for GPU: `pip install optimum==1.12.0 && pip install optimum[onnxruntime-gpu]`
+    - TensorRT: 
+    - [CUDA toolkit](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
+    - [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html)
+    - [TensorRT](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html) (installation from tar ball recommended)
+- To enable memory profiling with the command line argument `--do_profile`, run `pip install memory-profiler==0.61.0`.
 
 See [`inference.sh`](./scripts/inference.sh) for example usage. The script will generate a json file containing  
 
