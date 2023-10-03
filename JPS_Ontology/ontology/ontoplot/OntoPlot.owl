@@ -1,0 +1,698 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontoplot/"
+     xml:base="https://www.theworldavatar.com/kg/ontoplot/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:ontoplot="https://www.theworldavatar.com/kg/ontoplot/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplot/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 October 2023</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlot is an ontology developed to describe the attributes of land plots and their buildable spaces.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/atStorey -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/atStorey">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Storey"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">at storey</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/containsStorey -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/containsStorey">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Storey"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">contains storey</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/forZoningCase -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/forZoningCase">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Programme"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">for zoning case</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedAbsoluteHeight -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedAbsoluteHeight">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AbsoluteHeight"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed absolute height </rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedBuildingEdge -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedBuildingEdge">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed building edge</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedFloorToFloorHeight -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedFloorToFloorHeight">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Storey"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed floor to floor height</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedFootprint -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedFootprint">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Storey"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Footprint"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed footprint</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedGFA -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedGFA">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed gross floor area</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedGPR -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedGPR">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed gross plot ratio</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedSiteCoverage -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedSiteCoverage">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/SiteCoverage"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed site coverage</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedStoreyAggregate -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedStoreyAggregate">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed storey aggregate</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasArea -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasArea">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has area</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasBuildableSpace -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasBuildableSpace">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has buildable space</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasDepth -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasDepth">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AverageDepth"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has depth</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasFootprintArea -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasFootprintArea">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoplot/hasArea"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Footprint"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/FootprintArea"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has footprint area</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasNeighbour -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasNeighbour">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has neighbour </rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasRequiredPartyWall -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasRequiredPartyWall">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/PartyWall"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has required party wall</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasRequiredSetback -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasRequiredSetback">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has required setback</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasSiteArea -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasSiteArea">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has site area</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasSource -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasSource">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/AbsoluteHeight"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/SiteCoverage"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has source</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasWidth -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasWidth">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AverageWidth"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has width</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/atLevel -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/atLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Storey"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">at level</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/atLevelOfDetail -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/atLevelOfDetail">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">at level of detail</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/atResidentialFringe -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/atResidentialFringe">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">at residential fringe</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasNumOfStoreys -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasNumOfStoreys">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has number of storeys</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/hasRoadType -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasRoadType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has road type</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/isCornerPlot -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/isCornerPlot">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is corner plot</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Area -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Depth -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Depth"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Distance -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Width -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/AbsoluteHeight -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/AbsoluteHeight">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Absolute Height defines Buildable Space volume in meters. Absolute Height may be derived from number of storeys linked to Storey Aggregate and each storey&amp;apos;s Floor To Floor Height.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Absolute Height</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/AverageDepth -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/AverageDepth">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Depth"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Average depth represent average plot depth resulting from averaging sample depths along the plot&amp;apos;s front edges</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Average Depth</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/AverageWidth -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/AverageWidth">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Average width represent average plot width resulting from averaging sample widths along the plot&amp;apos;s side edges.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Average Width </rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/BuildableSpace -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Buildable Space is the maximum allowable space on a plot that can built up according to relevant planning regulations. Buildable spaces may be linked to a Zone, LandUse or a particular Programme if there exist specific regulations. For instance, a plot on which flat and condominium developments are allowed, will have two buildable spaces - one for condominium and one for flat as a product of unique planning regulation combinations.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Buildable Space</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/BuildingEdge -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/BuildingEdge">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building Edge is an uninterupted set of storeys starting from the groundfloor that share the same setback and form a uniform volume.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building Edge</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Floor To Floor Height defines the storey height, from current storey floor to the floor of the next storey.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Floor To Floor Height</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/Footprint -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Footprint">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Footprint defines a boundary within which a specific storey exist.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Footprint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/FootprintArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/FootprintArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Allowed Footprint Area linked to a specific storey.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Footprint Area</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/FrontSetback -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/FrontSetback">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Front Setback applies to plot&amp;apos;s side that has the main entrance facing the road.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Front Setback</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Allowed Gross Floor Area is a sum of all allowed Footprint Areas for a specific Buildable Space.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Floor Area</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">As defined in https://www.ura.gov.sg/-/media/Corporate/Planning/Master-Plan/MP19writtenstatement.pdf</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Plot Ratio</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/PartyWall -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/PartyWall">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplot/SideSetback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PartyWall setback refers to Side setback whose buffer distance is required to be 0m.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Party Wall</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/RearSetback -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/RearSetback">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rear Setback applies to plot side that is opposite of plot&amp;apos;s front side.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rear Setback</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/RoadBuffer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/RoadBuffer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Buffer refers to setbacks related to adjecent road category instead of plot sides. Plot may have more than one road buffer if it is adjacent to multiple road plots.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Buffer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/Setback -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Setback">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setback defines distances that any development needs to be setbacked from plot boundary.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setback</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/SideSetback -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/SideSetback">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Side Setback apply to the plot&apos;s side that is not Front nor Rear.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Side Setback</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/SiteArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/SiteArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Site area or plot area.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Site Area</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/SiteCoverage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/SiteCoverage">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Site Coverage defines the ratio between Site Area And Buildable Space 1st Storeys footprint area.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Site Coverage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/Storey -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Storey">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Storey refers to the spaces that within Buildable Space that are at the same height and does not require vertical connections.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Storey</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Storey aggregate defines Buildable Space volume in storeys. Each buildable space will have one storey aggregate, consisting of multiple storeys.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Storey Aggregate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/LandUse -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Plot -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Programme -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Programme"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+

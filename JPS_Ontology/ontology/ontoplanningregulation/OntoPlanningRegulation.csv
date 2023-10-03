@@ -24,8 +24,8 @@ RoadCategory2,Class,RoadCategory,IS-A,,,,,https://www.theworldavatar.com/kg/onto
 RoadCategory3,Class,RoadCategory,IS-A,,,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,Road Category 3
 RoadCategory4,Class,RoadCategory,IS-A,,,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,Road Category 4
 RoadCategory5,Class,RoadCategory,IS-A,,,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,Road Category 5
-allowsGrossPlotRatio,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/GrossPlotRatio,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows Gross Plot Ratio
-allowsSiteCoverage,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/SiteCoverage,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows site coverage
+allowsGrossPlotRatio,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows Gross Plot Ratio
+allowsSiteCoverage,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/SiteCoverage,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows site coverage
 forNeighbourZoneType,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontozoning/ZoningType,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,for neighbour zone type
 forPlotContainedIn,Object Property,,,URARegulation,AreaRegulation,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,for plot contained in
 forProgramme,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontozoning/Programme,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,for programme
@@ -33,19 +33,19 @@ forZoningType,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/
 inUrbanDesignArea,Object Property,,,UrbanDesignGuideline,UrbanDesignArea,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,in urban design area
 isConstrainedBy,Object Property,,,URARegulation,RoadCategory,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,is constrained by
 isPartOf,Object Property,,,PlanningBoundary,PlanningRegion,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,is part of
-requiresDepth,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/AverageDepth,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires depth
-requiresRoadBuffer,Object Property,,,RoadCategory,https://www.theworldavatar.com/kg/ontobuildablespace/RoadBuffer,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires road buffer
-requiresWidth,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/AverageWidth,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires width
-allowsAbsoluteHeight,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/AbsoluteHeight,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows absolute height
-allowsGrossFloorArea,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/GrossFloorArea,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows Gross Floor Area
-allowsStoreyAggregate,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows storey aggregate
-allowsBuildingEdge,Object Property,allowsStoreyAggregate,IS-A,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows building edge
+requiresDepth,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/AverageDepth,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires depth
+requiresRoadBuffer,Object Property,,,RoadCategory,https://www.theworldavatar.com/kg/ontoplot/RoadBuffer,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires road buffer
+requiresWidth,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/AverageWidth,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires width
+allowsAbsoluteHeight,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/AbsoluteHeight,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows absolute height
+allowsGrossFloorArea,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows Gross Floor Area
+allowsStoreyAggregate,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows storey aggregate
+allowsBuildingEdge,Object Property,allowsStoreyAggregate,IS-A,URARegulation,https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows building edge
 appliesTo,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontozoning/Plot,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,applies to
 hasAdditionalType,Object Property,,,URARegulation,URARegulation,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,has additional type
-requiresFloorToFloorHeight,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/FloorToFloorHeight,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires floor to floor height
-requiresPartyWall,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/PartyWall,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires party wall
-requiresSetback,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/Setback,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires setback
-requiresSiteArea,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontobuildablespace/SiteArea,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires site area
+requiresFloorToFloorHeight,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires floor to floor height
+requiresPartyWall,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/PartyWall,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires party wall
+requiresSetback,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/Setback,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires setback
+requiresSiteArea,Object Property,,,URARegulation,https://www.theworldavatar.com/kg/ontoplot/SiteArea,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires site area
 forCornerPlot,Data Property,,,URARegulation,boolean,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,for corner plot
 forFringePlot,Data Property,,,URARegulation,boolean,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,for fringe plot
 hasExternalRef,Data Property,,,URARegulation,String,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,has external ref
