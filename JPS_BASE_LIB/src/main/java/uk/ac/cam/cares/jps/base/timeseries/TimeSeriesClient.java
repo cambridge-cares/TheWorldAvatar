@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql.CustomDuration;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -153,19 +154,6 @@ public class TimeSeriesClient<T> {
         // interacting with triple store and SPARQL query is either executed fully or
         // not at all (no partial execution possible)
         String tsIRI = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Timeseries_" + UUID.randomUUID();
-        Iri timeseriesType = null;
-
-        if (type.equals(Type.AVERAGE)) {
-            timeseriesType = TimeSeriesSparql.AVERAGE_TIMESERIES;
-        } else if (type.equals(Type.STEPWISECUMULATIVE)) {
-            timeseriesType = TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES;
-        } else if (type.equals(Type.CUMULATIVETOTAL)) {
-            timeseriesType = TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES;
-        } else if (type.equals(Type.INSTANTANEOUS)) {
-            timeseriesType = TimeSeriesSparql.INSTANTANEOUS_TIMESERIES;
-        } else if (type.equals(Type.GENERAL)) {
-            timeseriesType = TimeSeriesSparql.TIMESERIES;
-        }
 
         // Obtain RDB URL from connection object, exception thrown when connection is
         // down
@@ -178,9 +166,17 @@ public class TimeSeriesClient<T> {
             LOGGER.warn("Failed to get RDB URL from connection object, setting RDB URL to = \"\"");
             rdbURL = "";
         }
+
+        TimeSeriesKgMetadata timeSeriesKgMetadata = new TimeSeriesKgMetadata(tsIRI);
+        timeSeriesKgMetadata.setTimeSeriesType(type);
+        timeSeriesKgMetadata.setDataIriList(dataIRIs);
+        timeSeriesKgMetadata.setDataClassList(dataClass);
+        timeSeriesKgMetadata.setTimeUnit(timeUnit);
+        timeSeriesKgMetadata.setDuration(duration);
+        timeSeriesKgMetadata.setDurationUnit(unit);
+
         try {
-            rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit, timeseriesType, duration, unit,
-                    rdbClient.getTimeClass(), rdbClient.getClass());
+            rdfClient.initTS(timeSeriesKgMetadata, rdbURL, rdbClient.getTimeClass(), rdbClient.getClass());
         } catch (Exception eRdfCreate) {
             throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
         }
@@ -237,29 +233,39 @@ public class TimeSeriesClient<T> {
      * @param units
      */
     private void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit,
-            Integer srid, Connection conn, List<Type> type, List<Duration> durations, List<ChronoUnit> units) {
-
+            Integer srid, Connection conn, List<Type> type, List<Duration> durations,
+            List<ChronoUnit> units) {
         // create random time series IRI
         List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
-        List<Iri> timeSeriesTypes = new ArrayList<>(dataIRIs.size());
 
-        Iri timeSeriesType = null;
+        List<TimeSeriesKgMetadata> timeSeriesKgMetadataList = new ArrayList<>();
 
         for (int i = 0; i < dataIRIs.size(); i++) {
             String tsIRI = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Timeseries_" + UUID.randomUUID();
-            if (type.get(i).equals(Type.AVERAGE)) {
-                timeSeriesType = TimeSeriesSparql.AVERAGE_TIMESERIES;
-            } else if (type.get(i).equals(Type.STEPWISECUMULATIVE)) {
-                timeSeriesType = TimeSeriesSparql.STEPWISE_CUMULATIVE_TIMESERIES;
-            } else if (type.get(i).equals(Type.CUMULATIVETOTAL)) {
-                timeSeriesType = TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES;
-            } else if (type.get(i).equals(Type.INSTANTANEOUS)) {
-                timeSeriesType = TimeSeriesSparql.INSTANTANEOUS_TIMESERIES;
-            } else if (type.get(i).equals(Type.GENERAL)) {
-                timeSeriesType = TimeSeriesSparql.TIMESERIES;
+            TimeSeriesKgMetadata timeSeriesKgMetadata = new TimeSeriesKgMetadata(tsIRI);
+            timeSeriesKgMetadata.setTimeSeriesType(type.get(i));
+            timeSeriesKgMetadata.setDataIriList(dataIRIs.get(i));
+            timeSeriesKgMetadata.setDataClassList(dataClass.get(i));
+
+            if (durations == null) {
+                timeSeriesKgMetadata.setDuration(null);
+            } else {
+                timeSeriesKgMetadata.setDuration(durations.get(i));
             }
-            tsIRIs.add(i, tsIRI);
-            timeSeriesTypes.add(i, timeSeriesType);
+
+            if (units == null) {
+                timeSeriesKgMetadata.setDurationUnit(null);
+            } else {
+                timeSeriesKgMetadata.setDurationUnit(units.get(i));
+            }
+
+            if (timeUnit == null) {
+                timeSeriesKgMetadata.setTimeUnit(null);
+            } else {
+                timeSeriesKgMetadata.setTimeUnit(timeUnit.get(i));
+            }
+
+            timeSeriesKgMetadataList.add(timeSeriesKgMetadata);
         }
 
         // Step1: Initialise time series in knowledge base
@@ -292,8 +298,7 @@ public class TimeSeriesClient<T> {
         }
 
         try {
-            rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbURL, timeUnit, timeSeriesTypes, durations, units,
-                    rdbClient.getTimeClass(), rdbClient.getClass());
+            rdfClient.bulkInitTS(timeSeriesKgMetadataList, rdbURL, rdbClient.getTimeClass(), rdbClient.getClass());
         } catch (Exception eRdfCreate) {
             throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", eRdfCreate);
         }
@@ -464,16 +469,12 @@ public class TimeSeriesClient<T> {
             throw new JPSRuntimeException(exceptionPrefix + "Invalid TimeSeries Type: " + type);
         }
 
-        String temporalUnit = null;
-        Double numericDuration = null;
+        CustomDuration customDuration = null;
         String durIRI = null;
 
         if (timeSeriesType.equals(TimeSeriesSparql.AVERAGE_TIMESERIES)) {
-            TimeSeriesSparql.CustomDuration customDuration = rdfClient.getCustomDuration(tsIRI);
-            temporalUnit = customDuration.getUnit();
-            numericDuration = customDuration.getValue();
+            customDuration = rdfClient.getCustomDuration(tsIRI);
             durIRI = rdfClient.getAveragingPeriod(tsIRI);
-
         }
 
         // Step1: Delete time series with all associations in knowledge base
@@ -510,8 +511,17 @@ public class TimeSeriesClient<T> {
             // a different exception depending on what the problem was, and how it should be
             // handled
             try {
-                rdfClient.initTS(tsIRI, dataIRIs, rdbURL, timeUnit, timeSeriesType, durIRI, numericDuration,
-                        temporalUnit, rdbClient.getTimeClass(), rdbClient.getClass());
+                TimeSeriesKgMetadata timeSeriesKgMetadata = new TimeSeriesKgMetadata(tsIRI);
+                timeSeriesKgMetadata.setDataIriList(dataIRIs);
+                timeSeriesKgMetadata.setTimeUnit(timeUnit);
+                timeSeriesKgMetadata.setTimeSeriesType(timeSeriesType);
+                if (customDuration != null) {
+                    timeSeriesKgMetadata.setDurationValue(customDuration.getValue());
+                    timeSeriesKgMetadata.setDurationUnitIri(customDuration.getUnit());
+                }
+                timeSeriesKgMetadata.setDurationIri(durIRI);
+
+                rdfClient.reInitTS(timeSeriesKgMetadata, rdbURL, rdbClient.getTimeClass(), rdbClient.getClass());
             } catch (Exception eRdfCreate) {
                 throw new JPSRuntimeException(
                         exceptionPrefix + "Inconsistent state created when deleting time series " + tsIRI +
