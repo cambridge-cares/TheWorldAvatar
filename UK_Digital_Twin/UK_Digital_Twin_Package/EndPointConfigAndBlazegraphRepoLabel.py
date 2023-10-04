@@ -5,14 +5,14 @@
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
-from UK_Digital_Twin_Package.endPoint import ONSEndpoint, UKPowerSystemBaseWorld, UKPopulationData
+from UK_Digital_Twin_Package.endPoint import ONSEndpoint_iri, UKPowerSystemBaseWorld_iri, UKPopulationData_iri
 
 """UK Power System Base World in Blazegraph"""
 UKPowerSystemBaseWorld = {
     'label': 'UKPowerSystemBaseWorld',
-    'endpoint_iri' : UKPowerSystemBaseWorld,
-    'queryendpoint_iri' : UKPowerSystemBaseWorld,
-    'updateendpoint_iri' : UKPowerSystemBaseWorld}
+    'endpoint_iri' : UKPowerSystemBaseWorld_iri,
+    'queryendpoint_iri' : UKPowerSystemBaseWorld_iri,
+    'updateendpoint_iri' : UKPowerSystemBaseWorld_iri}
 
 """ONS in Blazegraph"""
 # ONS = {
@@ -26,15 +26,15 @@ UKPowerSystemBaseWorld = {
 ONS = {
     'label': 'ons',
     'type':'DIGITALOCEAN',
-    'endpoint_iri' : ONSEndpoint,
-    'queryendpoint_iri' : ONSEndpoint,
-    'updateendpoint_iri' : ONSEndpoint}
+    'endpoint_iri' : ONSEndpoint_iri,
+    'queryendpoint_iri' : ONSEndpoint_iri,
+    'updateendpoint_iri' : ONSEndpoint_iri}
 
 """UK population data"""
 UKPopulationData = {
     'label': 'UKPopulationData',
-    'endpoint_iri' : UKPopulationData,
-    'queryendpoint_iri' : UKPopulationData,
-    'updateendpoint_iri' : UKPopulationData}
+    'endpoint_iri' : UKPopulationData_iri,
+    'queryendpoint_iri' : UKPopulationData_iri,
+    'updateendpoint_iri' : UKPopulationData_iri}
 
 

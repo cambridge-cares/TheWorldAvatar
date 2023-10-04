@@ -4830,7 +4830,9 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
         return
 
     """Create the multiple lines diagram reflecting the weather condition impact under the same weight 0.5"""
-    def lineGraph_annualGeneration_WindAndSolar_ESO(self, sattlementPeriodPerDay:int, year:int):  
+    def lineGraph_annualGeneration_WindAndSolar_ESO(self, sattlementPeriodPerDay:int, year:int, 
+                                                    windUpperBound:float, windLowerBound:float, windAverage:float,
+                                                    solarUpperBound:float, solarLowerBound:float, solarAverage:float):  
         ## Download the csv file from ESO: https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix
         year = int(year)
         ## read the data from resource
@@ -4839,9 +4841,9 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
 
         ## Fuel type
         for i_f, fuel in enumerate(generationByType[0]): 
-            if "WIND" in fuel:
+            if "WIND" == fuel:
                 windCOL = i_f
-            elif "SOLAR" in fuel:
+            elif "SOLAR" == fuel:
                 solarCOL = i_f
         ## Find the start and end line
         for i, line in enumerate(generationByType):
@@ -4872,11 +4874,11 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
             for i in range(monthDays):
                 dailyOutput = [0, 0]
                 for j in range(int(sattlementPeriodPerDay)):
-                    dailyOutput[0] += float(generationByType[index_generationByTypeList][windCOL])/int(sattlementPeriodPerDay)/1E3 ## Unit: GW
-                    dailyOutput[1] += float(generationByType[index_generationByTypeList][solarCOL])/int(sattlementPeriodPerDay)/1E3 ## Unit: GW
-                    for i_dop, dop in enumerate(dailyOutput):
-                        dailyOutput[i_dop] = round(dop, 2)
+                    dailyOutput[0] += float(generationByType[index_generationByTypeList][windCOL - 1])/int(sattlementPeriodPerDay)/1E3 ## Unit: GW
+                    dailyOutput[1] += float(generationByType[index_generationByTypeList][solarCOL - 1])/int(sattlementPeriodPerDay)/1E3 ## Unit: GW
                     index_generationByTypeList += 1
+                for i_dop, dop in enumerate(dailyOutput):
+                    dailyOutput[i_dop] = round(dop, 2)          
                 genlist.append(dailyOutput)
 
         ##-- Plot the output by fuel type vs time --##
@@ -4884,6 +4886,7 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
         ax1.set_ylabel("Generation output (GW)", fontsize = labelFontSize)
 
         ## Find the maximum
+        genlist = numpy.array(genlist)
         maximum = 0
         for col in range(2):
             max_ = max(genlist[:, col])
@@ -4901,6 +4904,32 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
 
         ax1.plot(dayList, genlist[:, 0], label = "Wind", color = "#00A5B5", linewidth = 1)
         ax1.plot(dayList, genlist[:, 1], label = "Solar", color = "#F39530", linewidth = 1)
+
+        ## New ticks showing the qtr of the year
+        qtr_2 = monthList[0] + monthList[1] + monthList[2] + 1
+        qtr_3 = monthList[3] + monthList[4] + monthList[5]
+        qtr_4 = monthList[6] + monthList[7] + monthList[8]
+        qtr_xticks = [1, qtr_2, qtr_2 + qtr_3, qtr_2 + qtr_3 + qtr_4, daysNum]  # Define the new tick locations
+        qtr_xticklabels = [f'JAN {str(year)}', f'APR {str(year)}', f'JUL {str(year)}', f'OCT {str(year)}', f'DEC {str(year)}']  # Define the new tick labels
+        ax1.set_xticks(qtr_xticks)
+        ax1.set_xticklabels(qtr_xticklabels)
+
+        ## horizontal line: label the wind and solar average 
+        ax1.axhline(y=float(windUpperBound), color='#1a1a1a', linestyle='dashdot', alpha=1, lw = 1)
+        ax1.axhline(y=float(windLowerBound), color='#1a1a1a', linestyle='dashdot', alpha=1, lw = 1)
+        ax1.axhline(y=float(windAverage), color='#1a1a1a', linestyle='dashdot', alpha=1, lw = 1)
+
+        ax1.axhline(y=float(solarUpperBound), color='#5D6D7E', linestyle='dashdot', alpha=1, lw = 1)
+        ax1.axhline(y=float(solarLowerBound), color='#5D6D7E', linestyle='dashdot', alpha=1, lw = 1)
+        ax1.axhline(y=float(solarAverage), color='#5D6D7E', linestyle='dashdot', alpha=1, lw = 1)
+
+        ax1.text(240, float(windUpperBound) + 0.1, f'Wind max: ' + str(windUpperBound) + ' GW', color='#17202A', fontsize = 9, alpha = 0.9, weight="bold")  
+        ax1.text(240, float(windLowerBound) + 0.1, f'Wind min: ' + str(windLowerBound) + ' GW', color='#17202A', fontsize = 9, alpha = 0.9, weight="bold")  
+        ax1.text(240, float(windAverage) + 0.1, f'Wind average: ' + str(windAverage) + ' GW', color='#17202A', fontsize = 9, alpha = 0.9, weight="bold")  
+        
+        ax1.text(240, float(solarUpperBound) - 0.6, f'Solar max: ' + str(solarUpperBound) + ' GW', color='#6E2C00', fontsize = 9, alpha = 0.9, weight="bold")  
+        ax1.text(240, float(solarLowerBound) + 0.1, f'Solar min: ' + str(solarLowerBound) + ' GW', color='#6E2C00', fontsize = 9, alpha = 0.9, weight="bold")  
+        ax1.text(240, float(solarAverage) + 0.1, f'Solar average: ' + str(solarAverage) + ' GW', color='#6E2C00', fontsize = 9, alpha = 0.9, weight="bold")   
 
         ## set legend
         pos = ax1.get_position() 
@@ -5147,6 +5176,7 @@ if __name__ == '__main__':
         #                                                         config_data["weatherConditionList"], config_data_postp["specifiedConfig_barChart"])
 
         # smr_replacement_for_fossil_fuel.lineGraph_generationByTypePerYear_BMRS(48, 2022)
-        smr_replacement_for_fossil_fuel.lineGraph_annualGeneration_WindAndSolar_ESO(48, 2022)
+
+        smr_replacement_for_fossil_fuel.lineGraph_annualGeneration_WindAndSolar_ESO(48, 2022, 17, 2.89, 8.9, 2.9, 0.25, 1.4)
     print('-----Terminal-----')
 
