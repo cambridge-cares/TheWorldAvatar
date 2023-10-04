@@ -192,11 +192,12 @@ def ParetoFrontCreator(filePath_GAResults, weightList, SMRList, SMRUnitCapacity,
     plt.cla()
     return
 
-if __name__ == '__main__': 
-    filePath_GAResults = "/mnt/d/wx243/FromAW/npy/29bus_LCOE_£60/np_ParetoFrontResult_eachSMRDesign.npy"
+if __name__ == '__main__':
+    ## This is an example of running this code 
+    filePath_GAResults = "/<YOU_PATH>/np_ParetoFrontResult_eachSMRDesign.npy"
     weightList = [0, 0.25, 0.5, 0.75, 0.9, 1] 
     SMRList = [10, 20, 30, 33, 36, 40, 50, 52, 60]
-    figSavePath = "/mnt/d/wx243/FromAW/ParetoFront/"
+    figSavePath = "/<YOU_PATH>/ParetoFront/"
     selectedSMRNumber = [10, 20, 30, 40, 50, 60]
     LineToBeDrew = [10, 20, 30, 40, 50, 60]
     selectedWeight = [0.25, 0.5, 0.75]
