@@ -67,7 +67,11 @@ Each CSV file has exactly the same number of rows. Among the .csv files, only th
 
 - Copy all the files from `Dropbox (Cambridge University)\CoMo shared\wx243\c4e-wx243-TWAPowerSystem\Codes\resources\ONSData\WithinGB` to `\UK_Digital_Twin\resources\ONSData\WithinGB`
 
-Now, simply run `ons_data_uploader.py` from the path of `\UK_Digital_Twin\UK_Power_System_Base_World_Initialiser\UploadONS\` using the following command if you are at the UK_Digital_Twin folder:
+Now, simply run `ons_data_uploader.py` from the path of `\UK_Digital_Twin\UK_Power_System_Base_World_Initialiser\UploadONS\` using the following command, 
+
+   `python ons_data_uploader.py`
+
+if you are at the UK_Digital_Twin folder path, simply run this command instead:
 
    `python UK_Power_System_Base_World_Initialiser/UploadONS/ons_data_uploader.py`
 
