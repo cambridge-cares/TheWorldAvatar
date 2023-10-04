@@ -24,11 +24,13 @@ WORKDIR /app
 
 # Copy in the properties file
 COPY ./config/agent.properties /root/agent.properties
+COPY ./config/ontologyMap.properties /root/ontologyMap.properties
 RUN mkdir /root/folderQR
 RUN mkdir /root/manuals
 
 # Set the required environment variable
 ENV AGENTPROPERTIES "/root/agent.properties"
+ENV ONTOMAPPROPERTIES "/root/ontologyMap.properties"
 ENV FOLDERQR "/root/folderQR/"
 ENV FOLDERMANUAL "/root/manuals/"
 

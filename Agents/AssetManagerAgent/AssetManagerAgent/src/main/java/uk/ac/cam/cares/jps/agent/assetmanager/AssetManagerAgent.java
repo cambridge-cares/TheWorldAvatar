@@ -42,6 +42,7 @@ public class AssetManagerAgent extends JPSAgent{
     //Request params
     String requestURL;
     public final String KEY_AGENTPROPERTIES = "AGENTPROPERTIES";
+    public final String KEY_ONTOMAPPROPERTIES = "ONTOMAPPROPERTIES";
     public final String KEY_FOLDERqr = "FOLDERQR";
     public final String KEY_FOLDERmanual = "FOLDERMANUAL";
 
@@ -72,6 +73,7 @@ public class AssetManagerAgent extends JPSAgent{
         if (validateInput(requestParams, urlPath)) {
             LOGGER.info("Passing request to Asset Manager Agent..");
             String agentProperties = System.getenv(KEY_AGENTPROPERTIES);
+            String ontoMapProperties = System.getenv(KEY_ONTOMAPPROPERTIES);
             String FOLDER_QR = System.getenv(KEY_FOLDERqr);
             String FOLDER_MANUAL = System.getenv(KEY_FOLDERmanual);
             JSONObject assetData = requestParams.getJSONObject("assetData");
@@ -80,6 +82,28 @@ public class AssetManagerAgent extends JPSAgent{
                 readPropFile(agentProperties);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Failed to read agent.properties file: ", e);
+            }
+
+            if(!(assetData.getString("Prefix").isBlank() || assetData.getString("Prefix") == null)){
+                try (InputStream input = new FileInputStream(ontoMapProperties)) {
+                    // Load properties file from specified path
+                    Properties prop = new Properties();
+                    prop.load(input);
+
+                    try {
+                        String AssetClass = assetData.getString("AssetClass");
+                        assetData.put("Prefix", prop.getProperty(AssetClass));
+
+                    }
+                    catch (Exception e) {
+                        throw new IOException ("The asset class keys cannot be retrieved from the properties file: ", e);
+                    }
+                    
+
+                }
+                catch (Exception e) {
+                    throw new JPSRuntimeException("Failed to read properties file: ", e);
+                }
             }
             
 
