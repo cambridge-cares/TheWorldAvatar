@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.assetmanager;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -349,7 +350,38 @@ public class AssetManagerAgent extends JPSAgent{
     public JSONObject getDataForUI (){
         JSONObject message = new JSONObject();
         message.accumulate("result", instanceHandler.getRequiredIriUI());
+        try {
+            message.getJSONObject("result").put("Type", getAssetClass());
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Failed to add asset class type: ", e);
+        }
+        
         return message;
+    }
+
+    private JSONArray getAssetClass() throws IOException{
+        String propFile = System.getenv(KEY_ONTOMAPPROPERTIES);
+        JSONArray result = new JSONArray();
+        try (InputStream input = new FileInputStream(propFile)) {
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+
+            try {
+                // Read the mappings folder from the properties file
+                result = new JSONArray(prop.keys());
+            }
+            catch (Exception e) {
+                throw new IOException ("The endpoint keys cannot be retrieved from the properties file: ", e);
+            }
+            
+
+        }
+        catch (Exception e) {
+            throw new JPSRuntimeException("Failed to read properties file: ", e);
+        }
+
+        return result;
     }
 
     public JSONObject getItemsByDocs (JSONObject docsIRI) {
