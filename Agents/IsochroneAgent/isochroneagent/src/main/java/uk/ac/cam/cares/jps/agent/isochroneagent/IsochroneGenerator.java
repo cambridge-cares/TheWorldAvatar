@@ -69,7 +69,10 @@ public class IsochroneGenerator {
                 "    geom geometry\n" +
                 ");";
 
+        String add_uuid_ossp_Extension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
+
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
+            executeSql(connection, add_uuid_ossp_Extension);
             executeSql(connection, tableGeneration);
             System.out.println("Isochrone_aggregated table created.");
         }
@@ -188,8 +191,26 @@ public class IsochroneGenerator {
                 "WHERE minute !=0\n" +
                 "GROUP BY\n" +
                 "    minute,transportmode, poi_type;\n" +
-                
-                
+
+                "WITH unique_values AS (\n" +
+                "    SELECT\n" +
+                "        poi_type,\n" +
+                "        transportmode,\n" +
+                "        'https://www.theworldavatar.com/kg/Isochrone/' || uuid_generate_v4()::text AS isochrone_iri,\n" +
+                "        'http://www.opengis.net/ont/geosparql#Geometry/' || uuid_generate_v4()::text AS geometry_iri\n" +
+                "    FROM isochrone_aggregated\n" +
+                "    WHERE isochrone_iri IS NULL\n" +
+                "    GROUP BY poi_type, transportmode\n" +
+                ")\n" +
+                "\n" +
+                "UPDATE isochrone_aggregated AS ia\n" +
+                "SET isochrone_iri = uv.isochrone_iri,\n" +
+                "    geometry_iri = uv.geometry_iri\n" +
+                "FROM unique_values uv\n" +
+                "WHERE ia.isochrone_iri IS NULL\n" +
+                "    AND ia.poi_type = uv.poi_type\n" +
+                "    AND ia.transportmode = uv.transportmode;"+
+
                 "DROP TABLE eventspace_etas;\n" +
                 "DROP TABLE eventspace_delaunay;\n" +
                 "DROP TABLE eventspace_isochrones;\n" +
