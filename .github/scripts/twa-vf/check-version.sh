@@ -25,7 +25,7 @@ echo "Does not match version on main, which is: $MAIN_VERSION"
 
 # Check that there's no -SNAPSHOT in the version
 TOKEN="-SNAPSHOT"
-if grep -q "$TOKEN" <<< "$VERSION"; then
+if [[ "$VERSION" == *"$TOKEN"* ]]; then
   echo "Version still contains the -SNAPSHOT qualifier!"
   exit -1
 fi

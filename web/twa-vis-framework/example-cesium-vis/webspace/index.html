@@ -40,9 +40,6 @@
         <!-- Element for depth of field overlay -->
         <div id="tiltShift"></div>
 
-        <!-- Pop up box for hover-over effecrs -->
-        <div id="cesiumMetaBox"></div>
-
         <!-- Element the map controls will be added to (normally on the left) -->
         <div id="controlsContainer">
             <div id="controlContainer">
@@ -167,16 +164,18 @@
             window.manager = manager;
 
             // Read credentials
-            manager.readCredentials().then(() => {
-
+            var credentialPromise = manager.readCredentials();
+            
             // Only start the map after data definitions have been read.
             var dataPromise = manager.loadDefinitions();
-            dataPromise.then(() => start());
+
+            // Start when credentials and definitions have been loaded
+            Promise.all([credentialPromise, dataPromise]).then(() => start());
 
             /**
              * Starts the visualisation setup process.
              */
-             function start() {
+            function start() {
                 // Initialise the map object
                 manager.initialiseMap();
 
@@ -200,15 +199,12 @@
                 // Save general tab state as default
                 manager.getPanelHandler().storeDefault();
 
-                 // Load the data definitions
-                let configURL = "./data.json"
-                manager.loadDefinitionsFromURL(configURL).then(function() {
-
+                // Load registered images and linked files
+                manager.loadImagesAndLinks().then(() => {
                     // Plot the data
-                manager.plotData();
+                    manager.plotData();
                 });
             }
-            });
         </script>
     </body>
 </html>

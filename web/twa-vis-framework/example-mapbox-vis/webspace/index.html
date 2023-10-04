@@ -152,12 +152,13 @@
             window.manager = manager;
 
             // Read credentials
-            manager.readCredentials().then(() => {
+            var credentialPromise = manager.readCredentials();
             
             // Only start the map after data definitions have been read.
             var dataPromise = manager.loadDefinitions();
-            dataPromise.then(() => start());
 
+            // Start when credentials and definitions have been loaded
+            Promise.all([credentialPromise, dataPromise]).then(() => start());
 
             /**
              * Starts the visualisation setup process.
@@ -184,7 +185,7 @@
 
                 // Set the manager's callback to trigger once data definitions are loaded
                 manager.dataLoadCallback = function() {
-                buildLegend();
+                    buildLegend();
                 };
                 // ===== CUSTOMISABLE =====
 
@@ -196,19 +197,11 @@
 
                     // Load registered images and linked files
                     manager.loadImagesAndLinks().then(() => {
-
-                        // Load the data definitions
-                        let configURL = "./data.json"
-                        manager.loadDefinitionsFromURL(configURL).then(function() {
-
-                            // Plot the data
+                        // Plot the data
                         manager.plotData();
                     });
                 });
-                });
             }
-            });
-          
         </script>
     </body>
 </html>
