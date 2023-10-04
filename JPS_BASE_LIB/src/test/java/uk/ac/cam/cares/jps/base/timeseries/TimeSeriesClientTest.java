@@ -408,19 +408,16 @@ public class TimeSeriesClientTest {
                 .thenReturn(TimeSeriesSparql.TIMESERIES_NAMESPACE + "TimeSeries");
         Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
 
-        // does not work at the last time of testing
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient)
-                .reInitTS(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any());
+                .reInitTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteEntireTimeSeries(
                 dataIRIs.get(0), conn);
 
         e = Assert.assertThrows(JPSRuntimeException.class,
                 () -> testClientWithMocks.deleteTimeSeries(tsIRI, conn));
-        // commented out because Mockito is not behaving as expected for unknown reasons
-        // Assert.assertTrue(e.getMessage().contains("Inconsistent state created when
-        // deleting time series"));
-        // Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-        // Assert.assertTrue(e.getMessage().contains(tsIRI));
+        Assert.assertTrue(e.getMessage().contains("Inconsistent state created when deleting time series"));
+        Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+        Assert.assertTrue(e.getMessage().contains(tsIRI));
     }
 
     @Test

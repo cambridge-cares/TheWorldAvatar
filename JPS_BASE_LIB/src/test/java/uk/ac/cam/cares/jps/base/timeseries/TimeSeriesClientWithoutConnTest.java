@@ -205,19 +205,16 @@ public class TimeSeriesClientWithoutConnTest {
                 .thenReturn(TimeSeriesSparql.TIMESERIES_NAMESPACE + "TimeSeries");
         Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
 
-        // this Mockito function is not working as expected
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient)
-                .reInitTS(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any());
+                .reInitTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient)
                 .deleteEntireTimeSeries(dataIRIs.get(0));
 
         JPSRuntimeException e2 = Assert.assertThrows(JPSRuntimeException.class,
                 () -> testClientWithMocks.deleteTimeSeries(tsIRI));
-        // commented out due to Mockito not working as expected
-        // Assert.assertTrue(e2.getMessage().contains("Inconsistent state created when
-        // deleting time series"));
-        // Assert.assertTrue(e2.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-        // Assert.assertTrue(e2.getMessage().contains(tsIRI));
+        Assert.assertTrue(e2.getMessage().contains("Inconsistent state created when deleting time series"));
+        Assert.assertTrue(e2.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+        Assert.assertTrue(e2.getMessage().contains(tsIRI));
     }
 
     private void setRDFMock() throws NoSuchFieldException, IllegalAccessException {
