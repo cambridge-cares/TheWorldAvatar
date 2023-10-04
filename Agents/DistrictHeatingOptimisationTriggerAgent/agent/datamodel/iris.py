@@ -1,6 +1,7 @@
 # Provide Constants/IRIs for KG queries/updates
 
-from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, \
+from pyderivationagent.data_model.iris import ONTODERIVATION_ISDERIVEDFROM,\
+                                              ONTODERIVATION_BELONGSTO, \
                                               ONTODERIVATION_DERIVATION, \
                                               ONTODERIVATION_DERIVATIONWITHTIMESERIES
 
@@ -64,6 +65,7 @@ OHN_INCINERATIONPLANT = OHN + "IncinerationPlant"
 OHN_MUNICIPAL_UTILITY = OHN + "MunicipalUtility"
 OHN_HAS_DOWNSTREAM_GRIDCONNECTION = OHN + "hasDownstreamGridConnection"
 OHN_HAS_UPSTREAM_GRIDCONNECTION = OHN + "hasUpstreamGridConnection"
+OHN_GRIDCONNECTION = OHN + "GridConnection"
 OHN_HAS_OBSERVABLE_PROPERTY = OHN + "hasObservableProperty"
 OHN_ISPUBLICHOLIDAY = OHN + "isPublicHoliday"
 OHN_PROVIDED_HEAT_AMOUNT = OHN + "ProvidedHeatAmount"

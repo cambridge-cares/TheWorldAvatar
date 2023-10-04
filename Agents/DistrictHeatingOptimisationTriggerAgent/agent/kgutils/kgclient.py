@@ -119,6 +119,97 @@ class KGClient(PySparqlClient):
         return mu_temp_flow, mu_temp_return, efw_temp_flow, efw_temp_return
     
 
+    def get_forecast_derivations(self):
+        """
+        Query already instantiated heat demand and grid temperature forecast 
+        derivation IRIs
+
+        Returns:
+            derivation_iris {list} -- list of instantiated derivation IRIs
+        """
+
+        query = f"""
+            SELECT DISTINCT ?derivation_iri
+            WHERE {{
+            ?derivation_iri <{ONTODERIVATION_ISDERIVEDFROM}> ?input .
+            ?input <{RDF_TYPE}> ?input_type . 
+            FILTER (?input_type = <{OHN_HEAT_DEMAND}> || 
+                    ?input_type = <{OM_TEMPERATURE}> &&
+                    EXISTS {{ ?input ^<{OHN_HAS_OBSERVABLE_PROPERTY}>/<{RDF_TYPE}> <{OHN_GRIDCONNECTION}> }} )
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        
+        # Extract list of unique query results
+        return self.get_list_of_unique_values(res, 'derivation_iri')
+
+
+    def get_downstream_derivation(self, derivation_iri:str):
+        """
+        Queries IRI of downstream derivation, i.e., derivation which uses
+        output of current derivation as input
+
+        Returns:
+            downstream {str} -- IRI of downstream derivation
+        """
+
+        query = f"""
+            SELECT DISTINCT ?downstream
+            WHERE {{
+            <{derivation_iri}> ^<{ONTODERIVATION_BELONGSTO}> ?output .
+            ?output ^<{ONTODERIVATION_ISDERIVEDFROM}> ?downstream
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        
+        # Extract list of unique query results
+        res_list = self.get_list_of_unique_values(res, 'downstream')
+        if len(res_list) == 1:
+            return res_list[0]
+        elif len(res_list) == 0:
+            return None
+        else:
+            msg = f"Multiple downstream derivations attached to derivation: {derivation_iri}."
+            logger.error(msg)
+            raise ValueError(msg)
+        
+
+    def get_pure_trigger_inputs(self, derivation_iris:list):
+        """
+        Queries IRIs of already instantiated time:Interval (incl. associated
+        time:Instants) and disp:SimulationTime instances, which are associated
+        with current chain of derivations
+
+        Returns:
+            sim_t {str} -- IRI of simulation time instance
+            interval {str} -- IRI of forecast/optimisation interval instance
+            start {str} -- IRI of interval start instance
+            end {str} -- IRI of interval end instance
+        """
+
+        query = f"""
+            SELECT DISTINCT ?sim_t ?interval ?start ?end
+            WHERE {{
+            VALUES ?derivation_iri {{ <{'> <'.join(derivation_iris)}> }}
+            {{ ?sim_t <{RDF_TYPE}> <{TIME_DURATION}> ;
+                      ^<{ONTODERIVATION_ISDERIVEDFROM}> ?derivation_iri .
+            }} UNION {{
+               ?interval <{RDF_TYPE}> <{TIME_INTERVAL}> ;
+                         ^<{ONTODERIVATION_ISDERIVEDFROM}> ?derivation_iri ;
+                         <{TIME_HASBEGINNING}> ?start ;
+                         <{TIME_HASEND}> ?end }}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract unique query results
+        return self.get_unique_value(res, 'sim_t'), self.get_unique_value(res, 'interval'), \
+               self.get_unique_value(res, 'start'), self.get_unique_value(res, 'end')
+    
+
     def get_derivation_outputs(self, derivation_iris: list):
         """
         Returns all output instances of a given list of derivation instances
