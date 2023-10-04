@@ -2,7 +2,7 @@
 
 This `District Heating Optimisation Trigger Agent` can be used to trigger recurring optimisations of the district heating system in Pirmasens (including the simulation of corresponding emission dispersion) according to the latest use case design using [chained derivations]. For each time step to simulate (i.e., using Aermod Agent), a corresponding `SimulationTime` instance is instantiated or updated, together with a time `Interval` instance representing the associated optimisation horizon (for the DH Optimisation Agent) and two time `Duration`s specifying the length of historical time series data required for the Forecasting Agent. 
 
-On agent startup, the specified SPARQL endpoint will also be populated with all triples provided as `.ttl` files in the [resources] folder, e.g., upload required descriptions of used forecasting models etc.
+On agent startup, the specified SPARQL endpoint will also be populated with all triples provided as `.ttl` files in the [resources/triples] folder, e.g., upload required descriptions of used forecasting models and static point source instances. **Please note** that the `disp:hasOntoCityGMLCityObject` range instances need to be populated manually beforehand, as there is currently no way to extract the corresponding IRIs programmatically. As the folder is mounted into the container, no rebuilding is required after changing the triples to upload. 
 
 <!-- 
 TODO: elaborate on the overall role of this agent in the use case/deployment design: sequence of deployments, dependencies, etc. 
@@ -119,7 +119,7 @@ Markus Hofmeister (mh807@cam.ac.uk), July 2023
 
 <!-- files -->
 [flaskapp init]: ./agent/flaskapp/__init__.py
-[resources]: ./resources/
+[resources/triples]: ./resources/triples/
 [example_opt_request]: ./resources/example_opt_request.http
 [Docker compose file]: ./docker-compose.yml
 [stack-manager-input-config]: ./stack-manager-input-config

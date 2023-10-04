@@ -24,6 +24,10 @@ DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
 # NOTE: to be aligned with fcmodels.ttl
 fc_model_heat_demand = KB + 'ForecastingModel_TFT_heat_demand'
 fc_model_grid_temperature = KB + 'ForecastingModel_Prophet'
+# Static point source instances #
+# NOTE: to be aligned with static_point_sources.ttl
+point_source_mu = KB + 'StaticPointSource_MunicipalUtility'
+point_source_efw = KB + 'StaticPointSource_EfWPlant'
 
 ### Concept/Data types ###
 RDF_TYPE = RDF + 'type'

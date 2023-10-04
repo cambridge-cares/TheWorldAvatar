@@ -28,9 +28,9 @@ logger = agentlogging.get_logger('prod')
 app = Flask(__name__)
 
 # Import triples from 'resources' folder upon app startup
-logger.info("Importing triples from 'resources' folder...")
+logger.info("Importing triples from 'resources/triples' folder...")
 kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
-kg_client.initialise_namespace('./resources')
+kg_client.initialise_namespace('./resources/triples')
 logger.info("Successfully imported triples.")
 
 # Add covariate relationships to uploaded forecasting model instances
@@ -86,7 +86,7 @@ def trigger_optimisation():
 @celery.task
 def trigger_optimisation_task(params):
     try:
-         #TODO: Sequence to be refactored/streamlined
+        #TODO: Sequence to be refactored/streamlined
         # Initialise sparql and derivation clients
         kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         derivation_client = PyDerivationClient(
@@ -97,10 +97,18 @@ def trigger_optimisation_task(params):
         # Heat demand and grid temp forecast derivation IRIs; returns empty list if not exist
         fc_deriv_iris = kg_client.get_forecast_derivations()
         # Downstream optimisation and emission derivation IRIs; returns None if not exist
-        opti_deriv_iri = None if not fc_deriv_iris else \
+        opti_deriv_iri = [] if not fc_deriv_iris else \
                             kg_client.get_downstream_derivation(fc_deriv_iris[0])
-        em_deriv_iri = None if not opti_deriv_iri else \
+        if len(opti_deriv_iri) > 1:
+            msg = f'More than 1 Generation optimisation derivation retrieved: {", ".join(opti_deriv_iri)}'
+            logger.error(msg)
+            raise ValueError(msg)
+        em_deriv_iri = [] if not opti_deriv_iri else \
                         kg_client.get_downstream_derivation(opti_deriv_iri)
+        if len(em_deriv_iri) > 2:
+            msg = f'More than 2 Emission estimation derivation retrieved: {", ".join(em_deriv_iri)}'
+            logger.error(msg)
+            raise ValueError(msg)
         derivs = [d for d in (opti_deriv_iri, em_deriv_iri) if d is not None]
         try:
             # Retrieve unique time inputs (optimisation interval, simulation time)
@@ -189,31 +197,34 @@ def trigger_optimisation_task(params):
                     inputs_opi = list(fc_outputs[TS_FORECAST]) + [opti_int]
                     deriv = derivation_client.createSyncDerivationForNewInfo(DH_OPTIMISATION_AGENT, 
                                     inputs_opi, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
-                    opti_deriv_iri = deriv.getIri()
-                    logger.info(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri}")
+                    opti_deriv_iri.append(deriv.getIri())
+                    logger.info(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri[0]}")
                 else:
-                    derivation_client.unifiedUpdateDerivation(opti_deriv_iri)
-                    logger.info(f"Generation optimisation derivation instance successfully updated: {opti_deriv_iri}")
+                    derivation_client.unifiedUpdateDerivation(opti_deriv_iri[0])
+                    logger.info(f"Generation optimisation derivation instance successfully updated: {opti_deriv_iri[0]}")
 
-                # # 3) Emission estimation derivations
-                # # Query Point Sources associated with emissions (instances need to have
-                # # a disp:hasOntoCityGMLCityObject relationship attached for Aermod to work)
-                # # TODO: to be implemented
-                # ps_efw = None
-                # ps_mu = None
-                # # Get all optimisation derivation outputs
-                # opti_outputs = kg_client.get_derivation_outputs([opti_deriv_iri])
-                # # Extract all created forecast instances and create list of optimisation inputs
-                # #    1) EfW emissions (ProvidedHeatAmount)
-                # inputs_efw_em = list(opti_outputs[OHN_PROVIDED_HEAT_AMOUNT]) + [sim_t, ps_efw]
-                # deriv = derivation_client.createSyncDerivationForNewInfo(EMISSION_ESTIMATION_AGENT, 
-                #                             inputs_efw_em, ONTODERIVATION_DERIVATION)
-                # logger.info(f"EfW emission estimation derivation successfully instantiated: {deriv.getIri()}")
-                # #    2) heating plant emissions (ConsumedGasAmount)
-                # inputs_mu_em = list(opti_outputs[OHN_CONSUMED_GAS_AMOUNT]) + [sim_t, ps_mu]
-                # deriv = derivation_client.createSyncDerivationForNewInfo(EMISSION_ESTIMATION_AGENT, 
-                #                             inputs_mu_em, ONTODERIVATION_DERIVATION)
-                # logger.info(f"Municipal utility emission estimation derivation successfully instantiated: {deriv.getIri()}")
+                # 3) Emission estimation derivations
+                if not em_deriv_iri:
+                    # Query Point Sources associated with emissions (instances need to have
+                    # a disp:hasOntoCityGMLCityObject relationship attached for Aermod to work)
+
+                    # Get all optimisation derivation outputs
+                    opti_outputs = kg_client.get_derivation_outputs([opti_deriv_iri])
+                    # Extract all created forecast instances and create list of optimisation inputs
+                    #    1) EfW emissions (ProvidedHeatAmount)
+                    inputs_efw_em = list(opti_outputs[OHN_PROVIDED_HEAT_AMOUNT]) + [sim_t, point_source_efw]
+                    deriv = derivation_client.createSyncDerivationForNewInfo(EMISSION_ESTIMATION_AGENT, 
+                                                inputs_efw_em, ONTODERIVATION_DERIVATION)
+                    logger.info(f"EfW emission estimation derivation successfully instantiated: {deriv.getIri()}")
+                    #    2) heating plant emissions (ConsumedGasAmount)
+                    inputs_mu_em = list(opti_outputs[OHN_CONSUMED_GAS_AMOUNT]) + [sim_t, point_source_mu]
+                    deriv = derivation_client.createSyncDerivationForNewInfo(EMISSION_ESTIMATION_AGENT, 
+                                                inputs_mu_em, ONTODERIVATION_DERIVATION)
+                    logger.info(f"Municipal utility emission estimation derivation successfully instantiated: {deriv.getIri()}")
+                else:
+                    for d in em_deriv_iri:
+                        derivation_client.unifiedUpdateDerivation(d)
+                        logger.info(f"Emission estimation derivation instance successfully updated: {d}")
 
                 # 4) Initialise Aermod dispersion derivation markup (i.e., for 
                 #    existing SimulationTime instance)

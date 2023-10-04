@@ -7,6 +7,13 @@
                 "Command": [
                     "/bin/bash", "./delayed_start.sh"
                 ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "/home/caresuser/TWA-git/Agents/DistrictHeatingOptimisationTriggerAgent/resources/triples",
+                        "Target": "/app/resources/triples"
+                    }
+                ],
                 "Env": [
                     "NAMESPACE=kb",
                     "FORECASTING_AGENT=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service",

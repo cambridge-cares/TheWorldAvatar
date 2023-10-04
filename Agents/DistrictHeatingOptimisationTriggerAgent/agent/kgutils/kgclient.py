@@ -165,16 +165,8 @@ class KGClient(PySparqlClient):
         res = self.performQuery(query)
         
         # Extract list of unique query results
-        res_list = self.get_list_of_unique_values(res, 'downstream')
-        if len(res_list) == 1:
-            return res_list[0]
-        elif len(res_list) == 0:
-            return None
-        else:
-            msg = f"Multiple downstream derivations attached to derivation: {derivation_iri}."
-            logger.error(msg)
-            raise ValueError(msg)
-        
+        return self.get_list_of_unique_values(res, 'downstream')
+
 
     def get_pure_trigger_inputs(self, derivation_iris:list):
         """
