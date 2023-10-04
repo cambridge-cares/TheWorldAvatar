@@ -12,7 +12,7 @@ services:
     build:
       context: "./"
       dockerfile: "Dockerfile.dev"
-    image: ghcr.io/cambridge-cares/twa-vf-compile:latest
+    image: twa-vf-compilation:latest
     container_name: "twa-vf-compile"
     restart: "no"
     working_dir: "/app"
