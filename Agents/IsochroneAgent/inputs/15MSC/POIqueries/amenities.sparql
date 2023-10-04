@@ -3,21 +3,26 @@ PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?building_iri ?type ?geometry
+SELECT DISTINCT ?poi_iri ?poi_type ?geometry
 WHERE {
-	{
-		# OntopQuery to retrieve
-		SERVICE <http://pirmasens-ontop:8080/sparql/> {
-        SELECT DISTINCT ?building_iri ?type ?geometry
-        WHERE {
-            {
-                VALUES (?type ?label) {
-                    (obe:Hospital "Hospital")
+    {
+        # OntopQuery to retrieve
+        SERVICE <http://pirmasens-ontop:8080/sparql/> {
+            SELECT DISTINCT ?building_iri ?type ?geom
+            WHERE {
+                {
+                    VALUES (?type ?label) {
+                        (obe:Hospital "Hospital")
+                    }
+                    ?building_iri obe:hasPropertyUsage ?usageiri .
+                    ?building_iri obe:hasFootprint ?geom.
+                    ?usageiri rdf:type ?type .
                 }
-                ?building_iri obe:hasPropertyUsage ?usageiri .
-            ?building_iri obe:hasFootprint ?geometry.
-                ?usageiri rdf:type ?type .
             }
         }
     }
-}}
+    # Binding variable names as requested
+    BIND(?building_iri AS ?poi_iri)
+    BIND(?type AS ?poi_type)
+    BIND(?geom AS ?geometry)
+}

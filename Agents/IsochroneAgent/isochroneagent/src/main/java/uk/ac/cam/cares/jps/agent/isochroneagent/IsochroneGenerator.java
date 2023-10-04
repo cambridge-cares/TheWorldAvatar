@@ -1,7 +1,11 @@
 package uk.ac.cam.cares.jps.agent.isochroneagent;
 
+import org.json.JSONArray;
+import java.util.Map;
+
+
 public class IsochroneGenerator {
-    public static void generateIsochrone(){
+    public static void generateIsochrone(JSONArray poisArraywithNodes, int upperTimeLimit, int timeInterval, Map<String,String> EdgesTableSQLMap ){
 
         String isochrone_sql = "--CREATE ISOCHRONE TABLE\n" +
                 "DROP TABLE IF EXISTS isochrone_final_aggregated;\n" +
