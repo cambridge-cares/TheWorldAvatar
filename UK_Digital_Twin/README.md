@@ -11,9 +11,13 @@ Step 1: preparation of the environment
 - Install Open JDK by running the command `sudo apt-get install -y openjdk-11-jdk-headless`.
 - Install conda on Ubuntu using the instructions below:
    `wget https://repo.anaconda.com/archive/Anaconda3-2023.07-1-Linux-x86_64.sh`
+
    `chmod +x ./Anaconda3-2023.07-1-Linux-x86_64.sh`
+
    `./Anaconda3-2023.07-1-Linux-x86_64.sh`
+
    `source ~/.bashrc`
+   
 - Check the version installed:
    `conda --version`
    If it shows the version number, you have succssfully installed conda.
