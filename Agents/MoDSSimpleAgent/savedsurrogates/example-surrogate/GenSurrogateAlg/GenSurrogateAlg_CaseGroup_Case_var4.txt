@@ -1,0 +1,43 @@
+% Reduced chi^2:
+2.06872e-20
+% R^2:
+0.372349
+% Dimension (number of independent variables):
+3
+% Variable names:
+x_0 = var1
+x_1 = var2
+x_2 = var3
+% Surrogate model type:
+HDMR
+%  Interaction order:
+2
+% Order at each interaction level:
+0: 3
+1: 0
+%
+% First Order Sensitivities:
+0.0696689
+0.930331
+0
+% Sum of Variances:
+0.0753458
+%
+% Zeroth Order Coefficient:
+0.38
+% First Order Coefficients:
+-0.102462*(3/2)^0.5*x_0
+0.374424*(7/2)^0.5*(-1.5*x_1+2.5*x_1^3)
+%
+% Zeroth Order Terms:
+0.38
+% First Order Terms:
+-0.12549*x_0
+0*x_0^2
+0*x_0^3
+-1.05072*x_1
+0*x_1^2
+1.75121*x_1^3
+0*x_2
+0*x_2^2
+0*x_2^3
