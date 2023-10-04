@@ -29,7 +29,7 @@ There are two classes that extend this interface:
     - May not be suitable for applications which require many tables
 
     Usage example:
-    ```
+    ```java
     TimeSeriesRDBClient<Instant> timeSeriesRdbClient = new TimeSeriesRDBClient<>(Instant.class);
     RemoteStoreClient remoteStoreClient = new RemoteStoreClient(kgUrl, kgUrl);
 
@@ -47,7 +47,7 @@ There are two classes that extend this interface:
     - May be suitable for applications which require instantiation of new time series repetitively, when using the default option creates too many tables.
 
     Usage example:
-    ```
+    ```java
     TimeSeriesRDBClientWithReducedTables<Instant> timeSeriesRdbClient = new TimeSeriesRDBClientWithReducedTables<>(Instant.class);
     RemoteStoreClient remoteStoreClient = new RemoteStoreClient(kgUrl, kgUrl);
 
@@ -65,7 +65,7 @@ There are two classes that extend this interface:
 * The methods in the TimeSeriesClient are broadly separated into methods that receive a connection object and methods without the connection object. By using methods with the connection object, it is up to the developer to ensure that the connection is closed by using try-with-resources demonstrated.
 
 Example using TimeSeriesRDBClient's built-in connection handling:
-```
+```java
 TimeSeriesRDBClient<Instant> timeSeriesRdbClient = new TimeSeriesRDBClient<>(Instant.class);
 timeSeriesRdbClient.setRdbUrl(url); timeSeriesRdbClient.setRdbUser(user); timeSeriesRdbClient.setRdbPassword(password);
 
@@ -77,6 +77,16 @@ timeSeriesClient.initTimeSeries(dataIRIs, dataClass, timeUnit);
 timeSeriesClient.addTimeSeriesData(timeseries);
 ```
 Note the setting of RDB details in the TimeSeriesRDBClient object, the same applies to TimeSeriesRDBClientWithReducedTables. Each method call will open and close a single connection, so this may not be suitable for applications that require lots of interaction with the database.
+
+## TimeSeriesClientFactory
+This class provides a method to generate a TimeSeriesClient object, `TimeSeriesClientFactory.getInstance(TripleStoreClientInterface storeClient, List<String> dataIriList)`, with the correct RDB client (either TimeSeriesRDBClient or TimeSeriesRDBClientWithReducedTables), schema, RDB URL and time class.
+
+The provided IRIs need to be initialise with time series beforehand and the store client should point towards the SPARQL endpoint containing the time series instances.
+
+Example:
+```java
+TimeSeriesClient<?> timeSeriesClient = TimeSeriesClientFactory.getInstance(remoteStoreClient, dataIriList);
+```
 
 ## Time series instantiation
 The namespaces used in this document:  
@@ -95,25 +105,34 @@ Upon instantiation of a time series for any `<entity>` in the KG, the following 
 <b>1. Instantaneous Time Series</b>
 ```
 <entity>  ts:hasTimeSeries  kb:InstantaneousTimeSeries_UUID
-kb:InstantaneousTimeSeries_UUID  rdf:type  ts:InstantaneousTimeSeries
-kb:InstantaneousTimeSeries_UUID  ts:hasRDB  <Postgres URL>
-kb:InstantaneousTimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
+kb:InstantaneousTimeSeries_UUID  rdf:type  ts:InstantaneousTimeSeries;
+kb:InstantaneousTimeSeries_UUID  ts:hasRDB  "Postgres URL"
+kb:InstantaneousTimeSeries_UUID  ts:hasTimeUnit  "timeUnit"
+kb:InstantaneousTimeSeries_UUID  ts:hasSchema  "public"
+kb:InstantaneousTimeSeries_UUID  ts:hasTimeClass  "java.time.Instant"
+kb:InstantaneousTimeSeries_UUID  ts:hasRDBClientClass "uk.ac.cam.cares.jps.base.timeseries.___"
 ```
 
 <b>2. StepwiseCumulative Time Series</b>
 ```
 <entity>  ts:hasTimeSeries  kb:StepwiseCumulativeTimeSeries_UUID
 kb:StepwiseCumulativeTimeSeries_UUID  rdf:type  ts:StepwiseCumulativeTimeSeries
-kb:StepwiseCumulativeTimeSeries_UUID  ts:hasRDB  <Postgres URL>
-kb:StepwiseCumulativeTimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
+kb:StepwiseCumulativeTimeSeries_UUID  ts:hasRDB  "Postgres URL"
+kb:StepwiseCumulativeTimeSeries_UUID  ts:hasTimeUnit  "timeUnit"
+kb:StepwiseCumulativeTimeSeries_UUID  ts:hasSchema  "public"
+kb:StepwiseCumulativeTimeSeries_UUID  ts:hasTimeClass  "java.time.Instant"
+kb:StepwiseCumulativeTimeSeries_UUID  ts:hasRDBClientClass "uk.ac.cam.cares.jps.base.timeseries.___"
 ```
 
 <b>3. CumulativeTotal Time Series</b>
 ```
 <entity>  ts:hasTimeSeries  kb:CumulativeTotalTimeSeries_UUID
 kb:CumulativeTotalTimeSeries_UUID  rdf:type  ts:CumulativeTotalTimeSeries
-kb:CumulativeTotalTimeSeries_UUID  ts:hasRDB  <Postgres URL>
-kb:CumulativeTotalTimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
+kb:CumulativeTotalTimeSeries_UUID  ts:hasRDB  "Postgres URL"
+kb:CumulativeTotalTimeSeries_UUID  ts:hasTimeUnit  "timeUnit"
+kb:CumulativeTotalTimeSeries_UUID  ts:hasSchema  "public"
+kb:CumulativeTotalTimeSeries_UUID  ts:hasTimeClass  "java.time.Instant"
+kb:CumulativeTotalTimeSeries_UUID  ts:hasRDBClientClass "uk.ac.cam.cares.jps.base.timeseries.___"
 ```
 
 <b>4. Average Time Series</b>
@@ -126,6 +145,9 @@ kb:AverageTimeSeries_UUID  ts:hasAveragingPeriod kb:AveragingPeriod_UUID
 kb:AveragingPeriod_UUID    rdf:type  time:Duration
 kb:AveragingPeriod_UUID    time:unitType <time:temporalUnit>
 kb:AveragingPeriod_UUID    time:numericDuration <value>^^xsd:decimal
+kb:AveragingPeriod_UUID    ts:hasSchema  "public"
+kb:AveragingPeriod_UUID    ts:hasTimeClass  "java.time.Instant"
+kb:AveragingPeriod_UUID    ts:hasRDBClientClass  "uk.ac.cam.cares.jps.base.timeseries.___"
 ```
 
 <b>In case time series subclass is not specified, the following triples will be created:</b>
@@ -134,6 +156,9 @@ kb:AveragingPeriod_UUID    time:numericDuration <value>^^xsd:decimal
 kb:TimeSeries_UUID  rdf:type  ts:TimeSeries
 kb:TimeSeries_UUID  ts:hasRDB  <Postgres URL>
 kb:TimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
+kb:TimeSeries_UUID  ts:hasSchema  "public"
+kb:TimeSeries_UUID  ts:hasTimeClass  "java.time.Instant"
+kb:TimeSeries_UUID  ts:hasRDBClientClass  "uk.ac.cam.cares.jps.base.timeseries.___
 ```
 
 The created `UUID` denotes a UUID version 4. The data properties `Postgres URL` and `timeUnit` are Literals describing the link to the RDB and the time format in which the data is stored, respectively.
