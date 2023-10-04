@@ -35,7 +35,7 @@ public class TimeParser {
     /**
      * Allowable names for query result columns.
      */
-    public static final String[] KEYS = new String[]{"Measurement", "Forecast", "Time Series", "Name", "Unit"};
+    public static final String[] KEYS = new String[]{"Measurable", "Time Series", "Name", "Unit"};
 
 	/**
 	 * Constructor.

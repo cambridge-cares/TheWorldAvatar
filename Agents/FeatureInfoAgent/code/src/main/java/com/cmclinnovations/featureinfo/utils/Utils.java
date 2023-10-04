@@ -1,11 +1,7 @@
-package com.cmclinnovations.featureinfo;
+package com.cmclinnovations.featureinfo.utils;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -16,9 +12,6 @@ import org.apache.logging.log4j.Logger;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.StackEndpoint;
 import com.cmclinnovations.featureinfo.config.StackEndpointType;
-
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
  * Misc utilities for the FeatureInfoAgent.

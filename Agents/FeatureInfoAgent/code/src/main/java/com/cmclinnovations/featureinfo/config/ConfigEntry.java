@@ -338,9 +338,14 @@ public class ConfigEntry {
             }
 
             // Parse time series query
+            LOGGER.debug("ON CLASS ENTRY: {}", entry.classIRI);
+            LOGGER.debug("LOADING TIME FILE" + entry.timeQueryFile);
+
             if(entry.timeQueryFile != null && !entry.timeQueryFile.isEmpty()) {
                 Path file = this.configDirectory.resolve(Paths.get(entry.timeQueryFile));
                 entry.timeQueryContent = Files.readString(file);
+                LOGGER.debug("QUERY CONTENT");
+                LOGGER.debug(entry.timeQueryContent);
             } else {
                 LOGGER.info("No valid entry for time series query file in entry '{}', skipping.", entry.id);
             }

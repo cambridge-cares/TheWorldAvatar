@@ -17,18 +17,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.sparql.function.library.collation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cmclinnovations.featureinfo.Utils;
 import com.cmclinnovations.featureinfo.config.ConfigEntry;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.StackEndpoint;
 import com.cmclinnovations.featureinfo.config.StackEndpointType;
 import com.cmclinnovations.featureinfo.config.StackInteractor;
 import com.cmclinnovations.featureinfo.config.TimeReference;
+import com.cmclinnovations.featureinfo.utils.Utils;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -125,12 +126,19 @@ public class TimeHandler {
         // Iterate through each matching query
         classMatches.forEach(classMatch -> {
             try {
-                // Get measurable entities
-                allMeasurables.addAll(getMeasurables(classMatch));
+                if(classMatch.getTimeQueryContent() == null || classMatch.getTimeQueryContent().isEmpty()) {
+                    LOGGER.info("No time configuration set for class match, skipping: {}", classMatch.getClassIRI());
+                } else {
+                    // Get measurable entities
+                    LOGGER.info("Processing time series queries for class match: {}", classMatch.getClassIRI());
+                    allMeasurables.addAll(getMeasurables(classMatch));
+                }
             } catch(Exception exception) {
                 LOGGER.error("Execution for time series acquisition has failed!", exception);
             }
         });
+
+        LOGGER.debug("Detected {} measurable instances.", allMeasurables.size());
 
         // Group measurables by their time series IRIs
         Map<String, List<Measurable>> groupByTimeSeries = allMeasurables
@@ -141,6 +149,7 @@ public class TimeHandler {
 
         // Pool of all constructed and populated timeseries objects
         Map<TimeSeries<Instant>, List<Measurable>> allTimeSeries = new LinkedHashMap<>();
+        LOGGER.debug("Data IRIs are across {} distinct time series.", allTimeSeries.size());
 
         // Iterate through unique timeseries IRIs
         for(Map.Entry<String, List<Measurable>> entryByTime : groupByTimeSeries.entrySet()) {
@@ -160,14 +169,31 @@ public class TimeHandler {
                 List<Measurable> theseMeasurables = entryByConfig.getValue();
 
                 // Get populated time series object from client
-                TimeSeries<Instant> timeseries = getTimeSeries(thisConfig, theseMeasurables);
-                if(timeseries != null && timeseries.getTimes() != null && !timeseries.getTimes().isEmpty()) {
-                    allTimeSeries.put(timeseries, theseMeasurables);
+                LOGGER.debug("Getting data for time series IRI: {}", entryByTime.getKey());
+
+                // Connect to a new database if required
+                connectToDatabase(
+                    this.configStore.getStackEndpoints(StackEndpointType.POSTGRES).get(0),
+                    thisConfig.getTimeDatabase()
+                );
+
+                // Using the cached connection, or a new one if required
+                try (Connection rdbConn = (this.connection != null) ? this.connection : this.dbClient.getConnection()) {
+                    this.connection = rdbConn;
+
+                    TimeSeries<Instant> timeseries = getTimeSeries(thisConfig, theseMeasurables);
+                    if(timeseries != null && timeseries.getTimes() != null && !timeseries.getTimes().isEmpty()) {
+                        allTimeSeries.put(timeseries, theseMeasurables);
+                    }
+
+                } catch(Exception exception) {
+                    LOGGER.error("Exception occurered when contacting database!", exception);
                 }
             }
         }
 
         // Convert all timeseries to JSON objects.
+        LOGGER.debug("Converting time series data to JSON...");
         return convertTimeSeries(allTimeSeries);
     }
 
@@ -197,7 +223,7 @@ public class TimeHandler {
             LOGGER.debug("Running non-federated measurement IRI query.");
             kgClient.setQueryEndpoint(endpoints.get(0));
             result = kgClient.executeQuery(query);
-
+            
         } else {
             LOGGER.debug("Running federated measurement IRI query.");
             result = kgClient.executeFederatedQuery(endpoints, query);
@@ -209,6 +235,7 @@ public class TimeHandler {
             JSONObject obj = result.getJSONObject(i);
             Measurable measurable = MeasurableBuilder.build(classMatch, obj);
             if(measurable != null) {
+                LOGGER.debug("Measurable with time series IRI: {}", measurable.getTimeSeriesIRI());
                 measurables.add(measurable);
             }
         }
@@ -265,27 +292,13 @@ public class TimeHandler {
         Instant lowerBound = bounds.getLeft().isBefore(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
         Instant upperBound = bounds.getLeft().isAfter(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
 
-        // Connect to a new database if required
-        connectToDatabase(
-            this.configStore.getStackEndpoints(StackEndpointType.POSTGRES).get(0),
-            classMatch.getTimeDatabase()
+        // Call client to get TimeSeries object
+        return this.tsClient.getTimeSeriesWithinBounds(
+            measurableIRIs,
+            lowerBound,
+            upperBound,
+            this.connection
         );
-
-        // Using the cached connection, or a new one if required
-        try (Connection rdbConn = (this.connection != null) ? this.connection : this.dbClient.getConnection()) {
-            this.connection = rdbConn;
-
-            // Call client to get TimeSeries object
-            return this.tsClient.getTimeSeriesWithinBounds(
-                measurableIRIs,
-                lowerBound,
-                upperBound,
-                rdbConn
-            );
-        } catch(Exception exception) {
-            LOGGER.error("Exception when connecting to RDB through TimeSeriesClient!", exception);
-            return null;
-        }
     }
 
     /**
@@ -310,14 +323,14 @@ public class TimeHandler {
         switch(reference) {
             case NOW: {
                 Instant boundOne = LocalDateTime.now().toInstant(ZoneOffset.UTC);
-                Instant boundTwo = offsetTime(timeLimit, timeUnit, boundOne);
+                Instant boundTwo = offsetTime(timeLimit * -1, timeUnit, boundOne);
                 return new ImmutablePair<>(boundOne, boundTwo);
             }
 
             case LATEST: {
                 TimeSeries<Instant> latest = this.tsClient.getLatestData(measureIRI, this.connection);
                 Instant boundOne = latest.getTimes().get(0);
-                Instant boundTwo = offsetTime(timeLimit, timeUnit, boundOne);
+                Instant boundTwo = offsetTime(timeLimit * -1, timeUnit, boundOne);
                 return new ImmutablePair<>(boundOne, boundTwo);
             }
 
@@ -410,6 +423,7 @@ public class TimeHandler {
      * @param database database name.
      */
     private void connectToDatabase(StackEndpoint rdbEndpoint, String database) {
+        LOGGER.info("Checking cached database connection...");
         String postgresURL = StackInteractor.generatePostgresURL(database);
         
         // Same URL, skip

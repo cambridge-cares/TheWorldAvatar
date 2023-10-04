@@ -3,6 +3,7 @@ package com.cmclinnovations.featureinfo;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -19,6 +20,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 
 import com.cmclinnovations.featureinfo.config.ConfigStore;
+import com.cmclinnovations.featureinfo.utils.TimeSeriesCreator;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -33,7 +35,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  * @author Michael Hillman {@literal <mdhillman@cmclinnovations.com>}
  */
 @Controller
-@WebServlet(urlPatterns = {"/get", "/status"})
+@WebServlet(urlPatterns = {"/get", "/status", "/make-time-series"})
 public class FeatureInfoAgent extends JPSAgent {
 
     /**
@@ -155,6 +157,13 @@ public class FeatureInfoAgent extends JPSAgent {
                 }
                 break;
 
+                case "/make-time-series": {
+                    // Undocumented route to generate sample time series data.
+                    // Not to be used outside of very specific testing cases.
+                    makeTimeSeries(response);
+                }
+                break;
+
                 default: {
                     // Something else
                     LOGGER.info("Detected an unknown request route...");
@@ -238,7 +247,7 @@ public class FeatureInfoAgent extends JPSAgent {
             response.getWriter().write("{\"description\":\"Agent is in invalid state, please check server logs.\"}");
             return;
         } 
-        
+
         // Force refresh of configuration
         this.configStore.loadDetails();
 
@@ -259,6 +268,35 @@ public class FeatureInfoAgent extends JPSAgent {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Check that the agent is in a valid state.
+     * 
+     * @param response HTTP response.
+     */
+    private final void makeTimeSeries(HttpServletResponse response) throws IOException {
+        LOGGER.info("Detected request to generate sample time series data...");
+
+        if(!this.valid) {
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Agent is in invalid state, please check server logs.\"}");
+            return;
+        } 
+
+        // Make time series data
+        TimeSeriesCreator creator = new TimeSeriesCreator(this.configStore);
+        creator.createClients("sample-data", "postgres");
+        creator.addSampleData();
+
+        response.setStatus(Response.Status.OK.getStatusCode());
+        response.getWriter().write(String.format("""
+            {
+                "description": "Have attempted to generate new time series in 'sample-data' namespace and 'castles' database.",
+                "completed-at": "%s"
+
+            }
+            """, LocalTime.now().toString()));
     }
 
 }

@@ -14,10 +14,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.Utils;
 import com.cmclinnovations.featureinfo.config.ConfigEntry;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.StackEndpointType;
+import com.cmclinnovations.featureinfo.utils.Utils;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -56,12 +56,20 @@ public class MeasurableBuilder {
         // Parse all fields from JSON
         Object measureIRI = TimeParser.findField(TimeParser.KEYS[0], jsonObj);
         if(measureIRI == null) {
-            measureIRI = TimeParser.findField(TimeParser.KEYS[1], jsonObj);
+            measureIRI = TimeParser.findField("Measurement", jsonObj);
+            if(measureIRI == null) {
+                measureIRI = TimeParser.findField("Forecast", jsonObj);
+            }
         }
 
-        Object timeIRI = TimeParser.findField(TimeParser.KEYS[2], jsonObj);
-        Object name = TimeParser.findField(TimeParser.KEYS[3], jsonObj);
-        Object unit = TimeParser.findField(TimeParser.KEYS[4], jsonObj);
+        Object timeIRI = TimeParser.findField(TimeParser.KEYS[1], jsonObj);
+        if(timeIRI == null) {
+            timeIRI = TimeParser.findField("timeseries", jsonObj);
+        }
+        LOGGER.debug("TIME IRI is " + timeIRI);
+        
+        Object name = TimeParser.findField(TimeParser.KEYS[2], jsonObj);
+        Object unit = TimeParser.findField(TimeParser.KEYS[3], jsonObj);
 
         // Bug out if required fields not present
         if(measureIRI == null || name == null) return null;

@@ -23,6 +23,11 @@ target          sample:Castle/{id} a castle:{castle_type} ;
                     castle:hadFeudalLord sample:FeudalLordMeasurement/{id} ;
                     geo:hasDefaultGeometry castle:Geometry/{id} .
 				castle:Geometry/{id} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral .
+                sample:PopulationMeasurement/{id} castle:hasUnit "People"^^xsd:string ;
+                    rdf:label "Population"^^xsd:string .
+                sample:WorthMeasurement/{id} castle:hasUnit "£"^^xsd:string ;
+                    rdf:label "Worth (Millions)"^^xsd:string .
+                sample:FeudalLordMeasurement/{id}  rdf:label "Feudal Lord"^^xsd:string .
 source          SELECT
                     "ID" as id,
                     "Castle Name" as name,

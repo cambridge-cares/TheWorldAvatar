@@ -20,10 +20,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.Utils;
 import com.cmclinnovations.featureinfo.config.ConfigEntry;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.StackEndpointType;
+import com.cmclinnovations.featureinfo.utils.Utils;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
