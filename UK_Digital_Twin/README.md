@@ -17,7 +17,7 @@ Step 1: preparation of the environment
    `./Anaconda3-2023.07-1-Linux-x86_64.sh`
 
    `source ~/.bashrc`
-   
+
 - Check the version installed:
    `conda --version`
    If it shows the version number, you have succssfully installed conda.
@@ -29,7 +29,31 @@ Step 1: preparation of the environment
 - Following the activation of the conda environment, install the required packages by running the command `pip install -r requirements.txt`. Note: we assume that you are running the command at the same path of this README file.
 
 Step 2: How to build the base world knowledge graph for the UK power system?
-- 2.1 Check the data files: check the folder `\UK_Digital_Twin\Data files\DUKES`. There would be folders with the data pubulished by UK.GOV in different years, e.g. 2019. Go to the folder called `2019`. The .csv files there are the processed files based on the DUKES raw data file `\UK_Digital_Twin\Data file\DUKES\2019\DUKES2019.xls` that was downloaded from `https://www.gov.uk/government/statistics/electricity-chapter-5-digest-of-united-kingdom-energy-statistics-dukes`. In that page there are many files and the excel file named 'Power stations in the United Kingdom (DUKES 5.11)' was downloaded. Columns relevant to the study are copied from the excel sheet (tab) named `5.11 Full list` within this excel file and pasted in producing the CSV files, e.g., plantname.csv, planttype.csv, etc. Each CSV file has exactly the same number of rows. Among the .csv files, only the 'gpslocation.csv' is manully created by collecting coordinates from the Google maps which contain all the lat-lon locations of the power plants listed in DUKES. After 2022, the original DUKES data started reporting the GPS locations but they are not accurate enough. Therefore, till 2023 the location of the power plant is still based on the manually collected one.
+- 2.1 Check the data files: check the folder `\UK_Digital_Twin\Data files\DUKES`. There would be folders with the data pubulished by UK.GOV in different years, e.g. 2019. Go to the folder called `2019`. The .csv files there are the processed files based on the DUKES raw data file `\UK_Digital_Twin\Data file\DUKES\2019\DUKES2019.xls` that was downloaded from `https://www.gov.uk/government/statistics/electricity-chapter-5-digest-of-united-kingdom-energy-statistics-dukes`. In that page there are many files and the excel file named 'Power stations in the United Kingdom (DUKES 5.11)' was downloaded. Columns relevant to the study are copied from the excel sheet (tab) named `5.11 Full list` within this excel file and pasted in producing the CSV files, e.g., plantname.csv, planttype.csv, etc. 
+
+   The content of `builtyear.csv` is from column "Year of commission";
+
+   The content of `designcapacity.csv` is from column "Installed Capacity (MW)";
+
+   The content of `energyGen.csv` is modified from column "Type";
+
+   The content of `genTech.csv` is modified from column "Type";
+
+   The content of `gpslocation.csv` is collected by hands;
+
+   The content of `owner.csv` is from column "Company Name";
+
+   The content of `plantname.csv` is from column "Station Name";
+
+   The content of `planttype.csv` is modified from column "Type";
+
+   The content of `primaryFuel.csv` is modified from column "Fuel";
+
+   The first column from `propertydata.csv` is installed capacity, the second column is commissioned year and the third and fourth columns are lat-lon locations.
+
+   The content of `regionaladdress.csv` is modified from column "Location: Scotland, Wales, Northern Ireland or English region";
+
+Each CSV file has exactly the same number of rows. Among the .csv files, only the 'gpslocation.csv' is manully created by collecting coordinates from the Google maps which contain all the lat-lon locations of the power plants listed in DUKES. After 2022, the original DUKES data started reporting the GPS locations but they are not accurate enough. Therefore, till 2023 the location of the power plant is still based on the manually collected one.
 - 2.2 Create namespaces for building the base world knowledge graph: By default, Blazegraph is the triple store used for managing the KG. The creation of namespaces in the Blazegraph endpoint was done manually in this work. The recommended names of the namespaces are `ONS_subset`, `UKPopulationData` and `UKPowerSystemBaseWorld`. All these namespaces should be created with the option `Enable geospatial` ticked. Create `ONS_subset` to manage the subset of ONS data which was available from `https://statistics.data.gov.uk/sparql`. Create `UKPopulationData` and `UKPowerSystemBaseWorld` to store the triples describing the base world of the UK power system. The namespace `UKPopulationData` is specifically designed to contain the population data while `UKPowerSystemBaseWorld` is for the other data. After the creation of these three namespaces, set up the endpoint IRIs in `\UK_Digital_Twin\UK_Digital_Twin_Package\endPoint.py`.
 - 2.3 Create a replica of the required subset of ONS data: Copy all the files except the batch (.bat) files from Dropbox by following the instructions below:
 
@@ -89,9 +113,9 @@ An example ONS structure with the type of 'ORIGINAL' is provided below:
 ONS = {
     'label': 'ons',
     'type':'ORIGINAL',
-    'endpoint_iri' : ONSEndpoint,
-    'queryendpoint_iri' : ONSEndpoint,
-    'updateendpoint_iri' : ONSEndpoint}
+    'endpoint_iri' : ONSEndpoint_iri,
+    'queryendpoint_iri' : ONSEndpoint_iri,
+    'updateendpoint_iri' : ONSEndpoint_iri}
 
 
 - 2.4 Create the base world: Go to `\UK_Digital_Twin\UK_Power_System_Base_World_Initialiser\` and run `UKPowerSystem_BaseWorld.py` using the following command.
