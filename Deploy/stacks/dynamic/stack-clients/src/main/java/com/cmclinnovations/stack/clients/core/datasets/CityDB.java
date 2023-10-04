@@ -61,6 +61,8 @@ public class CityDB extends GeoServerDataSubset {
 
         createLayer(database);
 
+        CityDBClient.getInstance().resetSchema(database);
+
     }
 
     @Override
