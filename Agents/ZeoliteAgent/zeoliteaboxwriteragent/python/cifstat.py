@@ -33,6 +33,10 @@ def isEmpty( line ):
   return False
 
 def cleanString( line ):
+  """
+  Remove extra symbols, comments, etc from a stirng. 
+  Specific for this python file, so it is not in the common tools.py 
+  """
   if not isinstance(line,str):
     logging.error( "Input line '" + str(line) + "' is not a string in cleanString()." )
     return True
@@ -68,7 +72,7 @@ class CIFStat:
   def readStandardFile( self, path ):
       output = []
       if not os.path.isfile( path ):
-        logging.error( "CIF file does not exist: '" + path + "'" )
+        logging.error( "CIF standard file does not exist: '" + path + "'" )
         return []
 
       f = open( path, encoding="utf8" )
@@ -293,7 +297,7 @@ if __name__ == "__main__":
 
   cs.addDir( "CIF" )
   cs.addDir( "LI-CIF" )
-  #cs.addDir( "ccdcfiles" )
+  cs.addDir( "ccdcfiles" )
   #cs.addDir( "test" )
 
   cs.stat( filename = "stat.dat" )

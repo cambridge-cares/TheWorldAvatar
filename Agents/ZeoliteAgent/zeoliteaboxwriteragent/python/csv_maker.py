@@ -1,3 +1,39 @@
+"""
+Creator of abox .csv file for zeolite data from CIF file and other sources.
+
+This ontology uses the OntoCrystal and OntoZeolite TBox structures.
+Extra features supported:
+- Save the uncertainties for some of the crystal parameters,
+- Divide a concatenated CIF file and save such files separately.
+
+There are different lists of Atom Sites:
+1) original atoms as they are written in CIF (fractional coordinates, 
+   removed symmetrical copies, with uncertainties)
+   This is done by TODO
+2) all atoms in the unit cell (original with symmetry applied, with uncertainties).
+   This is done by TODO
+3) all atoms in the unit cell (original with symmetry applied, no uncertainties).
+   This is done by defailt in PyMatGen package.
+All of these lists can be converted to the cartesian coordinates 
+with or without uncertainties.
+
+It is also possible to save only the CIF data.
+
+Usage:
+python csv_maker.py 
+- No flag  : use all available data to create a .csv file for an individual zeolite.
+--cif,-c path : process only the .cif file to populate the CristalInformation 
+             class instance with its subclasses and save the result in a .csv file.
+             Such .csv file can be concatenated with other files.
+             'path' may be a file or a directory. In the latter case all .cif files 
+             in that directory and its sub-directories will be processed.
+             Each .cif file is converted to a separate .csv file.
+             The output is written to the ???? TODO
+--out,-o   : The name of the output file(s). Each   
+-??? 
+
+"""
+
 
 import csv
 import os
@@ -13,42 +49,217 @@ import zeolist
 import tilesignature
 import math
 import numpy
+import argparse
 
 from pymatgen.core.structure import Structure, Lattice
 
 
 # FIXME
 #http://www.w3.org/2000/01/rdf-schema#Literal
+class CommandLine:
+  def __init__(self):
+    parser = argparse.ArgumentParser( description='what is this?' )
+    parser.add_argument( '--cif', type=str, default='', help='file name of the CIF file' )
+
+    args = parser.parse_args()
+    #print( args.accumulate, args.cif )
+    print( "Input CIF file ='" + args.cif + "'." )
+    pass # __init__()
+
+  def a(self):
+
+
+    pass
+
+  pass # class CommandLine
+
 
 class CsvMaker:
-
   def __init__( self ):
     #self.zeoOption = "main"
     self.zeoOption = "test"
     self.zeoList = []
 
-    self.ontoBase = "ontoZeolite"
+    self.ontoBase = "OntoZeolite"
     self.ontoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
 
     self.inputDir  = os.path.join( "ontozeolite", "data" )
     self.outputDir = os.path.join( "ontozeolite", "zeocsv" )
+
+    self.cifStandard = []
+    self.cifStandard = self.readStandardFile( "CIF_standard_2.4.5.txt" )
 
     #baseName = self.ontoBase + "-" + zeoname
     #self.ontoHttp = ""
     
     pass # CsvMaker.__init__()
 
+  def cleanString( self, line ):
+    if not isinstance( line, str ):
+      logging.error( "Input line '" + str(line) + "' i snot a string in cleanString()" )
+      return str(line)
+    pos = line.find( "#" )
+    if pos < 0:
+      tmp = line.strip()
+    else:
+      tmp = line[:pos].strip()
+
+    return tmp
+
+  def readStandardFile( self, path ):
+    output = []
+    if not os.path.isfile( path ):
+      logging.error( "CIF standard file does not exist: '" + path + "'" )
+      return []
+    f = open( path, encoding="utf8" )
+    for line in f:
+      short = self.cleanString( line )
+      pos = short.find( "_" )
+      if 0 == pos:
+        pos = short.find( "_[]" )
+        if pos < 0:
+          output.append(short)
+        else:
+          pass
+
+    f.close()
+    return output
+
   def prepare( self ):
     self.zeoList = zeolist.getZeoList( self.zeoOption )
-    self.zeoList = [ os.path.join( "test", "913885.cif" ) ]
-    self.uuidDB = tools.loadUUID( )
+    #self.zeoList = [ os.path.join( "test", "913885.cif" ) ]
+    self.uuidDB  = tools.loadUUID( )
 
     # May be also command line arguments here:
 
+  def __del__( self ):
+    #self.finalize()
+    pass
 
   def finalize( self ):
     tools.saveUUID( self.uuidDB )
 
+  def getArrVector( self, subject, predicate, value ):
+    """
+    Create a vector with specified values.
+    'subject' - is the full proper name of the parent class pointing to the new vector,
+    'preidcate' - is the full object property to link the parent and the new vector,
+    The input 'value' is a dictionary with values:
+    ["class"] : The class of the newly created vector. Depending on the class name 
+                some properties may not be available.
+    ["name"] : The instance name (without UUID, UUID will be generated automatically)
+               Internally, all components and other classes (if any) 
+               will be using the same UUID.
+               The 'name' should be saved somewhere internally to prevent 
+               creation of vectors with repeating names.
+    ["comp"]["x"]     : value
+    ["comp"]["alpha"] : value
+    ["comp"][0]       : value
+    ["unit"]          : (optional) unit for the entire vector
+    ["comp"]["x"]["value"]  : value of the individual component
+    ["comp"]["x"]["unit"]  : (optional) for individual component
+    ["comp"]["list"]  : the value is a list(), defines the vector using integer index
+    ["comp"]["start"] : if ["comp"] is a "list" this is the index of the first component. Default is 1.
+    ["+/-"]           : appends another vector 'uncertainty' to this file.
+    ["label"]         : A label assigned to the entire vector (valid only for UnitCellLatticeVector class)
+
+    Other keys are also possible. There will be warnings for unknown/unsupported keys.
+    """
+    output = []
+    #logging.error( " getArrVector() is not implemented yet" )
+    # FIXME TODO
+
+    keys = value.keys()
+    if "name" not in keys:
+      logging.error( " Creating a vector without the value['name'] specified. I skip it." )
+      return []
+
+    if "class" in keys:
+      myClass = value["class"]
+    else:
+      logging.error( " Missing value['class'] for vector '" + value["name"] + 
+                     "', will use default 'Vector'."  )
+      myClass = "Vector" 
+
+    #if "comp" not in keys:
+    #  logging.error( " Missing value['comp'] for vector '" + value["name"] + "'"  )
+
+    if myClass in ["Vector", "UnitCellLengths", "UnitCellAngles"]:
+        # Do nothing
+        pass
+    elif "VectorWithUncertainty" == myClass:
+        # Do nothing
+        pass
+    elif "UnitCellLatticeVector" == myClass:
+        # Do nothing
+        pass
+    else:
+        logging.error( " Unknown vector class '" + myClass + "' for vector '" + value["name"] + "'." )
+
+
+    # Vector for Unit Cell length parameters (a,b,c):
+    uuid_vector = tools.getUUID( self.uuidDB, myClass, value["name"] )
+    output.append( [ uuid_vector, "Instance", myClass, "", "", "" ] )
+ 
+    if "UnitCellLatticeVector" == myClass:
+      if "label" in keys:
+        output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                         uuid_vector, "", value["label"], "string" ] )
+
+      else:
+        logging.warning( " Label is not defined for '" + value["name"] + "' of class '" + 
+                         myClass + "'." )
+
+
+    if   isinstance( value["comp"], dict):
+      comp_keys = value["comp"].keys()  # comp_keys means 'KEYS of the COMPonents'.
+      for ck in comp_keys:
+        uuid_comp = tools.getUUID( self.uuidDB, "VectorComponent", value["name"] + "_comp_" + ck  )
+        output.append( [ uuid_comp, "Instance", "VectorComponent", "", "", "" ] )
+
+        output.append( [ uuid_vector, "Instance", uuid_comp,  
+                         self.ontoPrefix + "hasComponent", "", "" ] )
+
+        output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                         uuid_comp, "", ck, "string" ] )
+
+        output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                         uuid_comp, "", value["comp"][ck]["value"], "rdfs:Literal" ] )
+ 
+        if "unit" in list(value["comp"][ck].keys()):
+          unit = value["comp"][ck]["unit"]
+          if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
+            logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
+                             value["name"] + "'. " + 
+                             "Expecting an instance of OM-2 ontology class Unit." )
+
+          output.append( [ uuid_comp, "Instance", unit,
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                          "", "" ] )
+
+
+    if "unit" in keys:
+#"http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom"
+      unit = value["unit"]
+      if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
+        logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
+                         value["name"] + "'. " + 
+                         "Expecting an instance of OM-2 ontology class Unit." )
+
+      output.append( [ uuid_vector, "Instance", unit,
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    elif isinstance( value["comp"], list):
+      logging.error( " Not implemented yet list component 2222222 " )
+
+    else:
+      logging.error( " Unknown type of value['comp'] = '" + str(type(value["comp"])) + 
+                     "' in vector '" + value["name"] + "'." )
+
+    #print( "==============================" )
+    return output
+    pass # getArrVector()
 
   def arrInit( self, zeoname ):
     output = [ ]
@@ -66,9 +277,9 @@ class CsvMaker:
 
     # The framework should be initialized only once.
     #uuidDB = tools.loadUUID( )
-    uuidDB = self.uuidDB
+    #uuidDB = self.uuidDB
 
-    uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
+    uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
     output.append( [ uuid_zeolite, "Instance", "ZeoliteFramework", "", "", "" ] )
  
     output.append( [ self.ontoPrefix + "hasZeoliteCode", "Data Property", 
@@ -87,7 +298,7 @@ class CsvMaker:
     output = []
 
     #uuidDB = tools.loadUUID( )
-    uuidDB = self.uuidDB
+    #uuidDB = self.uuidDB
 
     path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
 
@@ -98,15 +309,15 @@ class CsvMaker:
 
     structure = Structure.from_file( path )
     #uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
-    uuid_cif = tools.getUUID( uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
+    uuid_cif = tools.getUUID( self.uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
 
-    uuid_cif_core_trans = tools.getUUID( uuidDB, "CIFCoreTransform", "ZeoliteCIFCoreTransform_" + zeoname )
+    uuid_cif_core_trans = tools.getUUID( self.uuidDB, "CIFCoreTransform", "ZeoliteCIFCoreTransform_" + zeoname )
     output.append( [ uuid_cif_core_trans, "Instance", "CIFCoreTransform", "", "", "" ] )
     output.append( [ uuid_cif, "instance", uuid_cif_core_trans,  
                      self.ontoPrefix + "hasCifCoreTransformation", "", "" ] )
 
     ################# Fractional to Cartesian ########################
-    uuid_m_frac_to_cart = tools.getUUID( uuidDB, "CIFCoreTransformationMatrixToCartesian", 
+    uuid_m_frac_to_cart = tools.getUUID( self.uuidDB, "CIFCoreTransformationMatrixToCartesian", 
                         "ZeoliteCIFTransformationMatrixToCartesian_" + zeoname )
     output.append( [ uuid_m_frac_to_cart, "Instance", 
                            "Matrix", "", "", "" ] )
@@ -121,7 +332,7 @@ class CsvMaker:
 
     for iy in range(3):
         for ix in range(3):
-            uuid_m_comp = tools.getUUID( uuidDB, "MatrixComponent", 
+            uuid_m_comp = tools.getUUID( self.uuidDB, "MatrixComponent", 
                         "MatrixComponentToCartesian"+str(ix)+str(iy)+"_" + zeoname )
             output.append( [ uuid_m_comp, "Instance", 
                            "MatrixComponent", "", "", "" ] )
@@ -143,7 +354,7 @@ class CsvMaker:
                              uuid_m_comp, "", 
                              round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
 
-    uuid_v_frac_to_cart = tools.getUUID( uuidDB, "Vector", 
+    uuid_v_frac_to_cart = tools.getUUID( self.uuidDB, "Vector", 
                         "ZeoliteCIFTransformationVectorToCartesian_" + zeoname )
     output.append( [ uuid_v_frac_to_cart, "Instance", 
                            "CIFCoreTransformationVectorToCartesian", "", "", "" ] )
@@ -156,7 +367,7 @@ class CsvMaker:
                       "", "" ] )
 
     for ix in range(3):
-        uuid_v_comp = tools.getUUID( uuidDB, "VectorComponent", 
+        uuid_v_comp = tools.getUUID( self.uuidDB, "VectorComponent", 
                     "VectorComponentToCartesian" + str(ix) + "_" + zeoname )
         output.append( [ uuid_v_comp, "Instance", 
                        "VectorComponent", "", "", "" ] )
@@ -177,7 +388,7 @@ class CsvMaker:
 
 
     ################# Cartesian to Fractional ########################
-    uuid_m_cart_to_frac = tools.getUUID( uuidDB, "CIFCoreTransformationMatrixToFractional", 
+    uuid_m_cart_to_frac = tools.getUUID( self.uuidDB, "CIFCoreTransformationMatrixToFractional", 
                         "ZeoliteCIFTransformationMatrixToFractional_" + zeoname )
     output.append( [ uuid_m_cart_to_frac, "Instance", 
                            "Matrix", "", "", "" ] )
@@ -192,7 +403,7 @@ class CsvMaker:
 
     for iy in range(3):
         for ix in range(3):
-            uuid_m_comp = tools.getUUID( uuidDB, "MatrixComponent", 
+            uuid_m_comp = tools.getUUID( self.uuidDB, "MatrixComponent", 
                         "MatrixComponentToFractional"+str(ix)+str(iy)+"_" + zeoname )
             output.append( [ uuid_m_comp, "Instance", 
                            "MatrixComponent", "", "", "" ] )
@@ -213,7 +424,7 @@ class CsvMaker:
                              uuid_m_comp, "", 
                              round(structure.lattice.reciprocal_lattice.matrix[iy][ix]/TWOPI, 12), "decimal" ] )
 
-    uuid_v_cart_to_frac = tools.getUUID( uuidDB, "Vector", 
+    uuid_v_cart_to_frac = tools.getUUID( self.uuidDB, "Vector", 
                         "ZeoliteCIFTransformationVectorToFractional" + zeoname )
     output.append( [ uuid_v_cart_to_frac, "Instance", 
                            "Vector", "", "", "" ] )
@@ -227,7 +438,7 @@ class CsvMaker:
                       "", "" ] )
 
     for ix in range(3):
-        uuid_v_comp = tools.getUUID( uuidDB, "VectorComponent", 
+        uuid_v_comp = tools.getUUID( self.uuidDB, "VectorComponent", 
                     "VectorComponentToFractional" + str(ix) + "_" + zeoname )
         output.append( [ uuid_v_comp, "Instance", 
                        "VectorComponent", "", "", "" ] )
@@ -247,7 +458,6 @@ class CsvMaker:
                          #round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
 
 
-
     #tools.saveUUID( uuidDB )
 
     return output
@@ -259,7 +469,7 @@ class CsvMaker:
     output = []
 
     #uuidDB = tools.loadUUID( )
-    uuidDB = self.uuidDB
+    #uuidDB = self.uuidDB
 
     path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
     #dataIn = tools.readCsv( path )
@@ -269,9 +479,9 @@ class CsvMaker:
 
     structure = Structure.from_file( path )
 
-    uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
+    uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
 
-    uuid_cif = tools.getUUID( uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
+    uuid_cif = tools.getUUID( self.uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
  
 
     return output
@@ -280,15 +490,17 @@ class CsvMaker:
   def arrUnitCell( self, zeoname ):
     output = []
     TWOPI = 2 * math.pi
+
     # TODO to add get_crystal_system(), get_space_group_number(), 
     #      https://pymatgen.org/pymatgen.symmetry.html
 
     #uuidDB = tools.loadUUID( )
-    uuidDB = self.uuidDB
+    #uuidDB = self.uuidDB
 
     path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
 
-    path = os.path.join( "test", "913885.cif" ) 
+    #print( "Using a test case 913885.cif for the UnitCell class" )
+    #path = os.path.join( "test", "913885.cif" ) 
     #dataIn = tools.readCsv( path )
     if not os.path.isfile( path ):
       logging.error( "File not found '" + path + "'." )
@@ -307,15 +519,15 @@ class CsvMaker:
     #print( TWOPI * numpy.linalg.inv( structure.lattice.matrix ) )
 
     # Define class instances:
-    uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
+    uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
  
     #output.append( [ self.ontoPrefix + "hasZeoliteCode", "Data Property", 
     #                 uuid_zeolite, "", zeoname.strip(' "'), "string" ] )
 
-    uuid_cif = tools.getUUID( uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
+    uuid_cif = tools.getUUID( self.uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
     output.append( [ uuid_cif, "Instance", "CIFCore", "", "", "" ] )
  
-    uuid_cif_uc = tools.getUUID( uuidDB, "CIFCoreCell", "UnitCell_" + zeoname )
+    uuid_cif_uc = tools.getUUID( self.uuidDB, "CIFCoreCell", "UnitCell_" + zeoname )
     output.append( [ uuid_cif_uc, "Instance", "CIFCoreCell", "", "", "" ] )
 
     # Define relation between the class instances:
@@ -324,514 +536,165 @@ class CsvMaker:
 
     output.append( [ uuid_cif, "Instance", uuid_cif_uc,  
                      self.ontoPrefix + "hasCIFCoreCell", "", "" ] )
+
     ###########################################
 
     # Vector for Unit Cell length parameters (a,b,c):
-    uuid_uc_abc = tools.getUUID( uuidDB, "UnitCellLengths", "UnitCellLengths_" + zeoname )
-    output.append( [ uuid_uc_abc, "Instance", "UnitCellLengths", "", "", "" ] )
- 
-    uuid_uc_a = tools.getUUID( uuidDB, "VectorComponent", "UnitCellLengthA_" + zeoname )
-    output.append( [ uuid_uc_a, "Instance", "Length", "", "", "" ] )
- 
-    uuid_uc_b = tools.getUUID( uuidDB, "VectorComponent", "UnitCellLengthB_" + zeoname )
-    output.append( [ uuid_uc_b, "Instance", "Length", "", "", "" ] )
-
-    uuid_uc_c = tools.getUUID( uuidDB, "VectorComponent", "UnitCellLengthC_" + zeoname )
-    output.append( [ uuid_uc_c, "Instance", "Length", "", "", "" ] )
-
-    output.append( [ uuid_cif_uc, "Instance", uuid_uc_abc,  
-                     self.ontoPrefix + "hasUnitCellLengths", "", "" ] )
-
-    output.append( [ uuid_uc_abc, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    output.append( [ uuid_uc_abc, "Instance", uuid_uc_a,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_abc, "Instance", uuid_uc_b,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_abc, "Instance", uuid_uc_c,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_a, "", "a", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_a, "", round(structure.lattice.a, 12) , "decimal" ] )
-    #print( round( 10.123456789012345678, 15 ) )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_b, "", "b", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_b, "", round(structure.lattice.b, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_c, "", "c", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_c, "", round(structure.lattice.c, 12) , "decimal" ] )
-    ###########################################
+    tmp = {"class":"UnitCellLengths", 
+           "name": "UnitCellLengths_" + zeoname,
+           "comp":{ "a": {"value":round(structure.lattice.a, 12)},
+                    "b": {"value":round(structure.lattice.b, 12)},
+                    "c": {"value":round(structure.lattice.c, 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+           }
+    arr = self.getArrVector( uuid_cif_uc, self.ontoPrefix + "hasUnitCellLengths", tmp )
+    for line in arr:
+      output.append( line )
 
     # Vector for Unit Cell angles parameters (alpha,beta,gamma):
-    uuid_uc_abg = tools.getUUID( uuidDB, "UnitCellAngles", "UnitCellAngles_" + zeoname )
-    output.append( [ uuid_uc_abg, "Instance", "UnitCellAngles", "", "", "" ] )
- 
-    uuid_uc_al = tools.getUUID( uuidDB, "VectorComponent", "UnitCellAngleAlpha_" + zeoname )
-    output.append( [ uuid_uc_al, "Instance", "VectorComponent", "", "", "" ] )
- 
-    uuid_uc_be = tools.getUUID( uuidDB, "VectorComponent", "UnitCellAngleBeta_" + zeoname )
-    output.append( [ uuid_uc_be, "Instance", "VectorComponent", "", "", "" ] )
+    tmp = {"class":"UnitCellAngles", 
+           "name": "UnitCellAngles_" + zeoname,
+           "comp":{ "alpha": {"value":round(structure.lattice.alpha, 12)},
+                    "beta" : {"value":round(structure.lattice.beta , 12)},
+                    "gamma": {"value":round(structure.lattice.gamma, 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/degree",
+           }
+    arr = self.getArrVector( uuid_cif_uc, self.ontoPrefix + "hasUnitCellAngless", tmp )
+    for line in arr:
+      output.append( line )
 
-    uuid_uc_gm = tools.getUUID( uuidDB, "VectorComponent", "UnitCellAngleGamma_" + zeoname )
-    output.append( [ uuid_uc_gm, "Instance", "VectorComponent", "", "", "" ] )
+    # Vector for reciprocal Unit Cell length parameters (a*,b*,c*):
+    tmp = {"class":"UnitCellLengths", 
+           "name": "UnitCellReciprocalLengths_" + zeoname,
+           "comp":{ "a*": {"value":round(structure.lattice.reciprocal_lattice.a, 12)},
+                    "b*": {"value":round(structure.lattice.reciprocal_lattice.b, 12)},
+                    "c*": {"value":round(structure.lattice.reciprocal_lattice.c, 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+           }
+    arr = self.getArrVector( uuid_cif_uc, self.ontoPrefix + "hasUnitCellReciprocalLengths", tmp )
+    for line in arr:
+      output.append( line )
 
-    output.append( [ uuid_cif_uc, "Instance", uuid_uc_abg,  
-                     self.ontoPrefix + "hasUnitCellAngles", "", "" ] )
+    # Vector for Reciprocal Unit Cell angle parameters (alpha*,beta*,gamma*):
+    tmp = {"class":"UnitCellAngles", 
+           "name": "UnitCellReciprocalAngles_" + zeoname,
+           "comp":{ "alpha*": {"value":round(structure.lattice.reciprocal_lattice.alpha, 12)},
+                    "beta*" : {"value":round(structure.lattice.reciprocal_lattice.beta , 12)},
+                    "gamma*": {"value":round(structure.lattice.reciprocal_lattice.gamma, 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/degree",
+           }
+    arr = self.getArrVector( uuid_cif_uc, self.ontoPrefix + "hasUnitCellReciprocalAngles", tmp )
+    for line in arr:
+      output.append( line )
 
-    output.append( [ uuid_uc_abg, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/degree",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    output.append( [ uuid_uc_abg, "Instance", uuid_uc_al,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_abg, "Instance", uuid_uc_be,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_abg, "Instance", uuid_uc_gm,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_al, "", "alpha", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_al, "", 
-                     round(structure.lattice.alpha, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_be, "", "beta",  "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_be, "", 
-                     round(structure.lattice.beta,  12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_gm, "", "gamma", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_gm, "", 
-                     round(structure.lattice.gamma, 12) , "decimal" ] )
     ###########################################
 
-
-    # Vector for reciprocal Unit Cell lengths (a*,b*,c*):
-    uuid_uc_r_abc = tools.getUUID( uuidDB, "UnitCellReciprocalLengths", "UnitCellReciprocalLengths_" + zeoname )
-    output.append( [ uuid_uc_r_abc, "Instance", "UnitCellLengths", "", "", "" ] )
- 
-    uuid_uc_r_a = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalLengthA_" + zeoname )
-    output.append( [ uuid_uc_r_a, "Instance", "Length", "", "", "" ] )
- 
-    uuid_uc_r_b = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalLengthB_" + zeoname )
-    output.append( [ uuid_uc_r_b, "Instance", "Length", "", "", "" ] )
-
-    uuid_uc_r_c = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalLengthC_" + zeoname )
-    output.append( [ uuid_uc_r_c, "Instance", "Length", "", "", "" ] )
-
-    output.append( [ uuid_cif_uc, "Instance", uuid_uc_abc,  
-                     self.ontoPrefix + "hasUnitCellReciprocalLengths", "", "" ] )
-
-    output.append( [ uuid_uc_r_abc, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    output.append( [ uuid_uc_r_abc, "Instance", uuid_uc_r_a,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_r_abc, "Instance", uuid_uc_r_b,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_r_abc, "Instance", uuid_uc_r_c,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_r_a, "", "a*", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_a, "", 
-                     round(structure.lattice.reciprocal_lattice.a/TWOPI, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_r_b, "", "b*", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_b, "", 
-                     round(structure.lattice.reciprocal_lattice.b/TWOPI, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_r_c, "", "c*", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_c, "", 
-                     round(structure.lattice.reciprocal_lattice.c/TWOPI, 12) , "decimal" ] )
     ###########################################
-    ###########################################
-
-    # Vector for Reciprocal Unit Cell angles parameters (alpha*,beta*,gamma*):
-    uuid_uc_r_abg = tools.getUUID( uuidDB, "UnitCellReciprocalAngles", "UnitCellReciprocalAngles_" + zeoname )
-    output.append( [ uuid_uc_r_abg, "Instance", "UnitCellReciprocalAngles", "", "", "" ] )
- 
-    uuid_uc_r_al = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalAngleAlpha_" + zeoname )
-    output.append( [ uuid_uc_r_al, "Instance", "VectorComponent", "", "", "" ] )
- 
-    uuid_uc_r_be = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalAngleBeta_" + zeoname )
-    output.append( [ uuid_uc_r_be, "Instance", "VectorComponent", "", "", "" ] )
-
-    uuid_uc_r_gm = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalAngleGamma_" + zeoname )
-    output.append( [ uuid_uc_r_gm, "Instance", "VectorComponent", "", "", "" ] )
-
-    output.append( [ uuid_cif_uc, "Instance", uuid_uc_r_abg,  
-                     self.ontoPrefix + "hasUnitCellReciprocalAngles", "", "" ] )
-
-    output.append( [ uuid_uc_r_abg, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/degree",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    output.append( [ uuid_uc_r_abg, "Instance", uuid_uc_r_al,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_r_abg, "Instance", uuid_uc_r_be,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_r_abg, "Instance", uuid_uc_r_gm,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_r_al, "", "alpha", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_al, "", 
-                     round(structure.lattice.reciprocal_lattice.alpha, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_r_be, "", "beta",  "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_be, "", 
-                     round(structure.lattice.reciprocal_lattice.beta,  12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_r_gm, "", "gamma", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_gm, "", 
-                     round(structure.lattice.reciprocal_lattice.gamma, 12) , "decimal" ] )
-    ###########################################
-
     # Vector to keep three Unit Cell vectors (a,b,c):
-    uuid_uc_vec_abc = tools.getUUID( uuidDB, "UnitCellVectorSet", "UnitCellVectors_" + zeoname )
+    uuid_uc_vec_abc = tools.getUUID( self.uuidDB, "UnitCellVectorSet", "UnitCellVectorSet_" + zeoname )
     output.append( [ uuid_uc_vec_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
 
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_abc,  
                      self.ontoPrefix + "hasUnitCellVectorSet", "", "" ] )
 
-    uuid_vec_a = tools.getUUID( uuidDB, "UnitCellVector", "UnitCellVectorA_" + zeoname )
-    uuid_vec_b = tools.getUUID( uuidDB, "UnitCellVector", "UnitCellVectorB_" + zeoname )
-    uuid_vec_c = tools.getUUID( uuidDB, "UnitCellVector", "UnitCellVectorC_" + zeoname )
-
-    output.append( [ uuid_vec_a, "Instance", "UnitCellVector", "", "", "" ] )
-    output.append( [ uuid_vec_b, "Instance", "UnitCellVector", "", "", "" ] )
-    output.append( [ uuid_vec_c, "Instance", "UnitCellVector", "", "", "" ] )
-
-    output.append( [ uuid_uc_vec_abc, "Instance", uuid_vec_a,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_vec_abc, "Instance", uuid_vec_b,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_vec_abc, "Instance", uuid_vec_c,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_a, "", "a", "string" ] )
-    output.append( [ uuid_vec_a, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_b, "", "b", "string" ] )
-    output.append( [ uuid_vec_b, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_c, "", "c", "string" ] )
-    output.append( [ uuid_vec_c, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    uuid_vec_ax = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorAx_" + zeoname )
-    uuid_vec_ay = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorAy_" + zeoname )
-    uuid_vec_az = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorAz_" + zeoname )
-
-    uuid_vec_bx = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorBx_" + zeoname )
-    uuid_vec_by = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorBy_" + zeoname )
-    uuid_vec_bz = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorBz_" + zeoname )
-
-    uuid_vec_cx = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorCx_" + zeoname )
-    uuid_vec_cy = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorCy_" + zeoname )
-    uuid_vec_cz = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorCz_" + zeoname )
+    tmp = {"class":"UnitCellLatticeVector", 
+           "name": "UnitCellLatticeVectorA_" + zeoname,
+           "comp":{ "x": {"value": round(structure.lattice.matrix[0][0], 12)},
+                    "y": {"value": round(structure.lattice.matrix[0][1], 12)},
+                    "z": {"value": round(structure.lattice.matrix[0][2], 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+           "label": "a"
+           }
+    arr = self.getArrVector( uuid_uc_vec_abc, self.ontoPrefix + "hasLatticeVector", tmp )
+    for line in arr:
+      output.append( line )
 
 
-    output.append( [ uuid_vec_ax, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_ay, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_az, "Instance", "VectorComponent", "", "", "" ] )
+    tmp = {"class":"UnitCellLatticeVector", 
+           "name": "UnitCellLatticeVectorB_" + zeoname,
+           "comp":{ "x": {"value": round(structure.lattice.matrix[1][0], 12)},
+                    "y": {"value": round(structure.lattice.matrix[1][1], 12)},
+                    "z": {"value": round(structure.lattice.matrix[1][2], 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+           "label": "b"
+           }
+    arr = self.getArrVector( uuid_uc_vec_abc, self.ontoPrefix + "hasLatticeVector", tmp )
+    for line in arr:
+      output.append( line )
 
-    output.append( [ uuid_vec_bx, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_by, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_bz, "Instance", "VectorComponent", "", "", "" ] )
+    tmp = {"class":"UnitCellLatticeVector", 
+           "name": "UnitCellLatticeVectorC_" + zeoname,
+           "comp":{ "x": {"value": round(structure.lattice.matrix[2][0], 12)},
+                    "y": {"value": round(structure.lattice.matrix[2][1], 12)},
+                    "z": {"value": round(structure.lattice.matrix[2][2], 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+           "label": "c"
+           }
 
-    output.append( [ uuid_vec_cx, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_cy, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_cz, "Instance", "VectorComponent", "", "", "" ] )
-
-
-    output.append( [ uuid_vec_a, "Instance", uuid_vec_ax,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_a, "Instance", uuid_vec_ay,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_a, "Instance", uuid_vec_az,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-
-    output.append( [ uuid_vec_b, "Instance", uuid_vec_bx,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_b, "Instance", uuid_vec_by,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_b, "Instance", uuid_vec_bz,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-
-    output.append( [ uuid_vec_c, "Instance", uuid_vec_cx,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_c, "Instance", uuid_vec_cy,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_c, "Instance", uuid_vec_cz,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_ax, "", "x", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_ax, "", 
-                     round(structure.lattice.matrix[0][0], 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_ay, "", "y", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_ay, "", 
-                     round(structure.lattice.matrix[0][1], 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_az, "", "z", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_az, "", 
-                     round(structure.lattice.matrix[0][2], 12) , "decimal" ] )
-
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_bx, "", "x", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_bx, "", 
-                     round(structure.lattice.matrix[1][0], 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_by, "", "y", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_by, "", 
-                     round(structure.lattice.matrix[1][1], 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_bz, "", "z", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_bz, "", 
-                     round(structure.lattice.matrix[1][2], 12) , "decimal" ] )
-
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_cx, "", "x", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_cx, "", 
-                     round(structure.lattice.matrix[2][0], 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_cy, "", "y", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_cy, "", 
-                     round(structure.lattice.matrix[2][1], 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_cz, "", "z", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_cz, "", 
-                     round(structure.lattice.matrix[2][2], 12) , "decimal" ] )
-
-    ###########################################
+    arr = self.getArrVector( uuid_uc_vec_abc, self.ontoPrefix + "hasLatticeVector", tmp )
+    for line in arr:
+      output.append( line )
 
     # Vector for Reciprocal Unit Cell vectors (a*,b*,c*):
-    uuid_uc_vec_r_abc = tools.getUUID( uuidDB, "UnitCellVectorSet", "ReciprocalUnitCellVectors_" + zeoname )
+    uuid_uc_vec_r_abc = tools.getUUID( self.uuidDB, "UnitCellVectorSet", "ReciprocalUnitCellVectorSet_" + zeoname )
     output.append( [ uuid_uc_vec_r_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
  
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_r_abc,  
                      self.ontoPrefix + "hasReciprocalUnitCellVectorSet", "", "" ] )
 
-    uuid_vec_r_a  = tools.getUUID( uuidDB, "UnitCellVector", "ReciprocalUnitCellVectorA_" + zeoname )
-    uuid_vec_r_b  = tools.getUUID( uuidDB, "UnitCellVector", "ReciprocalUnitCellVectorB_" + zeoname )
-    uuid_vec_r_c  = tools.getUUID( uuidDB, "UnitCellVector", "ReciprocalUnitCellVectorC_" + zeoname )
-
-    output.append( [ uuid_vec_r_a, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_r_b, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_r_c, "Instance", "VectorComponent", "", "", "" ] )
-
-    output.append( [ uuid_uc_vec_r_abc, "Instance", uuid_vec_r_a,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_vec_r_abc, "Instance", uuid_vec_r_b,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_vec_r_abc, "Instance", uuid_vec_r_c,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_a, "", "a", "string" ] )
-
-    output.append( [ uuid_vec_r_a, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_b, "", "b", "string" ] )
-    output.append( [ uuid_vec_r_b, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_c, "", "c", "string" ] )
-    output.append( [ uuid_vec_r_c, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
+    tmp = {"class":"UnitCellLatticeVector", 
+           "name": "UnitCellReciprocalLatticeVectorA_" + zeoname,
+           "comp":{ "x": {"value": round(structure.lattice.reciprocal_lattice.matrix[0][0], 12)},
+                    "y": {"value": round(structure.lattice.reciprocal_lattice.matrix[0][1], 12)},
+                    "z": {"value": round(structure.lattice.reciprocal_lattice.matrix[0][2], 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+           "label": "a*"
+           }
+    arr = self.getArrVector( uuid_uc_vec_r_abc, self.ontoPrefix + "hasLatticeVector", tmp )
+    for line in arr:
+      output.append( line )
 
 
-    uuid_vec_r_ax = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorAx_" + zeoname )
-    uuid_vec_r_ay = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorAy_" + zeoname )
-    uuid_vec_r_az = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorAz_" + zeoname )
+    tmp = {"class":"UnitCellLatticeVector", 
+           "name": "UnitCellReciprocalLatticeVectorB_" + zeoname,
+           "comp":{ "x": {"value": round(structure.lattice.reciprocal_lattice.matrix[1][0], 12)},
+                    "y": {"value": round(structure.lattice.reciprocal_lattice.matrix[1][1], 12)},
+                    "z": {"value": round(structure.lattice.reciprocal_lattice.matrix[1][2], 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+           "label": "b*"
+           }
+    arr = self.getArrVector( uuid_uc_vec_r_abc, self.ontoPrefix + "hasLatticeVector", tmp )
+    for line in arr:
+      output.append( line )
 
-    uuid_vec_r_bx = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorBx_" + zeoname )
-    uuid_vec_r_by = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorBy_" + zeoname )
-    uuid_vec_r_bz = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorBz_" + zeoname )
+    tmp = {"class":"UnitCellLatticeVector", 
+           "name": "UnitCellReciprocalLatticeVectorC_" + zeoname,
+           "comp":{ "x": {"value": round(structure.lattice.reciprocal_lattice.matrix[2][0], 12)},
+                    "y": {"value": round(structure.lattice.reciprocal_lattice.matrix[2][1], 12)},
+                    "z": {"value": round(structure.lattice.reciprocal_lattice.matrix[2][2], 12)}
+                  },
+           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+           "label": "c*"
+           }
 
-    uuid_vec_r_cx = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorCx_" + zeoname )
-    uuid_vec_r_cy = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorCy_" + zeoname )
-    uuid_vec_r_cz = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorCz_" + zeoname )
-
-    output.append( [ uuid_vec_r_ax, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_r_ay, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_r_az, "Instance", "VectorComponent", "", "", "" ] )
-
-    output.append( [ uuid_vec_r_bx, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_r_by, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_r_bz, "Instance", "VectorComponent", "", "", "" ] )
-
-    output.append( [ uuid_vec_r_cx, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_r_cy, "Instance", "VectorComponent", "", "", "" ] )
-    output.append( [ uuid_vec_r_cz, "Instance", "VectorComponent", "", "", "" ] )
-
-    output.append( [ uuid_vec_r_a, "Instance", uuid_vec_r_ax,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_r_a, "Instance", uuid_vec_r_ay,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_r_a, "Instance", uuid_vec_r_az,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-
-    output.append( [ uuid_vec_r_b, "Instance", uuid_vec_r_bx,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_r_b, "Instance", uuid_vec_r_by,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_r_b, "Instance", uuid_vec_r_bz,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-
-    output.append( [ uuid_vec_r_c, "Instance", uuid_vec_r_cx,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_r_c, "Instance", uuid_vec_r_cy,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ uuid_vec_r_c, "Instance", uuid_vec_r_cz,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_ax, "", "x", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_ax, "", 
-                     round(structure.lattice.reciprocal_lattice.matrix[0][0]/TWOPI, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_ay, "", "y", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_ay, "", 
-                     round(structure.lattice.reciprocal_lattice.matrix[0][1]/TWOPI, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_az, "", "z", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_az, "", 
-                     round(structure.lattice.reciprocal_lattice.matrix[0][2]/TWOPI, 12) , "decimal" ] )
-
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_bx, "", "x", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_bx, "", 
-                     round(structure.lattice.reciprocal_lattice.matrix[1][0]/TWOPI, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_by, "", "y", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_by, "", 
-                     round(structure.lattice.reciprocal_lattice.matrix[1][1]/TWOPI, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_bz, "", "z", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_bz, "", 
-                     round(structure.lattice.reciprocal_lattice.matrix[1][2]/TWOPI, 12) , "decimal" ] )
-
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_cx, "", "x", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_cx, "", 
-                     round(structure.lattice.reciprocal_lattice.matrix[2][0]/TWOPI, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_cy, "", "y", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_cy, "", 
-                     round(structure.lattice.reciprocal_lattice.matrix[2][1]/TWOPI, 12) , "decimal" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_vec_r_cz, "", "z", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_cz, "", 
-                     round(structure.lattice.reciprocal_lattice.matrix[2][2]/TWOPI, 12) , "decimal" ] )
+    arr = self.getArrVector( uuid_uc_vec_r_abc, self.ontoPrefix + "hasLatticeVector", tmp )
+    for line in arr:
+      output.append( line )
 
     ###########################################
 
     # Unit cell volume, single value, not vector:
 
-    uuid_uc_volume = tools.getUUID( uuidDB, 
+    uuid_uc_volume = tools.getUUID( self.uuidDB, 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure", 
                      "UnitCellVolume_" + zeoname )
 
@@ -864,16 +727,16 @@ class CsvMaker:
     output = []
 
     #uuidDB = tools.loadUUID()
-    uuidDB = self.uuidDB
+    #uuidDB = self.uuidDB
 
     path = os.path.join( self.inputDir, "Tile-signature-2023.csv" )
     dataIn = tools.readCsv( path )
 
     data = tilesignature.getDataByCode( dataIn, zeoname )
 
-    uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
+    uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
 
-    uuid_tstructure = tools.getUUID( uuidDB, "TiledStructure", "TiledStructure_" + zeoname )
+    uuid_tstructure = tools.getUUID( self.uuidDB, "TiledStructure", "TiledStructure_" + zeoname )
     output.append( [ uuid_tstructure, "Instance", "TiledStructure",
                      "", "", "" ] )
 
@@ -884,23 +747,23 @@ class CsvMaker:
                      uuid_tstructure, "", data[2].strip(' "'), "string" ] )
 
     ### Begin of transitivity
-    uuid_tile_trans = tools.getUUID( uuidDB, "Vector", "TileNumber_" + zeoname + "_transitivity" )
+    uuid_tile_trans = tools.getUUID( self.uuidDB, "Vector", "TileNumber_" + zeoname + "_transitivity" )
     output.append( [ uuid_tile_trans, "Instance", "Vector",
                      "", "", "" ] )
 
-    uuid_tile_transP = tools.getUUID( uuidDB, "VectorComponent", "TileNumber_" + zeoname + "_transitivityP" )
+    uuid_tile_transP = tools.getUUID( self.uuidDB, "VectorComponent", "TileNumber_" + zeoname + "_transitivityP" )
     output.append( [ uuid_tile_transP, "Instance", "VectorComponent",
                      "", "", "" ] )
 
-    uuid_tile_transQ = tools.getUUID( uuidDB, "VectorComponent", "TileNumber_" + zeoname + "_transitivityQ" )
+    uuid_tile_transQ = tools.getUUID( self.uuidDB, "VectorComponent", "TileNumber_" + zeoname + "_transitivityQ" )
     output.append( [ uuid_tile_transQ, "Instance", "VectorComponent",
                      "", "", "" ] )
 
-    uuid_tile_transR = tools.getUUID( uuidDB, "VectorComponent", "TileNumber_" + zeoname + "_transitivityR" )
+    uuid_tile_transR = tools.getUUID( self.uuidDB, "VectorComponent", "TileNumber_" + zeoname + "_transitivityR" )
     output.append( [ uuid_tile_transR, "Instance", "VectorComponent",
                      "", "", "" ] )
 
-    uuid_tile_transS = tools.getUUID( uuidDB, "VectorComponent", "TileNumber_" + zeoname + "_transitivityS" )
+    uuid_tile_transS = tools.getUUID( self.uuidDB, "VectorComponent", "TileNumber_" + zeoname + "_transitivityS" )
     output.append( [ uuid_tile_transS, "Instance", "VectorComponent",
                      "", "", "" ] )
 
@@ -951,8 +814,8 @@ class CsvMaker:
 
     #print( "faces =", faceN )
     for ic, cage in enumerate(cages):
-      uuid_tile     = tools.getUUID( uuidDB, "Tile", "Tile_" + zeoname + "_cage" + str(ic+1) )
-      uuid_tile_num = tools.getUUID( uuidDB, "TileNumber", "TileNumber_" + zeoname + "_cage" + str(ic+1) )
+      uuid_tile     = tools.getUUID( self.uuidDB, "Tile", "Tile_" + zeoname + "_cage" + str(ic+1) )
+      uuid_tile_num = tools.getUUID( self.uuidDB, "TileNumber", "TileNumber_" + zeoname + "_cage" + str(ic+1) )
 
       output.append( [ uuid_tile, "Instance", "Tile", 
                        "", "", "" ] )
@@ -1001,8 +864,8 @@ class CsvMaker:
         #print( "face = ", face )
         
         suffix = "_" + zeoname + "_cage" + str(ic+1) + "_face" + str(f+1)
-        uuid_tile_face     = tools.getUUID( uuidDB, "TileFace", "TileFace"       + suffix )
-        uuid_tile_face_num = tools.getUUID( uuidDB, "TileFaceNumber", "TileFaceNumber" + suffix )
+        uuid_tile_face     = tools.getUUID( self.uuidDB, "TileFace", "TileFace"       + suffix )
+        uuid_tile_face_num = tools.getUUID( self.uuidDB, "TileFaceNumber", "TileFaceNumber" + suffix )
 
         output.append( [ uuid_tile_face,     "Instance", "TileFace", 
                          "" , "", "" ] )
@@ -1046,12 +909,12 @@ class CsvMaker:
 
   def getTransitivity( self, strValue ):
     if not isinstance( strValue, str ):
-      print( "Error! input must be string" )
+      logging.error( " input must be string" )
       return None
 
     short = strValue.strip()
     if short[0] != "[" or short[-1] != "]":
-      print( "Error! Transitivity must be in [] brackets" )
+      logging.error( " Transitivity must be in [] brackets" )
 
     trans = [None]*4
     i = 1   # position of character in the string
@@ -1077,30 +940,37 @@ class CsvMaker:
   def splitErrorBarLoop( self, line, headers, file_line ):
     #print( "Running error bar loop", line )
     #words = line.split()
-    words = self.strSplit( line )
+    nBracket = 0
+    words = tools.strSplit( line )
+    #print ( ">>>>>>>>>>> ", words )
 
     if len(words) == 0:
       logging.error( " Empty line " + file_line )
-      return line
+      return line, 0
 
     if len(words) != len(headers):
       logging.error( " Number of elements on line is different from the " +
                      "definition of the loop: " + str(len(words)) +" vs " + 
                      str(len(headers)) + ": " + str(words) + " vs " + str(headers) +
                      " " + file_line + "." )
-      return line
+      return line, 0
 
     lineNew = line
+    #print( self.entriesToCheck )
     #for i in range( len(headers) ):
     for ih, h in enumerate(headers):
+      #print( "=== '" + h + "' ===" )
       if h in self.entriesToCheck:
+        #print( "   need to process" )
         #logging.warning( " Found one of the entries" )
-        vOut, eOut = self.splitErrorBar( words[ih], file_line )
+        vOut, eOut = self.splitErrorBar( words[ih].strip(), file_line )
+        if eOut != "":
+          nBracket += 1
         pos = line.find( words[ih] )
         lineNew = lineNew.replace( words[ih], vOut )
 
-    print( "lineNew =", lineNew )
-    return lineNew
+    #print( "lineNew =", lineNew )
+    return lineNew, nBracket
 
 
   def splitStr( self, value ):
@@ -1175,9 +1045,71 @@ class CsvMaker:
     return vOut, eOut
     pass
 
-  def cleanCif( self ):
-    fileIn  = os.path.join( "test", "913885.cif" )
-    fileOut = "after-913885.cif"
+
+  #def getCifLineRanges( self, fileIn ):
+  #  return [ 0, 100, 400 ]
+
+  def cleanCif( self, fileIn ):
+    """ 
+    There are two situations when CIF file is not directly readable:
+    1) Single file contains several CIF data structures (concatenation of several files)
+    2) CIF file contains uncertainties (a.k.a. error bars) 
+
+    In both cases I read the file line-by-line and save new (corrected) file(s) 
+    to a temporary directory. 
+    The new file(s) is/are proper CIF file(s), and I can read it/them by the standard functions.
+
+    Return a list containing new filename(s).
+    If no correction was necessary the list is empty.
+
+    There are two independent operations:
+    - find the ranges of individual CIF files in a combined CIF file,
+    - divide the combined CIF file and save to several files,
+    - detect brackets.
+    """
+
+    # Here lineRanges is the list of the first lines of the individual CIF(s) 
+    #    ??? and the last line appended behind.
+    # Later the file can be divided into several using this information.
+    lineRanges = tools.getCifLineRanges( fileIn )
+    filesOut = []
+
+    tmpDir = "tmp"
+    if not os.path.isdir( tmpDir ):
+      os.makedirs(  tmpDir )
+    
+    for i in range(len(lineRanges)-1):
+      #print( "i =", i, ", ", lineRanges[i] )
+
+      nBracket = self.readUncertainties( fileIn, lineRanges[i], lineRanges[i+1] )
+      if ( nBracket > 0 ) or ( len(lineRanges) - 1 > 1 ):
+        fileBase, ext = os.path.splitext( os.path.basename(fileIn) )
+        print( "Input file name and extension:", fileBase, ext )
+
+        fileOut = os.path.join( tmpDir, fileBase + "_" + str(i+1) + ext )
+        filesOut.append( fileOut )
+        self.readUncertainties( fileIn, lineRanges[i], lineRanges[i+1], fileOut = fileOut )
+
+    #else:
+    #fileOut = "after-913885.cif"
+
+    return filesOut
+    pass # cleanCif()
+
+  def readUncertainties(self, fileIn, lineFr, lineTo, fileOut = "" ):
+    """
+    This function can do three different operations:
+    1) read fileIn and count the number of brackets (i.e. the uncertainties)
+       The argument fileOut = "" or not specified.
+    2) Save a modified file whith uncertanties removed, so that the file
+       can be used for reading by standard libraries.
+       Specify the fileOut a path.
+    3) Read both value and uncertainty and assign to the internal variables,
+       which later can be saved into an ABox formal (.csv).
+
+      Return In all 3 cases function returns the number of detected uncertainties.
+
+    """
 
     self.entriesToCheck = [ "_cell_length_a", "_cell_length_b", "_cell_length_c", 
                   "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma",
@@ -1193,41 +1125,49 @@ class CsvMaker:
                   ]
 
     if not os.path.isfile( fileIn ):
-      logging.error( " File '" + fileIn + "' does not exist in cleanCif()." )
+      logging.error( " Input file '" + fileIn + "' does not exist in cleanCif()." )
       return
 
-    f = open( fileIn )
-    fOut = open( fileOut, "w", encoding="utf8" )
+    fIn = open( fileIn )
+    
+    if len(fileOut) > 0:
+      fOut = open( fileOut, "w", encoding="utf8" )
 
     inLoop = False
+    countBrackets = 0
 
-    for il, line in enumerate(f):
+    for il, line in enumerate(fIn):
       file_line = "In file '" + fileIn + "' line " + str(il+1)
       #print( file_line )
 
-      if il >= 66:
+      if il >= 220:
         logging.debug( " Break after 75 lines for testing. " + file_line )
-        break
+        #break
         pass
 
       pos1 = line.find( "#" )
       pos2 = line.find( ";" )
       if   0 == pos1:
-        logging.info( " Found a comment '" + line.strip() + "'. " + file_line )
+        logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
         #short = line[ :pos] + "\n"
-        fOut.write( line )
+        if len(fileOut) > 0:
+          fOut.write( line )
         continue
 
       elif 0 == pos2:
-        logging.info( " Found a comment '" + line.strip() + "'. " + file_line )
+        logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
         #short = line[ :pos] + "\n"
-        fOut.write( line )
+        if len(fileOut) > 0:
+          fOut.write( line )
         continue
 
       elif pos1 > 0 or pos2 > 0:
-        logging.error( file_line + " Comment starts not from line start. " + 
-                       "This is not supported by cleanCif()." )
-        fOut.write( line )
+        logging.warning( " Comment starts not from beginning of the line: '" + 
+                       line.strip() + "' " + file_line + "."  
+                       #+ " This is not supported by readUncertainties()." 
+                     )
+        if len(fileOut) > 0:
+          fOut.write( line )
         continue
 
       #words = line.strip().split()
@@ -1236,28 +1176,33 @@ class CsvMaker:
       
       if len(words) == 0:
         #logging.info( " Empty string " + file_line )
-        fOut.write( line )
+        if len(fileOut) > 0:
+          fOut.write( line )
         inLoop = False
         continue
         pass
 
-      elif "loop_" == words[0]:
-        #logging.info( " In 'loop_' option" )
+      elif "loop_" == words[0].strip():
+        #logging.info( " Found a 'loop_' option" )
         inLoop = True
         inLoopHead = True
         inLoopBody = False
         self.loopHeaders = []
-        #fOut.write( "added 'loop_': " + line )
-        fOut.write( line )
+        if len(fileOut) > 0:
+          #fOut.write( "added 'loop_': " + line )
+          fOut.write( line )
         continue
 
       elif inLoop:
         #logging.info( " In inLoop option" )
+        #print( "Inside the loop" )
         
         if inLoopHead:
+          #print( "Inside the loop head" )
           if "_" == words[0][0]:
-            self.loopHeaders.append( words[0] )
-            fOut.write( line )
+            self.loopHeaders.append( words[0].strip() )
+            if len(fileOut) > 0:
+              fOut.write( line )
           else:
             inLoopHead = False
             inLoopBody = True
@@ -1265,67 +1210,89 @@ class CsvMaker:
         if inLoopBody:
           if "_" == words[0][0]:
             inLoop = False
-            logging.info( " inLoop is set to False" )
-            fOut.write( line )
+            #logging.info( " inLoop is set to False" )
+            if len(fileOut) > 0:
+              fOut.write( line )
             #self.loopHeaders = []
             
           else:
-            lineNew = self.splitErrorBarLoop( line, self.loopHeaders, file_line )
-            fOut.write( lineNew )
+            lineNew, nbrac = self.splitErrorBarLoop( line, self.loopHeaders, file_line )
+            countBrackets += nbrac
+            #print( "after stplitErrorBarLoop():", lineNew, nbrac )
+            if len(fileOut) > 0:
+              fOut.write( lineNew )
             continue
             pass
 
           pass
 
-        print( "headers =", self.loopHeaders )
+        #print( "headers =", self.loopHeaders )
 
       elif len(words) > 2:
         #logging.info( " Length of string = " + str(len(words)) + " " + file_line )
-        fOut.write( line )
+        if len(fileOut) > 0:
+          fOut.write( line )
         pass
 
       elif "_" == words[0][0]:
+        #print( "Checking property", words[0], "is it in list of known?", words[0] in self.entriesToCheck ) 
         if False == inLoop:
           if len(words) == 1:
             #logging.info( " Only 1 entry in '" + line.strip() + "' " + file_line + ". I skip this case." )
-            fOut.write( line )
+            if len(fileOut) > 0:
+              fOut.write( line )
             continue
           elif len(words) > 2:
             #logging.info( " More than 2 entries in '" + line.strip() + "' " + file_line + ". I skip this case." )
-            fOut.write( line )
+            if len(fileOut) > 0:
+              fOut.write( line )
             continue
             
           elif words[0] in self.entriesToCheck:
             #logging.info( " Found one of the entries" )
             vOut, eOut = self.splitErrorBar( words[1], file_line )
+            if "" != eOut:
+              countBrackets += 1
+
             pos = line.find( words[1] )
 
             newLine = line.replace( words[1], vOut )
-            fOut.write( newLine )
-            #fOut.write( line[:pos] + vOut + "\n" )
+            if len(fileOut) > 0:
+              fOut.write( newLine )
+              #fOut.write( line[:pos] + vOut + "\n" )
             continue
 
+          elif words[0] in self.cifStandard:
+            if len(fileOut) > 0:
+              fOut.write( line )
           else:
             logging.warning( " Unknown situation. Line = '" + line.strip() + 
                              "'. " + file_line + "." )
-            fOut.write( line )
+            if len(fileOut) > 0:
+              fOut.write( line )
         else:
-          fOut.write( line )
+          if len(fileOut) > 0:
+            fOut.write( line )
 
       elif len(words) == 2:
         #logging.warning( " Length of string = " + str(len(words)) + " " + file_line )
-        fOut.write( line )
+        if len(fileOut) > 0:
+          fOut.write( line )
         pass
 
       else:
         #logging.warning( " default else option." )
-        fOut.write( line )
+        if len(fileOut) > 0:
+          fOut.write( line )
         pass
 
-    f.close()
-    fOut.close()
+    fIn.close()
+    if len(fileOut) > 0:
+      fOut.close()
 
-    pass
+    print( "Number of brackets =", countBrackets )
+    return countBrackets
+    pass # readUncertainties()
 
 
   def makeCsvs( self ):
@@ -1362,11 +1329,17 @@ class CsvMaker:
 
 if __name__ == "__main__":
   
+  settings = CommandLine()
+
   a = CsvMaker()
 
-  #a.makeCsvs()
+  a.makeCsvs()
 
-  a.cleanCif()
+  fileIn  = os.path.join( "test", "913885.cif" )
+
+  filesOut = a.cleanCif( fileIn )
+
+  print( "Created", len(filesOut), "file(s) after clean-up:", filesOut )
 
   #input_strings = [ "123450(16)", "123450(160)", "1234.5(16)", "123.45(16)", "12.345(16)"]
   #for input_string in input_strings:

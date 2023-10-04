@@ -97,6 +97,30 @@ def valueIsValid( value ):
 
   return True
 
+def getCifLineRanges( fileIn ):
+  ranges = []
+
+  if not os.path.isfile( fileIn ):
+    logging.error( "File '" + fileIn + "' does not exist " + \
+                   "in tools.getCifLineRanges()" )
+    return ranges
+
+  f = open( fileIn )
+  ranges.append( 0 )
+  lineCount = 0
+  for line in f:
+    # TODO detect beginning of the new CIF file
+
+    lineCount += 1
+    pass
+
+  ranges.append( lineCount )
+
+  f.close()
+
+  return ranges
+  pass # getCifLineRanges()
+
 def getUUID( uuidDB, className, instanceName ):
   # Check the input names:
   if not valueIsValid( className ):
@@ -159,7 +183,7 @@ def strSplit( inline, sep = " ", quotes = ["'", '"'] ):
     #inQuote2 = False
     inQuote = ""
 
-    for ic,c in enumerate(inline):
+    for ic,c in enumerate(inline.strip()):
       if inQuote == "":
         #if "'" == c or '"' == c:
         if c in quotes:
