@@ -104,7 +104,7 @@ public class CityDB extends GeoServerDataSubset {
     }
 
     @Override
-    public void createLayer(String workspaceName, String database) {
+    public void createLayers(String workspaceName, String database) {
         GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
         if (null != virtualTable) {
             virtualTable.setSql(handleFileValues(virtualTable.getSql()));
