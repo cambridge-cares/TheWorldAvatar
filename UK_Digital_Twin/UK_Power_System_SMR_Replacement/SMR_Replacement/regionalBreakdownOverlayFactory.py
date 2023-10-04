@@ -42,15 +42,3 @@ def energyBreakdownOverlayerFactory(base_image_path, overlay_image_folderPath, a
 
     print(overlay_image_folderPath + "OVERLAY_RegionalAreaEnergyBreakdown is created. ")
     return
-
-
-if __name__ == '__main__':  
-    base_image_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/UKMapWithRegionalBoundaries.png"
-    arrow_image_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/arrow.png"
-    legend_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/breakdownLegend.png"
-
-    overlay_image_folderPath = "/mnt/d/wx243/FromTWA/regionalEnergyBreakdownPieChart/20230628-0326/RegionalAreaEnergyBreakdown/SMR_32_CarbonTax_100_weatherCondition_WBSB_weight_0.5/"
-    energyBreakdownOverlayerFactory(base_image_path, overlay_image_folderPath, arrow_image_path, legend_path)
-
-
-

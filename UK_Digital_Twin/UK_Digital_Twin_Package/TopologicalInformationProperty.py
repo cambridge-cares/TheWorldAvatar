@@ -14,9 +14,7 @@ class TopologicalInformation:
         # for 29 bus model, the IRI of the branch needs to be recorded in the BranchModelInitialisation file
         self.BranchModelInitialisation = str(Path(__file__).resolve().parent.parent) + "/Data files/PowerGridModelInitialisation/" + str(numOfBus) + '_bus/BranchModelInitialisation.csv'     
         self.UpdateHeaderOfBranchModelInitialisation = "BranchNodeIRI"
-        
-        # self.BranchProperty =  self.DataPath + str(self.EBus_num) + '_bus/branch_properties.csv' # the branch prop should be calculated from the raw data
-           
+            
         """Data file header"""
         self.voltageLevel = voltageLevel
         self.headerBusTopologicalInformation = ["BusNumber", "Region", "LocalAuthority", "x-axis", "y-axis", "Aggregated\n"]
@@ -26,7 +24,5 @@ class TopologicalInformation:
              self.headerBranchTopologicalInformation.append(voltage)
                 
         """Source Data"""
-        if self.EBus_num == 10:
-            self.__TOPOINFO = self.DataPath + str(self.EBus_num) +  "_bus/-Node-24h-Tax-Auto - Template.xlsx"
         if self.EBus_num == 29:
             self.DataSource = "https://www.maths.ed.ac.uk/optenergy/NetworkData/reducedGB/"

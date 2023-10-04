@@ -1,6 +1,7 @@
 """This module is used to recored the repository labels used in the remote triple store, Blazegraph. The lables will be refered when performing queries."""
 
 """The lables of different repositories maintained in RDF4j triple store deployed in CoMo server"""
+
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)

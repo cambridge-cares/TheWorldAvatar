@@ -34,23 +34,6 @@ def performFederatedQuery(query, queryendpoints:list):
         return str(response)
     except:
         print("***WARNING:RemoteKnowledgeBaseClient has not been created successfully***")
-
-
-if __name__ == '__main__':  
-    qstr = """
-    SELECT *
-    WHERE{
-        ?s ?p ?o .
-    } LIMIT 1
-    """
-    ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
-    ONS_json = "http://statistics.data.gov.uk/sparql.json" 
-    # ONS_json = "http://statistics.data.gov.uk/sparql"
-    # res = performFederatedQuery(qstr, [ukdigitaltwinendpoint, ukdigitaltwinendpoint])
-    # res = performFederatedQuery(queryONS, [ONS_json, ukdigitaltwinendpoint])
-    res = performQuery(ONS_json, qstr)
-    print(res)
- 
     
     
     

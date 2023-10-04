@@ -242,7 +242,3 @@ def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:
     fig.set_size_inches(10, 0.8)
     plt.savefig(filepath + str(fileName) + '.png', dpi = 200, bbox_inches = "tight", transparent = True)
     return
-
-if __name__ == '__main__': 
-    ## print(sequentialHEXColourCodePicker(6.1, 6, 0, None, 7))
-    createColourBarLegend('/mnt/d/wx243/FromTWA/', 20000, 0, 'Total output (MW)', 'legend-regionalTotalOutput', None, 7)
