@@ -359,31 +359,16 @@ public class TimeSeriesSparql {
     }
 
     /**
-     * Instantiate the time series instance in the knowledge base (time unit is
-     * optional)
+     * Instantiate the time series instance in the knowledge base
      * 
-     * @param timeSeriesIRI timeseries IRI provided as string
-     * @param dataIRI       list of data IRI provided as string that should be
-     *                      attached to the timeseries
-     * @param dbURL         URL of the database where the timeseries data is stored
-     *                      provided as string
-     * @param timeUnit      the time unit of the time series (optional)
-     * @param type          type of TimeSeries data to be instantiated.
-     *                      Allowed values of type enum: Type.AVERAGE,
-     *                      Type.INSTANTANEOUS, Type.STEPWISECUMULATIVE,
-     *                      Type.CUMULATIVETOTAL
-     * @param duration      Required for Average Time Series. Numeric duration of
-     *                      the averaging period for Average TimeSeries of type
-     *                      Duration. Only positive values are allowed. (optional)
-     * @param unit          Required for Average Time Series. Temporal unit type of
-     *                      the averaging period for Average TimeSeries. (optional)
-     *                      Allowed values of type ChronoUnit:
-     *                      ChronoUnit.SECONDS, ChronoUnit.MINUTES,
-     *                      ChronoUnit.HOURS, ChronoUit.DAYS, ChronoUnit.WEEKS,
-     *                      ChronoUnit.MONTHS, ChronoUnit.YEARS
-     *
+     * @param timeSeriesKgMetadata object containing metadata for a time series
+     * @param dbURL                jdbc url of database where time series data is
+     *                             stored
+     * @param schema               schema in database, defaults to public
+     * @param timeClass            java class of the time values
+     * @param rdbClientClass       java class of the rdb client (e.g.
+     *                             TimeSeriesRDBClient)
      */
-
     protected void initTS(TimeSeriesKgMetadata timeSeriesKgMetadata, String dbURL, String schema, Class<?> timeClass,
             Class<?> rdbClientClass) {
         // Construct time series IRI
@@ -466,6 +451,17 @@ public class TimeSeriesSparql {
         kbClient.executeUpdate(modify.getQueryString());
     }
 
+    /**
+     * similar to initTS, but uploads triples in one update
+     * 
+     * @param timeSeriesKgMetadata object containing metadata for a time series
+     * @param dbURL                jdbc url of database where time series data is
+     *                             stored
+     * @param schema               schema in database, defaults to public
+     * @param timeClass            java class of the time values
+     * @param rdbClientClass       java class of the rdb client (e.g.
+     *                             TimeSeriesRDBClient)
+     */
     protected void bulkInitTS(List<TimeSeriesKgMetadata> timeSeriesKgMetadataList, String rdbURL, String schema,
             Class<?> timeClass, Class<?> rdbClientClass) {
         ModifyQuery modify = Queries.MODIFY();
@@ -889,6 +885,15 @@ public class TimeSeriesSparql {
         return instanceIRIs;
     }
 
+    /**
+     * used to reinitialise time series instance when deletion in RDB fails
+     * 
+     * @param timeSeriesKgMetadata
+     * @param dbURL
+     * @param schema
+     * @param timeClass
+     * @param rdbClientClass
+     */
     void reInitTS(TimeSeriesKgMetadata timeSeriesKgMetadata, String dbURL, String schema, Class<?> timeClass,
             Class<?> rdbClientClass) {
         // Construct time series IRI
@@ -952,6 +957,13 @@ public class TimeSeriesSparql {
         kbClient.executeUpdate(modify.getQueryString());
     }
 
+    /**
+     * used by TimeSeriesClientFactory to get the necessary information to create a
+     * TimeSeriesClient object
+     * 
+     * @param dataIriList
+     * @return
+     */
     List<String> getTimeClassRdbClassAndUrlAndSchema(List<String> dataIriList) {
         SelectQuery query = Queries.SELECT();
 
@@ -988,6 +1000,12 @@ public class TimeSeriesSparql {
         return Arrays.asList(timeClassName, rdbClientClassName, rdbUrl, schema);
     }
 
+    /**
+     * returns true if any of the provided IRI contains a time series instance
+     * 
+     * @param dataIriList
+     * @return
+     */
     boolean hasExistingTimeSeries(List<String> dataIriList) {
         SelectQuery query = Queries.SELECT();
         Variable timeSeriesVar = query.var();

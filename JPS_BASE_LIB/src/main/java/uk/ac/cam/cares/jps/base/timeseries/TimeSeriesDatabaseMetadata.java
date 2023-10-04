@@ -10,8 +10,8 @@ import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;
 
 /**
- * used internally in TimeSeriesRDBClient to keep track of the data type for
- * each column
+ * used internally in TimeSeriesRDBClientWithReducedTables to keep track of the
+ * data type for each column
  */
 class TimeSeriesDatabaseMetadata {
     // column name set within each table is unique

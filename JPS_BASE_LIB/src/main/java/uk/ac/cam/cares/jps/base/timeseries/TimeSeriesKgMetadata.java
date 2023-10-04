@@ -9,6 +9,10 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 
+/**
+ * used as argument to methods in TimeSeriesSparql to store data regarding a
+ * time series to mark up
+ */
 public class TimeSeriesKgMetadata {
     private String timeSeriesIri;
     private List<String> dataIriList;
