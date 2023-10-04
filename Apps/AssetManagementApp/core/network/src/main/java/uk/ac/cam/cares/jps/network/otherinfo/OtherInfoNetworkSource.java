@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +27,7 @@ import uk.ac.cam.cares.jps.network.NetworkConfiguration;
 public class OtherInfoNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(OtherInfoNetworkSource.class);
 
-//    String path = "asset-manager-agent/getuidata";
-    String path = "android-status-agent/testdata";
+    String path = "asset-manager-agent/getuidata";
 
 
     Connection connection;
@@ -43,7 +43,7 @@ public class OtherInfoNetworkSource {
      * @param onSuccessUpper upper level onSuccess listener. It is created by Repository and used to pass data to repository for processing
      * @param onFailureUpper upper level onFailure listener. It is created by Repository and used to handle error
      */
-    public void getOtherInfoFromAssetAgent(Response.Listener<Map<String, HashMap<String, String>>> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+    public void getOtherInfo(Response.Listener<Map<String, HashMap<String, String>>> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String requestUri = NetworkConfiguration.constructUrlBuilder(path).build().toString();
         LOGGER.info(requestUri);
 
@@ -54,20 +54,17 @@ public class OtherInfoNetworkSource {
                 Map<String, HashMap<String, String>> results = new HashMap<>();
                 JSONObject resultJson = new JSONObject(response).getJSONObject("result");
                 // todo: check type related code after agent is done
-                results.put(TYPE, keyConversion(gson.fromJson(resultJson.getJSONArray("Type").toString(), type), TYPE));
+//                results.put(TYPE, keyConversion(gson.fromJson(resultJson.getJSONArray("Type").toString(), type), TYPE));
                 results.put(ASSIGNED_TO, keyConversion(gson.fromJson(resultJson.getJSONArray("User").toString(), type), ASSIGNED_TO));
                 results.put(VENDOR, keyConversion(gson.fromJson(resultJson.getJSONArray("Supplier").toString(), type), SUPPLIER_SECTION_TITLE));
                 results.put(MANUFACTURER, keyConversion(gson.fromJson(resultJson.getJSONArray("Manufacturer").toString(), type), MANUFACTURER));
                 results.put(INVOICE_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("Invoice").toString(), type), INVOICE_NUMBER));
                 results.put(PURCHASE_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseOrder").toString(), type), PURCHASE_ORDER_NUMBER));
                 results.put(DELIVERY_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("DeliveryOrder").toString(), type), DELIVERY_ORDER_NUMBER));
-                results.put(PURCHASE_REQUEST_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseRequest").toString(), type), PURCHASE_REQUEST_NUMBER));
+//                results.put(PURCHASE_REQUEST_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseRequest").toString(), type), PURCHASE_REQUEST_NUMBER));
 
-                // todo: test data
-//                results.put(ITEM_NAME, keyConversion(gson.fromJson(resultJson.getJSONArray("Items").toString(), type), ITEM_NAME));
-                results.put(LOCATED_IN, keyConversion(gson.fromJson(resultJson.getJSONArray("Rooms").toString(), type), LOCATED_IN));
-                results.put(SEAT_LOCATION, keyConversion(gson.fromJson(resultJson.getJSONArray("Seats").toString(), type), SEAT_LOCATION));
-//                results.put(STORED_IN, keyConversion(gson.fromJson(resultJson.getJSONArray("Containers").toString(), type), STORED_IN));
+                // todo: items should be retrieved with a separate call after docs are selected
+                results.put(STORED_IN, keyConversion(gson.fromJson(resultJson.getJSONArray("Element").toString(), type), STORED_IN));
 
                 onSuccessUpper.onResponse(results);
             } catch (JSONException e) {
@@ -75,12 +72,31 @@ public class OtherInfoNetworkSource {
             }
         };
 
-        StringRequest request = new StringRequest(Request.Method.GET, requestUri, onSuccess, onFailureUpper);
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("assetData", new JSONObject());
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        StringRequest request = new StringRequest(Request.Method.POST, requestUri, onSuccess, onFailureUpper) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() {
+
+                try {
+                    return requestBody.toString().getBytes("utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    LOGGER.error("Unsupported Encoding while trying to get the bytes of" + requestBody + " using utf-8");
+                    throw new RuntimeException(e);
+                }
+            }
+        };
         connection.addToRequestQueue(request);
-    }
-
-    public void getLocationRelatedInfoFromBMSAgent(Response.Listener<Map<String, HashMap<String, String>>> onSuccessUpper, Response.ErrorListener onFailureUpper) {
-
     }
 
     /**
