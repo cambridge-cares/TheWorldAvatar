@@ -86,65 +86,98 @@ def trigger_optimisation():
 @celery.task
 def trigger_optimisation_task(params):
     try:
+         #TODO: to be refactored later
         # Initialise sparql and derivation clients
         kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         derivation_client = PyDerivationClient(
             derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
             query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+        
+        # Check for already instantiated chain of derivations (to be reused)
+        # Heat demand and grid temp forecast derivation IRIs; returns empty list if not exist
+        fc_deriv_iris = kg_client.get_forecast_derivations()
+        # Downstream optimisation and emission derivation IRIs; returns None if not exist
+        opti_deriv_iri = None if not fc_deriv_iris else \
+                            kg_client.get_downstream_derivation(fc_deriv_iris[0])
+        em_deriv_iri = None if not opti_deriv_iri else \
+                        kg_client.get_downstream_derivation(opti_deriv_iri)
+        derivs = [d for d in (opti_deriv_iri, em_deriv_iri) if d is not None]
+        try:
+            # Retrieve unique time inputs (optimisation interval, simulation time)
+            # attached to retrieved derivations; throws Exception if any does not exists
+            sim_t, opti_int, opti_t1, opti_t2 = kg_client.get_pure_trigger_inputs(derivs)
+            logger.info('Derivation chain already instantiated.')
+            new_derivation = False
+        except:
+            new_derivation = True
+            logger.info('Instantiating new chain of derivations...')
+            # Create IRIs for time inputs to instantiate
+            # Simulation time
+            sim_t = KB + 'SimulationTime_' + str(uuid.uuid4())
+            # Optimisation interval
+            opti_int = KB + 'OptimisationInterval_' + str(uuid.uuid4())
+            opti_t1 = KB + 'OptimisationStartInstant_' + str(uuid.uuid4())
+            opti_t2 = KB + 'OptimisationEndInstant_' + str(uuid.uuid4())
+            # Heat demand & grid temperature data length
+            heat_length = KB + 'HeatDemandDuration_' + str(uuid.uuid4())
+            tmp_length = KB + 'GridTemperatureDuration_' + str(uuid.uuid4())
+            # Forecast frequency
+            freq = KB + 'Frequency_' + str(uuid.uuid4())
 
-        # Create Instance IRIs 
-        # Simulation time
-        sim_t = KB + 'SimulationTime_' + str(uuid.uuid4())
-        # Optimisation interval
-        opti_int = KB + 'OptimisationInterval_' + str(uuid.uuid4())
-        opti_t1 = KB + 'OptimisationStartInstant_' + str(uuid.uuid4())
-        opti_t2 = KB + 'OptimisationEndInstant_' + str(uuid.uuid4())
-        opti_dt = params['optHorizon']*params['timeDelta_unix']
-        # Heat demand & grid temperature data length
-        heat_length = KB + 'HeatDemandDuration_' + str(uuid.uuid4())
-        tmp_length = KB + 'GridTemperatureDuration_' + str(uuid.uuid4())
-        # Forecast frequency
-        freq = KB + 'Frequency_' + str(uuid.uuid4())
-
+        # Trigger derivation update for each time step to optimise
         for run in range(params['numberOfTimeSteps']):
             if run == 0:
-                t1 = params['start']
+                # Initialise optimisation/forecast interval
+                opti_dt = params['optHorizon']*params['timeDelta_unix']
+                t1 = params['start']                
                 t2 = t1 + opti_dt
-                # Instantiate required time instances to initiate optimisation cascades
-                kg_client.instantiate_time_instant(sim_t, t1, instance_type=OD_SIMULATION_TIME) 
-                kg_client.instantiate_time_interval(opti_int, opti_t1, opti_t2, t1, t2)
-                # Instantiate required durations
-                kg_client.instantiate_time_duration(heat_length, params['timeDelta'], 
-                                                    params['heatDemandDataLength'])
-                kg_client.instantiate_time_duration(tmp_length, params['timeDelta'], 
-                                                    params['gridTemperatureDataLength'])
-                # Instantiate required frequency for forecasting agent
-                kg_client.instantiate_time_duration(freq, params['timeDelta'], 
-                                                    value=1, rdf_type=TS_FREQUENCY)
-
-                # Add time stamps to pure inputs
-                derivation_client.addTimeInstanceCurrentTimestamp(
-                    [sim_t, opti_int, heat_length, tmp_length, freq])
+                if new_derivation:
+                    logger.info('Instantiating optimisation time etc. pure inputs...')
+                    # Instantiate required time instances to initiate optimisation cascades
+                    kg_client.instantiate_time_instant(sim_t, t1, instance_type=OD_SIMULATION_TIME) 
+                    kg_client.instantiate_time_interval(opti_int, opti_t1, opti_t2, t1, t2)
+                    # Instantiate required durations
+                    kg_client.instantiate_time_duration(heat_length, params['timeDelta'], 
+                                                        params['heatDemandDataLength'])
+                    kg_client.instantiate_time_duration(tmp_length, params['timeDelta'], 
+                                                        params['gridTemperatureDataLength'])
+                    # Instantiate required frequency for forecasting agent
+                    kg_client.instantiate_time_duration(freq, params['timeDelta'], 
+                                                        value=1, rdf_type=TS_FREQUENCY)
+                    # Add time stamps to pure inputs
+                    derivation_client.addTimeInstanceCurrentTimestamp(
+                        [sim_t, opti_int, heat_length, tmp_length, freq])
+                    logger.info('Instantiation of optimisation time etc. successfully finished.')
+                else:
+                    # Update time instances (pre-existing from previous optimisation)
+                    kg_client.update_time_instant(sim_t, t1)
+                    kg_client.update_time_instant(opti_t1, t1)
+                    kg_client.update_time_instant(opti_t2, t2)
                 
                 ###   Instantiate derivation markups   ###
                 # 1) Forecast derivations
                 #    1) Heat demand
-                heat_demand = kg_client.get_heat_demand()
-                inputs_demand = [heat_demand, fc_model_heat_demand, opti_int, freq, heat_length]
-                deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT, 
-                                inputs_demand, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
-                logger.info(f"Heat demand forecast derivation successfully instantiated: {deriv.getIri()}")
-                # Initialise list of all forecast derivation IRIs
-                fc_deriv_iris = [deriv.getIri()]                
-                #    2) Grid temperatures
-                grid_temps = kg_client.get_grid_temperatures()
-                deriv_base = [fc_model_grid_temperature, opti_int, freq, tmp_length]
-                inputs_temps = [deriv_base + [t] for t in grid_temps]
-                for i in inputs_temps:
+                if not fc_deriv_iris:
+                    heat_demand = kg_client.get_heat_demand()
+                    inputs_demand = [heat_demand, fc_model_heat_demand, opti_int, freq, heat_length]
                     deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT, 
-                                i, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
-                    logger.info(f"Grid temperature forecast derivation successfully instantiated: {deriv.getIri()}")
-                    fc_deriv_iris.append(deriv.getIri())                
+                                    inputs_demand, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+                    logger.info(f"Heat demand forecast derivation successfully instantiated: {deriv.getIri()}")
+                    # Add to list of all forecast derivation IRIs
+                    fc_deriv_iris.append(deriv.getIri())
+                    #    2) Grid temperatures
+                    grid_temps = kg_client.get_grid_temperatures()
+                    deriv_base = [fc_model_grid_temperature, opti_int, freq, tmp_length]
+                    inputs_temps = [deriv_base + [t] for t in grid_temps]
+                    for i in inputs_temps:
+                        deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT, 
+                                    i, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+                        logger.info(f"Grid temperature forecast derivation successfully instantiated: {deriv.getIri()}")
+                        fc_deriv_iris.append(deriv.getIri())
+                else:
+                    for d in fc_deriv_iris:
+                        derivation_client.unifiedUpdateDerivation(d)
+                        logger.info(f"Forecast derivation instance successfully updated: {d}")
 
                 # TODO: uncomment
                 # # 2) Optimisation derivation
