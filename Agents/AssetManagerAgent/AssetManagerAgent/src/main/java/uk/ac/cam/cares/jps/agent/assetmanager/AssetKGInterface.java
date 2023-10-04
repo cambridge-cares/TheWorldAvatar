@@ -101,7 +101,7 @@ public class AssetKGInterface {
         AssetData.put("ID", id);
         AssetData.put("label", AssetDataRaw.getString("Name").replaceAll("(\\r|\\n)", " ").replace("\\", "\\\\"));
         AssetData.put("itemIRI", itemIRI);
-        AssetData.put("itemComment", AssetDataRaw.getString("PurchaseOrderNum"));
+        AssetData.put("itemComment", AssetDataRaw.getString("ItemComment"));
         AssetData.put("ServiceCategoryIRI", genIRIString("ServiceCategory", P_ASSET));
         AssetData.put("ServiceCategoryName", AssetDataRaw.getString("BudgetCat"));
         AssetData.put("ServiceCategoryType", AssetDataRaw.getString("ServiceCode"));
