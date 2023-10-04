@@ -2,7 +2,7 @@ import argparse
 import json
 from typing import List, Optional
 
-from sklearn.base import accuracy_score
+from sklearn.metrics import accuracy_score
 from core.data_processing.compact_query.compact_query_rep import CompactQueryRep
 
 from core.data_processing.compact_query.correct_relations import RelationCorrector
@@ -63,6 +63,8 @@ def get_translation_metrics(
                 print("An unhandled error is encountered when parsing a compact query.")
                 print(datum)
                 print(e)
+            return ""
+        if pred is None:
             return ""
         return normalize_query(pred)
 
