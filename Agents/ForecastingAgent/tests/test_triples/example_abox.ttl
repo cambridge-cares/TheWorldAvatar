@@ -1,0 +1,93 @@
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix om:     <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix time:   <http://www.w3.org/2006/time#> .
+@prefix ts:     <https://www.theworldavatar.com/kg/ontotimeseries/> .
+@prefix deriv:	<https://www.theworldavatar.com/kg/derivation/> .
+@prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
+@prefix dh:	    <https://www.theworldavatar.com/kg/ontoheatnetwork/> .
+@prefix ems:    <https://www.theworldavatar.com/kg/ontoems/> .
+@prefix :       <https://www.theworldavatar.com/test/> . 
+
+################################################
+##      Forecasting Agent TEST instances      ##
+################################################
+
+# The Forecasting Agent takes the following 5 pure inputs:
+#   ts:ForecastingModel
+#   ts:Frequency
+#   time:Interval
+#   time:Duration
+#   om:Quantity OR owl:Thing
+#   --> om:Quantity is the default; however, if no om:Quantity is marked up,
+#       the agent will try to forecast any other marked up instance
+#       (however, this instance needs to be sub-class of owl:Thing)
+#
+# They need timestamp to be properly retrieved by the derivation agent.
+# However, the timestamp is not provided in the example triples. Instead, 
+# they will be added by the script when the derivation instances are created
+# for new info
+
+:HeatDemand_1 rdf:type dh:HeatDemand ;
+              om:hasValue :Measure_1 .
+:Measure_1 rdf:type om:Measure ;
+           om:hasUnit om:megawattHour .
+
+:HeatDemand_2 rdf:type dh:HeatDemand ;
+              om:hasUnit om:megawattHour .
+
+:Availability_1 rdf:type dh:Availability .
+:Availability_2 rdf:type dh:Availability .
+
+:OptimisationInterval_1 rdf:type time:Interval ;
+    time:hasBeginning :OptimisationStartInstant_1 ;
+    time:hasEnd :OptimisationEndInstant_1 .
+:OptimisationStartInstant_1 rdf:type time:Instant ;
+    time:inTimePosition :TimePosition_1 .
+:OptimisationEndInstant_1 rdf:type time:Instant ;
+    time:inTimePosition :TimePosition_2 .
+:TimePosition_1 rdf:type time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1577836800.0 .
+:TimePosition_2 rdf:type time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1577923200.0 .
+
+:OptimisationInterval_2 rdf:type time:Interval ;
+    time:hasBeginning :OptimisationEndInstant_1 ;
+    time:hasEnd :OptimisationEndInstant_2 .
+:OptimisationEndInstant_2 rdf:type time:Instant ;
+    time:inTimePosition :TimePosition_3 .
+:TimePosition_3 rdf:type time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1578009600.0 .
+
+:Frequency_1 rdf:type ts:Frequency ;
+    time:numericDuration 1.0 ;
+    time:unitType time:unitHour ;
+    ts:resampleData "False"^^xsd:boolean .
+
+:Duration_1 rdf:type time:Duration ;
+    time:numericDuration 336.0 ;
+    time:unitType time:unitHour .
+
+:Duration_2 rdf:type time:Duration ;
+    time:numericDuration 8760.0 ;
+    time:unitType time:unitHour .
+
+:ForecastingModel_1 rdf:type ts:ForecastingModel ;
+    rdfs:label "Prophet" ;
+    ts:scaleData "False"^^xsd:boolean .
+
+:ForecastingModel_2 rdf:type ts:ForecastingModel ;
+    rdfs:label "tft_pirmasens_heat_demand" ;
+    ts:scaleData "True"^^xsd:boolean ;
+    ts:hasModelURL "https://www.dropbox.com/s/8pnne7gv34btr9x/_model.pth.tar?dl=1"^^xsd:string ;
+    ts:hasCheckpointURL "https://www.dropbox.com/s/ia1nwqbepu8lbeh/best.ckpt?dl=1"^^xsd:string ;
+    ts:hasCovariate :AirTemperature_1 ;
+    ts:hasCovariate :IsHoliday_1 .
+
+:AirTemperature_1 rdf:type ems:AirTemperature .
+:IsHoliday_1 rdf:type dh:isPublicHoliday .

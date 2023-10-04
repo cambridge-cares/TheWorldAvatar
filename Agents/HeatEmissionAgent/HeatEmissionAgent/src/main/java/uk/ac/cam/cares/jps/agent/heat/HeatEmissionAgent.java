@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.UUID;
 
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
@@ -19,6 +20,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 import com.jayway.jsonpath.JsonPath;
@@ -211,20 +213,23 @@ public class HeatEmissionAgent extends JPSAgent {
 		StringBuffer IRIandCO2Query = new StringBuffer(
 				"PREFIX ns2: <https://www.theworldavatar.com/kg/ontobuiltenv/>\n");
 		IRIandCO2Query.append("PREFIX geo: <http://www.opengis.net/ont/geosparql#>\n");
-		IRIandCO2Query.append("PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
-		IRIandCO2Query.append("PREFIX ocp: <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#>\n");
+		IRIandCO2Query.append("PREFIX ocp: <http://www.theworldavatar.com/kg/ontochemplant/>\n");
 		IRIandCO2Query.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
-		IRIandCO2Query.append("SELECT ?chemical_plant ?plant_item ?IRI ?CO2 ?unit WHERE {");
-		IRIandCO2Query.append("?chemical_plant geo:ehContains ?plant_item .");
-		IRIandCO2Query.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI .");
-		IRIandCO2Query.append("?plant_item ocp:hasIndividualCO2Emission ?x .");
-		IRIandCO2Query.append("?x om:hasNumericalValue ?CO2 .");
-		IRIandCO2Query.append("?x om:hasUnit ?a .");
-		IRIandCO2Query.append("?a om:symbol ?unit .");
-		IRIandCO2Query.append("FILTER regex(str(?plant_item), \"Plant_item\")");
-		IRIandCO2Query.append(
-				"FILTER EXISTS {?chemical_plant ocp:hasFuelType <http://www.theworldavatar.com/kb/ontochemplant/Naturalgasliquid>}.}");
-		JSONArray IRIandCO2QueryResult = AccessAgentCaller.queryStore("jibusinessunits", IRIandCO2Query.toString());
+		IRIandCO2Query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+		IRIandCO2Query.append("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n");
+		IRIandCO2Query.append("SELECT ?chemical_plant ?plant_item ?IRI ?CO2 ?unit WHERE { \n");
+		IRIandCO2Query.append("?chemical_plant ocp:hasFuelType ?ft. \n");
+		IRIandCO2Query.append("?ft rdfs:label ?ftl. \n");
+		IRIandCO2Query.append("?chemical_plant geo:ehContains ?plant_item . \n");
+		IRIandCO2Query.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI . \n");
+		IRIandCO2Query.append("?plant_item ocp:hasIndividualCO2Emission ?x .  \n");
+		IRIandCO2Query.append("?x om:hasNumericalValue ?CO2 . \n");
+		IRIandCO2Query.append("?x om:hasUnit ?a . \n");
+		IRIandCO2Query.append("?a om:symbol ?unit . \n");
+		IRIandCO2Query.append("FILTER regex(str(?ftl),\"Natural gas liquid\").");
+		IRIandCO2Query.append("FILTER regex(str(?plant_item), \"plantitem\").} \n");
+		JSONArray IRIandCO2QueryResult = AccessAgentCaller.queryStore("jibusinessunits",
+				IRIandCO2Query.toString());
 		return IRIandCO2QueryResult;
 	}
 
@@ -232,7 +237,7 @@ public class HeatEmissionAgent extends JPSAgent {
 	public static JSONArray FuelCEIEfficiency(String ChemialPlant) {
 		StringBuffer FuelCEIEffiQuery = new StringBuffer(
 				"PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
-		FuelCEIEffiQuery.append("PREFIX ocp: <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#>\n");
+		FuelCEIEffiQuery.append("PREFIX ocp: <http://www.theworldavatar.com/kg/ontochemplant/>\n");
 		FuelCEIEffiQuery.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
 		FuelCEIEffiQuery.append("SELECT ?fuel ?CEI ?unit ?efficiency WHERE {");
 		FuelCEIEffiQuery.append(ChemialPlant).append(" ocp:hasThermalEfficiency ?efficiency .");
@@ -241,7 +246,8 @@ public class HeatEmissionAgent extends JPSAgent {
 		FuelCEIEffiQuery.append("?cei om:hasNumericalValue ?CEI .");
 		FuelCEIEffiQuery.append("?cei om:hasUnit ?a .");
 		FuelCEIEffiQuery.append("?a om:symbol ?unit .}");
-		JSONArray plantInfoQueryResult = AccessAgentCaller.queryStore("jibusinessunits", FuelCEIEffiQuery.toString());
+		JSONArray plantInfoQueryResult = AccessAgentCaller.queryStore("jibusinessunits",
+				FuelCEIEffiQuery.toString());
 		return plantInfoQueryResult;
 	}
 
@@ -296,32 +302,42 @@ public class HeatEmissionAgent extends JPSAgent {
 	}
 
 	// Put the heat emssion data into the blazegraph via SPARQL update
-	public void sparqlUpdate(String Plant_item, String Heat_value) {
+	public void sparqlUpdate(String Plant_item, String heatValue) {
 		String Heat_of_plantitem = Plant_item + "_Heat";
-		String rdf_label = Heat_of_plantitem.substring(47);
+		String heat_label = Heat_of_plantitem.substring(47);
+		String hasGeneratedHeat = "http://www.theworldavatar.com/kg/ontochemplant/hasGeneratedHeat";
+		String genHeat = "http://www.theworldavatar.com/kg/ontochemplant/GeneratedHeat";
+		String heatIri = genHeat + "_" + UUID.randomUUID();
+		String measure = "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure";
+		String measureIri = measure + "_" + UUID.randomUUID();
+		String measure_label = "Measure_" + heat_label;
 
 		UpdateBuilder ub = new UpdateBuilder()
 				.addPrefix("rdf", "https://www.w3.org/1999/02/22-rdf-syntax-ns")
 				.addPrefix("rdfs", "https://www.w3.org/2000/01/rdf-schema#")
 				.addInsert(NodeFactory.createURI(Plant_item),
 						NodeFactory.createURI(
-								"http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasGeneratedHeat"),
-						NodeFactory.createURI(Heat_of_plantitem))
-				.addInsert(NodeFactory.createURI(Heat_of_plantitem), "rdf:type",
+								"http://theworldavatar.com/kg/ontochemplant/hasGeneratedHeat"),
+						NodeFactory.createURI(heatIri))
+				.addInsert(NodeFactory.createURI(heatIri), "rdf:type",
 						NodeFactory.createURI(
-								"http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#GeneratedHeat"))
-				.addInsert(NodeFactory.createURI(Heat_of_plantitem),
+								genHeat))
+				.addInsert(NodeFactory.createURI(heatIri), "rdfs:label", heat_label)
+				.addInsert(NodeFactory.createURI(heatIri),
 						NodeFactory.createURI(
-								"http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"),
-						Heat_value)
-				.addInsert(NodeFactory.createURI(Heat_of_plantitem), "rdfs:label", rdf_label)
-				.addInsert(NodeFactory.createURI(Heat_of_plantitem),
+								"http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"),
+						NodeFactory.createURI(measureIri))
+				.addInsert(NodeFactory.createURI(measureIri), "rdf:type", NodeFactory.createURI(measure))
+				.addInsert(NodeFactory.createURI(measureIri), "rdfs:label", measure_label)
+				.addInsert(NodeFactory.createURI(measureIri), NodeFactory.createURI(
+						"http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"), heatValue)
+				.addInsert(NodeFactory.createURI(measureIri),
 						NodeFactory.createURI("http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"),
-						NodeFactory.createURI("http://www.theworldavatar.com/kb/ontochemplant/MegaWatt"));
+						NodeFactory.createURI("http://www.theworldavatar.com/kg/ontochemplant/MegaWatt"));
 
 		UpdateRequest ur = ub.buildRequest();
 		System.out.println(ur);
-		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontochemplant", ur.toString());
+		AccessAgentCaller.updateStore("http://localhost:48888/ontochemplant", ur.toString());
 		// This line below is for update the data in Claudius
 		// AccessAgentCaller.updateStore("jibusinessunits", ur.toString());
 	}
