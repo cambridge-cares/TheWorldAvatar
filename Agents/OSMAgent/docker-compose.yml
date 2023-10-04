@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  osmagent:
+    image: osmagent:1.0.0
+    build: .
+    ports:
+      - "10104:8080"
+    volumes:
+      - ./osmagent/src/main/resources:/usr/local/tomcat/data

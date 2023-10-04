@@ -282,7 +282,7 @@ Relative file-system paths containing `..` are not supported.
 
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
+The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data), [`tboxcsv`](#tbox-csv-data), and [`osmrouting`](#osm-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
@@ -361,7 +361,7 @@ Within that the following nodes can be added.
     - `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
     - `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`.
       Note that this is different from the GDAL Options.
-  - `"parameter"` specify individual [parameters][geoserver-sql-params] with the following `key:value` pairs.
+  - `"parameters"` specify individual [parameters][geoserver-sql-params] as a list of nodes with the following `key:value` pairs.
     - `"name"` parameter name.
     - `"defaultValue"` default value of parameter.
     - `"regexpValidator"` validation regular expression.
@@ -563,6 +563,24 @@ The data loader does the following when uploading RDF data:
 2. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to uploads the contents of the OWL file to the Blazegraph database in the stack.
 
 There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
+
+### OSM Data
+
+The `"osmrouting"` data type should be used to load Open Street Map (OSM) files in a form that is compatible with [pgRouting][pgrouting].
+These can be `.osm` or `.pbf` files.
+By default, three tables and three GeoServer layers are created; `DATA_SUBSET_NAME_ways`, `DATA_SUBSET_NAME_ways_vertices_pgr`, and `DATA_SUBSET_NAME_pointsofinterest`.
+
+#### osm2pgrouting Options
+
+For OSM data you can add a `osm2PGRoutingOptions` node within the relevant data subset in the configuration json.
+This can be used to configure the osm2pgrouting tool as specified [here][osm2pgrouting-how-to-use].
+- `"flags"`: a list of flags without arguments e.g. `[--attributes, --addnodes]`
+- `"options"`: a node containing the key value pairs of options with arguments e.g. `{"--chunk": "40000"}`
+
+#### OSM GeoServer Options
+
+For OSM data you can add the nodes `waysGeoServerSettings`, `verticesGeoServerSettings`, and `poiGeoServerSettings` nodes within the relevant data subset in the configuration json.
+The nodes that can be added within each are the same as the GeoServer options for [vector data](#vector-data).
 
 ## OBDA Mapping File
 
@@ -780,6 +798,9 @@ This way you can look at look at the user interfaces of the various services (se
 [raster-geotiff]: https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format
 
 [postgis-raster-loader]: https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
+
+[pgrouting]: http://pgrouting.org/
+[osm2pgrouting-how-to-use]: https://github.com/pgRouting/osm2pgrouting#how-to-use
 
 [3dcitydb-importer]:         https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/cli/import.html
 [3dcitydb-importer-formats]: https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/import.html#import-supported-file-formats
