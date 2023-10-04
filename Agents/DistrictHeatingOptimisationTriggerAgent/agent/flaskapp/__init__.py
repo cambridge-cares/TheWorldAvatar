@@ -86,7 +86,7 @@ def trigger_optimisation():
 @celery.task
 def trigger_optimisation_task(params):
     try:
-         #TODO: to be refactored later
+         #TODO: Sequence to be refactored/streamlined
         # Initialise sparql and derivation clients
         kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         derivation_client = PyDerivationClient(
@@ -179,20 +179,22 @@ def trigger_optimisation_task(params):
                         derivation_client.unifiedUpdateDerivation(d)
                         logger.info(f"Forecast derivation instance successfully updated: {d}")
 
-                # TODO: uncomment
-                # # 2) Optimisation derivation
-                # # NOTE: Instantiated using "createSyncDerivationForNewInfo" for same
-                # #       reason as above, i.e., ensure initial generation of output triples
-                # # Get all forecast derivation outputs
-                # fc_outputs = kg_client.get_derivation_outputs(fc_deriv_iris)
-                # # Extract all created forecast instances and create list of optimisation inputs
-                # inputs_opi = list(fc_outputs[TS_FORECAST]) + [opti_int]
-                # deriv = derivation_client.createSyncDerivationForNewInfo(DH_OPTIMISATION_AGENT, 
-                #                 inputs_opi, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
-                # opti_deriv_iri = deriv.getIri()
-                # logger.info(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri}")
-                
-                # TODO: uncomment
+                # 2) Optimisation derivation
+                if not opti_deriv_iri:
+                    # NOTE: Instantiated using "createSyncDerivationForNewInfo" for same
+                    #       reason as above, i.e., ensure initial generation of output triples
+                    # Get all forecast derivation outputs
+                    fc_outputs = kg_client.get_derivation_outputs(fc_deriv_iris)
+                    # Extract all created forecast instances and create list of optimisation inputs
+                    inputs_opi = list(fc_outputs[TS_FORECAST]) + [opti_int]
+                    deriv = derivation_client.createSyncDerivationForNewInfo(DH_OPTIMISATION_AGENT, 
+                                    inputs_opi, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+                    opti_deriv_iri = deriv.getIri()
+                    logger.info(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri}")
+                else:
+                    derivation_client.unifiedUpdateDerivation(opti_deriv_iri)
+                    logger.info(f"Generation optimisation derivation instance successfully updated: {opti_deriv_iri}")
+
                 # # 3) Emission estimation derivations
                 # # Query Point Sources associated with emissions (instances need to have
                 # # a disp:hasOntoCityGMLCityObject relationship attached for Aermod to work)
@@ -213,6 +215,12 @@ def trigger_optimisation_task(params):
                 #                             inputs_mu_em, ONTODERIVATION_DERIVATION)
                 # logger.info(f"Municipal utility emission estimation derivation successfully instantiated: {deriv.getIri()}")
 
+                # 4) Initialise Aermod dispersion derivation markup (i.e., for 
+                #    existing SimulationTime instance)
+                #TODO: Likely by sending POST request to some agent in Aermod suite,
+                #      which shall return dispersion derivation iri
+                #dis_deriv_iri=
+
             else:
                 t1 += params['timeDelta_unix']
                 t2 += params['timeDelta_unix']
@@ -220,16 +228,15 @@ def trigger_optimisation_task(params):
                 kg_client.update_time_instant(sim_t, t1)
                 kg_client.update_time_instant(opti_t1, t1)
                 kg_client.update_time_instant(opti_t2, t2)
-
                 # Update time stamps of pure inputs
                 derivation_client.updateTimestamps([sim_t, opti_int])
 
-
-            # Request derivation update from Aermod Agent
-            # Aermod agent itself will request update from Emission Estimation Agent,
-            # and all other derivation updates are handled by DIF as derivations
-            # are directly linked via input/output relations in the KG
-            #TODO: to be implemented
+            # Request derivation update via Aermod Agent
+            #TODO: to be verified
+            #derivation_client.unifiedUpdateDerivation(dis_deriv_iri)
+            # NOTE: Aermod Agent queries emission derivations via StaticPointSources 
+            # and requests update; all other derivation updates are handled by DIF 
+            # directly as derivationscare directly linked via I/O relations in KG            
 
             # Print progress (to ensure output to console even for async tasks)
             print(f"Optimisation run {run+1}/{params['numberOfTimeSteps']} completed.")
