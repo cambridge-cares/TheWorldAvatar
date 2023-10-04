@@ -28,10 +28,6 @@ public class IsochroneAgent extends JPSAgent {
     private EndpointConfig endpointConfig = new EndpointConfig();
 
     private String dbName;
-    private String dbUrl;
-
-    private String dbUser;
-    private String dbPassword;
     private String kgEndpoint;
 
     private RemoteStoreClient storeClient;
@@ -102,30 +98,30 @@ public class IsochroneAgent extends JPSAgent {
             Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
 
 
-            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
-            JSONArray cumulativePOI = new JSONArray();
-            for (Map.Entry<String, String> entry : POImap.entrySet()) {
-                String value = entry.getValue();
-                JSONArray POI = storeClient.executeQuery(value);
+            // // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
+            // JSONArray cumulativePOI = new JSONArray();
+            // for (Map.Entry<String, String> entry : POImap.entrySet()) {
+            //     String value = entry.getValue();
+            //     JSONArray POI = storeClient.executeQuery(value);
 
-                // Iterate through the POIs in this iteration and add them to the cumulative array
-                for (int i = 0; i < POI.length(); i++) {
-                    cumulativePOI.put(POI.get(i));
-                }
-            }
-
+            //     // Iterate through the POIs in this iteration and add them to the cumulative array
+            //     for (int i = 0; i < POI.length(); i++) {
+            //         cumulativePOI.put(POI.get(i));
+            //     }
+            // }
 
             // Split road into multiple smaller segment and find the nearest_node 
             RouteSegmentization routeSegmentization = new RouteSegmentization();
-            
             // routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
+            
+            // Create a table to store nearest_node 
             // routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
-            // Take the nearest node and input into isochrone generator - contains (poi_iri, poi_type, nearest_node, geom)
-            JSONArray poisArrayWithNodes = routeSegmentization.getNearestNodes(remoteRDBStoreClient);
 
-            // // Isochrone generator SQL will take 3 inputs (poisArray -[poi_iri, poi_type, nearest_node, geom], upperTimeLimit, timeInterval, edgesTableSQL)
-            // IsochroneGenerator.generateIsochrone(poisArrayWithNodes, timeThreshold, timeInterval, EdgesTableSQLMap);
+            // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap)
+            IsochroneGenerator isochroneGenerator = new IsochroneGenerator();
+            isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
+
             // Population matcher
 
             // Create geoserver layer

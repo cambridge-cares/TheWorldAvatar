@@ -100,6 +100,7 @@ public class RouteSegmentization {
             + "poi_iri VARCHAR, "
             + "poi_type VARCHAR, "
             + "nearest_node BIGINT,"
+            + "isochrone_iri VARCHAR,"
             + "geom geometry "
             + ")";
         
@@ -154,31 +155,7 @@ public class RouteSegmentization {
         }
     }
 
-    public JSONArray getNearestNodes(RemoteRDBStoreClient remoteRDBStoreClient) throws SQLException {
-        String getNearestNode_sql = "SELECT DISTINCT poi_iri, poi_type, nearest_node, geom FROM poi_nearest_node";
-    
-        JSONArray jsonArray = new JSONArray();
-    
-        try (Connection connection = remoteRDBStoreClient.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(getNearestNode_sql)) {
-    
-            while (resultSet.next()) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("poi_iri", resultSet.getString("poi_iri"));
-                jsonObject.put("poi_type", resultSet.getString("poi_type"));
-                jsonObject.put("nearest_node", resultSet.getString("nearest_node"));
-                jsonObject.put("geom", resultSet.getString("geom"));
-    
-                jsonArray.put(jsonObject);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
-        }
-    
-        return jsonArray;
-    }
+
     
     
     /**
