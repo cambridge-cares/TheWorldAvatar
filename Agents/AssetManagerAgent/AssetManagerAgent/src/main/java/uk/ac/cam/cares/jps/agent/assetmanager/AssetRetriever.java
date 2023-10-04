@@ -11,6 +11,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -408,6 +409,7 @@ public class AssetRetriever {
         //location -- Retrieving all the rooms is a bit more complicated than I thought. Not yet implemented ~MTL
         //Room
         //Workspace
+        result.put("Workspace", getAllRoomWorspacePair());
         //Element in workspace
         result.put("Element", getIriListByPredicate(containsElement, storeClientDevice));
         //supplier
@@ -501,6 +503,26 @@ public class AssetRetriever {
         }
 
         return storeClientPurchDoc.executeQuery(query.getQueryString());
+    }
+
+    public JSONArray getAllRoomWorspacePair (){
+        Variable roomIRI = SparqlBuilder.var("roomIRI");
+        Variable IFCReprIRI = SparqlBuilder.var("IFCReprIRI");
+        Variable workspaceIRI = SparqlBuilder.var("workspaceIRI");
+        Variable workspaceID = SparqlBuilder.var("workspaceID");
+        Variable roomName = SparqlBuilder.var("roomName");
+
+
+        SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        query.where(IFCReprIRI.has(RDFS.LABEL, roomName));
+        query.where(roomIRI.has(hasIfcRepresentation, IFCReprIRI));
+        query.where(workspaceIRI.has(isLocatedIn, roomIRI));
+        query.where(workspaceIRI.has(hasWorkspaceIdentifier, workspaceID));
+
+        return storeClientDevice.executeQuery(query.getQueryString());
     }
 
 }
