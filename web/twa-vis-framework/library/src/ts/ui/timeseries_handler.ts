@@ -58,25 +58,13 @@ class TimeseriesHandler {
                 var timeClass = null
                 var firstTime = tableTimes[0];
 
-                // // Regex tokens to test before and after conversion to Moment format
-                // var regexBeforeMoment = String(firstTime).match(/^\d{4}-\d{2}-\d{2}T\d{2}(:\d{2}){1,2}Z/);
-                // var regexAfterMoment = String(firstTime).match(/^\d{4}-\d{2}-\d{2}\s\d{2}(:\d{2}){1,2}/);
-
-                // if(regexBeforeMoment || regexAfterMoment) {
-                //     timeClass = "dateTime"
-                // } else if(String(firstTime).includes(":")) {
-                //     timeClass = "offsetTime"
-                // } else {
-                //     timeClass = "number";
-                // }
-
+                // Attempt to determine if time values are dates, times, or numbers
                 if(isNaN(Date.parse(firstTime)) && isNaN(Date.parse(firstTime.replaceAll("-", "/")))) {
                     if(firstTime.includes(":")) {
                         timeClass = "offsetTime"
                     } else {
                         timeClass = "number";
                     }
-
                 } else {
                     timeClass = "dateTime";
                 }
