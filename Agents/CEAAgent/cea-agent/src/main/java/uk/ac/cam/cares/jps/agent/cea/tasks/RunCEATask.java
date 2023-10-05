@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.cea.tasks;
 
+import org.locationtech.jts.geom.Geometry;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAMetaData;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -57,7 +58,6 @@ public class RunCEATask implements Runnable {
     private static final String PROJECT_NAME = "testProject";
     private static final String SCENARIO_NAME = "testScenario";
     private static final String CEA_OUTPUT_DATA_DIRECTORY = PROJECT_NAME + FS + SCENARIO_NAME + FS + "outputs" + FS + "data";
-    private Map<String, ArrayList<String>> solarSupply = new HashMap<>();
 
     public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, URI endpointUri, ArrayList<String> uris, int thread, String crs) {
         this.inputs = buildingData;
@@ -66,7 +66,6 @@ public class RunCEATask implements Runnable {
         this.threadNumber = thread;
         this.crs = crs;
         this.metaData = ceaMetaData;
-        setSolarSupply();
     }
 
     public void stop() {
@@ -147,7 +146,7 @@ public class RunCEATask implements Runnable {
 
         for (int i = 0; i < dataInputs.size(); i++) {
             Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("geometry", dataInputs.get(i).getGeometry().getFootprint());
+            tempMap.put("geometry", polygonToString(dataInputs.get(i).getGeometry().getFootprint()));
             tempMap.put("height", dataInputs.get(i).getGeometry().getHeight());
             tempMap.put("usage", dataInputs.get(i).getUsage());
             tempMap.put("id", i);
@@ -174,6 +173,16 @@ public class RunCEATask implements Runnable {
         }
     }
 
+    private List<String> polygonToString(List<Geometry> geometries) {
+        List<String> result = new ArrayList<>();
+
+        for (Geometry geometry : geometries) {
+            result.add(geometry.toString());
+        }
+
+        return result;
+    }
+
     /**
      * Converts surrounding data into text file to be read by the Python scripts
      * @param surroundings list of CEAGeometryData of the surrounding buildings
@@ -184,12 +193,12 @@ public class RunCEATask implements Runnable {
         //Parse input data to JSON
         String dataString = "[";
 
-        if (!surroundings.isEmpty()) {
+        if (surroundings != null) {
             noSurroundings = false;
 
             for (int i = 0; i < surroundings.size(); i++) {
                 Map<String, Object> tempMap = new HashMap<>();
-                tempMap.put("geometry", surroundings.get(i).getFootprint());
+                tempMap.put("geometry", polygonToString(surroundings.get(i).getFootprint()));
                 tempMap.put("height", surroundings.get(i).getHeight());
                 dataString += new Gson().toJson(tempMap);
                 if (i != surroundings.size() - 1) {
@@ -216,7 +225,7 @@ public class RunCEATask implements Runnable {
     }
 
     private void parseWeather(List<OffsetDateTime> weatherTimes, Map<String, List<Double>> weather, List<Double> weatherMetaData, String weatherTimes_path, String weather_path) {
-        if (weatherTimes.isEmpty()) {
+        if (weatherTimes != null) {
             List<Map<String, Integer>> timeMap = new ArrayList<>();
 
             noWeather = false;
@@ -276,129 +285,6 @@ public class RunCEATask implements Runnable {
                 throw new JPSRuntimeException(e);
             }
         }
-    }
-
-    /**
-     * Add time series data on solar energy generator potential energy to CEAOutputData
-     * @param result CEAOutputData to store the CEA outputs
-     * @param generatorType type of solar energy generator
-     * @param generatorLocation location of the solar energy generator
-     * @param supplyType type of potential energy of data
-     * @param data time series data of the potential energy for the solar energy generator
-     * @return CEAOutputData with the specified potential energy added
-     */
-    public CEAOutputData addSolarSupply(CEAOutputData result, String generatorType, String generatorLocation, String supplyType, ArrayList<String> data) {
-        if (generatorType.equals("PVT_FP")) {
-            if (supplyType.equals("E")) {
-                if (generatorLocation.contains("roof")) {
-                    result.PVTPlateRoofESupply.add(data);
-                } else if (generatorLocation.contains("north")) {
-                    result.PVTPlateWallNorthESupply.add(data);
-                } else if (generatorLocation.contains("south")) {
-                    result.PVTPlateWallSouthESupply.add(data);
-                } else if (generatorLocation.contains("west")) {
-                    result.PVTPlateWallWestESupply.add(data);
-                } else if (generatorLocation.contains("east")) {
-                    result.PVTPlateWallEastESupply.add(data);
-                }
-            } else if (supplyType.equals("Q")) {
-                if (generatorLocation.contains("roof")) {
-                    result.PVTPlateRoofQSupply.add(data);
-                } else if (generatorLocation.contains("north")) {
-                    result.PVTPlateWallNorthQSupply.add(data);
-                } else if (generatorLocation.contains("south")) {
-                    result.PVTPlateWallSouthQSupply.add(data);
-                } else if (generatorLocation.contains("west")) {
-                    result.PVTPlateWallWestQSupply.add(data);
-                } else if (generatorLocation.contains("east")) {
-                    result.PVTPlateWallEastQSupply.add(data);
-                }
-            }
-        } else if (generatorType.equals("PVT_ET")) {
-            if (supplyType.equals("E")) {
-                if (generatorLocation.contains("roof")) {
-                    result.PVTTubeRoofESupply.add(data);
-                } else if (generatorLocation.contains("north")) {
-                    result.PVTTubeWallNorthESupply.add(data);
-                } else if (generatorLocation.contains("south")) {
-                    result.PVTTubeWallSouthESupply.add(data);
-                } else if (generatorLocation.contains("west")) {
-                    result.PVTTubeWallWestESupply.add(data);
-                } else if (generatorLocation.contains("east")) {
-                    result.PVTTubeWallEastESupply.add(data);
-                }
-            } else if (supplyType.equals("Q")) {
-                if (generatorLocation.contains("roof")) {
-                    result.PVTTubeRoofQSupply.add(data);
-                } else if (generatorLocation.contains("north")) {
-                    result.PVTTubeWallNorthQSupply.add(data);
-                } else if (generatorLocation.contains("south")) {
-                    result.PVTTubeWallSouthQSupply.add(data);
-                } else if (generatorLocation.contains("west")) {
-                    result.PVTTubeWallWestQSupply.add(data);
-                } else if (generatorLocation.contains("east")) {
-                    result.PVTTubeWallEastQSupply.add(data);
-                }
-            }
-        } else if (generatorType.equals("PV")) {
-            if (generatorLocation.contains("roof")) {
-                result.PVRoofSupply.add(data);
-            } else if (generatorLocation.contains("north")) {
-                result.PVWallNorthSupply.add(data);
-            } else if (generatorLocation.contains("south")) {
-                result.PVWallSouthSupply.add(data);
-            } else if (generatorLocation.contains("west")) {
-                result.PVWallWestSupply.add(data);
-            } else if (generatorLocation.contains("east")) {
-                result.PVWallEastSupply.add(data);
-            }
-        } else if (generatorType.equals("SC_FP")) {
-            if (generatorLocation.contains("roof")) {
-                result.ThermalPlateRoofSupply.add(data);
-            } else if (generatorLocation.contains("north")) {
-                result.ThermalPlateWallNorthSupply.add(data);
-            } else if (generatorLocation.contains("south")) {
-                result.ThermalPlateWallSouthSupply.add(data);
-            } else if (generatorLocation.contains("west")) {
-                result.ThermalPlateWallWestSupply.add(data);
-            } else if (generatorLocation.contains("east")) {
-                result.ThermalPlateWallEastSupply.add(data);
-            }
-        } else if (generatorType.equals("SC_ET")) {
-            if (generatorLocation.contains("roof")) {
-                result.ThermalTubeRoofSupply.add(data);
-            } else if (generatorLocation.contains("north")) {
-                result.ThermalTubeWallNorthSupply.add(data);
-            } else if (generatorLocation.contains("south")) {
-                result.ThermalTubeWallSouthSupply.add(data);
-            } else if (generatorLocation.contains("west")) {
-                result.ThermalTubeWallWestSupply.add(data);
-            } else if (generatorLocation.contains("east")) {
-                result.ThermalTubeWallEastSupply.add(data);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Sets solarSupply with the keys being the type of solar energy generator, and the values being the type of energy that the generator can generate
-     */
-    private void setSolarSupply() {
-        ArrayList<String> EQ = new ArrayList<>();
-        ArrayList<String> E = new ArrayList<>();
-        ArrayList<String> Q = new ArrayList<>();
-
-        EQ.add("E");
-        EQ.add("Q");
-        E.add("E");
-        Q.add("Q");
-
-        solarSupply.put("PV", E);
-        solarSupply.put("PVT_FP", EQ);
-        solarSupply.put("PVT_ET", EQ);
-        solarSupply.put("SC_FP", Q);
-        solarSupply.put("SC_ET", Q);
     }
 
     /**
