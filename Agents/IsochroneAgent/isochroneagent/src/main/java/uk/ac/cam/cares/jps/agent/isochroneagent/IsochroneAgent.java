@@ -9,8 +9,12 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 import javax.servlet.annotation.WebServlet;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,8 +24,7 @@ import java.util.*;
 @WebServlet(urlPatterns = "/update")
 
 public class IsochroneAgent extends JPSAgent {
-    private static final String PROPETIES_PATH = "/usr/local/tomcat/data/config.properties";
-    private static final String SQL_PATH = "/usr/local/tomcat/data/sql";
+    private static final String PROPETIES_PATH = "/inputs/config.properties";
     private static final Path POI_PATH = Path.of("/inputs/15MSC/POIqueries");
     private static final Path EDGESTABLESQL_PATH = Path.of("/inputs/15MSC/edgesSQLTable");
 
@@ -96,36 +99,36 @@ public class IsochroneAgent extends JPSAgent {
             Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
             Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
 
-            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
-            JSONArray cumulativePOI = new JSONArray();
-            for (Map.Entry<String, String> entry : POImap.entrySet()) {
-                String value = entry.getValue();
-                JSONArray POI = storeClient.executeQuery(value);
+            // // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
+            // JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
 
-                // Iterate through the POIs in this iteration and add them to the cumulative array
-                for (int i = 0; i < POI.length(); i++) {
-                    cumulativePOI.put(POI.get(i));
-                }
-            }
-
-            // Split road into multiple smaller segment and find the nearest_node 
-            RouteSegmentization routeSegmentization = new RouteSegmentization();
-            routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
+            // // Split road into multiple smaller segment and find the nearest_node 
+            // RouteSegmentization routeSegmentization = new RouteSegmentization();
+            // routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
             
-            // Create a table to store nearest_node 
-            routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
+            // // Create a table to store nearest_node 
+            // routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
 
-            // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap)
-            IsochroneGenerator isochroneGenerator = new IsochroneGenerator();
-            isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
+            // // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap)
+            // IsochroneGenerator isochroneGenerator = new IsochroneGenerator();
+            // isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
 
-            // Population matcher
-            PopulationMapper populationMapper = new PopulationMapper();
-            populationMapper.checkAndAddColumns(remoteRDBStoreClient, populationTableList);
-            populationMapper.mapPopulation(remoteRDBStoreClient, populationTableList);
+            // // Population matcher
+            // PopulationMapper populationMapper = new PopulationMapper();
+            // populationMapper.checkAndAddColumns(remoteRDBStoreClient, populationTableList);
+            // populationMapper.mapPopulation(remoteRDBStoreClient, populationTableList);
 
-            // Create geoserver layer
+            // Create geoserver layer            
+            GeoServerClient geoServerClient = GeoServerClient.getInstance();
+            String workspaceName= "isochrone"; 
+            String schema = "public";
+            geoServerClient.createWorkspace(workspaceName);
+            geoServerClient.createPostGISDataStore(workspaceName,"isochrone_aggregated" , dbName, schema);
+            
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            geoServerClient.createPostGISLayer(workspaceName, dbName,"isochrone_aggregated" ,geoServerVectorSettings);
+            
 
         } catch (Exception e) {
             e.printStackTrace();

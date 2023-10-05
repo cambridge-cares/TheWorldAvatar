@@ -21,7 +21,6 @@ services:
       - stack
     volumes:
       - ./inputs:/inputs
-      - ./isochroneagent/src/main/resources:/usr/local/tomcat/data
 volumes:
   inputs:
     name: "inputs"

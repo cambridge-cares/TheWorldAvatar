@@ -10,6 +10,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.json.JSONArray;
+
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
 public class FileReader {
 
     public static InputStream getStream(String path) throws FileNotFoundException {
@@ -79,5 +83,20 @@ public class FileReader {
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read files from the directory.", ex);
         }
+    }
+
+    public static JSONArray getPOILocation(RemoteStoreClient storeClient, Map<String, String> POImap)
+    {            
+        JSONArray cumulativePOI = new JSONArray();
+        for (Map.Entry<String, String> entry : POImap.entrySet()) {
+            String value = entry.getValue();
+            JSONArray POI = storeClient.executeQuery(value);
+
+            // Iterate through the POIs in this iteration and add them to the cumulative array
+            for (int i = 0; i < POI.length(); i++) {
+                cumulativePOI.put(POI.get(i));
+            }
+        }
+        return cumulativePOI;
     }
 }
