@@ -312,7 +312,7 @@ public class ConfigEntry {
                 entry.timeLimitUnit = TimeUnit.valueOf(timeLimitUnit.toUpperCase());
             }
 
-            if(timeLimitUnit == 0) {
+            if(timeLimitValue == 0) {
                 entry.timeLimitValue = 24;
             } else {
                 entry.timeLimitValue = timeLimitValue;
