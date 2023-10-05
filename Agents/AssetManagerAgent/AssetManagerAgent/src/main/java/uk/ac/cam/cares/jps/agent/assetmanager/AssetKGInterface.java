@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
  * Class for creating queries and instantiating asset triples
  */
 public class AssetKGInterface {
+    private String endpointAsset, endpointDevice, endpointPurchDoc;
     private RemoteStoreClient storeClientAsset, storeClientDevice, storeClientPurchDoc;
     public AssetExistenceChecker existenceChecker;
     public AssetRetriever assetRetriever;
@@ -54,6 +55,10 @@ public class AssetKGInterface {
 
     //constructor
     public AssetKGInterface(String kgEndpointAsset, String kgEndpointDevice, String kgEndpointPurchDoc) {
+        endpointAsset = kgEndpointAsset;
+        endpointDevice = kgEndpointDevice;
+        endpointPurchDoc = kgEndpointPurchDoc;
+
         storeClientAsset = new RemoteStoreClient(kgEndpointAsset, kgEndpointAsset);
         storeClientDevice = new RemoteStoreClient(kgEndpointDevice, kgEndpointDevice);
         storeClientPurchDoc = new RemoteStoreClient(kgEndpointPurchDoc, kgEndpointPurchDoc);
@@ -825,7 +830,7 @@ public class AssetKGInterface {
       }
 
       public JSONObject getRequiredIriUI () {
-        return assetRetriever.getRequiredIriUI();
+        return assetRetriever.getRequiredIriUI(endpointAsset, endpointDevice);
       }
 
       public JSONArray getItemListByDocIRI (String InvoiceIRI, String POiri, String DOiri) {

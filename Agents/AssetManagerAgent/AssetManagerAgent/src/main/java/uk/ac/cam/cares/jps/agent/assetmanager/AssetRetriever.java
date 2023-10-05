@@ -399,7 +399,7 @@ public class AssetRetriever {
         }
     }
 
-    public JSONObject getRequiredIriUI () {
+    public JSONObject getRequiredIriUI (String assetNamespace, String deviceNamepsace) {
         JSONObject result = new JSONObject();
         //For type will need to check with the ontology insetad. Not yet implemented
         //as the ontology for some of the stuff are not finalised
@@ -411,7 +411,7 @@ public class AssetRetriever {
         //Workspace
         result.put("Workspace", getAllRoomWorspacePair());
         //Element in workspace
-        result.put("Element", getIriListByPredicate(containsElement, storeClientDevice));
+        result.put("Element", getAllElementInWorkspace(assetNamespace, deviceNamepsace));
         //supplier
         result.put("Supplier", getAllSupplierIRI());
         //Manufacturer
@@ -523,6 +523,26 @@ public class AssetRetriever {
         query.where(workspaceIRI.has(hasWorkspaceIdentifier, workspaceID));
 
         return storeClientDevice.executeQuery(query.getQueryString());
+    }
+
+    public JSONArray getAllElementInWorkspace(String assetNamespace, String deviceNamepsace){
+        /*TODO modify to rdf4j format
+         * Yes, I'm being lazy again here. But it works, so who cares
+         */
+        String query = "PREFIX ontoassetmanagement: <" + ONTOASSET + ">\r\n"+
+                "SELECT * \r\n" + 
+                "WHERE {\r\n" + 
+                "SERVICE <"+deviceNamepsace+"> {\r\n" + 
+                "    assetIRI ontoassetmanagement:isLocatedAt ?workspaceIRI.\r\n" + 
+                "        ?workspaceIRI ontoassetmanagement:hasWorkspaceIdentifier ?workspaceID.\r\n" + 
+                "      SERVICE <"+assetNamespace+"> {\r\n" + 
+                "        ?assetIRI ontoassetmanagement:hasItemInventoryIdentifier ?assetID.\r\n" + 
+                "        }\r\n" + 
+                "    }\r\n" + 
+                "      \r\n" + 
+                "}";
+
+        return storeClientDevice.executeQuery(query);
     }
 
 }
