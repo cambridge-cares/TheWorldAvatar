@@ -214,6 +214,21 @@ def load_ts_data(cfg, tsClient):
                                          cfg['loaded_data_bounds']['lowerbound'], 
                                          cfg['loaded_data_bounds']['upperbound'])
             logger.info('Covariates loaded successfully.')
+        # Load all covariates as they are as default behaviour for the prophet model
+        # if no custom loading function in fcmodels is provided
+        elif cfg['fc_model'].get('name') == 'prophet':
+            # Load all covariates as df
+            logger.info(f'Loading all covariates for prophet model')
+            covariates = [get_df_of_ts(iri, tsClient, lowerbound=cfg['loaded_data_bounds']['lowerbound'], 
+                                            upperbound=cfg['loaded_data_bounds']['upperbound'], column_name='covariate')
+                            for iri, _ in cfg['fc_model']['covariates'].items()]
+            # Create consolidated covariates list for the forecast
+            # NOTE: The order of the covariate list does not affect the prophet model
+            #      as the model is directly trained on the covariates and produces forecast
+            covariates = concatenate(
+                [TimeSeries.from_dataframe(covariate, time_col='time', value_cols="covariate")
+                    for covariate in covariates],
+                axis="component")
         else:
             msg = 'No covariate loading function has been provided for the specified forecasting model.'
             logger.error(msg)

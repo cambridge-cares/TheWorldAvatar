@@ -1,5 +1,23 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 4.1.1
+### Features
+* _No features present._
+### Bug Fixes:
+* No longer append null units to time series tables.
+* No longer show charts for time series where dependent values are strings.
+* Time series table should now grow to fill container vertically.
+
+# 4.1.0
+### Features
+* Added Cesium source option to enable/disable back face culling in 3D tile sets.
+### Bug Fixes:
+* Popup components are now handled centrally by the framework.
+* Fixed placement of popup components over 2D WMS features in Cesium.
+* Selecting the same base imagery twice no longer removes all data.
+* Changing the base imagery now preserves the layer visibility.
+* Minor tweaks to Mapbox tutorial.
+
 # 4.0.0
 ### Features
 * Renamed from "Digital Twin Visualisation Framework" to "TWA Visualisation Framework".
