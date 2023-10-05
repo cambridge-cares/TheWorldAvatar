@@ -152,7 +152,7 @@ Once the module starts, the terminal will firstly show the following message ask
 
 `Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): ` 
 
-This is to determine which config file to use to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reporoduing the results reported in Preprint 312, use `2999`.
+This is to determine which config file to use to initialise the SMR replacement simulation. There are two config files avaliable in this project which are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reproducing  the results reported in Preprint 312, use `2999`.
 
 After setting up the model type, the terminal will then show up the following message to specify the LCOE of the SMR.
 
@@ -160,19 +160,19 @@ After setting up the model type, the terminal will then show up the following me
 
 The range could be any number. In this study, due to the prototype picked for the SMR, 40 ~ 60 £/MWh is insterested.
 
-For reporoduing the results reported in Preprint 312, use `40`.
+For reproducing  the results reported in Preprint 312, use `40`.
 
-Following this step, the terminal will ask for an input `Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): ` to configurate the generation of GeoJSON files. 
+Following this step, the terminal will ask for an input `Please specify if you want to generate the geojson file for visulisation (1 for Yes, 2 for No): ` to configurate the generation of GeoJSON files. 
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
-Then, you will see the following message asking for an input: `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` To specify if this run is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
+Then, you will see the following message asking for an input: `Please specify if you want to use the existing results for post-processing (1 for Yes, 2 for No): ` To specify if this run is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
 
-For reporoduing the results reported in Preprint 312, use `2`.
+For reproducing  the results reported in Preprint 312, use `2`.
 
-The next step you need to decide whether to create the PDF files for Pareto Front `Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): `. Enters `1` for creating PDFs and `2` for not. It is recommended to select `1` for simulation and for post processing, it can be any value which will not affect the proccess.
+The next step lets you decide whether to create PDF files for Pareto Front `Please specify if you want to create PDF files for Pareto Front (1 for Yes, 2 for No): `. Enter `1` for creating PDFs and `2` for not. It is recommended to select `1` for simulation and for post processing, it can be any value which will not affect the proccess.
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
 The last step is to confirm the number of the round by providing an input when you see the following message: `Please confirm the round of this run, ranging from 1 to 6: `
 
@@ -188,7 +188,7 @@ Once the module starts, the terminal will firstly show the following sentence
 
 `Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): ` 
 
-for determing which config file is used to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reporoduing the results reported in Preprint 312, use `2999`.
+for determing which config file is used to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reproducing  the results reported in Preprint 312, use `2999`.
 
 After setting up the model type, the terminal will then show up the following question to specify the LCOE of the SMR
 
@@ -196,19 +196,19 @@ After setting up the model type, the terminal will then show up the following qu
 
 The range could be any number. In this study, due to the prototype picked for the SMR, 40 ~ 60 £/MWh is insterested.
 
-For reporoduing the results reported in Preprint 312, use `40`.
+For reproducing  the results reported in Preprint 312, use `40`.
 
 Following this step, the terminal will ask for the question `Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): ` to configurate the generation of GeoJSON files. For entering `1` is to generate the GeoJSON file for visulisation purpose and it is recommended. 
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
 Then, you will see from the terminal asks that `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` to specify if this running is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
 At the last step you need to decide whether to create the PDF files for Pareto Front `Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): `. Enters `1` for creating PDFs and `2` for not. It is recommended to select `1` for simulation and for post processing, it can be any value which will not affect the proccess.
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
 Once the code execution is finished, you will find figures reported in Preprint 312. Figures 2-6 may be found in the following path in PDF format:
 `UK_Digital_Twin\outputs\smr_replacement_fig`.
@@ -223,7 +223,7 @@ Once the module starts, the terminal will firstly show the following message ask
 
 `Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): ` 
 
-This is to determine which config file to use to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reporoduing the results reported in Preprint 312, use `2999`.
+This is to determine which config file to use to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reproducing  the results reported in Preprint 312, use `2999`.
 
 After setting up the model type, the terminal will then show up the following message to specify the LCOE of the SMR.
 
@@ -231,19 +231,19 @@ After setting up the model type, the terminal will then show up the following me
 
 The range could be any number. In this study, due to the prototype picked for the SMR, 40 ~ 60 £/MWh is insterested.
 
-For reporoduing the results reported in Preprint 312, use `60`.
+For reproducing  the results reported in Preprint 312, use `60`.
 
 Following this step, the terminal will ask for an input `Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): ` to configurate the generation of GeoJSON files. 
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
 Then, you will see the following message asking for an input: `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` To specify if this run is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
 
-For reporoduing the results reported in Preprint 312, use `2`.
+For reproducing  the results reported in Preprint 312, use `2`.
 
 The next step you need to decide whether to create the PDF files for Pareto Front `Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): `. Enters `1` for creating PDFs and `2` for not. It is recommended to select `1` for simulation and for post processing, it can be any value which will not affect the proccess.
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
 The last step is to confirm the number of the round by providing an input when you see the following message: `Please confirm the round of this run, ranging from 1 to 6: `
 
@@ -259,7 +259,7 @@ Once the module starts, the terminal will firstly show the following sentence
 
 `Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): ` 
 
-for determing which config file is used to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reporoduing the results reported in Preprint 312, use `2999`.
+for determing which config file is used to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reproducing  the results reported in Preprint 312, use `2999`.
 
 After setting up the model type, the terminal will then show up the following question to specify the LCOE of the SMR
 
@@ -267,19 +267,19 @@ After setting up the model type, the terminal will then show up the following qu
 
 The range could be any number. In this study, due to the prototype picked for the SMR, 40 ~ 60 £/MWh is insterested.
 
-For reporoduing the results reported in Preprint 312, use `60`.
+For reproducing  the results reported in Preprint 312, use `60`.
 
 Following this step, the terminal will ask for the question `Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): ` to configurate the generation of GeoJSON files. For entering `1` is to generate the GeoJSON file for visulisation purpose and it is recommended. 
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
 Then, you will see from the terminal asks that `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` to specify if this running is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
 At the last step you need to decide whether to create the PDF files for Pareto Front `Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): `. Enters `1` for creating PDFs and `2` for not. It is recommended to select `1` for simulation and for post processing, it can be any value which will not affect the proccess.
 
-For reporoduing the results reported in Preprint 312, use `1`.
+For reproducing  the results reported in Preprint 312, use `1`.
 
 Once the code execution is finished, you will find figures reported in Preprint 312. Figures 2-6 may be found in the following path in PDF format:
 `UK_Digital_Twin\outputs\smr_replacement_fig`.

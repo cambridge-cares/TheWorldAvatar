@@ -4960,21 +4960,21 @@ if __name__ == '__main__':
     SMR_LCOE = int(input('Please specify the LCOE of SMR (£/MWh): '))
 
     ## 3. Specify if generate GeoJSON file
-    generateVisualisationJSON_flag = int(input('Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): '))
+    generateVisualisationJSON_flag = int(input('Please specify if you want to generate the geojson file for visulisation (1 for Yes, 2 for No): '))
     if generateVisualisationJSON_flag == 1:
         generateVisualisationJSON = True
     else: 
         generateVisualisationJSON = False
 
     ## 4. Specify if this is the post-processing
-    ifReadLocalResults_flag = int(input('Please specify if use the existing results for post-processing (1 for Yes, 2 for No): '))
+    ifReadLocalResults_flag = int(input('Please specify if you want to use the existing results for post-processing (1 for Yes, 2 for No): '))
     if ifReadLocalResults_flag == 1:
         ifReadLocalResults = True
     else: 
         ifReadLocalResults = False
 
     ## 5. Specify if generate Pareto Front figures
-    ifGenerateParetoFrontPDF_flag = int(input('Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): '))
+    ifGenerateParetoFrontPDF_flag = int(input('Please specify if you want to create PDF files for Pareto Front (1 for Yes, 2 for No): '))
     if ifGenerateParetoFrontPDF_flag == 1:
         ifGenerateParetoFrontPDF = True
     else: 
@@ -4985,8 +4985,6 @@ if __name__ == '__main__':
     numOfBranch = config_data["NumOfBranch"]
     rootPath = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/smr_replacements/%sbus%sbranch_LCOE_%s£/"%(str(numberOfBus), str(numOfBranch), str(SMR_LCOE))
 
-    energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist() 
-    
     if not ifReadLocalResults:
         folder = os.path.exists(rootPath)
         if not folder:                
