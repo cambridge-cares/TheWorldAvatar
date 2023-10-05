@@ -71,6 +71,10 @@ then
     rm -rf "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/*"
     cp -r "./visualisation/." "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/"
 
+    # Copy in the mapbox secret files
+    cp "./visualisation/mapbox_api_key" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/secrets/"
+    cp "./visualisation/mapbox_username" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/secrets/"
+    
     # Run the stack manager to start a new stack
     cd "$ROOT/Deploy/stacks/dynamic/stack-manager"
     echo "Running the stack start up script..."
