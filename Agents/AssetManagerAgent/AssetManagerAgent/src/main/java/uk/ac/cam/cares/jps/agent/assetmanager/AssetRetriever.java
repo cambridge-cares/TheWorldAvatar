@@ -527,19 +527,18 @@ public class AssetRetriever {
 
     public JSONArray getAllElementInWorkspace(String assetNamespace, String deviceNamepsace){
         /*TODO modify to rdf4j format
-         * Yes, I'm being lazy again here. But it works, so who cares
+         * Yes, I'm being lazy again here. But it works (sometimes), so who cares
          */
-        String query = "PREFIX ontoassetmanagement: <" + ONTOASSET + ">\r\n"+
-                "SELECT * \r\n" + 
-                "WHERE {\r\n" + 
-                "SERVICE <"+deviceNamepsace+"> {\r\n" + 
-                "    assetIRI ontoassetmanagement:isLocatedAt ?workspaceIRI.\r\n" + 
-                "        ?workspaceIRI ontoassetmanagement:hasWorkspaceIdentifier ?workspaceID.\r\n" + 
-                "      SERVICE <"+assetNamespace+"> {\r\n" + 
-                "        ?assetIRI ontoassetmanagement:hasItemInventoryIdentifier ?assetID.\r\n" + 
-                "        }\r\n" + 
-                "    }\r\n" + 
-                "      \r\n" + 
+        String query = "PREFIX ontoassetmanagement: <" + ONTOASSET + ">\n"+
+                "SELECT *\n" + 
+                "WHERE {\n" + 
+                "   SERVICE <"+deviceNamepsace+"> {\r\n" + 
+                "       ?assetIRI ontoassetmanagement:isLocatedAt ?workspaceIRI.\r\n" + 
+                "       ?workspaceIRI ontoassetmanagement:hasWorkspaceIdentifier ?workspaceID.\r\n" + 
+                "       SERVICE <"+assetNamespace+"> {\r\n" + 
+                "           ?assetIRI ontoassetmanagement:hasItemInventoryIdentifier ?assetID.\r\n" + 
+                "       }\r\n" + 
+                "   }\r\n" + 
                 "}";
 
         return storeClientDevice.executeQuery(query);

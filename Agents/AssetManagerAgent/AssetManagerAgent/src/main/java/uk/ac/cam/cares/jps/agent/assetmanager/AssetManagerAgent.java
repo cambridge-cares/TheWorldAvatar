@@ -85,29 +85,6 @@ public class AssetManagerAgent extends JPSAgent{
                 throw new JPSRuntimeException("Failed to read agent.properties file: ", e);
             }
 
-            if(!(assetData.getString("Prefix").isBlank() || assetData.getString("Prefix") == null)){
-                try (InputStream input = new FileInputStream(ontoMapProperties)) {
-                    // Load properties file from specified path
-                    Properties prop = new Properties();
-                    prop.load(input);
-
-                    try {
-                        String AssetClass = assetData.getString("AssetClass");
-                        assetData.put("Prefix", prop.getProperty(AssetClass));
-
-                    }
-                    catch (Exception e) {
-                        throw new IOException ("The asset class keys cannot be retrieved from the properties file: ", e);
-                    }
-                    
-
-                }
-                catch (Exception e) {
-                    throw new JPSRuntimeException("Failed to read properties file: ", e);
-                }
-            }
-            
-
             String[] args = new String[] {
                 ENDPOINT_KG_ASSET, 
                 ENDPOINT_KG_DEVICE, 
@@ -130,11 +107,11 @@ public class AssetManagerAgent extends JPSAgent{
             }
             
             if (urlPath.contains("retrievebydocs")){
-                JSONObject docsIRI = requestParams.getJSONObject("assetData").getJSONObject("ID");
+                JSONObject docsIRI = assetData.getJSONObject("ID");
                 jsonMessage = getItemsByDocs(docsIRI);
             }
             else if (urlPath.contains("retrieve")){
-                String ID = requestParams.getString("ID");
+                String ID = assetData.getString("ID");
                 jsonMessage = retrieveAssetInstance(args, ID);
             }
 
@@ -142,6 +119,27 @@ public class AssetManagerAgent extends JPSAgent{
                 jsonMessage = getDataForUI();
             }
             else if (urlPath.contains("instantiate")){
+                if(!(assetData.getString("Prefix").isBlank() || assetData.getString("Prefix") == null)){
+                    try (InputStream input = new FileInputStream(ontoMapProperties)) {
+                        // Load properties file from specified path
+                        Properties prop = new Properties();
+                        prop.load(input);
+
+                        try {
+                            String AssetClass = assetData.getString("AssetClass");
+                            assetData.put("Prefix", prop.getProperty(AssetClass));
+
+                        }
+                        catch (Exception e) {
+                            throw new IOException ("The asset class keys cannot be retrieved from the properties file: ", e);
+                        }
+                        
+
+                    }
+                    catch (Exception e) {
+                        throw new JPSRuntimeException("Failed to read properties file: ", e);
+                    }
+                }
                 jsonMessage = instantiateAsset(args, assetData);
             }
             else if (urlPath.contains("addmanualpdf")){
@@ -198,28 +196,29 @@ public class AssetManagerAgent extends JPSAgent{
 
     public boolean validateInput(JSONObject requestParams, String pathURL) throws BadRequestException {
         boolean validate = true;
-
-        if (requestParams.isEmpty()) {
-            validate = false;
+        
+        if (System.getenv(KEY_AGENTPROPERTIES) == null) {
+            return false; 
         }
-        else {
-            validate = requestParams.has("assetData");
-            if (validate == true) {
-                
-                if (System.getenv(KEY_AGENTPROPERTIES) == null) {
-                    validate = false; 
-                }
 
-                if (pathURL.contains("retrieve")) {
-                    validate = requestParams.getJSONObject("assetData").has("ID");
-                }
-                if (pathURL.contains("print")) {
-                    validate = requestParams.getJSONObject("assetData").has("IRI");
-                }
-           
+        if (pathURL.contains("getuidata")){return true;} //Needed no body, do no validation
+        
+
+        validate = requestParams.has("assetData");
+        if(validate){
+            if (pathURL.contains("retrieve")) {
+                validate = requestParams.getJSONObject("assetData").has("ID");
             }
-
+            if (pathURL.contains("print")) {
+                validate = requestParams.getJSONObject("assetData").has("IRI");
+            }
+            if (pathURL.contains("addmanualpdf")) {
+                validate = requestParams.getJSONObject("assetData").has("encodedPDF");
+                validate = requestParams.getJSONObject("assetData").has("fileName");
+            }
         }
+
+        
         return validate;
     }
 
