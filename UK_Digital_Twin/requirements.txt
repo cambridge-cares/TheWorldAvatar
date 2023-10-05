@@ -1,5 +1,5 @@
 about-time==3.1.1
-#adjustText==0.7.3
+adjustText==0.8
 alive-progress==2.4.1
 anyio==3.5.0
 asgiref==3.5.0
