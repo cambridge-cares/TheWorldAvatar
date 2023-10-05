@@ -114,7 +114,7 @@ then
 
     # Generate sample time series data
     echo "Generating sample time series data, may also take some time..."
-    bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:38383/feature-info-agent/make-time-series)" != "200" ]]; do sleep 5; done'
+    curl -s -o /dev/null http://localhost:38383/feature-info-agent/make-time-series
     echo "Finished script, visualisation should be at http://localhost:38383/visualisation"
 
 else
