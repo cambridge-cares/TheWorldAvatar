@@ -27,6 +27,7 @@ class KGClient(PySparqlClient):
     #
     # SPARQL QUERIES
     #
+    #TODO: Check whether that's still needed in the end
     def get_associated_dataIRI(self, instance_iri:str, unit=None, forecast=False) -> tuple:
         """
         Retrieves the dataIRI (i.e., IRI with attached time series) associated
@@ -79,35 +80,93 @@ class KGClient(PySparqlClient):
                 msg = f'Multiple "dataIRI"s associated with given instance: {instance_iri}.'
             logger.error(msg)
             raise ValueError(msg)
-   
+        
 
-    def get_unix_timestamps(self, instant_iri:str) -> int:
+    def get_input_forecast_details(self, forecast_iri:str):
         """
-        Retrieves the unix timestamp for a given instant IRI
+        Returns the tsIRI, rdb url and time format associated with the given 
+        dataIRI, i.e., IRI of grid temperature or heat demand forecast
 
         Arguments:
-            instant_iri {str} -- IRI of instant for which to retrieve timestamp
+            forecast_iri (str) -- IRI of heat demand or grid temperature forecast
+                                  (i.e., inputs to the generation optimisation)
         Returns:
-            unix {int} -- unix timestamp (in s)
+            ts (dict) -- dictionary with keys 'ts_iri', 'rdb_url' and 'time_format'
         """
 
+        #TODO: Include unit of forecast, i.e. MW?
         query = f"""
-            SELECT ?unix
-            WHERE {{
-                <{instant_iri}> <{TIME_INTIMEPOSITION}> ?pos .
-                ?pos <{TIME_HASTRS}> <{UNIX_TIME}> ;
-                    <{TIME_NUMERICPOSITION}> ?unix . 
+            SELECT DISTINCT ?ts_iri ?fc_iri ?unit ?rdb_url ?time_format
+            WHERE {{   
+            <{forecast_iri}> <{TS_HASTIMESERIES}> ?ts_iri .
+            ?ts_iri <{TS_HASRDB}> ?rdb_url .
+            OPTIONAL {{ ?ts_iri <{TS_HASTIMEUNIT}> ?time_format . }}
             }}
-        """        
+        """
         query = self.remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
-        # Extract unix timestamp and cast to int
+        # Extract relevant information from unique query result
         if len(res) == 1:
-            return self.get_unique_value(res, 'unix', int)
-
+            ts = {'ts_iri': self.get_unique_value(res, 'ts_iri'),
+                  'rdb_url': self.get_unique_value(res, 'rdb_url'),
+                  'time_format': self.get_unique_value(res, 'time_format'),
+            }
+            return ts
+        
         else:
-            msg = "No unique Unix timestamp could be retrieved from KG."
+            # Throw exception if no or multiple time series are found
+            if len(res) == 0:
+                msg = f"No time series associated with data IRI: {forecast_iri}."
+            else:
+                msg = f"Multiple time series associated with data IRI: {forecast_iri}."
+            logger.error(msg)
+            raise ValueError(msg)
+   
+
+    def get_interval_details(self, intervalIRI:str):
+        """
+        Returns interval time bounds (inclusive) for given optimisation interval IRI.
+
+        Returns:
+            interval (dict) -- dictionary with keys 'start_unix' and 'end_unix'
+        """
+
+        def _get_instant_details(var_instant, var_timepos):
+            query = f"""
+                VALUES ?trs {{ <{UNIX_TIME}> }} 
+                ?{var_instant} <{TIME_INTIMEPOSITION}>/<{TIME_HASTRS}> ?trs ;
+                            <{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?{var_timepos} . 
+            """
+            return query
+
+        query = f"""
+            SELECT DISTINCT ?start_unix ?end_unix
+            WHERE {{
+            <{intervalIRI}> <{TIME_HASBEGINNING}> ?start_iri ;
+                            <{TIME_HASEND}> ?end_iri .
+            {_get_instant_details('start_iri', 'start_unix')} 
+            {_get_instant_details('end_iri', 'end_unix')}        
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            interval = {'start_unix': self.get_unique_value(res, 'start_unix', int),
+                        'end_unix': self.get_unique_value(res, 'end_unix', int),
+            }
+            # Check validity of retrieved interval
+            if interval['start_unix'] >= interval['end_unix']:
+                msg = "Interval start time is not before end time."
+                logger.error(msg)
+                raise ValueError(msg)
+
+            return interval
+        
+        else:
+            msg = "No unique interval details could be retrieved from KG."
             logger.error(msg)
             raise ValueError(msg)
 

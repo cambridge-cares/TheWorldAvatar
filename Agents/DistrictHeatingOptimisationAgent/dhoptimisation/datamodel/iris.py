@@ -1,5 +1,9 @@
 # Provide Constants/IRIs, which can be used to query and update the KG
 
+from pyderivationagent.data_model.iris import ONTODERIVATION_ISDERIVEDFROM, \
+                                              ONTODERIVATION_BELONGSTO, \
+                                              ONTODERIVATION_DERIVATIONWITHTIMESERIES
+
 # Namespaces
 # External ontologies
 OM =   'http://www.ontology-of-units-of-measure.org/resource/om-2/'
@@ -134,6 +138,7 @@ TS_HASTIMESERIES = TS + 'hasTimeSeries'
 TS_HASFORECAST = TS + 'hasForecast'
 TS_HASURL = TS + 'hasURL'
 TS_HASRDB = TS + 'hasRDB'
+TS_HASTIMEUNIT = TS + "hasTimeUnit"
 
 ### Time ###
 TIME_INTERVAL = TIME + 'Interval'
