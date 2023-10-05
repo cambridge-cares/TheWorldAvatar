@@ -34,9 +34,9 @@ def create_shapefile(data, crs, shapefile):
     ind = 0
 
     for building in data:
-        geometries = data["geometry"]
-        height = data["height"]
-        id = data["id"]
+        geometries = building["geometry"]
+        height = float(building["height"])
+        id = building["id"]
 
         # Convert geometry data to arrays of points
         for geom in geometries:
@@ -56,7 +56,7 @@ def create_shapefile(data, crs, shapefile):
             else:
                 name = initial + str(ind)
 
-            name += "_" + id # to identify geometries that belong to the same building
+            name += "_" + str(id) # to identify geometries that belong to the same building
 
             names.append(name)
 
@@ -64,6 +64,7 @@ def create_shapefile(data, crs, shapefile):
 
             # calculate number of floors above ground
             floors = round(height / floor_height[-1])
+
             if floors != 0:
                 floors_ag.append(floors)
             else:
@@ -97,10 +98,10 @@ def main(argv):
     with open(argv.data_file_location, "r") as f:
         dataString = f.read()
 
-    data_dictionary = json.loads(dataString)
+    data_list = json.loads(dataString)
 
     try:
-        create_shapefile(data_dictionary, argv.crs, shapefile)
+        create_shapefile(data_list, argv.crs, shapefile)
     except IOError:
         print('Error while processing file: ' + shapefile)
 
