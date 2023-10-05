@@ -202,7 +202,7 @@ Following this step, the terminal will ask for the question `Please specify if g
 
 For reproducing  the results reported in Preprint 312, use `1`.
 
-Then, you will see from the terminal asks that `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` to specify if this running is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
+Then, you will see from the terminal asks that `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` to specify if this running is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, enter `1` for post-processing the existing result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
 
 For reproducing  the results reported in Preprint 312, use `1`.
 
@@ -237,7 +237,7 @@ Following this step, the terminal will ask for an input `Please specify if gener
 
 For reproducing  the results reported in Preprint 312, use `1`.
 
-Then, you will see the following message asking for an input: `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` To specify if this run is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
+Then, you will see the following message asking for an input: `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` To specify if this run is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post-processing the existing result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
 
 For reproducing  the results reported in Preprint 312, use `2`.
 
