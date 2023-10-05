@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   dh-optimisation-agent:
-    image: ghcr.io/cambridge-cares/dh-optimisation-agent:1.0.0
+    image: ghcr.io/cambridge-cares/dh-optimisation-agent:0.0.1-SNAPSHOT
     environment:
       # Required environment variables for "standalone" deployment
       - STACK_NAME=

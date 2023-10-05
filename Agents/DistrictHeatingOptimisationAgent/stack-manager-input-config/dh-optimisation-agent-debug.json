@@ -3,7 +3,7 @@
         "Name": "dh-optimisation-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dh-optimisation-agent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/dh-optimisation-agent:0.0.1-SNAPSHOT",
                 "Command": [
                     "tail", "-f",  "/dev/null"
                 ],
