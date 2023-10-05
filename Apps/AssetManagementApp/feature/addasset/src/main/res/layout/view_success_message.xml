@@ -27,7 +27,7 @@
         android:layout_margin="80dp"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
-        android:text="Asset is added. The new qr code has been sent to your email for printing."
+        android:text="@string/asset_is_added_the_new_qr_code_has_been_sent_to_your_email_for_printing"
         android:id="@+id/text_view"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,12 +15,16 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import uk.ac.cam.cares.jps.model.building.Workspace;
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.NetworkConfiguration;
 
@@ -43,7 +47,7 @@ public class OtherInfoNetworkSource {
      * @param onSuccessUpper upper level onSuccess listener. It is created by Repository and used to pass data to repository for processing
      * @param onFailureUpper upper level onFailure listener. It is created by Repository and used to handle error
      */
-    public void getOtherInfo(Response.Listener<Map<String, HashMap<String, String>>> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+    public void getOtherInfo(Response.Listener<OtherInfoResponse> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String requestUri = NetworkConfiguration.constructUrlBuilder(path).build().toString();
         LOGGER.info(requestUri);
 
@@ -51,22 +55,22 @@ public class OtherInfoNetworkSource {
             Gson gson = new Gson();
             Type type = new TypeToken<List<HashMap<String, String>>>() {}.getType();
             try {
-                Map<String, HashMap<String, String>> results = new HashMap<>();
+                OtherInfoResponse result = new OtherInfoResponse();
                 JSONObject resultJson = new JSONObject(response).getJSONObject("result");
                 // todo: check type related code after agent is done
-//                results.put(TYPE, keyConversion(gson.fromJson(resultJson.getJSONArray("Type").toString(), type), TYPE));
-                results.put(ASSIGNED_TO, keyConversion(gson.fromJson(resultJson.getJSONArray("User").toString(), type), ASSIGNED_TO));
-                results.put(VENDOR, keyConversion(gson.fromJson(resultJson.getJSONArray("Supplier").toString(), type), SUPPLIER_SECTION_TITLE));
-                results.put(MANUFACTURER, keyConversion(gson.fromJson(resultJson.getJSONArray("Manufacturer").toString(), type), MANUFACTURER));
-                results.put(INVOICE_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("Invoice").toString(), type), INVOICE_NUMBER));
-                results.put(PURCHASE_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseOrder").toString(), type), PURCHASE_ORDER_NUMBER));
-                results.put(DELIVERY_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("DeliveryOrder").toString(), type), DELIVERY_ORDER_NUMBER));
-//                results.put(PURCHASE_REQUEST_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseRequest").toString(), type), PURCHASE_REQUEST_NUMBER));
+//                result.otherInfo.put(TYPE, keyConversion(gson.fromJson(resultJson.getJSONArray("Type").toString(), type), TYPE));
+                result.otherInfo.put(ASSIGNED_TO, keyConversion(gson.fromJson(resultJson.getJSONArray("User").toString(), type), ASSIGNED_TO));
+                result.otherInfo.put(VENDOR, keyConversion(gson.fromJson(resultJson.getJSONArray("Supplier").toString(), type), SUPPLIER_SECTION_TITLE));
+                result.otherInfo.put(MANUFACTURER, keyConversion(gson.fromJson(resultJson.getJSONArray("Manufacturer").toString(), type), MANUFACTURER));
+                result.otherInfo.put(INVOICE_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("Invoice").toString(), type), INVOICE_NUMBER));
+                result.otherInfo.put(PURCHASE_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseOrder").toString(), type), PURCHASE_ORDER_NUMBER));
+                result.otherInfo.put(DELIVERY_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("DeliveryOrder").toString(), type), DELIVERY_ORDER_NUMBER));
+//                result.otherInfo.put(PURCHASE_REQUEST_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseRequest").toString(), type), PURCHASE_REQUEST_NUMBER));
 
                 // todo: items should be retrieved with a separate call after docs are selected
-                results.put(STORED_IN, keyConversion(gson.fromJson(resultJson.getJSONArray("Element").toString(), type), STORED_IN));
+                result.workspaces  = processElement(gson.fromJson(resultJson.getJSONArray("Element").toString(), type));
 
-                onSuccessUpper.onResponse(results);
+                onSuccessUpper.onResponse(result);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -134,6 +138,24 @@ public class OtherInfoNetworkSource {
             result.put(obj.get(iriKey), obj.get(nameKey));
         }
         return result;
+    }
+
+    private List<Workspace> processElement(List<HashMap<String, String>> rawInput) {
+        HashMap<String, List<String>> workspaceToElement = new HashMap<>();
+        for (HashMap<String, String> obj : rawInput) {
+            String iri = obj.get("x0");
+            String val = obj.get("x1"); // todo: need to update to id once the agent is done
+
+            workspaceToElement.computeIfAbsent(iri, k -> new ArrayList<>()).add(val);
+        }
+
+        List<Workspace> workspaces = new ArrayList<>();
+        for (String iri : workspaceToElement.keySet()) {
+            Workspace temp = new Workspace(iri);
+            temp.constructElements(workspaceToElement.get(iri));
+            workspaces.add(temp);
+        }
+        return workspaces;
     }
 
 }

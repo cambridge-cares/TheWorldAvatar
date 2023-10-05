@@ -96,7 +96,7 @@ public class AddAssetFragment extends Fragment {
         });
 
         binding.doneBt.setOnClickListener(view1 -> {
-            // todo: the check may not pass for edit function. Some mandatory fields are missing from the existing data, and in test phase the drop down list is not completed
+            // todo: remove check for test purpose
             if (viewModel.checkMissingInput()) {
                 return;
             }

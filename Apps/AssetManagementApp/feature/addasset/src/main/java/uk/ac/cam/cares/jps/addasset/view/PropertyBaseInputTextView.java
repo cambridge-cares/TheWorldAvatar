@@ -73,4 +73,8 @@ abstract public class PropertyBaseInputTextView extends RelativeLayout {
     public void setInputLayoutError(CharSequence error) {
         inputLayout.setError(error);
     }
+
+    public void clearEditText() {
+        editText.getText().clear();
+    }
 }

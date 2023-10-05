@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
@@ -19,6 +20,7 @@ public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
     AutoCompleteTextView editText;
     Context context;
     private Logger LOGGER = Logger.getLogger(PropertyAutoCompleteTextView.class);
+    private TextWatcher defaultTextWatcher;
 
     public PropertyAutoCompleteTextView(Context context) {
         super(context);
@@ -41,7 +43,8 @@ public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
             String selected = (String) adapterView.getItemAtPosition(i);
             property.setFieldValue(selected);
         });
-        editText.addTextChangedListener(new TextWatcher() {
+
+        defaultTextWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {;}
 
@@ -54,11 +57,25 @@ public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
                 property.getIsMissingField().setValue(false);
                 property.setFieldValue(editable.toString());
             }
-        });
+        };
+        editText.addTextChangedListener(defaultTextWatcher);
     }
 
-    public void updateAdapterList(List<String> options) {
+    public <T> void updateAdapterList(List<T> options) {
         // may be a bug with AutoCompleteTextView, the arrayAdapter.addAll() and notifyDatasetChanged() do not work
         editText.setAdapter(new ArrayAdapter<>(context, R.layout.list_item, options));
+    }
+
+    public <T> ArrayAdapter<T> getAdapter() {
+        return (ArrayAdapter<T>) editText.getAdapter();
+    }
+
+    public void setOnItemClickedListener(AdapterView.OnItemClickListener onItemClickListener) {
+        editText.setOnItemClickListener(onItemClickListener);
+    }
+
+    public void setTextWatcher(TextWatcher textWatcher) {
+        editText.removeTextChangedListener(defaultTextWatcher);
+        editText.addTextChangedListener(textWatcher);
     }
 }

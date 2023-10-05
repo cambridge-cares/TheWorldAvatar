@@ -7,4 +7,5 @@
     <string name="printed_items">Printed Items</string>
     <string name="done">Done</string>
     <string name="send_to_printer">Send to Printer</string>
+    <string name="qr_printing">Print QR Code</string>
 </resources>

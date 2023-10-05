@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
+import uk.ac.cam.cares.jps.network.otherinfo.BMSNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
 
 @Module
@@ -33,5 +34,10 @@ public class NetworkModule {
     @Provides
     public OtherInfoNetworkSource provideOtherInfoNetworkSource(Connection connection) {
         return new OtherInfoNetworkSource(connection);
+    }
+
+    @Provides
+    public BMSNetworkSource provideBMSNetworkSource(Connection connection) {
+        return new BMSNetworkSource(connection);
     }
 }

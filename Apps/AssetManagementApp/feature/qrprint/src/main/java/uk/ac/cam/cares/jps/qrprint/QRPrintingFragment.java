@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.model.PrintItem;
 import uk.ac.cam.cares.jps.qrprint.databinding.FragmentQrPrintBinding;
+import uk.ac.cam.cares.jps.ui.UiUtils;
 
 @AndroidEntryPoint
 public class QRPrintingFragment extends Fragment {
@@ -33,6 +35,7 @@ public class QRPrintingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.qr_printing);
 
         ListUpdate printListUpdate = item -> {
             viewModel.removePrintingItem(item);
@@ -61,7 +64,11 @@ public class QRPrintingFragment extends Fragment {
             binding.idEditText.setText("");
         });
 
-        binding.printBt.setOnClickListener(v -> viewModel.printSelectedItems());
+        binding.printBt.setOnClickListener(v -> {
+            // todo: not connected to print service yet
+//            UiUtils.showNotImplementedDialog(requireContext());
+            viewModel.printSelectedItems();
+        });
 
         viewModel.getPrintingList().observe(getViewLifecycleOwner(), printItemAdapter::updateItems);
         viewModel.getUnprintedList().observe(getViewLifecycleOwner(), unprintedItemAdapter::updateItems);

@@ -21,6 +21,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.model.AssetInfo;
 import uk.ac.cam.cares.jps.data.otherinfo.OtherInfoRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
+import uk.ac.cam.cares.jps.model.building.Building;
+import uk.ac.cam.cares.jps.model.building.Instance;
 
 @HiltViewModel
 public class AddAssetViewModel extends ViewModel {
@@ -43,12 +45,13 @@ public class AddAssetViewModel extends ViewModel {
     private final Map<String, AssetPropertyDataModel> inputFieldModels = new HashMap<>();
 
     // use field keys to define each field view's appearance and behaviour
-    private final List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, LOCATED_IN);
-    private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, LOCATED_IN, SEAT_LOCATION, STORED_IN, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, ITEM_NAME, SERVICE_CODE, SERVICE_CATEGORY);
+    private final List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, BUILDING);
+    private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, ITEM_NAME, SERVICE_CODE, SERVICE_CATEGORY);
+    private final List<String> locationFieldKeys = Arrays.asList(BUILDING, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
     private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_SECTION_TITLE, MANUAL_SECTION_TITLE);
-    private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, ASSIGNED_TO);
+    private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, ASSIGNED_TO, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
     private final List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
-    private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SERVICE_CODE_DESCRIPTION, SERVICE_CATEGORY_DESCRIPTION);
+    private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION);
 
     @Inject
     AddAssetViewModel(OtherInfoRepository otherInfoRepository) {
@@ -82,6 +85,8 @@ public class AddAssetViewModel extends ViewModel {
                 assetPropertyDataModel = new DropDownDataModel(key);
             } else if (dataSheetFieldKeys.contains(key)) {
                 assetPropertyDataModel = new DataSheetDataModel(key);
+            } else if (locationFieldKeys.contains(key)) {
+                assetPropertyDataModel = new LocationDropDownDataModel(key);
             } else {
                 assetPropertyDataModel = new AssetPropertyDataModel(key);
             }
@@ -98,10 +103,15 @@ public class AddAssetViewModel extends ViewModel {
     public void requestAllDropDownOptionsFromRepository() {
         Map<String, RepositoryCallback<Map<String, String>>> callbacks = new HashMap<>();
         for (String key : otherInfoFromAssetAgentKeys) {
+            if (key.equals(BUILDING)) {
+                continue;
+            }
             callbacks.put(key, getRepositoryCallbackForKey(key));
         }
 
-        otherInfoRepository.getAllOtherInfo(callbacks);
+        // todo: finish the ui callback
+        RepositoryCallback<List<Instance>> locationCallback = getLocationCallback();
+        otherInfoRepository.getAllOtherInfo(callbacks, locationCallback);
     }
 
     private RepositoryCallback<Map<String, String>> getRepositoryCallbackForKey(String key) {
@@ -115,6 +125,20 @@ public class AddAssetViewModel extends ViewModel {
             @Override
             public void onFailure(Throwable error) {
                 // do nothing, update failed, or notify user?
+            }
+        };
+    }
+
+    private RepositoryCallback<List<Instance>> getLocationCallback() {
+        return new RepositoryCallback<List<Instance>>() {
+            @Override
+            public void onSuccess(List<Instance> result) {
+                ((LocationDropDownDataModel) inputFieldModels.get(BUILDING)).getMutableInstances().postValue(result);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+
             }
         };
     }
@@ -133,7 +157,7 @@ public class AddAssetViewModel extends ViewModel {
     public boolean checkDisallowNewInstanceInputField() {
         boolean hasError = false;
         for (String key : disallowNewInstanceInputForDropDown) {
-            // if field value is empty, then no need to check whether have a mathced iri
+            // if field value is empty, then no need to check whether have a matched iri
             if (!inputFieldModels.get(key).getFieldValue().isEmpty() && ((DropDownDataModel)inputFieldModels.get(key)).getValueIri().isEmpty()) {
                 ((DropDownDataModel) inputFieldModels.get(key)).getShowDisallowError().setValue(true);
                 hasError = true;

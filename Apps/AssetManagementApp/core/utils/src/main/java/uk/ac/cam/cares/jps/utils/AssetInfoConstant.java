@@ -15,6 +15,8 @@ public class AssetInfoConstant {
 
     // LOCATION KEYS
     static public final String LOCATION_SECTION_TITLE = "Location";
+    static public final String BUILDING = "Building";
+    static public final String FACILITY = "Facility";
     static public final String LOCATED_IN = "Located in";
     static public final String SEAT_LOCATION = "Seat Location";
     static public final String STORED_IN = "Stored in";
@@ -34,9 +36,7 @@ public class AssetInfoConstant {
     static public final String ITEM_DESCRIPTION = "Item Description";
     static public final String PRICE_UNIT = "Unit";
     static public final String SERVICE_CATEGORY = "Service Category";
-    static public final String SERVICE_CATEGORY_DESCRIPTION = "Service Category Description";
     static public final String SERVICE_CODE = "Service Code";
-    static public final String SERVICE_CODE_DESCRIPTION = "Service Code Description";
 
     // DOC LINE INFO KEYS
     static public final String PURCHASE_SECTION_TITLE = "Purchase";
@@ -59,15 +59,14 @@ public class AssetInfoConstant {
 
     // ORDERED KEYS
     static public final List<String> basicInfoOrder = new ArrayList<>(Arrays.asList(REFERENCE_LABEL, TYPE, ASSIGNED_TO, IRI, INVENTORY_ID));
-    static public final List<String> locationInfoOrder = new ArrayList<>(Arrays.asList(LOCATED_IN, SEAT_LOCATION, STORED_IN));
+    static public final List<String> locationInfoOrder = new ArrayList<>(Arrays.asList(BUILDING, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN));
     static public final List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList(VENDOR, MANUFACTURER, MANUFACTURE_URL, SERIAL_NUMBER, MODEL_NUMBER));
     static public final List<String> priceInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_PRICE));
-    static public final List<String> itemInfoOrder = new ArrayList<>(Arrays.asList(ITEM_NAME, ITEM_DESCRIPTION, PURCHASE_PRICE, PRICE_UNIT, SERVICE_CATEGORY, SERVICE_CATEGORY_DESCRIPTION, SERVICE_CODE, SERVICE_CODE_DESCRIPTION));
+    static public final List<String> itemInfoOrder = new ArrayList<>(Arrays.asList(ITEM_NAME, ITEM_DESCRIPTION, PURCHASE_PRICE, PRICE_UNIT, SERVICE_CATEGORY, SERVICE_CODE));
     static public final List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER));
     static public final List<String> maintenanceInfoOrder = new ArrayList<>(Arrays.asList(MAINTENANCE_SCHEDULE_FOR, MAINTENANCE_MAINTAINED_BY, MAINTENANCE_INTERVAL));
 
-
-//    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER);
-    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, LOCATED_IN, SEAT_LOCATION);
+//    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, BUILDING, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
+    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER);
     static public final String HAS_TIME_SERIES = "hasTimeSeries";
 }
