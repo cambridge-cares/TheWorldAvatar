@@ -138,6 +138,8 @@ Queries that generate multiple rows with the same property name are supported, t
    <em>Results of a valid SPARQL query for metadata.</em>
 </p>
 
+An example of a meta data SPARQL query [can be seen here](./sample/fia/CastleMeta.sparql); note that this is for a sample data set defined in a simple ontology [here](./sample/sample-tboxes.csv).
+
 #### Queries for measurables (time series)
 
 Queries for measurable entities need to return the IRIs of the entities representing the dependent value columns (i.e. "Measurable" instances), rather than that of the time series instance itself. Those IRIs will be used to grab the actual values from the relational database as well as parameters associated with each measurement/forecast. 
@@ -150,6 +152,8 @@ Required columns are `Measurable` (`Measurement` also supported for backwards co
 <p align="center">
    <em>Results of a valid SPARQL query for measurable entity IRIs.</em>
 </p>
+
+An example of a meta data SPARQL query [can be seen here](./sample/fia/CastleTime.sparql); note that this is for a sample data set defined in a simple ontology [here](./sample/sample-tboxes.csv).
 
 ## Requests
 

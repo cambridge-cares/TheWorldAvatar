@@ -20,3 +20,10 @@ To launch the sample stack, follow the below steps:
 ## What's in the sample stack
 
 The sample stack contains a CSV of generated data on castles within the UK, with a very simple CSV ontology and OBDA mapping files. At the end of the `launch.sh` a request is made to the FIA to generate some sample time series data based on the IRIs the aforementioned data will generate; the time series consists of three dependent data series per castle with daily time values from now-15 days to now+15 days. 
+
+<p align="center">
+    <img src="./sample.jpg" alt="FIA sample stack data" width="75%"/>
+</p>
+<p align="center">
+   <em>FIA sample stack data</em>
+</p>
