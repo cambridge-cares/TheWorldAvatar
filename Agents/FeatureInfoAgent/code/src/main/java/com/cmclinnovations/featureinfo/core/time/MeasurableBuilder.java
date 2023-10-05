@@ -66,7 +66,6 @@ public class MeasurableBuilder {
         if(timeIRI == null) {
             timeIRI = TimeParser.findField("timeseries", jsonObj);
         }
-        LOGGER.debug("TIME IRI is " + timeIRI);
         
         Object name = TimeParser.findField(TimeParser.KEYS[2], jsonObj);
         Object unit = TimeParser.findField(TimeParser.KEYS[3], jsonObj);

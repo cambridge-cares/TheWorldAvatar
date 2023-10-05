@@ -1,18 +1,19 @@
 # Feature Info Agent
 
-<img align="right" width="250" height="250" src="./docs/fia-logo.svg">
+<img align="right" width="200" height="200" src="./docs/fia-logo.svg">
 
-This Feature Info Agent (FIA) acts as a single access point for [TWA Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) before display within the side panel of the visualisation.
+This Feature Info Agent (FIA) acts as a single access point for [TWA Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) so that it can then be displayed within the side panel of the visualisation.
 
 Please see the [CHANGELOG](./CHANGELOG.md) file for details on recent changes; the latest available image of the FIA can be determined by viewing its [GitHub package page](https://github.com/cambridge-cares/TheWorldAvatar/pkgs/container/feature-info-agent).
 
+
 ## Overview
 
-The FIA is a relatively simple HTTP agent built using the TWA agent framework. It's goal is to take in the IRI of a single feature then use it to query the knowledge graphs for metadata, and the relational databases for time series data before formatting and returning it as a JSON object.
+The FIA is a relatively simple HTTP agent built using the TWA agent framework. Its goal is to take in the IRI of a single feature then use it to query the knowledge graphs for metadata, and the relational databases for time series data before formatting and returning it as a JSON object.
 
-At the time of writing, automatic discovery of data is not feasible, as such the developer deploying an instance of the FIA is responsible for writing SPARQL queries to both return the raw metadata as well as the measurement IRIs of time series data (so that these can then be looked up in the relational databases to actually get the time series data).
+At the time of writing, automatic discovery of data is not feasible, as such the developer deploying an instance of the FIA is responsible for writing SPARQL queries to both return the raw metadata as well as the data IRIs of time series data (so that these can then be looked up in the relational databases to actually get the time series data).
 
-These SPARQL queries are written on a class-by-class (T-Box) basis; this should mean that, for example, all IRIs that are A-Box instances of the `https://theworldavatar.io/Building` T-Box class will reuse the same SPARQL query as they _should_ have data in the same format.
+These SPARQL queries are written on a class-by-class (T-Box) basis; this should mean that, for example, all IRIs that are A-Box instances of the `https://theworldavatar.io/ontobuildings/Building` T-Box class will reuse the same SPARQL query as they _should_ have data in the same format.
 
 ## Restrictions
 
@@ -21,32 +22,51 @@ At the time of writing, the FIA has a few restrictions that all deploying develo
 - The FIA can only be run within a [TWA Stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 - The FIA can only report meta and time data that is contained within the same stack as the agent itself.
 - The FIA can only return time series data on series that uses the [Instant](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html) class.
-  - This is due to a limitation with the underlying TimeseriesClient.
+  - This is due to a limitation with the underlying TimeseriesClient class from the JPS Base Library.
 
 ### Class discovery
 
-In addition to the above restrictions, the FIA uses a hardcoded series of SPARQL queries to ask the KG what classes the received A-Box IRI belongs to. For the FIA to detect a class, then use it to find and run the correct metadata/time series query, the data must be able to fulfil one of the below queries.
+In addition to the above restrictions, the FIA uses a hardcoded SPARQL query to ask the KG what classes the received A-Box IRI belongs to. In essence, the query asks what `rdf:type` the A-Box IRI has, and what the super class of any returned T-Box IRI is, producing a list of the class hierarchy all the way up to `rdf:Resource`. It has been written in a way that uses all of the Blazegraph and Ontop endpoints within the stack, to be robust to the A-Boxes and T-Boxes being stored separately.
 
-If neither query below returns any results, then the FIA will not function; developers may need to update their triples/mapping until at least one of the queries does return something.
-
-```
-prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT distinct ?class WHERE {
-    [IRI] rdf:type ?class
-}
-```
+If the query fails to return any results, then the FIA will not function; developers may need to update their triples/mapping until at least one of the queries does return something.
 
 ```
-prefix owl: <http://www.w3.org/2002/07/owl#>
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
 
-select distinct ?class { 
-    SERVICE [ONTOP] { [IRI] a ?x . }
-    ?x rdfs:subClassOf* ?class .
-    ?class rdf:type owl:Class .
-}
+SELECT DISTINCT ?class WHERE {
+    VALUES ?all_endpoints {
+        [ENDPOINTS-ALL]
+    }    
+    VALUES ?kg_endpoints {
+        [ENDPOINTS-BLAZEGRAPH]
+    }
+            
+    SERVICE ?all_endpoints {
+        [IRI] a ?type.
+    } 
+    SERVICE ?kg_endpoints {
+        ?type rdfs:subClassOf* ?class .
+    }
+            
+    FILTER (!isBlank(?class))
+} 
 ```
+
+## Definitions
+
+Before diving into the details on how to write the queries to retrieve the aforementioned data, it's worth clarifying some terms used within this documentation. For more details on time series, check out the documentation for the JPS Base Lib project.
+
+- **Time Series:**
+  - As per the time series ontology, a time series is defined as a collection of entities (each of which represents a column of dependent, or Y, values) that are grouped by a single column of independent (or X) time values.
+  - Confusingly, the entity representing the independent values is referred to as a "Time Series"; there is no generic name for the entities representing the dependent values (see below).
+  - Neither the entities representing the independent or dependent columns have values within the knowledge graph, only the IRIs are present and are used to link to the actual values stored within the relational database.
+
+- **Measurable:**
+  - As there's no ontological term for the entities representing dependent columns, the FIA (within the code and documentation) is going to referred to them as "Measurables".
+  - Each of these "Measurable" instances will normally have some sort of `hasUnit` predicate/
+  - A "Measurable" can be a series of values of any time (number, string, boolean etc.).
+  - Any existing entity in the KG can become a "Measurable", as such one cannot write a generic "show me all measurables" SPARQL query that works for all data sets. 
 
 ## Requirements
 
@@ -54,32 +74,60 @@ For the FIA to function, a number of configuration steps need to take place befo
 
 ### Configuration
 
+**Note:** As of version `3.0.0` of the FeatureInfoAgent, the configuration format has changed to support new options. The new format is documented below, but the older format is also supported. To support the newer features, it is recommended that developers write new configurations using the new format, and existing configurations are manually updated wherever possible.
+
 Follow the below configuration steps within the `fia-queries` subdirectory of the TWA stack manager's data directory. Volumes that are used by containers running with the TWA Stack are populated by named subdirectories within the stack manager's [data directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data). For more details, read the [TWA Stack Manager documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
-- Create a JSON configuration file named `fia-config.json`.
-  - This configuration file should be a JSON object containing the following parameters:
-    - `queries`: This is a **required** array of objects defining a mapping between (T-Box) class names and the names of files containing pre-written SPARQL queries. Each object needs to contain the following string parameters:
-      - `class`: Full IRI of the class.
-      - `metaFile`: Name of the file (inc. extension) that contains the query to run when gathering metadata. This file should also be located within the `queries` directory.
-      - `timeFile`: Optional, name of the file (inc. extension) that contains the query to run when gathering timeseries measurement details. This file should also be located within the `queries` directory.
-      - `timeLimit`: Optional, this is an integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
-      - `databaseName`: Optional, but **required** if setting a timeFile. It should match the PostgreSQL database name that contains your timeseries data.
+The configuration file should be a JSON file named `fia-config.json`, contained within it should be:
 
-The `metaFile` should contain a single SPARQL query that is used to return metadata from the Knowledge Graph in the required format (listed below).
+- `entries`: This is a **required** array of objects defining a mapping between (T-Box) class IRIs and the names of files containing pre-written SPARQL queries. Each object needs to contain the following parameters:
+   - Required:
+     - `class`: Full IRI of the class.
+   - Optional:
+      - `meta`: Object containing configurations for meta data retrieval.
+      - `time`: Object containing configurations for time series retrieval.
 
-The `timeFiles` should contain a single SPARQL query that is used to return the measurement IRIs used to identify the connected time series objects (not the actual time series data). Note that this query should also return results in a set format (detailed below).
 
-Within the [examples](./examples/) directory, a mock configuration file has been provided along with a number of example SPARQL query files.
+The `meta` object should contain the following parameters:
+- Required:
+  - `queryFile`: Location of file with SPARQL query used to get meta data (relative to configuration file).
+
+The `time` object should contain the following parameters:
+- Required:
+  - `queryFile`: Location of file with SPARQL query used to get measurable IRIs (relative to configuration file).
+  - `database`: Name of PostGRES database containing values.
+- Optional:
+  - `limit`: Non-zero integer, defaults to "24". Limit used when calculating boundaries of time data to query.
+  - `unit`: Unit of above limit, defaults to "hours". One of:
+    - "days"
+    - "hours"
+    - "minutes"
+    - "seconds"
+    - "milliseconds"
+  - `reference`: Reference point for bounds calculation, defaults to "now". One of:
+    - "all" (limit parameter unused in this case)
+    - "now" (server time at request)
+    - "latest" (furthest forward time value in RDB)
+    - "first" (furthest back time value in RDB)
+
+For clarification, the `limit` value supports both positive and negative integers. For reference types of `now` and `latest` it is multiplied by **-1** then **added** to the reference time during the calculation of retrieval times. For references of `first` is is simply **added** to the reference time.
+
+For example, a value of `24` with a reference of `now` will provide all values generated within the last real-world day. Whereas a value of `24` with a reference of `first` will return all values generated between the first data point and one real-world day afterwards.
+
+Within the [samples/fia/fia-config.json](./samples/fia/fia-config.json) file, a mock configuration can be found.
 
 ### Expected query formats
 
-To properly parse the metadata and time series queries, the agent requires the results from queries to fulfil a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
+To properly parse the meta data and time series queries, the agent requires the results from queries to fulfil a set formats. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
 
 - `[IRI]`: The IRI of the feature (A-Box) of interest, i.e. the feature selected within the TWA-VF (the IRI will be injected by the agent).
 - `[ONTOP]`: The internal URL of the Ontop service within the stack (the URL will be injected by the agent).
+- `[ENDPOINTS-ALL]`: Internal URLs of all Blazegraph and Ontop endpoints, good for use with "SERVICE" keyword.
+- `[ENDPOINTS-BLAZEGRAPH]`: Internal URLs of all Blazegraph endpoints, good for use with "SERVICE" keyword.
 
-**Metadata queries**:<br/>
-Queries for metadata should not concern themselves with data relating to time series. Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`; any other columns are currently ignored.
+#### Meta data queries
+
+Queries for meta data should not concern themselves with data relating to time series. Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`; any other columns are currently ignored.
 
 Queries that generate multiple rows with the same property name are supported, their values will be combined into a single JSON array by the agent.
 
@@ -90,14 +138,17 @@ Queries that generate multiple rows with the same property name are supported, t
    <em>Results of a valid SPARQL query for metadata.</em>
 </p>
 
-**Queries for time series:**<br/>
-Queries for time series need to return the measurement/forecast IRIs (i.e. the IRIs which are connected via `ts:hasTimeSeries`) to the actual time series instances stored in the relational database. Those IRIs will be used to grab the actual values from PostgreSQL as well as parameters associated with each measurement/forecast. Required columns are `Series` containing the time series' IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank);any other columns are currently ignored
+#### Queries for measurables (time series)
+
+Queries for measurable entities need to return the IRIs of the entities representing the dependent value columns (i.e. "Measurable" instances), rather than that of the time series instance itself. Those IRIs will be used to grab the actual values from the relational database as well as parameters associated with each measurement/forecast. 
+
+Required columns are `Measurable` (`Measurement` also supported for backwards compatibility) containing the entity IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank); any other columns are currently ignored
 
 <p align="center">
     <img src="./docs/time-query-example.jpg" alt="Example result of a time series query" width="75%"/>
 </p>
 <p align="center">
-   <em>Results of a valid SPARQL query for time series IRIs.</em>
+   <em>Results of a valid SPARQL query for measurable entity IRIs.</em>
 </p>
 
 ## Requests
@@ -107,7 +158,7 @@ The following HTTP request routes are available for the agent:
 - `/get`
   - Run algorithm to gather metadata and time series.
   - Requires the `iri` parameter.
-  - Supports optional `endpoint` parameter to direct KG queries rather than federating.
+  - Supports optional `endpoint` parameter to direct KG queries to a specific endpoint rather than federating across all of them.
 
 - `/status`
   - Reports the agent's current status.
@@ -135,7 +186,12 @@ The FIA is currently set up with two automated GitHub actions:
 
 ## Examples
 
-A number of example metadata and time series queries, along with an example FIA configuration file, can be found within the [FIA Examples](./examples/README.md) document.
+A number of different projects have made use of the FeatureInfoAgent, some good examples to use as starting points are:
+
+- [UK Base World](../../web/uk-base-world/): Project showing power plant locations across the UK.
+- [TWA-VF Tutorial](../../web/twa-vis-framework/): The Mapbox tutorial from the TWA-VF documents using the FIA in a simple case with NHS data.
+
+Packaged within this directory is also a number of configuration and data files used to spin up a [small sample stack](./sample/) used to manually test the FIA. Whilst this has not been put together to act as a shining example of the FIA, one is free to look at the configuration files to determine proper syntax.
 
 ## Tutorial
 
@@ -149,8 +205,10 @@ For troubleshooting and FAQs, please see the [FIA Troubleshooting](./docs/troubl
 
 The FIA is a simple HTTP agent written using the existing TWA agent framework. The core functionality of the agent is split across 4 classes; the central `FeatureInfoAgent` class that acts as the receiver and transmitter for HTTP requests, and classes that actually run logic (which should be self-explanatory): `ClassHandler`, `MetaHandler`, and `TimeHandler`.
 
-The algorithm used to find, format, and return data after a request is received is detailed in the diagram below (although you can also read the in-code documentation for more details).
+The algorithm used to find, format, and return data after a request is received is detailed in the Mermaid diagram [here](./docs/mermaid-get-request.md) (although you can also read the in-code documentation for more details).
 
 Building the Docker image for the FIA is automatically triggered under certain conditions (see above), but developers can also build a local copy using the provided `build.sh` script after supplying the required `repo_username.txt` and `repo_password.txt` files within the `credentials` directory.
 
-Mermaid diagrams are available for the [start up routine](./docs/mermaid-startup.md) and the [main retrieval algorithm](./docs/mermaid-get-request.md).
+## Support
+
+For support, please file an issue in GitHub using the `FeatureInfoAgent` project, or contact the CMCL technical team.

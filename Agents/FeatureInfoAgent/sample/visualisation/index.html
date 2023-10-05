@@ -143,49 +143,48 @@
             window.manager = manager;
 
             // Set credentials
-            MapHandler.MAP_USER = "cmclinnovations";
-            MapHandler.MAP_API = "pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA";
-            
-            // Only start the map after data definitions have been read.
-            var dataPromise = manager.loadDefinitions();
-            dataPromise.then(() => start());
+            manager.readCredentials().then(() => {
+                
+                // Only start the map after data definitions have been read.
+                var dataPromise = manager.loadDefinitions();
+                dataPromise.then(() => start());
 
-            /**
-             * Starts the visualisation setup process.
-             */
-            function start() {
-                // Initialise the map object
-                manager.initialiseMap();
-            
-                // Set the default content in the "General" tab of the side panel
-                manager.getPanelHandler().setTitle("<h1>FIA Test Stack</h1>");
-                manager.getPanelHandler().setContent(`
-                    <p>
-                        This visualisation's sole purpose is to provide an in situ test of the FeatureInfoAgent with sample data. For more details, see the 
-                        README file within the 'Agents/FeatureInfoAgent/sample' directory of The World Avatar repository.
-                    </p>
-                    <p>
-                        Sample data used in this example is generated and no regard has been given for correctness. It is not suggested that people use this
-                        example as a starting point for their own projects.
-                    </p>
-                `);
-                manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                /**
+                 * Starts the visualisation setup process.
+                 */
+                function start() {
+                    // Initialise the map object
+                    manager.initialiseMap();
+                
+                    // Set the default content in the "General" tab of the side panel
+                    manager.getPanelHandler().setTitle("<h1>FIA Test Stack</h1>");
+                    manager.getPanelHandler().setContent(`
+                        <p>
+                            This visualisation's sole purpose is to provide an in situ test of the FeatureInfoAgent with sample data. For more details, see the 
+                            README file within the 'Agents/FeatureInfoAgent/sample' directory of The World Avatar repository.
+                        </p>
+                        <p>
+                            Sample data used in this example is generated and no regard has been given for correctness. It is not suggested that people use this
+                            example as a starting point for their own projects.
+                        </p>
+                    `);
+                    manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
 
-                // Save general tab state as default
-                manager.getPanelHandler().storeDefault();
+                    // Save general tab state as default
+                    manager.getPanelHandler().storeDefault();
 
-                // Once the underlying style has loaded...
-                MapHandler.MAP.on("style.load", function() {
-                    
-                    // Load registered images and linked files
-                    manager.loadImagesAndLinks().then(() => {
+                    // Once the underlying style has loaded...
+                    MapHandler.MAP.on("style.load", function() {
+                        
+                        // Load registered images and linked files
+                        manager.loadImagesAndLinks().then(() => {
 
-                        // Plot the data
-                        manager.plotData();
+                            // Plot the data
+                            manager.plotData();
+                        });
                     });
-                });
-            }
-          
+                }
+            });
         </script>
     </body>
 </html>

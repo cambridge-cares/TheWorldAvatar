@@ -106,6 +106,13 @@ then
     echo "Running the stack uploader script, this may take some time..."
     ./stack.sh start FIATESTSTACK 
 
+    sleep 15
+
+    # Generate sample time series data
+    echo "Generating sample time series data, may also take some time..."
+    bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:38383/feature-info-agent/make-time-series)" != "200" ]]; do sleep 5; done'
+    echo "Finished script, visualisation should be at http://localhost:38383/visualisation"
+
 else
     echo "Exiting script early."
     exit 1

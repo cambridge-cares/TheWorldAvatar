@@ -35,7 +35,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  * @author Michael Hillman {@literal <mdhillman@cmclinnovations.com>}
  */
 @Controller
-@WebServlet(urlPatterns = {"/get", "/status", "/make-time-series"})
+@WebServlet(urlPatterns = {"/get", "/status", "/refresh", "/make-time-series"})
 public class FeatureInfoAgent extends JPSAgent {
 
     /**
@@ -253,7 +253,13 @@ public class FeatureInfoAgent extends JPSAgent {
 
         // Respond
         response.setStatus(Response.Status.OK.getStatusCode());
-        response.getWriter().write("{\"description\":\"Cached endpoints and configurations have been refreshed.\"}");
+        response.getWriter().write(String.format("""
+            {
+                "description": "Cached endpoints and configurations have been refreshed.",
+                "completed-at": "%s"
+
+            }
+            """, LocalTime.now().toString()));
     }
 
     /**

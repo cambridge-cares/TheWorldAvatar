@@ -290,9 +290,6 @@ public class ConfigEntry {
             String timeDatabase) throws IllegalArgumentException, IOException {
 
             // Check for valid parameters
-            if(timeQueryFile != null && !timeQueryFile.isEmpty() && timeLimitValue == 0) {
-                throw new IllegalArgumentException("Invalid value for 'timeLimitValue' parameter, please see documentation for allowed values.");
-            } 
             if(timeQueryFile != null && !timeQueryFile.isEmpty() && (timeDatabase == null || timeDatabase.isEmpty())) {
                 throw new IllegalArgumentException("Invalid value for 'timeDatabase' parameter, please see documentation for allowed values.");
             }
@@ -314,8 +311,13 @@ public class ConfigEntry {
             } else {
                 entry.timeLimitUnit = TimeUnit.valueOf(timeLimitUnit.toUpperCase());
             }
+
+            if(timeLimitUnit == 0) {
+                entry.timeLimitValue = 24;
+            } else {
+                entry.timeLimitValue = timeLimitValue;
+            }
            
-            entry.timeLimitValue = timeLimitValue;
             entry.timeDatabase = timeDatabase;
 
             // Populate query contents

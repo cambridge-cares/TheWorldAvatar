@@ -289,16 +289,25 @@ public class TimeHandler {
         
         // Calculate time bounds
         Pair<Instant, Instant> bounds = calculateBounds(classMatch, measurables);
-        Instant lowerBound = bounds.getLeft().isBefore(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
-        Instant upperBound = bounds.getLeft().isAfter(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
 
         // Call client to get TimeSeries object
-        return this.tsClient.getTimeSeriesWithinBounds(
-            measurableIRIs,
-            lowerBound,
-            upperBound,
-            this.connection
-        );
+        if(bounds == null) {
+            return this.tsClient.getTimeSeries(
+                measurableIRIs,
+                this.connection
+            );
+
+        } else {
+            Instant lowerBound = bounds.getLeft().isBefore(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
+            Instant upperBound = bounds.getLeft().isAfter(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
+
+            return this.tsClient.getTimeSeriesWithinBounds(
+                measurableIRIs,
+                lowerBound,
+                upperBound,
+                this.connection
+            );
+        }
     }
 
     /**
@@ -342,7 +351,7 @@ public class TimeHandler {
             }
 
             default:
-                return new ImmutablePair<>(Instant.MIN, Instant.MAX);
+                return null;
         }
     }
 
