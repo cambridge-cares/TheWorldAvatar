@@ -16,11 +16,11 @@ CREATE TABLE "public"."true_surface_CityDB" AS (
         CASE
             WHEN public.ST_3DArea(public.ST_MakeValid(geometry)) != 0
             AND public.ST_Orientation(geometry) = 1
-            AND public.ST_Area(geometry) / public.ST_3DArea(public.ST_MakeValid(geometry)) > { critAreaRatio } THEN 35
+            AND public.ST_Area(geometry) / public.ST_3DArea(public.ST_MakeValid(geometry)) > {critAreaRatio} THEN 35
             ELSE CASE
                 WHEN public.ST_3DArea(public.ST_MakeValid(geometry)) != 0
                 AND public.ST_Orientation(geometry) = -1
-                AND public.ST_Area(geometry) / public.ST_3DArea(public.ST_MakeValid(geometry)) > { critAreaRatio } THEN 33
+                AND public.ST_Area(geometry) / public.ST_3DArea(public.ST_MakeValid(geometry)) > {critAreaRatio} THEN 33
                 ELSE 34
             END
         END AS "class"
