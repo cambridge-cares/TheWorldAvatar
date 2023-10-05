@@ -1,5 +1,13 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 4.1.1
+### Features
+* _No features present._
+### Bug Fixes:
+* No longer append null units to time series tables.
+* No longer show charts for time series where dependent values are strings.
+* Time series table should now grow to fill container vertically.
+
 # 4.1.0
 ### Features
 * Added Cesium source option to enable/disable back face culling in 3D tile sets.
