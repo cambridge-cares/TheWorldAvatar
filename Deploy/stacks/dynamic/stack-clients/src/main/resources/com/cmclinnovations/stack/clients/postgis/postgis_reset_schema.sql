@@ -5,7 +5,7 @@ WITH "sdb" AS (
         "pg_catalog"."pg_db_role_setting"
         JOIN "pg_catalog"."pg_database" ON "pg_catalog"."pg_db_role_setting"."setdatabase" = "pg_catalog"."pg_database"."oid"
     WHERE
-        "pg_catalog"."pg_database"."datname" = current_database()
+        "pg_catalog"."pg_database"."datname" = '{database}'
 )
 UPDATE
     "pg_catalog"."pg_db_role_setting"

@@ -306,7 +306,4 @@ public class CityDBClient extends ContainerClient {
         applySQLFile(database, "citydb_add_footprint.sql");
     }
 
-    public void resetSchema(String database) {
-        applySQLFile(database, "citydb_reset_schema.sql");
-    }
 }
