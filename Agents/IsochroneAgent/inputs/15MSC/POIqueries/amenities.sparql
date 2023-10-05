@@ -13,8 +13,13 @@ WHERE {
                 {
                     VALUES (?type ?label) {
                         (obe:Hospital "Hospital")
-                        (obe:PoliceStation "Police Station")
+                        (obe:Clinic "Clinic")
                         (obe:Pharmacy "Pharmacy")
+                        (obe:PoliceStation "Police Station")
+                        (obe:School "School")
+                        (obe:Bank "Bank")
+                        (obe:EatingEstablishment "Eating Establishment")
+                        (obe:ReligiousFacility "Religious Facility")
                     }
                     ?building_iri obe:hasPropertyUsage ?usageiri .
                     ?building_iri obe:hasFootprint ?geom.

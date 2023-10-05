@@ -70,8 +70,8 @@ public class IsochroneAgent extends JPSAgent {
 
             String populationTables = prop.getProperty("populationTables");
             // Split the string using the comma as the delimiter
-            String[] tableNames = populationTables.split(",");
-            this.populationTableList = new ArrayList<>(Arrays.asList(tableNames));
+            String[] tableNames = populationTables.split("\\s*,\\s*");
+            this.populationTableList = new ArrayList<String>(Arrays.asList(tableNames));
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -92,30 +92,28 @@ public class IsochroneAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
         try {
             init();
-
             // Read SPARQL and SQL files. 
             Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
             Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
 
+            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
+            JSONArray cumulativePOI = new JSONArray();
+            for (Map.Entry<String, String> entry : POImap.entrySet()) {
+                String value = entry.getValue();
+                JSONArray POI = storeClient.executeQuery(value);
 
-            // // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
-            // JSONArray cumulativePOI = new JSONArray();
-            // for (Map.Entry<String, String> entry : POImap.entrySet()) {
-            //     String value = entry.getValue();
-            //     JSONArray POI = storeClient.executeQuery(value);
-
-            //     // Iterate through the POIs in this iteration and add them to the cumulative array
-            //     for (int i = 0; i < POI.length(); i++) {
-            //         cumulativePOI.put(POI.get(i));
-            //     }
-            // }
+                // Iterate through the POIs in this iteration and add them to the cumulative array
+                for (int i = 0; i < POI.length(); i++) {
+                    cumulativePOI.put(POI.get(i));
+                }
+            }
 
             // Split road into multiple smaller segment and find the nearest_node 
             RouteSegmentization routeSegmentization = new RouteSegmentization();
-            // routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
+            routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
             
             // Create a table to store nearest_node 
-            // routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
+            routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
 
             // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap)
@@ -123,6 +121,9 @@ public class IsochroneAgent extends JPSAgent {
             isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
 
             // Population matcher
+            PopulationMapper populationMapper = new PopulationMapper();
+            populationMapper.checkAndAddColumns(remoteRDBStoreClient, populationTableList);
+            populationMapper.mapPopulation(remoteRDBStoreClient, populationTableList);
 
             // Create geoserver layer
 

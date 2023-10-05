@@ -196,7 +196,7 @@ public class IsochroneGenerator {
                 "    SELECT\n" +
                 "        poi_type,\n" +
                 "        transportmode,\n" +
-                "        'https://www.theworldavatar.com/kg/Isochrone/' || uuid_generate_v4()::text AS isochrone_iri,\n" +
+                "        'https://www.theworldavatar.com/kg/ontoisochrone/Isochrone/' || uuid_generate_v4()::text AS isochrone_iri,\n" +
                 "        'http://www.opengis.net/ont/geosparql#Geometry/' || uuid_generate_v4()::text AS geometry_iri\n" +
                 "    FROM isochrone_aggregated\n" +
                 "    WHERE isochrone_iri IS NULL\n" +
