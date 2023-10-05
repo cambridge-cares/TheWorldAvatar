@@ -31,3 +31,7 @@
 .special-char {
     cursor: pointer;
 }
+
+#sparql-query {
+    white-space: pre-wrap;
+}
