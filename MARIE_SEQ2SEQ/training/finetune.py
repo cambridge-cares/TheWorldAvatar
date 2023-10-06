@@ -22,11 +22,12 @@ from core.arguments_schema import DatasetArguments, ModelArguments
 from core.model_utils.hf import get_hf_model_and_tokenizer
 
 
-def get_t5_trainer(
+def get_seq2seq_trainer(
     model: PreTrainedModel,
     tokenizer: PreTrainedTokenizer,
     data_args: DatasetArguments,
     train_args: Seq2SeqTrainingArguments,
+    model_family: str = "t5",
 ):
     def _tokenize(examples):
         model_inputs = tokenizer(
@@ -40,10 +41,11 @@ def get_t5_trainer(
 
     def _preprocess_examples(examples):
         sources = [
-            preprocess_input(qn, model_family="t5") for qn in examples["question"]
+            preprocess_input(qn, model_family=model_family)
+            for qn in examples["question"]
         ]
         targets = [
-            preprocess_output(query, model_family="t5")
+            preprocess_output(query, model_family=model_family)
             for query in examples["sparql_query_compact"]
         ]
         return dict(source=sources, target=targets)
@@ -74,11 +76,12 @@ def get_t5_trainer(
     )
 
 
-def get_llama_trainer(
+def get_sft_trainer(
     model: PreTrainedModel,
     tokenizer: PreTrainedTokenizer,
     data_args: DatasetArguments,
     train_args: TrainingArguments,
+    model_family: str = "gpt",
 ):
     model.config.use_cache = False
     model.config.pretraining_tp = 1
@@ -95,15 +98,11 @@ def get_llama_trainer(
             text = template.format(
                 question=examples["question"][i],
                 sparql_query=preprocess_output(
-                    examples["sparql_query_compact"][i], model_family="llama"
+                    examples["sparql_query_compact"][i], model_family=model_family
                 ),
             )
             output_texts.append(text)
         return output_texts
-
-    collator = DataCollatorForCompletionOnlyLM(
-        LLAMA_COMPLETION_TEMPLATE, tokenizer=tokenizer
-    )
 
     return SFTTrainer(
         model=model,
@@ -111,12 +110,8 @@ def get_llama_trainer(
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         formatting_func=formatting_func,
-        # data_collator=collator,
         args=train_args,
     )
-
-
-TRAINER_GETTER_BY_MODEL = dict(t5=get_t5_trainer, llama=get_llama_trainer)
 
 
 def train():
@@ -126,9 +121,23 @@ def train():
     model_args, data_args, train_args = hfparser.parse_args_into_dataclasses()
     model, tokenizer = get_hf_model_and_tokenizer(model_args, is_trainable=True)
 
-    trainer = TRAINER_GETTER_BY_MODEL[model_args.model_family](
-        model=model, tokenizer=tokenizer, data_args=data_args, train_args=train_args
-    )
+    if model_args.model_family in ["t5", "mt0"]:
+        trainer = get_seq2seq_trainer(
+            model=model,
+            tokenizer=tokenizer,
+            data_args=data_args,
+            train_args=train_args,
+            model_family=model_args.model_family,
+        )
+    elif model_args.model_family in ["llama"]:
+        trainer = get_sft_trainer(
+            model=model,
+            tokenizer=tokenizer,
+            data_args=data_args,
+            train_args=train_args,
+            model_family=model_args.model_family,
+        )
+
     trainer.train()
 
     model_output_dir = os.path.join(train_args.output_dir, "model")
