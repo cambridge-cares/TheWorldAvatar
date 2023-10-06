@@ -33,10 +33,13 @@ def create_shapefile(data, crs, shapefile):
 
     ind = 0
 
+    surroundings_flag = ("surroundings" in shapefile)
+
     for building in data:
         geometries = building["geometry"]
         height = float(building["height"])
-        id = building["id"]
+        if not surroundings_flag:
+            id = building["id"]
 
         # Convert geometry data to arrays of points
         for geom in geometries:
@@ -46,7 +49,7 @@ def create_shapefile(data, crs, shapefile):
             height_bg.append(0)
             floor_height.append(3.2)  # approximate floor-to-floor height
 
-            if "zone.shp" in shapefile:
+            if not surroundings_flag:
                 initial = "B"
             else:
                 initial = "S"
@@ -56,7 +59,8 @@ def create_shapefile(data, crs, shapefile):
             else:
                 name = initial + str(ind)
 
-            name += "_" + str(id) # to identify geometries that belong to the same building
+            if not surroundings_flag:
+                name += "_" + str(id) # to identify geometries that belong to the same building
 
             names.append(name)
 
