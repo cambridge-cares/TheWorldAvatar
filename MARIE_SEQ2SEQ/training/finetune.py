@@ -6,29 +6,23 @@ from transformers import (
     DataCollatorForSeq2Seq,
     Seq2SeqTrainingArguments,
     Seq2SeqTrainer,
-    PreTrainedModel,
-    PreTrainedTokenizer,
     TrainingArguments,
 )
-from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
+from trl import SFTTrainer
 
-from core.data_processing.input_processing import (
-    LLAMA_COMPLETION_TEMPLATE,
-    LLAMA_TEMPLATE,
-    preprocess_input,
-)
+from core.data_processing.input_processing import preprocess_input
 from core.data_processing.output_processing import preprocess_output
 from core.arguments_schema import DatasetArguments, ModelArguments
 from core.model_utils.hf import get_hf_model_and_tokenizer
 
 
 def get_seq2seq_trainer(
-    model: PreTrainedModel,
-    tokenizer: PreTrainedTokenizer,
+    model_args: ModelArguments,
     data_args: DatasetArguments,
     train_args: Seq2SeqTrainingArguments,
-    model_family: str = "t5",
 ):
+    model, tokenizer = get_hf_model_and_tokenizer(model_args, is_trainable=True)
+
     def _tokenize(examples):
         model_inputs = tokenizer(
             examples["source"], max_length=data_args.source_max_len, truncation=True
@@ -41,11 +35,11 @@ def get_seq2seq_trainer(
 
     def _preprocess_examples(examples):
         sources = [
-            preprocess_input(qn, model_family=model_family)
+            preprocess_input(qn, model_family=model_args.model_family)
             for qn in examples["question"]
         ]
         targets = [
-            preprocess_output(query, model_family=model_family)
+            preprocess_output(query, model_family=model_args.model_family)
             for query in examples["sparql_query_compact"]
         ]
         return dict(source=sources, target=targets)
@@ -77,12 +71,12 @@ def get_seq2seq_trainer(
 
 
 def get_sft_trainer(
-    model: PreTrainedModel,
-    tokenizer: PreTrainedTokenizer,
+    model_args: ModelArguments,
     data_args: DatasetArguments,
     train_args: TrainingArguments,
-    model_family: str = "gpt",
 ):
+    model, tokenizer = get_hf_model_and_tokenizer(model_args, is_trainable=True)
+
     model.config.use_cache = False
     model.config.pretraining_tp = 1
 
@@ -98,7 +92,8 @@ def get_sft_trainer(
             text = template.format(
                 question=examples["question"][i],
                 sparql_query=preprocess_output(
-                    examples["sparql_query_compact"][i], model_family=model_family
+                    examples["sparql_query_compact"][i],
+                    model_family=model_args.model_family,
                 ),
             )
             output_texts.append(text)
@@ -119,30 +114,25 @@ def train():
         (ModelArguments, DatasetArguments, Seq2SeqTrainingArguments)
     )
     model_args, data_args, train_args = hfparser.parse_args_into_dataclasses()
-    model, tokenizer = get_hf_model_and_tokenizer(model_args, is_trainable=True)
 
     if model_args.model_family in ["t5", "mt0"]:
         trainer = get_seq2seq_trainer(
-            model=model,
-            tokenizer=tokenizer,
+            model_args=model_args,
             data_args=data_args,
             train_args=train_args,
-            model_family=model_args.model_family,
         )
     elif model_args.model_family in ["llama"]:
         trainer = get_sft_trainer(
-            model=model,
-            tokenizer=tokenizer,
+            model_args=model_args,
             data_args=data_args,
             train_args=train_args,
-            model_family=model_args.model_family,
         )
 
     trainer.train()
 
     model_output_dir = os.path.join(train_args.output_dir, "model")
-    model.save_pretrained(model_output_dir)
-    tokenizer.save_pretrained(model_output_dir)
+    trainer.model.save_pretrained(model_output_dir)
+    trainer.tokenizer.save_pretrained(model_output_dir)
 
 
 if __name__ == "__main__":
