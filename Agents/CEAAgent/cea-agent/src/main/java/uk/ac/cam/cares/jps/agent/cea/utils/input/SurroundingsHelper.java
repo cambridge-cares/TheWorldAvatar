@@ -30,7 +30,7 @@ public class SurroundingsHelper {
      * @param endpoint SPARQL endpoint
      * @return the surrounding buildings as an ArrayList of CEAInputData
      */
-    public List<CEAGeometryData> getSurroundings(ArrayList<CEABuildingData> ceaBuildingDataList, String endpoint) {
+    public List<CEAGeometryData> getSurroundings(ArrayList<CEABuildingData> ceaBuildingDataList, ArrayList<String> buildingIRIs, String endpoint) {
         try {
             String uri;
             List<CEAGeometryData> surroundings = new ArrayList<>();
@@ -68,8 +68,10 @@ public class SurroundingsHelper {
             for (int i = 0; i < queryResultArray.length(); i++) {
                 uri = queryResultArray.getJSONObject(i).get("building").toString();
 
-                CEAGeometryData temp = geometryQueryHelper.getBuildingGeometry(uri, endpoint);
-                surroundings.add(temp);
+                if (!buildingIRIs.contains(uri)) {
+                    CEAGeometryData temp = geometryQueryHelper.getBuildingGeometry(uri, endpoint);
+                    surroundings.add(temp);
+                }
             }
 
             return surroundings;
@@ -87,17 +89,20 @@ public class SurroundingsHelper {
      * @return returns a query string
      */
     private Query getBuildingsWithinBoundsQuery(String boundingBox, String crs) throws ParseException {
-        boundingBox = "<" + ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg) + crs + "> " + boundingBox + "^^geo:wktLiteral";
+        boundingBox = "\"<" + ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg) + crs + "> " + boundingBox + "\"^^geo:wktLiteral";
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("bot", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bot))
                 .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addPrefix("geof", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geof));
+                .addPrefix("geof", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geof))
+                .addPrefix("bldg", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bldg))
+                .addPrefix("grp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.grp))
+                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo));
 
-        wb.addWhere("?building", "rdf:type", "bot:building")
-                .addWhere("?building", "ocgml:lodFootprint", "?Lod0Footprint")
-                .addFilter("geof:sfIntersects(?geometry, ?box)");
+        wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
+                .addWhere("?geometry", "grp:parent" , "?Lod0FootPrint")
+                .addWhere("?geometry", "geo:asWKT", "?wkt")
+                .addFilter("geof:sfIntersects(?wkt, ?box)");
 
         SelectBuilder sb = new SelectBuilder()
                 .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
