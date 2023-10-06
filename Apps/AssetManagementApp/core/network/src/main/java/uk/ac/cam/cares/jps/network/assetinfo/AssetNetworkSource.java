@@ -1,9 +1,10 @@
 package uk.ac.cam.cares.jps.network.assetinfo;
 
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
-
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -25,8 +26,8 @@ public class AssetNetworkSource {
 
     private static final Logger LOGGER = Logger.getLogger(AssetNetworkSource.class);
 
-    String path = "feature-info-agent/get";
-
+    String retrievePath = "feature-info-agent/get";
+    String addAssetPath = "asset-manager-agent/instantiate";
 
     Connection connection;
 
@@ -37,7 +38,7 @@ public class AssetNetworkSource {
     }
 
     public void getAssetInfoByIri(String iri, Response.Listener<AssetInfoModel> onSuccessUpper, Response.ErrorListener onFailureUpper) {
-        String requestUri = NetworkConfiguration.constructUrlBuilder(path)
+        String requestUri = NetworkConfiguration.constructUrlBuilder(retrievePath)
                 .addQueryParameter("iri", iri)
                 .build().toString();
         LOGGER.info(requestUri);
@@ -56,6 +57,23 @@ public class AssetNetworkSource {
         };
 
         StringRequest request = new StringRequest(Request.Method.GET, requestUri, onSuccess, onFailureUpper);
+        connection.addToRequestQueue(request);
+    }
+
+    public void addAsset(JSONObject param, Response.Listener<JSONObject> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+        String requestUri = NetworkConfiguration.constructUrlBuilder(addAssetPath).build().toString();
+
+        Response.Listener<JSONObject> onSuccess = response -> {
+            try {
+                if (response.getJSONArray("Result").getJSONObject(0).has("deviceIRI")) {
+                    onSuccessUpper.onResponse(response.getJSONArray("Result").getJSONObject(0));
+                }
+            } catch (JSONException e) {
+                onFailureUpper.onErrorResponse(new VolleyError("Failed to create new asset"));
+            }
+        };
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, requestUri, param, onSuccess, onFailureUpper);
         connection.addToRequestQueue(request);
     }
 }

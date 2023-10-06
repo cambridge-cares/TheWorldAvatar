@@ -36,9 +36,9 @@ public class NewAssetResultViewModel extends ViewModel {
                 isSuccess.postValue(true);
                 try {
                     qrPrintRepository.updatePrintList(new PrintItem(
-                            result.getString("inventoryID"),
+                            result.getString("ID"),
                             assetInfo.getProperty(REFERENCE_LABEL),
-                            result.getString("iri")));
+                            result.getString("deviceIRI")));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }

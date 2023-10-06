@@ -21,6 +21,6 @@ public class AssetInfo implements Serializable {
         this.properties.put(key, value);
     }
     public String getProperty(String key) {
-        return this.properties.get(key);
+        return this.properties.getOrDefault(key, "");
     }
 }

@@ -28,6 +28,9 @@ public class DataFileDataModel extends AssetPropertyDataModel{
     }
 
     public String getFieldValue(Context context) {
+        if (filePath.getValue().toString().isEmpty()) {
+            return "";
+        }
         return FileUtils.getFileNameFromUri(filePath.getValue(), context);
     }
 }
