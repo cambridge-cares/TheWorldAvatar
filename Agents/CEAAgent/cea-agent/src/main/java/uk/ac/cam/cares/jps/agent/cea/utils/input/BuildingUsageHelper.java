@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
 
 import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -11,6 +9,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -36,14 +35,16 @@ public class BuildingUsageHelper
         Map<String, Double> result = new HashMap<>();
         Map<String, Double> temp = new HashMap<>();
         String usage;
-        Query q = getBuildingUsagesQuery(uriString);
+        Query query = getBuildingUsagesQuery(uriString);
 
         JSONArray queryResultArray;
 
-        if (RouteHelper.checkEndpoint(endpoint)) {
-            queryResultArray = AccessAgentCaller.queryStore(endpoint, q.toString());
+        RemoteStoreClient remoteStoreClient = new RemoteStoreClient(endpoint);
+
+        try {
+            queryResultArray = remoteStoreClient.executeQuery(query.toString());
         }
-        else {
+        catch (Exception e) {
             queryResultArray = new JSONArray();
         }
 
