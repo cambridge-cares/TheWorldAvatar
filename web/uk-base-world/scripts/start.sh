@@ -85,9 +85,9 @@ then
     if [ -n "$HOST" ]; then
         # HOST parameter supplied, inject into visualisation's data.json file
         echo "Injecting custom HOST paramater into visualisation files..."
-        sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/data.json"
-        sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/legend.html"
-        sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/settings.json"
+        sed -i "s|http://localhost:38383|"http://localhost:$HOST"|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/data.json"
+        sed -i "s|http://localhost:38383|"http://localhost:$HOST"|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/legend.html"
+        sed -i "s|http://localhost:38383|"http://localhost:$HOST"|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/settings.json"
     fi
    
     # Copy in the custom grafana conf into the special volume populator folder
@@ -108,13 +108,14 @@ then
     cp -r ./inputs/config/pylons-and-veg/* "$UPLOAD_CONFIG/"
 
     # Copy in the data for upload
-    UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
+    #UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
+    echo "Copying data..." 
     cp -r "./inputs/data/." "$UPLOAD_DATA/" 
 
     # Run the stack manager to start a new stack
     cd "$ROOT/Deploy/stacks/dynamic/stack-manager" || exit
     echo "Running the stack start up script..."
-    ./stack.sh start UKBASEWORLD 38383
+    ./stack.sh start UKBASEWORLD "$HOST"
 
     # Wait for the stack manager container to exit
 while docker ps --format '{{.Names}}' | grep -qE 'stack-manager'; do

@@ -3,13 +3,13 @@
     "groups": [
         {
             "name": "Forestry",
-            "stack": "http://localhost:3838",
+            "stack": "http://localhost:38383",
             "sources": [
                 {
                     "id": "forestry",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -62,41 +62,41 @@
         },
         {
             "name": "National Grid distribution",
-            "stack": "http://localhost:3838",
+            "stack": "http://localhost:38383",
             "sources": [
                 {
                     "id": "national-grid-poles",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_poles&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_poles&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "national-grid-towers",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "substations-points",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_substations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_substations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "national-grid-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "national-grid-cables",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -339,48 +339,48 @@
         },
         {
             "name": "UKPN distribution",
-            "stack": "http://localhost:3838",
+            "stack": "http://localhost:38383",
             "sources": [
                 {
                     "id": "high-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "medium-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "high-distribution-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "low-distribution-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_low_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_low_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "high-poles-towers",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "medium-poles-towers",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -617,13 +617,13 @@
         },
         {
             "name": "Power Generation Sites",
-            "stack": "http://localhost:3838/",
+            "stack": "http://localhost:38383/",
             "sources": [
                 {
                     "id": "uk-power-source",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
