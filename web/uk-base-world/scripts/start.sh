@@ -46,13 +46,13 @@ then
         exit 1
     fi
 
-    # Copy in the FIA config and query
-    FIA_DIR="$ROOT/Agents/FeatureInfoAgent/queries"
-    cp "./inputs/config/fia-config.json" "$FIA_DIR/"
-    cp "./inputs/config/dukes_query.sparql" "$FIA_DIR/"
-    cp "./inputs/config/power_line_query.sparql" "$FIA_DIR/"
-    cp "./inputs/config/substation_query.sparql" "$FIA_DIR/"
-    cp "./inputs/config/woodland_query.sparql" "$FIA_DIR/"
+    # Copy in the FIA config and query ( removed this bit )
+    # FIA_DIR="$ROOT/Agents/FeatureInfoAgent/queries"
+    # cp "./inputs/config/fia-config.json" "$FIA_DIR/"
+    # cp "./inputs/config/dukes_query.sparql" "$FIA_DIR/"
+    # cp "./inputs/config/power_line_query.sparql" "$FIA_DIR/"
+    # cp "./inputs/config/substation_query.sparql" "$FIA_DIR/"
+    # cp "./inputs/config/woodland_query.sparql" "$FIA_DIR/"
 
     # Clear any existing stack manager configs
     MANAGER_CONFIG="$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/config/"
@@ -86,6 +86,7 @@ then
         # HOST parameter supplied, inject into visualisation's data.json file
         echo "Injecting custom HOST paramater into visualisation files..."
         sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/data.json"
+        sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/legend.html"
         sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/settings.json"
     fi
    

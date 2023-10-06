@@ -1,5 +1,4 @@
 {
-    
     "queries": [
         {
             "class": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant",
@@ -13,8 +12,16 @@
             "class": "http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl#NonWoodland",
             "metaFile": "woodland_query.sparql"
         },
+        {             	
+            "class": "http://theworldavatar.com/ontology/ontopower/OntoPower.owl#Line",
+            "metaFile": "power_line_query.sparql"
+        },
+        {             	
+            "class": "http://theworldavatar.com/ontology/ontopower/OntoPower.owl#Substation",
+            "metaFile": "substation_query.sparql"
+        },
         {
-            "class": "http://www.theworldavatar.com/ontology/ontopower/OntoPower.owl#Line",
+            "class": "http://theworldavatar.com/ontology/ontocredo/ontoukpn.owl#Line",
             "metaFile": "power_line_query.sparql"
         }
     ]

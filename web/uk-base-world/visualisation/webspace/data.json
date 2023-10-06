@@ -3,13 +3,13 @@
     "groups": [
         {
             "name": "Forestry",
-            "stack": "http://localhost:38383",
+            "stack": "http://localhost:3838",
             "sources": [
                 {
                     "id": "forestry",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -61,120 +61,53 @@
             ]
         },
         {
-            "name": "National Grid",
-            "stack": "http://localhost:38383",
+            "name": "National Grid distribution",
+            "stack": "http://localhost:3838",
             "sources": [
+                {
+                    "id": "national-grid-poles",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_poles&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "national-grid-towers",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "substations-points",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_substations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
                 {
                     "id": "national-grid-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "national-grid-cables",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
-                },
-                {
-                    "id": "national-grid-poles-towers",
-                    "type": "vector",
-                    "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_poles_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
             "layers": [
                 {
-                    "id": "national-grid-cables-outline",
-                    "type": "line",
-                    "name": "National Grid Cables",
-                    "source": "national-grid-cables",
-                    "minzoom": 11,
-                    "source-layer": "ng_underground_cables",
-                    "treeable": false,
-                    "paint": {
-                        "line-width": [
-                            "to-number",
-                            [
-                                "slice",
-                                [
-                                    "get",
-                                    "outline_width"
-                                ],
-                                0,
-                                -1
-                            ]
-                        ],
-                        "line-color": [
-                            "get",
-                            "outline_colour"
-                        ]
-                    }
-                },
-                {
-                    "id": "national-grid-cables",
-                    "type": "line",
-                    "name": "National Grid Cables",
-                    "source": "national-grid-cables",
-                    "minzoom": 3,
-                    "source-layer": "ng_underground_cables",
-                    "treeable": false,
-                    "paint": {
-                        "line-width": [
-                            "to-number",
-                            [
-                                "slice",
-                                [
-                                    "get",
-                                    "line_width"
-                                ],
-                                0,
-                                -1
-                            ]
-                        ],
-                        "line-color": [
-                            "get",
-                            "line_colour"
-                        ]
-                    }
-                },
-                {
-                    "id": "national-grid-overhead-lines",
-                    "type": "line",
-                    "name": "National Grid Overhead Lines",
-                    "source": "national-grid-overhead-lines",
-                    "source-layer": "ng_overhead_lines",
-                    "minzoom": 3,
-                    "treeable": false,
-                    "paint": {
-                        "line-width": [
-                            "to-number",
-                            [
-                                "slice",
-                                [
-                                    "get",
-                                    "line_width"
-                                ],
-                                0,
-                                -1
-                            ]
-                        ],
-                        "line-color": [
-                            "get",
-                            "line_colour"
-                        ]
-                    }
-                },
-                {
-                    "id": "national-grid-poles-towers",
+                    "id": "national-grid-poles",
                     "type": "symbol",
-                    "name": "National Grid Pole Towers",
-                    "source": "national-grid-poles-towers",
-                    "source-layer": "ng_poles_towers",
-                    "treeable": false,
+                    "name": "Poles",
+                    "source": "national-grid-poles",
+                    "source-layer": "ng_poles",
+                    "treeable": true,
                     "minzoom": 11,
                     "layout": {
                         "icon-image": [
@@ -227,53 +160,227 @@
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }
+                },
+                {
+                    "id": "national-grid-towers",
+                    "type": "symbol",
+                    "name": "Towers",
+                    "source": "national-grid-towers",
+                    "source-layer": "ng_towers",
+                    "treeable": true,
+                    "minzoom": 11,
+                    "layout": {
+                        "icon-image": [
+                            "get",
+                            "icon"
+                        ],
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            11,
+                            [
+                                "*",
+                                0.003125,
+                                [
+                                    "to-number",
+                                    [
+                                        "slice",
+                                        [
+                                            "get",
+                                            "icon_size"
+                                        ],
+                                        0,
+                                        -1
+                                    ]
+                                ]
+                            ],
+                            30,
+                            [
+                                "*",
+                                0.0375,
+                                [
+                                    "to-number",
+                                    [
+                                        "slice",
+                                        [
+                                            "get",
+                                            "icon_size"
+                                        ],
+                                        0,
+                                        -1
+                                    ]
+                                ]
+                            ]
+                        ],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                },
+                {
+                    "id": "substations-points",
+                    "type": "symbol",
+                    "name": "Substations",
+                    "source": "substations-points",
+                    "source-layer": "ng_substations",
+                    "treeable": true,
+                    "minzoom": 5,
+                    "layout": {
+                        "icon-image": [
+                            "get",
+                            "icon"
+                        ],
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            11,
+                            [
+                                "*",
+                                0.003125,
+                                [
+                                    "to-number",
+                                    [
+                                        "slice",
+                                        [
+                                            "get",
+                                            "icon_size"
+                                        ],
+                                        0,
+                                        -1
+                                    ]
+                                ]
+                            ],
+                            30,
+                            [
+                                "*",
+                                0.0375,
+                                [
+                                    "to-number",
+                                    [
+                                        "slice",
+                                        [
+                                            "get",
+                                            "icon_size"
+                                        ],
+                                        0,
+                                        -1
+                                    ]
+                                ]
+                            ]
+                        ],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                },
+                {
+                    "id": "national-grid-overhead-lines",
+                    "type": "line",
+                    "name": "Overhead Lines",
+                    "source": "national-grid-overhead-lines",
+                    "minzoom": 8,
+                    "source-layer": "ng_overhead_lines",
+                    "treeable": true,
+                    "paint": {
+                        "line-width": [
+                            "to-number",
+                            [
+                                "slice",
+                                [
+                                    "get",
+                                    "line_width"
+                                ],
+                                0,
+                                -1
+                            ]
+                        ],
+                        "line-color": [
+                            "get",
+                            "line_colour"
+                        ]
+                    }
+                },
+                {
+                    "id": "national-grid-cables-outline",
+                    "type": "line",
+                    "name": "Underground Cables",
+                    "source": "national-grid-cables",
+                    "minzoom": 13,
+                    "source-layer": "ng_underground_cables",
+                    "treeable": true,
+                    "paint": {
+                        "line-width": [
+                            "to-number",
+                            [
+                                "slice",
+                                [
+                                    "get",
+                                    "outline_width"
+                                ],
+                                0,
+                                -1
+                            ]
+                        ],
+                        "line-color": [
+                            "get",
+                            "outline_colour"
+                        ]
+                    }
                 }
             ]
         },
         {
-            "name": "UK Power Networks",
-            "stack": "http://localhost:38383",
+            "name": "UKPN distribution",
+            "stack": "http://localhost:3838",
             "sources": [
                 {
                     "id": "high-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "medium-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "high-distribution-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_high_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "low-distribution-overhead-lines",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_low_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_low_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "high-poles-towers",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "medium-poles-towers",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -284,7 +391,7 @@
                     "name": "High Voltage Overhead Lines",
                     "source": "high-overhead-lines",
                     "source-layer": "ukpn_overhead_lines_high",
-                    "treeable": false,
+                    "treeable": true,
                     "minzoom": 6,
                     "paint": {
                         "line-width": [
@@ -311,7 +418,7 @@
                     "name": "Medium Voltage Overhead Lines",
                     "source": "medium-overhead-lines",
                     "source-layer": "ukpn_overhead_lines_medium",
-                    "treeable": false,
+                    "treeable": true,
                     "minzoom": 7,
                     "paint": {
                         "line-width": [
@@ -338,7 +445,7 @@
                     "name": "High Distribution Voltage Overhead Lines",
                     "source": "high-distribution-overhead-lines",
                     "source-layer": "ukpn_overhead_lines_high_distribution",
-                    "treeable": false,
+                    "treeable": true,
                     "minzoom": 8,
                     "paint": {
                         "line-width": [
@@ -365,7 +472,7 @@
                     "name": "Low Distribution Voltage Overhead Lines",
                     "source": "low-distribution-overhead-lines",
                     "source-layer": "ukpn_overhead_lines_low_distribution",
-                    "treeable": false,
+                    "treeable": true,
                     "minzoom": 8,
                     "paint": {
                         "line-width": [
@@ -392,7 +499,7 @@
                     "name": "High Voltage Pole Towers",
                     "source": "high-poles-towers",
                     "source-layer": "ukpn_poles_towers_high",
-                    "treeable": false,
+                    "treeable": true,
                     "minzoom": 12,
                     "layout": {
                         "icon-image": [
@@ -452,7 +559,7 @@
                     "name": "Medium Pole Towers",
                     "source": "medium-poles-towers",
                     "source-layer": "ukpn_poles_towers_medium",
-                    "treeable": false,
+                    "treeable": true,
                     "minzoom": 13,
                     "layout": {
                         "icon-image": [
@@ -509,68 +616,17 @@
             ]
         },
         {
-            "name": "Substations",
-            "stack": "http://localhost:38383",
+            "name": "Power Generation Sites",
+            "stack": "http://localhost:3838/",
             "sources": [
                 {
-                    "id": "substations_polygons",
+                    "id": "uk-power-source",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:substations_polygons&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
-                },
-                {
-                    "id": "substations_points",
-                    "type": "vector",
-                    "tiles": [
-                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:substations_points&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
-            "layers": [
-                {
-                    "id": "substations-polygons",
-                    "type": "fill",
-                    "name": "Substations",
-                    "source": "substations_polygons",
-                    "source-layer": "substations_polygons",
-                    "treeable": false,
-                    "minzoom": 12,
-                    "paint": {
-                        "fill-color": "#4a3c61"
-                    }
-                },
-                {
-                    "id": "substations-points",
-                    "type": "symbol",
-                    "name": "Substations",
-                    "source": "substations_points",
-                    "source-layer": "substations_points",
-                    "treeable": false,
-                    "minzoom": 3,
-                    "layout": {
-                        "icon-image": "substation_icon",
-                        "icon-size": 0.35,
-                        "icon-allow-overlap": true,
-                        "icon-ignore-placement": true
-                        
-                    }
-                }
-            ]
-        },
-        {
-            "name": "Power Generation Sites",
-            "stack": "http://localhost:38383/",
-            "sources": [
-                {
-                    "id": "uk-power-source",  
-                    "type": "vector",
-                    "tiles": [
-                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
-                }
-                
-            ], 
             "layers": [
                 {
                     "id": "power_renewable_layer",
@@ -582,14 +638,28 @@
                         "!",
                         [
                             "in",
-                            ["get", "type"],
-                            ["literal", ["Fossil Fuel", "Nuclear"]]
+                            [
+                                "get",
+                                "type"
+                            ],
+                            [
+                                "literal",
+                                [
+                                    "Fossil Fuel",
+                                    "Nuclear"
+                                ]
+                            ]
                         ]
                     ],
                     "layout": {
                         "visibility": "visible",
                         "circle-sort-key": [
-                            "*", -1.0, ["get", "capacity"]
+                            "*",
+                            -1.0,
+                            [
+                                "get",
+                                "capacity"
+                            ]
                         ]
                     },
                     "paint": {
@@ -598,20 +668,69 @@
                         "circle-opacity": 0.85,
                         "circle-radius": [
                             "interpolate",
-                            ["linear"],
-                            ["get", "capacity"],
-                            0, 4,
-                            100, 8,
-                            1000, 14,
-                            2250, 28
+                            [
+                                "linear"
+                            ],
+                            [
+                                "get",
+                                "capacity"
+                            ],
+                            0,
+                            4,
+                            100,
+                            8,
+                            1000,
+                            14,
+                            2250,
+                            28
                         ],
                         "circle-color": [
                             "case",
-                            ["==", ["get", "primary_fuel"], "Biomass"], "#66ff66",
-                            ["==", ["get", "primary_fuel"], "MSW"], "#006600",
-                            ["==", ["get", "primary_fuel"], "Wind"], "#99ccff",
-                            ["==", ["get", "primary_fuel"], "Hydro"], "#006699",
-                            ["==", ["get", "primary_fuel"], "Solar"], "#ffff99",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "Biomass"
+                            ],
+                            "#66ff66",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "MSW"
+                            ],
+                            "#006600",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "Wind"
+                            ],
+                            "#99ccff",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "Hydro"
+                            ],
+                            "#006699",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "Solar"
+                            ],
+                            "#ffff99",
                             "#FFFFFF"
                         ]
                     }
@@ -624,13 +743,27 @@
                     "source-layer": "dukes_2023",
                     "filter": [
                         "in",
-                        ["get", "type"],
-                        ["literal", ["Fossil Fuel", "Nuclear"]]
+                        [
+                            "get",
+                            "type"
+                        ],
+                        [
+                            "literal",
+                            [
+                                "Fossil Fuel",
+                                "Nuclear"
+                            ]
+                        ]
                     ],
                     "layout": {
                         "visibility": "visible",
                         "circle-sort-key": [
-                            "*", -1.0, ["get", "capacity"]
+                            "*",
+                            -1.0,
+                            [
+                                "get",
+                                "capacity"
+                            ]
                         ]
                     },
                     "paint": {
@@ -639,20 +772,69 @@
                         "circle-opacity": 0.85,
                         "circle-radius": [
                             "interpolate",
-                            ["linear"],
-                            ["get", "capacity"],
-                            0, 4,
-                            100, 8,
-                            1000, 14,
-                            2250, 28
+                            [
+                                "linear"
+                            ],
+                            [
+                                "get",
+                                "capacity"
+                            ],
+                            0,
+                            4,
+                            100,
+                            8,
+                            1000,
+                            14,
+                            2250,
+                            28
                         ],
                         "circle-color": [
                             "case",
-                            ["==", ["get", "primary_fuel"], "Diesel/Gas Oil"], "#cccccc",
-                            ["==", ["get", "primary_fuel"], "Coal"], "#333333",
-                            ["==", ["get", "primary_fuel"], "Sour Gas"], "#ff9999",
-                            ["==", ["get", "primary_fuel"], "Natural Gas"], "#660000",
-                            ["==", ["get", "primary_fuel"], "Nuclear"], "#999900",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "Diesel/Gas Oil"
+                            ],
+                            "#cccccc",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "Coal"
+                            ],
+                            "#333333",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "Sour Gas"
+                            ],
+                            "#ff9999",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "Natural Gas"
+                            ],
+                            "#660000",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "primary_fuel"
+                                ],
+                                "Nuclear"
+                            ],
+                            "#999900",
                             "#FFFFFF"
                         ]
                     }

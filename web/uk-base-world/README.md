@@ -19,7 +19,7 @@ Once a year, the UK government publishes a Digest of UK Energy Statistics (DUKES
 Read the associated [DUKES Data](./docs/data-dukes.md) page for details on how the DUKES data was acquired and processed.
 
 ### National Grid 
-National Grid publish shapefiles of their whole network including lines, pylons and substations. There are links to each download page in the relevant `data` subdirectory. There is a good number of files to download but they are all backed up on pavilion. 
+National Grid publish shapefiles of their whole network including lines, pylons and substations. There are links to each download page in the relevant `data` subdirectory. There is a good number of files (19) to download but they are all backed up on pavilion. 
 
 ### UKPN
 Similarly to above, download links are in each of the relevant Uk Power Networks subdirectory and are backed up on pavilion.
