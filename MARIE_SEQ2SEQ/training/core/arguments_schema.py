@@ -16,7 +16,7 @@ class ModelArguments:
     )
     model_family: str = field(
         default="t5",
-        metadata={"help": "Either `t5` or `llama.`"},
+        metadata={"help": "`t5`, `mt0`, `llama`, or `bloomz`."},
     )
     device_map: Optional[str] = field(default=None)
     lora_path: Optional[str] = field(default=None)
