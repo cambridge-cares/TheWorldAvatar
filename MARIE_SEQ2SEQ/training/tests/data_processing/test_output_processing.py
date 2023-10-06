@@ -1,8 +1,8 @@
 import pytest
 
 from core.data_processing.output_processing import (
-    t5_decode_output_special_chars,
-    t5_encode_output_special_chars,
+    preprocess_output,
+    postprocess_output,
     remove_prefixes,
 )
 
@@ -22,7 +22,7 @@ class TestOutputProcessing:
         ],
     )
     def test_encodeOutput(self, query, expected):
-        assert t5_encode_output_special_chars(query) == expected
+        assert preprocess_output(query, model_family="t5") == expected
 
     @pytest.mark.parametrize(
         "query, expected",
@@ -38,7 +38,7 @@ class TestOutputProcessing:
         ],
     )
     def test_decodeOutput(self, query, expected):
-        assert t5_decode_output_special_chars(query) == expected
+        assert postprocess_output(query, model_family="t5") == expected
 
     @pytest.mark.parametrize(
         "query, expected",

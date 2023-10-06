@@ -25,6 +25,8 @@ def preprocess_input(text: str, model_family: str):
     if model_family == "t5":
         text = t5_encode_input_special_chars(text)
         text = T5_INPUT_PREFIX + text
+    elif model_family == "mt0":
+        text = T5_INPUT_PREFIX + text
     elif model_family == "llama":
         text = LLAMA_PROMPT_TEMPLATE.format(question=text)
     return text

@@ -15,12 +15,10 @@ T5_OUTPUT_ENCODINGS = {
 T5_OUTPUT_DECODINGS = {v: k for k, v in T5_OUTPUT_ENCODINGS.items()}
 
 
-def t5_encode_output_special_chars(text: str):
-    return replace_multi(text, T5_OUTPUT_ENCODINGS)
-
-
-def t5_decode_output_special_chars(text: str):
-    return replace_multi(text, T5_OUTPUT_DECODINGS)
+MT0_OUTPUT_ENCODINGS = {
+    "?": "var_"
+}
+MT0_OUTPUT_DECODINGS = {v: k for k, v in MT0_OUTPUT_ENCODINGS.items()}
 
 
 def remove_prefixes(text: str):
@@ -41,13 +39,17 @@ def remove_prefixes(text: str):
 def preprocess_output(text: str, model_family: str):
     text = remove_prefixes(text)
     if model_family == "t5":
-        text = t5_encode_output_special_chars(text)
+        text = replace_multi(text, T5_OUTPUT_ENCODINGS)
+    elif model_family == "mt0":
+        text = replace_multi(text, MT0_OUTPUT_ENCODINGS)
     return text
 
 
 def postprocess_output(text: str, model_family: str):
     if model_family == "t5":
-        text = t5_decode_output_special_chars(text)
+        text = replace_multi(text, T5_OUTPUT_DECODINGS)
+    elif model_family == "mt0":
+        text = replace_multi(text, MT0_OUTPUT_DECODINGS)
     elif model_family == "llama" and "\n\n###\n\n" in text:
         text = text.split("\n\n###\n\n", maxsplit=1)[1]
     return text
