@@ -465,4 +465,31 @@ public class AssetExistenceChecker {
         
     }
 
+    public JSONObject getDataSheetIRI(String fileLoc, String fileType){
+        return getDataSheetIRI(fileLoc, fileType, false);
+    }
+
+    public JSONObject getDataSheetIRI(String fileLoc, String fileType, Boolean generate){
+        JSONObject result = new JSONObject();
+        JSONArray reqResult = getIRIbyLiteral(fileLoc, availableAt, storeClientAsset);
+        switch (reqResult.length()) {
+            case 0:
+                //document doesn't exist. Make new IRIs
+                if (generate){
+                    result.put("DocIRI", genIRIString(fileType, P_ASSET));
+                    return result;
+                }
+                return null;
+                
+                
+            case 1:
+                result.put("DocIRI", reqResult.getJSONObject(0).getString("Subject"));
+                return result;
+            default:
+                //TODO Properly handle multiple cases 
+                result.put("DocIRI", reqResult.getJSONObject(0).getString("Subject"));
+                return result;
+        }
+    }
+
 }

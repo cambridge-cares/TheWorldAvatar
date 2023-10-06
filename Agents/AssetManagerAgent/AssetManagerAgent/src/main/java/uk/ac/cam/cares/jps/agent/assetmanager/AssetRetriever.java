@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.query.algebra.Service;
 import org.eclipse.rdf4j.sparqlbuilder.core.GroupBy;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -26,14 +27,19 @@ import static uk.ac.cam.cares.jps.agent.assetmanager.QueryUtil.*;
 public class AssetRetriever {
     private RemoteStoreClient storeClientAsset, storeClientDevice, storeClientPurchDoc;
     JSONObject result = new JSONObject();
+    String assetNamespace, deviceNamespace, purchaseDocsNamespace;
     /**
      * Logger for reporting info/errors.
      */
     private static final Logger LOGGER = LogManager.getLogger(AssetManagerAgent.class);
-    public AssetRetriever (RemoteStoreClient clientAsset, RemoteStoreClient clientDevice, RemoteStoreClient clientPurchDoc) {
+    public AssetRetriever (RemoteStoreClient clientAsset, RemoteStoreClient clientDevice, RemoteStoreClient clientPurchDoc, String assetKGNamespace, String deviceKGNamespace, String purchaseDocsKGNamespace) {
         storeClientAsset = clientAsset;
         storeClientDevice = clientDevice;
         storeClientPurchDoc = clientPurchDoc;
+
+        assetNamespace = assetKGNamespace;
+        deviceNamespace = deviceKGNamespace;
+        purchaseDocsNamespace = purchaseDocsKGNamespace;
     }
 
 
@@ -409,9 +415,9 @@ public class AssetRetriever {
         //location -- Retrieving all the rooms is a bit more complicated than I thought. Not yet implemented ~MTL
         //Room
         //Workspace
-        result.put("Workspace", getAllRoomWorspacePair());
+        result.put("Workspace", getAllRoomWorkspacePair());
         //Element in workspace
-        result.put("Element", getAllElementInWorkspace(assetNamespace, deviceNamepsace));
+        result.put("Element", getAllElementInWorkspace());
         //supplier
         result.put("Supplier", getAllSupplierIRI());
         //Manufacturer
@@ -480,14 +486,20 @@ public class AssetRetriever {
 
     public JSONArray getItemListByDocIRI (String InvoiceIRI, String POiri, String DOiri){
 
-        SelectQuery query = Queries.SELECT();
-        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
-        );
         Variable itemIRI = SparqlBuilder.var("itemIRI");
         Variable InvoiceLineIRI = SparqlBuilder.var("invoiceLineIRI");
         Variable POLineIRI = SparqlBuilder.var("POLineIRI");
         Variable DOLineIRI = SparqlBuilder.var("DOLineIRI");
+        Variable assetIRI = SparqlBuilder.var("assetIRI");
+        Variable assetID = SparqlBuilder.var("assetID");
+
+        SelectQuery query = Queries.SELECT(itemIRI, assetIRI, assetID);
+        GroupBy group = SparqlBuilder.groupBy();
+        group.by(itemIRI, assetIRI, assetID);
+        query.groupBy(group);
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
 
         if(!(InvoiceIRI == null || InvoiceIRI.isBlank())){
             query.where(iri(InvoiceIRI).has(hasInvoiceLine, InvoiceLineIRI));
@@ -502,10 +514,22 @@ public class AssetRetriever {
             query.where(DOLineIRI.has(hasItem, itemIRI));
         }
 
-        return storeClientPurchDoc.executeQuery(query.getQueryString());
+        String queryWithService = query.getQueryString();
+        //queryWithService = queryWithService.substring(0, queryWithService.length()-1);
+        String queryWithServiceStart = queryWithService.substring(0,queryWithService.lastIndexOf("}"));
+        String queryWithServiceEnd = queryWithService.substring(queryWithService.lastIndexOf("}"), queryWithService.length());
+        queryWithService = queryWithServiceStart + 
+                            "\n SERVICE <"+assetNamespace+"> {\n" +
+                            "       ?itemIRI ontoassetmanagement:references ?assetIRI}\n"+
+                            "\n SERVICE <"+assetNamespace+"> {\n" +
+                            "       ?assetIRI ontoassetmanagement:hasItemInventoryIdentifier ?assetID}\n"+ 
+                            queryWithServiceEnd
+        ;
+
+        return storeClientPurchDoc.executeQuery(queryWithService);
     }
 
-    public JSONArray getAllRoomWorspacePair (){
+    public JSONArray getAllRoomWorkspacePair (){
         Variable roomIRI = SparqlBuilder.var("roomIRI");
         Variable IFCReprIRI = SparqlBuilder.var("IFCReprIRI");
         Variable workspaceIRI = SparqlBuilder.var("workspaceIRI");
@@ -525,20 +549,20 @@ public class AssetRetriever {
         return storeClientDevice.executeQuery(query.getQueryString());
     }
 
-    public JSONArray getAllElementInWorkspace(String assetNamespace, String deviceNamepsace){
+    public JSONArray getAllElementInWorkspace(){
         /*TODO modify to rdf4j format
          * Yes, I'm being lazy again here. But it works (sometimes), so who cares
          */
         String query = "PREFIX ontoassetmanagement: <" + ONTOASSET + ">\n"+
                 "SELECT *\n" + 
                 "WHERE {\n" + 
-                "   SERVICE <"+deviceNamepsace+"> {\r\n" + 
-                "       ?assetIRI ontoassetmanagement:isLocatedAt ?workspaceIRI.\r\n" + 
-                "       ?workspaceIRI ontoassetmanagement:hasWorkspaceIdentifier ?workspaceID.\r\n" + 
-                "       SERVICE <"+assetNamespace+"> {\r\n" + 
-                "           ?assetIRI ontoassetmanagement:hasItemInventoryIdentifier ?assetID.\r\n" + 
-                "       }\r\n" + 
-                "   }\r\n" + 
+                "   SERVICE <"+deviceNamespace+"> {\n" + 
+                "       ?assetIRI ontoassetmanagement:isLocatedAt ?workspaceIRI.\n" + 
+                "       ?workspaceIRI ontoassetmanagement:hasWorkspaceIdentifier ?workspaceID.\n" + 
+                "       SERVICE <"+assetNamespace+"> {\n" + 
+                "           ?assetIRI ontoassetmanagement:hasItemInventoryIdentifier ?assetID.\n" + 
+                "       }\n" + 
+                "   }\n" + 
                 "}";
 
         return storeClientDevice.executeQuery(query);

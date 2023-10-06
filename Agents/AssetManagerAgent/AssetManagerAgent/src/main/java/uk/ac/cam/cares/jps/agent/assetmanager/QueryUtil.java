@@ -39,7 +39,7 @@ public class QueryUtil {
     }
 
     public static String getPrefixStringFromName(String ontology) throws Exception {
-        switch (ontology) {
+        switch (ontology.strip()) {
             case "ontodevice":
                 return P_DEV;
 

@@ -51,6 +51,7 @@ public class AssetManagerAgent extends JPSAgent{
     public String ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC;
     public String ENDPOINT_PRINTER;
     public Double TARGET_QR_SIZE;
+    public String URL_MANUAL;
 
     /**
      * Logger for reporting info/errors.
@@ -91,7 +92,8 @@ public class AssetManagerAgent extends JPSAgent{
                 ENDPOINT_KG_PURCHASEDOC, 
                 ENDPOINT_PRINTER, 
                 FOLDER_QR, 
-                FOLDER_MANUAL
+                FOLDER_MANUAL,
+                URL_MANUAL
             };
             
             try {
@@ -119,7 +121,7 @@ public class AssetManagerAgent extends JPSAgent{
                 jsonMessage = getDataForUI();
             }
             else if (urlPath.contains("instantiate")){
-                if(!(assetData.getString("Prefix").isBlank() || assetData.getString("Prefix") == null)){
+                if(assetData.getString("Prefix").isBlank() || assetData.getString("Prefix") == null){
                     try (InputStream input = new FileInputStream(ontoMapProperties)) {
                         // Load properties file from specified path
                         Properties prop = new Properties();
@@ -143,7 +145,7 @@ public class AssetManagerAgent extends JPSAgent{
                 jsonMessage = instantiateAsset(args, assetData);
             }
             else if (urlPath.contains("addmanualpdf")){
-                jsonMessage = addManualPDF(args, assetData.getString("encodedPDF"), assetData.getString("fileName"));
+                jsonMessage = addManualPDF(args, assetData.getString("targetID"), assetData.getString("comments"), assetData.getString("documentType"), assetData.getString("encodedPDF"), assetData.getString("fileName"));
             }
             
             else if (urlPath.contains("printbulk")){
@@ -182,6 +184,7 @@ public class AssetManagerAgent extends JPSAgent{
                 ENDPOINT_KG_PURCHASEDOC  = prop.getProperty("endpoint.kg.purchasedocs");
                 ENDPOINT_PRINTER = prop.getProperty("endpoint.printer");
                 TARGET_QR_SIZE = Double.parseDouble(prop.getProperty("target_qr_size"));
+                URL_MANUAL = prop.getProperty("url.manual");
             }
             catch (Exception e) {
                 throw new IOException ("The endpoint keys cannot be retrieved from the properties file: ", e);
@@ -368,7 +371,7 @@ public class AssetManagerAgent extends JPSAgent{
 
             try {
                 // Read the mappings folder from the properties file
-                result = new JSONArray(prop.keys());
+                result = new JSONArray(Collections.list((prop.keys())));
             }
             catch (Exception e) {
                 throw new IOException ("The endpoint keys cannot be retrieved from the properties file: ", e);
@@ -399,27 +402,32 @@ public class AssetManagerAgent extends JPSAgent{
         return message;
     }
 
-    public JSONObject addManualPDF(String[] arg, String encodedPDF, String fileName) {
+    public JSONObject addManualPDF(String[] arg, String targetID, String comments, String documentType, String encodedPDF, String fileName) {
         JSONObject message = new JSONObject();
-        File file = new File(arg[5]+fileName);
-        LOGGER.debug("FILENAME::"+arg[5]+fileName);
-        if(!file.exists()) { 
-            try {
-                //file.getParentFile().mkdirs();
-                file.createNewFile();
-                LOGGER.debug("Created empty pdf...");
-            } catch (Exception e) {
-                message.accumulate("Result", "Failed to create PDF:"+ e);
+        if(!(encodedPDF.isBlank() || encodedPDF == null)){
+            File file = new File(arg[5]+fileName);
+            LOGGER.debug("FILENAME::"+arg[5]+fileName);
+            if(!file.exists()) { 
+                try {
+                    //file.getParentFile().mkdirs();
+                    file.createNewFile();
+                    LOGGER.debug("Created empty pdf...");
+                } catch (Exception e) {
+                    message.accumulate("Result", "Failed to create PDF:"+ e);
+                }
+                
             }
-            
+            try ( FileOutputStream fos = new FileOutputStream(file); ) {
+                byte[] decoder = Base64.getDecoder().decode(encodedPDF);
+                fos.write(decoder);
+                message.accumulate("Result", "PDF saved successfully");
+            } catch (Exception e) {
+                message.accumulate("Result","Failed to save PDF:"+ e);
+            }
         }
-        try ( FileOutputStream fos = new FileOutputStream(file); ) {
-            byte[] decoder = Base64.getDecoder().decode(encodedPDF);
-            fos.write(decoder);
-            message.accumulate("Result", "PDF saved successfully");
-        } catch (Exception e) {
-            message.accumulate("Result","Failed to save PDF:"+ e);
-        }
+        //Create manual instance
+        String fileURL = arg[6] + fileName;
+        instanceHandler.addDataSheet(fileURL, documentType, comments, targetID);
     
         return message;
     }

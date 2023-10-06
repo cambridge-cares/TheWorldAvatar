@@ -7,6 +7,7 @@ import static uk.ac.cam.cares.jps.agent.assetmanager.QueryUtil.*;
 
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.util.SparqlBuilderUtils;
+import org.jooq.InsertQuery;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -62,9 +63,9 @@ public class AssetKGInterface {
         storeClientAsset = new RemoteStoreClient(kgEndpointAsset, kgEndpointAsset);
         storeClientDevice = new RemoteStoreClient(kgEndpointDevice, kgEndpointDevice);
         storeClientPurchDoc = new RemoteStoreClient(kgEndpointPurchDoc, kgEndpointPurchDoc);
-    
+            
         existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientDevice, storeClientPurchDoc);
-        assetRetriever =  new AssetRetriever (storeClientAsset, storeClientDevice, storeClientPurchDoc);
+        assetRetriever =  new AssetRetriever (storeClientAsset, storeClientDevice, storeClientPurchDoc, endpointAsset, endpointDevice, endpointPurchDoc);
     }
 
     /**
@@ -816,6 +817,25 @@ public class AssetKGInterface {
         storeClientDevice.executeUpdate(query.getQueryString());
 
     }
+
+    public void addDataSheet(String docFilename, String docType, String docComment, String deviceID) {
+        String deviceIRI = existenceChecker.getIRIStringbyID(deviceID);
+        String documentIRI = "";
+
+        documentIRI = existenceChecker.getDataSheetIRI(docFilename, docType, true).getString("DocIRI");
+        
+        ModifyQuery query = Queries.MODIFY();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        query.insert(iri(documentIRI).isA(SpecSheet));
+        query.insert(iri(deviceIRI).has(hasDataSheet, documentIRI));
+        query.insert(iri(documentIRI).has(availableAt, docFilename));
+        if (!docComment.isBlank()){
+            query.insert(iri(documentIRI).has(RDFS.COMMENT, Rdf.literalOf(docComment)));
+        }
+    }
+
 
     /*
      * =============================================================================================================================================================
