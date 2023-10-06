@@ -1,10 +1,6 @@
 package uk.ac.cam.cares.jps.data.otherinfo;
 
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.BUILDING;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.otherInfoFromAssetAgentKeys;
-
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 
 import org.apache.log4j.Logger;
 
@@ -12,25 +8,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
-import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.UndeliverableException;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.datastore.OtherInfoLocalSource;
-import uk.ac.cam.cares.jps.model.AssetInfo;
-import uk.ac.cam.cares.jps.model.building.Building;
 import uk.ac.cam.cares.jps.model.building.Instance;
-import uk.ac.cam.cares.jps.model.building.Room;
 import uk.ac.cam.cares.jps.model.building.Workspace;
 import uk.ac.cam.cares.jps.network.otherinfo.BMSNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
@@ -174,25 +162,5 @@ public class OtherInfoRepository {
             results.put(map.get(key), key);
         }
         return results;
-    }
-
-    private static abstract class Result {
-        private Result() { }
-
-        public static final class Complete extends Result {
-            private Complete() { }
-        }
-
-        public static final class Error extends Result {
-            private final Throwable throwable;
-
-            public Error(Throwable throwable) {
-                this.throwable = throwable;
-            }
-
-            public Throwable getThrowable() {
-                return throwable;
-            }
-        }
     }
 }
