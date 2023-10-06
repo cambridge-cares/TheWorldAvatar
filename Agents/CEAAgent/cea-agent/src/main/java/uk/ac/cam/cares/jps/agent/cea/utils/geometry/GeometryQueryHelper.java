@@ -52,8 +52,8 @@ public class GeometryQueryHelper {
     public String getBuildingHeight(String uriString, String endpoint) {
         try {
             WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                    .addWhere("?s", "ocgml:measuredHeight", "?height")
+                    .addPrefix("bldg", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bldg))
+                    .addWhere("?s", "bldg:measuredHeight", "?height")
                     .addFilter("!isBlank(?height)");
             SelectBuilder sb = new SelectBuilder()
                     .addVar("?height")
@@ -67,36 +67,48 @@ public class GeometryQueryHelper {
             String height = queryResultArray.getJSONObject(0).getString("height");
 
             return height;
-        } catch (ParseException e) {
+        }
+        catch (ParseException e) {
             e.printStackTrace();
             return null;
         }
     }
 
     public CEAGeometryData getLod0Footprint(String uriString, String endpoint, String height) {
-        RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
+        try {
+            RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
 
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
-                .addWhere("?building", "ocgml:lod0Footprint", "?Lod0Footprint");
-        SelectBuilder sb = new SelectBuilder()
-                .addWhere(wb)
-                .addVar("?Lod0Footprint");
-        sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
+            WhereBuilder wb = new WhereBuilder()
+                    .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
+                    .addPrefix("bldg", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bldg))
+                    .addPrefix("grp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.grp));
 
-        Query query = sb.build();
+            wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
+                    .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
+                    .addWhere("?geometry", "geo:asWKT", "?wkt");
 
-        JSONArray queryResultArray = storeClient.executeQuery(query.toString());
+            SelectBuilder sb = new SelectBuilder()
+                    .addPrefix("geof", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geof))
+                    .addWhere(wb)
+                    .addVar("?wkt")
+                    .addVar("geof:getSRID(?wkt)", "?crs");
+            sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
 
-        String crs = queryResultArray.getJSONObject(0).getString("Lod0Footprint").split(" ")[0];
+            Query query = sb.build();
 
-        crs = crs.split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
+            JSONArray queryResultArray = storeClient.executeQuery(query.toString());
 
-        crs = crs.split(">")[0];
+            String crs = queryResultArray.getJSONObject(0).getString("crs").split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
 
-        List<Geometry> geometry = GeometryHandler.extractFootprint(queryResultArray, crs, Double.parseDouble(height));
+            crs = crs.split(">")[0];
 
-        return new CEAGeometryData(geometry, crs, height);
+            List<Geometry> geometry = GeometryHandler.extractFootprint(queryResultArray, crs, Double.parseDouble(height));
+
+            return new CEAGeometryData(geometry, crs, height);
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
