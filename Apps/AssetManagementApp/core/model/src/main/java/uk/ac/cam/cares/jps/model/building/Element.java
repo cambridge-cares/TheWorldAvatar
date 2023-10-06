@@ -4,6 +4,10 @@ import androidx.annotation.Nullable;
 
 public class Element extends Instance{
 
+    public Element(String iri, String label) {
+        super(iri, label);
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof Element) {

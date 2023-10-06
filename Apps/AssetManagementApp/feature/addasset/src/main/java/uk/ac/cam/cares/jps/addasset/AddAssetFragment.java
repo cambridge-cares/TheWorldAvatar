@@ -97,13 +97,13 @@ public class AddAssetFragment extends Fragment {
 
         binding.doneBt.setOnClickListener(view1 -> {
             // todo: remove check for test purpose
-            if (viewModel.checkMissingInput()) {
-                return;
-            }
-
-            if (viewModel.checkDisallowNewInstanceInputField()) {
-                return;
-            }
+//            if (viewModel.checkMissingInput()) {
+//                return;
+//            }
+//
+//            if (viewModel.checkDisallowNewInstanceInputField()) {
+//                return;
+//            }
 
             // show summary page
             NavHostFragment.findNavController(this).navigate(getRequest());
@@ -114,7 +114,7 @@ public class AddAssetFragment extends Fragment {
         NavDeepLinkRequest request = null;
         try {
             request = NavDeepLinkRequest.Builder
-                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/asset_summary?assetinfo=" + serializeObjectToString(viewModel.getAssetInfo())  + "&operation=" + viewModel.getEditMode()))
+                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/asset_summary?assetinfo=" + serializeObjectToString(viewModel.getAssetInfo(requireContext()))  + "&operation=" + viewModel.getEditMode()))
                     .build();
             return request;
         } catch (IOException e) {

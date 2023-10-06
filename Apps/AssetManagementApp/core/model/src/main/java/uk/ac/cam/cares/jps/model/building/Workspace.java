@@ -7,16 +7,8 @@ import java.util.List;
 public class Workspace extends Instance{
 
     // todo: should add element to workspace
-    public Workspace(String iri) {
-        this.iri = iri;
-    }
-
-    public void constructElements(List<String> elementIris) {
-        for (String elementIri : elementIris) {
-            Element temp = new Element();
-            temp.iri = elementIri;
-            this.subLevelItems.add(temp);
-        }
+    public Workspace(String iri, String label) {
+        super(iri, label);
     }
 
     @Override

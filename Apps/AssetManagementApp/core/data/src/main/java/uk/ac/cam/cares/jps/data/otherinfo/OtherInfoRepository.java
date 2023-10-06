@@ -18,21 +18,22 @@ import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.datastore.OtherInfoLocalSource;
+import uk.ac.cam.cares.jps.model.building.Building;
+import uk.ac.cam.cares.jps.model.building.Facility;
 import uk.ac.cam.cares.jps.model.building.Instance;
+import uk.ac.cam.cares.jps.model.building.Room;
 import uk.ac.cam.cares.jps.model.building.Workspace;
 import uk.ac.cam.cares.jps.network.otherinfo.BMSNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoResponse;
 
 public class OtherInfoRepository {
-    private Logger LOGGER =  Logger.getLogger(OtherInfoRepository.class);
+    private Logger LOGGER = Logger.getLogger(OtherInfoRepository.class);
     private OtherInfoLocalSource otherInfoLocalSource;
     private OtherInfoNetworkSource otherInfoNetworkSource;
     private BMSNetworkSource bmsNetworkSource;
     private Map<String, Map<String, String>> otherInfoByKey = new HashMap<>();
-
-    List<Workspace> workspacesWithElements = new ArrayList<>();
-    List<Workspace> roomsWithWorkspaces = new ArrayList<>();
+    HashMap<String, Room> roomsWithWorkspaces = new HashMap<>();
     List<Instance> buildings = new ArrayList<>();
 
     @Inject
@@ -64,7 +65,7 @@ public class OtherInfoRepository {
     }
 
     private void otherInfoOnSuccess(OtherInfoResponse response, Map<String, RepositoryCallback<Map<String, String>>> callbacks) {
-        workspacesWithElements = response.getWorkspaces();
+        roomsWithWorkspaces = response.getRooms();
 
         Map<String, HashMap<String, String>> otherInfo = response.getOtherInfo();
         for (String key : otherInfo.keySet()) {
@@ -86,54 +87,59 @@ public class OtherInfoRepository {
     }
 
     private void retrieveFromNetworkSource(Map<String, RepositoryCallback<Map<String, String>>> callbacks, RepositoryCallback<List<Instance>> locationCallback) {
-            RxJavaPlugins.setErrorHandler(throwable -> {
-                if (throwable instanceof UndeliverableException) {
-                    LOGGER.info("Both network call failed. Ignore this RxJava exception.");
-                } else {
-                    if (Thread.currentThread().getUncaughtExceptionHandler() != null) {
-                        Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), throwable);
-                    }
+        RxJavaPlugins.setErrorHandler(throwable -> {
+            if (throwable instanceof UndeliverableException) {
+                LOGGER.info("Both network call failed. Ignore this RxJava exception.");
+            } else {
+                if (Thread.currentThread().getUncaughtExceptionHandler() != null) {
+                    Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), throwable);
                 }
-            });
+            }
+        });
 
+        Completable otherInfoNetworkCall = Completable.create(emitter -> otherInfoNetworkSource.getOtherInfo(response -> {
+            otherInfoOnSuccess(response, callbacks);
+            emitter.onComplete();
+        }, error -> {
+            callbacks.values().forEach(callback -> callback.onFailure(error));
+            LOGGER.error(error.getMessage());
+            emitter.onError(error);
+        }));
 
-            Completable otherInfoNetworkCall = Completable.create(emitter -> otherInfoNetworkSource.getOtherInfo(response -> {
-                otherInfoOnSuccess(response, callbacks);
-                emitter.onComplete();
-            }, error -> {
-                callbacks.values().forEach(callback -> callback.onFailure(error));
-                LOGGER.error(error.getMessage());
-                emitter.onError(error);
-            }));
+        Completable bmsNetworkCall = Completable.create(emitter -> bmsNetworkSource.getBuildingInfo(response -> {
+            buildings = response;
+            emitter.onComplete();
+        }, error -> {
+            LOGGER.error(error.getMessage());
+            emitter.onError(new Throwable(error));
+        }));
 
-            Completable bmsNetworkCall = Completable.create(emitter -> bmsNetworkSource.getBuildingInfo(response -> {
-                buildings = response;
-                emitter.onComplete();
-            }, error -> {
-                LOGGER.error(error.getMessage());
-                emitter.onError(new Throwable(error));
-            }));
-
-            Completable combinedCompletable = Completable.mergeArray(otherInfoNetworkCall, bmsNetworkCall);
-            Disposable disposable = combinedCompletable.subscribe(
-                    () -> {
-                        // merge location info from both request
-                        // todo: link roomsWithWorkspaces, workspacesWithElements and buildings
-//                    for (Workspace workspace : workspacesWithElements) {
-//
-//                    }
-
-                        // todo: store in local storage
-
-                        // todo: callback to UI
-                        locationCallback.onSuccess(buildings);
-
-                    },
-                    error -> {
-                        LOGGER.error(error.getMessage());
-                        locationCallback.onFailure(error);
+        Completable combinedCompletable = Completable.mergeArray(otherInfoNetworkCall, bmsNetworkCall);
+        Disposable disposable = combinedCompletable.subscribe(
+                () -> {
+                    // merge location info from both request
+                    for (Instance building : buildings) {
+                        for (Instance facility : building.getSortedSubLevelItems()) {
+                            for (Instance room : facility.getSortedSubLevelItems()) {
+                                if (!roomsWithWorkspaces.containsKey(room.getIri())) {
+                                    continue;
+                                }
+                                room.addAllToSublist(roomsWithWorkspaces.get(room.getIri()).getSortedSubLevelItems());
+                            }
+                        }
                     }
-            );
+
+                    // todo: store in local storage
+
+                    // todo: callback to UI
+                    locationCallback.onSuccess(buildings);
+
+                },
+                error -> {
+                    LOGGER.error(error.getMessage());
+                    locationCallback.onFailure(error);
+                }
+        );
 
     }
 

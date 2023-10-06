@@ -21,6 +21,10 @@ public class Instance {
     public Instance(String label) {
         this.label = label;
     }
+    public Instance(String iri, String label) {
+        this.iri = iri;
+        this.label = label;
+    }
 
     public String getLabel() {
         return label;
@@ -38,6 +42,14 @@ public class Instance {
         return subLevelItems.stream()
                 .sorted(Comparator.comparing(o -> o.label))
                 .collect(Collectors.toList());
+    }
+
+    public void addToSublist(Instance item) {
+        subLevelItems.add(item);
+    }
+
+    public void addAllToSublist(List<Instance> items) {
+        subLevelItems.addAll(items);
     }
 
     void generateSubLevelItemsFromJSON(JSONObject jsonObject) throws JSONException {}

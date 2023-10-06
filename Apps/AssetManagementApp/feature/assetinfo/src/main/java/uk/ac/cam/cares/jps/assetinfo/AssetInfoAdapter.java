@@ -110,7 +110,7 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
         allKeys.addAll(docLineInfoOrder);
 
         for (String key : map.keySet()) {
-            if (key.equals(HAS_TIME_SERIES)) {
+            if (Arrays.asList(HAS_TIME_SERIES, SPEC_SHEET_FILE_URI, MANUAL_FILE_URI).contains(key)) {
                 continue;
             }
             if (!allKeys.contains(key)) {

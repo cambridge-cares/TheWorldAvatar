@@ -4,10 +4,10 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.BUILDING;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.FACILITY;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.LOCATED_IN;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.LOCATION_SECTION_TITLE;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_FILE_URI;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_FILE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_SECTION_TITLE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SEAT_LOCATION;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_FILE_URI;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_FILE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_SECTION_TITLE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.STORED_IN;
 
@@ -274,9 +274,9 @@ public class TabFragment extends Fragment {
     }
 
     private void checkStoragePermission(DataFileDataModel property) {
-        if (property.getFieldName().equals(SPEC_SHEET_FILE_URI)) {
+        if (property.getFieldName().equals(SPEC_SHEET_FILE)) {
             startFilePicker(OPEN_SPEC_SHEET_REQUEST);
-        } else if (property.getFieldName().equals(MANUAL_FILE_URI)) {
+        } else if (property.getFieldName().equals(MANUAL_FILE)) {
             startFilePicker(OPEN_MANUAL_REQUEST);
         }
 
@@ -312,7 +312,7 @@ public class TabFragment extends Fragment {
                     // Get the selected file's URI
                     Uri selectedFileUri = result.getData();
                     LOGGER.info("Selected spec sheet URI: " + selectedFileUri.toString());
-                    ((DataFileDataModel) viewModel.getInputFieldModels().get(SPEC_SHEET_FILE_URI)).setFilePath(selectedFileUri);
+                    ((DataFileDataModel) viewModel.getInputFieldModels().get(SPEC_SHEET_FILE)).setFilePath(selectedFileUri);
                 }
             }
         } else if (requestCode == OPEN_MANUAL_REQUEST) {
@@ -321,7 +321,7 @@ public class TabFragment extends Fragment {
                     // Get the selected file's URI
                     Uri selectedFileUri = result.getData();
                     LOGGER.info("Selected spec sheet URI: " + selectedFileUri.toString());
-                    ((DataFileDataModel) viewModel.getInputFieldModels().get(MANUAL_FILE_URI)).setFilePath(selectedFileUri);
+                    ((DataFileDataModel) viewModel.getInputFieldModels().get(MANUAL_FILE)).setFilePath(selectedFileUri);
                 }
             }
         }

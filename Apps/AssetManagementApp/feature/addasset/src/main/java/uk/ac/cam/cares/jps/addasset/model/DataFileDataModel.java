@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.addasset.model;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.lifecycle.MutableLiveData;
+
+import uk.ac.cam.cares.jps.utils.FileUtils;
 
 public class DataFileDataModel extends AssetPropertyDataModel{
     // todo: this should be attached to the button only...
@@ -22,5 +25,9 @@ public class DataFileDataModel extends AssetPropertyDataModel{
 
     public void setFilePath(Uri filePath) {
         this.filePath.setValue(filePath);
+    }
+
+    public String getFieldValue(Context context) {
+        return FileUtils.getFileNameFromUri(filePath.getValue(), context);
     }
 }

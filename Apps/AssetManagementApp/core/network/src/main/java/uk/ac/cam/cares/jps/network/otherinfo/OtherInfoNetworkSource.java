@@ -24,6 +24,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import uk.ac.cam.cares.jps.model.building.Element;
+import uk.ac.cam.cares.jps.model.building.Room;
 import uk.ac.cam.cares.jps.model.building.Workspace;
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.NetworkConfiguration;
@@ -53,22 +55,24 @@ public class OtherInfoNetworkSource {
 
         Response.Listener<String> onSuccess = response -> {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<HashMap<String, String>>>() {}.getType();
+            Type listMapType = new TypeToken<List<HashMap<String, String>>>() {}.getType();
+            Type listStringType = new TypeToken<List<String>>() {}.getType();
             try {
                 OtherInfoResponse result = new OtherInfoResponse();
                 JSONObject resultJson = new JSONObject(response).getJSONObject("result");
-                // todo: check type related code after agent is done
-//                result.otherInfo.put(TYPE, keyConversion(gson.fromJson(resultJson.getJSONArray("Type").toString(), type), TYPE));
-                result.otherInfo.put(ASSIGNED_TO, keyConversion(gson.fromJson(resultJson.getJSONArray("User").toString(), type), ASSIGNED_TO));
-                result.otherInfo.put(VENDOR, keyConversion(gson.fromJson(resultJson.getJSONArray("Supplier").toString(), type), SUPPLIER_SECTION_TITLE));
-                result.otherInfo.put(MANUFACTURER, keyConversion(gson.fromJson(resultJson.getJSONArray("Manufacturer").toString(), type), MANUFACTURER));
-                result.otherInfo.put(INVOICE_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("Invoice").toString(), type), INVOICE_NUMBER));
-                result.otherInfo.put(PURCHASE_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseOrder").toString(), type), PURCHASE_ORDER_NUMBER));
-                result.otherInfo.put(DELIVERY_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("DeliveryOrder").toString(), type), DELIVERY_ORDER_NUMBER));
-//                result.otherInfo.put(PURCHASE_REQUEST_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseRequest").toString(), type), PURCHASE_REQUEST_NUMBER));
+
+                result.otherInfo.put(TYPE, listToMapWithRandomKey(gson.fromJson(resultJson.getJSONArray("Type").toString(), listStringType)));
+                result.otherInfo.put(ASSIGNED_TO, keyConversion(gson.fromJson(resultJson.getJSONArray("User").toString(), listMapType), ASSIGNED_TO));
+                result.otherInfo.put(VENDOR, keyConversion(gson.fromJson(resultJson.getJSONArray("Supplier").toString(), listMapType), SUPPLIER_SECTION_TITLE));
+                result.otherInfo.put(MANUFACTURER, keyConversion(gson.fromJson(resultJson.getJSONArray("Manufacturer").toString(), listMapType), MANUFACTURER));
+                result.otherInfo.put(INVOICE_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("Invoice").toString(), listMapType), INVOICE_NUMBER));
+                result.otherInfo.put(PURCHASE_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseOrder").toString(), listMapType), PURCHASE_ORDER_NUMBER));
+                result.otherInfo.put(DELIVERY_ORDER_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("DeliveryOrder").toString(), listMapType), DELIVERY_ORDER_NUMBER));
+//                result.otherInfo.put(PURCHASE_REQUEST_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseRequest").toString(), listMapType), PURCHASE_REQUEST_NUMBER));
 
                 // todo: items should be retrieved with a separate call after docs are selected
-                result.workspaces  = processElement(gson.fromJson(resultJson.getJSONArray("Element").toString(), type));
+                result.workspaces  = processElement(gson.fromJson(resultJson.getJSONArray("Element").toString(), listMapType));
+                result.rooms  = processWorkspace(gson.fromJson(resultJson.getJSONArray("Workspace").toString(), listMapType), result.workspaces);
 
                 onSuccessUpper.onResponse(result);
             } catch (JSONException e) {
@@ -140,22 +144,35 @@ public class OtherInfoNetworkSource {
         return result;
     }
 
-    private List<Workspace> processElement(List<HashMap<String, String>> rawInput) {
-        HashMap<String, List<String>> workspaceToElement = new HashMap<>();
+    private HashMap<String, String> listToMapWithRandomKey(List<String> list) {
+        HashMap<String, String> result = new HashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            result.put("" + i, list.get(i));
+        }
+        return result;
+    }
+
+    private HashMap<String, Workspace> processElement(List<HashMap<String, String>> rawInput) {
+        HashMap<String, Workspace> workspaceToElement = new HashMap<>();
         for (HashMap<String, String> obj : rawInput) {
-            String iri = obj.get("x0");
-            String val = obj.get("x1"); // todo: need to update to id once the agent is done
-
-            workspaceToElement.computeIfAbsent(iri, k -> new ArrayList<>()).add(val);
+            String workspaceIRI = obj.get("workspaceIRI");
+            String workspaceID = obj.get("workspaceID");
+            String assetIRI = obj.get("assetIRI");
+            String assetID = obj.get("assetID");
+            workspaceToElement.computeIfAbsent(workspaceIRI, k -> new Workspace(workspaceIRI, workspaceID)).addToSublist(new Element(assetIRI, assetID));
         }
+        return workspaceToElement;
+    }
 
-        List<Workspace> workspaces = new ArrayList<>();
-        for (String iri : workspaceToElement.keySet()) {
-            Workspace temp = new Workspace(iri);
-            temp.constructElements(workspaceToElement.get(iri));
-            workspaces.add(temp);
+    private HashMap<String, Room> processWorkspace(List<HashMap<String, String>> rawInput, HashMap<String, Workspace> workspaces) {
+        HashMap<String, Room> workspaceToElement = new HashMap<>();
+        for (HashMap<String, String> obj : rawInput) {
+            String workspaceIRI = obj.get("workspaceIRI");
+            String roomIRI = obj.get("roomIRI");
+            String roomName = obj.get("roomName");
+            workspaceToElement.computeIfAbsent(roomIRI, k -> new Room(roomIRI, roomName)).addToSublist(workspaces.get(workspaceIRI));
         }
-        return workspaces;
+        return workspaceToElement;
     }
 
 }

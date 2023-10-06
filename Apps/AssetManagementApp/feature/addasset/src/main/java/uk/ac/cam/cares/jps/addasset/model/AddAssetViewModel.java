@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.addasset.model;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
 
+import android.content.Context;
+
 import androidx.lifecycle.ViewModel;
 
 import org.apache.log4j.BasicConfigurator;
@@ -44,9 +46,9 @@ public class AddAssetViewModel extends ViewModel {
 
     // use field keys to define each field view's appearance and behaviour
     private final List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, BUILDING);
-    private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, ITEM_NAME, SERVICE_CODE, SERVICE_CATEGORY);
+    private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, SERVICE_CODE, SERVICE_CATEGORY);
     private final List<String> locationFieldKeys = Arrays.asList(BUILDING, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
-    private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_FILE_URI, MANUAL_FILE_URI);
+    private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_FILE, MANUAL_FILE);
     private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
     private final List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
     private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION);
@@ -65,10 +67,8 @@ public class AddAssetViewModel extends ViewModel {
         inputFieldNamesBySection.put(SUPPLIER_SECTION_TITLE, initFields(supplierInfoOrder));
         inputFieldNamesBySection.put(PURCHASE_SECTION_TITLE, initFields(docLineInfoOrder));
         inputFieldNamesBySection.put(ITEM_SECTION_TITLE, initFields(itemInfoOrder));
-
-        // assume only 1 spec sheet and 1 manual
-        inputFieldNamesBySection.put(SPEC_SHEET_SECTION_TITLE, initFields(Arrays.asList(SPEC_SHEET_PAGE_NO, SPEC_SHEET_FILE_URI)));
-        inputFieldNamesBySection.put(MANUAL_SECTION_TITLE, initFields(Arrays.asList(MANUAL_URL, MANUAL_FILE_URI)));
+        inputFieldNamesBySection.put(SPEC_SHEET_SECTION_TITLE, initFields(specSheetInfoOrder));
+        inputFieldNamesBySection.put(MANUAL_SECTION_TITLE, initFields(manualInfoOrder));
     }
 
     private List<String> initFields(List<String> fieldKeys) {
@@ -101,9 +101,6 @@ public class AddAssetViewModel extends ViewModel {
     public void requestAllDropDownOptionsFromRepository() {
         Map<String, RepositoryCallback<Map<String, String>>> callbacks = new HashMap<>();
         for (String key : otherInfoFromAssetAgentKeys) {
-            if (key.equals(BUILDING)) {
-                continue;
-            }
             callbacks.put(key, getRepositoryCallbackForKey(key));
         }
 
@@ -163,11 +160,17 @@ public class AddAssetViewModel extends ViewModel {
         return hasError;
     }
 
-    public AssetInfo getAssetInfo() {
+    public AssetInfo getAssetInfo(Context context) {
         AssetInfo assetInfo = new AssetInfo();
         for (AssetPropertyDataModel field : inputFieldModels.values()) {
             if (field instanceof DataFileDataModel) {
-                // todo: data sheet data
+                assetInfo.addProperties(field.getFieldName(), ((DataFileDataModel) field).getFieldValue(context));
+
+                if (field.getFieldName().equals(SPEC_SHEET_FILE)) {
+                    assetInfo.addProperties(SPEC_SHEET_FILE_URI, ((DataFileDataModel) field).getFilePath().toString());
+                } else if (field.getFieldName().equals(MANUAL_FILE)) {
+                    assetInfo.addProperties(MANUAL_FILE_URI, ((DataFileDataModel) field).getFilePath().toString());
+                }
             } else {
                 assetInfo.addProperties(field.getFieldName(), field.getFieldValue());
             }
