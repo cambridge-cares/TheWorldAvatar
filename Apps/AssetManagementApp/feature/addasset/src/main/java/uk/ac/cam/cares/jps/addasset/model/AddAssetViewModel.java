@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,7 +20,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.model.AssetInfo;
 import uk.ac.cam.cares.jps.data.otherinfo.OtherInfoRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
-import uk.ac.cam.cares.jps.model.building.Building;
 import uk.ac.cam.cares.jps.model.building.Instance;
 
 @HiltViewModel
@@ -48,8 +46,8 @@ public class AddAssetViewModel extends ViewModel {
     private final List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, BUILDING);
     private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, ITEM_NAME, SERVICE_CODE, SERVICE_CATEGORY);
     private final List<String> locationFieldKeys = Arrays.asList(BUILDING, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
-    private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_SECTION_TITLE, MANUAL_SECTION_TITLE);
-    private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, ASSIGNED_TO, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
+    private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_FILE_URI, MANUAL_FILE_URI);
+    private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
     private final List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
     private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION);
 
@@ -69,8 +67,8 @@ public class AddAssetViewModel extends ViewModel {
         inputFieldNamesBySection.put(ITEM_SECTION_TITLE, initFields(itemInfoOrder));
 
         // assume only 1 spec sheet and 1 manual
-        inputFieldNamesBySection.put(SPEC_SHEET_SECTION_TITLE, initFields(Collections.singletonList(SPEC_SHEET_SECTION_TITLE)));
-        inputFieldNamesBySection.put(MANUAL_SECTION_TITLE, initFields(Collections.singletonList(MANUAL_SECTION_TITLE)));
+        inputFieldNamesBySection.put(SPEC_SHEET_SECTION_TITLE, initFields(Arrays.asList(SPEC_SHEET_PAGE_NO, SPEC_SHEET_FILE_URI)));
+        inputFieldNamesBySection.put(MANUAL_SECTION_TITLE, initFields(Arrays.asList(MANUAL_URL, MANUAL_FILE_URI)));
     }
 
     private List<String> initFields(List<String> fieldKeys) {
@@ -84,7 +82,7 @@ public class AddAssetViewModel extends ViewModel {
             if (dropDownFieldKeys.contains(key)) {
                 assetPropertyDataModel = new DropDownDataModel(key);
             } else if (dataSheetFieldKeys.contains(key)) {
-                assetPropertyDataModel = new DataSheetDataModel(key);
+                assetPropertyDataModel = new DataFileDataModel(key);
             } else if (locationFieldKeys.contains(key)) {
                 assetPropertyDataModel = new LocationDropDownDataModel(key);
             } else {
@@ -109,7 +107,6 @@ public class AddAssetViewModel extends ViewModel {
             callbacks.put(key, getRepositoryCallbackForKey(key));
         }
 
-        // todo: finish the ui callback
         RepositoryCallback<List<Instance>> locationCallback = getLocationCallback();
         otherInfoRepository.getAllOtherInfo(callbacks, locationCallback);
     }
@@ -166,15 +163,11 @@ public class AddAssetViewModel extends ViewModel {
         return hasError;
     }
 
-    // todo: show summary
-
     public AssetInfo getAssetInfo() {
         AssetInfo assetInfo = new AssetInfo();
         for (AssetPropertyDataModel field : inputFieldModels.values()) {
-            if (field instanceof DropDownDataModel) {
-                assetInfo.addProperties(field.getFieldName(), ((DropDownDataModel) field).getValueIri());
-            } else if (field instanceof DataSheetDataModel) {
-                // todo
+            if (field instanceof DataFileDataModel) {
+                // todo: data sheet data
             } else {
                 assetInfo.addProperties(field.getFieldName(), field.getFieldValue());
             }

@@ -13,12 +13,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.UndeliverableException;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.plugins.RxJavaPlugins;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.datastore.OtherInfoLocalSource;
 import uk.ac.cam.cares.jps.model.AssetInfo;
@@ -92,45 +98,55 @@ public class OtherInfoRepository {
     }
 
     private void retrieveFromNetworkSource(Map<String, RepositoryCallback<Map<String, String>>> callbacks, RepositoryCallback<List<Instance>> locationCallback) {
+            RxJavaPlugins.setErrorHandler(throwable -> {
+                if (throwable instanceof UndeliverableException) {
+                    LOGGER.info("Both network call failed. Ignore this RxJava exception.");
+                } else {
+                    if (Thread.currentThread().getUncaughtExceptionHandler() != null) {
+                        Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), throwable);
+                    }
+                }
+            });
 
-        Completable otherInfoNetworkCall = Completable.create(emitter -> otherInfoNetworkSource.getOtherInfo(response -> {
-            otherInfoOnSuccess(response, callbacks);
-            emitter.onComplete();
-        }, error -> {
-            callbacks.values().forEach(callback -> callback.onFailure(error));
-            LOGGER.error(error.getMessage());
-            emitter.onError(error);
-        }));
 
-        Completable bmsNetworkCall = Completable.create(emitter -> bmsNetworkSource.getBuildingInfo(response -> {
-            buildings = response;
-            emitter.onComplete();
-        }, error -> {
-            locationCallback.onFailure(error);
-            LOGGER.error(error.getMessage());
-            emitter.onError(error);
-        }));
+            Completable otherInfoNetworkCall = Completable.create(emitter -> otherInfoNetworkSource.getOtherInfo(response -> {
+                otherInfoOnSuccess(response, callbacks);
+                emitter.onComplete();
+            }, error -> {
+                callbacks.values().forEach(callback -> callback.onFailure(error));
+                LOGGER.error(error.getMessage());
+                emitter.onError(error);
+            }));
 
-        Completable combinedCompletable = Completable.mergeArray(otherInfoNetworkCall, bmsNetworkCall);
-        Disposable disposable = combinedCompletable.subscribe(
-                () -> {
-                    // merge location info from both request
-                    // todo: link roomsWithWorkspaces, workspacesWithElements and buildings
+            Completable bmsNetworkCall = Completable.create(emitter -> bmsNetworkSource.getBuildingInfo(response -> {
+                buildings = response;
+                emitter.onComplete();
+            }, error -> {
+                LOGGER.error(error.getMessage());
+                emitter.onError(new Throwable(error));
+            }));
+
+            Completable combinedCompletable = Completable.mergeArray(otherInfoNetworkCall, bmsNetworkCall);
+            Disposable disposable = combinedCompletable.subscribe(
+                    () -> {
+                        // merge location info from both request
+                        // todo: link roomsWithWorkspaces, workspacesWithElements and buildings
 //                    for (Workspace workspace : workspacesWithElements) {
 //
 //                    }
 
-                    // todo: store in local storage
+                        // todo: store in local storage
 
-                    // todo: callback to UI
-                    locationCallback.onSuccess(buildings);
+                        // todo: callback to UI
+                        locationCallback.onSuccess(buildings);
 
-                },
-                error -> {
-                    LOGGER.error(error.getMessage());
-                    locationCallback.onFailure(error);
-                }
-        );
+                    },
+                    error -> {
+                        LOGGER.error(error.getMessage());
+                        locationCallback.onFailure(error);
+                    }
+            );
+
     }
 
     private void retrieveFromLocalSource(Map<String, RepositoryCallback<Map<String, String>>> callbacks, String key) {
@@ -158,5 +174,25 @@ public class OtherInfoRepository {
             results.put(map.get(key), key);
         }
         return results;
+    }
+
+    private static abstract class Result {
+        private Result() { }
+
+        public static final class Complete extends Result {
+            private Complete() { }
+        }
+
+        public static final class Error extends Result {
+            private final Throwable throwable;
+
+            public Error(Throwable throwable) {
+                this.throwable = throwable;
+            }
+
+            public Throwable getThrowable() {
+                return throwable;
+            }
+        }
     }
 }

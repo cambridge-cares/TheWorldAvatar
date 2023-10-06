@@ -10,4 +10,7 @@
     <string name="network_error">Not able to create new asset, please check your network connection and try again.</string>
     <string name="edit_asset">Edit Asset</string>
     <string name="asset_is_added_the_new_qr_code_has_been_sent_to_your_email_for_printing">Asset is added. QR code is ready to be printed from the home page.</string>
+    <string name="file_name">File Name</string>
+    <string name="storage_permission_granted">Storage permission granted.</string>
+    <string name="failed_to_get_storage_permission">Failed to get storage permission.</string>
 </resources>

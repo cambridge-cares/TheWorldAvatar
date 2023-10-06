@@ -29,6 +29,7 @@ public class DropDownDataModel extends AssetPropertyDataModel{
         return mutableLabelsToIri;
     }
 
+    // NOTICE: KEEP IT FOR RETRIEVE ITEMS BY DOC IRIS
     public void constructIriToLabel() {
         iriToLabel.clear();
         for (Map.Entry<String, String> entry : mutableLabelsToIri.getValue().entrySet()) {

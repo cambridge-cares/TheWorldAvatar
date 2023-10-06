@@ -50,6 +50,7 @@ dependencies {
     implementation project(path: ':feature:qrprint')
     implementation project(path: ':core:network')
     implementation project(path: ':core:notification')
+    implementation project(path: ':core:utils')
     implementation project(path: ':core:ui')
 
     testImplementation 'junit:junit:4.13.2'

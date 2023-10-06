@@ -4,11 +4,16 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.BUILDING;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.FACILITY;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.LOCATED_IN;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.LOCATION_SECTION_TITLE;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_FILE_URI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_SECTION_TITLE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SEAT_LOCATION;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_FILE_URI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_SECTION_TITLE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.STORED_IN;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,7 +24,10 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -35,19 +43,27 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
 import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
+import uk.ac.cam.cares.jps.addasset.model.DataFileDataModel;
 import uk.ac.cam.cares.jps.addasset.model.DropDownDataModel;
 import uk.ac.cam.cares.jps.addasset.model.LocationDropDownDataModel;
-import uk.ac.cam.cares.jps.addasset.view.DataSheetItemView;
+import uk.ac.cam.cares.jps.addasset.view.DataFileItemView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyAutoCompleteTextView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyBaseInputTextView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyGeneralInputTextView;
 import uk.ac.cam.cares.jps.model.building.Instance;
+import uk.ac.cam.cares.jps.utils.FileUtils;
 
 @AndroidEntryPoint
 public class TabFragment extends Fragment {
     AddAssetViewModel viewModel;
     List<String> sections;
     private Logger LOGGER = Logger.getLogger(TabFragment.class);
+
+    private final int OPEN_SPEC_SHEET_REQUEST = 98754;
+    private final int OPEN_MANUAL_REQUEST = 78945;
+    private final int PERMISSION_REQUEST = 15678;
+
+    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     TabFragment(List<String> sections) {
         this.sections = sections;
@@ -81,6 +97,16 @@ public class TabFragment extends Fragment {
         }
 
         scrollView.addView(root);
+
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                Toast.makeText(requireContext(), R.string.storage_permission_granted,Toast.LENGTH_SHORT)
+                        .show();
+            } else {
+                Toast.makeText(requireContext(), R.string.failed_to_get_storage_permission,
+                        Toast.LENGTH_LONG).show();
+            }
+        });
         return scrollView;
     }
 
@@ -224,12 +250,82 @@ public class TabFragment extends Fragment {
 
         LinearLayout linearLayout = sectionView.findViewById(R.id.linear_layout);
         for (String fieldName : viewModel.getInputFieldNamesBySection().get(section)) {
-            View dataSheetItem = new DataSheetItemView(requireContext(), viewModel.getInputFieldModels().get(fieldName));
-            linearLayout.addView(dataSheetItem);
+            AssetPropertyDataModel property = viewModel.getInputFieldModels().get(fieldName);
+            if (property instanceof DataFileDataModel) {
+                DataFileItemView dataSheetItem = new DataFileItemView(requireContext(), (DataFileDataModel) property);
+                ((DataFileDataModel) property).getMutableFilePath().observe(getViewLifecycleOwner(), uri -> {
+                    if (uri.toString().isEmpty()) {
+                        return;
+                    }
+                    dataSheetItem.setFileNameTextView(FileUtils.getFileNameFromUri(uri, requireContext()));
+                });
+                dataSheetItem.setOnButtonClickListener(getFilePickerListener((DataFileDataModel) property));
+                linearLayout.addView(dataSheetItem);
+            } else {
+                PropertyBaseInputTextView inputText = new PropertyGeneralInputTextView(requireContext(), property);
+                linearLayout.addView(inputText);
+            }
         }
         return sectionView;
     }
 
+    private View.OnClickListener getFilePickerListener(DataFileDataModel property) {
+        return view -> checkStoragePermission(property);
+    }
+
+    private void checkStoragePermission(DataFileDataModel property) {
+        if (property.getFieldName().equals(SPEC_SHEET_FILE_URI)) {
+            startFilePicker(OPEN_SPEC_SHEET_REQUEST);
+        } else if (property.getFieldName().equals(MANUAL_FILE_URI)) {
+            startFilePicker(OPEN_MANUAL_REQUEST);
+        }
+
+//        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+//                == PackageManager.PERMISSION_GRANTED) {
+//            if (property.getFieldName().equals(SPEC_SHEET_FILE_URI)) {
+//                startFilePicker(property, OPEN_SPEC_SHEET_REQUEST);
+//            } else if (property.getFieldName().equals(MANUAL_FILE_URI)) {
+//                startFilePicker(property, OPEN_MANUAL_REQUEST);
+//            }
+//
+//        } else {
+//            // Permission not granted, request it
+//            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+//        }
+    }
+
+    private void startFilePicker(int requestCode) {
+
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent result) {
+        super.onActivityResult(requestCode, resultCode, result);
+        if (requestCode == OPEN_SPEC_SHEET_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (result.getData() != null) {
+                    // Get the selected file's URI
+                    Uri selectedFileUri = result.getData();
+                    LOGGER.info("Selected spec sheet URI: " + selectedFileUri.toString());
+                    ((DataFileDataModel) viewModel.getInputFieldModels().get(SPEC_SHEET_FILE_URI)).setFilePath(selectedFileUri);
+                }
+            }
+        } else if (requestCode == OPEN_MANUAL_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (result.getData() != null) {
+                    // Get the selected file's URI
+                    Uri selectedFileUri = result.getData();
+                    LOGGER.info("Selected spec sheet URI: " + selectedFileUri.toString());
+                    ((DataFileDataModel) viewModel.getInputFieldModels().get(MANUAL_FILE_URI)).setFilePath(selectedFileUri);
+                }
+            }
+        }
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

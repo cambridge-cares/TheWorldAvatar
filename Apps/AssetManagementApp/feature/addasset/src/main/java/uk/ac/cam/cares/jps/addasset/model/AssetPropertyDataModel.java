@@ -7,12 +7,11 @@ public class AssetPropertyDataModel {
     String fieldValue = "";
 
     String fieldName = "";
-    // ui related
 
+    // ui related
     boolean isRequired = false;
 
     boolean isMultiLine = false;
-    String helperText = "";
 
     MutableLiveData<Boolean> isMissingField = new MutableLiveData<>();
 
@@ -30,10 +29,6 @@ public class AssetPropertyDataModel {
 
     public boolean isRequired() {
         return isRequired;
-    }
-
-    public String getHelperText() {
-        return helperText;
     }
 
     public void setFieldValue(String fieldValue) {

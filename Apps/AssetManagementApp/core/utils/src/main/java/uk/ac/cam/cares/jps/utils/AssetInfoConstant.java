@@ -47,7 +47,14 @@ public class AssetInfoConstant {
 
     // DATASHEET KEYS
     static public final String SPEC_SHEET_SECTION_TITLE = "Spec Sheet";
+    static public final String SPEC_SHEET_PAGE_NO = "Spec Sheet Page No.";
+    static public final String SPEC_SHEET = "Spec Sheet";
+    static public final String SPEC_SHEET_FILE_URI = "Spec Sheet File Uri";
+
     static public final String MANUAL_SECTION_TITLE = "Manual";
+    static public final String MANUAL_URL = "Manual URL";
+    static public final String MANUAL = "Manual";
+    static public final String MANUAL_FILE_URI = "Manual File Uri";
 
     // MAINTENANCE KEYS
     static public final String MAINTENANCE_SECTION_TITLE = "Maintenance";
@@ -65,6 +72,9 @@ public class AssetInfoConstant {
     static public final List<String> itemInfoOrder = new ArrayList<>(Arrays.asList(ITEM_NAME, ITEM_DESCRIPTION, PURCHASE_PRICE, PRICE_UNIT, SERVICE_CATEGORY, SERVICE_CODE));
     static public final List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER));
     static public final List<String> maintenanceInfoOrder = new ArrayList<>(Arrays.asList(MAINTENANCE_SCHEDULE_FOR, MAINTENANCE_MAINTAINED_BY, MAINTENANCE_INTERVAL));
+    static public final List<String> manualInfoOrder = new ArrayList<>(Arrays.asList(MANUAL, MANUAL_URL));
+    static public final List<String> specSheetInfoOrder = new ArrayList<>(Arrays.asList(SPEC_SHEET, SPEC_SHEET_PAGE_NO));
+
 
 //    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, BUILDING, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
     static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER);
