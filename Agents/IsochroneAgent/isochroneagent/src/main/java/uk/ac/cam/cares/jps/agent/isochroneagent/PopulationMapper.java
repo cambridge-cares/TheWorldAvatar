@@ -2,12 +2,12 @@ package uk.ac.cam.cares.jps.agent.isochroneagent;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class PopulationMapper {
 

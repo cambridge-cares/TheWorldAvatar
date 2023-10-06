@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.isochroneagent;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
-import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 public class EndpointConfig {
@@ -10,12 +9,10 @@ public class EndpointConfig {
     private String dburl;
     private String dbUser;
     private String dbPassword;
-
     private String kgurl;
     private String kguser;
     private String kgpassword;
 
-    private String ontopurl;
 
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
@@ -29,9 +26,6 @@ public class EndpointConfig {
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
 
-        OntopEndpointConfig ontopEndpointConfig = containerClient.readEndpointConfig("ontop",
-                OntopEndpointConfig.class);
-        this.ontopurl = ontopEndpointConfig.getUrl();
     }
 
     public String getDbUrl(String dbName) {
@@ -50,7 +44,4 @@ public class EndpointConfig {
         return this.kgurl;
     }
 
-    public String getOntopurl() {
-        return this.ontopurl;
-    }
 }

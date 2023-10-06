@@ -1,26 +1,14 @@
 package uk.ac.cam.cares.jps.agent.isochroneagent;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.postgis.PGgeometry;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.agent.isochroneagent.RouteSegmentization;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class IsochroneGenerator {
     public void generateIsochrone(RemoteRDBStoreClient remoteRDBStoreClient, int upperTimeLimit, int timeInterval, Map<String,String> EdgesTableSQLMap ){
