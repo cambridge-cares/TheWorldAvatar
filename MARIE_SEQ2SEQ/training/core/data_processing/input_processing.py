@@ -1,7 +1,8 @@
+from core.constants import FAMILY_CAUSAL
 from core.data_processing.utils import replace_multi
 
 
-LLAMA_INPUT_TEMPLATE = 'Translate the following input query to SPARQL.\n\n### Input:\n{question}\n\n### Response:\n'
+CAUSALLM_INPUT_TEMPLATE = 'Translate the following input query to SPARQL.\n\n### Input:\n{question}\n\n### Response:\n'
 
 T5_INPUT_PREFIX = "translate to SPARQL: "
 T5_INPUT_ENCODINGS = {
@@ -25,6 +26,6 @@ def preprocess_input(text: str, model_family: str):
         text = T5_INPUT_PREFIX + text
     elif model_family == "mt0":
         text = T5_INPUT_PREFIX + text
-    elif model_family == "llama":
-        text = LLAMA_INPUT_TEMPLATE.format(question=text)
+    elif model_family in FAMILY_CAUSAL:
+        text = CAUSALLM_INPUT_TEMPLATE.format(question=text)
     return text
