@@ -96,7 +96,7 @@ public class FileReader {
         }
     }
 
-    /** Retrieve POI locations from SPARQL
+    /** Retrieve POI locations from knowledge graph by executing the input SPARQL queries.
      * @param storeClient
      * @param POImap
      * @return

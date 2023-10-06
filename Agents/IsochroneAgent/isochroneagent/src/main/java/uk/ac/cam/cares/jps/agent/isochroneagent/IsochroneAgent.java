@@ -1,44 +1,50 @@
 package uk.ac.cam.cares.jps.agent.isochroneagent;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import javax.servlet.annotation.WebServlet;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.http.impl.conn.LoggingSessionOutputBuffer;
+import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 @WebServlet(urlPatterns = "/update")
 
 public class IsochroneAgent extends JPSAgent {
+    
+    private static String isochroneFunction = null; 
     private static final String PROPETIES_PATH = "/inputs/config.properties";
-    private static final Path POI_PATH = Path.of("/inputs/15MSC/POIqueries");
-    private static final Path EDGESTABLESQL_PATH = Path.of("/inputs/15MSC/edgesSQLTable");
-    private static final Path obdaFile = Path.of("/inputs/15MSC/OBDAmapping/building_location.obda");
+    private final String FUNCTION_KEY = "function";
 
-
+    private static final Logger LOGGER = LogManager.getLogger(IsochroneAgent.class);
+    
     private EndpointConfig endpointConfig = new EndpointConfig();
-
     private String dbName;
     private String kgEndpoint;
-
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
     private RemoteStoreClient ontopStoreClient;
-
     public int timeThreshold;
     public int timeInterval;
     public double segmentization_length;
@@ -95,6 +101,20 @@ public class IsochroneAgent extends JPSAgent {
      */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
+
+        if (!validateInput(requestParams)) {
+            throw new JPSRuntimeException("Unable to validate request sent to the agent.");
+        }
+
+        this.isochroneFunction = requestParams.getString(FUNCTION_KEY);
+        LOGGER.info("Successfully set isochroneFunction to " + isochroneFunction);
+
+        JSONObject response = new JSONObject();
+        response.put("message", "Successfully set isochroneFunction to " + isochroneFunction);
+
+        Path POI_PATH = Path.of("/inputs/"+isochroneFunction+"/POIqueries");
+        Path EDGESTABLESQL_PATH = Path.of("/inputs/"+isochroneFunction+"/edgesSQLTable");
+        Path obdaFile = Path.of("/inputs/"+isochroneFunction+"/OBDAmapping/isochrone.obda");
         try {
             init();
             // Read SPARQL and SQL files. 
@@ -133,18 +153,26 @@ public class IsochroneAgent extends JPSAgent {
             // geoServerClient.createPostGISLayer(workspaceName, dbName,"isochrone_aggregated" ,geoServerVectorSettings);
 
             //Upload Isochrone Ontop mapping
-            try {
-                OntopClient ontopClient = OntopClient.getInstance();
-                ontopClient.updateOBDA(obdaFile);
-            } catch (Exception e) {
-                System.out.println("Could not retrieve virtual sensor ontop.obda file.");
-            }
+            // try {
+            //     OntopClient ontopClient = OntopClient.getInstance();
+            //     ontopClient.updateOBDA(obdaFile);
+            // } catch (Exception e) {
+            //     System.out.println("Could not retrieve isochrone .obda file.");
+            // }
 
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-        return requestParams;
+        return response;
     }
-
+    
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (!requestParams.has(FUNCTION_KEY)) {
+            LOGGER.error("Function is missing.");
+            return false;
+        }
+        return true;
+    }
 }
