@@ -84,19 +84,17 @@ def get_sft_trainer(
     train_dataset = Dataset.from_json(data_args.train_data_path)
     eval_dataset = Dataset.from_json(data_args.eval_data_path)
 
-    # template = LLAMA_TEMPLATE
-    template = "{question}\n\n###\n\n{sparql_query}"
-
     def formatting_func(examples):
         output_texts = []
         for i in range(len(examples["question"])):
-            text = template.format(
-                question=examples["question"][i],
-                sparql_query=preprocess_output(
-                    examples["sparql_query_compact"][i],
-                    model_family=model_args.model_family,
-                ),
+            input_preprocessed = preprocess_input(
+                examples["question"][i], model_family=model_args.model_family
             )
+            output_preprocessed = preprocess_output(
+                examples["sparql_query_compact"][i],
+                model_family=model_args.model_family,
+            )
+            text = input_preprocessed + output_preprocessed
             output_texts.append(text)
         return output_texts
 
