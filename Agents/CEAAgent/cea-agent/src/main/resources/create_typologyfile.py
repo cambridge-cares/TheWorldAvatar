@@ -79,11 +79,11 @@ def create_typologyfile(zone_geometry_path, data, typologyfile):
     ind = 0
 
     for building in data:
-        num = len(data["geometry"])
-        usage = data["usage"]
+        num = len(building["geometry"])
+        usage = building["usage"]
 
         # assign the same usages and weights for the different geometries that belong to the same building
-        for in range(num):
+        for i in range(num):
             j = 0
 
             # iterate through the different usages and their respective weighting
@@ -103,11 +103,12 @@ def main(argv):
     zone_geometry_path = argv.file_location + os.sep + "zone.shp"
 
     with open(argv.data_file_location, "r") as f:
-        dataString = f.read[0]
-    data_dictionary = json.loads(dataString)
+        dataString = f.read()
+
+    data_list = json.loads(dataString)
 
     try:
-        create_typologyfile(zone_geometry_path, data_dictionary, typologyfile)
+        create_typologyfile(zone_geometry_path, data_list, typologyfile)
     except IOError:
         print('Error while processing file: ' + typologyfile)
 
