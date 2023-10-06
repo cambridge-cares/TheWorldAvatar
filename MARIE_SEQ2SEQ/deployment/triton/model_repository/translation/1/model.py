@@ -1,12 +1,8 @@
-import os
-from typing import List
-
-
-import torch
 import numpy as np
 import triton_python_backend_utils as pb_utils
 from transformers import AutoTokenizer
 from transformers.generation.configuration_utils import GenerationConfig
+from transformers.utils.hub import cached_file
 from optimum.onnxruntime import ORTModelForSeq2SeqLM
 from optimum.utils.save_utils import maybe_load_preprocessors
 
@@ -22,7 +18,7 @@ def replace_multi(text: str, mapper: dict):
 
 
 class TritonPythonModel:
-    MODEL_PATH = "/models/translation/1/model"
+    MODEL_PATH = "picas9dan/20230924_1_8bit"
     T5_INPUT_PREFIX = "translate to SPARQL: "
     T5_INPUT_ENCODINGS = {
         "<": "&lt;",
@@ -37,9 +33,9 @@ class TritonPythonModel:
     }
 
     def _load_model(self):
-        encoder_path = os.path.join(self.MODEL_PATH, "encoder_model_quantized.onnx")
-        decoder_path = os.path.join(self.MODEL_PATH, "decoder_model_quantized.onnx")
-        decoder_wp_path = os.path.join(self.MODEL_PATH, "decoder_with_past_model_quantized.onnx")
+        encoder_path = cached_file(self.MODEL_PATH, "encoder_model_quantized.onnx")
+        decoder_path = cached_file(self.MODEL_PATH, "decoder_model_quantized.onnx")
+        decoder_wp_path = cached_file(self.MODEL_PATH, "decoder_with_past_model_quantized.onnx")
 
         (
             encoder_session,
