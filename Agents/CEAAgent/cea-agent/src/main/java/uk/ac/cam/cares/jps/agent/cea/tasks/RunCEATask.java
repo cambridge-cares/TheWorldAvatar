@@ -341,7 +341,7 @@ public class RunCEATask implements Runnable {
                 // write building geometry and usage data to temporary text file
                 parseBuildingData(this.inputs, strTmp, data_path);
                 // write surrounding buildings' geometry data to temporary text file
-                parseSurroundings(this.metaData.getSurrounding(), strTmp, data_path);
+                parseSurroundings(this.metaData.getSurrounding(), strTmp, surroundings_path);
                 // write weather data to temporary text file
                 parseWeather(this.metaData.getWeatherTimes(), this.metaData.getWeather(), this.metaData.getWeatherMetaData(), weatherTimes_path, weatherData_path);
                 // convert terrain bytes data to TIFF
