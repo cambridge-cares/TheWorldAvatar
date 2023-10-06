@@ -68,6 +68,26 @@ public class AssetKGInterface {
         assetRetriever =  new AssetRetriever (storeClientAsset, storeClientDevice, storeClientPurchDoc, endpointAsset, endpointDevice, endpointPurchDoc);
     }
 
+    public AssetKGInterface(String kgEndpointAsset, String kgEndpointDevice, String kgEndpointPurchDoc, String username, String password) {
+        endpointAsset = kgEndpointAsset;
+        endpointDevice = kgEndpointDevice;
+        endpointPurchDoc = kgEndpointPurchDoc;
+
+        storeClientAsset = new RemoteStoreClient(kgEndpointAsset, kgEndpointAsset);
+        storeClientDevice = new RemoteStoreClient(kgEndpointDevice, kgEndpointDevice);
+        storeClientPurchDoc = new RemoteStoreClient(kgEndpointPurchDoc, kgEndpointPurchDoc);
+
+        storeClientAsset.setUser(username);
+        storeClientAsset.setPassword(password);
+        storeClientDevice.setUser(username);
+        storeClientDevice.setPassword(password);
+        storeClientPurchDoc.setUser(username);
+        storeClientPurchDoc.setPassword(password);
+            
+        existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientDevice, storeClientPurchDoc);
+        assetRetriever =  new AssetRetriever (storeClientAsset, storeClientDevice, storeClientPurchDoc, endpointAsset, endpointDevice, endpointPurchDoc);
+    }
+
     /**
      * =============================================================================================================================================================
      * INSTANTIATE

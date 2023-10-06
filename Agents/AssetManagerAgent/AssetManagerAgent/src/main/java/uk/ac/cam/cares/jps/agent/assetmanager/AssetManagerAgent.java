@@ -52,6 +52,7 @@ public class AssetManagerAgent extends JPSAgent{
     public String ENDPOINT_PRINTER;
     public Double TARGET_QR_SIZE;
     public String URL_MANUAL;
+    public String KG_USERNAME, KG_PASSWORD;
 
     /**
      * Logger for reporting info/errors.
@@ -103,7 +104,17 @@ public class AssetManagerAgent extends JPSAgent{
             }
             
             try{
-                instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC);
+                if (KG_USERNAME.isBlank() && KG_PASSWORD.isBlank()){
+                    instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC);
+                }
+                else if(!(KG_USERNAME.isBlank() && KG_PASSWORD.isBlank())){
+                    instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC, KG_USERNAME, KG_PASSWORD);
+                }
+                else{
+                    throw new JPSRuntimeException("Either username or password for blazegraph authentication is empty."+
+                    " Please ensure eiher both field to be filled when auth is needed or both are empty when not.");
+                }
+                
             } catch(Exception e) {
 
             }
@@ -182,6 +193,8 @@ public class AssetManagerAgent extends JPSAgent{
                 ENDPOINT_KG_ASSET = prop.getProperty("endpoint.kg.asset");
                 ENDPOINT_KG_DEVICE= prop.getProperty("endpoint.kg.device");
                 ENDPOINT_KG_PURCHASEDOC  = prop.getProperty("endpoint.kg.purchasedocs");
+                KG_USERNAME = prop.getProperty("auth.kg.user");
+                KG_PASSWORD = prop.getProperty("auth.kg.pass");
                 ENDPOINT_PRINTER = prop.getProperty("endpoint.printer");
                 TARGET_QR_SIZE = Double.parseDouble(prop.getProperty("target_qr_size"));
                 URL_MANUAL = prop.getProperty("url.manual");
