@@ -16,12 +16,21 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class FileReader {
 
+    /**
+     * Read input files
+     * @param path
+     * @return
+     * @throws FileNotFoundException
+     */
     public static InputStream getStream(String path) throws FileNotFoundException {
         return new FileInputStream(path);
     }
 
+
     /**
-     * Read POI SPARQL files
+     * Read Point of Interest (POI) files from directory and parse into Map, allows multiple SPARQL files.
+     * @param POI_PATH Path for directory containing POI SPARQL queries
+     * @return
      */
     public static Map readPOIsparql(Path POI_PATH) {
         try (Stream<Path> files = Files.list(POI_PATH)) {
@@ -53,7 +62,9 @@ public class FileReader {
     }
 
     /**
-     * Read EdgesTableSQL
+     * Read EDGESTABLE SQL files from directory and parse into Map, allows multiple .SQL files.
+     * @param EDGESTABLESQL_PATH Path for directory containing .SQL
+     * @return
      */
     public static Map readEdgesTableSQL(Path EDGESTABLESQL_PATH) {
         try (Stream<Path> files = Files.list(EDGESTABLESQL_PATH)) {
@@ -85,6 +96,11 @@ public class FileReader {
         }
     }
 
+    /** Retrieve POI locations from SPARQL
+     * @param storeClient
+     * @param POImap
+     * @return
+     */
     public static JSONArray getPOILocation(RemoteStoreClient storeClient, Map<String, String> POImap)
     {            
         JSONArray cumulativePOI = new JSONArray();

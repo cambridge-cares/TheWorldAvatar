@@ -1,16 +1,18 @@
 [PrefixDeclaration]
 xsd:    http://www.w3.org/2001/XMLSchema#
 bot:    https://w3id.org/bot#
-: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+obe: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+iso:    https://www.theworldavatar.com/kg/ontoisochrone/
+geo:    http://www.opengis.net/ont/geosparql#
 
 [MappingDeclaration] @collection [[
 mappingId	usage
 target		<{building_iri}> a bot:Building ;
-                :hasPropertyUsage <{propertyusage_iri}> ;
-                :hasFootprint {geometry}^^xsd:string.
-            <{propertyusage_iri}> a :{ontobuilt} ;
-                :hasUsageShare {usageshare}^^xsd:float ;
-                :hasUsageLabel {name}^^xsd:string .
+                obe:hasPropertyUsage <{propertyusage_iri}> ;
+                obe:hasFootprint {geometry}^^xsd:string.
+            <{propertyusage_iri}> a obe:{ontobuilt} ;
+                obe:hasUsageShare {usageshare}^^xsd:float ;
+                obe:hasUsageLabel {name}^^xsd:string .
 source      SELECT DISTINCT
                 COALESCE(p.name, o.name) AS name,
                 u.building_iri,
@@ -30,4 +32,19 @@ source      SELECT DISTINCT
                 citydb.building AS b ON b.id = cga.cityobject_id -- Fix the syntax here
             LEFT JOIN
                 citydb.surface_geometry sg ON b.lod0_footprint_id = sg.id
+
+
+mappingId	isochrone_transport
+target		<{isochrone_iri}> a iso:Isochrone ;
+                iso:calculatedUsing {transportmode}^^xsd:string;
+                iso:hasTimeThreshold {minute}^^xsd:integer;
+                geo:hasGeometry <{geometry_iri}>.
+            <{geometry_iri}> a geo:Geometry;
+                geo:asWKT {geom}^^xsd:string.
+source      SELECT minute, transportmode, poi_type, isochrone_iri, geometry_iri, ST_AsText(ST_Force2D(geom)) as geom  FROM isochrone_aggregated
+
+mappingId	isochrone_building
+target		<{isochrone_iri}> a iso:Isochrone ;
+                iso:generatedFrom <{poi_iri}>.
+source      SELECT isochrone_iri, poi_iri FROM isochrone_building_ref
 ]]

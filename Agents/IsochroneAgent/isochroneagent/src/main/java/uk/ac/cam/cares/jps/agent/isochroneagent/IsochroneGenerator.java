@@ -195,12 +195,13 @@ public class IsochroneGenerator {
                 "WITH unique_values AS (\n" +
                 "    SELECT\n" +
                 "        poi_type,\n" +
+                "        minute,\n" +
                 "        transportmode,\n" +
                 "        'https://www.theworldavatar.com/kg/ontoisochrone/Isochrone/' || uuid_generate_v4()::text AS isochrone_iri,\n" +
                 "        'http://www.opengis.net/ont/geosparql#Geometry/' || uuid_generate_v4()::text AS geometry_iri\n" +
                 "    FROM isochrone_aggregated\n" +
                 "    WHERE isochrone_iri IS NULL\n" +
-                "    GROUP BY poi_type, transportmode\n" +
+                "    GROUP BY minute, poi_type, transportmode\n" +
                 ")\n" +
                 "\n" +
                 "UPDATE isochrone_aggregated AS ia\n" +
@@ -209,7 +210,8 @@ public class IsochroneGenerator {
                 "FROM unique_values uv\n" +
                 "WHERE ia.isochrone_iri IS NULL\n" +
                 "    AND ia.poi_type = uv.poi_type\n" +
-                "    AND ia.transportmode = uv.transportmode;"+
+                "    AND ia.transportmode = uv.transportmode\n"+
+                "    AND ia.minute = uv.minute;"+
 
                 "DROP TABLE eventspace_etas;\n" +
                 "DROP TABLE eventspace_delaunay;\n" +
@@ -275,5 +277,31 @@ public class IsochroneGenerator {
         }
 
     }
+
+
+
+    public void createIsochroneBuilding (RemoteRDBStoreClient remoteRDBStoreClient){
+
+    String createIsochroneBuildingTable_sqlString ="-- Drop the table if it exists\n" +
+                                                    "DROP TABLE IF EXISTS isochrone_building_ref;\n" +
+                                                    "\n" +
+                                                    "-- Create the table\n" +
+                                                    "CREATE TABLE isochrone_building_ref AS\n" +
+                                                    "SELECT DISTINCT ia.isochrone_iri, pno.poi_iri\n" +
+                                                    "FROM isochrone_aggregated AS ia\n" +
+                                                    "LEFT JOIN poi_nearest_node AS pno ON ia.poi_type = pno.poi_type\n" +
+                                                    "ORDER BY ia.isochrone_iri;";
+    try (Connection connection = remoteRDBStoreClient.getConnection()) {
+        executeSql(connection, createIsochroneBuildingTable_sqlString);
+        System.out.println("isochrone_building_ref table created.");
+    }
+    catch (Exception e) {
+        e.printStackTrace();
+        throw new JPSRuntimeException(e);
+    }
+
+    }
+
+    
 
 }

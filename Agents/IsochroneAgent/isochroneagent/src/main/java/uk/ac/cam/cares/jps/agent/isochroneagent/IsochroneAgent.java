@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.isochroneagent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.bigdata.concurrent.TxDag.Edge;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -12,8 +11,9 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
-
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import javax.servlet.annotation.WebServlet;
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,6 +27,8 @@ public class IsochroneAgent extends JPSAgent {
     private static final String PROPETIES_PATH = "/inputs/config.properties";
     private static final Path POI_PATH = Path.of("/inputs/15MSC/POIqueries");
     private static final Path EDGESTABLESQL_PATH = Path.of("/inputs/15MSC/edgesSQLTable");
+    private static final Path obdaFile = Path.of("/inputs/15MSC/OBDAmapping/building_location.obda");
+
 
     private EndpointConfig endpointConfig = new EndpointConfig();
 
@@ -113,6 +115,7 @@ public class IsochroneAgent extends JPSAgent {
             // // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap)
             // IsochroneGenerator isochroneGenerator = new IsochroneGenerator();
             // isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
+            // isochroneGenerator.createIsochroneBuilding(remoteRDBStoreClient);
 
             // // Population matcher
             // PopulationMapper populationMapper = new PopulationMapper();
@@ -120,15 +123,22 @@ public class IsochroneAgent extends JPSAgent {
             // populationMapper.mapPopulation(remoteRDBStoreClient, populationTableList);
 
             // Create geoserver layer            
-            GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            String workspaceName= "isochrone"; 
-            String schema = "public";
-            geoServerClient.createWorkspace(workspaceName);
-            geoServerClient.createPostGISDataStore(workspaceName,"isochrone_aggregated" , dbName, schema);
+            // GeoServerClient geoServerClient = GeoServerClient.getInstance();
+            // String workspaceName= "isochrone"; 
+            // String schema = "public";
+            // geoServerClient.createWorkspace(workspaceName);
+            // geoServerClient.createPostGISDataStore(workspaceName,"isochrone_aggregated" , dbName, schema);
             
-            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-            geoServerClient.createPostGISLayer(workspaceName, dbName,"isochrone_aggregated" ,geoServerVectorSettings);
-            
+            // GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            // geoServerClient.createPostGISLayer(workspaceName, dbName,"isochrone_aggregated" ,geoServerVectorSettings);
+
+            //Upload Isochrone Ontop mapping
+            try {
+                OntopClient ontopClient = OntopClient.getInstance();
+                ontopClient.updateOBDA(obdaFile);
+            } catch (Exception e) {
+                System.out.println("Could not retrieve virtual sensor ontop.obda file.");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
