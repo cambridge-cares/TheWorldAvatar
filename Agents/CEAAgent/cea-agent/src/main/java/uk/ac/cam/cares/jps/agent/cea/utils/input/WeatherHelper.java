@@ -239,24 +239,25 @@ public class WeatherHelper extends JPSAgent {
     private String getWeatherStation(Coordinate center, Double radius, String route) {
         String result = "";
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
+                .addPrefix("geoservice", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoservice))
+                .addPrefix("geoliteral", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoliteral))
                 .addPrefix("ontoems", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems));
 
-        wb.addWhere("?station", "geo:search", "inCircle")
-                .addWhere("?station", "geo:searchDatatype", "geoliteral:lat-lon")
-                .addWhere("?station", "geo:predicate", "ontoems:hasObservationLocation")
+        wb.addWhere("?station", "geoservice:search", "inCircle")
+                .addWhere("?station", "geoservice:searchDatatype", "geoliteral:lat-lon")
+                .addWhere("?station", "geoservice:predicate", "ontoems:hasObservationLocation")
                 // PLACEHOLDER because the coordinate will be treated as doubles instead of string otherwise
-                .addWhere("?station", "geo:spatialCircleCenter", center.getX() + "PLACEHOLDER" + center.getY())
-                .addWhere("?station", "geo:spatialCircleRadius", radius);
+                .addWhere("?station", "geoservice:spatialCircleCenter", center.getX() + "PLACEHOLDER" + center.getY())
+                .addWhere("?station", "geoservice:spatialCircleRadius", radius);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar("?station");
 
         Query query = sb.build();
 
-        // add geospatial service
+        // add geoservicespatial service
         ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo) + "search", wb.build().getQueryPattern()));
+        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoservice) + "search", wb.build().getQueryPattern()));
         query.setQueryPattern(body);
 
         String queryString = query.toString().replace("PLACEHOLDER", "#");
