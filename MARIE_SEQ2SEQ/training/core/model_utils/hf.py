@@ -8,6 +8,7 @@ from transformers import (
 )
 
 from core.arguments_schema import ModelArguments
+from core.constants import FAMILY_SEQ2SEQ
 
 
 TARGET_MODULES_BY_MODEL = dict(t5=["q", "v"], llama=["q_proj", "v_proj"])
@@ -46,7 +47,7 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool):
     }
 
     model_cls = (
-        AutoModelForSeq2SeqLM if model_args.model_family == "t5" else LlamaForCausalLM
+        AutoModelForSeq2SeqLM if model_args.model_family in FAMILY_SEQ2SEQ else LlamaForCausalLM
     )
     model = model_cls.from_pretrained(model_args.model_path, **model_load_kwargs)
 
@@ -69,7 +70,7 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool):
         
         task_type = (
             TaskType.SEQ_2_SEQ_LM
-            if model_args.model_family == "t5"
+            if model_args.model_family in FAMILY_SEQ2SEQ
             else TaskType.CAUSAL_LM
         )
         lora_config = LoraConfig(

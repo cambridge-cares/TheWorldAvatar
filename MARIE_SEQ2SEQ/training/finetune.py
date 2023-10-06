@@ -9,6 +9,7 @@ from transformers import (
     TrainingArguments,
 )
 from trl import SFTTrainer
+from core.constants import FAMILY_CAUSAL, FAMILY_SEQ2SEQ
 
 from core.data_processing.input_processing import preprocess_input
 from core.data_processing.output_processing import preprocess_output
@@ -115,18 +116,20 @@ def train():
     )
     model_args, data_args, train_args = hfparser.parse_args_into_dataclasses()
 
-    if model_args.model_family in ["t5", "mt0"]:
+    if model_args.model_family in FAMILY_SEQ2SEQ:
         trainer = get_seq2seq_trainer(
             model_args=model_args,
             data_args=data_args,
             train_args=train_args,
         )
-    elif model_args.model_family in ["llama"]:
+    elif model_args.model_family in FAMILY_CAUSAL:
         trainer = get_sft_trainer(
             model_args=model_args,
             data_args=data_args,
             train_args=train_args,
         )
+    else:
+        raise ValueError()
 
     trainer.train()
 
