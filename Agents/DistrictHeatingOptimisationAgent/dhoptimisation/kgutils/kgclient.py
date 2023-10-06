@@ -122,6 +122,37 @@ class KGClient(PySparqlClient):
                 msg = f"Multiple time series associated with data IRI: {forecast_iri}."
             logger.error(msg)
             raise ValueError(msg)
+        
+
+    def get_optimisation_outputs(self, forecast_iri:str):
+        """
+        Returns a list of all generation optimisation outputs associated with
+        provided forecast IRI as input
+        NOTE: Only considers ts:Forecast types as relevant outputs
+
+        Arguments:
+            forecast_iri (str) -- IRI of heat demand or grid temperature forecast
+                                  (i.e., inputs to the generation optimisation)
+        Returns:
+            output_iris (list) -- list of instantiated optimisation derivation outputs
+                                  (empty list if not exist)
+        """
+
+        #TODO: To be revisited whether that's the final way we want to do it,
+        #      or rather query via OntoHeatNet instead of OntoDerivation
+        query = f"""
+            SELECT DISTINCT ?output_iris
+            WHERE {{   
+            <{forecast_iri}> ^<{ONTODERIVATION_ISDERIVEDFROM}> ?deriv_iri . 
+            ?deriv_iri ^<{ONTODERIVATION_BELONGSTO}> ?output_iri . 
+            ?output_iri <{RDF_TYPE}> <{TS_FORECAST}> . 
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from query result
+        return self.get_list_of_unique_values(res, 'output_iri')
    
 
     def get_interval_details(self, intervalIRI:str):

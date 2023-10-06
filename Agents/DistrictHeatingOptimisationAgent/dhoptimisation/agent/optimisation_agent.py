@@ -15,10 +15,11 @@ from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
 from dhoptimisation.datamodel.iris import *
+from dhoptimisation.agent.config import *
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
 from dhoptimisation.agent.optimisation_tasks import *
-from dhoptimisation.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
+from dhoptimisation.utils.env_configs import DB_USER, DB_PASSWORD
 
 
 class DHOptimisationAgent(DerivationAgent):
@@ -96,26 +97,66 @@ class DHOptimisationAgent(DerivationAgent):
               are actually considered
         """
 
+        #TODO: Decide on whether to round or not
+
         # Get input IRIs from the agent inputs (derivation_inputs)
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
 
         # Get validated optimisation model inputs
-        input_iris = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
+        #TODO: skipped for now, to be properly implemented
+        #input_iris = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
+        input_iris = inputs
 
         # Optimise heat generation
+        #TODO: mocked for now; to be properly implemented
+        # 1) Get optimisation interval bounds
+        interval = self.sparql_client.get_interval_details(input_iris[TIME_INTERVAL])
+        # 2) Get relevant time series settings from KG
+        fc_details = self.sparql_client.get_input_forecast_details(input_iris[TS_FORECAST][0])
+        # 3) Get potentially already instantiated optimisation output instances, i.e.,
+        #    ProvidedHeat and ConsumedGas Amounts, which ts would just get updated
+        outputs = self.sparql_client.get_optimisation_outputs(input_iris[TS_FORECAST][0])
 
-       
+        # Create optimisation
+        rdb_url, time_format = get_rdb_endpoint(fc_details)
+        ts_client = TSClient(kg_client=self.sparql_client, rdb_url=rdb_url, 
+                             rdb_user=DB_USER, rdb_password=DB_PASSWORD)
+
+        # Instantiate new optimisation outputs in KG and RDB (if not yet existing)
+        if not outputs:
+            # Mock
+            # 1) retrieve 1 input time series
+            # 2) initialise output forecast for same/scaled values
+            # # Initialise forecast in KG
+            # fc_iri = self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg,
+            #                                                  create_new=True)
+            # # Create new forecast instance and add ts data in RDB
+            # ts_client.init_timeseries(dataIRI=fc_iri, times=times, values=values, 
+            #                           ts_type=cfg['ts_data_type'], time_format=time_format)
+
+            # Add output graph to ensure complete derivation markup
+            # --> this part of the code is only relevant when called via 
+            # 'createSyncDerivationForNewInfo' and its only purpose is to ensure
+            #  that forecast instance is marked up as "belongsTo" the derivation
+            g = Graph()
+            g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))   
+            derivation_outputs.addGraph(g)
+
+        else:
+            # Only update optimisation time series data in RDB
+            # NOTE: Entire previous optimisation data is replaced, i.e., NOT just 
+            #       appending new data and potentially overwriting existing data
+            ts_client.replace_ts_data(dataIRI=outputs[0], times=times, values=values)
+            #ts_client.add_ts_data(dataIRI=cfg['fc_iri'], times=times, values=values)
+        
+        created_at = pd.to_datetime('now', utc=True)
+        logger.info(f'Created generation optimisation at: {created_at}')
+
         # NOTE: DerivationWithTimeSeries does not return any output triples, 
         #       as all updates to the time series are expected to be conducted
-        #       within the agent logic
-        # Hence, this part of the code is only relevant when called via 
-        # 'createSyncDerivationForNewInfo' and its only purpose is to ensure
-        # completeness of initial derivation markup
-        g = Graph()
-        # g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))   
-        derivation_outputs.addGraph(g)
+        #       within the agent logic 
         
 
 def default():
