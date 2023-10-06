@@ -127,7 +127,7 @@ def train():
             train_args=train_args,
         )
     else:
-        raise ValueError()
+        raise ValueError(model_args.model_family + " is not supported.")
 
     trainer.train()
 
