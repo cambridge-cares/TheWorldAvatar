@@ -35,7 +35,18 @@ public class GeometryHandler {
         return WKTReader.extract(geometryString).getGeometry();
     }
 
+    /**
+     *
+     * @param geom
+     * @param sourceCRS source CRS of geometry with EPSG prefix
+     * @param distance
+     * @return
+     */
     public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance)  {
+        if (distance == 0) {
+            return geom;
+        }
+
         Geometry transformed;
         Integer source = Integer.parseInt(sourceCRS.replaceAll("[^0-9]", ""));
 
@@ -83,8 +94,8 @@ public class GeometryHandler {
     /**
      * Transforms a geometry from sourceCRS to targetCRS
      * @param geometry geometry object
-     * @param sourceCRS source CRS of geometry
-     * @param targetCRS target CRS for geometry transformation
+     * @param sourceCRS source CRS of geometry with EPSG prefix
+     * @param targetCRS target CRS for geometry transformation with EPSG prefix
      * @return the transformed geometry in targetCRS
      */
     public static Geometry transformGeometry(Geometry geometry, String sourceCRS, String targetCRS) throws Exception {
@@ -103,8 +114,8 @@ public class GeometryHandler {
     /**
      * Transform a coordinate from sourceCRS to targetCRS
      * @param coordinate coordinate to be transformed
-     * @param sourceCRS source CRS of coordinate
-     * @param targetCRS target CRS for coordinate transformation
+     * @param sourceCRS source CRS of coordinate with EPSG prefix
+     * @param targetCRS target CRS for coordinate transformation with EPSG prefix
      * @return the transformed coordinate in targetCRS
      */
     public static Coordinate transformCoordinate(Coordinate coordinate, String sourceCRS, String targetCRS) throws Exception {
@@ -150,8 +161,15 @@ public class GeometryHandler {
         }
     }
 
+    /**
+     *
+     * @param surfaceArray
+     * @param crs CRS of surfaceArray as String
+     * @param height
+     * @return
+     */
     public static List<Geometry> extractFootprint(JSONArray surfaceArray, String crs, Double height) {
-        double distance = 0.00001;
+        double distance = 0.0;
         double increment = 0.00001;
         double limit = 0.0005;
 
@@ -162,14 +180,16 @@ public class GeometryHandler {
 
         List<Geometry> result = new ArrayList<>();
 
+        crs = "EPSG:" + crs;
+
         if (surfaceArray.length() == 1) {
-            result.add(toGeometry(surfaceArray.getJSONObject(0).getString("Lod0Footprint").split("> ")[1]));
+            result.add(toGeometry(surfaceArray.getJSONObject(0).getString("wkt").split("> ")[1]));
             return result;
         }
         else {
             for (int i = 0; i < surfaceArray.length(); i++) {
                 // create Polygon object from WKT string
-                Polygon polygon = (Polygon) toGeometry(surfaceArray.getJSONObject(i).getString("Lod0Footprint").split("> ")[1]);
+                Polygon polygon = (Polygon) toGeometry(surfaceArray.getJSONObject(i).getString("wkt").split("> ")[1]);
                 LinearRing exterior = polygon.getExteriorRing();
 
                 // get exterior ring for buffering
@@ -188,8 +208,10 @@ public class GeometryHandler {
 
             geoType = merged.getGeometryType();
 
+            distance += increment;
+
             // keep on inflating, merging until either the limit is reached or a single polygon is formed
-            while (!geoType.equals("Polygon") || distance < limit) {
+            while (!geoType.equals("Polygon") && distance < limit) {
                 distance += increment;
 
                 for (int i = 0; i < exteriors.size(); i++) {
@@ -207,18 +229,29 @@ public class GeometryHandler {
 
             List<Geometry> geometries = new ArrayList<>();
 
-            // deflate geometries back
-            for (int i = 0; i < geoCol.getNumGeometries(); i++) {
-                Geometry geometry = geoCol.getGeometryN(i);
+            if (geoType.equals("Polygon")) {
+                geometries.add(bufferPolygon(merged, crs, -1 * distance));
+            }
+            else {
+                for (int i = 0; i < merged.getNumGeometries(); i++) {
+                    Geometry geometry = merged.getGeometryN(i);
 
-                // calculate number of floors
-                int floor = (int) Math.round(height / FLOOR_HEIGHT);
-                // calculate gross floor area for the geometry, since CEA treates each geometry object as a building
-                double gfa = floor * geometry.getArea();
+                    // calculate number of floors
+                    int floor = (int) Math.round(height / FLOOR_HEIGHT);
 
-                // CEA cannot work with geometry whose gross floor area is smaller than or equal to 100 m2
-                if (gfa > 100) {
-                    geometries.add(bufferPolygon(geometry, crs, -1 * distance));
+                    // at least one floor
+                    if (floor == 0) {
+                        floor = 1;
+                    }
+
+                    // calculate gross floor area for the geometry, since CEA treats each geometry object as a building
+                    double gfa = floor * geometry.getArea();
+
+                    // CEA cannot work with geometry whose gross floor area is smaller than or equal to 100 m2
+                    if (gfa > 100) {
+                        // deflate geometries back
+                        geometries.add(bufferPolygon(geometry, crs, -1 * distance));
+                    }
                 }
             }
 
