@@ -4760,12 +4760,16 @@ if __name__ == '__main__':
     else: 
         ifReadLocalResults = False
 
-    ## 5. Specify if generate Pareto Front figures
-    ifGenerateParetoFrontPDF_flag = int(input('Please specify if you want to create PDF files for Pareto Front (1 for Yes, 2 for No): '))
-    if ifGenerateParetoFrontPDF_flag == 1:
-        ifGenerateParetoFrontPDF = True
-    else: 
-        ifGenerateParetoFrontPDF = False
+    if ifReadLocalResults is False:
+        ## 5. Specify if generate Pareto Front figures
+        ifGenerateParetoFrontPDF_flag = int(input('Please specify if you want to create PDF files for Pareto Front (1 for Yes, 2 for No): '))
+        if ifGenerateParetoFrontPDF_flag == 1:
+            ifGenerateParetoFrontPDF = True
+        else: 
+            ifGenerateParetoFrontPDF = False
+
+        ## 7. Number of the round
+        r = int(input('Please confirm the round of this run, ranging from 1 to 6: '))
 
     ## 6. Specify the path for storing the raw simulation results files
     numberOfBus = config_data["NumOfBus"]
@@ -4779,9 +4783,6 @@ if __name__ == '__main__':
             print("---  new folder %s...  ---" % rootPath)
         else:
             print("---  There has npy folder!  ---")
-
-    ## 7. Number of the round
-    r = int(input('Please confirm the round of this run, ranging from 1 to 6: '))
     
     ## TODO: 8. Agent IRI and results update endpoint
     AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
@@ -4802,11 +4803,10 @@ if __name__ == '__main__':
                                                                             config_data["safeDistance"], config_data["pop_size"], config_data["n_offsprings"], config_data["numberOfGenerations"], 
                                                                             ifReadLocalResults, updateEndPointURL)  
 
-    ## cutter for the SMR list 
-    cutter = 5
-    counter_smrChunk = r
-
     if not ifReadLocalResults:
+        ## cutter for the SMR list 
+        cutter = 5
+        counter_smrChunk = r
         smr_replacement_for_fossil_fuel.powerPlantAndDemandingAreasMapper()
         smr_replacement_for_fossil_fuel.retrofitGeneratorInstanceFinder() ## determine the retrofitListBeforeSelection, population_list and weightedDemandingDistance_list
         smr_replacement_for_fossil_fuel.ModelPythonObjectInputInitialiser_BusAndBranch()
@@ -4920,8 +4920,8 @@ if __name__ == '__main__':
         summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
         netDemanding_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
         energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
-        branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist()
-        netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        # branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        # netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
 
         """The line charts"""
         for pickedWeight in config_data_postp["pickedWeightList"]:
@@ -4946,8 +4946,8 @@ if __name__ == '__main__':
         ####                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig"])
         smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
                                                                     config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
-        smr_replacement_for_fossil_fuel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-                                                                    config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
+        # smr_replacement_for_fossil_fuel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+        #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
         smr_replacement_for_fossil_fuel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
                                                                     config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_output"])  
         smr_replacement_for_fossil_fuel.GeoJSONCreator_fossilFuelPowerPlant(config_data_postp["specifiedConfig_output"])
