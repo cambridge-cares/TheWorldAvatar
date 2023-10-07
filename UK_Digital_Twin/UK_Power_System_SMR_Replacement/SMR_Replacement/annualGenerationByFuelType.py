@@ -193,8 +193,8 @@ def lineGraph_annualGeneration_WindAndSolar_ESO(sattlementPeriodPerDay:int, year
     ax1.yaxis.set_major_locator(y_major_locator)
     plt.ylim(0, maximum)
 
-    ax1.plot(dayList, genlist[:, 0], label = "Wind", color = "#00A5B5", linewidth = 1)
-    ax1.plot(dayList, genlist[:, 1], label = "Solar", color = "#F39530", linewidth = 1)
+    ax1.plot(dayList, genlist[:, 0], label = "Wind", color = "#1f4e79", linewidth = 1.3, alpha = 0.85)
+    ax1.plot(dayList, genlist[:, 1], label = "Solar", color = "#548235" , linewidth = 1.3, alpha = 0.85) # "#F39530"
 
     ## New ticks showing the qtr of the year
     qtr_2 = monthList[0] + monthList[1] + monthList[2] + 1
@@ -214,9 +214,9 @@ def lineGraph_annualGeneration_WindAndSolar_ESO(sattlementPeriodPerDay:int, year
     ax1.axhline(y=float(solarLowerBound), color='#5D6D7E', linestyle='dashdot', alpha=1, lw = 1)
     ax1.axhline(y=float(solarAverage), color='#5D6D7E', linestyle='dashdot', alpha=1, lw = 1)
 
-    ax1.text(240, float(windUpperBound) + 0.1, f'Wind max: {str(windUpperBound)} GW', color='#17202A', fontsize = 9, alpha = 0.9, weight="bold")  
-    ax1.text(240, float(windLowerBound) + 0.1, f'Wind min: {str(windLowerBound)} GW', color='#17202A', fontsize = 9, alpha = 0.9, weight="bold")  
-    ax1.text(240, float(windAverage) + 0.1, f'Wind average: {str(windAverage)} GW', color='#17202A', fontsize = 9, alpha = 0.9, weight="bold")  
+    ax1.text(5, float(windUpperBound) + 0.1, f'Wind max: {str(windUpperBound)} GW', color='#434c5e', fontsize = 9, alpha = 1, weight="bold")  
+    ax1.text(5, float(windLowerBound) + 0.1, f'Wind min: {str(windLowerBound)} GW', color='#434c5e', fontsize = 9, alpha = 1, weight="bold")  
+    ax1.text(5, float(windAverage) + 0.1, f'Wind average: {str(windAverage)} GW', color='#434c5e', fontsize = 9, alpha = 1, weight="bold")  
     
     ax1.text(240, float(solarUpperBound) - 0.6, f'Solar max: {str(solarUpperBound)} GW', color='#6E2C00', fontsize = 9, alpha = 0.9, weight="bold")  
     ax1.text(240, float(solarLowerBound) + 0.1, f'Solar min: {str(solarLowerBound)} GW', color='#6E2C00', fontsize = 9, alpha = 0.9, weight="bold")  

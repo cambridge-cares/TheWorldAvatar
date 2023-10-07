@@ -4916,24 +4916,24 @@ if __name__ == '__main__':
         with open('./UK_Power_System_SMR_Replacement/SMR_Replacement/config_postProcessing_LCOE%s.json'%str(SMR_LCOE), 'r') as config_file_postp:
             config_data_postp = json.load(config_file_postp)
 
-        ## total cost and total emission
-        # summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
-        # netDemanding_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
-        # energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
-        # branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist()
-        # netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        # total cost and total emission
+        summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
+        netDemanding_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
 
         """The line charts"""
-        # for pickedWeight in config_data_postp["pickedWeightList"]:
-        #     smr_replacement_for_fossil_fuel.lineGraph_weatherImpact(pickedWeight, config_data_postp["currentYear"], config_data_postp["currentYearlyCO2Emission_Mt"], 
-        #                                                             config_data_postp["estimatedCO2Emissions_Mt"], config_data_postp["calculatedCO2Emissions_Mt"],
-        #                                                             config_data_postp["correspondingCarbonTax"], config_data_postp["divergedPoint"],
-        #                                                             config_data_postp["SMRTransitionWindowLowerBound"], config_data_postp["SMRTransitionWindowUpperBound"],
-        #                                                             config_data_postp["NonSMRTransitionLowerBound"], config_data_postp["NonSMRTransitionUpperBound"],
-        #                                                             summary_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        #                                                             config_data["weatherConditionList"])
-        # # """Capacity figure"""
-        # smr_replacement_for_fossil_fuel.stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(config_data_postp["givenNumberofSMR"], config_data_postp["reported_consumption"], config_data_postp["plannedNuclearCapacity"])
+        for pickedWeight in config_data_postp["pickedWeightList"]:
+            smr_replacement_for_fossil_fuel.lineGraph_weatherImpact(pickedWeight, config_data_postp["currentYear"], config_data_postp["currentYearlyCO2Emission_Mt"], 
+                                                                    config_data_postp["estimatedCO2Emissions_Mt"], config_data_postp["calculatedCO2Emissions_Mt"],
+                                                                    config_data_postp["correspondingCarbonTax"], config_data_postp["divergedPoint"],
+                                                                    config_data_postp["SMRTransitionWindowLowerBound"], config_data_postp["SMRTransitionWindowUpperBound"],
+                                                                    config_data_postp["NonSMRTransitionLowerBound"], config_data_postp["NonSMRTransitionUpperBound"],
+                                                                    summary_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+                                                                    config_data["weatherConditionList"])
+        # """Capacity figure"""
+        smr_replacement_for_fossil_fuel.stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(config_data_postp["givenNumberofSMR"], config_data_postp["reported_consumption"], config_data_postp["plannedNuclearCapacity"])
 
         """WITH SPECIFIED CONFIGRATION""" 
 
@@ -4944,21 +4944,20 @@ if __name__ == '__main__':
 
         #### smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
         ####                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig"])
-        # smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
-        # smr_replacement_for_fossil_fuel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
-        # smr_replacement_for_fossil_fuel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        #                                                             config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_output"])  
-        # smr_replacement_for_fossil_fuel.GeoJSONCreator_fossilFuelPowerPlant(config_data_postp["specifiedConfig_output"])
+        smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+                                                                    config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
+        smr_replacement_for_fossil_fuel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+                                                                    config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_brchloss"])
+        smr_replacement_for_fossil_fuel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+                                                                    config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_output"])  
+        smr_replacement_for_fossil_fuel.GeoJSONCreator_fossilFuelPowerPlant(config_data_postp["specifiedConfig_output"])
 
-        # smr_replacement_for_fossil_fuel.MAPBOX_Preparation_FolderPath(config_data_postp["specifiedConfig_output"])
+        smr_replacement_for_fossil_fuel.MAPBOX_Preparation_FolderPath(config_data_postp["specifiedConfig_output"])
 
-        # smr_replacement_for_fossil_fuel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        #                                                                                    config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_pieChart"])
+        smr_replacement_for_fossil_fuel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+                                                                                           config_data["weatherConditionList"], ifSpecifiedResultsForNetDemanding, config_data_postp["specifiedConfig_pieChart"])
         
-        # smr_replacement_for_fossil_fuel.barChart_outputOfRegion(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
-        #                                                         config_data["weatherConditionList"], config_data_postp["specifiedConfig_barChart"])
+        smr_replacement_for_fossil_fuel.barChart_outputOfRegion(energyBreakdown_regionalArea_eachSMRDesign, config_data["FullListOfSMRUnit"], config_data["CarbonTaxForOPFList"], 
+                                                                config_data["weatherConditionList"], config_data_postp["specifiedConfig_barChart"])
     
     print('-----Terminal-----')
-
