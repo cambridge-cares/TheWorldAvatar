@@ -144,7 +144,7 @@ Step 3 (OPTIONAL): How to conduct the scenario analysis of SMR replacement with 
 
 - 3.2 Conduct SMR Replacement: For reproducing the results reported in Preprint 312, you need to run `SMRReplacemenWithOptimalFlowAnalysis.py`.
 
-First simulation: Go to `\UK_Digital_Twin\UK_Power_System_SMR_Replacement\SMR_Replacement\` and run `SMRReplacemenWithOptimalFlowAnalysis.py` using the following command.
+First simulation: Run SMRReplacemenWithOptimalFlowAnalysis.py using the following command.
 
    `python UK_Power_System_SMR_Replacement/SMR_Replacement/SMRReplacemenWithOptimalFlowAnalysis.py`
 
@@ -281,10 +281,14 @@ At the last step you need to decide whether to create the PDF files for Pareto F
 
 For reproducing  the results reported in Preprint 312, use `1`.
 
-Once the code execution is finished, you will find figures reported in Preprint 312. Figures 2-6 may be found in the following path in PDF format:
+Once the code execution is finished, you will find figures reported in Preprint 312. In the following folder, you will find the figure 2,3 and 4 displayed in prepint 312.
 `UK_Digital_Twin\outputs\smr_replacement_fig`.
 
-In this folder, you will find the figure 2,3 and 4 displayed in prepint 312.
+Fig 2 can be found via `UK_Digital_Twin\outputs\smr_replacement_fig\figFiles(LineChartANDHeatmapGrid)\<YYYYMMDD-HHMM>\`,
+
+Fig 3 can be found via `UK_Digital_Twin\outputs\smr_replacement_fig\figFiles(StackAreaGraph)\<YYYYMMDD-HHMM>\SMRvsCapacity)`, 
+
+Fig 4 can be found via `UK_Digital_Twin\outputs\smr_replacement_fig\ParetoFront\<YYYYMMDD-HHMM>\`.
 
 Step 4 (OPTIONAL): How to visulise the SMR adoption on the UK regional power output map as the carbon tax increasing?
 
