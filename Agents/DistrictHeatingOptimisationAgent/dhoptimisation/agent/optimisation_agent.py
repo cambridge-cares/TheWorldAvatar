@@ -126,9 +126,31 @@ class DHOptimisationAgent(DerivationAgent):
 
         # Instantiate new optimisation outputs in KG and RDB (if not yet existing)
         if not outputs:
+            # Initialise return Graph
+            g = Graph()
             # Mock
             # 1) retrieve 1 input time series
-            # 2) initialise output forecast for same/scaled values
+            times, values = ts_client.retrieve_timeseries(input_iris[TS_FORECAST][0])
+            # 2) initialise output forecast for "random" values
+            providers = self.sparql_client.get_heat_providers()
+            # efw plant
+            efw_outputs = self.sparql_client.get_efw_output_iris(providers['efw_plant'][0])
+            g, efw_ts = self.sparql_client.instantiate_new_outputs(g, efw_outputs)
+            provided_heat = 8   # MWh/h
+            provided_heat = [float(provided_heat) for t in times]
+            ts_client.init_timeseries(dataIRI=efw_ts['heat'], 
+                                      times=times, values=values, 
+                                      time_format=time_format)
+
+            # gas boiler
+            boiler_outputs = self.sparql_client.get_efw_output_iris(providers['boilers'][0])
+            g, boiler_ts = self.sparql_client.instantiate_new_outputs(g, boiler_outputs)
+            consumed_gas = 6    # MWh/h (per boiler)
+            consumed_gas = [float(consumed_gas) for t in times]
+            ts_client.init_timeseries(dataIRI=boiler_ts['gas'], 
+                                      times=times, values=values, 
+                                      time_format=time_format)
+
             # # Initialise forecast in KG
             # fc_iri = self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg,
             #                                                  create_new=True)
@@ -140,8 +162,7 @@ class DHOptimisationAgent(DerivationAgent):
             # --> this part of the code is only relevant when called via 
             # 'createSyncDerivationForNewInfo' and its only purpose is to ensure
             #  that forecast instance is marked up as "belongsTo" the derivation
-            g = Graph()
-            g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))   
+
             derivation_outputs.addGraph(g)
 
         else:
