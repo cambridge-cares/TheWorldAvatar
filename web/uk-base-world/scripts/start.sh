@@ -46,14 +46,6 @@ then
         exit 1
     fi
 
-    # Copy in the FIA config and query ( removed this bit )
-    # FIA_DIR="$ROOT/Agents/FeatureInfoAgent/queries"
-    # cp "./inputs/config/fia-config.json" "$FIA_DIR/"
-    # cp "./inputs/config/dukes_query.sparql" "$FIA_DIR/"
-    # cp "./inputs/config/power_line_query.sparql" "$FIA_DIR/"
-    # cp "./inputs/config/substation_query.sparql" "$FIA_DIR/"
-    # cp "./inputs/config/woodland_query.sparql" "$FIA_DIR/"
-
     # Clear any existing stack manager configs
     MANAGER_CONFIG="$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/config/"
     rm -rf "$MANAGER_CONFIG/*.json"
@@ -108,14 +100,14 @@ then
     cp -r ./inputs/config/pylons-and-veg/* "$UPLOAD_CONFIG/"
 
     # Copy in the data for upload
-    #UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
+    UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
     echo "Copying data..." 
     cp -r "./inputs/data/." "$UPLOAD_DATA/" 
 
     # Run the stack manager to start a new stack
     cd "$ROOT/Deploy/stacks/dynamic/stack-manager" || exit
     echo "Running the stack start up script..."
-    ./stack.sh start UKBASEWORLD "$HOST"
+    ./stack.sh start UKBASEWORLD 38383
 
     # Wait for the stack manager container to exit
 while docker ps --format '{{.Names}}' | grep -qE 'stack-manager'; do
