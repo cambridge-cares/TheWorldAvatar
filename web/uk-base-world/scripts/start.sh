@@ -99,15 +99,15 @@ then
     cp "./inputs/config/dukes_2023.json" "$UPLOAD_CONFIG/"
     cp -r ./inputs/config/pylons-and-veg/* "$UPLOAD_CONFIG/"
 
-    # Copy in the data for upload
-    UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
-    echo "Copying data..." 
-    cp -r "./inputs/data/." "$UPLOAD_DATA/" 
-
     # Run the stack manager to start a new stack
     cd "$ROOT/Deploy/stacks/dynamic/stack-manager" || exit
     echo "Running the stack start up script..."
     ./stack.sh start UKBASEWORLD 38383
+
+    # Copy in the data for upload
+    UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
+    echo "Copying data..." 
+    cp -r "./inputs/data/." "$UPLOAD_DATA/" 
 
     # Wait for the stack manager container to exit
 while docker ps --format '{{.Names}}' | grep -qE 'stack-manager'; do
