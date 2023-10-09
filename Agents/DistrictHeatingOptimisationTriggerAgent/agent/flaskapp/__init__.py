@@ -104,7 +104,7 @@ def trigger_optimisation_task(params):
             logger.error(msg)
             raise ValueError(msg)
         em_deriv_iri = [] if not opti_deriv_iri else \
-                        kg_client.get_downstream_derivation(opti_deriv_iri)
+                        kg_client.get_downstream_derivation(opti_deriv_iri[0])
         if len(em_deriv_iri) > 2:
             msg = f'More than 2 Emission estimation derivation retrieved: {", ".join(em_deriv_iri)}'
             logger.error(msg)
@@ -194,9 +194,9 @@ def trigger_optimisation_task(params):
                     # Get all forecast derivation outputs
                     fc_outputs = kg_client.get_derivation_outputs(fc_deriv_iris)
                     # Extract all created forecast instances and create list of optimisation inputs
-                    inputs_opi = list(fc_outputs[TS_FORECAST]) + [opti_int]
+                    inputs_opti = list(fc_outputs[TS_FORECAST]) + [opti_int]
                     deriv = derivation_client.createSyncDerivationForNewInfo(DH_OPTIMISATION_AGENT, 
-                                    inputs_opi, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+                                    inputs_opti, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
                     opti_deriv_iri.append(deriv.getIri())
                     logger.info(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri[0]}")
                 else:
