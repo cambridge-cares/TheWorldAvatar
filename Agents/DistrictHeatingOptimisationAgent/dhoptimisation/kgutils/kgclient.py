@@ -141,18 +141,24 @@ class KGClient(PySparqlClient):
         #TODO: To be revisited whether that's the final way we want to do it,
         #      or rather query via OntoHeatNet instead of OntoDerivation
         query = f"""
-            SELECT DISTINCT ?output_iri
-            WHERE {{   
+            SELECT DISTINCT ?type ?output_iri
+            WHERE {{
+            VALUES ?type {{ <{OHN_CONSUMED_GAS_AMOUNT}> <{OHN_PROVIDED_HEAT_AMOUNT}> }}
             <{forecast_iri}> ^<{ONTODERIVATION_ISDERIVEDFROM}> ?deriv_iri . 
             ?deriv_iri ^<{ONTODERIVATION_BELONGSTO}> ?output_iri . 
-            ?output_iri <{RDF_TYPE}> <{TS_FORECAST}> . 
+            ?output_iri <{RDF_TYPE}> ?type .
             }}
         """
         query = self.remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
-        # Extract relevant information from query result
-        return self.get_list_of_unique_values(res, 'output_iri')
+        # Extract relevant information from unique query result
+        keys = [OHN_PROVIDED_HEAT_AMOUNT, OHN_CONSUMED_GAS_AMOUNT]
+        outputs = {k: set([x['output_iri'] for x in res if x['type'] == k]) for k in keys}
+        # Remove empty keys
+        outputs = {key: list(value) for key, value in outputs.items() if value}
+        
+        return outputs
    
 
     def get_interval_details(self, intervalIRI:str):

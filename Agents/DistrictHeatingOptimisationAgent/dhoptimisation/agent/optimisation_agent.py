@@ -125,27 +125,26 @@ class DHOptimisationAgent(DerivationAgent):
         ts_client = TSClient(kg_client=self.sparql_client, rdb_url=rdb_url, 
                              rdb_user=DB_USER, rdb_password=DB_PASSWORD)
         
-        # Initialise return Graph
-        g = Graph()
-        # Mock
+        # Mock optimisation data
         # 1) retrieve 1 input time series
         times, values = ts_client.retrieve_timeseries(input_iris[TS_FORECAST][0])
         # 2) initialise output forecast for "random" values
-        providers = self.sparql_client.get_heat_providers()
-        # efw plant
-        efw_outputs = self.sparql_client.get_efw_output_iris(providers['efw_plant'][0])
-        g, efw_ts = self.sparql_client.instantiate_new_outputs(g, efw_outputs)
-        provided_heat = 8   # MWh/h
-        provided_heat = [float(provided_heat) for t in times]
-
-        # gas boiler
-        boiler_outputs = self.sparql_client.get_heatgenerator_output_iris(providers['boilers'][0])
-        g, boiler_ts = self.sparql_client.instantiate_new_outputs(g, boiler_outputs)
-        consumed_gas = 6    # MWh/h (per boiler)
-        consumed_gas = [float(consumed_gas) for t in times]
+        import random
+        provided_heat = [round(random.uniform(2.0, 11.0),1) for _ in times]
+        consumed_gas = [round(random.uniform(1.0, 6.0),1) for _ in times]
 
         # Instantiate new optimisation outputs in KG and RDB (if not yet existing)
         if not outputs:
+            # Initialise return Graph
+            g = Graph()
+            providers = self.sparql_client.get_heat_providers()
+            # efw plant
+            efw_outputs = self.sparql_client.get_efw_output_iris(providers['efw_plant'][0])
+            g, efw_ts = self.sparql_client.instantiate_new_outputs(g, efw_outputs)
+            # gas boiler
+            boiler_outputs = self.sparql_client.get_heatgenerator_output_iris(providers['boilers'][0])
+            g, boiler_ts = self.sparql_client.instantiate_new_outputs(g, boiler_outputs)
+            
             # Initialise time series
             ts_client.init_timeseries(dataIRI=efw_ts[OHN_PROVIDED_HEAT_AMOUNT], 
                                       times=times, values=provided_heat,
@@ -166,9 +165,15 @@ class DHOptimisationAgent(DerivationAgent):
             # Only update optimisation time series data in RDB
             # NOTE: Entire previous optimisation data is replaced, i.e., NOT just 
             #       appending new data and potentially overwriting existing data
-            ts_client.replace_ts_data(dataIRI=efw_ts[OHN_PROVIDED_HEAT_AMOUNT], 
+            # efw plant
+            data_IRI, _ = self.sparql_client.get_associated_dataIRI(instance_iri=outputs[OHN_PROVIDED_HEAT_AMOUNT][0],
+                                                                    unit=None, forecast=True)
+            ts_client.replace_ts_data(dataIRI=data_IRI, 
                                       times=times, values=provided_heat)
-            ts_client.replace_ts_data(dataIRI=boiler_ts[OHN_CONSUMED_GAS_AMOUNT], 
+            # gas boiler
+            data_IRI, _ = self.sparql_client.get_associated_dataIRI(instance_iri=outputs[OHN_CONSUMED_GAS_AMOUNT][0],
+                                                                    unit=None, forecast=True)
+            ts_client.replace_ts_data(dataIRI=data_IRI, 
                                       times=times, values=consumed_gas)
         
         created_at = pd.to_datetime('now', utc=True)
