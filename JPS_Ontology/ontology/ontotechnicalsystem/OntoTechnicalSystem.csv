@@ -6,7 +6,7 @@ OntoTechnicalSystem,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 LabEquipmentSystem,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,IS-A,,,,A system that is comprised of lab equipments or is used to assist in/run experiments in a lab environment.,https://www.theworldavatar.com/kg/ontotechnicalsystem/,Lab equipment system
 FiltrationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for filtering liquid or gas in a lab environment.,https://www.theworldavatar.com/kg/ontotechnicalsystem/,Filtration system
 CrossFlowFiltrationSystem,Class,FiltrationSystem,IS-A,,,,"A system that utilizes cross-flow filtration or tangential flow filtration and it is usually used for chemical engineering, biochemical engineering and protein purification.",https://www.theworldavatar.com/kg/ontotechnicalsystem/,Cross-flow filtration system
-SimulationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for simulating a phenomenon in a lab environement.,https://www.theworldavatar.com/kg/ontotechnicalsystem/,Simulation System
+SimulationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for simulating a phenomenon in a lab environment.,https://www.theworldavatar.com/kg/ontotechnicalsystem/,Simulation System
 DilutionSystem,Class,LabEquipmentSystem,IS-A,,,,A system for diluting solutions in a lab environment.,https://www.theworldavatar.com/kg/ontotechnicalsystem/,Dilution system
 AerosolDilutionSystem,Class,DilutionSystem,IS-A,,,,A system for diluting aerosols.,https://www.theworldavatar.com/kg/ontotechnicalsystem/,Aerosol dilution system
 ServomechanismSystem,Class,LabEquipmentSystem,IS-A,,,,A system for managing connected bodies actuated by servos.,https://www.theworldavatar.com/kg/ontotechnicalsystem/,Servomechanism system
