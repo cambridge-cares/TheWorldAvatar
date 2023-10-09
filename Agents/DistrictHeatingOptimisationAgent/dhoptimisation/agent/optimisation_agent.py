@@ -147,11 +147,11 @@ class DHOptimisationAgent(DerivationAgent):
         # Instantiate new optimisation outputs in KG and RDB (if not yet existing)
         if not outputs:
             # Initialise time series
-            ts_client.init_timeseries(dataIRI=efw_ts['heat'], 
+            ts_client.init_timeseries(dataIRI=efw_ts[OHN_PROVIDED_HEAT_AMOUNT], 
                                       times=times, values=provided_heat,
                                       ts_type=DOUBLE,
                                       time_format=time_format)
-            ts_client.init_timeseries(dataIRI=boiler_ts['gas'], 
+            ts_client.init_timeseries(dataIRI=boiler_ts[OHN_CONSUMED_GAS_AMOUNT], 
                                       times=times, values=consumed_gas, 
                                       ts_type=DOUBLE,
                                       time_format=time_format)
@@ -166,8 +166,10 @@ class DHOptimisationAgent(DerivationAgent):
             # Only update optimisation time series data in RDB
             # NOTE: Entire previous optimisation data is replaced, i.e., NOT just 
             #       appending new data and potentially overwriting existing data
-            ts_client.replace_ts_data(dataIRI=efw_ts['heat'], times=times, values=values)
-            ts_client.replace_ts_data(dataIRI=boiler_ts['gas'], times=times, values=values)
+            ts_client.replace_ts_data(dataIRI=efw_ts[OHN_PROVIDED_HEAT_AMOUNT], 
+                                      times=times, values=provided_heat)
+            ts_client.replace_ts_data(dataIRI=boiler_ts[OHN_CONSUMED_GAS_AMOUNT], 
+                                      times=times, values=consumed_gas)
         
         created_at = pd.to_datetime('now', utc=True)
         logger.info(f'Created generation optimisation at: {created_at}')

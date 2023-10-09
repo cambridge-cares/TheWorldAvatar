@@ -256,8 +256,8 @@ class KGClient(PySparqlClient):
         res = self.performQuery(query)
 
         # Extract relevant information from unique query result
-        outputs = {'heat': self.get_unique_value(res, 'heat'),
-                   'availability': self.get_unique_value(res, 'availability')
+        outputs = {OHN_PROVIDED_HEAT_AMOUNT: self.get_unique_value(res, 'heat'),
+                   OHN_AVAILABILITY: self.get_unique_value(res, 'availability')
         }
         return outputs
     
@@ -297,13 +297,13 @@ class KGClient(PySparqlClient):
         res = self.performQuery(query)
 
         # Extract relevant information from unique query result
-        outputs = {'gas': self.get_unique_value(res, 'gas'),
-                   'heat': self.get_unique_value(res, 'heat'),
-                   'availability': self.get_unique_value(res, 'availability'),
-                   'electricity': None
+        outputs = {OHN_CONSUMED_GAS_AMOUNT: self.get_unique_value(res, 'gas'),
+                   OHN_GENERATED_HEAT_AMOUNT: self.get_unique_value(res, 'heat'),
+                   OHN_AVAILABILITY: self.get_unique_value(res, 'availability'),
+                   OHN_COGEN_ELECTRICITY_AMOUNT: None
         }
         if gt:
-            outputs['electricity'] = self.get_unique_value(res, 'electricity')
+            outputs[OHN_COGEN_ELECTRICITY_AMOUNT] = self.get_unique_value(res, 'electricity')
         return outputs
 
 
@@ -330,6 +330,8 @@ class KGClient(PySparqlClient):
             # electricity for conventional heat boilers)
             if outputs[output] is not None:
                 fc_iri = KB + 'Forecast_' + str(uuid.uuid4())
+                # Ensure inclusion of top output instance rdf types
+                g.add((URIRef(outputs[output]), URIRef(RDF_TYPE), URIRef(output)))
                 g.add((URIRef(outputs[output]), URIRef(TS_HASFORECAST), URIRef(fc_iri)))
                 g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))
                 g.add((URIRef(fc_iri), URIRef(OM_HASUNIT), URIRef(OM_MEGAWATTHOUR)))
