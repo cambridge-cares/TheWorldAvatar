@@ -729,300 +729,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelUseCommercialOrInstitutionZone"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/InfrastructureUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MarinaUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/PortUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/PublicUtilityUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RapidTransitUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ResortUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RetirementHousingUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ShopHouseUseGeneral"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/SportsComplexUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/StadiumUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterAreaUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoningType"/>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HostelUseResidentialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseResidentialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseWhiteZone"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseHotelZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseWhiteZone"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1White"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2White"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialOrInstitutionZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseWhiteZone"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:range rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/Flying"/>
-        <rdfs:range rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/InstitutionalLiving"/>
-        <rdfs:range rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/WaterStorage"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Lodging"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/WaterSportsAndRelatedLeisureActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Boating"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Canoeing"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Fishing"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ScubaDiving"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Water-skiing"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/BoatMooring"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Boating"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Canoeing"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Fishing"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Port"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Sailing"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Water-skiing"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/BoatMooring"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Port"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Sailing"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ConstructionActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Plant"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyGoodsStorageOrHandlingActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyPlantOrFactoryActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/StorageOfChemical"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Drive-in"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HistoricalOrCulturalCelebrations"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/VehicularMovement"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/VehicularParking"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Hockey"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HouseholdActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HouseholdActivities"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Store"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/LandfillingOrDumping"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SewageStoring"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Sewer-relatedControl"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SewerTreatmentAndProcessing"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SolidWasteCollectionAndStorage"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SolidWasteManagementActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/WasteProcessingOrRecycling"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/WaterPurificationAndFiltrationActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/WaterStoring"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/NaturalGasOrFuelsControl"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PowerGeneration"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PowerTransmissionLinesOrControlActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyPlantOrFactoryActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/StorageOfNaturalGas"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/OfficeActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Restaurant-typeActivity"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/GoodsOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ServiceOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtGallery"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeautySalon"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cafe"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarDealer"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRental"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRepair"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarWash"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dentist"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Doctor"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Embassy"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HairCare"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundry"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Physiotherapist"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PostOffice"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/School"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Spa"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Store"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/VeterinaryCare"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/OfficeActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Restaurant-typeActivity"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/GoodsOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ServiceOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtGallery"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeautySalon"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cafe"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarDealer"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRental"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRepair"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarWash"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dentist"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Doctor"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Embassy"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HairCare"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundry"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Physiotherapist"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PostOffice"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/School"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Spa"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/VeterinaryCare"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PassengerAssembly"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TrainsOrOtherRailMovement"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyGoodsStorageOrHandlingActivities"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TrackAndField"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Lodging"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">may allow use</rdfs:label>
     </owl:ObjectProperty>
@@ -1039,28 +747,75 @@
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/FloodControl"/>
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/Flying"/>
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/HealthCare"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/HistoricalOrCulturalCelebrations"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/Hockey"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/HouseholdActivities"/>
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/InstitutionalLiving"/>
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/Interment"/>
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/IrrigationWaterStorageAndDistributionActivities"/>
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/PedestrianMovement"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyGoodsStorageOrHandlingActivities"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyPlantOrFactoryActivities"/>
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/PromenadingAndOtherActivitiesInParks"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/TrackAndField"/>
-        <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
         <rdfs:domain rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/WaterStorage"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Programme"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/WaterSportsAndRelatedLeisureActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Boating"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Canoeing"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Fishing"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ScubaDiving"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Water-skiing"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/BoatMooring"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Boating"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Canoeing"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Fishing"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Port"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Sailing"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Water-skiing"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ConstructionActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Plant"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyGoodsStorageOrHandlingActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyPlantOrFactoryActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/StorageOfChemical"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Hockey"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HouseholdActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HouseholdActivities"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Store"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -1073,6 +828,7 @@
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SewerTreatmentAndProcessing"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SolidWasteCollectionAndStorage"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SolidWasteManagementActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/WasteProcessingOrRecycling"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/WaterPurificationAndFiltrationActivities"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/WaterStoring"/>
@@ -1085,6 +841,7 @@
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/NaturalGasOrFuelsControl"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PowerGeneration"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PowerTransmissionLinesOrControlActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyPlantOrFactoryActivities"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/StorageOfNaturalGas"/>
                 </owl:unionOf>
             </owl:Class>
@@ -1092,8 +849,102 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/OfficeActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Restaurant-typeActivity"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
                     <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/GoodsOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ServiceOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtGallery"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeautySalon"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cafe"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarDealer"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRental"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRepair"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarWash"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dentist"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Doctor"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Embassy"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HairCare"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundry"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Physiotherapist"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PostOffice"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/School"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Spa"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Store"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/VeterinaryCare"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/OfficeActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Restaurant-typeActivity"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/GoodsOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ServiceOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtGallery"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeautySalon"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cafe"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarDealer"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRental"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRepair"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarWash"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dentist"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Doctor"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Embassy"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HairCare"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundry"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Physiotherapist"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PostOffice"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/School"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Spa"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/VeterinaryCare"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyGoodsStorageOrHandlingActivities"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TrackAndField"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Lodging"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -1104,23 +955,18 @@
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/DrainageUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/InfrastructureUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MarinaUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MedicalUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/PedestrianLinkage"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/PublicUtilityUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ResortUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RetirementHousingUse"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ShopHouseUseGeneral"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/SportsComplexUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/StadiumUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterAreaUse"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BuiltOpenSpace"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PedestrianLinkage"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -1134,72 +980,17 @@
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CoastalRecreationUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialOrInstitutionZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseWhiteZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CoastalRecreationUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/FlatOrCondominiumUseCommercialAndResidentialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/FlatOrCondominiumUseResidentialWithCommercialAtFirstStorey"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/FlatOrCondominiumUseResidentialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/FlatOrCondominiumUseWhiteZone"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HostelUseResidentialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandedHousingUse"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseResidentialZone"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseWhiteZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ShopHouseUseGeneral"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HostelUseResidentialZone"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseHotelZone"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseWhiteZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseResidentialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseWhiteZone"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HostelUseResidentialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseHotelZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseWhiteZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseResidentialZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseWhiteZone"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/InfrastructureUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1White"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2White"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -1208,8 +999,6 @@
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1White"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2White"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -1218,7 +1007,6 @@
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2White"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PublicUtilityUse"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -1229,20 +1017,15 @@
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialOrInstitutionZone"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialZone"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseWhiteZone"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/SportsComplexUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/SportsComplexUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/StadiumUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -1295,6 +1078,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -1341,6 +1130,18 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MarinaUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/PortUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -1359,6 +1160,18 @@
 
 
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Boating">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MarinaUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
@@ -1395,6 +1208,18 @@
 
 
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Canoeing">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MarinaUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
@@ -1525,6 +1350,18 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MarinaUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -1617,6 +1454,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -1653,6 +1496,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ShopHouseUseGeneral"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -1665,6 +1514,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseResidentialZone"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseWhiteZone"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ShopHouseUseGeneral"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HostelUseResidentialZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseResidentialZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseWhiteZone"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -1765,6 +1628,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -1778,6 +1647,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -1871,6 +1754,18 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MarinaUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/PortUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -1925,6 +1820,32 @@
                         <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1White"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2White"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2White"/>
                         </owl:unionOf>
@@ -1940,6 +1861,25 @@
 
 
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyPlantOrFactoryActivities">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/PublicUtilityUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2White"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
@@ -1988,6 +1928,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -2008,6 +1954,20 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -2016,6 +1976,33 @@
 
 
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/SportsComplexUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUse"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialOrInstitutionZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseWhiteZone"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
@@ -2036,6 +2023,20 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -2044,6 +2045,18 @@
 
 
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Sailing">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MarinaUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/PortUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
@@ -2079,6 +2092,12 @@
 
 
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ScubaDiving">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
@@ -2145,6 +2164,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -2160,6 +2185,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -2215,6 +2254,24 @@
 
 
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/SportsComplexUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/StadiumUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
@@ -2275,6 +2332,18 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -2293,6 +2362,35 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUse"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialOrInstitutionZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseWhiteZone"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -2304,12 +2402,44 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/InfrastructureUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/InfrastructureUse"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2White"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness1White"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/MainUseBusiness2White"/>
                         </owl:unionOf>
@@ -2328,6 +2458,33 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/SportsComplexUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUse"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialOrInstitutionZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseWhiteZone"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -2340,6 +2497,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -2411,6 +2582,33 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HostelUseResidentialZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseResidentialZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseWhiteZone"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseHotelZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseWhiteZone"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -2460,7 +2658,20 @@
     <!-- http://ontology.eil.utoronto.ca/icity/LBCSv2/Water-skiing -->
 
 
-    <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Water-skiing"/>
+    <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Water-skiing">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/MarinaUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentreUse"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
@@ -2513,6 +2724,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -2533,6 +2750,20 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -2541,6 +2772,12 @@
 
 
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ServiceOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
@@ -2559,6 +2796,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -3074,6 +3325,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -3087,6 +3344,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -3391,6 +3662,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -3404,6 +3681,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -3503,6 +3794,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -3520,6 +3817,35 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUse"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialOrInstitutionZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseWhiteZone"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -3809,6 +4135,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -3822,6 +4154,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -3899,6 +4245,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -3912,6 +4264,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -3960,6 +4326,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -3973,6 +4345,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -3998,6 +4384,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -4011,6 +4403,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -4036,6 +4442,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -4049,6 +4461,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -5690,6 +6116,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -5705,6 +6137,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -5871,6 +6317,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -5886,6 +6338,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -6202,6 +6668,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -6215,6 +6687,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -7100,6 +7586,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -7117,6 +7609,35 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUse"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialOrInstitutionZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseCommercialZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClubUseWhiteZone"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -7154,6 +7675,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -7167,6 +7694,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -7393,19 +7934,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/StudentHostel"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HouseholdActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hostel Use Residential Zone</rdfs:label>
     </owl:Class>
@@ -7513,12 +8041,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelProgramme"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Lodging"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel Use Commercial Or Institution Zone</rdfs:label>
     </owl:Class>
@@ -7536,19 +8058,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelProgramme"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Lodging"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel Use Hotel Zone</rdfs:label>
     </owl:Class>
@@ -7564,19 +8073,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/allowsProgramme"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelProgramme"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Lodging"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
@@ -7743,27 +8239,6 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterPumpHouse"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterReclamationPlant"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterTreatmentPlant"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/LandfillingOrDumping"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SewageStoring"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Sewer-relatedControl"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SewerTreatmentAndProcessing"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SolidWasteCollectionAndStorage"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SolidWasteManagementActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/WasteProcessingOrRecycling"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/WaterPurificationAndFiltrationActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/WaterStoring"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -8171,6 +8646,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -8184,6 +8665,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -8342,6 +8837,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelUseCommercialOrInstitutionZone"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -8349,6 +8850,19 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialUseCommercialOrInstitutionZone"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialUseCommercialZone"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialUseWhiteZone"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseHotelZone"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelUseWhiteZone"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -8437,19 +8951,6 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyGoodsStorageOrHandlingActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Main Use Business 1</rdfs:label>
     </owl:Class>
@@ -8474,19 +8975,6 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/IndustrialTraining"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/LightIndustry"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PrintingOrPublishing"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyGoodsStorageOrHandlingActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -8523,23 +9011,6 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ConstructionActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Plant"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyGoodsStorageOrHandlingActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyPlantOrFactoryActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/StorageOfChemical"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Main Use Business 2</rdfs:label>
     </owl:Class>
@@ -8566,23 +9037,6 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Production"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/RepairAndServicing"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/StorageOfChemicalsOils"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ConstructionActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Plant"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyGoodsStorageOrHandlingActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyPlantOrFactoryActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/StorageOfChemical"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TelecommunicationsControl"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -8809,24 +9263,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/allowsProgramme"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Marina"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/BoatMooring"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Boating"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Canoeing"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Fishing"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Port"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Sailing"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Water-skiing"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
@@ -9902,6 +10338,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -9917,6 +10359,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -10115,20 +10571,6 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/BoatMooring"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Port"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Sailing"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Port Use</rdfs:label>
     </owl:Class>
@@ -10149,6 +10591,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -10162,6 +10610,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -10686,22 +11148,6 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/NaturalGasOrFuelsControl"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PowerGeneration"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PowerTransmissionLinesOrControlActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PrimarilyPlantOrFactoryActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/StorageOfNaturalGas"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Public Utility Use</rdfs:label>
     </owl:Class>
@@ -10740,19 +11186,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/allowsProgramme"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RapidTransitStation"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/PassengerAssembly"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TrainsOrOtherRailMovement"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
@@ -10807,22 +11240,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RecreationClub"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Recreation Club Use</rdfs:label>
     </owl:Class>
@@ -10838,22 +11255,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/allowsProgramme"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RecreationClub"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
@@ -10873,22 +11274,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RecreationClub"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Recreation Club Use Commercial Zone</rdfs:label>
     </owl:Class>
@@ -10904,22 +11289,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/allowsProgramme"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RecreationClub"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
@@ -11216,12 +11585,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Resort"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/Flying"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Resort Use</rdfs:label>
     </owl:Class>
@@ -11298,12 +11661,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RetirementHousing"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/InstitutionalLiving"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Retirement Housing Use</rdfs:label>
     </owl:Class>
@@ -11351,21 +11708,6 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PrimaryAccessRoad"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Semi-Expressway"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServiceRoadOrBacklane"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Drive-in"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HistoricalOrCulturalCelebrations"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/VehicularMovement"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/VehicularParking"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -11427,6 +11769,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -11440,6 +11788,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -11700,19 +12062,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ServicedApartment"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HouseholdActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Serviced Apartment Use Residential Zone</rdfs:label>
     </owl:Class>
@@ -11724,19 +12073,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartmentUseWhiteZone">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HouseholdActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TransientLiving"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Serviced Apartment Use White Zone</rdfs:label>
     </owl:Class>
@@ -11822,19 +12158,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ShopHouseUseGeneral">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/HouseholdActivities"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Store"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shop House Use General</rdfs:label>
     </owl:Class>
@@ -11948,6 +12271,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -11961,6 +12290,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -12172,21 +12515,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/SportsComplex"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Hockey"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sports Complex Use</rdfs:label>
     </owl:Class>
@@ -12225,19 +12553,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/allowsProgramme"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Stadium"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/TrackAndField"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
@@ -12323,6 +12638,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ShopHouseUseGeneral"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -12333,6 +12654,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialUseResidentialWithCommercialAtFirstStorey"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialUseWhiteZone"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ShopHouseUseGeneral"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
@@ -13064,6 +13399,12 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
@@ -13077,6 +13418,20 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessParkWhite"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayBeAllowedInUse"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness1White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusiness2White"/>
+                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteUseBusinessPark"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -13127,12 +13482,6 @@
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom rdf:resource="http://ontology.eil.utoronto.ca/icity/LBCSv2/WaterStorage"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
@@ -13219,25 +13568,6 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/allowsProgramme"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentre"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/WaterSportsAndRelatedLeisureActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Boating"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Canoeing"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Fishing"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ScubaDiving"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/SpectatorSportsAssembly"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Water-skiing"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
@@ -13375,45 +13705,6 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/OfficeActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Restaurant-typeActivity"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/GoodsOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ServiceOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtGallery"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeautySalon"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cafe"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarDealer"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRental"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRepair"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarWash"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dentist"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Doctor"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Embassy"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HairCare"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundry"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Physiotherapist"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PostOffice"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/School"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Spa"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Store"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/VeterinaryCare"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">White Use Business 1 White</rdfs:label>
     </owl:Class>
@@ -13441,45 +13732,6 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Shop"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Showroom"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/SportsAndRecreationFacility"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/OfficeActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Restaurant-typeActivity"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/GoodsOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ServiceOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtGallery"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeautySalon"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cafe"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarDealer"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRental"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRepair"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarWash"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dentist"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Doctor"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Embassy"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HairCare"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundry"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Physiotherapist"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PostOffice"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/School"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Spa"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Store"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/VeterinaryCare"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -13522,45 +13774,6 @@
                 </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/OfficeActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Restaurant-typeActivity"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/GoodsOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ServiceOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtGallery"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeautySalon"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cafe"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarDealer"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRental"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRepair"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarWash"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dentist"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Doctor"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Embassy"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HairCare"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundry"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Physiotherapist"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PostOffice"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/School"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Spa"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Store"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/VeterinaryCare"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">White Use Business Park</rdfs:label>
     </owl:Class>
@@ -13592,44 +13805,6 @@
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Shop"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Showroom"/>
                             <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/SportsAndRecreationFacility"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/OfficeActivities"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Restaurant-typeActivity"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Running"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Swimming"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Tennis"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/GoodsOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/ServiceOrientedhttp://ontology.eil.utoronto.ca/icity/LBCSv2/Shopping"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtGallery"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeautySalon"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cafe"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarDealer"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRental"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRepair"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarWash"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dentist"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Doctor"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Embassy"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/HairCare"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundry"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Physiotherapist"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/PostOffice"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/School"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Spa"/>
-                            <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/VeterinaryCare"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
