@@ -97,7 +97,7 @@ class TSClient:
         return timeseries
 
 
-    def init_timeseries(self, dataIRI, times, values, time_format, ts_type=None):
+    def init_timeseries(self, dataIRI, times, values, ts_type, time_format):
         """
         This method instantiates a new time series and immediately adds data to it.
         
@@ -108,9 +108,6 @@ class TSClient:
             ts_type (Java class): Java class of time series values
             time_format (str): Time format (e.g. "%Y-%m-%dT%H:%M:%SZ")
         """
-        
-        if not ts_type:
-            ts_type = self.INSTANT
 
         with self.connect() as conn:
             self.tsclient.initTimeSeries([dataIRI], [ts_type], time_format, conn)

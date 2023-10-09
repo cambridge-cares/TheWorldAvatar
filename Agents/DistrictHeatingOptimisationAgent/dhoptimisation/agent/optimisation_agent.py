@@ -112,7 +112,7 @@ class DHOptimisationAgent(DerivationAgent):
         # Optimise heat generation
         #TODO: mocked for now; to be properly implemented
         # 1) Get optimisation interval bounds
-        interval = self.sparql_client.get_interval_details(input_iris[TIME_INTERVAL])
+        interval = self.sparql_client.get_interval_details(input_iris[TIME_INTERVAL][0])
         # 2) Get relevant time series settings from KG
         fc_details = self.sparql_client.get_input_forecast_details(input_iris[TS_FORECAST][0])
         # 3) Get potentially already instantiated optimisation output instances, i.e.,
@@ -139,7 +139,7 @@ class DHOptimisationAgent(DerivationAgent):
         provided_heat = [float(provided_heat) for t in times]
 
         # gas boiler
-        boiler_outputs = self.sparql_client.get_efw_output_iris(providers['boilers'][0])
+        boiler_outputs = self.sparql_client.get_heatgenerator_output_iris(providers['boilers'][0])
         g, boiler_ts = self.sparql_client.instantiate_new_outputs(g, boiler_outputs)
         consumed_gas = 6    # MWh/h (per boiler)
         consumed_gas = [float(consumed_gas) for t in times]
@@ -148,10 +148,12 @@ class DHOptimisationAgent(DerivationAgent):
         if not outputs:
             # Initialise time series
             ts_client.init_timeseries(dataIRI=efw_ts['heat'], 
-                                      times=times, values=values, 
+                                      times=times, values=provided_heat,
+                                      ts_type=DOUBLE,
                                       time_format=time_format)
             ts_client.init_timeseries(dataIRI=boiler_ts['gas'], 
-                                      times=times, values=values, 
+                                      times=times, values=consumed_gas, 
+                                      ts_type=DOUBLE,
                                       time_format=time_format)
 
             # Add output graph to ensure complete derivation markup

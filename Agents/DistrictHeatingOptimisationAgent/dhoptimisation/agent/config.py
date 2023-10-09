@@ -9,14 +9,23 @@
 from py4jps import agentlogging
 
 from dhoptimisation.utils.env_configs import DB_URL
+from dhoptimisation.utils.baselib_gateway import jpsBaseLibGW
 
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
 
-# Define time format for timeseries
-TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+#
+# Define some default values
+#
+# Time series value data types (default: Double)
+jpsBaseLibView = jpsBaseLibGW.createModuleView()
+DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
+INTEGER = jpsBaseLibView.java.lang.Integer.TYPE
+BOOLEAN = jpsBaseLibView.java.lang.Boolean.TYPE
+# Time series format
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def get_rdb_endpoint(ts_details:dict):
