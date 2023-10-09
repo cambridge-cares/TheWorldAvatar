@@ -22,14 +22,10 @@ target		ukpn:Route/{route_id} a ukpn:Route ;
             ukpn:Route/{route_id}/Voltage om:hasValue ukpn:Route/{route_id}/Voltage/Measure .
             ukpn:Route/{route_id}/Voltage/Measure om:hasUnit om:kilovolt ;
                 om:hasNumericValue {voltage}^^xsd:float .
-source      SELECT DISTINCT REPLACE(REPLACE(routename,' ','%20'),'/','%2F') AS route_id, 
-            routename AS route_name, 
-            max_voltage_kv AS voltage
+source      SELECT DISTINCT REPLACE(REPLACE(routename,' ','%20'),'/','%2F') AS route_id, routename AS route_name, max_voltage_kv AS voltage
             FROM ukpn_poles_towers_medium
             UNION ALL
-            SELECT DISTINCT REPLACE(REPLACE(routename,' ','%20'),'/','%2F') AS route_id, 
-            routename AS route_name, 
-            TRIM(trailing 'KV' from "route_volt") AS voltage
+            SELECT DISTINCT REPLACE(REPLACE(routename,' ','%20'),'/','%2F') AS route_id, routename AS route_name, (TRIM(trailing 'kV' from "route_volt"))::float AS voltage
             FROM ukpn_poles_towers_high
 
 mappingId	lines
