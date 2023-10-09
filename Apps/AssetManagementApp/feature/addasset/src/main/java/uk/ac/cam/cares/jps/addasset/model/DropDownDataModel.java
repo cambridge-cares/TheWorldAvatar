@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import uk.ac.cam.cares.jps.model.building.Instance;
+
 public class DropDownDataModel extends AssetPropertyDataModel{
     // NOTICE: Assume no duplication in names, and each name has only one corresponding iri
     MutableLiveData<Map<String, String>> mutableLabelsToIri = new MutableLiveData<>(new HashMap<>());
@@ -45,5 +47,12 @@ public class DropDownDataModel extends AssetPropertyDataModel{
     public void setFieldValue(String fieldValue) {
         // normally the value provided here should be iri.. But in test environment, just allow fieldValue to be label
         this.fieldValue = iriToLabel.getOrDefault(fieldValue, fieldValue);
+    }
+
+    public Object getMatched() {
+        if (mutableLabelsToIri.getValue().keySet().contains(fieldValue)) {
+            return fieldValue;
+        }
+        return null;
     }
 }

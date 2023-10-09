@@ -28,4 +28,9 @@ public class LocationDropDownDataModel extends DropDownDataModel{
         }
         return null;
     }
+
+    @Override
+    public Instance getMatched() {
+        return getMatched(getFieldValue());
+    }
 }

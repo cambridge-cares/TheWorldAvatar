@@ -51,7 +51,7 @@ public class AddAssetViewModel extends ViewModel {
     private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_FILE, MANUAL_FILE);
     private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
     private final List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
-    private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION);
+    private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SPEC_SHEET_COMMENT, MANUAL_COMMENT);
 
     @Inject
     AddAssetViewModel(OtherInfoRepository otherInfoRepository) {
@@ -145,6 +145,19 @@ public class AddAssetViewModel extends ViewModel {
                 hasError = true;
             }
         }
+
+        // todo: redesign LocationDropDown and DropDown
+        if (((LocationDropDownDataModel)inputFieldModels.get(BUILDING)).getMatched() != null) {
+            if (inputFieldModels.get(FACILITY).getFieldValue().isEmpty()) {
+                inputFieldModels.get(FACILITY).getIsMissingField().setValue(true);
+                hasError = true;
+            }
+
+            if (inputFieldModels.get(LOCATED_IN).getFieldValue().isEmpty()) {
+                inputFieldModels.get(LOCATED_IN).getIsMissingField().setValue(true);
+                hasError = true;
+            }
+        }
         return hasError;
     }
 
@@ -152,9 +165,15 @@ public class AddAssetViewModel extends ViewModel {
         boolean hasError = false;
         for (String key : disallowNewInstanceInputForDropDown) {
             // if field value is empty, then no need to check whether have a matched iri
-            if (!inputFieldModels.get(key).getFieldValue().isEmpty() && ((DropDownDataModel)inputFieldModels.get(key)).getValueIri().isEmpty()) {
-                ((DropDownDataModel) inputFieldModels.get(key)).getShowDisallowError().setValue(true);
-                hasError = true;
+            AssetPropertyDataModel property = inputFieldModels.get(key);
+            if (!property.getFieldValue().isEmpty()) {
+                if (property instanceof  LocationDropDownDataModel && ((LocationDropDownDataModel) property).getMatched() == null) {
+                    ((LocationDropDownDataModel) property).getShowDisallowError().setValue(true);
+                    hasError = true;
+                } else if (((DropDownDataModel) property).getMatched() == null) {
+                    ((DropDownDataModel) property).getShowDisallowError().setValue(true);
+                    hasError = true;
+                }
             }
         }
         return hasError;

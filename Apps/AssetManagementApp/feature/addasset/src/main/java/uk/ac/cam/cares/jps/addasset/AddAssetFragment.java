@@ -96,14 +96,13 @@ public class AddAssetFragment extends Fragment {
         });
 
         binding.doneBt.setOnClickListener(view1 -> {
-            // todo: remove check for test purpose
-//            if (viewModel.checkMissingInput()) {
-//                return;
-//            }
-//
-//            if (viewModel.checkDisallowNewInstanceInputField()) {
-//                return;
-//            }
+            if (viewModel.checkMissingInput()) {
+                return;
+            }
+
+            if (viewModel.checkDisallowNewInstanceInputField()) {
+                return;
+            }
 
             // show summary page
             NavHostFragment.findNavController(this).navigate(getRequest());

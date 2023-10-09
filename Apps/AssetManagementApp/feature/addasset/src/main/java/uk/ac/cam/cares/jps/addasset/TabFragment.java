@@ -149,6 +149,16 @@ public class TabFragment extends Fragment {
         return sectionView;
     }
 
+    private void setIsMissingObserver(AssetPropertyDataModel property, PropertyBaseInputTextView inputText) {
+        property.getIsMissingField().observe(this.getViewLifecycleOwner(), isMissing -> {
+            if (isMissing) {
+                inputText.setInputLayoutError(getResources().getText(R.string.field_is_required));
+            } else {
+                inputText.setInputLayoutError(null);
+            }
+        });
+    }
+
     private View createLocationSection(LayoutInflater inflater, String section) {
         View sectionView = inflater.inflate(R.layout.view_input_text_section, null);
         ((TextView) sectionView.findViewById(R.id.section_label)).setText(section);
@@ -157,26 +167,31 @@ public class TabFragment extends Fragment {
         LocationDropDownDataModel buildingProperty = (LocationDropDownDataModel) viewModel.getInputFieldModels().get(BUILDING);
         PropertyAutoCompleteTextView buildingInputText = new PropertyAutoCompleteTextView(requireContext(), buildingProperty);
         buildingProperty.getMutableInstances().observe(this.getViewLifecycleOwner(), buildings -> ((PropertyAutoCompleteTextView) buildingInputText).updateAdapterList(buildings));
+        setIsMissingObserver(buildingProperty, buildingInputText);
         linearLayout.addView(buildingInputText);
 
         LocationDropDownDataModel facilityProperty = (LocationDropDownDataModel) viewModel.getInputFieldModels().get(FACILITY);
         PropertyAutoCompleteTextView facilityInputText = new PropertyAutoCompleteTextView(requireContext(), facilityProperty);
         facilityProperty.getMutableInstances().observe(this.getViewLifecycleOwner(), facilities -> ((PropertyAutoCompleteTextView) facilityInputText).updateAdapterList(facilities));
+        setIsMissingObserver(facilityProperty, facilityInputText);
         linearLayout.addView(facilityInputText);
 
         LocationDropDownDataModel roomProperty = (LocationDropDownDataModel) viewModel.getInputFieldModels().get(LOCATED_IN);
         PropertyAutoCompleteTextView roomInputText = new PropertyAutoCompleteTextView(requireContext(), roomProperty);
         roomProperty.getMutableInstances().observe(this.getViewLifecycleOwner(), rooms -> ((PropertyAutoCompleteTextView) roomInputText).updateAdapterList(rooms));
+        setIsMissingObserver(roomProperty, roomInputText);
         linearLayout.addView(roomInputText);
 
         LocationDropDownDataModel workspaceProperty = (LocationDropDownDataModel) viewModel.getInputFieldModels().get(SEAT_LOCATION);
         PropertyAutoCompleteTextView workspaceInputText = new PropertyAutoCompleteTextView(requireContext(), workspaceProperty);
         workspaceProperty.getMutableInstances().observe(this.getViewLifecycleOwner(), workspaces -> ((PropertyAutoCompleteTextView) workspaceInputText).updateAdapterList(workspaces));
+        setIsMissingObserver(workspaceProperty, workspaceInputText);
         linearLayout.addView(workspaceInputText);
 
         LocationDropDownDataModel elementProperty = (LocationDropDownDataModel) viewModel.getInputFieldModels().get(STORED_IN);
         PropertyAutoCompleteTextView elementInputText = new PropertyAutoCompleteTextView(requireContext(), elementProperty);
         elementProperty.getMutableInstances().observe(this.getViewLifecycleOwner(), elements -> ((PropertyAutoCompleteTextView) elementInputText).updateAdapterList(elements));
+        setIsMissingObserver(elementProperty, elementInputText);
         linearLayout.addView(elementInputText);
 
         List<PropertyAutoCompleteTextView> locationInputTextViews = Arrays.asList(buildingInputText, facilityInputText, roomInputText, workspaceInputText, elementInputText);
@@ -298,6 +313,7 @@ public class TabFragment extends Fragment {
 
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
+        // todo: restrict to pdf
         intent.setType("*/*");
 
         startActivityForResult(intent, requestCode);
