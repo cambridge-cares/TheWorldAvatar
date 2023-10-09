@@ -28,7 +28,7 @@ class KGClient(PySparqlClient):
     # SPARQL QUERIES
     #
     #TODO: Check whether that's still needed in the end
-    def get_associated_dataIRI(self, instance_iri:str, unit=None, forecast=False) -> tuple:
+    def get_associated_dataIRI(self, instance_iri:str, unit=None, forecast=True) -> tuple:
         """
         Retrieves the dataIRI (i.e., IRI with attached time series) associated
         with a given instance IRI (e.g., consumed gas amount IRI)
@@ -323,11 +323,13 @@ class KGClient(PySparqlClient):
                               and associated time series IRIs as values
         """
 
-        #TODO: add instantiation of unit (incl. prior query) where relevant
+        #TODO: add proper instantiation of units
+        #      (incl. prior query) where relevant
         for output in outputs:
             fc_iri = KB + 'Forecast_' + str(uuid.uuid4())
             g.add((URIRef(outputs[output]), URIRef(TS_HASFORECAST), URIRef(fc_iri)))
-            g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))   
+            g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))
+            g.add((URIRef(fc_iri), URIRef(OM_HASUNIT), URIRef(OM_MEGAWATTHOUR)))
             outputs[output] = fc_iri
 
         return g, outputs
