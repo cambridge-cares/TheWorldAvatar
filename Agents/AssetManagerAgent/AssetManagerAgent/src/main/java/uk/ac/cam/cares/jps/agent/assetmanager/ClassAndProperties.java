@@ -9,7 +9,7 @@ public class ClassAndProperties {
         // prefix
 	public static final String ONTODEV = "https://www.theworldavatar.com/kg/ontodevice/";
     public static final String ONTOLAB = "https://www.theworldavatar.com/kg/ontolab/";
-    public static final String ONTOSYSTEM = "https://www.theworldavatar.com/kg/ontosystem/";
+    public static final String ONTOSYSTEM = "https://www.theworldavatar.com/kg/ontotechnicalsystem/";
     public static final String ONTOINMA = "https://www.theworldavatar.com/kg/ontoinma/";
     public static final String ONTOEPE = "https://www.theworldavatar.com/kg/ontoelecpowerequipment/";
     public static final String ONTOASSET = "https://www.theworldavatar.com/kg/ontoassetmanagement/";
