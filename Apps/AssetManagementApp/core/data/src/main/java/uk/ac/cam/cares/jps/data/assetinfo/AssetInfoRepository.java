@@ -8,6 +8,8 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.INVOICE_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.ITEM_DESCRIPTION;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.LOCATED_IN;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_COMMENT;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_FILE_URI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_URL;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUFACTURER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MODEL_NUMBER;
@@ -18,12 +20,17 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SEAT_LOCATION;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SERIAL_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SERVICE_CATEGORY;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SERVICE_CODE;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_COMMENT;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_FILE_URI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_PAGE_NO;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.STORED_IN;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.TYPE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.VENDOR;
 
 import android.os.Handler;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -38,16 +45,25 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.CompletableSource;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.UndeliverableException;
+import io.reactivex.functions.Function;
+import io.reactivex.plugins.RxJavaPlugins;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.setting.SettingRepository;
 import uk.ac.cam.cares.jps.model.AssetInfo;
 import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
+import uk.ac.cam.cares.jps.network.datasheet.DataSheetNetworkSource;
 
 public class AssetInfoRepository {
     private final Logger LOGGER = Logger.getLogger(AssetInfoRepository.class);
 
     AssetNetworkSource assetInfoNetworkSource;
+    DataSheetNetworkSource dataSheetNetworkSource;
     SettingRepository settingRepository;
     List<String> visibleProperties = new ArrayList<>();
     AssetInfo assetInfo;
@@ -55,9 +71,10 @@ public class AssetInfoRepository {
     Map<String, String> keyConversionTable = getKeyConversionTable();
 
     @Inject
-    public AssetInfoRepository(AssetNetworkSource assetInfoNetworkSource, SettingRepository settingRepository) {
+    public AssetInfoRepository(AssetNetworkSource assetInfoNetworkSource, SettingRepository settingRepository, DataSheetNetworkSource dataSheetNetworkSource) {
         this.assetInfoNetworkSource = assetInfoNetworkSource;
         this.settingRepository = settingRepository;
+        this.dataSheetNetworkSource = dataSheetNetworkSource;
     }
 
     public void getAssetInfoByIri(String iri, RepositoryCallback<AssetInfo> callback) {
@@ -113,22 +130,6 @@ public class AssetInfoRepository {
     }
 
     public void createNewAsset(AssetInfo assetInfo, RepositoryCallback<JSONObject> callback) {
-        //        callback.onFailure(new Exception());
-
-        // test data for qr code printing
-//        Handler handler = new Handler();
-//        handler.postDelayed((Runnable) () -> {
-//            JSONObject successMessage = new JSONObject();
-//            try {
-//                successMessage.put("iri", "iri");
-//                successMessage.put("inventoryID", random.nextInt());
-//            } catch (JSONException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//            callback.onSuccess(successMessage);
-//        }, 2000);
-
         try {
             JSONObject assetData = new JSONObject();
             assetData.put(keyConversionTable.get("Prefix"), "");
@@ -165,9 +166,7 @@ public class AssetInfoRepository {
             JSONObject param = new JSONObject();
             param.put("assetData", assetData);
 
-            assetInfoNetworkSource.addAsset(param, response -> {
-                callback.onSuccess(response);
-            }, callback::onFailure);
+            assetInfoNetworkSource.addAsset(param, response -> addDataSheet(assetInfo, response, callback), callback::onFailure);
 
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -210,5 +209,49 @@ public class AssetInfoRepository {
         table.put(PURCHASE_PRICE, "price");
 
         return table;
+    }
+
+    private void addDataSheet(AssetInfo assetInfo, JSONObject newElement, RepositoryCallback<JSONObject> callback) {
+        RxJavaPlugins.setErrorHandler(throwable -> {
+            if (throwable instanceof UndeliverableException) {
+                LOGGER.info("Both network call failed. Ignore this RxJava exception.");
+            } else {
+                if (Thread.currentThread().getUncaughtExceptionHandler() != null) {
+                    Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), throwable);
+                }
+            }
+        });
+
+        try {
+            String id = newElement.getString("ID");
+
+            Completable specSheetNetworkCall = Single.just("").flatMapCompletable(s -> Completable.complete());
+            if (!assetInfo.getProperty(SPEC_SHEET_FILE_URI).isEmpty()) {
+                JSONObject specSheetData = new JSONObject();
+                specSheetData.put("targetID", id);
+                specSheetData.put("comments", assetInfo.getProperty(SPEC_SHEET_COMMENT));
+                specSheetData.put("documentType", "SpecSheet");
+                specSheetData.put("fileUri", assetInfo.getProperty(SPEC_SHEET_FILE_URI));
+                specSheetNetworkCall = Completable.create(emitter -> dataSheetNetworkSource.addDataSheet(specSheetData, isSuccess -> emitter.onComplete(), emitter::onError));
+            }
+
+            Completable manualNetworkCall = Single.just("").flatMapCompletable(s -> Completable.complete());
+            if (!assetInfo.getProperty(MANUAL_FILE_URI).isEmpty()) {
+                JSONObject manualData = new JSONObject();
+                manualData.put("targetID", id);
+                manualData.put("comments", assetInfo.getProperty(MANUAL_COMMENT));
+                manualData.put("documentType", "Manual");
+                manualData.put("fileUri", assetInfo.getProperty(MANUAL_FILE_URI));
+                manualNetworkCall = Completable.create(emitter -> dataSheetNetworkSource.addDataSheet(manualData, isSuccess -> emitter.onComplete(), emitter::onError));
+            }
+
+            Completable combinedCompletable = Completable.mergeArray(specSheetNetworkCall, manualNetworkCall);
+            Disposable disposable = combinedCompletable.subscribe(() -> {
+                callback.onSuccess(newElement);
+            }, callback::onFailure);
+
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.datastore.OtherInfoLocalSource;
 import uk.ac.cam.cares.jps.datastore.QRPrintingLocalSource;
 import uk.ac.cam.cares.jps.datastore.SettingLocalSource;
 import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
+import uk.ac.cam.cares.jps.network.datasheet.DataSheetNetworkSource;
 import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.BMSNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
@@ -24,8 +25,8 @@ import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
 public class RepositoryModule {
     @Provides
     @Singleton
-    public AssetInfoRepository provideAssetInfoRepository(AssetNetworkSource networkSource, SettingRepository settingRepository) {
-        return new AssetInfoRepository(networkSource, settingRepository);
+    public AssetInfoRepository provideAssetInfoRepository(AssetNetworkSource assetNetworkSource, SettingRepository settingRepository, DataSheetNetworkSource dataSheetNetworkSource) {
+        return new AssetInfoRepository(assetNetworkSource, settingRepository, dataSheetNetworkSource);
     }
 
     @Provides

@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 import uk.ac.cam.cares.jps.network.Connection;
+import uk.ac.cam.cares.jps.network.datasheet.DataSheetNetworkSource;
 import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.BMSNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
@@ -39,5 +40,10 @@ public class NetworkModule {
     @Provides
     public BMSNetworkSource provideBMSNetworkSource(Connection connection) {
         return new BMSNetworkSource(connection);
+    }
+
+    @Provides
+    public DataSheetNetworkSource provideDocumentNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new DataSheetNetworkSource(connection, applicationContext);
     }
 }
