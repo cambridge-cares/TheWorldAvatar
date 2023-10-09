@@ -19,10 +19,10 @@ Once a year, the UK government publishes a Digest of UK Energy Statistics (DUKES
 Read the associated [DUKES Data](./docs/data-dukes.md) page for details on how the DUKES data was acquired and processed.
 
 ### National Grid 
-National Grid publish shapefiles of their whole network including lines, pylons and substations. There are links to each download page in the relevant `data` subdirectory. There is a good number of files (19) to download but they are all backed up on pavilion. 
+National Grid publish shapefiles of their whole network including lines, pylons and substations. There are links to :Peach download page in the relevant `data` subdirectory. There is a good number of files (20) to download but they are all backed up on pavilion. Individual links for each file and where they go is given in the *Running the Stack* section of this page
 
 ### UKPN
-Similarly to above, download links are in each of the relevant Uk Power Networks subdirectory and are backed up on pavilion.
+Similarly to above, download links are in each of the relevant Uk Power Networks subdirectory and are backed up on pavilion. Links also given in the *Running the Stack* section
 
 ### Forestry
 Shapefiles are obtained from [national forestry inventory 2020](https://data-forestry.opendata.arcgis.com/datasets/eb05bd0be3b449459b9ad0692a8fc203_0/explore?location=55.089693%2C-2.724655%2C6.98) and backed upon pavilion. The feature info agent is used to cross reference with the power lines and determine whether or not they intersect.
@@ -83,6 +83,30 @@ To run the script and bring up a local instance of the UK Base World visualisati
 4. Add the data files:
    - Add the processed DUKES 2023 CSV to the `./inputs/data/uk_base_world/dukes_2023` directory.
    - Add the OntoEIP OWL and TTL files to the `./inputs/data/uk_base_world/ontoeip` directory (note that these need to be in a flat structure, no subdirectories).
+   - Add forestry data: download shapefiles from [National Forest Inventory Woodland GB 2020](https://data-forestry.opendata.arcgis.com/datasets/eb05bd0be3b449459b9ad0692a8fc203_0/explore?location=55.208415%2C-2.724655%2C6.98) and copy into `./inputs/data/forestry/vector` subdirectory.
+   - Add relevant shapefiles for National Grid vector data: cables, ohls, poles, substations and towers.
+      - [132kV Transformers](https://connecteddata.nationalgrid.co.uk/dataset/132kv_gm_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [66kV Ground Mounted Substations](https://connecteddata.nationalgrid.co.uk/dataset/66kv_gm_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [33kV Transformers](https://connecteddata.nationalgrid.co.uk/dataset/33kv-transformers), [11kV Transformers](https://connecteddata.nationalgrid.co.uk/dataset/11kv-transformers) 
+       into `./inputs/data/national_grid/vector/substations` 
+
+       - [132kV Towers](https://connecteddata.nationalgrid.co.uk/dataset/132kv_towers_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [66kV Towers](https://connecteddata.nationalgrid.co.uk/dataset/66kv_towers_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [33Kv Towers](https://connecteddata.nationalgrid.co.uk/dataset/33kv_towers_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [11kV Towers](https://connecteddata.nationalgrid.co.uk/dataset/11kv_towers_full_nged_area_4_dnos_in_esri_shapefile_shp_format) 
+       into `./inputs/data/national_grid/vector/towers` 
+
+       - [132kV Poles](https://connecteddata.nationalgrid.co.uk/dataset/132kv_poles_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [66kV Poles](https://connecteddata.nationalgrid.co.uk/dataset/66kv_poles_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [33kV Poles](https://connecteddata.nationalgrid.co.uk/dataset/33kv_poles_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [11kV Poles](https://connecteddata.nationalgrid.co.uk/dataset/11kv_poles_full_nged_area_4_dnos_in_esri_shapefile_shp_format) 
+       into `./inputs/data/national_grid/vector/poles` 
+
+       - [132kv Overhead Lines](https://connecteddata.nationalgrid.co.uk/dataset/132kv_ohl_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [66kV Overhead Lines](https://connecteddata.nationalgrid.co.uk/dataset/66kv_ohl_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [33kV Overhead Lines](https://connecteddata.nationalgrid.co.uk/dataset/33kv_ohl_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [11kV Overhead Lines](https://connecteddata.nationalgrid.co.uk/dataset/11kv_ohl_full_nged_area_4_dnos_in_esri_shapefile_shp_format)
+       into `./inputs/data/national_grid/vector/ohls`
+
+       - [132kV Underground Cables](https://connecteddata.nationalgrid.co.uk/dataset/132kv_ug_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [66kv Underground Cables](https://connecteddata.nationalgrid.co.uk/dataset/66kv_ug_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [33kV Underground Cables](https://connecteddata.nationalgrid.co.uk/dataset/33kv_ug_full_nged_area_4_dnos_in_esri_shapefile_shp_format), [11kV Underground Cables](https://connecteddata.nationalgrid.co.uk/dataset/11kv_ug_full_nged_area_4_dnos_in_esri_shapefile_shp_format)
+       into `./inputs/data/national_grid/vector/ohls`
+   - Add relevant shapefiles for UKPN vector data. All of the below files should be copied into `./inputs/data/ukpn/vector/ohls`
+       - [33kV Overhead Lines](https://ukpowernetworks.opendatasoft.com/explore/dataset/33kv-overhead-lines)
+       - [132kV Overhead Lines](https://ukpowernetworks.opendatasoft.com/explore/dataset/132kv-overhead-lines) 
+       - [132kV Poles & Towers](https://ukpowernetworks.opendatasoft.com/explore/dataset/132kv-poles-towers)
+       - [33kV Poles & Towers](https://ukpowernetworks.opendatasoft.com/explore/dataset/ukpn-33kv-poles-towers)
+       - [66kV Overhead Lines](https://ukpowernetworks.opendatasoft.com/explore/dataset/ukpn-66kv-overhead-lines-shapefile)
+       - [HV Overhead Lines](https://ukpowernetworks.opendatasoft.com/explore/dataset/ukpn-hv-overhead-lines-shapefile)
+       - [LV Overhead Lines](https://ukpowernetworks.opendatasoft.com/explore/dataset/ukpn-lv-overhead-lines-shapefile)
 5. Run the script from the `uk-base-world` directory, passing a password for PostGIS and Geoserver:
    - Example command: `./scripts/start.sh PASSWORD=pickapassword`
    - If deploying behind an existing URL, the `HOST` parameter can be passed to auto-update the visualisation's client side files (e.g. `./scripts/start.sh PASSWORD=pickapassword HOST=https://theworldavatar.io/demo/uk-base-world`)
