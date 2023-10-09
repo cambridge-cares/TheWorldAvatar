@@ -12,7 +12,7 @@
         {
             "type": "tabular",
             "skip": false,
-            "table": "ng_styling",
+            "table": "styling",
             "subdirectory": "styling"
         },
         {
