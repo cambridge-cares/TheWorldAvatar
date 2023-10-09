@@ -80,7 +80,8 @@ To run the script and bring up a local instance of the UK Base World visualisati
 3. Add your Mapbox credentials:
    - Add your username to a file at `./visualisation/mapbox_username`
    - Add your API key to a file at `./visualisation/mapbox_api_key`
-4. Add the data files:
+4. Add the data files: 
+   **NB** the entire config and data folders can be copied directly into the `inputs` directory from `\\pavilion\all\projects\uk-base-world-with-pylons-and-veg\data`
    - Add the processed DUKES 2023 CSV to the `./inputs/data/uk_base_world/dukes_2023` directory.
    - Add the OntoEIP OWL and TTL files to the `./inputs/data/uk_base_world/ontoeip` directory (note that these need to be in a flat structure, no subdirectories).
    - Add forestry data: download shapefiles from [National Forest Inventory Woodland GB 2020](https://data-forestry.opendata.arcgis.com/datasets/eb05bd0be3b449459b9ad0692a8fc203_0/explore?location=55.208415%2C-2.724655%2C6.98) and copy into `./inputs/data/forestry/vector` subdirectory.
