@@ -141,7 +141,7 @@ class KGClient(PySparqlClient):
         #TODO: To be revisited whether that's the final way we want to do it,
         #      or rather query via OntoHeatNet instead of OntoDerivation
         query = f"""
-            SELECT DISTINCT ?output_iris
+            SELECT DISTINCT ?output_iri
             WHERE {{   
             <{forecast_iri}> ^<{ONTODERIVATION_ISDERIVEDFROM}> ?deriv_iri . 
             ?deriv_iri ^<{ONTODERIVATION_BELONGSTO}> ?output_iri . 
