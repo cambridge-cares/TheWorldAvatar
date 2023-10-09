@@ -185,7 +185,7 @@ class KGClient(PySparqlClient):
             SELECT DISTINCT ?sim_t ?interval ?start ?end
             WHERE {{
             VALUES ?derivation_iri {{ <{'> <'.join(derivation_iris)}> }}
-            {{ ?sim_t <{RDF_TYPE}> <{TIME_DURATION}> ;
+            {{ ?sim_t <{RDF_TYPE}> <{OD_SIMULATION_TIME}> ;
                       ^<{ONTODERIVATION_ISDERIVEDFROM}> ?derivation_iri .
             }} UNION {{
                ?interval <{RDF_TYPE}> <{TIME_INTERVAL}> ;

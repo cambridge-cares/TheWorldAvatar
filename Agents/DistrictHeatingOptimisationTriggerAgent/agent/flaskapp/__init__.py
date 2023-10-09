@@ -109,7 +109,7 @@ def trigger_optimisation_task(params):
             msg = f'More than 2 Emission estimation derivation retrieved: {", ".join(em_deriv_iri)}'
             logger.error(msg)
             raise ValueError(msg)
-        derivs = [d for d in (opti_deriv_iri, em_deriv_iri) if d is not None]
+        derivs = opti_deriv_iri + em_deriv_iri
         try:
             # Retrieve unique time inputs (optimisation interval, simulation time)
             # attached to retrieved derivations; throws Exception if any does not exists
@@ -209,7 +209,7 @@ def trigger_optimisation_task(params):
                     # a disp:hasOntoCityGMLCityObject relationship attached for Aermod to work)
 
                     # Get all optimisation derivation outputs
-                    opti_outputs = kg_client.get_derivation_outputs([opti_deriv_iri])
+                    opti_outputs = kg_client.get_derivation_outputs(opti_deriv_iri)
                     # Extract all created forecast instances and create list of optimisation inputs
                     #    1) EfW emissions (ProvidedHeatAmount)
                     inputs_efw_em = list(opti_outputs[OHN_PROVIDED_HEAT_AMOUNT]) + [sim_t, point_source_efw]
