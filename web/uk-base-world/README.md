@@ -82,7 +82,7 @@ To run the script and bring up a local instance of the UK Base World visualisati
    - Add your API key to a file at `./visualisation/mapbox_api_key`
 4. Add the data files:
    - Add the processed DUKES 2023 CSV to the `./inputs/data/uk_base_world/dukes_2023` directory.
-   - Add the OntoEIP OWL and TTL files to the `./inputs/data/ontoeip` directory (note that these need to be in a flat structure, no subdirectories).
+   - Add the OntoEIP OWL and TTL files to the `./inputs/data/uk_base_world/ontoeip` directory (note that these need to be in a flat structure, no subdirectories).
 5. Run the script from the `uk-base-world` directory, passing a password for PostGIS and Geoserver:
    - Example command: `./scripts/start.sh PASSWORD=pickapassword`
    - If deploying behind an existing URL, the `HOST` parameter can be passed to auto-update the visualisation's client side files (e.g. `./scripts/start.sh PASSWORD=pickapassword HOST=https://theworldavatar.io/demo/uk-base-world`)
