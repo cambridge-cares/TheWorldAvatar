@@ -366,8 +366,8 @@ To create this figure, four files are needed to be copied into the scenario fold
 - 4.3.4 The final step is to copy the `index.html` template from `\UK_Digital_Twin\resources\HTML_Files\SMR_FossilPlant_output` into the scenario folder `\UK_Digital_Twin\outputs\MAPBOX_files\SMR_FossilPlant_output\29bus_LCOE_60£\weather_WBSB\weight_0.25\carbonTax_55\`. In the `index.html`, please do the following modification:
 
 - 4.3.4.1 Replace `<SMR_GEOJSON_FILE_NAME>` with `29BusModel_28_SMRs_Introduced_CarbonTax55_WeatherCondition_WBSB_weighter_0.25_SMR.geojson`
-- 4.3.4.2 Replace `<FOSSIL_POWER_PLANT_GEOJSON_FILE_NAME>` with `fossilFuelPowerPlantGeoJSON_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
-- 4.3.4.3 Replace `<OUTPUT_POWER_PLANT_GEOJSON_FILE_NAME>` with `TotalOutputForRegionalArea_(SMR_0_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
+- 4.3.4.2 Replace `<FOSSIL_POWER_PLANT_GEOJSON_FILE_NAME>` with `fossilFuelPowerPlantGeoJSON_(SMR_28_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
+- 4.3.4.3 Replace `<OUTPUT_POWER_PLANT_GEOJSON_FILE_NAME>` with `TotalOutputForRegionalArea_(SMR_28_CarbonTax_0_weatherCondition_WBSB_weight_0.25).geojson`
 
 - 4.3.4.4 Start the http.server for the visulisation in Google mapbox.
 
