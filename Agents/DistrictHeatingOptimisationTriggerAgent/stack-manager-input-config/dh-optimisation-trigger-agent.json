@@ -3,7 +3,7 @@
         "Name": "dh-optimisation-trigger-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:0.0.1-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:1.0.0",
                 "Command": [
                     "/bin/bash", "./delayed_start.sh"
                 ],

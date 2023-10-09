@@ -1,23 +1,23 @@
 # District Heating Optimisation Trigger Agent
 
-This `District Heating Optimisation Trigger Agent` can be used to trigger recurring optimisations of the district heating system in Pirmasens (including the simulation of corresponding emission dispersion) according to the latest use case design using [chained derivations]. For each time step to simulate (i.e., using Aermod Agent), a corresponding `SimulationTime` instance is instantiated or updated, together with a time `Interval` instance representing the associated optimisation horizon (for the DH Optimisation Agent) and two time `Duration`s specifying the length of historical time series data required for the Forecasting Agent. 
+This `District Heating Optimisation Trigger Agent` can be used to trigger recurring optimisations of the district heating system in Pirmasens (including the simulation of corresponding emission dispersion) according to the latest use case design using [chained derivations]. For each time step to simulate (i.e., using Aermod Agent), a corresponding `SimulationTime` instance is instantiated or updated, together with a time `Interval` instance representing the associated optimisation horizon (for the DH Optimisation Agent) and two time `Duration`s specifying the length of historical time series data required for the Forecasting Agent. For details, please see the provided link to the derivation design together with the [OntoTimeSeries (Miro board)] and [OntoHeatNet (Miro board)].
 
-On agent startup, the specified SPARQL endpoint will also be populated with all triples provided as `.ttl` files in the [resources/triples] folder, e.g., upload required descriptions of used forecasting models and static point source instances. **Please note** that the `disp:hasOntoCityGMLCityObject` range instances need to be populated manually beforehand, as there is currently no way to extract the corresponding IRIs programmatically. As the folder is mounted into the container, no rebuilding is required after changing the triples to upload. 
-
-<!-- 
-TODO: elaborate on the overall role of this agent in the use case/deployment design: sequence of deployments, dependencies, etc. 
--->
-
-For details, please see the provided link to the derivation design together with the [OntoTimeSeries (Miro board)] and [OntoHeatNet (Miro board)].
+On agent startup, the specified SPARQL endpoint will also be populated with all triples provided as `.ttl` files in the [resources/triples] folder, e.g., upload required descriptions of used forecasting models and static point source instances.
 
 
 # 1. Setup
 
 The dockerised agent can be deployed as standalone version (i.e., outside a larger Docker stack) or deployed to an (existing) stack. 
 
-## 1.1. Stand-alone Deployment
+## 1.1. Prerequisites
 
-Several key environment variables need to be set in the [Docker compose file]:
+Before starting the agent, the `disp:hasOntoCityGMLCityObject` range instances in the [static_point_sources.ttl] file need to be populated manually with the corresponding exhaust outlets/chimneys, as there is currently no way to extract these CityObject IRIs programmatically. The agent will not start in case syntactically invalid IRIs are provided. 
+When deploying the agent via the stack-manager, the `Source` node of the mount specification in the [stack-manager-input-config file] likely needs to be adjusted. As the folder is mounted into the container, no rebuilding is required after changing the triples to upload; a simple restart shall be sufficient.
+
+
+## 1.2. Stand-alone Deployment
+
+Several key environment variables need to be set in the [docker compose file]:
 
 ```bash
 # Required environment variables for "standalone deployment"
@@ -30,14 +30,13 @@ Several key environment variables need to be set in the [Docker compose file]:
 - EMISSION_ESTIMATION_AGENT=
 ```
 
-The `STACK_NAME` variable is used to identify the deployment mode of the agent (and a missing one will result in an error). In case the `STACK_NAME` is left blank, Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients.
+The `STACK_NAME` variable is used to identify the deployment mode of the agent (and a missing one will result in an error). In case the `STACK_NAME` is left blank, Blazegraph endpoint settings will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients.
 
 To build and publish the agent Docker image please use the following commands. Please note that all of those commands are bundled in the  `publish_docker_image.sh` convenience script.
 
 ```bash
 # Building the Docker image
 docker compose -f docker-compose.yml build
-
 # Publish the Docker image to the Github container registry
 docker image push ghcr.io/cambridge-cares/<image tag>:<version>
 ```
@@ -49,7 +48,7 @@ Deploy the agent image with the following command in the same location where thi
 docker compose -f docker-compose.yml up
 ```
 
-## 1.2. Stack Deployment
+## 1.3. Stack Deployment
 
 Several key environment variables need to be set in the [stack-manager-input-config file]:
 
@@ -64,10 +63,10 @@ Several key environment variables need to be set in the [stack-manager-input-con
     ],
 ```
 
-**Please note:** The specified namespace needs to exist/be created in Blazegraph beforehand to avoid agent execution issues.
+**Please note:** 1) The specified namespace needs to exist/be created in Blazegraph beforehand to avoid agent execution issues. 2) The `Source` of the bind mount path likely needs to be adjusted.
 
 If you want to spin up this agent as part of a stack, do the following:
-1) Build the Docker image using the commands provided above (do not spin up the image)
+1) Pull the Docker image `docker pull ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:1.0.0` (alternatively, build with the commands above, but do not spin up the image)
 2) Copy the `dh-optimisation-trigger-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config/services` folder of the stack manager
 3) Add the service to a corresponding stack configuration json in `inputs/config`
 4) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
@@ -121,6 +120,7 @@ Markus Hofmeister (mh807@cam.ac.uk), July 2023
 [flaskapp init]: ./agent/flaskapp/__init__.py
 [resources/triples]: ./resources/triples/
 [example_opt_request]: ./resources/example_opt_request.http
-[Docker compose file]: ./docker-compose.yml
+[docker compose file]: ./docker-compose.yml
 [stack-manager-input-config]: ./stack-manager-input-config
-[stack-manager-input-config file]: ./stack-manager-input-config/dhoptimisationtrigger_agent.json
+[stack-manager-input-config file]: ./stack-manager-input-config/dh-optimisation-trigger-agent.json
+[static_point_sources.ttl]: ./resources/triples/static_point_sources.ttl
