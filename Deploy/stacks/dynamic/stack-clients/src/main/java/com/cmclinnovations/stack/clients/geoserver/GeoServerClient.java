@@ -195,6 +195,7 @@ public class GeoServerClient extends ContainerClient {
 
             GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
             if (null != virtualTable) {
+                virtualTable.setName(layerName + "_" + virtualTable.getName());
                 fte.setNativeName(virtualTable.getName());
                 fte.setMetadataVirtualTable(virtualTable);
             }
@@ -212,7 +213,7 @@ public class GeoServerClient extends ContainerClient {
 
     public void createGeoTiffLayer(String workspaceName, String name, String database, String schema,
             GeoServerRasterSettings geoServerSettings) {
-        
+
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
             logger.info("GeoServer coverage store '{}' already exists.", name);
         } else {
