@@ -25,6 +25,15 @@ OntoZoning is an ontology developed to represent relationships between zoning ty
 
 - As defined in Singapore's Master Plan 2019, there are 32 unique zoning types, which have been incorporated into this ontology. These zones may host multiple land uses. 
 - All zoning types have a 'Zone' suffix in their class names to bring clarity, especially given the presence of a 'SpecialUse' zoning type.
+- Certain zoning types are subsets of another zoning type, and have been reflected as such in the ontology. As subsets, these zoning types include their parent zoning types' programmes and have additional programmes based on their legal definitions. Examples are:
+
+Zoning Type | Zoning Type Subset
+--- | ---
+Business1 | Business1White
+Business2 | Business2White
+BusinessPark | BusinessParkWhite
+Residential | ResidentialOrInstitution
+Residential | ResidentialWithCommercialAtFirstStorey
 
 >LandUse
 
