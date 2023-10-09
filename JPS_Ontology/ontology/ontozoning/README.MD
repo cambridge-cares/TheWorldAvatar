@@ -81,7 +81,7 @@ CommunityInstitutionExcludingDormitoryAndFuneral | |
 - Every programme has a data source defining the source of the concept name. This allows us to extend the applications beyond the limited scope of the URA Written Statement and other planning regulations in Singapore. The data sources are as follows:
     - URA Written Statement
     - Google Places data
-    - The [LBCSv2](https://enterpriseintegrationlab.github.io/icity/LandUse/LandUse_1.1/doc/index-en.html) land use ontology.
+    - Activities from the [Land Based Classification Standards (LBCS)](https://enterpriseintegrationlab.github.io/icity/LBCSv2/doc/index-en.html) ontology.
 
 >UseQuantum
 
