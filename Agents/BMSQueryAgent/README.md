@@ -1,9 +1,11 @@
 # BMSQueryAgent
 BMSQueryAgent is an agent designed to query for equipment instances and the related zones from the knowledge graph.
-With this agent, a user can get all the equipment following the link building - facility - room - equipment. The agent is usually used in the BMS Query App for visualisation.
+With this agent, a user can get all the equipment following the link building - facility - room - equipment. 
 
 To achieve a balance between response speed and body size, the agent breaks the above link to two Http requests. 
 - Request sent to `retrieve/zones` will return all the available buildings, the associated facilities and all the rooms in each facility in JSON format. 
+- Request sent to `retrieve/lab` is similar to `retrieve/zones` but only the zones in lab namespace
+- Request sent to `retrieve/office` is similar to `retrieve/zones` but only the zones in office namespace
 - Once the room is determined, users can send `retrieve/equipment?RoomIRI=<selected room iri>` to get all the equipment in the selected room.
 
 # 1. Setup
