@@ -21,16 +21,19 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import static uk.ac.cam.cares.jps.agent.assetmanager.ClassAndProperties.*;
 import static uk.ac.cam.cares.jps.agent.assetmanager.QueryUtil.*;
 
+import java.rmi.Remote;
+
 public class AssetExistenceChecker {
-    private RemoteStoreClient storeClientAsset, storeClientDevice, storeClientPurchDoc;
+    private RemoteStoreClient storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab;
     /**
      * Logger for reporting info/errors.
      */
     private static final Logger LOGGER = LogManager.getLogger(AssetManagerAgent.class);
-    public AssetExistenceChecker (RemoteStoreClient clientAsset, RemoteStoreClient clientDevice, RemoteStoreClient clientPurchDoc) {
+    public AssetExistenceChecker (RemoteStoreClient clientAsset, RemoteStoreClient clientDevice, RemoteStoreClient clientPurchDoc, RemoteStoreClient clientLab) {
         storeClientAsset = clientAsset;
-        storeClientDevice = clientDevice;
+        storeClientOffice = clientDevice;
         storeClientPurchDoc = clientPurchDoc;
+        storeClientLab = clientLab;
     }
     
     public JSONObject getPersonTriples(String name){
@@ -144,9 +147,9 @@ public class AssetExistenceChecker {
         }
     }
 
-    public JSONObject getLocationTriples (String buildingName, String facilityName, String roomName){
+    public JSONObject getLocationTriples (String buildingName, String facilityName, String roomName, RemoteStoreClient storeClient){
         if (buildingName.equals("Research Wing") || buildingName.equals("CREATE Tower")){
-            return  queryLocationIRIByName(buildingName, facilityName, roomName);
+            return  queryLocationIRIByName(buildingName, facilityName, roomName, storeClient);
         }
         else{
             //Use String literal for the location as its not registered
@@ -154,7 +157,7 @@ public class AssetExistenceChecker {
         }
     }
 
-    public JSONObject queryLocationIRIByName (String buildingName, String facilityName, String roomName) {
+    public JSONObject queryLocationIRIByName (String buildingName, String facilityName, String roomName, RemoteStoreClient storeClient) {
         JSONObject result = new JSONObject();
         Variable roomIRI = SparqlBuilder.var("roomIRI");
         Variable roomTypeIRI = SparqlBuilder.var("roomTypeIRI");
@@ -180,7 +183,7 @@ public class AssetExistenceChecker {
         query.where(locationIRI.has(hasIfcRepresentation, locationIFCReprIRI));
         query.where(locationIFCReprIRI.has(RDFS.LABEL, Rdf.literalOf(buildingName)));
 
-        JSONArray reqResult = storeClientDevice.executeQuery(query.getQueryString());
+        JSONArray reqResult = storeClient.executeQuery(query.getQueryString());
         switch (reqResult.length()) {
             case 0:
                 //location does not exist.
@@ -206,7 +209,7 @@ public class AssetExistenceChecker {
 
     }
 
-    public JSONObject queryStorageIRIbyID(String ID) {
+    public JSONObject queryStorageIRIbyID(String ID, RemoteStoreClient storeClient) {
         //For Asset storing other assets or FH/WFH
         JSONObject result = new JSONObject();
         SelectQuery query = Queries.SELECT();
@@ -229,7 +232,7 @@ public class AssetExistenceChecker {
                 throw new JPSRuntimeException("Storage has more than 1 IRI for ID: " + ID + ". Check the knowledge graph for duplicates.", null);
         }
         //Fumehoods are in lab namespace
-        reqResult = storeClientDevice.executeQuery(query.getQueryString());
+        reqResult = storeClient.executeQuery(query.getQueryString());
         LOGGER.debug("Storage Asset existence check for ID:"+ ID+ " :" + reqResult);
         switch (reqResult.length()) {
             case 0:
@@ -242,10 +245,11 @@ public class AssetExistenceChecker {
             default:
                 throw new JPSRuntimeException("Storage has more than 1 IRI for ID: " + ID + ". Check the knowledge graph for duplicates.", null);
         }
+        
 
     }
 
-    public JSONObject queryStorageFurnitureIRIbyName(String name) {
+    public JSONObject queryStorageFurnitureIRIbyName(String name, RemoteStoreClient storeClient) {
         //FOr cabinets or other furnitures
         JSONObject result = new JSONObject();
         SelectQuery query = Queries.SELECT();
@@ -255,7 +259,7 @@ public class AssetExistenceChecker {
         Variable cabinetIRI = SparqlBuilder.var("cabinetIRI");
 
         query.where(cabinetIRI.has(hasFurnitureIdentifier, Rdf.literalOf(name)));
-        JSONArray reqResult = storeClientDevice.executeQuery(query.getQueryString());
+        JSONArray reqResult = storeClient.executeQuery(query.getQueryString());
         switch (reqResult.length()) {
             case 0:
                 return null;

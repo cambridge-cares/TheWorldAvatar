@@ -25,21 +25,24 @@ import static uk.ac.cam.cares.jps.agent.assetmanager.ClassAndProperties.*;
 import static uk.ac.cam.cares.jps.agent.assetmanager.QueryUtil.*;
 
 public class AssetRetriever {
-    private RemoteStoreClient storeClientAsset, storeClientDevice, storeClientPurchDoc;
+    private RemoteStoreClient storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab;
     JSONObject result = new JSONObject();
-    String assetNamespace, deviceNamespace, purchaseDocsNamespace;
+    String assetNamespace, deviceNamespace, purchaseDocsNamespace, labNamespace;
     /**
      * Logger for reporting info/errors.
      */
     private static final Logger LOGGER = LogManager.getLogger(AssetManagerAgent.class);
-    public AssetRetriever (RemoteStoreClient clientAsset, RemoteStoreClient clientDevice, RemoteStoreClient clientPurchDoc, String assetKGNamespace, String deviceKGNamespace, String purchaseDocsKGNamespace) {
+    public AssetRetriever (RemoteStoreClient clientAsset, RemoteStoreClient clientOffice, RemoteStoreClient clientPurchDoc, RemoteStoreClient clientLab, 
+                            String assetKGNamespace, String deviceKGNamespace, String purchaseDocsKGNamespace, String labKGNamespace) {
         storeClientAsset = clientAsset;
-        storeClientDevice = clientDevice;
+        storeClientOffice = clientOffice;
         storeClientPurchDoc = clientPurchDoc;
+        storeClientLab = clientLab;
 
         assetNamespace = assetKGNamespace;
         deviceNamespace = deviceKGNamespace;
         purchaseDocsNamespace = purchaseDocsKGNamespace;
+        labNamespace = labKGNamespace;
     }
 
 
@@ -234,7 +237,7 @@ public class AssetRetriever {
 
 
         
-        handleDeviceData(storeClientDevice.executeQuery(query.getQueryString()));
+        handleDeviceData(storeClientOffice.executeQuery(query.getQueryString()));
     }
 
     void handleDeviceData (JSONArray requestResult) {
@@ -536,7 +539,7 @@ public class AssetRetriever {
         Variable workspaceID = SparqlBuilder.var("workspaceID");
         Variable roomName = SparqlBuilder.var("roomName");
 
-
+        JSONArray result = new JSONArray();
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
@@ -546,13 +549,16 @@ public class AssetRetriever {
         query.where(workspaceIRI.has(isLocatedIn, roomIRI));
         query.where(workspaceIRI.has(hasWorkspaceIdentifier, workspaceID));
 
-        return storeClientDevice.executeQuery(query.getQueryString());
+        result.put(storeClientOffice.executeQuery(query.getQueryString()));
+        result.put(storeClientLab.executeQuery(query.getQueryString()));
+        return result;
     }
 
     public JSONArray getAllElementInWorkspace(){
         /*TODO modify to rdf4j format
          * Yes, I'm being lazy again here. But it works (sometimes), so who cares
          */
+        JSONArray result = new JSONArray();
         String query = "PREFIX ontoassetmanagement: <" + ONTOASSET + ">\n"+
                 "SELECT *\n" + 
                 "WHERE {\n" + 
@@ -565,7 +571,9 @@ public class AssetRetriever {
                 "   }\n" + 
                 "}";
 
-        return storeClientDevice.executeQuery(query);
+        result.put(storeClientOffice.executeQuery(query));
+        result.put(storeClientLab.executeQuery(query));
+        return result;
     }
 
 }

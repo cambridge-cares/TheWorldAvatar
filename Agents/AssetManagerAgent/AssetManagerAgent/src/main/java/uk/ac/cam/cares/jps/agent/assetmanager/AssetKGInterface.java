@@ -43,8 +43,8 @@ import org.apache.logging.log4j.Logger;
  * Class for creating queries and instantiating asset triples
  */
 public class AssetKGInterface {
-    private String endpointAsset, endpointDevice, endpointPurchDoc;
-    private RemoteStoreClient storeClientAsset, storeClientDevice, storeClientPurchDoc;
+    private String endpointAsset, endpointOffice, endpointPurchDoc, endpointLab;
+    private RemoteStoreClient storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab;
     public AssetExistenceChecker existenceChecker;
     public AssetRetriever assetRetriever;
 
@@ -55,37 +55,43 @@ public class AssetKGInterface {
     private static final Logger LOGGER = LogManager.getLogger(AssetManagerAgent.class);
 
     //constructor
-    public AssetKGInterface(String kgEndpointAsset, String kgEndpointDevice, String kgEndpointPurchDoc) {
+    public AssetKGInterface(String kgEndpointAsset, String kgEndpointOffice, String kgEndpointPurchDoc, String kgEndpointLab) {
         endpointAsset = kgEndpointAsset;
-        endpointDevice = kgEndpointDevice;
+        endpointOffice = kgEndpointOffice;
         endpointPurchDoc = kgEndpointPurchDoc;
+        endpointLab = kgEndpointLab;
 
         storeClientAsset = new RemoteStoreClient(kgEndpointAsset, kgEndpointAsset);
-        storeClientDevice = new RemoteStoreClient(kgEndpointDevice, kgEndpointDevice);
+        storeClientOffice = new RemoteStoreClient(kgEndpointOffice, kgEndpointOffice);
         storeClientPurchDoc = new RemoteStoreClient(kgEndpointPurchDoc, kgEndpointPurchDoc);
+        storeClientLab = new RemoteStoreClient(kgEndpointLab, kgEndpointLab);
             
-        existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientDevice, storeClientPurchDoc);
-        assetRetriever =  new AssetRetriever (storeClientAsset, storeClientDevice, storeClientPurchDoc, endpointAsset, endpointDevice, endpointPurchDoc);
+        existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab);
+        assetRetriever =  new AssetRetriever (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab, endpointAsset, endpointOffice, endpointPurchDoc, endpointLab);
     }
 
-    public AssetKGInterface(String kgEndpointAsset, String kgEndpointDevice, String kgEndpointPurchDoc, String username, String password) {
+    public AssetKGInterface(String kgEndpointAsset, String kgEndpointOffice, String kgEndpointPurchDoc, String kgEndpointLab, String username, String password) {
         endpointAsset = kgEndpointAsset;
-        endpointDevice = kgEndpointDevice;
+        endpointOffice = kgEndpointOffice;
         endpointPurchDoc = kgEndpointPurchDoc;
+        endpointLab = kgEndpointLab;
 
         storeClientAsset = new RemoteStoreClient(kgEndpointAsset, kgEndpointAsset);
-        storeClientDevice = new RemoteStoreClient(kgEndpointDevice, kgEndpointDevice);
+        storeClientOffice = new RemoteStoreClient(kgEndpointOffice, kgEndpointOffice);
         storeClientPurchDoc = new RemoteStoreClient(kgEndpointPurchDoc, kgEndpointPurchDoc);
+        storeClientLab = new RemoteStoreClient(kgEndpointLab, kgEndpointLab);
 
         storeClientAsset.setUser(username);
         storeClientAsset.setPassword(password);
-        storeClientDevice.setUser(username);
-        storeClientDevice.setPassword(password);
+        storeClientOffice.setUser(username);
+        storeClientOffice.setPassword(password);
         storeClientPurchDoc.setUser(username);
         storeClientPurchDoc.setPassword(password);
+        storeClientLab.setUser(username);
+        storeClientLab.setPassword(password);
             
-        existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientDevice, storeClientPurchDoc);
-        assetRetriever =  new AssetRetriever (storeClientAsset, storeClientDevice, storeClientPurchDoc, endpointAsset, endpointDevice, endpointPurchDoc);
+        existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab);
+        assetRetriever =  new AssetRetriever (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab, endpointAsset, endpointOffice, endpointPurchDoc, endpointLab);
     }
 
     /**
@@ -248,6 +254,30 @@ public class AssetKGInterface {
         AssetData.put("serialNum", SerialNum);
         AssetData.put("modelNumber", ModelNum);
 
+        //Location and rooms
+        //Workspace IRI is handled at "Person"
+        String location = AssetDataRaw.getString("BuildingLocation");
+        String facility = AssetDataRaw.getString("FacilityLocation");
+        String room = AssetDataRaw.getString("RoomLocation");
+        String roomIRI = "";
+        String facilityIRI = "";
+        String locationIRI = location;
+
+        RemoteStoreClient preferredClient = storeClientOffice;
+
+        if(location.contains("Research Wing")){preferredClient = storeClientLab;}
+
+        JSONObject locationIRIs = existenceChecker.getLocationTriples (location, facility, room, preferredClient);
+        if (locationIRIs != null){
+            locationIRI = locationIRIs.getString("locationIRI");
+            facilityIRI = locationIRIs.getString("facilityIRI");
+            roomIRI = locationIRIs.getString("RoomIRI");
+        }
+        AssetData.put("locationIRI", locationIRI);
+        AssetData.put("facilityIRI", facilityIRI);
+        AssetData.put("RoomIRI", roomIRI);
+        AssetData.put("Location", location);
+
         //storage
         String storageName = AssetDataRaw.getString("storage");
         AssetData.put("storageID", storageName);
@@ -260,7 +290,7 @@ public class AssetKGInterface {
             if (storageName.toLowerCase().contains("cabinet") || storageName.toLowerCase().contains("cupboard") || storageName.contains("MS") || storageName.contains("BS") || storageName.contains("LABC")){
                 //TODO handle cabinet type
                 String cabinetIRI = "";
-                JSONObject reqResult = existenceChecker.queryStorageFurnitureIRIbyName(storageName);
+                JSONObject reqResult = existenceChecker.queryStorageFurnitureIRIbyName(storageName, preferredClient);
                 if (reqResult == null) {
                     cabinetIRI = genIRIString("Cabinet", P_ASSET);
                 }
@@ -284,30 +314,12 @@ public class AssetKGInterface {
             }
             else{
                 //Assumed to be other assets or fumehoods
-                AssetData.put("storageIRI", existenceChecker.queryStorageIRIbyID(storageName).getString("storageIRI"));
+                AssetData.put("storageIRI", existenceChecker.queryStorageIRIbyID(storageName, preferredClient).getString("storageIRI"));
                 AssetData.put("cabinetIRI", "");
                 AssetData.put("cabinetTypeIRI", "");
             }
         }
 
-        //Location and rooms
-        //Workspace IRI is handled at "Person"
-        String location = AssetDataRaw.getString("BuildingLocation");
-        String facility = AssetDataRaw.getString("FacilityLocation");
-        String room = AssetDataRaw.getString("RoomLocation");
-        String roomIRI = "";
-        String facilityIRI = "";
-        String locationIRI = location;
-        JSONObject locationIRIs = existenceChecker.getLocationTriples (location, facility, room);
-        if (locationIRIs != null){
-            locationIRI = locationIRIs.getString("locationIRI");
-            facilityIRI = locationIRIs.getString("facilityIRI");
-            roomIRI = locationIRIs.getString("RoomIRI");
-        }
-        AssetData.put("locationIRI", locationIRI);
-        AssetData.put("facilityIRI", facilityIRI);
-        AssetData.put("RoomIRI", roomIRI);
-        AssetData.put("Location", location);
 
         //Purchase docs
         //Item and service code are handled above together with device
@@ -605,7 +617,7 @@ public class AssetKGInterface {
         }
         
 
-        storeClientDevice.executeUpdate(query.getQueryString());
+        storeClientOffice.executeUpdate(query.getQueryString());
     }
 
     private void createPurchaseDocNamespace (JSONObject data){
@@ -834,7 +846,7 @@ public class AssetKGInterface {
         }
         
         
-        storeClientDevice.executeUpdate(query.getQueryString());
+        storeClientOffice.executeUpdate(query.getQueryString());
 
     }
 
@@ -848,8 +860,8 @@ public class AssetKGInterface {
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
-        query.insert(iri(documentIRI).isA(SpecSheet));
-        query.insert(iri(deviceIRI).has(hasDataSheet, documentIRI));
+        query.insert(iri(documentIRI).isA(iri(docType)));
+        query.insert(iri(deviceIRI).has(hasDataSheet, iri(documentIRI)));
         query.insert(iri(documentIRI).has(availableAt, docFilename));
         if (!docComment.isBlank()){
             query.insert(iri(documentIRI).has(RDFS.COMMENT, Rdf.literalOf(docComment)));
@@ -871,7 +883,7 @@ public class AssetKGInterface {
       }
 
       public JSONObject getRequiredIriUI () {
-        return assetRetriever.getRequiredIriUI(endpointAsset, endpointDevice);
+        return assetRetriever.getRequiredIriUI(endpointAsset, endpointOffice);
       }
 
       public JSONArray getItemListByDocIRI (String InvoiceIRI, String POiri, String DOiri) {
