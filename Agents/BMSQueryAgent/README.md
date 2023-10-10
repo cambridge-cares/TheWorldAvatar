@@ -61,6 +61,8 @@ Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/D
 The agent accepts three paths:
 - /status
 - /retrieve/zones
+- /retrieve/lab
+- /retrieve/office
 - /retrieve/equipment?roomIRI="room iri"
 
 ## Status
@@ -75,7 +77,7 @@ Result in:
 ```
 
 ## Retrieve Zones
-This request gets all the available buildings, the associated facilities and all the rooms in each facility in JSON format. The request has the following format:
+This request gets all the available buildings from lab and office namespace, the associated facilities and all the rooms in each facility in JSON format. The request has the following format:
 ```
 curl -X GET http://localhost:3838/bms-query-agent/retrieve/zones
 ```
@@ -110,6 +112,20 @@ Result in:
     }
 }
 ```
+
+## Retrieve Lab Zones
+This request gets all the available buildings from lab namespace, the associated facilities and all the rooms in each facility in JSON format. The request has the following format:
+```
+curl -X GET http://localhost:3838/bms-query-agent/retrieve/lab
+```
+The response will have similar structure as in `/retrieve/zones`
+
+## Retrieve Office Zones
+This request gets all the available buildings from office namespace, the associated facilities and all the rooms in each facility in JSON format. The request has the following format:
+```
+curl -X GET http://localhost:3838/bms-query-agent/retrieve/office
+```
+The response will have similar structure as in `/retrieve/zones`
 
 ## Retrieve Equipment
 This request gets all the equipment in a given room. The request has the following format:

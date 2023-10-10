@@ -54,10 +54,14 @@ public class BMSQueryAgentIntegrationTest {
         httpClient = HttpClients.createDefault();
         createNewNameSpace();
 
-        RemoteStoreClient rsClient = new RemoteStoreClient();
-        rsClient.setQueryEndpoint(getNamespaceUrl("lab"));
+        RemoteStoreClient labRsClient = new RemoteStoreClient();
+        labRsClient.setQueryEndpoint(getNamespaceUrl("lab"));
+
+        RemoteStoreClient officeRsClient = new RemoteStoreClient();
+        officeRsClient.setQueryEndpoint(getNamespaceUrl("caresOffice"));
+
         agent = new BMSQueryAgent();
-        agent.setRSClient(rsClient);
+        agent.setRSClient(labRsClient, officeRsClient);
 
 //        postNewData("lab", "");
     }
@@ -80,14 +84,14 @@ public class BMSQueryAgentIntegrationTest {
 
     @Test
     public void testQueryAllZones_Empty() {
-        JSONObject result = agent.queryAllZones();
+        JSONObject result = agent.queryLabZones();
         assertTrue(result.getJSONObject("buildings").keySet().isEmpty());
     }
 
     @Test
     public void testQueryAllZones() throws IOException {
         createNewData("lab", "testQueryAllZones.xml");
-        JSONObject result = agent.queryAllZones();
+        JSONObject result = agent.queryLabZones();
 
         JSONObject buildings = result.getJSONObject("buildings");
         assertEquals(2, buildings.keySet().size());
