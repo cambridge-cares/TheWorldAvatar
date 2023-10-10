@@ -854,6 +854,7 @@ public class AssetKGInterface {
         if (!docComment.isBlank()){
             query.insert(iri(documentIRI).has(RDFS.COMMENT, Rdf.literalOf(docComment)));
         }
+        storeClientAsset.executeUpdate(query.getQueryString());
     }
 
 

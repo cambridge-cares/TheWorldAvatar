@@ -34,7 +34,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
     "/addmaintenance",
     "/print", 
     "/printbulk",
-    "/addmanualpdf"
+    "/addmanual"
 })
 public class AssetManagerAgent extends JPSAgent{
     /**
@@ -155,8 +155,8 @@ public class AssetManagerAgent extends JPSAgent{
                 }
                 jsonMessage = instantiateAsset(args, assetData);
             }
-            else if (urlPath.contains("addmanualpdf")){
-                jsonMessage = addManualPDF(args, assetData.getString("targetID"), assetData.getString("comments"), assetData.getString("documentType"), assetData.getString("encodedPDF"), assetData.getString("fileName"));
+            else if (urlPath.contains("addmanual")){
+                jsonMessage = addManual(args, assetData.getString("targetID"), assetData.getString("comments"), assetData.getString("documentType"), assetData.getString("encoded"), assetData.getString("fileName"));
             }
             
             else if (urlPath.contains("printbulk")){
@@ -228,8 +228,8 @@ public class AssetManagerAgent extends JPSAgent{
             if (pathURL.contains("print")) {
                 validate = requestParams.getJSONObject("assetData").has("IRI");
             }
-            if (pathURL.contains("addmanualpdf")) {
-                validate = requestParams.getJSONObject("assetData").has("encodedPDF");
+            if (pathURL.contains("addmanual")) {
+                validate = requestParams.getJSONObject("assetData").has("encoded");
                 validate = requestParams.getJSONObject("assetData").has("fileName");
             }
         }
@@ -415,9 +415,9 @@ public class AssetManagerAgent extends JPSAgent{
         return message;
     }
 
-    public JSONObject addManualPDF(String[] arg, String targetID, String comments, String documentType, String encodedPDF, String fileName) {
+    public JSONObject addManual(String[] arg, String targetID, String comments, String documentType, String encoded, String fileName) {
         JSONObject message = new JSONObject();
-        if(!(encodedPDF.isBlank() || encodedPDF == null)){
+        if(!(encoded.isBlank() || encoded == null)){
             File file = new File(arg[5]+fileName);
             LOGGER.debug("FILENAME::"+arg[5]+fileName);
             if(!file.exists()) { 
@@ -431,7 +431,7 @@ public class AssetManagerAgent extends JPSAgent{
                 
             }
             try ( FileOutputStream fos = new FileOutputStream(file); ) {
-                byte[] decoder = Base64.getDecoder().decode(encodedPDF);
+                byte[] decoder = Base64.getDecoder().decode(encoded);
                 fos.write(decoder);
                 message.accumulate("Result", "PDF saved successfully");
             } catch (Exception e) {
