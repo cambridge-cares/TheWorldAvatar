@@ -1,5 +1,9 @@
 package com.cmclinnovations.featureinfo.core.time;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -11,8 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.jena.sparql.function.library.langeq;
-import org.hamcrest.Matchers;
 import org.json.JSONArray;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -25,7 +27,6 @@ import com.cmclinnovations.featureinfo.TestUtils;
 import com.cmclinnovations.featureinfo.config.ConfigEntry;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.ConfigStoreTest;
-import com.cmclinnovations.featureinfo.core.time.TimeHandler;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -89,15 +90,23 @@ public class TimeHandlerTest {
             configStore
         );
 
+        // Need to return a null connection otherwise it'll fail to connect
+        // to a non-existant database
+        TimeHandler spiedHandler = spy(timeHandler);
+        doReturn(null).when(spiedHandler).connectToDatabase(
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any()
+        );
+
         // Set clients for communication with KG and RDB
-        timeHandler.setClients(
+        spiedHandler.setClients(
             mockKGClient(true),
             mockTSClient(),
             mockRDBClient()
         );
 
         // Attempt to get results
-        JSONArray result = timeHandler.getData(
+        JSONArray result = spiedHandler.getData(
             configStore.getConfigEntries().subList(1, 2),
             TestUtils.mockResponse()
         );
@@ -148,15 +157,23 @@ public class TimeHandlerTest {
             configStore
         );
 
+        // Need to return a null connection otherwise it'll fail to connect
+        // to a non-existant database
+        TimeHandler spiedHandler = spy(timeHandler);
+        doReturn(null).when(spiedHandler).connectToDatabase(
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any()
+        );
+
         // Set clients for communication with KG and RDB
-        timeHandler.setClients(
+        spiedHandler.setClients(
             mockKGClient(false),
             mockTSClient(),
             mockRDBClient()
         );
 
         // Attempt to get results
-        JSONArray result = timeHandler.getData(
+        JSONArray result = spiedHandler.getData(
             configStore.getConfigEntries().subList(1, 2),
             TestUtils.mockResponse()
         );
@@ -207,8 +224,16 @@ public class TimeHandlerTest {
             configStore
         );
 
+        // Need to return a null connection otherwise it'll fail to connect
+        // to a non-existant database
+        TimeHandler spiedHandler = spy(timeHandler);
+        doReturn(null).when(spiedHandler).connectToDatabase(
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any()
+        );
+
         // Set clients for communication with KG and RDB
-        timeHandler.setClients(
+        spiedHandler.setClients(
             mockKGClientForMultiple(),
             mockTSClient(),
             mockRDBClient()
@@ -220,7 +245,7 @@ public class TimeHandlerTest {
         classMatches.add(configStore.getConfigEntries().get(3));
 
         // Attempt to get results
-        JSONArray result = timeHandler.getData(
+        JSONArray result = spiedHandler.getData(
             classMatches,
             TestUtils.mockResponse()
         );
