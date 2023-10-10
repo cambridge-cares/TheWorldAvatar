@@ -47,7 +47,7 @@ public class AddAssetFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         BasicConfigurator.configure();
         binding = FragmentAddAssetBinding.inflate(inflater);
-        viewModel = new ViewModelProvider(requireActivity()).get(AddAssetViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AddAssetViewModel.class);
         return binding.getRoot();
     }
 
@@ -86,7 +86,7 @@ public class AddAssetFragment extends Fragment {
     private void loadUIComponent() {
         ViewPager2 viewPager = binding.viewPager;
         TabLayout tabLayout = binding.tabs;
-        adapter = new TabAdapter(requireActivity().getSupportFragmentManager(), getLifecycle());
+        adapter = new TabAdapter(requireActivity().getSupportFragmentManager(), getLifecycle(), viewModel);
         viewPager.setAdapter(adapter);
         List<String> tabNames = Arrays.asList("General", "Purchase", "Documents");
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabNames.get(position))).attach();

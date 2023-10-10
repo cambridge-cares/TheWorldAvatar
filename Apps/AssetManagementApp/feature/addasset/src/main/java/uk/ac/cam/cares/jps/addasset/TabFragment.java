@@ -65,8 +65,9 @@ public class TabFragment extends Fragment {
 
     private ActivityResultLauncher<String> requestPermissionLauncher;
 
-    TabFragment(List<String> sections) {
+    TabFragment(List<String> sections, AddAssetViewModel viewModel) {
         this.sections = sections;
+        this.viewModel = viewModel;
     }
 
     @Nullable
@@ -82,7 +83,7 @@ public class TabFragment extends Fragment {
         LinearLayout root = new LinearLayout(inflater.getContext());
         root.setOrientation(LinearLayout.VERTICAL);
 
-        viewModel = new ViewModelProvider(requireActivity()).get(AddAssetViewModel.class);
+//        viewModel = new ViewModelProvider(requireActivity()).get(AddAssetViewModel.class);
 
         for (String section : sections) {
             View sectionView;

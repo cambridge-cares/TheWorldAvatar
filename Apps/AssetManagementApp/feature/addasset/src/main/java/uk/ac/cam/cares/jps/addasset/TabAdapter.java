@@ -16,23 +16,27 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.Arrays;
 
+import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
+
 public class TabAdapter extends FragmentStateAdapter {
     private final int NUM_TABS = 3;
+    private AddAssetViewModel viewModel;
 
-    public TabAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+    public TabAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle, AddAssetViewModel viewModel) {
         super(fragmentManager, lifecycle);
+        this.viewModel = viewModel;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) {
-            return new TabFragment(Arrays.asList(BASIC_SECTION_TITLE, LOCATION_SECTION_TITLE, SUPPLIER_SECTION_TITLE));
+            return new TabFragment(Arrays.asList(BASIC_SECTION_TITLE, LOCATION_SECTION_TITLE, SUPPLIER_SECTION_TITLE), viewModel);
         } else if (position == 1) {
-            return new TabFragment(Arrays.asList(PURCHASE_SECTION_TITLE, ITEM_SECTION_TITLE));
+            return new TabFragment(Arrays.asList(PURCHASE_SECTION_TITLE, ITEM_SECTION_TITLE), viewModel);
         } else {
             // todo: maybe need a separate fragment for datasheet, because the section items look very different from other input fields
-            return new TabFragment(Arrays.asList(SPEC_SHEET_SECTION_TITLE, MANUAL_SECTION_TITLE));
+            return new TabFragment(Arrays.asList(SPEC_SHEET_SECTION_TITLE, MANUAL_SECTION_TITLE), viewModel);
         }
     }
 
