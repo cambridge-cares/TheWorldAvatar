@@ -176,19 +176,26 @@ def getUUID_random( code ):
   return output
   pass # getUUID_random()
 
-def strSplit( inline, sep = " ", quotes = ["'", '"'] ):
+def strSplit( inline, sep = [" ","\t"], quotes = ["'", '"'] ):
     words = []
     w = []
     #inQuote1 = False
     #inQuote2 = False
     inQuote = ""
+    if isinstance( sep, list ):
+      sepArr = sep
+    elif isinstance( sep, str ):
+      sepArr = [sep]
+    else:
+      logging.error( "Unknown type '" + str(type(sep)) + "' of sep '" + 
+                   str(sep) + "'. Expected str or list." )
 
     for ic,c in enumerate(inline.strip()):
       if inQuote == "":
         #if "'" == c or '"' == c:
         if c in quotes:
           inQuote = c
-        elif sep == c:
+        elif c in sepArr:
           if len(w) > 0:
             words.append( "".join(w) )
             w = []

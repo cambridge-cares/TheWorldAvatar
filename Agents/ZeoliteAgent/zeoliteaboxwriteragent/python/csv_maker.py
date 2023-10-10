@@ -41,8 +41,8 @@ import os
 import logging
 #logging.basicConfig( level = logging.DEBUG )
 #logging.basicConfig( level = logging.INFO )
-logging.basicConfig( level = logging.WARNING )
-#logging.basicConfig( level = logging.ERROR )
+#logging.basicConfig( level = logging.WARNING )
+logging.basicConfig( level = logging.ERROR )
 
 import tools
 import zeolist
@@ -52,11 +52,14 @@ import numpy
 import argparse
 
 from pymatgen.core.structure import Structure, Lattice
+import pymatgen
 
 
 # FIXME
 #http://www.w3.org/2000/01/rdf-schema#Literal
 class CommandLine:
+  #__slots__ = []
+
   def __init__(self):
     parser = argparse.ArgumentParser( description='what is this?' )
     parser.add_argument( '--cif', type=str, default='', help='file name of the CIF file' )
@@ -73,15 +76,476 @@ class CommandLine:
 
   pass # class CommandLine
 
+class OntoValueWithUncertainty:
+  __slots__ = ["uuidDB"]
+  def __init__( self, prefix = "", uuidDB = None,
+                myName = "" ):
+                  
+    if "" == myName:
+      self.name = "Unknown"
+      logging.error( " Empty name in '" + self.name + "' class OntoValueWithUncertainty." ) 
+    else:   
+      self.name = myName
+
+    if None == uuidDB:
+      logging.error( " Empty uuidDB in '" + self.name + "' class OntoValueWithUncertainty." ) 
+    else:   
+      #self.name = myName
+      pass
+
+     
+    pass # __init__()
+
+
+  def setValue( self, value = "", unit = "", error = "" ):
+    if "" == value:
+      logging.error( " Empty value in '" + self.name + "' " ) 
+
+    if "" == unit:
+      logging.error( " Empty unit in '" + self.name + "' " ) 
+
+    if "" == error:
+      logging.error( " Empty error in '" + self.name + "' " ) 
+
+
+    pass # setValue()
+
+  def arrValue( self, subject, predicate ):
+    """
+    subject   - Is the full hame of instance of class, 
+                which contains this entity of ValueWithUncertainty class.
+    predicate - Is the Object Property linking the Subject and 
+                the current entity of ValueWithUncertainty." 
+
+    # These property values are not guaranteed:
+    if subject.find( "CrystalInformation" ) < 0:
+      logging.warning( " Subject in arrUnitCell() is '" + subject + "'," +
+                       " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
+
+    """
+    if not predicate.startswith("has"):
+      logging.warning( " Predicate in arrValue() is '" + predicate + "'," +
+                       " but expecting it to have '" + "has" + "'." ) 
+
+
+    output = []
+    logging.error( " arrValue() is not implemented yet" )
+
+    return output
+    pass
+
+  pass # OntoValueWithUncertainty
+
+class OntoVector:
+  __slots__ = [ "uuidDB", "value", "ontoPrefix", "uuid_error" ]
+
+  def __init__( self, prefix = "", uuidDB = None, myClass = "", 
+                      myName = "", myUnit = "",   myLabel = "" ):
+    self.value = dict()
+
+    if "" == myName:
+      logging.error( " In OntoVector entity name is not specified.")
+      self.value["name"] = "Unknown"
+    else:
+      self.value["name"] = myName
+
+    if None == uuidDB:
+      logging.error( " In OntoVector uuidDB is not specified" + 
+                     " for '" + self.value["name"] + "'."  )
+    else:
+      self.uuidDB = uuidDB
+
+    if "" == myClass:
+      logging.error( " In OntoVector class name is not specified" +
+                     " for '" + self.value["name"] + "'." )
+      self.value["class"] = "Unknown"
+    else:
+      self.value["class"] = myClass
+
+
+    if "" == myUnit:
+      logging.error( " In OntoVector unit is not specified" +
+                     " for '" + self.value["name"] + "'." )
+      self.value["unit"] = "Unknown"
+    else:
+      self.value["unit"] = myUnit
+
+
+    if "UnitCellLatticeVector" == self.value["class"]:
+      if "" == myLabel:
+        logging.error( " In OntoVector label is not specified" +
+                       " for '" + self.value["name"] + "'." )
+        self.value["label"] = "Unknown"
+      else:
+        self.value["label"] = myLabel
+    else:
+      pass
+
+    # The vector class is defined in the OntoCrystal ontology:
+    self.ontoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+    #if "" == prefix:
+    #  logging.error( " In OntoVector ontology prefix is not specified" +
+    #                 " for '" + self.value["name"] + "'." )
+    #else:
+    #  self.ontoPrefix = prefix
+    
+    self.value["comp" ] = dict()
+
+    self.uuid_error = None      # This is used to avoid double creation of the Uncertainty Vector
+    #self.error = dict()
+
+    pass # __init__()
+  def addComponentList( self, list, unit = "", error = "" ):
+    logging.error( "in CsvMaker addComponentList() is not implemented" )
+
+    pass # addComponentList()
+
+  def addComponent( self, label, value = "", unit = "", error = "" ):
+    logging.warning( "Starting addComponent '" + self.value["name"] + "' label: '" + label + "'" )
+    """
+    Adding a component to a vector.
+    TODO: how to create a vector made of multiple values as a list?
+          probably it should be a separate function addComponentList( self, list, unit = "", error = "" )
+
+    label - required input argument. It defines the component subscript.
+    value - required input argument. The value of this component.
+    unit  - Optional. An instance defined in ontology OM-2. 
+            Accepted values either full path, or only the instance name.
+            The OM-2 prefix will be appended in getArrVector().
+    error - Optional. The component's error-bar (uncertainty). It has the same unit.
+    """
+    errCount = 0
+    if isinstance( value, str ):
+      if "" == value:
+        logging.error( " Not specified value for vector component in '" + self.value["name"] + "'." )
+        errCount += 1
+    else:
+      logging.error( "value = '" + str( value ) + "' is not a string in '" + self.value["name"] + "'." )
+
+    if isinstance( label, str ):
+      if "" == label:
+        logging.error( " Not specified label for vector component in '" + self.value["name"] + "'." )
+        errCount += 1
+
+      if label in list(self.value["comp"].keys()):
+        logging.warning( " Repeatedly adding (overwriting) a component '" + 
+                         label + "' in vector '" + self.value["name"] + "'." )
+        logging.warning( "Components-2 of vector =" + str(self.value["comp"]) + " value = '" + value + "'."  )
+        #errCount += 1 # No need to count as error. It may be intensional.
+
+    else:
+      logging.error( "label = '" + str( label ) + "' is not a string in '" + self.value["name"] + "'." )
+
+    if 0 == errCount:
+        self.value["comp"][label] = dict()
+        self.value["comp"][label]["value"] = value
+        if "" == unit:
+          logging.warning( " Not specified label for vector component in '" + self.value["name"] + "'." )
+        else:
+          self.value["comp"][label]["unit"]  = unit
+
+        if "" != error:
+          self.value["comp"][label]["error"] = error
+          logging.warning( "Components of vector = ", self.value["comp"], " value = '" + value + "'."  )
+          if "" != unit:
+            # Generally speaking the error bars may have different units, 
+            # though such situation looks strange:
+            print( " Assigned unit to", label )
+            self.value["comp"][label]["errorunit"]  = unit
+            pass
+            
+    pass
+
+  def getArrVector( self, subject, predicate ):
+    """
+    subject   - Is the full hame of instance of class, 
+                which contains this Vector class.
+    predicate - Is the Object Property linking the Subject and the current UnitCell.
+                Typically is should be contain "has".
+
+    # Value is not guaranteed:
+    if subject.find( "CrystalInformation" ) < 0:
+      logging.warning( " Subject in arrUnitCell() is '" + subject + "'," +
+                       " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
+    """
+
+    #if "has" != predicate:
+    if not predicate.startswith("has"):
+      logging.warning( " Predicate in getArrVector() is '" + predicate + "'," +
+                       " but expecting it to have '" + "has" + "'." ) 
+
+
+    """
+    Create a vector with specified values.
+    'subject' - is the full proper name of the parent class pointing to the new vector,
+    'preidcate' - is the full object property to link the parent and the new vector,
+    The input 'value' is a dictionary with values:
+    ["class"] : The class of the newly created vector. Depending on the class name 
+                some properties may not be available.
+    ["name"] : The instance name (without UUID, UUID will be generated automatically)
+               Internally, all components and other classes (if any) 
+               will be using the same UUID.
+               The 'name' should be saved somewhere internally to prevent 
+               creation of vectors with repeating names.
+    ["comp"]["x"]     : value
+    ["comp"]["alpha"] : value
+    ["comp"][0]       : value
+    ["unit"]          : (optional) unit for the entire vector
+    ["comp"]["x"]["value"]  : value of the individual component
+    ["comp"]["x"]["unit"]  : (optional) for individual component
+    ["comp"]["list"]  : the value is a list(), defines the vector using integer index
+    ["comp"]["start"] : if ["comp"] is a "list" this is the index of the first component. Default is 1.
+    ["+/-"]           : appends another vector 'uncertainty' to this file.
+    ["label"]         : A label assigned to the entire vector (valid only for UnitCellLatticeVector class)
+
+    Other keys are also possible. There will be warnings for unknown/unsupported keys.
+    """
+    output = []
+    #logging.error( " getArrVector() is not implemented yet" )
+    # FIXME TODO
+
+    keys = self.value.keys()
+    if "name" not in keys:
+      logging.error( " Creating a vector without the vector['name'] specified. I skip it." )
+      return []
+
+    if "class" in keys:
+      myClass = self.value["class"]
+    else:
+      logging.error( " Missing vector['class'] for vector '" + self.value["name"] + 
+                     "', will use default 'Vector'."  )
+      myClass = "Vector" 
+
+
+    if "comp" not in keys:
+      logging.error( " Missing vector['comp'] for vector '" + self.value["name"] + "'"  )
+
+    # Vector for Unit Cell length parameters (a,b,c):
+    uuid_vector = tools.getUUID( self.uuidDB, myClass, self.value["name"] )
+    output.append( [ uuid_vector, "Instance", myClass, "", "", "" ] )
+    output.append( [ subject, "Instance", uuid_vector, predicate, "", "" ] )
+
+    # Verification of the class and its components:
+    if myClass in [ "Vector" ]:
+      # Classes derived from the basic 'Vector':
+      if "error" in keys:
+        logging.error( " Vector class '" + myClass + "' has an error value: " + 
+                       self.value["error"] + ". Use class 'VectorWithUncertainty' " + 
+                       "instead or a class derived from it." )
+       
+      pass
+    elif myClass in [ "UnitCellAngles", "UnitCellLengths", "UnitCellAngles" ]:
+      # Classes derived from 'VectorWithUncertainty':
+
+      self.value["error"] = dict() # the error bars a.k.a. uncertainty. Optional parameter.
+      pass
+    elif myClass in [ "UnitCellLatticeVector" ]:
+      # Classes derived from 'UnitCellLatticeVector':
+
+      self.value["error"] = dict() # the error bars a.k.a. uncertainty. Optional parameter.
+                    
+      if "label" in keys:
+        output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                         uuid_vector, "", self.value["label"], "string" ] )
+
+      else:
+        logging.warning( " Label is not defined for '" + self.value["name"] + 
+                         "' of class '" + myClass + "'." )
+
+      pass
+      """
+    elif "Vector" == myClass: 
+      pass
+    elif "UnitCellLengths" == myClass: 
+      pass
+    elif "UnitCellAngles"  == myClass: 
+      # Do nothing
+      pass
+    elif "VectorWithUncertainty" == myClass:
+      # Do nothing
+      pass
+    elif "UnitCellLatticeVector" == myClass:
+      # Do nothing
+      pass
+      """
+
+    else:
+      logging.error( " Unknown vector class '" + myClass + "' "
+                      "for vector '" + self.value["name"] + "'." )
+      pass
+
+    if   isinstance( self.value["comp"], dict):
+      comp_keys = self.value["comp"].keys()  # comp_keys means 'KEYS of the COMPonents'.
+      for ck in comp_keys:
+        uuid_comp = tools.getUUID( self.uuidDB, "VectorComponent", self.value["name"] + "_comp_" + ck  )
+        output.append( [ uuid_comp, "Instance", "VectorComponent", "", "", "" ] )
+
+        output.append( [ uuid_vector, "Instance", uuid_comp,  
+                         self.ontoPrefix + "hasVectorComponent", "", "" ] )
+
+        output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                         uuid_comp, "", ck, "string" ] )
+
+        output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
+                         uuid_comp, "", self.value["comp"][ck]["value"], "rdfs:Literal" ] )
+ 
+        if "unit" in list(self.value["comp"][ck].keys()): # and "Unknown" != self.value["comp"][ck]["unit"]:
+          unit = self.value["comp"][ck]["unit"]
+          if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
+            logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
+                             self.value["name"] + "'. " + 
+                             "Expecting an instance of OM-2 ontology class Unit, but got '" +
+                             self.value["comp"][ck]["unit"] )
+
+          output.append( [ uuid_comp, "Instance", unit,
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                          "", "" ] )
+ 
+        if "error" in list(self.value["comp"][ck].keys()):
+          if None == self.uuid_error:
+            logging.info( " Creating a new instance for uuid_error for vector '" + self.value["name"] + "' " )
+
+            self.uuid_error = tools.getUUID( self.uuidDB, self.ontoPrefix + "Vector", self.value["name"] + "_error" )
+            output.append( [ self.uuid_error, "Instance", self.ontoPrefix + "Vector", "", "", "" ] )
+ 
+            output.append( [ uuid_vector, "Instance", self.uuid_error,  
+                             self.ontoPrefix + "hasUncertaintyVector", "", "" ] )
+ 
+          uuid_comp = tools.getUUID( self.uuidDB, "VectorComponent", self.value["name"] + "_err_" + ck  )
+          output.append( [ uuid_comp, "Instance", "VectorComponent", "", "", "" ] )
+
+          output.append( [ self.uuid_error, "Instance", uuid_comp,  
+                           self.ontoPrefix + "hasVectorComponent", "", "" ] )
+
+          output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                           uuid_comp, "", ck, "string" ] )
+
+          output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
+                           uuid_comp, "", self.value["comp"][ck]["error"], "rdfs:Literal" ] )
+ 
+          #print( "eeewwwwwwwwweeeeeeeeeeee" )
+          # FIXME here there is a mess between the units.
+          if "errorunit" in list(self.value["comp"][ck].keys()):
+            unit = self.value["comp"][ck]["errorunit"]
+          elif "unit" in list(self.value["comp"][ck].keys()):
+            unit = self.value["comp"][ck]["unit"]
+          else:
+            unit = ""
+
+          if "" != unit: 
+            if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
+              logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
+                             self.value["name"] + "'. " + 
+                             "Expecting an instance of OM-2 ontology class Unit." )
+
+            output.append( [ uuid_comp, "Instance", unit,
+                           "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                            "", "" ] )
+
+
+    elif isinstance( self.value["comp"], list):
+      logging.error( " Not implemented yet list component 2222222 " )
+
+    else:
+      logging.error( " Unknown type of vector['comp'] = '" + str(type(self.value["comp"])) + 
+                     "' in vector '" + self.value["name"] + "' reter." )
+
+    if "unit" in keys:
+#"http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom"
+      unit = self.value["unit"]
+      if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
+        logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
+                         self.value["name"] + "'. " + 
+                         "Expecting an instance of OM-2 ontology class Unit, but got '" +
+                         self.value["unit"] + "'" 
+                         )
+
+      output.append( [ uuid_vector, "Instance", unit,
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    #print( "==============================" )
+    return output
+    pass # getArrVector()
+
+
+  pass # class OntoVector
+
+class CrystalInformation:
+  """
+  A single CsvMaker can have several different data-sets from a CIF file:
+  1) As they are loaded by PyMatGen,
+  2) As they appear in the CIF file (symmetry + reduced sites)
+  3) Data with uncertainty.
+
+  I could store these sets of data in different CrystalInformation classes
+  and use them as needed. But probably I will not do it.
+  I can store the data to the same variables inside readWithUncertainties()
+  Whatever function was called last - it will be written to the output.
+
+  """
+
+  def __init__( self ):
+    pass
+
+
+
+
+
+
+
+  pass # class CrystalInformation
 
 class CsvMaker:
+  """
+  An adjustable constructor of a .csv file for the ABox of a crystal or zeolite.
+  Algorithm for operation of this class:
+
+  0) Prepare the header lines (standard).
+  1) For CIF related data:
+    a) Load CIF data and store internally.
+       by loadCifZeolite()   - zeolite-specific, calls the next funtion:
+                               Some CIF files may be a merge of several files ??? TODO
+
+          loadCifStructure() - this function does not know about zeolites, 
+                               it can be used for any kind of CIF file.
+                               It saves data from CIF to internal variables.
+          
+    b) Modify CIF data (if necessary).
+       by ???
+    c) Save data related to CIF (it can be in different structure, 
+       according to the settings).
+       arrUnitCell()
+       arrAtomSite()
+       arrTransform()
+       etc
+  2) For Tile related data:
+    a) 
+
+  ) Finally dump all data to a .csv file.
+
+  """
+  __slots__ = [ "zeoList",  "zeoOption", "zeoOntoPrefix", "crystOntoPrefix",  "ontoBase", 
+                "inputDir", "outputDir", "cifStandard", "uuidDB",    
+                "entriesWithUncertainties", "loopHeaders", #"", "", 
+                "unitCellLengths", "unitCellRecipLengths", 
+                "unitCellAngles",  "unitCellRecipAngles",
+                "cifPyMatGen", 
+                "unitCellVectorA",      "unitCellVectorB",      "unitCellVectorC",
+                "unitCellRecipVectorA", "unitCellRecipVectorB", "unitCellRecipVectorC",
+
+
+                #"", "", "", 
+                ]
+
   def __init__( self ):
-    #self.zeoOption = "main"
-    self.zeoOption = "test"
+    self.zeoOption = "main"
+    #self.zeoOption = "test"
     self.zeoList = []
 
-    self.ontoBase = "OntoZeolite"
-    self.ontoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
+    self.ontoBase   = "OntoZeolite"
+    self.zeoOntoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
+    self.crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
 
     self.inputDir  = os.path.join( "ontozeolite", "data" )
     self.outputDir = os.path.join( "ontozeolite", "zeocsv" )
@@ -89,9 +553,23 @@ class CsvMaker:
     self.cifStandard = []
     self.cifStandard = self.readStandardFile( "CIF_standard_2.4.5.txt" )
 
+    self.unitCellLengths = None
+    self.unitCellAngles = None
+    self.unitCellRecipLengths = None
+    self.unitCellRecipAngles = None
+
+    self.unitCellVectorA = None
+    self.unitCellVectorB = None
+    self.unitCellVectorC = None
+
+    self.unitCellRecipVectorA = None
+    self.unitCellRecipVectorB = None
+    self.unitCellRecipVectorC = None
+
+
     #baseName = self.ontoBase + "-" + zeoname
     #self.ontoHttp = ""
-    
+
     pass # CsvMaker.__init__()
 
   def cleanString( self, line ):
@@ -105,6 +583,201 @@ class CsvMaker:
       tmp = line[:pos].strip()
 
     return tmp
+
+  def loadCifZeolite( self, zeoname ):
+    """
+    - zeolite-specific, calls the next funtion:
+    """
+
+    filePath = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
+
+    #print( "Using a test case 913885.cif for the UnitCell class" )
+    #path = os.path.join( "test", "913885.cif" ) 
+    #dataIn = tools.readCsv( path )
+    if not os.path.isfile( filePath ):
+      logging.error( "File not found '" + filePath + "'." )
+      return 
+
+    self.loadCifStructure( filePath, zeoname )
+
+    nBracket = self.readWithUncertainties( filePath, zeoname, save = True )
+    print( "Found brackets:",  nBracket, "in '" + zeoname + "'." )
+ 
+    return
+    pass # loadCifZeolite()
+
+
+  def loadCifStructure( self, filePath, cifName ):
+    """
+    This function does not know about zeolites, it can be used for any CIF file.
+    Loads CIF file and stores the data in internal variable(s) 
+    self.structure ?
+
+    ??? cifName is a unique name for the CIF structure, as it should appear in the ontology abox.
+    """
+
+    self.cifPyMatGen = Structure.from_file( filePath )
+
+    # The Unit Cell Lengths:
+    self.unitCellLengths = OntoVector( uuidDB = self.uuidDB, 
+                                       myClass = "UnitCellLengths", 
+                                       myName  = "UnitCellLengths_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
+
+    self.unitCellLengths.addComponent( label = "a", 
+         value = str(round(self.cifPyMatGen.lattice.a, 12)), error = "" )
+
+    self.unitCellLengths.addComponent( label = "b", 
+         value = str(round(self.cifPyMatGen.lattice.b, 12)), error = "" )
+
+    self.unitCellLengths.addComponent( label = "c", 
+         value = str(round(self.cifPyMatGen.lattice.c, 12)), error = "" )
+
+    # The Unit Cell Angles:
+    self.unitCellAngles = OntoVector( uuidDB = self.uuidDB, 
+                                      myClass = "UnitCellAngles", 
+                                      myName  = "UnitCellAngles_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/degree" )
+
+    self.unitCellAngles.addComponent( label = "alpha", 
+         value = str(round(self.cifPyMatGen.lattice.alpha, 12)), error = "" )
+
+    self.unitCellAngles.addComponent( label = "beta", 
+         value = str(round(self.cifPyMatGen.lattice.beta , 12)), error = "" )
+
+    self.unitCellAngles.addComponent( label = "gamma", 
+         value = str(round(self.cifPyMatGen.lattice.gamma, 12)), error = "" )
+
+    # The Reciprocal Unit Cell Lengths:
+    self.unitCellRecipLengths = OntoVector( uuidDB = self.uuidDB, 
+                                       myClass = "UnitCellLengths", 
+                                       myName  = "UnitCellReciprocalLengths_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom" )
+
+    self.unitCellRecipLengths.addComponent( label = "a*", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.a, 12)), error = "" )
+
+    self.unitCellRecipLengths.addComponent( label = "b*", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.b, 12)), error = "" )
+
+    self.unitCellRecipLengths.addComponent( label = "c*", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.c, 12)), error = "" )
+
+    # The Reciprocal Unit Cell Angles:
+    self.unitCellRecipAngles = OntoVector( uuidDB = self.uuidDB, 
+                                       myClass = "UnitCellAngles", 
+                                       myName  = "UnitCellReciprocalAngles_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/degree" )
+
+    self.unitCellRecipAngles.addComponent( label = "alpha*", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.alpha, 12)), error = "" )
+
+    self.unitCellRecipAngles.addComponent( label = "beta*", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.beta , 12)), error = "" )
+
+    self.unitCellRecipAngles.addComponent( label = "gamma*", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.gamma, 12)), error = "" )
+
+    # Vectors to keep three Unit Cell vectors (a,b,c):
+    self.unitCellVectorA = OntoVector( uuidDB = self.uuidDB, 
+                                       myClass = "UnitCellLatticeVector", 
+                                       myName  = "UnitCellVectorA_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                                       myLabel = "a" )
+
+    self.unitCellVectorA.addComponent( label = "x", 
+         value = str(round(self.cifPyMatGen.lattice.matrix[0][0], 12)), error = "" )
+
+    self.unitCellVectorA.addComponent( label = "y", 
+         value = str(round(self.cifPyMatGen.lattice.matrix[0][1], 12)), error = "" )
+
+    self.unitCellVectorA.addComponent( label = "z", 
+         value = str(round(self.cifPyMatGen.lattice.matrix[0][2], 12)), error = "" )
+
+    self.unitCellVectorB = OntoVector( uuidDB = self.uuidDB, 
+                                       myClass = "UnitCellLatticeVector", 
+                                       myName  = "UnitCellVectorB_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                                       myLabel = "b" )
+
+    self.unitCellVectorB.addComponent( label = "x", 
+         value = str(round(self.cifPyMatGen.lattice.matrix[1][0], 12)), error = "" )
+
+    self.unitCellVectorB.addComponent( label = "y", 
+         value = str(round(self.cifPyMatGen.lattice.matrix[1][1], 12)), error = "" )
+
+    self.unitCellVectorB.addComponent( label = "z", 
+         value = str(round(self.cifPyMatGen.lattice.matrix[1][2], 12)), error = "" )
+
+
+    self.unitCellVectorC = OntoVector( uuidDB = self.uuidDB, 
+                                       myClass = "UnitCellLatticeVector", 
+                                       myName  = "UnitCellVectorC_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                                       myLabel = "c" )
+
+    self.unitCellVectorC.addComponent( label = "x", 
+         value = str(round(self.cifPyMatGen.lattice.matrix[2][0], 12)), error = "" )
+
+    self.unitCellVectorC.addComponent( label = "y", 
+         value = str(round(self.cifPyMatGen.lattice.matrix[2][1], 12)), error = "" )
+
+    self.unitCellVectorC.addComponent( label = "z", 
+         value = str(round(self.cifPyMatGen.lattice.matrix[2][2], 12)), error = "" )
+
+
+    # Vectors to keep three Reciprocal Unit Cell vectors (a,b,c):
+    self.unitCellRecipVectorA = OntoVector( uuidDB = self.uuidDB, 
+                                       myClass = "UnitCellLatticeVector", 
+                                       myName  = "UnitCellReciprocalLatticeVectorA_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+                                       myLabel = "a" )
+
+    self.unitCellRecipVectorA.addComponent( label = "x", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.matrix[0][0], 12)), error = "" )
+
+    self.unitCellRecipVectorA.addComponent( label = "y", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.matrix[0][1], 12)), error = "" )
+
+    self.unitCellRecipVectorA.addComponent( label = "z", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.matrix[0][2], 12)), error = "" )
+
+    self.unitCellRecipVectorB = OntoVector( uuidDB = self.uuidDB, 
+                                       myClass = "UnitCellLatticeVector", 
+                                       myName  = "UnitCellReciprocalLatticeVectorB_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+                                       myLabel = "a" )
+
+    self.unitCellRecipVectorB.addComponent( label = "x", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.matrix[1][0], 12)), error = "" )
+
+    self.unitCellRecipVectorB.addComponent( label = "y", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.matrix[1][1], 12)), error = "" )
+
+    self.unitCellRecipVectorB.addComponent( label = "z", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.matrix[1][2], 12)), error = "" )
+
+
+
+    self.unitCellRecipVectorC = OntoVector( uuidDB = self.uuidDB, 
+                                       myClass = "UnitCellLatticeVector", 
+                                       myName  = "UnitCellReciprocalLatticeVectorC_" + cifName,
+         myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+                                       myLabel = "a" )
+
+    self.unitCellRecipVectorC.addComponent( label = "x", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.matrix[2][0], 12)), error = "" )
+
+    self.unitCellRecipVectorC.addComponent( label = "y", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.matrix[2][1], 12)), error = "" )
+
+    self.unitCellRecipVectorC.addComponent( label = "z", 
+         value = str(round(self.cifPyMatGen.lattice.reciprocal_lattice.matrix[2][2], 12)), error = "" )
+
+
+
+
+    pass # loadCifStructure()
 
   def readStandardFile( self, path ):
     output = []
@@ -139,7 +812,8 @@ class CsvMaker:
   def finalize( self ):
     tools.saveUUID( self.uuidDB )
 
-  def getArrVector( self, subject, predicate, value ):
+  '''
+  def getArrVector( self, subject, predicate, vector ):
     """
     Create a vector with specified values.
     'subject' - is the full proper name of the parent class pointing to the new vector,
@@ -169,20 +843,20 @@ class CsvMaker:
     #logging.error( " getArrVector() is not implemented yet" )
     # FIXME TODO
 
-    keys = value.keys()
+    keys = vector.keys()
     if "name" not in keys:
-      logging.error( " Creating a vector without the value['name'] specified. I skip it." )
+      logging.error( " Creating a vector without the vector['name'] specified. I skip it." )
       return []
 
     if "class" in keys:
-      myClass = value["class"]
+      myClass = vector["class"]
     else:
-      logging.error( " Missing value['class'] for vector '" + value["name"] + 
+      logging.error( " Missing vector['class'] for vector '" + vector["name"] + 
                      "', will use default 'Vector'."  )
       myClass = "Vector" 
 
-    #if "comp" not in keys:
-    #  logging.error( " Missing value['comp'] for vector '" + value["name"] + "'"  )
+    if "comp" not in keys:
+      logging.error( " Missing vector['comp'] for vector '" + vector["name"] + "'"  )
 
     if myClass in ["Vector", "UnitCellLengths", "UnitCellAngles"]:
         # Do nothing
@@ -194,27 +868,27 @@ class CsvMaker:
         # Do nothing
         pass
     else:
-        logging.error( " Unknown vector class '" + myClass + "' for vector '" + value["name"] + "'." )
-
+        logging.error( " Unknown vector class '" + myClass + "' "
+                       "for vector '" + vector["name"] + "'." )
 
     # Vector for Unit Cell length parameters (a,b,c):
-    uuid_vector = tools.getUUID( self.uuidDB, myClass, value["name"] )
+    uuid_vector = tools.getUUID( self.uuidDB, myClass, vector["name"] )
     output.append( [ uuid_vector, "Instance", myClass, "", "", "" ] )
  
     if "UnitCellLatticeVector" == myClass:
       if "label" in keys:
         output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                         uuid_vector, "", value["label"], "string" ] )
+                         uuid_vector, "", vector["label"], "string" ] )
 
       else:
-        logging.warning( " Label is not defined for '" + value["name"] + "' of class '" + 
-                         myClass + "'." )
+        logging.warning( " Label is not defined for '" + vector["name"] + 
+                         "' of class '" + myClass + "'." )
 
 
-    if   isinstance( value["comp"], dict):
-      comp_keys = value["comp"].keys()  # comp_keys means 'KEYS of the COMPonents'.
+    if   isinstance( vector["comp"], dict):
+      comp_keys = vector["comp"].keys()  # comp_keys means 'KEYS of the COMPonents'.
       for ck in comp_keys:
-        uuid_comp = tools.getUUID( self.uuidDB, "VectorComponent", value["name"] + "_comp_" + ck  )
+        uuid_comp = tools.getUUID( self.uuidDB, "VectorComponent", vector["name"] + "_comp_" + ck  )
         output.append( [ uuid_comp, "Instance", "VectorComponent", "", "", "" ] )
 
         output.append( [ uuid_vector, "Instance", uuid_comp,  
@@ -224,13 +898,13 @@ class CsvMaker:
                          uuid_comp, "", ck, "string" ] )
 
         output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                         uuid_comp, "", value["comp"][ck]["value"], "rdfs:Literal" ] )
+                         uuid_comp, "", vector["comp"][ck]["value"], "rdfs:Literal" ] )
  
-        if "unit" in list(value["comp"][ck].keys()):
-          unit = value["comp"][ck]["unit"]
+        if "unit" in list(vector["comp"][ck].keys()):
+          unit = vector["comp"][ck]["unit"]
           if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
             logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
-                             value["name"] + "'. " + 
+                             vector["name"] + "'. " + 
                              "Expecting an instance of OM-2 ontology class Unit." )
 
           output.append( [ uuid_comp, "Instance", unit,
@@ -240,26 +914,27 @@ class CsvMaker:
 
     if "unit" in keys:
 #"http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom"
-      unit = value["unit"]
+      unit = vector["unit"]
       if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
         logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
-                         value["name"] + "'. " + 
+                         vector["name"] + "'. " + 
                          "Expecting an instance of OM-2 ontology class Unit." )
 
       output.append( [ uuid_vector, "Instance", unit,
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
                       "", "" ] )
 
-    elif isinstance( value["comp"], list):
+    elif isinstance( vector["comp"], list):
       logging.error( " Not implemented yet list component 2222222 " )
 
     else:
-      logging.error( " Unknown type of value['comp'] = '" + str(type(value["comp"])) + 
-                     "' in vector '" + value["name"] + "'." )
+      logging.error( " Unknown type of vector['comp'] = '" + str(type(vector["comp"])) + 
+                     "' in vector '" + vector["name"] + "'." )
 
     #print( "==============================" )
     return output
     pass # getArrVector()
+  '''   
 
   def arrInit( self, zeoname ):
     output = [ ]
@@ -282,23 +957,37 @@ class CsvMaker:
     uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
     output.append( [ uuid_zeolite, "Instance", "ZeoliteFramework", "", "", "" ] )
  
-    output.append( [ self.ontoPrefix + "hasZeoliteCode", "Data Property", 
+    output.append( [ self.zeoOntoPrefix + "hasZeoliteCode", "Data Property", 
                      uuid_zeolite, "", zeoname.strip(' "'), "string" ] )
+
 
     #tools.saveUUID( uuidDB )
 
     return output
     pass # CsvMaker.arrInit()
 
-  def arrTransform( self, zeoname ):
-    #print( "arrTransform started" )
+  def arrTransform( self, subject, predicate, zeoname ):
+    """
+    subject   - Is the full hame of instance of class CrystalInformation, 
+                which contains this CoordinateTransformation class.
+    predicate - Is the Object Property linking the Subject and the current CoordinateTransformation.
+                Typically is should be equal to "hasCoordinateTransformation".
+    """
+
+    if subject.find( "CrystalInformation" ) < 0:
+      logging.warning( " Subject in arrCoordinateTransformation() is '" + subject + "'," +
+                       " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
+
+    if "hasCoordinateTransformation" != predicate:
+      logging.warning( " Predicate in arrTransform() is '" + predicate + "'," +
+                       " but expecting '" + "hasCoordinateTransformation" + "'." ) 
+
+
+    #print( "arrTransform started1 )
     TWOPI = 2 * math.pi
     DIRS = "xyz"
 
     output = []
-
-    #uuidDB = tools.loadUUID( )
-    #uuidDB = self.uuidDB
 
     path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
 
@@ -314,7 +1003,7 @@ class CsvMaker:
     uuid_cif_core_trans = tools.getUUID( self.uuidDB, "CIFCoreTransform", "ZeoliteCIFCoreTransform_" + zeoname )
     output.append( [ uuid_cif_core_trans, "Instance", "CIFCoreTransform", "", "", "" ] )
     output.append( [ uuid_cif, "instance", uuid_cif_core_trans,  
-                     self.ontoPrefix + "hasCifCoreTransformation", "", "" ] )
+                     self.crystOntoPrefix + "hasCifCoreTransformation", "", "" ] )
 
     ################# Fractional to Cartesian ########################
     uuid_m_frac_to_cart = tools.getUUID( self.uuidDB, "CIFCoreTransformationMatrixToCartesian", 
@@ -323,7 +1012,7 @@ class CsvMaker:
                            "Matrix", "", "", "" ] )
                            #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
     output.append( [ uuid_cif_core_trans, "instance", uuid_m_frac_to_cart,  
-                     self.ontoPrefix + "hasTransformationMatrixToCartesian", "", "" ] )
+                     self.crystOntoPrefix + "hasTransformationMatrixToCartesian", "", "" ] )
 
     output.append( [ uuid_m_frac_to_cart, "Instance", 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
@@ -338,19 +1027,19 @@ class CsvMaker:
                            "MatrixComponent", "", "", "" ] )
                            #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
             output.append( [ uuid_m_frac_to_cart, "instance", uuid_m_comp,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
+                     self.crystOntoPrefix + "hasMatrixComponent", "", "" ] )
 
 
-            output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+            output.append( [ self.crystOntoPrefix + "hasLabel", "Data Property", 
                              uuid_m_comp, "", DIRS[ix]+DIRS[iy], "string" ] )
 
-            output.append( [ self.ontoPrefix + "hasRowIndex", "Data Property", 
+            output.append( [ self.crystOntoPrefix + "hasRowIndex", "Data Property", 
                              uuid_m_comp, "", iy, "integer" ] )
 
-            output.append( [ self.ontoPrefix + "hasColumnIndex", "Data Property", 
+            output.append( [ self.crystOntoPrefix + "hasColumnIndex", "Data Property", 
                              uuid_m_comp, "", ix, "integer" ] )
 
-            output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+            output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
                              uuid_m_comp, "", 
                              round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
 
@@ -359,7 +1048,7 @@ class CsvMaker:
     output.append( [ uuid_v_frac_to_cart, "Instance", 
                            "CIFCoreTransformationVectorToCartesian", "", "", "" ] )
     output.append( [ uuid_cif_core_trans, "instance", uuid_v_frac_to_cart,  
-                     self.ontoPrefix + "hasTransformationVectorToCartesian", "", "" ] )
+                     self.crystOntoPrefix + "hasTransformationVectorToCartesian", "", "" ] )
 
     output.append( [ uuid_v_frac_to_cart, "Instance", 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
@@ -373,18 +1062,17 @@ class CsvMaker:
                        "VectorComponent", "", "", "" ] )
                        #"CIFCoreTransformationVectorToCartesian", "", "", "" ] )
         output.append( [ uuid_v_frac_to_cart, "instance", uuid_v_comp,  
-                         self.ontoPrefix + "hasComponent", "", "" ] )
+                         self.crystOntoPrefix + "hasMatrixComponent", "", "" ] )
 
-        output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasLabel", "Data Property", 
                          uuid_v_comp, "", DIRS[ix], "string" ] )
 
-        output.append( [ self.ontoPrefix + "hasIndex", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasIndex", "Data Property", 
                          uuid_v_comp, "", ix, "integer" ] )
 
-        output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
                          uuid_v_comp, "", 
                          0.0, "decimal" ] )
-                         #round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
 
 
     ################# Cartesian to Fractional ########################
@@ -394,7 +1082,7 @@ class CsvMaker:
                            "Matrix", "", "", "" ] )
                            #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
     output.append( [ uuid_cif_core_trans, "instance", uuid_m_cart_to_frac,  
-                     self.ontoPrefix + "hasTransformationMatrixToFractional", "", "" ] )
+                     self.crystOntoPrefix + "hasTransformationMatrixToFractional", "", "" ] )
 
     output.append( [ uuid_m_cart_to_frac, "Instance", 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
@@ -409,18 +1097,18 @@ class CsvMaker:
                            "MatrixComponent", "", "", "" ] )
                            #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
             output.append( [ uuid_m_cart_to_frac, "instance", uuid_m_comp,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
+                     self.crystOntoPrefix + "hasComponent", "", "" ] )
 
-            output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+            output.append( [ self.crystOntoPrefix + "hasLabel", "Data Property", 
                              uuid_m_comp, "", DIRS[ix]+DIRS[iy], "string" ] )
 
-            output.append( [ self.ontoPrefix + "hasRowIndex", "Data Property", 
+            output.append( [ self.crystOntoPrefix + "hasRowIndex", "Data Property", 
                              uuid_m_comp, "", iy, "integer" ] )
 
-            output.append( [ self.ontoPrefix + "hasColumnIndex", "Data Property", 
+            output.append( [ self.crystOntoPrefix + "hasColumnIndex", "Data Property", 
                              uuid_m_comp, "", ix, "integer" ] )
 
-            output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+            output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
                              uuid_m_comp, "", 
                              round(structure.lattice.reciprocal_lattice.matrix[iy][ix]/TWOPI, 12), "decimal" ] )
 
@@ -429,8 +1117,9 @@ class CsvMaker:
     output.append( [ uuid_v_cart_to_frac, "Instance", 
                            "Vector", "", "", "" ] )
                            #"CIFCoreTransformationVectorToFractional", "", "", "" ] )
+
     output.append( [ uuid_cif_core_trans, "instance", uuid_v_cart_to_frac,  
-                     self.ontoPrefix + "hasTransformationVectorToFractional", "", "" ] )
+                     self.crystOntoPrefix + "hasTransformationVectorToFractional", "", "" ] )
 
     output.append( [ uuid_v_cart_to_frac, "Instance", 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
@@ -444,26 +1133,41 @@ class CsvMaker:
                        "VectorComponent", "", "", "" ] )
                        #"CIFCoreTransformationVectorToCartesian", "", "", "" ] )
         output.append( [ uuid_v_cart_to_frac, "instance", uuid_v_comp,  
-                         self.ontoPrefix + "hasComponent", "", "" ] )
+                         self.crystOntoPrefix + "hasComponent", "", "" ] )
 
-        output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasLabel", "Data Property", 
                          uuid_v_comp, "", DIRS[ix], "string" ] )
 
-        output.append( [ self.ontoPrefix + "hasIndex", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasIndex", "Data Property", 
                          uuid_v_comp, "", ix, "integer" ] )
 
-        output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
                          uuid_v_comp, "", 
                          0.0, "decimal" ] )
                          #round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
-
 
     #tools.saveUUID( uuidDB )
 
     return output
     pass # CsvMaker.arrTransform()
  
-  def arrAtomSite( self, zeoname ):
+  def arrAtomSite( self, subject, predicate, zeoname ):
+    """
+    subject   - Is the full hame of instance of class CrystalInformation, 
+                which contains this UnitCell class.
+    predicate - Is the Object Property linking the Subject and the current UnitCell.
+                Typically is should be equal to "hasUnitCell".
+    """
+
+    if subject.find( "CrystalInformation" ) < 0:
+      logging.warning( " Subject in arrAtomSite() is '" + subject + "'," +
+                       " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
+
+    if predicate.find( "hasAtomicStructure" ) < 0:
+      logging.warning( " Predicate in arrAtomSite() is '" + predicate + "'," +
+                       " but expecting '" + "hasAtomicStructure" + "'." ) 
+
+
     logging.warning( "arrAtomSite() is not implemented yet" )
 
     output = []
@@ -475,7 +1179,7 @@ class CsvMaker:
     #dataIn = tools.readCsv( path )
     if not os.path.isfile( path ):
       logging.error( "File not found '" + path + "'." )
-      return
+      return []
 
     structure = Structure.from_file( path )
 
@@ -487,7 +1191,24 @@ class CsvMaker:
     return output
     pass # CsvMaker.arrAtomSite()
 
-  def arrUnitCell( self, zeoname ):
+
+  def arrUnitCell( self, subject, predicate, zeoname ):
+    """
+    subject   - Is the full hame of instance of class CrystalInformation, 
+                which contains this UnitCell class.
+    predicate - Is the Object Property linking the Subject and the current UnitCell.
+                Typically is should be equal to "hasUnitCell".
+    """
+
+    #print( "'" + subject + "'", "'" + predicate + "'" )
+    if subject.find( "CrystalInformation" ) < 0:
+      logging.warning( " Subject in arrUnitCell() is '" + subject + "'," +
+                       " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
+
+    if predicate.find( "hasUnitCell" ) < 0:
+      logging.warning( " Predicate in arrUnitCell() is '" + predicate + "'," +
+                       " but expecting '" + "hasUnitCell" + "'." ) 
+
     output = []
     TWOPI = 2 * math.pi
 
@@ -518,181 +1239,73 @@ class CsvMaker:
     #print( "  ", structure.lattice.matrix ) # reciprocal parameters
     #print( TWOPI * numpy.linalg.inv( structure.lattice.matrix ) )
 
+    
+    #uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", subject )
     # Define class instances:
-    uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
- 
+
+    #uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
+    #uuid_zeolite = subject
+
     #output.append( [ self.ontoPrefix + "hasZeoliteCode", "Data Property", 
     #                 uuid_zeolite, "", zeoname.strip(' "'), "string" ] )
 
-    uuid_cif = tools.getUUID( self.uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
-    output.append( [ uuid_cif, "Instance", "CIFCore", "", "", "" ] )
+    uuid_cif = tools.getUUID( self.uuidDB, "CrystalInformation", "ZeoliteCIF_" + zeoname )
+    output.append( [ uuid_cif, "Instance", "CrystalInformation", "", "", "" ] )
  
-    uuid_cif_uc = tools.getUUID( self.uuidDB, "CIFCoreCell", "UnitCell_" + zeoname )
-    output.append( [ uuid_cif_uc, "Instance", "CIFCoreCell", "", "", "" ] )
+    uuid_cif_uc = tools.getUUID( self.uuidDB, "UnitCell", "UnitCell_" + zeoname )
+    output.append( [ uuid_cif_uc, "Instance", "UnitCell", "", "", "" ] )
 
     # Define relation between the class instances:
-    output.append( [ uuid_zeolite, "instance", uuid_cif,  
-                     self.ontoPrefix + "hasCIF", "", "" ] )
+    output.append( [ subject, "instance", uuid_cif,  
+    #output.append( [ uuid_zeolite, "instance", uuid_cif,  
+                     self.crystOntoPrefix + "hasCrystalInformation", "", "" ] )
 
     output.append( [ uuid_cif, "Instance", uuid_cif_uc,  
-                     self.ontoPrefix + "hasCIFCoreCell", "", "" ] )
+                     predicate, "", "" ] )
+                     #self.crystOntoPrefix + "hasUnitCell", "", "" ] )
 
     ###########################################
+    if not None == self.unitCellLengths:
+      output += self.unitCellLengths.getArrVector( uuid_cif_uc, 
+                self.crystOntoPrefix + "hasUnitCellLengths" ) 
 
-    # Vector for Unit Cell length parameters (a,b,c):
-    tmp = {"class":"UnitCellLengths", 
-           "name": "UnitCellLengths_" + zeoname,
-           "comp":{ "a": {"value":round(structure.lattice.a, 12)},
-                    "b": {"value":round(structure.lattice.b, 12)},
-                    "c": {"value":round(structure.lattice.c, 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-           }
-    arr = self.getArrVector( uuid_cif_uc, self.ontoPrefix + "hasUnitCellLengths", tmp )
-    for line in arr:
-      output.append( line )
+    if not None == self.unitCellAngles:
+      output += self.unitCellAngles.getArrVector(  uuid_cif_uc, 
+                self.crystOntoPrefix + "hasUnitCellAngles" ) 
 
-    # Vector for Unit Cell angles parameters (alpha,beta,gamma):
-    tmp = {"class":"UnitCellAngles", 
-           "name": "UnitCellAngles_" + zeoname,
-           "comp":{ "alpha": {"value":round(structure.lattice.alpha, 12)},
-                    "beta" : {"value":round(structure.lattice.beta , 12)},
-                    "gamma": {"value":round(structure.lattice.gamma, 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/degree",
-           }
-    arr = self.getArrVector( uuid_cif_uc, self.ontoPrefix + "hasUnitCellAngless", tmp )
-    for line in arr:
-      output.append( line )
+    if not None == self.unitCellRecipLengths:
+      output += self.unitCellRecipLengths.getArrVector( uuid_cif_uc, 
+                self.crystOntoPrefix + "hasReciprocalUnitCellLengths" )
 
-    # Vector for reciprocal Unit Cell length parameters (a*,b*,c*):
-    tmp = {"class":"UnitCellLengths", 
-           "name": "UnitCellReciprocalLengths_" + zeoname,
-           "comp":{ "a*": {"value":round(structure.lattice.reciprocal_lattice.a, 12)},
-                    "b*": {"value":round(structure.lattice.reciprocal_lattice.b, 12)},
-                    "c*": {"value":round(structure.lattice.reciprocal_lattice.c, 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-           }
-    arr = self.getArrVector( uuid_cif_uc, self.ontoPrefix + "hasUnitCellReciprocalLengths", tmp )
-    for line in arr:
-      output.append( line )
+    if not None == self.unitCellRecipAngles:
+      output += self.unitCellRecipAngles.getArrVector( uuid_cif_uc, 
+                self.crystOntoPrefix + "hasReciprocalUnitCellAngles" )
 
-    # Vector for Reciprocal Unit Cell angle parameters (alpha*,beta*,gamma*):
-    tmp = {"class":"UnitCellAngles", 
-           "name": "UnitCellReciprocalAngles_" + zeoname,
-           "comp":{ "alpha*": {"value":round(structure.lattice.reciprocal_lattice.alpha, 12)},
-                    "beta*" : {"value":round(structure.lattice.reciprocal_lattice.beta , 12)},
-                    "gamma*": {"value":round(structure.lattice.reciprocal_lattice.gamma, 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/degree",
-           }
-    arr = self.getArrVector( uuid_cif_uc, self.ontoPrefix + "hasUnitCellReciprocalAngles", tmp )
-    for line in arr:
-      output.append( line )
-
-    ###########################################
-
-    ###########################################
     # Vector to keep three Unit Cell vectors (a,b,c):
     uuid_uc_vec_abc = tools.getUUID( self.uuidDB, "UnitCellVectorSet", "UnitCellVectorSet_" + zeoname )
     output.append( [ uuid_uc_vec_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
 
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_abc,  
-                     self.ontoPrefix + "hasUnitCellVectorSet", "", "" ] )
+                     self.crystOntoPrefix + "hasUnitCellVectorSet", "", "" ] )
 
-    tmp = {"class":"UnitCellLatticeVector", 
-           "name": "UnitCellLatticeVectorA_" + zeoname,
-           "comp":{ "x": {"value": round(structure.lattice.matrix[0][0], 12)},
-                    "y": {"value": round(structure.lattice.matrix[0][1], 12)},
-                    "z": {"value": round(structure.lattice.matrix[0][2], 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-           "label": "a"
-           }
-    arr = self.getArrVector( uuid_uc_vec_abc, self.ontoPrefix + "hasLatticeVector", tmp )
-    for line in arr:
-      output.append( line )
+    output += self.unitCellVectorA.getArrVector( uuid_uc_vec_abc, self.crystOntoPrefix + "hasLatticeVector" )
+    output += self.unitCellVectorB.getArrVector( uuid_uc_vec_abc, self.crystOntoPrefix + "hasLatticeVector" )
+    output += self.unitCellVectorC.getArrVector( uuid_uc_vec_abc, self.crystOntoPrefix + "hasLatticeVector" )
 
+    # Vector to keep three Reciprocal Unit Cell vectors (a,b,c):
+    uuid_uc_r_vec_abc = tools.getUUID( self.uuidDB, "UnitCellVectorSet", "ReciprocalUnitCellVectorSet_" + zeoname )
+    output.append( [ uuid_uc_r_vec_abc, "Instance", "ReciprocalUnitCellVectorSet", "", "", "" ] )
 
-    tmp = {"class":"UnitCellLatticeVector", 
-           "name": "UnitCellLatticeVectorB_" + zeoname,
-           "comp":{ "x": {"value": round(structure.lattice.matrix[1][0], 12)},
-                    "y": {"value": round(structure.lattice.matrix[1][1], 12)},
-                    "z": {"value": round(structure.lattice.matrix[1][2], 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-           "label": "b"
-           }
-    arr = self.getArrVector( uuid_uc_vec_abc, self.ontoPrefix + "hasLatticeVector", tmp )
-    for line in arr:
-      output.append( line )
+    output.append( [ uuid_cif_uc, "Instance", uuid_uc_r_vec_abc,  
+                     self.crystOntoPrefix + "hasReciprocalUnitCellVectorSet", "", "" ] )
 
-    tmp = {"class":"UnitCellLatticeVector", 
-           "name": "UnitCellLatticeVectorC_" + zeoname,
-           "comp":{ "x": {"value": round(structure.lattice.matrix[2][0], 12)},
-                    "y": {"value": round(structure.lattice.matrix[2][1], 12)},
-                    "z": {"value": round(structure.lattice.matrix[2][2], 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-           "label": "c"
-           }
-
-    arr = self.getArrVector( uuid_uc_vec_abc, self.ontoPrefix + "hasLatticeVector", tmp )
-    for line in arr:
-      output.append( line )
-
-    # Vector for Reciprocal Unit Cell vectors (a*,b*,c*):
-    uuid_uc_vec_r_abc = tools.getUUID( self.uuidDB, "UnitCellVectorSet", "ReciprocalUnitCellVectorSet_" + zeoname )
-    output.append( [ uuid_uc_vec_r_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
- 
-    output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_r_abc,  
-                     self.ontoPrefix + "hasReciprocalUnitCellVectorSet", "", "" ] )
-
-    tmp = {"class":"UnitCellLatticeVector", 
-           "name": "UnitCellReciprocalLatticeVectorA_" + zeoname,
-           "comp":{ "x": {"value": round(structure.lattice.reciprocal_lattice.matrix[0][0], 12)},
-                    "y": {"value": round(structure.lattice.reciprocal_lattice.matrix[0][1], 12)},
-                    "z": {"value": round(structure.lattice.reciprocal_lattice.matrix[0][2], 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-           "label": "a*"
-           }
-    arr = self.getArrVector( uuid_uc_vec_r_abc, self.ontoPrefix + "hasLatticeVector", tmp )
-    for line in arr:
-      output.append( line )
-
-
-    tmp = {"class":"UnitCellLatticeVector", 
-           "name": "UnitCellReciprocalLatticeVectorB_" + zeoname,
-           "comp":{ "x": {"value": round(structure.lattice.reciprocal_lattice.matrix[1][0], 12)},
-                    "y": {"value": round(structure.lattice.reciprocal_lattice.matrix[1][1], 12)},
-                    "z": {"value": round(structure.lattice.reciprocal_lattice.matrix[1][2], 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-           "label": "b*"
-           }
-    arr = self.getArrVector( uuid_uc_vec_r_abc, self.ontoPrefix + "hasLatticeVector", tmp )
-    for line in arr:
-      output.append( line )
-
-    tmp = {"class":"UnitCellLatticeVector", 
-           "name": "UnitCellReciprocalLatticeVectorC_" + zeoname,
-           "comp":{ "x": {"value": round(structure.lattice.reciprocal_lattice.matrix[2][0], 12)},
-                    "y": {"value": round(structure.lattice.reciprocal_lattice.matrix[2][1], 12)},
-                    "z": {"value": round(structure.lattice.reciprocal_lattice.matrix[2][2], 12)}
-                  },
-           "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-           "label": "c*"
-           }
-
-    arr = self.getArrVector( uuid_uc_vec_r_abc, self.ontoPrefix + "hasLatticeVector", tmp )
-    for line in arr:
-      output.append( line )
+    output += self.unitCellRecipVectorA.getArrVector( uuid_uc_r_vec_abc, self.crystOntoPrefix + "hasLatticeVector" )
+    output += self.unitCellRecipVectorB.getArrVector( uuid_uc_r_vec_abc, self.crystOntoPrefix + "hasLatticeVector" )
+    output += self.unitCellRecipVectorC.getArrVector( uuid_uc_r_vec_abc, self.crystOntoPrefix + "hasLatticeVector" )
 
     ###########################################
 
-    # Unit cell volume, single value, not vector:
+    # Unit Cell volume, single value, not vector:
 
     uuid_uc_volume = tools.getUUID( self.uuidDB, 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure", 
@@ -703,7 +1316,7 @@ class CsvMaker:
                      "", "", "" ] )
 
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_volume,  
-                     self.ontoPrefix + "hasVolume", "", "" ] )
+                     self.crystOntoPrefix + "hasUnitCellVolume", "", "" ] )
 
     output.append( [ "http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue", 
                      "Data Property", uuid_uc_volume, "", 
@@ -716,20 +1329,56 @@ class CsvMaker:
 
     ###########################################
 
-    ###########################################
+    # The symmetry information of the unit cell.
+    # TODO to add get_crystal_system(), get_space_group_number(), 
+    #      https://pymatgen.org/pymatgen.symmetry.html
+ 
+    sga = pymatgen.symmetry.analyzer.SpacegroupAnalyzer( structure )
 
-    #tools.saveUUID( uuidDB )
+    #print( "Zeo Name = ", zeoname )
+    if isinstance( sga._space_group_data, dict ):
+      if "number" in sga._space_group_data.keys():
+        """
+        print( "SG number:", sga._space_group_data["number"], sga.get_space_group_number(), sga.get_crystal_system() )
+        print( "   ", #sga._get_symmetry(), 
+                      sga.get_hall(), 
+                      sga.get_lattice_type(), #sga.get_symmetry_dataset() 
+                      #sga.int_symbol()
+                      #sga._abc_impl
+                      )
+        """
+        #if isinstance( sga.get_crystal_system(), str) :
+        output.append( [ self.crystOntoPrefix + "hasLatticeSystem", 
+                           "Data Property", uuid_cif_uc, "", 
+                           sga.get_crystal_system() , "string" ] )
+        output.append( [ self.crystOntoPrefix + "hasSymmetryNumber", 
+                           "Data Property", uuid_cif_uc, "", 
+                           sga.get_space_group_number() , "integer" ] )
+   
+
 
     return output
     pass # CsvMaker.arrUnitCell()
 
-  def arrTiles( self, zeoname ):
+  def arrTiles( self, subject, predicate, zeoname ):
+    """
+    subject   - Is the full hame of instance of class CrystalInformation, 
+                which contains this TiledStructure class.
+    predicate - Is the Object Property linking the Subject and the current TiledStructure.
+                Typically is should be equal to "hasTiledStructure".
+    """
+
+    if subject.find( "TiledStructure" ) < 0:
+      logging.warning( " Subject in arrTiles() is '" + subject + "'," +
+                       " expecting the name to contain '" + "TiledStructure" + "'." ) 
+
+    if predicate.find( "hasTiledStructure" ) < 0:
+      logging.warning( " Predicate in arrTiles() is '" + predicate + "'," +
+                       " but expecting '" + "hasTiledStructure" + "'." ) 
+
     output = []
 
-    #uuidDB = tools.loadUUID()
-    #uuidDB = self.uuidDB
-
-    path = os.path.join( self.inputDir, "Tile-signature-2023.csv" )
+    path   = os.path.join( self.inputDir, "Tile-signature-2023.csv" )
     dataIn = tools.readCsv( path )
 
     data = tilesignature.getDataByCode( dataIn, zeoname )
@@ -741,9 +1390,9 @@ class CsvMaker:
                      "", "", "" ] )
 
     output.append( [ uuid_zeolite, "Instance", uuid_tstructure,  
-                     self.ontoPrefix + "hasTiledStructure", "", "" ] )
+                     self.crystOntoPrefix + "hasTiledStructure", "", "" ] )
 
-    output.append( [ self.ontoPrefix + "hasTileSignature", "Data Property", 
+    output.append( [ self.crystOntoPrefix + "hasTileSignature", "Data Property", 
                      uuid_tstructure, "", data[2].strip(' "'), "string" ] )
 
     ### Begin of transitivity
@@ -768,40 +1417,40 @@ class CsvMaker:
                      "", "", "" ] )
 
     output.append( [ uuid_tstructure, "Instance", uuid_tile_trans ,  
-                     self.ontoPrefix + "hasTransitivity", "", "" ] )
+                     self.crystOntoPrefix + "hasTransitivity", "", "" ] )
 
     output.append( [ uuid_tile_trans, "Instance", uuid_tile_transP,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
+                     self.crystOntoPrefix + "hasComponent", "", "" ] )
 
     output.append( [ uuid_tile_trans, "Instance", uuid_tile_transQ,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
+                     self.crystOntoPrefix + "hasComponent", "", "" ] )
 
     output.append( [ uuid_tile_trans, "Instance", uuid_tile_transR,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
+                     self.crystOntoPrefix + "hasComponent", "", "" ] )
 
     output.append( [ uuid_tile_trans, "Instance", uuid_tile_transS,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
+                     self.crystOntoPrefix + "hasComponent", "", "" ] )
 
     trans = self.getTransitivity( data[1] )
 
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+    output.append( [ self.crystOntoPrefix + "hasLabel", "Data Property", 
                                         uuid_tile_transP, "", "p", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+    output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
                                         uuid_tile_transP, "", trans[0], "integer" ] )
 
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+    output.append( [ self.crystOntoPrefix + "hasLabel", "Data Property", 
                                         uuid_tile_transQ, "", "q", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+    output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
                                         uuid_tile_transQ, "", trans[1], "integer" ] )
 
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+    output.append( [ self.crystOntoPrefix + "hasLabel", "Data Property", 
                                         uuid_tile_transR, "", "r", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+    output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
                                         uuid_tile_transR, "", trans[2], "integer" ] )
 
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+    output.append( [ self.crystOntoPrefix + "hasLabel", "Data Property", 
                                         uuid_tile_transS, "", "s", "string" ] )
-    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+    output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
                                         uuid_tile_transS, "", trans[3], "integer" ] )
     ### End of transitivity
 
@@ -821,37 +1470,37 @@ class CsvMaker:
                        "", "", "" ] )
 
       output.append( [ uuid_tstructure, "Instance", uuid_tile, 
-                       self.ontoPrefix + "hasTile", "", "" ] )
+                       self.crystOntoPrefix + "hasTile", "", "" ] )
 
-      output.append( [ self.ontoPrefix + "hasTileCode", "Data Property", 
+      output.append( [ self.crystOntoPrefix + "hasTileCode", "Data Property", 
                                          uuid_tile, "", codeN[ic], "string" ] )
 
-      output.append( [ self.ontoPrefix + "hasNumberOfFaces", "Data Property", 
+      output.append( [ self.crystOntoPrefix + "hasNumberOfFaces", "Data Property", 
                                          uuid_tile, "", faceN[ic], "integer" ] )
 
-      output.append( [ self.ontoPrefix + "hasNumberOfEdgges", "Data Property", 
+      output.append( [ self.crystOntoPrefix + "hasNumberOfEdgges", "Data Property", 
                                          uuid_tile, "", edgeN[ic], "integer" ] )
 
-      output.append( [ self.ontoPrefix + "hasNumberOfVertices", "Data Property", 
+      output.append( [ self.crystOntoPrefix + "hasNumberOfVertices", "Data Property", 
                                          uuid_tile, "", vertN[ic], "integer" ] )
 
       # TODO
       #output.append( [ self.ontoPrefix + "hasTileSymmetry", "Data Property", 
       #                                   uuid_tile, "", symmN[ic], "string" ] )
 
-      output.append( [ self.ontoPrefix + "hasTileSignature", "Data Property", 
+      output.append( [ self.crystOntoPrefix + "hasTileSignature", "Data Property", 
                                          uuid_tile, "", signN[ic], "string" ] )
 
       output.append( [ uuid_tile_num, "Instance", "TileNumber", 
                        "", "", "" ] )
 
       output.append( [ uuid_tstructure, "Instance", uuid_tile_num, 
-                       self.ontoPrefix + "hasTileNumber", "", "" ] )
+                       self.crystOntoPrefix + "hasTileNumber", "", "" ] )
 
       output.append( [ uuid_tile_num, "Instance", uuid_tile, 
-                       self.ontoPrefix + "isNumberOf", "", "" ] )
+                       self.crystOntoPrefix + "isNumberOf", "", "" ] )
 
-      output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+      output.append( [ self.crystOntoPrefix + "hasValue", "Data Property", 
                        #uuid_tile_num, "", cage[0], "" ] )
                        uuid_tile_num, "", cage[0], "integer" ] )
                        #uuid_tile_num, "", cage[0], 
@@ -871,30 +1520,30 @@ class CsvMaker:
                          "" , "", "" ] )
 
         output.append( [ uuid_tile,   "Instance", uuid_tile_face,   
-                         self.ontoPrefix + "hasTileFace" , "", "" ] )
+                         self.crystOntoPrefix + "hasTileFace" , "", "" ] )
 
         output.append( [ uuid_tile_face_num, "Instance", "TileFaceNumber",  
                          "" , "", "" ] )
         
         output.append( [ uuid_tile, "Instance", uuid_tile_face_num,  
-                         self.ontoPrefix + "hasTileFaceNumber" , "", "" ] )
+                         self.crystOntoPrefix + "hasTileFaceNumber" , "", "" ] )
 
         output.append( [ uuid_tile_face_num, "Instance", uuid_tile_face,
-                         self.ontoPrefix + "isNumberOf" , "", "" ] )
+                         self.crystOntoPrefix + "isNumberOf" , "", "" ] )
 
-        output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasValue", "Data Property", 
                               #uuid_tile_face_num, "", face[1], "" ] )
                               uuid_tile_face_num, "", face[1], "integer" ] )
                               #uuid_tile_face_num, "", face[1], 
                               #"http://www.w3.org/2001/XMLSchema#integer" ] )
 
-        output.append( [ self.ontoPrefix + "hasNumberOfEdges", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasNumberOfEdges", "Data Property", 
                               #uuid_tile_face, "", int(face[0]), "" ] )
                               uuid_tile_face, "", int(face[0]), "integer" ] )
                               #uuid_tile_face, "", int(face[0]), 
                               #"http://www.w3.org/2001/XMLSchema#integer" ] )
 
-        output.append( [ self.ontoPrefix + "hasFaceCode", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasFaceCode", "Data Property", 
                                        uuid_tile_face, "", str("UNDEFINED"), "string" ] )
 
         # TODO add face code (?), like 14a, 14b, etc
@@ -942,6 +1591,7 @@ class CsvMaker:
     #words = line.split()
     nBracket = 0
     words = tools.strSplit( line )
+    #words = tools.strSplit( line.relpace( "\t", " " ) ) # Some CIFs have a tab in a line
     #print ( ">>>>>>>>>>> ", words )
 
     if len(words) == 0:
@@ -956,24 +1606,86 @@ class CsvMaker:
       return line, 0
 
     lineNew = line
-    #print( self.entriesToCheck )
+    #print( self.entriesWithUncertainties )
     #for i in range( len(headers) ):
     for ih, h in enumerate(headers):
       #print( "=== '" + h + "' ===" )
-      if h in self.entriesToCheck:
+      if h in self.entriesWithUncertainties:
         #print( "   need to process" )
-        #logging.warning( " Found one of the entries" )
+        #logging.warning( " Found one of the entries in a loop" )
+
         vOut, eOut = self.splitErrorBar( words[ih].strip(), file_line )
         if eOut != "":
           nBracket += 1
+          #self.setValueAndError( cifName, h, vOut, eOut )
+
         pos = line.find( words[ih] )
         lineNew = lineNew.replace( words[ih], vOut )
 
     #print( "lineNew =", lineNew )
     return lineNew, nBracket
+    pass # splitErrorBarLoop()
+
+  def setValueAndError( self, cifName, entry, value, error ):
+    """
+
+    """
+    '''
+    self.entriesWithUncertainties = [ 
+                  "_cell_volume", "_cell_measurement_temperature",
+                  "_diffrn_ambient_temperature",
+                  "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
+                  "_atom_site_U_iso_or_equiv",
+                  "_atom_site_aniso_U_11", "_atom_site_aniso_U_22", 
+                  "_atom_site_aniso_U_33", "_atom_site_aniso_U_23", 
+                  "_atom_site_aniso_U_13", "_atom_site_aniso_U_12", 
+                  "_geom_bond_distance", "_geom_angle", 
+                  "_refine_ls_extinction_coef"
+                  ]
+    '''
+
+#    #cifName = "QQQQQQ"
+#    self.unitCellLengths = OntoVector( uuidDB = self.uuidDB, 
+#                                       myClass = "UnitCellLengths", 
+#                                       myName  = "UnitCellLengths_" + cifName,
+#       #                                myUnit  = "angstrom" )
+#       myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
+
+    logging.warning( "setValueAndError(): " + "cifName = '" + str(cifName) + "', " +
+           "entry = '" + str(entry) + "', " + 
+           "value = '" + str(value) + "', " + "error = '" + str(error) + "'." )
+
+    if "_cell_length_a" == entry:
+      self.unitCellLengths.addComponent( label = "a", value = value, error = error )
+
+    elif "_cell_length_b" == entry:
+      self.unitCellLengths.addComponent( label = "b", value = value, error = error )
+
+    elif "_cell_length_c" == entry:
+      self.unitCellLengths.addComponent( label = "c", value = value, error = error )
+
+    elif "_cell_angle_alpha" == entry:
+      self.unitCellAngles.addComponent( label = "alpha", value = value, error = error )
+
+    elif "_cell_angle_beta" == entry:
+      self.unitCellAngles.addComponent( label = "beta", value = value, error = error )
+
+    elif "_cell_angle_gamma" == entry:
+      self.unitCellAngles.addComponent( label = "gamma", value = value, error = error )
+
+
+
+      pass
+    else:
+      logging.error( " Unknown entry to store data with error: '" + entry + "'." )
+
+    pass # setValueAndError()
 
 
   def splitStr( self, value ):
+    """
+    Function splits a string of a form "12.345(6)" into two strings: "12.345" and "0.006".
+    """
 
     pos1 = value.find( "(" )
     pos2 = value.find( ")" )
@@ -1033,7 +1745,8 @@ class CsvMaker:
     pos1 = value.find( "(" )
     pos2 = value.find( ")" )
     if pos1 < 0 and pos2 < 0:
-      logging.info( " Brackets are not detected. " + file_line )
+      #logging.info( " Brackets are not detected. " + file_line )
+      pass
     elif pos1 >= 0 and pos2 >= 0 and pos1 < pos2:
       #print( "pos1 = ", pos1, " pos2 = ", pos2 )
       vOut,eOut = self.splitStr(value) 
@@ -1081,14 +1794,14 @@ class CsvMaker:
     for i in range(len(lineRanges)-1):
       #print( "i =", i, ", ", lineRanges[i] )
 
-      nBracket = self.readUncertainties( fileIn, lineRanges[i], lineRanges[i+1] )
+      nBracket = self.readWithUncertainties( fileIn, zeoname, lineRanges[i], lineRanges[i+1] )
       if ( nBracket > 0 ) or ( len(lineRanges) - 1 > 1 ):
         fileBase, ext = os.path.splitext( os.path.basename(fileIn) )
         print( "Input file name and extension:", fileBase, ext )
 
         fileOut = os.path.join( tmpDir, fileBase + "_" + str(i+1) + ext )
         filesOut.append( fileOut )
-        self.readUncertainties( fileIn, lineRanges[i], lineRanges[i+1], fileOut = fileOut )
+        self.readWithUncertainties( fileIn, zeoname, lineRanges[i], lineRanges[i+1], fileOut = fileOut )
 
     #else:
     #fileOut = "after-913885.cif"
@@ -1096,7 +1809,8 @@ class CsvMaker:
     return filesOut
     pass # cleanCif()
 
-  def readUncertainties(self, fileIn, lineFr, lineTo, fileOut = "" ):
+  def readWithUncertainties( self, fileIn, cifName, lineFr = None, lineTo = None, 
+                             fileOut = "", save = False ):
     """
     This function can do three different operations:
     1) read fileIn and count the number of brackets (i.e. the uncertainties)
@@ -1106,12 +1820,21 @@ class CsvMaker:
        Specify the fileOut a path.
     3) Read both value and uncertainty and assign to the internal variables,
        which later can be saved into an ABox formal (.csv).
+       Flag save = True (default save = False)
 
-      Return In all 3 cases function returns the number of detected uncertainties.
-
+      Parameters:
+      fileIn  - the input CIF file to be read,
+      cifName - is the unique identifier for the cif to be stored in abox
+      lineFr  - 
+      lineTo  - 
+      fileOut - output file to save data with uncertainties removed,
+      save    - boolean flag, whether to save the data to internal variables.
+      Return: 
+      In all 3 cases function returns the number of detected uncertainties.
+      In case of error the function returns negative value.
     """
 
-    self.entriesToCheck = [ "_cell_length_a", "_cell_length_b", "_cell_length_c", 
+    self.entriesWithUncertainties = [ "_cell_length_a", "_cell_length_b", "_cell_length_c", 
                   "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma",
                   "_cell_volume", "_cell_measurement_temperature",
                   "_diffrn_ambient_temperature",
@@ -1126,7 +1849,7 @@ class CsvMaker:
 
     if not os.path.isfile( fileIn ):
       logging.error( " Input file '" + fileIn + "' does not exist in cleanCif()." )
-      return
+      return -1
 
     fIn = open( fileIn )
     
@@ -1164,7 +1887,7 @@ class CsvMaker:
       elif pos1 > 0 or pos2 > 0:
         logging.warning( " Comment starts not from beginning of the line: '" + 
                        line.strip() + "' " + file_line + "."  
-                       #+ " This is not supported by readUncertainties()." 
+                       #+ " This is not supported by readWithUncertainties()." 
                      )
         if len(fileOut) > 0:
           fOut.write( line )
@@ -1235,7 +1958,7 @@ class CsvMaker:
         pass
 
       elif "_" == words[0][0]:
-        #print( "Checking property", words[0], "is it in list of known?", words[0] in self.entriesToCheck ) 
+        #print( "Checking property", words[0], "is it in list of known?", words[0] in self.entriesWithUncertainties ) 
         if False == inLoop:
           if len(words) == 1:
             #logging.info( " Only 1 entry in '" + line.strip() + "' " + file_line + ". I skip this case." )
@@ -1248,11 +1971,12 @@ class CsvMaker:
               fOut.write( line )
             continue
             
-          elif words[0] in self.entriesToCheck:
-            #logging.info( " Found one of the entries" )
+          elif words[0] in self.entriesWithUncertainties:
+            logging.info( " Found one of the entries:" + words[0]  )
             vOut, eOut = self.splitErrorBar( words[1], file_line )
             if "" != eOut:
               countBrackets += 1
+              self.setValueAndError( cifName, words[0], vOut, eOut )
 
             pos = line.find( words[1] )
 
@@ -1290,9 +2014,9 @@ class CsvMaker:
     if len(fileOut) > 0:
       fOut.close()
 
-    print( "Number of brackets =", countBrackets )
+    #print( "Number of brackets =", countBrackets )
     return countBrackets
-    pass # readUncertainties()
+    pass # readWithUncertainties()
 
 
   def makeCsvs( self ):
@@ -1303,10 +2027,19 @@ class CsvMaker:
     for z in self.zeoList:
       #print( "In zeolist z =", z )
       arr  = self.arrInit( z )
-      #arr += self.arrTiles( z )
-      arr += self.arrUnitCell( z )
-      #arr += self.arrAtomSite( z )
-      #arr += self.arrTransform( z )
+
+      self.loadCifZeolite( z ) 
+      #self.evalCifData()
+
+      uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + z )
+     
+
+      arr += self.arrUnitCell( uuid_zeolite, self.crystOntoPrefix + "hasUnitCell", z )
+
+      arr += self.arrAtomSite( uuid_zeolite, self.crystOntoPrefix + "hasUnitCell", z )
+
+      #arr += self.arrTiles( "", "", z )
+      #arr += self.arrTransform( "", "", z )
 
       #print( "arr =", arr )
       #csvWrite( arr )
@@ -1327,6 +2060,27 @@ class CsvMaker:
   pass # class CsvMaker
 
 
+  """
+  0) Prepare the header lines (standard).
+  1) For CIF related data:
+    a) Load CIF data and store internally.
+       by loadCifZeolite()   - zeolite-specific, calls the next funtion:
+                               Some CIF files may be a merge of several files ??? TODO
+
+          loadCifStructure() - this function does not know about zeolites, 
+                               it can be used for any kind of CIF file.
+    b) Modify CIF data (if necessary).
+       by ???
+    c) Save data related to CIF (it can be in different structure, 
+       according to the settings).
+       arrUnitCell()
+       arrAtomSite()
+       arrTransform()
+  """ 
+
+
+
+
 if __name__ == "__main__":
   
   settings = CommandLine()
@@ -1335,11 +2089,9 @@ if __name__ == "__main__":
 
   a.makeCsvs()
 
-  fileIn  = os.path.join( "test", "913885.cif" )
-
-  filesOut = a.cleanCif( fileIn )
-
-  print( "Created", len(filesOut), "file(s) after clean-up:", filesOut )
+  #fileIn  = os.path.join( "test", "913885.cif" )
+  #filesOut = a.cleanCif( fileIn )
+  #print( "Created", len(filesOut), "file(s) after clean-up:", filesOut )
 
   #input_strings = [ "123450(16)", "123450(160)", "1234.5(16)", "123.45(16)", "12.345(16)"]
   #for input_string in input_strings:

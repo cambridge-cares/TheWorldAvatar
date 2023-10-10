@@ -1,6 +1,10 @@
 """
 Combine several csvs.
 
+TODO
+1) ??? Verification that new classes are not defined twice. 
+   Though not strictly necessary. This is alreaty done in the abox_creator.
+2) 
 
 """
 
