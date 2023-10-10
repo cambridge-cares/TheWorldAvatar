@@ -275,7 +275,7 @@ public class IsochroneGenerator {
                                                     "\n" +
                                                     "-- Create the table\n" +
                                                     "CREATE TABLE isochrone_building_ref AS\n" +
-                                                    "SELECT DISTINCT ia.isochrone_iri, pno.poi_iri\n" +
+                                                    "SELECT DISTINCT ia.isochrone_iri, pno.poi_iri, pno.poi_type\n" +
                                                     "FROM isochrone_aggregated AS ia\n" +
                                                     "LEFT JOIN poi_nearest_node AS pno ON ia.poi_type = pno.poi_type\n" +
                                                     "ORDER BY ia.isochrone_iri;";
