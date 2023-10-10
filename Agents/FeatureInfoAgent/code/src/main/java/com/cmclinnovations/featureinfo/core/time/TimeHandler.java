@@ -182,8 +182,15 @@ public class TimeHandler {
                     this.connection = rdbConn;
 
                     TimeSeries<Instant> timeseries = getTimeSeries(thisConfig, theseMeasurables);
+                    LOGGER.debug("Got time series instance from client..");
+                    timeseries.getDataIRIs().forEach(dataIRI -> {
+                        LOGGER.debug("There are {} values for measurable IRI: {}", timeseries.getValues(dataIRI).size(), dataIRI);
+                    });
+
                     if(timeseries != null && timeseries.getTimes() != null && !timeseries.getTimes().isEmpty()) {
                         allTimeSeries.put(timeseries, theseMeasurables);
+                    } else {
+                        LOGGER.debug("Returned time series has no time entries, skipping: {}", entryByTime.getKey());
                     }
 
                 } catch(Exception exception) {
@@ -234,8 +241,12 @@ public class TimeHandler {
         for(int i = 0; i < result.length(); i++) {
             JSONObject obj = result.getJSONObject(i);
             Measurable measurable = MeasurableBuilder.build(classMatch, obj);
+
             if(measurable != null) {
-                LOGGER.debug("Measurable with time series IRI: {}", measurable.getTimeSeriesIRI());
+                LOGGER.debug("Discovered measurable with data IRI: {}", measurable.getEntityIRI());
+                if(measurable.getTimeSeriesIRI() != null) {
+                    LOGGER.debug("Measurable has parent time series: {}", measurable.getTimeSeriesIRI());
+                }
                 measurables.add(measurable);
             }
         }
@@ -292,6 +303,8 @@ public class TimeHandler {
 
         // Call client to get TimeSeries object
         if(bounds == null) {
+            LOGGER.debug("Calling TimeSeriesClient without time bounds.");
+
             return this.tsClient.getTimeSeries(
                 measurableIRIs,
                 this.connection
@@ -300,6 +313,9 @@ public class TimeHandler {
         } else {
             Instant lowerBound = bounds.getLeft().isBefore(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
             Instant upperBound = bounds.getLeft().isAfter(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
+
+            LOGGER.debug("Calculated lower time bound as: {}", lowerBound);
+            LOGGER.debug("Calculated upper time bound as: {}", upperBound);
 
             return this.tsClient.getTimeSeriesWithinBounds(
                 measurableIRIs,
