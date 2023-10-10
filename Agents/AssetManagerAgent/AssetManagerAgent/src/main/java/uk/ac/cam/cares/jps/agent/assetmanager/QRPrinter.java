@@ -171,7 +171,7 @@ public class QRPrinter {
                     document.add(qrCodeImage);
 
                     Paragraph p = new Paragraph(ID);
-                    p.setFixedPosition(x, y, qrCodeSize);
+                    p.setFixedPosition(x, y-20, qrCodeSize);
                     document.add(p);
 
                 } catch (Exception e) {
