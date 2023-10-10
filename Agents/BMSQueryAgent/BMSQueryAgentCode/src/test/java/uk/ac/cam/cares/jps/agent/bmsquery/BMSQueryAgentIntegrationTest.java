@@ -22,15 +22,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Ignore ("Requires triple store endpoint set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 @Testcontainers
 public class BMSQueryAgentIntegrationTest {
     @Container
-    private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+    private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
             .withExposedPorts(9999);
 
     //temp folder for temp namespace properties file
@@ -69,7 +68,7 @@ public class BMSQueryAgentIntegrationTest {
 
     @After
     public void tearDown() throws IOException {
-        for (String namespace : Arrays.asList("bms", "lab")) {
+        for (String namespace : Arrays.asList("bms", "lab", "caresOffice")) {
             clearBlazegraphData(namespace);
         }
     }
@@ -83,14 +82,64 @@ public class BMSQueryAgentIntegrationTest {
     }
 
     @Test
-    public void testQueryAllZones_Empty() {
+    public void testQueryAllZones() throws IOException {
+        createNewData("caresOffice", "testQueryOffice.xml");
+        createNewData("lab", "testQueryLab.xml");
+
+        JSONObject result = agent.queryAllZones();
+        JSONObject buildings = result.getJSONObject("buildings");
+        assertEquals(3, buildings.keySet().size());
+    }
+
+    @Test
+    public void testQueryOffice_Empty() {
+        JSONObject result = agent.queryOfficeZones();
+        assertTrue(result.getJSONObject("buildings").keySet().isEmpty());
+    }
+
+    @Test
+    public void testQueryOffice() throws IOException {
+        createNewData("caresOffice", "testQueryOffice.xml");
+        JSONObject result = agent.queryOfficeZones();
+
+        JSONObject buildings = result.getJSONObject("buildings");
+        assertEquals(1, buildings.keySet().size());
+
+        JSONObject building = buildings.getJSONObject("https://www.example.com/kg/caresOffice/OfficeBuilding_1");
+        assertEquals("OFFICE Tower", building.getString("label"));
+
+        JSONObject facilities = building.getJSONObject("facilities");
+        assertEquals(2, facilities.keySet().size());
+
+        JSONObject office1 = facilities.getJSONObject("https://www.example.com/kg/caresOffice/Office_1");
+        assertEquals("Mock Office 1", office1.getString("label"));
+
+        JSONObject office2 = facilities.getJSONObject("https://www.example.com/kg/caresOffice/Office_2");
+        assertEquals("Mock Office 2", office2.getString("label"));
+
+        JSONObject office1Rooms = office1.getJSONObject("rooms");
+        assertEquals(2, office1Rooms.keySet().size());
+
+        JSONObject office2Rooms = office2.getJSONObject("rooms");
+        assertEquals(0, office2Rooms.keySet().size());
+
+        JSONObject openLabArea = office1Rooms.getJSONObject("https://www.example.com/kg/caresOffice/Room_1");
+        assertEquals("Room 1", openLabArea.getString("label"));
+
+        JSONObject powderProcessingRoom = office1Rooms.getJSONObject("https://www.example.com/kg/caresOffice/Room_2");
+        assertEquals("Room 2", powderProcessingRoom.getString("label"));
+
+    }
+
+    @Test
+    public void testQueryLab_Empty() {
         JSONObject result = agent.queryLabZones();
         assertTrue(result.getJSONObject("buildings").keySet().isEmpty());
     }
 
     @Test
-    public void testQueryAllZones() throws IOException {
-        createNewData("lab", "testQueryAllZones.xml");
+    public void testQueryLab() throws IOException {
+        createNewData("lab", "testQueryLab.xml");
         JSONObject result = agent.queryLabZones();
 
         JSONObject buildings = result.getJSONObject("buildings");
@@ -156,6 +205,7 @@ public class BMSQueryAgentIntegrationTest {
     private void createNewNameSpace() throws IOException {
         String labPropertyFile = prepareBlazegraphPropertiesFile("lab");
         String bmsPropertyFile = prepareBlazegraphPropertiesFile("bms");
+        String officePropertyFile = prepareBlazegraphPropertiesFile("caresOffice");
 
         HttpPost httpPostLab = new HttpPost(getBlazegraphEndPoint() + "/namespace");
         httpPostLab.setEntity(new FileEntity(new File(labPropertyFile), ContentType.APPLICATION_XML));
@@ -165,8 +215,26 @@ public class BMSQueryAgentIntegrationTest {
         httpPostBMS.setEntity(new FileEntity(new File(bmsPropertyFile), ContentType.APPLICATION_XML));
         httpPostBMS.setHeader("Content-Type", "application/xml");
 
-        try (CloseableHttpResponse ignored = httpClient.execute(httpPostLab)) {
-            try (CloseableHttpResponse ignored2 = httpClient.execute(httpPostBMS)) {;}
+        HttpPost httpPostOffice = new HttpPost(getBlazegraphEndPoint() + "/namespace");
+        httpPostOffice.setEntity(new FileEntity(new File(officePropertyFile), ContentType.APPLICATION_XML));
+        httpPostOffice.setHeader("Content-Type", "application/xml");
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            try (CloseableHttpResponse response = httpClient.execute(httpPostLab)) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            try (CloseableHttpResponse response = httpClient.execute(httpPostBMS)) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            try (CloseableHttpResponse response = httpClient.execute(httpPostOffice)) {}
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
