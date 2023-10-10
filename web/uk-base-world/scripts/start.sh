@@ -107,7 +107,7 @@ then
     # Copy in the data for upload
     UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
     echo "Copying data..." 
-    cp -r "./inputs/data/." "$UPLOAD_DATA/" 
+    cp -r "$START/inputs/data/." "$UPLOAD_DATA/" 
 
     # Wait for the stack manager container to exit
 while docker ps --format '{{.Names}}' | grep -qE 'stack-manager'; do
