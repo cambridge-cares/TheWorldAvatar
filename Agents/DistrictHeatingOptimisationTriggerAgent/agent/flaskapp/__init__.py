@@ -1,6 +1,6 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 11 Jul 2022                            #
+# Date: 09 Oct 2022                            #
 ################################################
 
 # Create Flask application and define HTTP route to initiate district heating
@@ -14,6 +14,7 @@ from flask import Flask, request, jsonify
 from py4jps import agentlogging
 from pyderivationagent import PyDerivationClient
 
+import agent.flaskapp.tasks as tasks
 from agent.datamodel import *
 from agent.kgutils.kgclient import KGClient
 from agent.utils.agent_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
@@ -27,29 +28,9 @@ logger = agentlogging.get_logger('prod')
 # Create and start Flask app
 app = Flask(__name__)
 
-# Import triples from 'resources' folder upon app startup
-logger.info("Importing triples from 'resources/triples' folder...")
+# Upload triples from .ttl files and add covariates to forecasting models
 kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
-kg_client.initialise_namespace('./resources/triples')
-logger.info("Successfully imported triples.")
-
-# Add covariate relationships to uploaded forecasting model instances
-# TODO: Add covariate relationships for grid temperatures if necessary
-logger.info("Adding covariate relationships to relevant forecasting models...")
-if kg_client.check_if_triple_exist(fc_model_heat_demand, RDF_TYPE, TS_FORECASTINGMODEL):
-    # Get ambient air temperature and public holiday covariate IRIs
-    # NOTE: assumes exactly one instance of each type in the KG, i.e.,
-    #       ideally instantiate district heating in separate namespace
-    temp, holi = kg_client.get_heat_demand_covariates()
-    # Add covariate relationships
-    kg_client.instantiate_covariate_relationships(fc_model_heat_demand, [temp, holi])
-    logger.info("Covariate relationships successfully added.")
-else:
-    msg = 'Heat demand forecasting model instance not found in KG. '
-    msg += 'Please ensure it is instantiated and properly referenced in iris.py'
-    logger.error(msg)
-    raise ValueError(msg)
-
+tasks.upload_triples(kg_client)
 
 # Launch celery task queue
 celery = Celery(app.name, broker='redis://localhost:6379/0')
@@ -65,7 +46,7 @@ def trigger_optimisation():
     try:
         # Verify received HTTP request parameters
         params = request.get_json()
-        params = validate_input_params(params)
+        params = tasks.validate_input_params(params)
 
         # Queue the optimisation task
         #NOTE: For debugging please switch (un-)commented in next two lines
@@ -86,7 +67,6 @@ def trigger_optimisation():
 @celery.task
 def trigger_optimisation_task(params):
     try:
-        #TODO: Sequence to be refactored/streamlined
         # Initialise sparql and derivation clients
         kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         derivation_client = PyDerivationClient(
@@ -94,24 +74,23 @@ def trigger_optimisation_task(params):
             query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         
         # Check for already instantiated chain of derivations (to be reused)
-        # Heat demand and grid temp forecast derivation IRIs; returns empty list if not exist
+        # 1) Heat demand and grid temp forecast derivation IRIs; returns [] if not exist
         fc_deriv_iris = kg_client.get_forecast_derivations()
-        # Downstream optimisation and emission derivation IRIs; returns None if not exist
+        # 2) Downstream derivation IRIs; returns [] if not exist
+        # Generation optimisation derivation
         opti_deriv_iri = [] if not fc_deriv_iris else \
                             kg_client.get_downstream_derivation(fc_deriv_iris[0])
         if len(opti_deriv_iri) > 1:
-            msg = f'More than 1 Generation optimisation derivation retrieved: {", ".join(opti_deriv_iri)}'
-            logger.error(msg)
-            raise ValueError(msg)
+            tasks.raise_value_error(f'More than 1 Generation optimisation derivation retrieved: {", ".join(opti_deriv_iri)}')
+        # Emission estimation derivations
         em_deriv_iri = [] if not opti_deriv_iri else \
                         kg_client.get_downstream_derivation(opti_deriv_iri[0])
         if len(em_deriv_iri) > 2:
-            msg = f'More than 2 Emission estimation derivation retrieved: {", ".join(em_deriv_iri)}'
-            logger.error(msg)
-            raise ValueError(msg)
+            tasks.raise_value_error(f'More than 2 Emission estimation derivation retrieved: {", ".join(em_deriv_iri)}')
         derivs = opti_deriv_iri + em_deriv_iri
+        
         try:
-            # Retrieve unique time inputs (optimisation interval, simulation time)
+            # Retrieve unique time inputs (i.e., optimisation interval, simulation time)
             # attached to retrieved derivations; throws Exception if any does not exists
             sim_t, opti_int, opti_t1, opti_t2 = kg_client.get_pure_trigger_inputs(derivs)
             logger.info('Derivation chain already instantiated.')
@@ -120,17 +99,8 @@ def trigger_optimisation_task(params):
             new_derivation = True
             logger.info('Instantiating new chain of derivations...')
             # Create IRIs for time inputs to instantiate
-            # Simulation time
-            sim_t = KB + 'SimulationTime_' + str(uuid.uuid4())
-            # Optimisation interval
-            opti_int = KB + 'OptimisationInterval_' + str(uuid.uuid4())
-            opti_t1 = KB + 'OptimisationStartInstant_' + str(uuid.uuid4())
-            opti_t2 = KB + 'OptimisationEndInstant_' + str(uuid.uuid4())
-            # Heat demand & grid temperature data length
-            heat_length = KB + 'HeatDemandDuration_' + str(uuid.uuid4())
-            tmp_length = KB + 'GridTemperatureDuration_' + str(uuid.uuid4())
-            # Forecast frequency
-            freq = KB + 'Frequency_' + str(uuid.uuid4())
+            sim_t, opti_int, opti_t1, opti_t2, heat_length, tmp_length, freq = \
+                tasks.create_new_time_instances()
 
         # Trigger derivation update for each time step to optimise
         for run in range(params['numberOfTimeSteps']):
@@ -268,56 +238,6 @@ def is_processing_task_running():
         active_task_names = [v[0].get('name') for v in active_tasks.values()]
         return any('trigger_optimisation_task' in item for item in active_task_names)
     return False
-
-
-def validate_input_params(params_dict):
-    """
-    Validate suitability of received HTTP request parameters (converted to dict)
-    """
-
-    def _validate_int_parameter(param_name, param_value):
-        if not isinstance(param_value, int) or param_value <= 0:
-            raise ValueError(f"{param_name} should be an integer greater than 0")
-
-    # Check if all required keys are present
-    required_keys = ['start', 'optHorizon', 'numberOfTimeSteps', 'timeDelta', 
-                     'heatDemandDataLength', 'gridTemperatureDataLength']
-    for key in required_keys:
-        if key not in params_dict:
-            raise ValueError(f"Missing required parameter: {key}")
-
-    # Validate startDateTime
-    start_date_time = params_dict['start']
-    try:
-        datetime.strptime(start_date_time, '%Y-%m-%dT%H:%M:%SZ')
-    except ValueError:
-        raise ValueError("Invalid start dateTime format. Expected format: YYYY-MM-DDThh:mm:ssZ")
-
-    # Convert startDateTime to unix timestamp if needed
-    unix_timestamp = datetime.timestamp(datetime.strptime(start_date_time, '%Y-%m-%dT%H:%M:%SZ'))
-    params_dict['start'] = int(unix_timestamp)
-
-    # Validate integer parameters
-    _validate_int_parameter('optHorizon', params_dict['optHorizon'])
-    _validate_int_parameter('numberOfTimeSteps', params_dict['numberOfTimeSteps'])
-    _validate_int_parameter('heatDemandDataLength', params_dict['heatDemandDataLength'])
-    _validate_int_parameter('gridTemperatureDataLength', params_dict['gridTemperatureDataLength'])
-
-    # Validate frequency and map to constants
-    valid_frequencies = {
-        "day": (TIME_UNIT_DAY, int(timedelta(days=1).total_seconds())),
-        "hour": (TIME_UNIT_HOUR, int(timedelta(hours=1).total_seconds())),
-        "minute": (TIME_UNIT_MINUTE, int(timedelta(minutes=1).total_seconds())),
-        "second": (TIME_UNIT_SECOND, int(timedelta(seconds=1).total_seconds()))
-    }
-
-    frequency = params_dict['timeDelta']
-    if frequency not in valid_frequencies:
-        raise ValueError("Invalid timeDelta. Valid options: 'day', 'hour', 'minute', 'second'")
-    params_dict['timeDelta'] = valid_frequencies[frequency][0]
-    params_dict['timeDelta_unix'] = valid_frequencies[frequency][1]
-
-    return params_dict
 
 
 if __name__ == "__main__":

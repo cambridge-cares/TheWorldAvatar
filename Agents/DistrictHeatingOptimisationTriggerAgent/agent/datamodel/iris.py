@@ -5,7 +5,7 @@ from pyderivationagent.data_model.iris import ONTODERIVATION_ISDERIVEDFROM,\
                                               ONTODERIVATION_DERIVATION, \
                                               ONTODERIVATION_DERIVATIONWITHTIMESERIES
 
- # Namespaces
+# Namespaces
 # External ontologies
 RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 XSD = "http://www.w3.org/2001/XMLSchema#"
@@ -75,5 +75,6 @@ OHN_ISPUBLICHOLIDAY = OHN + "isPublicHoliday"
 OHN_PROVIDED_HEAT_AMOUNT = OHN + "ProvidedHeatAmount"
 OHN_CONSUMED_GAS_AMOUNT = OHN + "ConsumedGasAmount" 
 
+### OM ###
 OM_TEMPERATURE = OM + "Temperature"
 OM_HAS_VALUE = OM + "hasValue"

@@ -12,7 +12,7 @@
 #   gridTemperatureDataLength: Number of time steps prior to "start" of grid temperature data to use for forecasting
 #                              (used to scale data or retrieve history to refit Prophet model)
 
-POST http://localhost:3838/dhTriggerAgent/triggerOptimisation
+POST http://localhost:3838/dh-optimisation-trigger-agent/triggerOptimisation
 # Stack deployment (using stack-manager-input-config.json via stack-manager):
 Content-Type: application/json
 
