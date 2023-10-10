@@ -1,0 +1,13 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "routing",
+    "dataSubsets": [
+        {
+            "type": "OSMRouting",
+            "skip": false,
+            "schema": "public",
+            "name": "routing"
+        }
+    ]
+}

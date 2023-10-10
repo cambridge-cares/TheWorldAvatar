@@ -2,8 +2,7 @@
 
 ## Description
 This agent queries and processes the IFC data stored on a knowledge graph into the [3D Tiles Next](https://github.com/CesiumGS/3d-tiles/tree/main/next) specifications for visualisation in Cesium.
-Before running this agent, the IFC model **MUST** be instantiated with the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent). Please ensure that the IFC model has been preprocessed according to the [Tips for BIM processing](#4-tips-for-bim-processing) section. Tilesets and
-their geometry (`glb`) files will be generated in the output `data` directory.
+Before running this agent, the IFC model **MUST** be instantiated with the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent). Please ensure that the IFC model has been preprocessed according to the [Tips for BIM processing](#4-tips-for-bim-processing) section. Tilesets and their geometry (`glb`) files will be generated in the output `data` directory.
 
 A brief description of the workflow can be found below:
 1. Instantiate the semantic and geometry data in IFC models using the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent).
@@ -80,6 +79,14 @@ docker compose -f "./docker/docker-compose.debug.yml" up -d --build
 docker-compose up -d 
 ```
 
+**STACK DEPLOYMENT**
+
+If you want to spin up this agent as part of a stack, do the following:
+- Copy the contents of `config/properties.yaml_stack` into `config/properties.yaml`, inserting the name of your stack and the desired namespaces.
+- Build the image by issuing `docker compose build` in this folder. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required. Do note that this agent requires the `data` bind mount to have a nested `ifc` and `glb` folder, where the IFC model must be placed in the `ifc` folder. It is not recommended to target the same bind mount as the other IFC agents.
+- Start the stack manager as usual. This should start the container.
+
 ## 2. Running the agent
 ### 2.1 Precursor
 Place only one IFC file in `<root>\data\ifc\`. This directory is directly linked to the relevant directory in the Docker container. The agent is only able to convert ONE IFC model at a time.
@@ -106,7 +113,12 @@ A brief overview is as follows:
 ### 2.3 POST Request
 Run the agent by sending a POST request with the required JSON Object to the necessary endpoint. A sample request in `curl` syntax is as follows:
 ```
-curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"assetUrl\":\"./glb\"}'  
+curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{"assetUrl":"./glb"}'  
+```
+
+If running the agent within a stack:
+```
+curl -X POST --header "Content-Type: application/json" -d '{"assetUrl":"./glb"}' http://localhost:3838/ifc2tileset-agent/api
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows:

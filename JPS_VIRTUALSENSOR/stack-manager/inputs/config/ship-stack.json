@@ -6,9 +6,10 @@
 			"ship-input-agent",
 			"dispersion-interactor",
 			"dispersion-vis",
-			"aermod-agent-debug",
+			"aermod-agent",
 			"python-service",
 			"emissions-agent",
+			"virtual-sensor-agent",
 			"feature-info-agent"
 		]
 	}

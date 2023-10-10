@@ -22,7 +22,7 @@ on:
     branches:
       - main
     paths:
-      - Agents/FeatureInfoAgent/**
+      - 'Agents/FeatureInfoAgent/**'
 
 
 # Job definitions

@@ -126,7 +126,6 @@ public class HistoricalAQMeshAgentLauncherTest {
         }
     }
 
-
     @Test
     public void testMainBothReadingsNotEmpty() throws IOException {
         createProperClientPropertiesFile();
@@ -225,6 +224,7 @@ public class HistoricalAQMeshAgentLauncherTest {
             writer.write("db.password=postgres\n");
             writer.write("sparql.query.endpoint=http://localhost:9999/blazegraph/namespace/kb/sparql\n");
             writer.write("sparql.update.endpoint=http://localhost:9999/blazegraph/namespace/kb/sparql\n");
+
         }
     }
 

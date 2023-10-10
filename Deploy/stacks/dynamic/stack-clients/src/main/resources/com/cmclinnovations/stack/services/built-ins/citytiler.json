@@ -1,0 +1,34 @@
+{
+    "type":"citytiler",
+    "ServiceSpec": {
+        "Name": "citytiler",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/vcity/py3dtilers:latest",
+                "Command": [
+                    "tail",
+                    "-f",
+                    "/dev/null"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "3dtiles",
+                        "Target": "/3dtiles",
+                        "ReadOnly": false
+                    }
+                ]
+            }
+        }
+    }
+}

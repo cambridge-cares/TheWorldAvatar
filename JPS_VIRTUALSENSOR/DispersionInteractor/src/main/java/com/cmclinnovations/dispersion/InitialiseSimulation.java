@@ -79,7 +79,8 @@ public class InitialiseSimulation extends HttpServlet {
 
                     // add ontop mapping
                     Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
-                    new OntopClient().updateOBDA(obdaFile);
+                    OntopClient ontopClient = OntopClient.getInstance();
+                    ontopClient.updateOBDA(obdaFile);
 
                     // adds OntoAgent instance
                     queryClient.initialiseAgent();
@@ -123,8 +124,10 @@ public class InitialiseSimulation extends HttpServlet {
                     LOGGER.error(e.getMessage());
                     LOGGER.error("Failed to create JSON object for HTTP response");
                 }
+
             }
         }
+
     }
 
     /**
@@ -182,4 +185,5 @@ public class InitialiseSimulation extends HttpServlet {
 
         return station;
     }
+
 }

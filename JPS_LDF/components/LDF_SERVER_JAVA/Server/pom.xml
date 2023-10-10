@@ -66,7 +66,7 @@
             <groupId>uk.ac.cam.cares.jps.agent.ldf-server</groupId>
             <artifactId>trained_models</artifactId>
             <type>zip</type>
-            <version>2.0.0</version>
+            <version>4.0.0</version>
         </dependency>
         <!-- Custom node modules -->
         <dependency>
@@ -272,19 +272,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.0.0</version>
@@ -347,6 +334,14 @@
                     <includeArtifactIds>custom_node_modules,hdt_data,trained_models</includeArtifactIds>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>9</source>
+                    <target>9</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <distributionManagement>
@@ -355,4 +350,10 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </snapshotRepository>
     </distributionManagement>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
 </project>

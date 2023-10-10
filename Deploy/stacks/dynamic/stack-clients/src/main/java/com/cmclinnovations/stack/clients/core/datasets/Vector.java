@@ -19,13 +19,13 @@ public class Vector extends GeoServerDataSubset {
     private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
 
     @Override
-    public void loadData(Path dirPath, String database) {
+    public void loadData(Path dirPath, String database, String baseIRI) {
         GDALClient.getInstance()
                 .uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
     }
 
     @Override
-    public void createLayer(String workspaceName, String database) {
+    public void createLayers(String workspaceName, String database) {
         GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
         if (null != virtualTable) {
             virtualTable.setSql(handleFileValues(virtualTable.getSql()));

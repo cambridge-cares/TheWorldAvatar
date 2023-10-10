@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private static final Logger LOGGER = LogManager.getLogger(MainActivity.class);
     private ActivityMainBinding binding;
 
-    private final String BMS_RETRIEVE_ZONES = "bms-query-agent/retrieve/zones";
+    private final String BMS_RETRIEVE_ZONES = "bms-query-agent/retrieve/lab";
     private final String BMS_RETRIEVE_EQUIPMENT = "bms-query-agent/retrieve/equipment";
 
     final ArrayList<Building> buildings = new ArrayList<>();

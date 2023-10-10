@@ -13,6 +13,9 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -28,10 +31,13 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import com.cmclinnovations.aermod.objects.Building;
+import com.cmclinnovations.aermod.objects.DispersionOutput;
 import com.cmclinnovations.aermod.objects.PointSource;
+import com.cmclinnovations.aermod.objects.Pollutant;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
+import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
 
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
@@ -132,6 +138,7 @@ public class QueryClient {
     private static final String DISPERSION_MATRIX = PREFIX_DISP + "DispersionMatrix";
     private static final String DISPERSION_LAYER = PREFIX_DISP + "DispersionLayer";
     private static final String SHIPS_LAYER = PREFIX_DISP + "ShipsLayer";
+    private static final String AERMAP_OUTPUT = PREFIX_DISP + "AermapOutput";
 
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
@@ -150,6 +157,10 @@ public class QueryClient {
     private static final Iri OCGML_CITYOBJECT = P_OCGML.iri("cityObjectId");
     private static final Iri OCGML_OBJECTCLASSID = P_OCGML.iri("objectClassId");
     private static final Iri OCGML_BUILDINGID = P_OCGML.iri("buildingId");
+    private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
+    private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
+    private static final Iri HAS_DISPERSION_LAYER = P_DISP.iri("hasDispersionLayer");
+    private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
 
     // fixed units for each measured property
     private static final Map<String, Iri> UNIT_MAP = new HashMap<>();
@@ -477,6 +488,7 @@ public class QueryClient {
         Variable ps = query.var();
         Variable emissionIRI = query.var();
         Variable pollutant = query.var();
+        Variable pollutantIRI = query.var();
         Variable massFlowIRI = query.var();
         Variable densityIRI = query.var();
         Variable temperatureIRI = query.var();
@@ -488,8 +500,9 @@ public class QueryClient {
         Variable temperatureUnit = query.var();
 
         GraphPattern gp = GraphPatterns.and(ps.has(EMITS, emissionIRI),
-                emissionIRI.isA(pollutant).andHas(HAS_QTY, massFlowIRI)
+                emissionIRI.has(HAS_POLLUTANT_ID, pollutantIRI).andHas(HAS_QTY, massFlowIRI)
                         .andHas(HAS_QTY, densityIRI),
+                pollutantIRI.isA(pollutant),
                 massFlowIRI.isA(iri(MASS_FLOW)).andHas(PropertyPaths.path(HAS_VALUE,
                         HAS_NUMERICALVALUE), emissionValue)
                         .andHas(PropertyPaths.path(HAS_VALUE, HAS_UNIT), emissionUnit),
@@ -970,80 +983,177 @@ public class QueryClient {
         return corners;
     }
 
+    DSLContext getContext(Connection conn) {
+        return DSL.using(conn, SQLDialect.POSTGRES);
+    }
+
+    boolean tableExists(String tableName) {
+        String condition = String.format("table_name = '%s'", tableName);
+        boolean tableCheck = false;
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            tableCheck = getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition)
+                    .fetchOne(0,
+                            int.class) == 1;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            return false;
+        }
+
+        return tableCheck;
+    }
+
     public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
 
-        for (int i = 0; i < pointSources.size(); i++) {
-            StaticPointSource ps = pointSources.get(i);
-            String originalSrid = "EPSG:" + ps.getLocation().getSRID();
-            double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
-            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-            String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val " +
-                    "FROM elevation " + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
-                    xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
-                    simulationSrid);
+        String elevationTable = EnvConfig.ELEVATION_TABLE;
 
-            try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement();) {
+            for (int i = 0; i < pointSources.size(); i++) {
+                StaticPointSource ps = pointSources.get(i);
+                String originalSrid = "EPSG:" + ps.getLocation().getSRID();
+                double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
+                double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+
+                String sqlString = String.format(
+                        "SELECT ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast))) AS val "
+                                +
+                                "FROM %s WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
+                        xyTransformed[0], xyTransformed[1], simulationSrid, elevationTable,
+                        xyTransformed[0], xyTransformed[1], simulationSrid);
+
                 ResultSet result = stmt.executeQuery(sqlString);
-                double elevation = result.getDouble("val");
-                ps.setElevation(elevation);
-            } catch (SQLException e) {
-                LOGGER.error(e.getMessage());
+                if (result.next()) {
+                    double elevation = result.getDouble("val");
+                    ps.setElevation(elevation);
+                } else {
+                    LOGGER.warn(
+                            "Could not find elevation data for the point source located at ({},{}) in EPSG:{} coordinates. Its elevation will be set to zero when running BPIPPRM and AERMOD.",
+                            xyTransformed[0], xyTransformed[1], simulationSrid);
+                }
+
             }
 
-        }
+            for (int i = 0; i < buildings.size(); i++) {
+                Building building = buildings.get(i);
+                String originalSrid = building.getSrid();
+                double[] xyOriginal = { building.getLocation().getX(), building.getLocation().getY() };
+                double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
-        for (int i = 0; i < buildings.size(); i++) {
-            Building building = buildings.get(i);
-            String originalSrid = building.getSrid();
-            double[] xyOriginal = { building.getLocation().getX(), building.getLocation().getY() };
-            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-            String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val" +
-                    "FROM elevation" + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
-                    xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
-                    simulationSrid);
+                String sqlString = String.format(
+                        "SELECT ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast))) AS val "
+                                +
+                                "FROM %s WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
+                        xyTransformed[0], xyTransformed[1], simulationSrid, elevationTable,
+                        xyTransformed[0], xyTransformed[1], simulationSrid);
 
-            try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
                 ResultSet result = stmt.executeQuery(sqlString);
-                double elevation = result.getDouble("val");
-                building.setElevation(elevation);
-            } catch (SQLException e) {
-                LOGGER.error(e.getMessage());
+                if (result.next()) {
+                    double elevation = result.getDouble("val");
+                    building.setElevation(elevation);
+                } else {
+                    LOGGER.warn(
+                            "Could not find elevation data for the building located at ({},{}) in EPSG:{} coordinates. Its elevation will be set to zero when running BPIPPRM and AERMOD.",
+                            xyTransformed[0], xyTransformed[1], simulationSrid);
+                }
+
             }
 
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
+    }
+
+    List<byte[]> getScopeElevation(Polygon scope) {
+
+        List<byte[]> elevData = new ArrayList<>();
+
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement()) {
+
+            String sql = String.format("SELECT filename, ST_AsTiff(ST_UNION(rast)) AS rData FROM %s"
+                    + " WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast)))"
+                    + " GROUP BY 1", EnvConfig.ELEVATION_TABLE, scope.toText());
+            ResultSet result = stmt.executeQuery(sql);
+            while (result.next()) {
+                byte[] rasterBytes = result.getBytes("rData");
+                elevData.add(rasterBytes);
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return elevData;
 
     }
 
-    void updateOutputs(String derivation, String dispersionMatrix, String dispersionLayer, String shipLayer,
-            long timeStamp) {
-        // first query the IRIs
+    void updateOutputs(String derivation, DispersionOutput dispersionOutput, String shipLayer, long timeStamp,
+            String aermapOutput) {
+
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
-        Variable entityType = query.var();
+        Variable pollutant = query.var();
+        Variable pollutantIri = query.var();
+        Variable dispMatrix = query.var();
+        Variable dispLayer = query.var();
+        Variable dispRaster = query.var();
 
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
-        query.where(entity.has(belongsTo, iri(derivation)).andIsA(entityType)).prefix(P_DISP).select(entity, entityType)
-                .distinct();
-
+        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutantIri)
+                .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_LAYER, dispLayer)
+                .andHas(HAS_DISPERSION_RASTER, dispRaster), pollutantIri.isA(pollutant)).prefix(P_DISP)
+                .select(entity, pollutant, dispMatrix, dispLayer, dispRaster).distinct();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-        String dispersionMatrixIri = null;
-        String dispersionLayerIri = null;
+        List<String> tsDataList = new ArrayList<>();
+        List<List<?>> tsValuesList = new ArrayList<>();
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String pollutantIRI = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
+            String dispersionMatrixIRI = queryResult.getJSONObject(i)
+                    .getString(dispMatrix.getQueryString().substring(1));
+            String dispersionLayerIRI = queryResult.getJSONObject(i).getString(dispLayer.getQueryString().substring(1));
+            String dispersionRasterIRI = queryResult.getJSONObject(i)
+                    .getString(dispRaster.getQueryString().substring(1));
+
+            PollutantType pollutantType = Pollutant.getPollutantType(pollutantIRI);
+            if (dispersionOutput.hasPollutant(pollutantType)) {
+                tsDataList.add(dispersionMatrixIRI);
+                tsDataList.add(dispersionLayerIRI);
+                tsDataList.add(dispersionRasterIRI);
+                String dispersionMatrix = dispersionOutput.getDispMatrix(pollutantType);
+                // get(0) because there is only one height (ground level) for now.
+                String dispersionLayer = dispersionOutput.getDispLayer(pollutantType, 0.0);
+                String dispersionRaster = dispersionOutput.getDispRaster(pollutantType);
+                tsValuesList.add(List.of(dispersionMatrix));
+                tsValuesList.add(List.of(dispersionLayer));
+                tsValuesList.add(List.of(dispersionRaster));
+            }
+
+        }
+
+        SelectQuery query2 = Queries.SELECT();
+        Variable entityType = query.var();
+
+        query2.where(entity.isA(entityType).andHas(belongsTo, iri(derivation))
+                .filterNotExists(entity.has(HAS_POLLUTANT_ID, pollutant))).prefix(P_DISP).select(entity, entityType);
+
+        queryResult = storeClient.executeQuery(query2.getQueryString());
+
         String shipLayerIri = null;
+        String aermapOutputIri = null;
+
         for (int i = 0; i < queryResult.length(); i++) {
             String entityTypeIri = queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1));
 
             switch (entityTypeIri) {
-                case DISPERSION_MATRIX:
-                    dispersionMatrixIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
-                    break;
-                case DISPERSION_LAYER:
-                    dispersionLayerIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
-                    break;
                 case SHIPS_LAYER:
                     shipLayerIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+                    break;
+                case AERMAP_OUTPUT:
+                    aermapOutputIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
                     break;
                 default:
                     LOGGER.error("Unknown entity type: <{}>", entityType);
@@ -1051,25 +1161,36 @@ public class QueryClient {
             }
         }
 
-        if (dispersionMatrixIri == null || dispersionLayerIri == null || shipLayerIri == null) {
-            LOGGER.error("One of dispersion matrix, dispersion layer, ship layer IRI is null");
+        if (shipLayerIri == null || aermapOutputIri == null) {
+            LOGGER.error("Either the shipLayerIri or aermapOutputIRI is null");
             return;
         }
 
-        List<List<?>> values = new ArrayList<>();
-        values.add(List.of(dispersionMatrix));
-        values.add(List.of(dispersionLayer));
-        values.add(List.of(shipLayer));
+        tsDataList.add(shipLayerIri);
+        tsDataList.add(aermapOutputIri);
+
+        tsValuesList.add(List.of(shipLayer));
+        tsValuesList.add(List.of(aermapOutput));
 
         TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp),
-                List.of(dispersionMatrixIri, dispersionLayerIri, shipLayerIri), values);
+                tsDataList, tsValuesList);
 
         try (Connection conn = rdbStoreClient.getConnection()) {
             tsClientLong.addTimeSeriesData(timeSeries, conn);
         } catch (SQLException e) {
             LOGGER.error("Failed at closing connection");
             LOGGER.error(e.getMessage());
-            return;
+        }
+
+    }
+
+    void dropRasterConstraints() {
+        try (Connection conn = rdbStoreClient.getConnection(); Statement statement = conn.createStatement();) {
+            String sql = String.format("SELECT DropRasterConstraints('%s', 'rast')", EnvConfig.DISPERSION_RASTER_TABLE);
+            statement.executeQuery(sql);
+        } catch (SQLException e) {
+            LOGGER.error("Failed at closing connection");
+            LOGGER.error(e.getMessage());
         }
     }
 
