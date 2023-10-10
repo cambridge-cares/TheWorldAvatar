@@ -303,6 +303,7 @@ public class FeatureInfoAgent extends JPSAgent {
 
             }
             """, LocalTime.now().toString()));
+        LOGGER.info("Generation complete at: {}", LocalTime.now().toString());
     }
 
 }

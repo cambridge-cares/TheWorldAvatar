@@ -144,6 +144,7 @@ public final class TimeSeriesCreator {
 
                 // Push to db
                 this.tsClient.addTimeSeriesData(timeseries, connection);
+                LOGGER.debug("Generated time series for castle #{}", Integer.toString(i));
             }
         } catch(Exception exception) {
             LOGGER.error("Exception when attempting to generate sample time series!", exception);
