@@ -27,6 +27,7 @@ import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.rmi.Remote;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -382,7 +383,7 @@ public class AssetKGInterface {
         AssetData.put("amtMoney", amtMoneyIRI);
 
         LOGGER.info(AssetData);
-        createInstance(AssetData);
+        createInstance(AssetData, preferredClient);
                 
         JSONObject idPair = new JSONObject();
         idPair.put("ID", AssetData.getString("ID"));
@@ -420,9 +421,9 @@ public class AssetKGInterface {
     /*
      * Create new instances
      */
-    private void createInstance(JSONObject assetData) {
+    private void createInstance(JSONObject assetData, RemoteStoreClient preferredClient) {
         createAssetNameSpace(assetData);
-        createDeviceNameSpace(assetData);
+        createDeviceNameSpace(assetData, preferredClient);
         createPurchaseDocNamespace(assetData);
     }
 
@@ -559,7 +560,7 @@ public class AssetKGInterface {
         storeClientAsset.executeUpdate(query.getQueryString());
     }
 
-    private void createDeviceNameSpace (JSONObject data){
+    private void createDeviceNameSpace (JSONObject data, RemoteStoreClient preferredClient){
         ModifyQuery query = Queries.MODIFY();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
@@ -617,7 +618,7 @@ public class AssetKGInterface {
         }
         
 
-        storeClientOffice.executeUpdate(query.getQueryString());
+        preferredClient.executeUpdate(query.getQueryString());
     }
 
     private void createPurchaseDocNamespace (JSONObject data){
@@ -759,6 +760,8 @@ public class AssetKGInterface {
         String maintenanceScheduleIRI = genIRIString("MaintenanceSchedule", Pref_ASSET);
         String maintenanceTaskIRI = genIRIString("MaintenanceTask", Pref_ASSET);
 
+        RemoteStoreClient preferredClient = existenceChecker.getNameSpaceByID(ID);
+
         //Validation
         String deviceIRI = existenceChecker.getIRIStringbyID(ID);
         if (deviceIRI.isBlank()){
@@ -846,7 +849,7 @@ public class AssetKGInterface {
         }
         
         
-        storeClientOffice.executeUpdate(query.getQueryString());
+        preferredClient.executeUpdate(query.getQueryString());
 
     }
 

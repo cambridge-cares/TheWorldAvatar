@@ -496,4 +496,16 @@ public class AssetExistenceChecker {
         }
     }
 
+    public RemoteStoreClient getNameSpaceByID (String ID){
+        JSONArray reqRes = getIRIbyLiteral(ID, hasItemInventoryIdentifier, storeClientLab);
+        if (reqRes.length() == 0){
+            reqRes = getIRIbyLiteral(ID, hasItemInventoryIdentifier, storeClientOffice);
+            if (reqRes.length() == 0){
+                throw new JPSRuntimeException("Failed to retrieve the proper remote store client");
+            }
+            return storeClientOffice;
+        }
+        return storeClientLab;
+    }
+
 }
