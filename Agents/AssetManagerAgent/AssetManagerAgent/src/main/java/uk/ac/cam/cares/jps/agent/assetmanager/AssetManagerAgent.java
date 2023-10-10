@@ -48,7 +48,7 @@ public class AssetManagerAgent extends JPSAgent{
     public final String KEY_FOLDERmanual = "FOLDERMANUAL";
 
     //Properties params
-    public String ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC;
+    public String ENDPOINT_KG_ASSET, ENDPOINT_KG_OFFICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_KG_LAB;
     public String ENDPOINT_PRINTER;
     public Double TARGET_QR_SIZE;
     public String URL_MANUAL;
@@ -89,7 +89,8 @@ public class AssetManagerAgent extends JPSAgent{
 
             String[] args = new String[] {
                 ENDPOINT_KG_ASSET, 
-                ENDPOINT_KG_DEVICE, 
+                ENDPOINT_KG_OFFICE,
+                ENDPOINT_KG_LAB, 
                 ENDPOINT_KG_PURCHASEDOC, 
                 ENDPOINT_PRINTER, 
                 FOLDER_QR, 
@@ -105,10 +106,10 @@ public class AssetManagerAgent extends JPSAgent{
             
             try{
                 if (KG_USERNAME.isBlank() && KG_PASSWORD.isBlank()){
-                    instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC);
+                    instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_OFFICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_KG_LAB);
                 }
                 else if(!(KG_USERNAME.isBlank() && KG_PASSWORD.isBlank())){
-                    instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC, KG_USERNAME, KG_PASSWORD);
+                    instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_OFFICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_KG_LAB, KG_USERNAME, KG_PASSWORD);
                 }
                 else{
                     throw new JPSRuntimeException("Either username or password for blazegraph authentication is empty."+
@@ -191,7 +192,8 @@ public class AssetManagerAgent extends JPSAgent{
             try {
                 // Read the mappings folder from the properties file
                 ENDPOINT_KG_ASSET = prop.getProperty("endpoint.kg.asset");
-                ENDPOINT_KG_DEVICE= prop.getProperty("endpoint.kg.device");
+                ENDPOINT_KG_OFFICE= prop.getProperty("endpoint.kg.office");
+                ENDPOINT_KG_LAB= prop.getProperty("endpoint.kg.lab");
                 ENDPOINT_KG_PURCHASEDOC  = prop.getProperty("endpoint.kg.purchasedocs");
                 KG_USERNAME = prop.getProperty("auth.kg.user");
                 KG_PASSWORD = prop.getProperty("auth.kg.pass");
@@ -418,8 +420,8 @@ public class AssetManagerAgent extends JPSAgent{
     public JSONObject addManual(String[] arg, String targetID, String comments, String documentType, String encoded, String fileName) {
         JSONObject message = new JSONObject();
         if(!(encoded.isBlank() || encoded == null)){
-            File file = new File(arg[5]+fileName);
-            LOGGER.debug("FILENAME::"+arg[5]+fileName);
+            File file = new File(arg[6]+fileName);
+            LOGGER.debug("FILENAME::"+arg[6]+fileName);
             if(!file.exists()) { 
                 try {
                     //file.getParentFile().mkdirs();
@@ -439,7 +441,7 @@ public class AssetManagerAgent extends JPSAgent{
             }
         }
         //Create manual instance
-        String fileURL = arg[6] + fileName;
+        String fileURL = arg[7] + fileName;
         instanceHandler.addDataSheet(fileURL, documentType, comments, targetID);
     
         return message;
