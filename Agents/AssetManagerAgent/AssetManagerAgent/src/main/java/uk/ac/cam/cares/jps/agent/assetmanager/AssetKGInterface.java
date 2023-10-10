@@ -848,7 +848,7 @@ public class AssetKGInterface {
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
-        query.insert(iri(documentIRI).isA(SpecSheet));
+        query.insert(iri(documentIRI).isA(iri(docType)));
         query.insert(iri(deviceIRI).has(hasDataSheet, documentIRI));
         query.insert(iri(documentIRI).has(availableAt, docFilename));
         if (!docComment.isBlank()){
