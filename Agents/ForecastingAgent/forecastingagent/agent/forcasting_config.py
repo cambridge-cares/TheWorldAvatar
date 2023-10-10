@@ -200,8 +200,9 @@ def get_rdb_endpoint(ts_details:dict):
         ts_details {dict} -- time series details as retrieved from the KG
     
     Returns:
-        str -- RDB URL to use when creating forecast
-        str -- TIME FORMAT to use when creating forecast
+        str -- RDB URL to use when querying time series and creating forecast
+        str -- TIME FORMAT to use when parsing queried time series and 
+               creating forecast
     """
 
     # Retrieve RDB URL to use with following priority:
@@ -226,9 +227,28 @@ def get_rdb_endpoint(ts_details:dict):
         #       similar to the Access Agent
         rdb_url = rdb_url.replace('localhost', 'host.docker.internal')
 
+    # Retrieve TIME FORMAT to use with same priority
     time_format = ts_details.get('time_format')
     if not time_format:
         logger.warning(f'No time format associated with time series to forecast in KG. Using default format: {TIME_FORMAT}.')
         time_format = TIME_FORMAT
+    
+    # Ensure proper Python syntax of retrieved time format 
+    # (i.e., to avoid issues when parsing retrieved timestamps)
+    # NOTE: Instantiated time format in KG (via TimeSeriesClient) is likely either
+    #       already in Python syntax or in (some sort of) ISO 8601 format
+    iso_to_python_format = {
+        "YYYY-MM-DD": "%Y-%m-%d",
+        "YYYY-MM-DDTHH:MM:SSZ": "%Y-%m-%dT%H:%M:%SZ",
+        "YYYYMMDDTHHMMSSZ": "%Y%m%dT%H%M%SZ",
+        "YYYY-MM-DDTHH:MM:SS.SSSSSSZ": "%Y-%m-%dT%H:%M:%S.%fZ",
+    }
+    if time_format not in iso_to_python_format.values():
+        # Retrieve mapped Python compliant format; return itself if not mapped
+        time_format = iso_to_python_format.get(time_format.upper(), time_format)
+    if '%' not in time_format:
+        msg = 'Non-compliant time format retrieved from KG.'
+        logger.error(msg)
+        raise ValueError(msg)
     
     return rdb_url, time_format
