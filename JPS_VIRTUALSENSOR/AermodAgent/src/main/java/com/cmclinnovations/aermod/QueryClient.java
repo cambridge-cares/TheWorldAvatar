@@ -1,5 +1,7 @@
 package com.cmclinnovations.aermod;
 
+import org.eclipse.rdf4j.model.vocabulary.GEOF;
+import org.eclipse.rdf4j.model.vocabulary.TIME;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.SparqlFunction;
@@ -14,7 +16,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.jooq.DSLContext;
-import org.jooq.Field;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.json.JSONArray;
@@ -27,6 +28,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
+import com.cmclinnovations.aermod.sparqlbuilder.GeoSPARQL;
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
@@ -100,6 +102,12 @@ public class QueryClient {
 
     private static final Prefix P_EMS = SparqlBuilder.prefix("ems", iri(ONTO_EMS));
     private static final Prefix P_OCGML = SparqlBuilder.prefix("ocgml", iri(ONTO_CITYGML));
+    private static final Prefix P_GRP = SparqlBuilder.prefix("grp",
+            iri("http://www.opengis.net/citygml/cityobjectgroup/2.0/"));
+    private static final Prefix P_BLDG = SparqlBuilder.prefix("bldg",
+            iri("http://www.opengis.net/citygml/building/2.0/"));
+    private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.NAMESPACE));
+
     // classes
     public static final String REPORTING_STATION = "https://www.theworldavatar.com/kg/ontoems/ReportingStation";
     public static final String NX = PREFIX_DISP + "nx";
@@ -169,6 +177,9 @@ public class QueryClient {
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_DISPERSION_COLOUR_BAR = P_DISP.iri("hasDispersionColourBar");
     private static final Iri HAS_HEIGHT = P_DISP.iri("hasHeight");
+    private static final Iri LOD0_FOOTPRINT = P_BLDG.iri("lod0FootPrint");
+    private static final Iri MEASURED_HEIGHT = P_BLDG.iri("measuredHeight");
+    private static final Iri PARENT = P_GRP.iri("parent");
 
     // fixed units for each measured property
     private static final Map<String, Iri> UNIT_MAP = new HashMap<>();
@@ -887,6 +898,58 @@ public class QueryClient {
         return iriToPolygonMap;
     }
 
+    List<Building> getBuildings(List<PointSource> allSources, int simulationSrid) {
+        String sridIri = "<http://www.opengis.net/def/crs/EPSG/0/4326>";
+        Polygon boundingBox = getBoundingBoxOfPointSources2(allSources);
+
+        SelectQuery query = Queries.SELECT();
+        Variable buildingVar = query.var();
+        Variable wktVar = query.var();
+        Variable heightVar = query.var();
+        Variable surfaceParentVar = query.var();
+        Variable surfaceVar = query.var();
+
+        GraphPattern queryPattern = GraphPatterns.and(
+                buildingVar.has(LOD0_FOOTPRINT, surfaceParentVar).andHas(MEASURED_HEIGHT, heightVar),
+                surfaceVar.has(PARENT, surfaceParentVar).andHas(AS_WKT, wktVar));
+
+        Expression<?> expression = Expressions.and(GeoSPARQL.sfWithin(wktVar,
+                Rdf.literalOfType(sridIri + " " + boundingBox.toString(), iri(GEO.GEO_WKT_LITERAL.getIRIString()))));
+
+        query.select(buildingVar, wktVar, heightVar).where(queryPattern.filter(expression)).prefix(P_BLDG, P_GEO,
+                P_GRP, P_GEOF);
+
+        JSONArray queryResult = ontopStoreClient.executeQuery(query.getQueryString());
+
+        List<Building> buildings = new ArrayList<>();
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String buildingIri = queryResult.getJSONObject(i).getString(buildingVar.getQueryString().substring(1));
+            String wktLiteral = queryResult.getJSONObject(i).getString(wktVar.getQueryString().substring(1));
+            double buildingHeight = queryResult.getJSONObject(i).getDouble(heightVar.getQueryString().substring(1));
+
+            Polygon footPrintPolygon = (Polygon) WKTReader.extract(wktLiteral).getGeometry();
+
+            Coordinate[] transformedCoordinates = new Coordinate[footPrintPolygon.getExteriorRing()
+                    .getCoordinates().length];
+
+            for (int j = 0; j < footPrintPolygon.getExteriorRing().getCoordinates().length; j++) {
+                Coordinate originalCoordinate = footPrintPolygon.getExteriorRing().getCoordinates()[j];
+                double[] xyOriginal = { originalCoordinate.getX(), originalCoordinate.getY() };
+                double[] xyTransformed = CRSTransformer.transform("EPSG:" + 4326, "EPSG:" + simulationSrid,
+                        xyOriginal);
+                transformedCoordinates[j] = new Coordinate(xyTransformed[0], xyTransformed[1]);
+            }
+
+            Building building = new Building(footPrintPolygon.getExteriorRing(), buildingHeight);
+            building.setIri(buildingIri);
+            building.getFootprint().setSRID(4326);
+            buildings.add(building);
+        }
+
+        return buildings;
+    }
+
     // This method only retrieves items with an object Class ID of 26, which is the
     // OCGML identifier for buildings.
     // See
@@ -994,6 +1057,48 @@ public class QueryClient {
 
         GeometryFactory geometryFactory = new GeometryFactory();
         Polygon boundingBox = geometryFactory.createPolygon(coordinates);
+
+        return (Polygon) boundingBox.buffer(buffer);
+    }
+
+    /**
+     * at the time of writing this is assumes data is in lat lon (epsg:4326)
+     * 
+     * @param allSources
+     * @return
+     */
+    private Polygon getBoundingBoxOfPointSources2(List<PointSource> allSources) {
+        double buffer = 0.005;
+        GeometryFactory geoFactory = new GeometryFactory();
+        List<Point> convertedPoints = allSources.stream().map(s -> {
+            double[] xyOriginal = { s.getLocation().getX(), s.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform("EPSG:" + s.getLocation().getSRID(), "EPSG:4326",
+                    xyOriginal);
+            return geoFactory.createPoint(new Coordinate(xyTransformed[0], xyTransformed[1]));
+        }).collect(Collectors.toList());
+
+        List<Double> xCoordinates = convertedPoints.stream().map(Point::getX).collect(Collectors.toList());
+        List<Double> yCoordinates = convertedPoints.stream().map(Point::getY).collect(Collectors.toList());
+
+        double xMin = Collections.min(xCoordinates);
+        double yMin = Collections.min(yCoordinates);
+        double xMax = Collections.max(xCoordinates);
+        double yMax = Collections.max(yCoordinates);
+
+        if (allSources.size() == 1) {
+            double expandRange = 0.001;
+            xMin -= expandRange;
+            xMax += expandRange;
+            yMin -= expandRange;
+            yMax += expandRange;
+        }
+
+        Coordinate[] coordinates = { new Coordinate(xMin, yMin), new Coordinate(xMax, yMin),
+                new Coordinate(xMax, yMax), new Coordinate(xMin, yMax), new Coordinate(xMin, yMin) };
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Polygon boundingBox = geometryFactory.createPolygon(coordinates);
+        boundingBox.setSRID(4326);
 
         return (Polygon) boundingBox.buffer(buffer);
     }

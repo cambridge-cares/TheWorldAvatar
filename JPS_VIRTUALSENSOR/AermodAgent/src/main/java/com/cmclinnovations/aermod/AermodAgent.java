@@ -151,6 +151,17 @@ public class AermodAgent extends DerivationAgent {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
+        // new ontop query
+        if (buildings.isEmpty()) {
+            buildings = queryClient.getBuildings(allSources, srid);
+        }
+
+        // produces buildings input for aermod main code
+        if (!buildings.isEmpty()) {
+            aermod.createBPIPPRMInput(allSources, buildings, srid);
+            aermod.runBPIPPRM();
+        }
+
         boolean usesElevation = false;
         if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE) && queryClient.hasElevationData(scope)) {
             usesElevation = true;
@@ -161,11 +172,6 @@ public class AermodAgent extends DerivationAgent {
                     queryClient.getReceptorElevation(scope, nx, ny, srid));
         } else {
             aermod.createAERMODReceptorInput(scope, nx, ny, srid);
-        }
-
-        if (citiesNamespace != null) {
-            aermod.createBPIPPRMInput(allSources, buildings, srid);
-            aermod.runBPIPPRM();
         }
 
         // Moved this part outside the if statement to ensure that the buildings.dat
