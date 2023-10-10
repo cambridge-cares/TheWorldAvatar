@@ -10,6 +10,7 @@
 * Added "/refresh" route to force re-discovery of stack endpoints and re-read configurations.
 * Updated configuration format to better support future changes.
 * Updated documentation.
+* Docker image now pushes with multiple tags.
 ### Bug Fixes:
 * Updated class determination query to no longer require inheritance from OWL class.
 * Major refactoring.
