@@ -7,7 +7,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -18,15 +17,13 @@ import javax.inject.Inject;
 
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.NetworkConfiguration;
-import uk.ac.cam.cares.jps.network.assetinfo.AssetInfoModel;
-import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 import uk.ac.cam.cares.jps.utils.FileUtils;
 import uk.ac.cam.cares.jps.utils.SerializationUtils;
 
 public class DataSheetNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(DataSheetNetworkSource.class);
 
-    String addDataSheetPath = "asset-manager-agent/addmanualpdf";
+    String addDataSheetPath = "asset-manager-agent/addmanual";
 
     Connection connection;
     Context context;
@@ -49,7 +46,7 @@ public class DataSheetNetworkSource {
             // convert fileUri to fileName and encodedPDF Base64 string
             Uri fileUri = Uri.parse((String) assetData.remove("fileUri"));
             assetData.put("fileName", FileUtils.getFileNameFromUri(fileUri, context));
-            assetData.put("encodedPDF", SerializationUtils.serializeFileToString(fileUri, context));
+            assetData.put("encoded", SerializationUtils.serializeFileToString(fileUri, context));
 
             JSONObject param = new JSONObject();
             param.put("assetData", assetData);
@@ -69,7 +66,9 @@ public class DataSheetNetworkSource {
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
-            }, onFailureUpper);
+            }, error -> {
+                onFailureUpper.onErrorResponse(error);
+            });
             connection.addToRequestQueue(request);
 
         } catch (JSONException e) {

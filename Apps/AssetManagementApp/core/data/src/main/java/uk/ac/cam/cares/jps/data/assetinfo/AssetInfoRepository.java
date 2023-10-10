@@ -248,7 +248,9 @@ public class AssetInfoRepository {
             Completable combinedCompletable = Completable.mergeArray(specSheetNetworkCall, manualNetworkCall);
             Disposable disposable = combinedCompletable.subscribe(() -> {
                 callback.onSuccess(newElement);
-            }, callback::onFailure);
+            }, error -> {
+                callback.onFailure(error);
+            });
 
         } catch (JSONException e) {
             throw new RuntimeException(e);
