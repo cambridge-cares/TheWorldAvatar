@@ -23,6 +23,6 @@ public class UpdatedGSVirtualTableEncoder extends GSVirtualTableEncoder {
     }
 
     public void setParameters(List<VTParameterEncoder> paramEncList) {
-        paramEncList.stream().forEach(paramEnc -> addVirtualTableParameter(paramEnc));
+        paramEncList.forEach(this::addVirtualTableParameter);
     }
 }

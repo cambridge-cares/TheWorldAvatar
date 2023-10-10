@@ -1,0 +1,10 @@
+{
+    "datasetDirectory": "triples",
+    "namespace": "kb",
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "skip": false
+        }
+    ]
+}

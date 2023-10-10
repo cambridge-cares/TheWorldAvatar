@@ -22,7 +22,7 @@ AnnualHeatingConsumption,Class,HeatingConsumption,IS-A,,,,,https://www.theworlda
 AnnualHeatingConsumption,Class,AnnualThermalConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual heating consumption
 GridConsumption,Class,EnergyConsumption,IS-A,,,,The total grid electricity energy consumption,https://www.theworldavatar.com/kg/ontoubemmp/,Grid consumption
 AnnualGridConsumption,Class,GridConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual grid consumption
-consumesEnergy,Object Property,,,https://www.theworldavatar.com/kg/ontodevice/Device UNION https://w3id.org/bot#Zone UNION http://www.w3.org/ns/ssn/System,EnergyConsumption,,"A relationship between a device, zone or system and its consumed energy",https://www.theworldavatar.com/kg/ontoubemmp/,consumes energy
+consumesEnergy,Object Property,,,https://www.theworldavatar.com/kg/ontodevice/Device UNION https://w3id.org/bot#Zone UNION http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,EnergyConsumption,,"A relationship between a device, zone or technical system and its consumed energy",https://www.theworldavatar.com/kg/ontoubemmp/,consumes energy
 producesEnergy,Object Property,,,SolarDevice,EnergySupply,,A relationship that links the solar device to the energy it produces,https://www.theworldavatar.com/kg/ontoubemmp/,produces energy
 hasArea,Object Property,,,https://www.theworldavatar.com/kg/ontodevice/Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,,https://www.theworldavatar.com/kg/ontoubemmp/,has area
 SolarCollector,Class,SolarDevice,IS-A,,,,Solar collector: converts solar radiation into usable thermal energy,https://www.theworldavatar.com/kg/ontoubemmp/,Solar collector
