@@ -8,4 +8,6 @@
     <string name="done">Done</string>
     <string name="send_to_printer">Send to Printer</string>
     <string name="qr_printing">Print QR Code</string>
+    <string name="print_success">QR codes have been sent to printer for printing.</string>
+    <string name="print_failure">Failed to print QR codes. Please check network connection.</string>
 </resources>

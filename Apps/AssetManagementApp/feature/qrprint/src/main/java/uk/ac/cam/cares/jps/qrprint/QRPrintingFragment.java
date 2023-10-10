@@ -5,18 +5,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.model.PrintItem;
 import uk.ac.cam.cares.jps.qrprint.databinding.FragmentQrPrintBinding;
-import uk.ac.cam.cares.jps.ui.UiUtils;
 
 @AndroidEntryPoint
 public class QRPrintingFragment extends Fragment {
@@ -36,6 +37,7 @@ public class QRPrintingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.qr_printing);
+        view.findViewById(uk.ac.cam.cares.jps.ui.R.id.back_bt).setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
         ListUpdate printListUpdate = item -> {
             viewModel.removePrintingItem(item);
@@ -65,9 +67,15 @@ public class QRPrintingFragment extends Fragment {
         });
 
         binding.printBt.setOnClickListener(v -> {
-            // todo: not connected to print service yet
-//            UiUtils.showNotImplementedDialog(requireContext());
             viewModel.printSelectedItems();
+        });
+
+        viewModel.getIsPrintSuccess().observe(getViewLifecycleOwner(), isPrintSuccess -> {
+            if (isPrintSuccess) {
+                Toast.makeText(requireContext(), R.string.print_success, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), R.string.print_failure, Toast.LENGTH_SHORT).show();
+            }
         });
 
         viewModel.getPrintingList().observe(getViewLifecycleOwner(), printItemAdapter::updateItems);

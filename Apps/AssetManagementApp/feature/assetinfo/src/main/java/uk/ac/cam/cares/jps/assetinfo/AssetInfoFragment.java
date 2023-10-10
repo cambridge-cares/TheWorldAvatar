@@ -102,6 +102,7 @@ public class AssetInfoFragment extends Fragment {
         ImageButton editButton = view.findViewById(R.id.edit_bt);
         editButton.setEnabled(false);
         editButton.setOnClickListener(view1 -> {
+            // todo: the infor for assetinfo here may not be complete due to setting. need to fix it when goes to edit
             AssetInfo assetInfo = viewModel.getAssetInfo().getValue();
             NavDeepLinkRequest request = null;
             try {
@@ -178,7 +179,9 @@ public class AssetInfoFragment extends Fragment {
 
         ImageButton doneButton = view.findViewById(R.id.done_bt);
         doneButton.setVisibility(View.VISIBLE);
-        doneButton.setOnClickListener(v -> NavHostFragment.findNavController(this).navigate(request));
+        doneButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigate(request);
+        });
     }
 
     private void hideShimmer() {

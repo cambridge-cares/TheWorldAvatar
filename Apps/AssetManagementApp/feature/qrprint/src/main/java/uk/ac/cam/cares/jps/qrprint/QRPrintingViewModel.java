@@ -11,8 +11,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import uk.ac.cam.cares.jps.data.qrprint.QRPrintRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
+import uk.ac.cam.cares.jps.data.qrprint.QRPrintRepository;
 import uk.ac.cam.cares.jps.model.PrintItem;
 
 @HiltViewModel
@@ -21,6 +21,7 @@ public class QRPrintingViewModel extends ViewModel {
     private Logger LOGGER = Logger.getLogger(QRPrintingViewModel.class);
     private MutableLiveData<List<PrintItem>> printingList = new MutableLiveData<>(new ArrayList<>());
     private MutableLiveData<List<PrintItem>> unprintedList = new MutableLiveData<>(new ArrayList<>());
+    private MutableLiveData<Boolean> isPrintSuccess = new MutableLiveData<>();
 
     private QRPrintRepository repository;
 
@@ -35,6 +36,10 @@ public class QRPrintingViewModel extends ViewModel {
 
     public MutableLiveData<List<PrintItem>> getUnprintedList() {
         return unprintedList;
+    }
+
+    public MutableLiveData<Boolean> getIsPrintSuccess() {
+        return isPrintSuccess;
     }
 
     public void addPrintingItem(PrintItem item) {
@@ -81,10 +86,22 @@ public class QRPrintingViewModel extends ViewModel {
     }
 
     public void printSelectedItems() {
-        // todo: send request to agent to print the list of qr codes
+        repository.printQRCodes(printingList.getValue(), new RepositoryCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean result) {
+                // update the local storage for unprinted items
+                repository.updatePrintList(unprintedList.getValue());
+                printingList.setValue(new ArrayList<>());
 
-        // update the local storage for unprinted items
-        repository.updatePrintList(unprintedList.getValue());
-        printingList.setValue(new ArrayList<>());
+                isPrintSuccess.postValue(true);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                isPrintSuccess.postValue(false);
+            }
+        });
     }
+
+
 }

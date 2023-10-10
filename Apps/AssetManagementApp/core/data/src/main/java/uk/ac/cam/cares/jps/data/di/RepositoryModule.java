@@ -19,6 +19,7 @@ import uk.ac.cam.cares.jps.network.datasheet.DataSheetNetworkSource;
 import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.BMSNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
+import uk.ac.cam.cares.jps.network.qrprint.QRPrintingNetworkSource;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -49,7 +50,7 @@ public class RepositoryModule {
 
     @Provides
     @Singleton
-    public QRPrintRepository provideQRPrintingRepository(QRPrintingLocalSource localSource) {
-        return new QRPrintRepository(localSource);
+    public QRPrintRepository provideQRPrintingRepository(QRPrintingLocalSource localSource, QRPrintingNetworkSource networkSource) {
+        return new QRPrintRepository(localSource, networkSource);
     }
 }
