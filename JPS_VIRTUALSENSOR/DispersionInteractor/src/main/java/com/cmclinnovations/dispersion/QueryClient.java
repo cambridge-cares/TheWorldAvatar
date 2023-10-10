@@ -4,6 +4,7 @@ import org.eclipse.rdf4j.model.vocabulary.GEO;
 import org.eclipse.rdf4j.model.vocabulary.GEOF;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.vocabulary.TIME;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Operand;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -74,6 +75,7 @@ public class QueryClient {
     public static final Prefix P_EMS = SparqlBuilder.prefix("ontoems", iri(ONTO_EMS));
     private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.NAMESPACE));
     private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.NAMESPACE));
+    private static final Prefix P_TIME = SparqlBuilder.prefix("time", iri(TIME.NAMESPACE));
 
     // classes
     private static final Iri MEASURE = P_OM.iri("Measure");
@@ -177,15 +179,21 @@ public class QueryClient {
     }
 
     String initialiseScopeDerivation(String scopeIri, String scopeLabel, String weatherStation, int nx, int ny,
-            String citiesNamespace, List<Integer> zList) {
+            String citiesNamespace, List<Integer> zList, String simulationTimeIri) {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(scopeIri).isA(SCOPE).andHas(iri(RDFS.LABEL), scopeLabel));
 
         // sim time (input)
-        String simTime = PREFIX + UUID.randomUUID();
-        String simTimeMeasure = PREFIX + UUID.randomUUID();
-        modify.insert(iri(simTime).isA(SIMULATION_TIME).andHas(HAS_VALUE, iri(simTimeMeasure)));
-        modify.insert(iri(simTimeMeasure).isA(MEASURE).andHas(HAS_NUMERICALVALUE, 0));
+        String simTime = null;
+        if (simulationTimeIri == null) {
+            simTime = PREFIX + UUID.randomUUID();
+            String simTimePosition = PREFIX + UUID.randomUUID();
+            modify.insert(iri(simTime).isA(SIMULATION_TIME).andHas(iri(TIME.IN_TIME_POSITION), iri(simTimePosition)));
+            modify.insert(iri(simTimePosition).isA(iri(TIME.TIME_POSITION)).andHas(iri(TIME.NUMERIC_POSITION), 0)
+                    .andHas(iri(TIME.HAS_TRS), "https://dbpedia.org/page/Unix_time"));
+        } else {
+            simTime = simulationTimeIri;
+        }
 
         // nx (input)
         String nxIri = PREFIX + UUID.randomUUID();
@@ -319,11 +327,12 @@ public class QueryClient {
         Variable simTime = query.var();
         Variable simTimeMeasure = query.var();
         Variable oldValue = query.var();
-        GraphPattern gp = GraphPatterns.and(simTime.isA(SIMULATION_TIME).andHas(HAS_VALUE, simTimeMeasure),
-                simTimeMeasure.has(HAS_NUMERICALVALUE, oldValue));
+        GraphPattern gp = GraphPatterns.and(
+                simTime.isA(SIMULATION_TIME).andHas(iri(TIME.IN_TIME_POSITION), simTimeMeasure),
+                simTimeMeasure.has(iri(TIME.NUMERIC_POSITION), oldValue));
 
-        modify.insert(simTimeMeasure.has(HAS_NUMERICALVALUE, newValue))
-                .delete(simTimeMeasure.has(HAS_NUMERICALVALUE, oldValue)).where(gp).prefix(P_DISP, P_OM);
+        modify.insert(simTimeMeasure.has(iri(TIME.NUMERIC_POSITION), newValue))
+                .delete(simTimeMeasure.has(iri(TIME.NUMERIC_POSITION), oldValue)).where(gp).prefix(P_DISP, P_OM);
 
         storeClient.executeUpdate(modify.getQueryString());
 
@@ -347,11 +356,11 @@ public class QueryClient {
         Variable simTimeMeasure = query.var();
         Variable oldValue = query.var();
         GraphPattern gp = GraphPatterns.and(iri(derivation).has(isDerivedFrom, simTime),
-                simTime.isA(SIMULATION_TIME).andHas(HAS_VALUE, simTimeMeasure),
-                simTimeMeasure.has(HAS_NUMERICALVALUE, oldValue));
+                simTime.isA(SIMULATION_TIME).andHas(iri(TIME.IN_TIME_POSITION), simTimeMeasure),
+                simTimeMeasure.has(iri(TIME.NUMERIC_POSITION), oldValue));
 
-        modify.insert(simTimeMeasure.has(HAS_NUMERICALVALUE, newValue))
-                .delete(simTimeMeasure.has(HAS_NUMERICALVALUE, oldValue)).where(gp).prefix(P_DISP, P_OM);
+        modify.insert(simTimeMeasure.has(iri(TIME.NUMERIC_POSITION), newValue))
+                .delete(simTimeMeasure.has(iri(TIME.NUMERIC_POSITION), oldValue)).where(gp).prefix(P_DISP, P_OM);
 
         storeClient.executeUpdate(modify.getQueryString());
 

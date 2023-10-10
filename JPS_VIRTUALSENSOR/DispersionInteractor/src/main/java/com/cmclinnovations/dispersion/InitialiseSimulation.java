@@ -65,6 +65,7 @@ public class InitialiseSimulation extends HttpServlet {
         String citiesNamespace = req.getParameter("citiesnamespace");
         String scopeLabel = req.getParameter("label");
         String[] zArray = req.getParameterValues("z");
+        String simulationTimeIri = req.getParameter("simulationTimeIri"); // optional
 
         List<Integer> zList = new ArrayList<>();
         if (zArray == null) {
@@ -130,7 +131,7 @@ public class InitialiseSimulation extends HttpServlet {
                 String weatherStation = createVirtualWeatherStation(polygon4326);
 
                 String derivation = queryClient.initialiseScopeDerivation(scopeIri, scopeLabel, weatherStation, nx, ny,
-                        citiesNamespace, zList);
+                        citiesNamespace, zList, simulationTimeIri);
                 try {
                     resp.getWriter().print(new JSONObject().put("derivation", derivation));
                     resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());

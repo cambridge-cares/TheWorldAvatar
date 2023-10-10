@@ -221,7 +221,8 @@ public class QueryClient {
     long getMeasureValueAsLong(String instance) {
         SelectQuery query = Queries.SELECT().prefix(P_OM);
         Variable value = query.var();
-        GraphPattern gp = iri(instance).has(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), value);
+        GraphPattern gp = iri(instance).has(PropertyPaths.path(iri(TIME.IN_TIME_POSITION), iri(TIME.NUMERIC_POSITION)),
+                value);
         query.where(gp);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         return Long.parseLong(queryResult.getJSONObject(0).getString(value.getQueryString().substring(1)));
