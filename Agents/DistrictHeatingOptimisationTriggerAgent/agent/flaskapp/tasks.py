@@ -12,10 +12,7 @@ from datetime import datetime, timedelta
 from py4jps import agentlogging
 
 from agent.datamodel import *
-from agent.kgutils.kgclient import KGClient
-from agent.utils.agent_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-                                      FORECASTING_AGENT, DH_OPTIMISATION_AGENT, \
-                                      EMISSION_ESTIMATION_AGENT
+
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
@@ -107,7 +104,7 @@ def raise_value_error(msg):
     raise ValueError(msg)
 
 
-def create_new_time_instances():
+def create_new_time_instance_iris():
     # Simulation time
     sim_t = KB + 'SimulationTime_' + str(uuid.uuid4())
     # Optimisation interval
@@ -121,3 +118,24 @@ def create_new_time_instances():
     freq = KB + 'Frequency_' + str(uuid.uuid4())
     
     return sim_t, opti_int, opti_t1, opti_t2, heat_length, tmp_length, freq
+
+
+def update_time_instances(sparql_client, deriv_client, opti_int_iri,
+                          t_sim_iri, t_sim_unix, t1_opti_iri, t1_opti_unix, 
+                          t2_opti_iri, t2_opti_unix):
+    """
+    Update unix times of instantiated time:Instant instances and update associated
+    timestamps (to allow for derivation update)
+    
+    Arguments: 
+        opti_int_iri - time:Interval IRI
+        t_sim_iri, t1_opti_iri, t2_opti_iri - time:Instant IRIs
+        t_sim_unix, t1_opti_unix, t2_opti_unix - unix timestamps
+    """
+    
+    # Update time instances (pre-existing from previous optimisation)
+    sparql_client.update_time_instant(t_sim_iri, t_sim_unix)
+    sparql_client.update_time_instant(t1_opti_iri, t1_opti_unix)
+    sparql_client.update_time_instant(t2_opti_iri, t2_opti_unix)
+    # Update time stamps of pure inputs
+    deriv_client.updateTimestamps([t_sim_iri, opti_int_iri])

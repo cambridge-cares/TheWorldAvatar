@@ -6,9 +6,7 @@
 # Create Flask application and define HTTP route to initiate district heating
 # optimisation by derivation agents and trigger subsequent runs by updating inputs
 
-import uuid
 from celery import Celery
-from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
 
 from py4jps import agentlogging
@@ -79,12 +77,12 @@ def trigger_optimisation_task(params):
         # 2) Downstream derivation IRIs; returns [] if not exist
         # Generation optimisation derivation
         opti_deriv_iri = [] if not fc_deriv_iris else \
-                            kg_client.get_downstream_derivation(fc_deriv_iris[0])
+                         kg_client.get_downstream_derivation(fc_deriv_iris[0])
         if len(opti_deriv_iri) > 1:
             tasks.raise_value_error(f'More than 1 Generation optimisation derivation retrieved: {", ".join(opti_deriv_iri)}')
         # Emission estimation derivations
         em_deriv_iri = [] if not opti_deriv_iri else \
-                        kg_client.get_downstream_derivation(opti_deriv_iri[0])
+                       kg_client.get_downstream_derivation(opti_deriv_iri[0])
         if len(em_deriv_iri) > 2:
             tasks.raise_value_error(f'More than 2 Emission estimation derivation retrieved: {", ".join(em_deriv_iri)}')
         derivs = opti_deriv_iri + em_deriv_iri
@@ -100,7 +98,7 @@ def trigger_optimisation_task(params):
             logger.info('Instantiating new chain of derivations...')
             # Create IRIs for time inputs to instantiate
             sim_t, opti_int, opti_t1, opti_t2, heat_length, tmp_length, freq = \
-                tasks.create_new_time_instances()
+                tasks.create_new_time_instance_iris()
 
         # Trigger derivation update for each time step to optimise
         for run in range(params['numberOfTimeSteps']):
@@ -128,9 +126,8 @@ def trigger_optimisation_task(params):
                     logger.info('Instantiation of optimisation time etc. successfully finished.')
                 else:
                     # Update time instances (pre-existing from previous optimisation)
-                    kg_client.update_time_instant(sim_t, t1)
-                    kg_client.update_time_instant(opti_t1, t1)
-                    kg_client.update_time_instant(opti_t2, t2)
+                    tasks.update_time_instances(kg_client, derivation_client, opti_int,
+                                                sim_t, t1, opti_t1, t1, opti_t2, t2)
                 
                 ###   Instantiate derivation markups   ###
                 # 1) Forecast derivations
@@ -138,6 +135,9 @@ def trigger_optimisation_task(params):
                 if not fc_deriv_iris:
                     heat_demand = kg_client.get_heat_demand()
                     inputs_demand = [heat_demand, fc_model_heat_demand, opti_int, freq, heat_length]
+                    # NOTE: Forecast derivations are instantiated using "createSyncDerivationForNewInfo"
+                    #       to ensure that derivation outputs are instantiated, which is not the case
+                    #       for sole derivation updates when using derivations with time series
                     deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT, 
                                     inputs_demand, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
                     logger.info(f"Heat demand forecast derivation successfully instantiated: {deriv.getIri()}")
@@ -149,7 +149,7 @@ def trigger_optimisation_task(params):
                     inputs_temps = [deriv_base + [t] for t in grid_temps]
                     for i in inputs_temps:
                         deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT, 
-                                    i, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+                                        i, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
                         logger.info(f"Grid temperature forecast derivation successfully instantiated: {deriv.getIri()}")
                         fc_deriv_iris.append(deriv.getIri())
                 else:
@@ -157,7 +157,7 @@ def trigger_optimisation_task(params):
                         derivation_client.unifiedUpdateDerivation(d)
                         logger.info(f"Forecast derivation instance successfully updated: {d}")
 
-                # 2) Optimisation derivation
+                # 2) Generation optimisation derivation
                 if not opti_deriv_iri:
                     # NOTE: Instantiated using "createSyncDerivationForNewInfo" for same
                     #       reason as above, i.e., ensure initial generation of output triples
@@ -175,21 +175,20 @@ def trigger_optimisation_task(params):
 
                 # 3) Emission estimation derivations
                 if not em_deriv_iri:
-                    # Query Point Sources associated with emissions (instances need to have
-                    # a disp:hasOntoCityGMLCityObject relationship attached for Aermod to work)
-
                     # Get all optimisation derivation outputs
                     opti_outputs = kg_client.get_derivation_outputs(opti_deriv_iri)
                     # Extract all created forecast instances and create list of optimisation inputs
-                    #    1) EfW emissions (ProvidedHeatAmount)
+                    # NOTE: Point source instances associated with emissions need to be specified
+                    #       in static_point_sources.ttl and referenced in iris.py beforehand
+                    #    1) Waste incineration emissions (ProvidedHeatAmount)
                     inputs_efw_em = list(opti_outputs[OHN_PROVIDED_HEAT_AMOUNT]) + [sim_t, point_source_efw]
                     deriv = derivation_client.createSyncDerivationForNewInfo(EMISSION_ESTIMATION_AGENT, 
-                                                inputs_efw_em, ONTODERIVATION_DERIVATION)
+                                    inputs_efw_em, ONTODERIVATION_DERIVATION)
                     logger.info(f"EfW emission estimation derivation successfully instantiated: {deriv.getIri()}")
-                    #    2) heating plant emissions (ConsumedGasAmount)
+                    #    2) Heating plant emissions (ConsumedGasAmount)
                     inputs_mu_em = list(opti_outputs[OHN_CONSUMED_GAS_AMOUNT]) + [sim_t, point_source_mu]
                     deriv = derivation_client.createSyncDerivationForNewInfo(EMISSION_ESTIMATION_AGENT, 
-                                                inputs_mu_em, ONTODERIVATION_DERIVATION)
+                                    inputs_mu_em, ONTODERIVATION_DERIVATION)
                     logger.info(f"Municipal utility emission estimation derivation successfully instantiated: {deriv.getIri()}")
                 else:
                     for d in em_deriv_iri:
@@ -206,11 +205,9 @@ def trigger_optimisation_task(params):
                 t1 += params['timeDelta_unix']
                 t2 += params['timeDelta_unix']
                 # Update required time instances to trigger next optimisation run
-                kg_client.update_time_instant(sim_t, t1)
-                kg_client.update_time_instant(opti_t1, t1)
-                kg_client.update_time_instant(opti_t2, t2)
-                # Update time stamps of pure inputs
-                derivation_client.updateTimestamps([sim_t, opti_int])
+                tasks.update_time_instances(kg_client, derivation_client, opti_int,
+                                            sim_t, t1, opti_t1, t1, opti_t2, t2)
+
 
             # Request derivation update via Aermod Agent
             #TODO: to be verified
