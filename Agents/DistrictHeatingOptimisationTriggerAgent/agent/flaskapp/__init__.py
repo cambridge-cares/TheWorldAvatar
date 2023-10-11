@@ -8,6 +8,7 @@
 
 import json
 import requests
+from pathlib import Path
 from celery import Celery
 from flask import Flask, request, jsonify
 
@@ -202,21 +203,26 @@ def trigger_optimisation_task(params):
                 #    SimulationTime instance) by sending POST request to Dispersion
                 #    Interactor agent
                 # Read "hardcoded" parameters from json file (i.e., in bind-mount)
-                with open("./resources/dispersion_interactor/derivation_1.json", "r") as file:
+                # NOTE: Currently one derivation for entire Pirmasens is instantiated;
+                #       to be updated in case multiple derivations are needed
+                pathlist = list(Path("./resources/dispersion_interactor").glob('*.json'))
+                with open(pathlist[0], "r") as file:
                     parameters = json.load(file)
                 parameters['simulationTimeIri'] = sim_t
                 # Send POST request incl. pre-existing Simulation Time IRI
+                # NOTE: Returns derivation IRI of 1) newly created derivation or
+                #       2) already instantiated derivation (i.e., to be updated)
                 response = requests.post(DISPERSION_INTERACTOR_URL, data=parameters)
                 if response.status_code == 200:
                     try:
                         # Parse the response JSON and extract "derivation" IRI
                         result = response.json()
                         disp_deriv_iri = result.get("derivation")
-                        logger.info(f"Dispersion derivation successfully instantiated: {disp_deriv_iri}")
+                        logger.info(f"Dispersion derivation instance (created or retrieved): {disp_deriv_iri}")
                     except:
-                        tasks.raise_value_error(f"Dispersion creation request failed: {response.text}")
+                        tasks.raise_value_error(f"Dispersion creation/retrieval request failed: {response.text}")
                 else:
-                    tasks.raise_value_error(f"Dispersion creation request failed: {response.text}")
+                    tasks.raise_value_error(f"Dispersion creation/retrieval request failed: {response.text}")
 
             else:
                 t1 += params['timeDelta_unix']

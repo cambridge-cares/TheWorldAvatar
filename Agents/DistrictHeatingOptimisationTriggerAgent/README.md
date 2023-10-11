@@ -12,7 +12,7 @@ The dockerised agent can be deployed as standalone version (i.e., outside a larg
 ## 1.1. Prerequisites
 
 Before starting the agent, the `disp:hasOntoCityGMLCityObject` range instances in the [static_point_sources.ttl] file need to be populated manually with the corresponding exhaust outlets/chimneys, as there is currently no way to extract these CityObject IRIs programmatically. The agent will not start in case syntactically invalid IRIs are provided. 
-When deploying the agent via the stack-manager, the `Source` node of the mount specification in the [stack-manager-input-config file] likely needs to be adjusted. As the folder is mounted into the container, no rebuilding is required after changing the triples to upload; a simple restart shall be sufficient.
+When deploying the agent via the stack-manager, the `Source` node of the mount specification in the [stack-manager-input-config file] likely needs to be adjusted. As the entire [resources] folder is mounted into the container, no rebuilding is required after changing the triples to upload; a simple restart shall be sufficient.
 
 
 ## 1.2. Stand-alone Deployment
@@ -25,9 +25,11 @@ Several key environment variables need to be set in the [docker compose file]:
 - UPDATE_ENDPOINT=      # SPARQL update endpoint
 - STACK_NAME=           # to be left blank!
 # Derivation Agent service IRIs required to establish derivation markups
-- FORECASTING_AGENT=
-- DH_OPTIMISATION_AGENT=
-- EMISSION_ESTIMATION_AGENT=
+- FORECASTING_AGENT_IRI=
+- DH_OPTIMISATION_AGENT_IRI=
+- EMISSION_ESTIMATION_AGENT_IRI=
+# Dispersion Interactor HTTP URL to establish dispersion derivation markup (via POST request)
+- DISPERSION_INTERACTOR_URL=
 ```
 
 The `STACK_NAME` variable is used to identify the deployment mode of the agent (and a missing one will result in an error). In case the `STACK_NAME` is left blank, Blazegraph endpoint settings will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients.
@@ -57,13 +59,15 @@ Several key environment variables need to be set in the [stack-manager-input-con
         # Target Blazegraph namespace
         "NAMESPACE=kb"
         # Derivation Agent service IRIs required to establish derivation markups
-        "FORECASTING_AGENT=<agent service iri>",
-        "DH_OPTIMISATION_AGENT=<agent service iri>",
-        "EMISSION_ESTIMATION_AGENT=<agent service iri>"
+        "FORECASTING_AGENT_IRI=<agent service iri>",
+        "DH_OPTIMISATION_AGENT_IRI=<agent service iri>",
+        "EMISSION_ESTIMATION_AGENT_IRI=<agent service iri>"
+        # Dispersion Interactor HTTP URL to establish dispersion derivation markup
+        "DISPERSION_INTERACTOR_URL=<agent http url>"
     ],
 ```
 
-**Please note:** 1) The specified namespace needs to exist/be created in Blazegraph beforehand to avoid agent execution issues. 2) The `Source` of the bind mount path likely needs to be adjusted.
+**Please note:** 1) The specified namespace needs to exist/be created in Blazegraph beforehand to avoid agent execution issues. 2) The entire [resources] folder is mounted into the agent container; hence, the absolute path in the `Source` node of the config file likely needs to be adjusted.
 
 If you want to spin up this agent as part of a stack, do the following:
 1) Pull the Docker image `docker pull ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:1.0.0` (alternatively, build with the commands above, but do not spin up the image)
@@ -118,9 +122,10 @@ Markus Hofmeister (mh807@cam.ac.uk), July 2023
 
 <!-- files -->
 [flaskapp init]: ./agent/flaskapp/__init__.py
-[resources/triples]: ./resources/triples/
-[example_opt_request]: ./resources/example_opt_request.http
 [docker compose file]: ./docker-compose.yml
 [stack-manager-input-config]: ./stack-manager-input-config
 [stack-manager-input-config file]: ./stack-manager-input-config/dh-optimisation-trigger-agent.json
+[resources]: ./resources
+[resources/triples]: ./resources/triples/
+[example_opt_request]: ./resources/example_opt_request.http
 [static_point_sources.ttl]: ./resources/triples/static_point_sources.ttl

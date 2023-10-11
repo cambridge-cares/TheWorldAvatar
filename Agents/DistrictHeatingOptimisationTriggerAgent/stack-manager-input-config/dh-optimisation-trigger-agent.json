@@ -10,8 +10,8 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "/home/caresuser/TWA-git/Agents/DistrictHeatingOptimisationTriggerAgent/resources/triples",
-                        "Target": "/app/resources/triples"
+                        "Source": "/home/caresuser/TWA-git/Agents/DistrictHeatingOptimisationTriggerAgent/resources",
+                        "Target": "/app/resources"
                     }
                 ],
                 "Env": [

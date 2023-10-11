@@ -37,11 +37,14 @@ class KGClient(PySparqlClient):
             holiday {str} -- dataIRI of public holiday (time series)
         """
 
+        # Exclude AirTemperature instances which are reported by weather stations,
+        # which get added by weather agent required for dispersion simulation
         query = f"""
             SELECT DISTINCT ?measure ?holiday
             WHERE {{   
             ?airtemp <{RDF_TYPE}> <{EMS_AIRTEMPERATURE}> ; 
                      <{OM_HAS_VALUE}> ?measure . 
+            FILTER NOT EXISTS {{ ?station <{EMS_REPORTS}> ?airtemp }} . 
             ?holiday <{RDF_TYPE}> <{OHN_ISPUBLICHOLIDAY}> .
             }}
         """

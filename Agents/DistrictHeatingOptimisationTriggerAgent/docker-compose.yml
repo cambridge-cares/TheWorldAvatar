@@ -25,7 +25,7 @@ services:
       - "5000:5000"
     volumes:
       - logs:/root/.jps
-      - ./resources/triples:/app/resources/triples
+      - ./resources:/app/resources
 
 volumes:
   logs:

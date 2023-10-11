@@ -62,6 +62,7 @@ TIME_UNIT_SECOND = TIME + 'unitSecond'
 
 ### ONTOEMS ###
 EMS_AIRTEMPERATURE = EMS + "AirTemperature"
+EMS_REPORTS = EMS + 'reports'
 
 ### OHN ###
 OHN_HEAT_DEMAND = OHN + "HeatDemand"
