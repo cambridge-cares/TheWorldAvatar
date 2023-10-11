@@ -154,7 +154,7 @@ class KGClient(PySparqlClient):
 
         #TODO: Include unit of forecast, i.e. MW?
         query = f"""
-            SELECT DISTINCT ?ts_iri ?fc_iri ?unit ?rdb_url ?time_format
+            SELECT DISTINCT ?ts_iri ?unit ?rdb_url ?time_format
             WHERE {{   
             <{forecast_iri}> <{TS_HASTIMESERIES}> ?ts_iri .
             ?ts_iri <{TS_HASRDB}> ?rdb_url .

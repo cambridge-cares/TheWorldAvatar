@@ -8,6 +8,7 @@
 # heating generation optimisation agent as derivation agent using synchronous 
 # derivation with time series
 
+from datetime import datetime
 from rdflib import Graph, URIRef
 
 from pyderivationagent import DerivationAgent
@@ -54,29 +55,31 @@ class DHOptimisationAgent(DerivationAgent):
         """
         Check whether received input instances are suitable to optimise heat generation.
         Throw exception if data is not suitable.
-                # Extract required optimisation inputs from derivation markup (i.e., map
-        # retrieved derivation inputs to corresponding model input parameters)
 
         Arguments:
             inputs {dict} -- Dictionary of inputs with input concepts as keys and values as list
             derivationIRI {str} -- IRI of the derivation instance (optional)
 
         Returns:
-            dictionary of ...
+            opti_inputs {dict} -- optimisation model inputs with keys 'interval',
+                                  'q_demand', 't_flow_efw', 't_return_efw', 't_flow_mu',
+                                  't_return_mu' and corresponding IRI values as string
+            ts_client {TSClient} -- configures time series client object
+            time_format {str} -- Python compliant time format
         """
         
         # Initialise dict of return values
-        input_iris = {}
+        opti_inputs = {}
         
         # 1) Verify that exactly one (optimisation) time:Interval instance is provided
-            # Check whether input is available
+        # Check whether input is available
         if not inputs.get(TIME_INTERVAL):
             raise_error(TypeError, f"Derivation {derivationIRI}: No 'time:Interval' IRI provided.")
         else:
             inp = inputs.get(TIME_INTERVAL)
             # Check whether only one input has been provided
             if len(inp) == 1:
-                input_iris['interval'] = inp
+                opti_inputs['interval'] = inp[0]
             else:
                 raise_error(TypeError, f"Derivation {derivationIRI}: More than one 'time:Interval' IRI provided.")
        
@@ -85,56 +88,35 @@ class DHOptimisationAgent(DerivationAgent):
         if not inputs.get(TS_FORECAST):
             raise_error(TypeError, f"Derivation {derivationIRI}: No 'ts:Forecast' IRI provided.")
         else:
-            inp = self.sparql_client.get_input_types_from_forecast_iris(inputs[TS_FORECAST])
+            fc_mapping = self.sparql_client.get_input_types_from_forecast_iris(inputs[TS_FORECAST])
             # Throw exception in case any could not be retrieved (i.e., is None)
-            for key, value in inp.items():
+            for key, value in fc_mapping.items():
                 if value is None:
-                    raise_error(ValueError, f"Derivation {derivationIRI}: No forecast for '{key}' provided.")
-
-        #return input_iris
-    
-        # Create dict between input concepts and return values
-        input_iris = {
-        }
-
-        # 2) Verify that exactly one forecast for heat demand and each grid temperature
-        #    is provided
+                    raise_error(ValueError, f"Derivation {derivationIRI}: No forecast provided for '{key}'.")
         
-        # 3) Verify that forecast time series cover required optimisation interval
+        # 3) Verify that all forecast time series cover required optimisation interval
+        # Retrieve optimisation interval bounds
+        interval = self.sparql_client.get_interval_details(opti_inputs['interval'])
+        # Retrieve relevant time series settings from KG
+        # NOTE: This assumes that all time series have same rdb url and time format
+        ts_settings = self.sparql_client.get_input_forecast_details(fc_mapping['q_demand'])
+        rdb_url, time_format = get_rdb_endpoint(ts_settings)
+        ts_client = TSClient(kg_client=self.sparql_client, rdb_url=rdb_url, 
+                             rdb_user=DB_USER, rdb_password=DB_PASSWORD)
+        # Create datetime strings from interval timestamps
+        t1 = datetime.utcfromtimestamp(interval['start_unix']).strftime(time_format)
+        t2 = datetime.utcfromtimestamp(interval['end_unix']).strftime(time_format)
+        for key, value in fc_mapping.items():
+            times, _ = ts_client.retrieve_timeseries(value)
+            # Verify that retrieved times contain interval bounds
+            if not (t1 in times) or not (t2 in times):
+                raise_error(ValueError, f"Derivation {derivationIRI}: Time series data for " \
+                                       +f"'{key}' does not cover full optimisation interval.")
+        
+        # Otherwise append mapped IRIs to return dict
+        opti_inputs.update(fc_mapping)
 
-
-        # 2) Verify that either 1 ProvidedHeat (heat sourced from energy from waste plant) 
-        #    or at least 1 ConsumedGas instance (heat generated from gas combustion) is provided
-        # NOTE: a list of consumed gas instances can be provided to account for multiple 
-        #       gas boilers and gas turbine emitting through the same chimney
-            
-        # Extract lists of consumed gas and provided heat instances
-        provided_heat = inputs.get(OHN_PROVIDED_HEAT_AMOUNT)
-        consumed_gas = inputs.get(OHN_CONSUMED_GAS_AMOUNT)
-        # Create empty lists in case no instances have been marked up
-        provided_heat = [] if provided_heat is None else provided_heat
-        consumed_gas = [] if consumed_gas is None else consumed_gas
-
-        if provided_heat and consumed_gas:
-            msg = f"Derivation {derivationIRI}: Both 'ProvidedHeatAmount' and 'ConsumedGasAmount' instances provided."
-            self.logger.error(msg)
-            raise TypeError(msg)
-        if not provided_heat and not consumed_gas:
-            msg = f"Derivation {derivationIRI}: Neither 'ProvidedHeatAmount' nor 'ConsumedGasAmount' instances provided."
-            self.logger.error(msg)
-            raise TypeError(msg)
-        if provided_heat:                
-            if len(provided_heat) > 1:
-                msg = f"Derivation {derivationIRI}: More than one 'ProvidedHeatAmount' instance provided."
-                self.logger.error(msg)
-                raise TypeError(msg)
-            else:
-                input_iris[OHN_PROVIDED_HEAT_AMOUNT] = provided_heat
-
-        if consumed_gas:
-                input_iris[OHN_CONSUMED_GAS_AMOUNT] = consumed_gas
-
-        return input_iris
+        return opti_inputs, ts_client, time_format
 
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
@@ -169,27 +151,18 @@ class DHOptimisationAgent(DerivationAgent):
         derivIRI = derivation_inputs.getDerivationIRI()
 
         # Get validated optimisation model inputs
-        input_iris = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
+        opti_inputs, ts_client, time_format = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
 
         # Optimise heat generation
         #TODO: mocked for now; to be properly implemented
-        # 1) Get optimisation interval bounds
-        interval = self.sparql_client.get_interval_details(input_iris[TIME_INTERVAL][0])
-        # 2) Get relevant time series settings from KG
-        fc_details = self.sparql_client.get_input_forecast_details(input_iris[TS_FORECAST][0])
         # 3) Get potentially already instantiated optimisation output instances, i.e.,
         #    ProvidedHeat and ConsumedGas Amounts, which ts would just get updated
         #    (checks for actual forecast instances)
-        outputs = self.sparql_client.get_optimisation_outputs(input_iris[TS_FORECAST][0])
-
-        # Create optimisation
-        rdb_url, time_format = get_rdb_endpoint(fc_details)
-        ts_client = TSClient(kg_client=self.sparql_client, rdb_url=rdb_url, 
-                             rdb_user=DB_USER, rdb_password=DB_PASSWORD)
-        
+        outputs = self.sparql_client.get_optimisation_outputs(opti_inputs['q_demand'])
+       
         # Mock optimisation data
         # 1) retrieve 1 input time series
-        times, values = ts_client.retrieve_timeseries(input_iris[TS_FORECAST][0])
+        times, values = ts_client.retrieve_timeseries(opti_inputs['q_demand'])
         # 2) initialise output forecast for "random" values
         import random
         provided_heat = [round(random.uniform(2.0, 11.0),1) for _ in times]
