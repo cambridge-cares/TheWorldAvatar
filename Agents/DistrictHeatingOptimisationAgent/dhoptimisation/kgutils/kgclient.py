@@ -27,7 +27,6 @@ class KGClient(PySparqlClient):
     #
     # SPARQL QUERIES
     #
-    #TODO: Check whether that's still needed in the end
     def get_associated_dataIRI(self, instance_iri:str, unit=None, forecast=True) -> tuple:
         """
         Retrieves the dataIRI (i.e., IRI with attached time series) associated
@@ -82,6 +81,65 @@ class KGClient(PySparqlClient):
             raise ValueError(msg)
         
 
+    def get_input_types_from_forecast_iris(self, forecast_iris:list):
+        """
+        Map forecast instances to corresponding input types, i.e., heat demand
+        and flow/return grid temperatures at EfW and municipal utility location
+
+        Arguments:
+            forecast_iris (list) -- IRIs of heat demand and grid temperature forecasts
+                                    (i.e., inputs to the generation optimisation)
+        Returns:
+            inputs (dict) -- dictionary with keys 'q_demand', 't_flow_efw', 't_return_efw',
+                             't_flow_mu', and 't_return_mu' and mapped forecast IRIs as keys
+        """
+
+        query = f"""
+            SELECT DISTINCT ?fc_iri1 ?fc_iri2 ?fc_iri3 ?fc_iri4 ?fc_iri5
+            WHERE {{
+            {{ ?q_demand <{RDF_TYPE}> <{OHN_HEAT_DEMAND}> ;
+                         <{TS_HASFORECAST}> ?fc_iri1 .
+               ?fc_iri1 <{OM_HASUNIT}> <{OM_MEGAWATTHOUR}> .
+               FILTER (?fc_iri1 IN (<{'>, <'.join(forecast_iris)}>) )
+            }} UNION {{
+            ?efw_plant <{RDF_TYPE}> <{OHN_INCINERATIONPLANT}> ;
+                       <{OHN_HAS_DOWNSTREAM_GRIDCONNECTION}> ?efw_downstream ;
+                       <{OHN_HAS_UPSTREAM_GRIDCONNECTION}> ?efw_upstream .
+            ?efw_downstream <{OHN_HAS_OBSERVABLE_PROPERTY}> ?t_flow_efw .
+            ?t_flow_efw <{RDF_TYPE}> <{OM_TEMPERATURE}> ;
+                        <{TS_HASFORECAST}> ?fc_iri2 .
+            ?efw_upstream <{OHN_HAS_OBSERVABLE_PROPERTY}> ?t_return_efw .
+            ?t_return_efw <{RDF_TYPE}> <{OM_TEMPERATURE}> ;
+                          <{TS_HASFORECAST}> ?fc_iri3 .
+            FILTER (?fc_iri2 IN (<{'>, <'.join(forecast_iris)}>) && 
+                    ?fc_iri3 IN (<{'>, <'.join(forecast_iris)}>))
+            }} UNION {{
+            ?mu_plant  <{RDF_TYPE}> <{OHN_MUNICIPAL_UTILITY}> ;
+                       <{OHN_HAS_DOWNSTREAM_GRIDCONNECTION}> ?mu_downstream ;
+                       <{OHN_HAS_UPSTREAM_GRIDCONNECTION}> ?mu_upstream  .
+            ?mu_downstream <{OHN_HAS_OBSERVABLE_PROPERTY}> ?t_flow_mu .
+            ?t_flow_mu <{RDF_TYPE}> <{OM_TEMPERATURE}> ;
+                       <{TS_HASFORECAST}> ?fc_iri4 .
+            ?mu_upstream  <{OHN_HAS_OBSERVABLE_PROPERTY}> ?t_return_mu .
+            ?t_return_mu <{RDF_TYPE}> <{OM_TEMPERATURE}> ;
+                         <{TS_HASFORECAST}> ?fc_iri5 . 
+            FILTER (?fc_iri4 IN (<{'>, <'.join(forecast_iris)}>) && 
+                    ?fc_iri5 IN (<{'>, <'.join(forecast_iris)}>))
+            }} }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from query result; returns None if unavailable
+        inputs = {'q_demand': self.get_unique_value(res, 'fc_iri1'),
+                  't_flow_efw': self.get_unique_value(res, 'fc_iri2'),
+                  't_return_efw': self.get_unique_value(res, 'fc_iri3'),
+                  't_flow_mu': self.get_unique_value(res, 'fc_iri4'),
+                  't_return_mu': self.get_unique_value(res, 'fc_iri5')
+        }
+        return inputs
+
+    
     def get_input_forecast_details(self, forecast_iri:str):
         """
         Returns the tsIRI, rdb url and time format associated with the given 

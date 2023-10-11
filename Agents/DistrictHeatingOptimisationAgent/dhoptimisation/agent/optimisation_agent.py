@@ -54,6 +54,8 @@ class DHOptimisationAgent(DerivationAgent):
         """
         Check whether received input instances are suitable to optimise heat generation.
         Throw exception if data is not suitable.
+                # Extract required optimisation inputs from derivation markup (i.e., map
+        # retrieved derivation inputs to corresponding model input parameters)
 
         Arguments:
             inputs {dict} -- Dictionary of inputs with input concepts as keys and values as list
@@ -63,12 +65,74 @@ class DHOptimisationAgent(DerivationAgent):
             dictionary of ...
         """
         
-        # Extract required optimisation inputs from derivation markup (i.e., map
-        # retrieved derivation inputs to corresponding model input parameters)
+        # Initialise dict of return values
+        input_iris = {}
+        
+        # 1) Verify that exactly one (optimisation) time:Interval instance is provided
+            # Check whether input is available
+        if not inputs.get(TIME_INTERVAL):
+            raise_error(TypeError, f"Derivation {derivationIRI}: No 'time:Interval' IRI provided.")
+        else:
+            inp = inputs.get(TIME_INTERVAL)
+            # Check whether only one input has been provided
+            if len(inp) == 1:
+                input_iris['interval'] = inp
+            else:
+                raise_error(TypeError, f"Derivation {derivationIRI}: More than one 'time:Interval' IRI provided.")
+       
+        # 2) Verify that exactly one forecast for heat demand and each grid temperature
+        #    is provided, i.e., map forecast instances to corresponding input parameters
+        if not inputs.get(TS_FORECAST):
+            raise_error(TypeError, f"Derivation {derivationIRI}: No 'ts:Forecast' IRI provided.")
+        else:
+            inp = self.sparql_client.get_input_types_from_forecast_iris(inputs[TS_FORECAST])
+            # Throw exception in case any could not be retrieved (i.e., is None)
+            for key, value in inp.items():
+                if value is None:
+                    raise_error(ValueError, f"Derivation {derivationIRI}: No forecast for '{key}' provided.")
+
+        #return input_iris
+    
+        # Create dict between input concepts and return values
         input_iris = {
         }
 
-        # Map forecast instances to corresponding input parameters using further KG data
+        # 2) Verify that exactly one forecast for heat demand and each grid temperature
+        #    is provided
+        
+        # 3) Verify that forecast time series cover required optimisation interval
+
+
+        # 2) Verify that either 1 ProvidedHeat (heat sourced from energy from waste plant) 
+        #    or at least 1 ConsumedGas instance (heat generated from gas combustion) is provided
+        # NOTE: a list of consumed gas instances can be provided to account for multiple 
+        #       gas boilers and gas turbine emitting through the same chimney
+            
+        # Extract lists of consumed gas and provided heat instances
+        provided_heat = inputs.get(OHN_PROVIDED_HEAT_AMOUNT)
+        consumed_gas = inputs.get(OHN_CONSUMED_GAS_AMOUNT)
+        # Create empty lists in case no instances have been marked up
+        provided_heat = [] if provided_heat is None else provided_heat
+        consumed_gas = [] if consumed_gas is None else consumed_gas
+
+        if provided_heat and consumed_gas:
+            msg = f"Derivation {derivationIRI}: Both 'ProvidedHeatAmount' and 'ConsumedGasAmount' instances provided."
+            self.logger.error(msg)
+            raise TypeError(msg)
+        if not provided_heat and not consumed_gas:
+            msg = f"Derivation {derivationIRI}: Neither 'ProvidedHeatAmount' nor 'ConsumedGasAmount' instances provided."
+            self.logger.error(msg)
+            raise TypeError(msg)
+        if provided_heat:                
+            if len(provided_heat) > 1:
+                msg = f"Derivation {derivationIRI}: More than one 'ProvidedHeatAmount' instance provided."
+                self.logger.error(msg)
+                raise TypeError(msg)
+            else:
+                input_iris[OHN_PROVIDED_HEAT_AMOUNT] = provided_heat
+
+        if consumed_gas:
+                input_iris[OHN_CONSUMED_GAS_AMOUNT] = consumed_gas
 
         return input_iris
 
@@ -85,9 +149,9 @@ class DHOptimisationAgent(DerivationAgent):
             1 ohn:ProvidedHeatAmount instance representing the amount of heat provided
               by the energy from waste plant
             4 ohn:GeneratedHeatAmount instances representing the amount of heat generated
-              by the conventional gas boilers and the CHP gas turbine
+              by three conventional gas boilers and the CHP gas turbine
             4 ohn:ConsumedGasAmount instances representing the amount of gas consumed
-              by the conventional gas boilers and the CHP gas turbine
+              by three conventional gas boilers and the CHP gas turbine
 
         NOTE: This is a minimal design in the sense than many more input parameters 
               required for the optimisation are queried from the KG (and instantiated
@@ -105,9 +169,7 @@ class DHOptimisationAgent(DerivationAgent):
         derivIRI = derivation_inputs.getDerivationIRI()
 
         # Get validated optimisation model inputs
-        #TODO: skipped for now, to be properly implemented
-        #input_iris = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
-        input_iris = inputs
+        input_iris = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
 
         # Optimise heat generation
         #TODO: mocked for now; to be properly implemented
