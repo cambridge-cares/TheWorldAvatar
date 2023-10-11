@@ -292,7 +292,7 @@ Fig 4 can be found via `UK_Digital_Twin\outputs\smr_replacement_fig\ParetoFront\
 
 Step 4 (OPTIONAL): How to visulise the SMR adoption on the UK regional power output map as the carbon tax increasing?
 
-In this step, we are going to create one of the 16 subfigures of figure 5 reported in preprint 312 based on 29-bus model. The following instructions detail how to create a subfigure corresponding to different conditions.
+In this step, we are going to create one of the 12 subfigures of figure 5 reported in preprint 312 based on 29-bus model. The following instructions detail how to create a subfigure corresponding to different conditions.
 
 - 4.1 Check the required materials and folder path structure: to conduct Step 4, please make sure that the step 3 is done as this step is required for this post processing step.
 
@@ -318,7 +318,7 @@ Open each sub-folder, there are four sub-folders included which are listed as
    `carbonTax50`,
    `carbonTax150`.
 
-The name of the folder referring to the condition of creating the visulisation of the each subfigure in figure 5 of prepint 312.
+The name of the folder refers to the condition of creating the visulisation of the each subfigure in Figure 5 of Prepint 312.
 
 If we use the first subfigure as the demonstration example, which is generated under the condition as the weather condition is WBSB, weight 0.25, carbon tax 0 and 0 SMR . It is worthy to mention that the number of the SMR denoted in each subfigure in preprint 312 is the optimised result. In this example, 0 SMR means that when carbon tax set to be 0, the most economic solution is with no SMR adoption.
 
