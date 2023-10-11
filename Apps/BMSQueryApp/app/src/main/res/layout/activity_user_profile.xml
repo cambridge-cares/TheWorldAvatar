@@ -66,8 +66,6 @@
         android:layout_marginTop="@dimen/component_margin_small"
     >
 
-        <include layout="@layout/item_with_divider_and_arrow_view"
-            android:id="@+id/update_pw"/>
 
         <include layout="@layout/item_with_divider_and_arrow_view"
             android:id="@+id/logout"/>

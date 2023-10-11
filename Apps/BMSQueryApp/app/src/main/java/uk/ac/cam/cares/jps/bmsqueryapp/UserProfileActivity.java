@@ -34,6 +34,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private static final Logger LOGGER = LogManager.getLogger(UserProfileActivity.class);
     ActivityUserProfileBinding binding;
+    String userId = "";
 
     private AuthorizationHelper authHelper;
     private String KEY_EMAIL = "email";
@@ -61,12 +62,6 @@ public class UserProfileActivity extends AppCompatActivity {
         binding.logout.content.setText(R.string.logout);
         binding.logout.getRoot().setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_item_background, null));
         binding.logout.getRoot().setOnClickListener(v -> logoutLauncher.launch(authHelper.getLogOutIntent()));
-
-        binding.updatePw.content.setText(R.string.updatePassword);
-        binding.updatePw.getRoot().setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_item_background, null));
-        binding.updatePw.getRoot().setOnClickListener(v -> {
-            // todo: trigger update password
-        });
 
         binding.returnButton.setOnClickListener(v -> finish());
     }
