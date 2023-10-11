@@ -111,13 +111,25 @@ public class InitialiseSimulation extends HttpServlet {
                     polygon4326 = polygonProvided;
                 }
 
-                if (!dispersionPostGISClient.scopeExists(polygon4326, conn)) {
+                // returns null if there are no matches
+                scopeIri = dispersionPostGISClient.getScopeIri(polygon4326, conn);
+                String derivation = null;
+
+                if (scopeIri == null) {
                     scopeIri = dispersionPostGISClient.addScope(polygon4326, conn);
+
+                    String weatherStation = createVirtualWeatherStation(polygon4326);
+
+                    derivation = queryClient.initialiseScopeDerivation(scopeIri, scopeLabel, weatherStation, nx,
+                            ny, citiesNamespace, zList, simulationTimeIri);
                 } else {
-                    String responseString = "Given EWKT literal already exists in the database, or the scopeExists query failed, check logs";
-                    resp.getWriter().write(String.format("Created scope <%s>", scopeIri));
-                    LOGGER.warn(responseString);
+                    derivation = queryClient.getDerivationWithScope(scopeIri);
                 }
+
+                resp.getWriter().print(new JSONObject().put("derivation", derivation));
+                resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
+                resp.setCharacterEncoding("UTF-8");
+
             } catch (SQLException e) {
                 LOGGER.error("SQL state {}", e.getSQLState());
                 LOGGER.error(e.getMessage());
@@ -125,24 +137,8 @@ public class InitialiseSimulation extends HttpServlet {
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
                 LOGGER.error("Probably failed to add ontop mapping");
-            }
-
-            if (scopeIri != null && polygon4326 != null) {
-                String weatherStation = createVirtualWeatherStation(polygon4326);
-
-                String derivation = queryClient.initialiseScopeDerivation(scopeIri, scopeLabel, weatherStation, nx, ny,
-                        citiesNamespace, zList, simulationTimeIri);
-                try {
-                    resp.getWriter().print(new JSONObject().put("derivation", derivation));
-                    resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
-                    resp.setCharacterEncoding("UTF-8");
-                } catch (IOException e) {
-                    LOGGER.error(e.getMessage());
-                    LOGGER.error("Failed to write HTTP response");
-                } catch (JSONException e) {
-                    LOGGER.error(e.getMessage());
-                    LOGGER.error("Failed to create JSON object for HTTP response");
-                }
+            } catch (JSONException e) {
+                LOGGER.error(e.getMessage());
             }
         }
 

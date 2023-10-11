@@ -101,6 +101,25 @@ public class DispersionPostGISClient {
         return scopeExists;
     }
 
+    String getScopeIri(Polygon polygon, Connection conn) {
+        String scopeIri = null;
+        String sql = String.format("SELECT iri FROM %s WHERE ST_Equals(geom, ST_GeomFromText('%s'))",
+                Config.SCOPE_TABLE_NAME, polygon.toString());
+
+        try (Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            // there should not be any duplicates
+            while (result.next()) {
+                scopeIri = result.getString("iri");
+            }
+        } catch (SQLException e) {
+            LOGGER.error("SQL state: {}", e.getSQLState());
+            LOGGER.error(e.getMessage());
+        }
+
+        return scopeIri;
+    }
+
     boolean sensorExists(Point target, Connection conn) {
         if (!tableExists(Config.SENSORS_TABLE_NAME, conn))
             return false;

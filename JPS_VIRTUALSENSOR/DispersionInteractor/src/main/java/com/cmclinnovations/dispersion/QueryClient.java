@@ -760,4 +760,17 @@ public class QueryClient {
 
         return dispColourBarUrl;
     }
+
+    String getDerivationWithScope(String scope) {
+        Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
+        SelectQuery query = Queries.SELECT();
+
+        Variable derivationVar = query.var();
+
+        query.where(derivationVar.has(isDerivedFrom, iri(scope)));
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        return queryResult.getJSONObject(0).getString(derivationVar.getQueryString().substring(1));
+    }
 }
