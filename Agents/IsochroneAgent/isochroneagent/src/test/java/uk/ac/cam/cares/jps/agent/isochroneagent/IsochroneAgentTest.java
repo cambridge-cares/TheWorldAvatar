@@ -1,9 +1,7 @@
 package uk.ac.cam.cares.jps.agent.isochroneagent;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
@@ -19,36 +17,24 @@ import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
-import org.apache.jena.atlas.json.JSON;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.io.ParseException;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.GeoserverOtherStaticFile;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
-import com.google.gson.JsonObject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -156,7 +142,7 @@ public class IsochroneAgentTest {
         verify(endpointConfigMock.constructed().get(0), times(1)).getDbUser();
         verify(endpointConfigMock.constructed().get(0), times(1)).getDbPassword();
         verify(routeSegmentizationMock.constructed().get(0), times(1)).segmentize(any(RemoteRDBStoreClient.class), anyDouble());
-        //verify(routeSegmentizationMock.constructed().get(0), times(1)).insertPoiData(any(RemoteRDBStoreClient.class),any(JSONArray.class));
+//        verify(routeSegmentizationMock.constructed().get(0), times(1)).insertPoiData(any(RemoteRDBStoreClient.class),any(JSONArray.class));
         verify(isochroneGeneratorMock.constructed().get(0), times(1)).generateIsochrone(any(RemoteRDBStoreClient.class), anyInt(), anyInt(),  any(Map.class));
         verify(isochroneGeneratorMock.constructed().get(0), times(1)).createIsochroneBuilding(any(RemoteRDBStoreClient.class));
         verify(populationMapperMock.constructed().get(0), times(1)).checkAndAddColumns(any(RemoteRDBStoreClient.class), any(ArrayList.class));

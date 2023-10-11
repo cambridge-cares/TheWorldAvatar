@@ -2,7 +2,7 @@
 ## 1. Description
 The IsochroneAgent is an agent that 
 1) Retrieves Points of Interest (POI) locations from the knowledge graph.
-2) Generates isochrones from the locations with different mode of transport. 
+2) Generates isochrones from the locations with different mode of transport as according to OntoIsochrone. 
 
 ## 2. Prerequisites
 ### 2.1. Stack Set Up
@@ -21,16 +21,26 @@ To prepare population data
 ## 3. Agent Configuration 
 ### 3.1 Config Properties
 Things to configure in table: 
-1) `timeThreshold` the upper bounds of time. 
-2) `timeInterval` in minutes. 
-3) `populationTable` all the population table names as uploaded in .
+1) `timeThreshold` - The time cutoff of an isochrone in minutes. Default value is set at 15 minutes. 
+2) `timeInterval` - The time increment value of each isochrone in minutes. Default value is set at 5 mintues time interval. 
+3) `populationTable` - The exact table names of the population tables as per [uploaded](#23-uploading-population-data-via-stack-data-uploader). 
 
 ### 3.2 SPARQL Queries
-Modify SPARQL queries as according to the POI you wish to query.
+SPARQL queries are used to retrieve the location of POI. 
 
-### 3.3 
-Modify the edgeTableSQL as according to the cost table per the transport mode.
+The acceptable SPARQL queries format require 3 columns. 
+1) `poi_iri` refers to the POI's iri. 
+2) `poi_type` refers to the iri type. 
+3) `geometry` refers to the WKT literals of the POI location. 
 
+Sample SPARQL queries are created for Pirmasens and King's Lynn use cases. 
+
+### 3.3 EdgeTableSQL
+[EdgeTable](https://docs.pgrouting.org/2.5/en/pgRouting-concepts.html#description-of-the-edges-sql-query-for-dijkstra-like-functions) describes the characteristic of the road networks. It is used to define the transport mode during the calculation of isochrone. 
+
+Sample edgeTable prepared:
+1) 15 Minute Smart City (15MSC) - Walk, Cycle, Drive
+2) Urban Resillience - Drive, Drive_flood
 
 ## 4. Build
 ### 4.1. GitHub Credentials
