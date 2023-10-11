@@ -131,12 +131,14 @@ Queries for meta data should not concern themselves with data relating to time s
 
 Queries that generate multiple rows with the same property name are supported, their values will be combined into a single JSON array by the agent.
 
-<p align="center">
-   <img src="./docs/meta-query-example.jpg" alt="Example result of a metadata query" width="50%"/>
-</p>
-<p align="center">
-   <em>Results of a valid SPARQL query for metadata.</em>
-</p>
+| Property | Value | Unit |
+| --- | --- | --- |
+| Elevation | 100 | m |
+| Station Reference | 0001 | |
+| Station Reference | 0001A | |
+| Catchment Name | Cotswolds | |
+| Up Time | 7 | Days |
+
 
 An example of a meta data SPARQL query [can be seen here](./sample/fia/CastleMeta.sparql); note that this is for a sample data set defined in a simple ontology [here](./sample/sample-tboxes.csv).
 
@@ -146,12 +148,11 @@ Queries for measurable entities need to return the IRIs of the entities represen
 
 Required columns are `Measurable` (`Measurement` also supported for backwards compatibility) containing the entity IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank); any other columns are currently ignored
 
-<p align="center">
-    <img src="./docs/time-query-example.jpg" alt="Example result of a time series query" width="75%"/>
-</p>
-<p align="center">
-   <em>Results of a valid SPARQL query for measurable entity IRIs.</em>
-</p>
+| Measurement | Name | Unit |
+| --- | --- | --- |
+| https://theworldavatar.io/measurement-iri-one/ | Flow Rate | m^3/s |
+| https://theworldavatar.io/measurement-iri-two/ | Speed | m/s |
+| https://theworldavatar.io/measurement-iri-three/ | Ownership | |
 
 An example of a meta data SPARQL query [can be seen here](./sample/fia/CastleTime.sparql); note that this is for a sample data set defined in a simple ontology [here](./sample/sample-tboxes.csv).
 
