@@ -6,21 +6,6 @@ services:
     build: .
     ports:
       - "10105:8080"
-    environment:
-      - STACK_NAME=${STACK_NAME}
-      - GEOSERVER_URL=http://host.docker.internal:3838/geoserver # specifying here because WMS endpoint does not work with container name
-    configs:
-      - postgis
-      - blazegraph
-      - geoserver
-      - ontop
-    secrets:
-      - postgis_password
-      - geoserver_password
-    networks:
-      - stack
     volumes:
       - ./inputs:/inputs
-volumes:
-  inputs:
-    name: "inputs"
+

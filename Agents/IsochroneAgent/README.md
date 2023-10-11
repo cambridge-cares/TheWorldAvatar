@@ -72,7 +72,7 @@ The agent is reachable at the `/update` endpoint. `function` is used to indicate
 
 To run the agent, simply run the following cURL command:
 ```
-curl -X POST localhost:10105/isochroneagent/update?function=15MSC
+curl -X POST localhost:3840/isochroneagent/update?function=15MSC
 ```
 
 

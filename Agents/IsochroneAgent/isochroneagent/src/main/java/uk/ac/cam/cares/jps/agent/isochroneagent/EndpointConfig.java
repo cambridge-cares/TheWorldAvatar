@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.isochroneagent;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 public class EndpointConfig {
@@ -25,6 +26,7 @@ public class EndpointConfig {
         this.kgurl = blazegraphEndpointConfig.getUrl("kb");
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
+
 
     }
 

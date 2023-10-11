@@ -62,7 +62,7 @@ public class IsochroneGenerator {
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             executeSql(connection, add_uuid_ossp_Extension);
             executeSql(connection, tableGeneration);
-            System.out.println("Isochrone_aggregated table created.");
+            System.out.println("Isochrone_aggregated table created. Calculating isochrones based on POI now.");
         }
         catch (Exception e) {
             e.printStackTrace();

@@ -2,6 +2,9 @@ package uk.ac.cam.cares.jps.agent.isochroneagent;
 
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
+
+import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.core.datasets.GeoServerDataSubset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
@@ -110,18 +113,18 @@ public class IsochroneAgent extends JPSAgent {
 
         try {
             init();
-            // Read SPARQL and SQL files. 
+            // Read SPARQL and SQL files.
             Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
             Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
 
             // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
             JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
 
-            // Split road into multiple smaller segment and find the nearest_node 
+            // Split road into multiple smaller segment and find the nearest_node
             RouteSegmentization routeSegmentization = new RouteSegmentization();
             routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
-            
-            // Create a table to store nearest_node 
+
+            // Create a table to store nearest_node
             routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
 
@@ -135,7 +138,7 @@ public class IsochroneAgent extends JPSAgent {
             populationMapper.checkAndAddColumns(remoteRDBStoreClient, populationTableList);
             populationMapper.mapPopulation(remoteRDBStoreClient, populationTableList);
 
-            //Create geoserver layer            
+            //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
             String workspaceName= "isochrone"; 
             String schema = "public";
