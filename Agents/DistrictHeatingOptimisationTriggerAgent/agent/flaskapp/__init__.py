@@ -6,6 +6,8 @@
 # Create Flask application and define HTTP route to initiate district heating
 # optimisation by derivation agents and trigger subsequent runs by updating inputs
 
+import json
+import requests
 from celery import Celery
 from flask import Flask, request, jsonify
 
@@ -195,11 +197,23 @@ def trigger_optimisation_task(params):
                         derivation_client.unifiedUpdateDerivation(d)
                         logger.info(f"Emission estimation derivation instance successfully updated: {d}")
 
-                # 4) Initialise Aermod dispersion derivation markup (i.e., for 
-                #    existing SimulationTime instance)
-                #TODO: Likely by sending POST request to some agent in Aermod suite,
-                #      which shall return dispersion derivation iri
-                #dis_deriv_iri=
+                # 4) Initialise Aermod dispersion derivation markup (for existing
+                #    SimulationTime instance) by sending POST request to Dispersion
+                #    Interactor agent
+                url = 'http://dhstack-dispersion-interactor:8080/DispersionInteractor/InitialiseSimulation'
+                # Read "hardcoded" parameters from json file (i.e., in bind-mount)
+                with open("./resources/dispersion_interactor/derivation_1.json", "r") as file:
+                    parameters = json.load(file)
+                parameters['simulationTimeIri'] = sim_t
+                # Send POST request incl. pre-existing Simulation Time IRI
+                response = requests.post(url, data=parameters)
+                if response.status_code == 200:
+                    # Parse the response JSON and extract "derivation" IRI
+                    result = response.json()
+                    disp_deriv_iri = result.get("derivation")
+                    logger.info(f"Dispersion derivation successfully instantiated: {disp_deriv_iri}")
+                else:
+                    tasks.raise_value_error("Dispersion creation request failed:", response.text)
 
             else:
                 t1 += params['timeDelta_unix']
@@ -210,8 +224,7 @@ def trigger_optimisation_task(params):
 
 
             # Request derivation update via Aermod Agent
-            #TODO: to be verified
-            #derivation_client.unifiedUpdateDerivation(dis_deriv_iri)
+            derivation_client.unifiedUpdateDerivation(disp_deriv_iri)
             # NOTE: Aermod Agent queries emission derivations via StaticPointSources 
             # and requests update; all other derivation updates are handled by DIF 
             # directly as derivationscare directly linked via I/O relations in KG            
