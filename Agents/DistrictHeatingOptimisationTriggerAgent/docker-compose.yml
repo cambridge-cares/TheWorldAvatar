@@ -11,10 +11,13 @@ services:
       # Additional environment variables required for "standalone deployment"
       - QUERY_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/kb/sparql
       - UPDATE_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/kb/sparql
-      # Required agent service IRIs (to be aligned with docker-compose files of respective agents)
-      - FORECASTING_AGENT=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service
-      - DH_OPTIMISATION_AGENT=https://www.theworldavatar.com/resource/agents/Service__DHOptimisationAgent/Service
-      - EMISSION_ESTIMATION_AGENT=https://www.theworldavatar.com/resource/agents/Service__DHEmissionAgent/Service
+      # Required agent service IRIs; to be aligned with docker-compose files of respective agents
+      # (corresponding HTTP URLs will be queried from KG when required)
+      - FORECASTING_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service
+      - DH_OPTIMISATION_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__DHOptimisationAgent/Service
+      - EMISSION_ESTIMATION_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__DHEmissionAgent/Service
+      # Required agent HTTP URLs (to send HTTP requests directly)
+      - DISPERSION_INTERACTOR_URL=http://host.docker.internal:8080/DispersionInteractor/InitialiseSimulation
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .

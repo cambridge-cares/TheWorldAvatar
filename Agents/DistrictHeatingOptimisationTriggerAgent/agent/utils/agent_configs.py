@@ -24,16 +24,18 @@ def retrieve_configs():
 
     # Define global scope for global variables
     global NAMESPACE, STACK_NAME, QUERY_ENDPOINT, UPDATE_ENDPOINT, \
-           FORECASTING_AGENT, DH_OPTIMISATION_AGENT, EMISSION_ESTIMATION_AGENT
+           FORECASTING_AGENT_IRI, DH_OPTIMISATION_AGENT_IRI, EMISSION_ESTIMATION_AGENT_IRI, \
+           DISPERSION_INTERACTOR_URL
     
     # Initialise variables (to ensure working imports even if not defined in env vars)
     NAMESPACE = None
     STACK_NAME = None
     QUERY_ENDPOINT = None
     UPDATE_ENDPOINT = None
-    FORECASTING_AGENT = None
-    DH_OPTIMISATION_AGENT = None
-    EMISSION_ESTIMATION_AGENT = None
+    FORECASTING_AGENT_IRI = None
+    DH_OPTIMISATION_AGENT_IRI = None
+    EMISSION_ESTIMATION_AGENT_IRI = None
+    DISPERSION_INTERACTOR_URL = None
 
     # Retrieve Docker Stack name
     STACK_NAME = os.getenv('STACK_NAME')
@@ -76,7 +78,8 @@ def retrieve_configs():
     logger.info(f"UPDATE_ENDPOINT: {UPDATE_ENDPOINT}")
 
     # Retrieve derivation agent service IRIs
-    vars_names = ['FORECASTING_AGENT', 'DH_OPTIMISATION_AGENT', 'EMISSION_ESTIMATION_AGENT']
+    vars_names = ['FORECASTING_AGENT_IRI', 'DH_OPTIMISATION_AGENT_IRI', 
+                  'EMISSION_ESTIMATION_AGENT_IRI', 'DISPERSION_INTERACTOR_URL']
     for v in vars_names:
         globals()[v] = os.getenv(v)
         if not globals()[v]:
