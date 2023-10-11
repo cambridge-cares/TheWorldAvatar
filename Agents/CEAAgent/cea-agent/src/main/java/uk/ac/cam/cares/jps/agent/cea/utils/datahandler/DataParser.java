@@ -15,11 +15,11 @@ public class DataParser {
      * @param key - requested data
      * @return List of data
      */
-    public static List<String> getList (JSONObject dataJSON, String key) {
+    public static List<Double> getList (JSONObject dataJSON, String key) {
         JSONArray array = (JSONArray) dataJSON.get(key);
-        List<String> list = new ArrayList<>();
+        List<Double> list = new ArrayList<>();
         for (int j = 0; j < array.length(); j++) {
-            list.add(array.getString(j));
+            list.add(array.getDouble(j));
         }
         return list;
     }
@@ -38,7 +38,7 @@ public class DataParser {
             JSONArray timeDataArray = (JSONArray) array.get(index);
 
             for (int i = 0; i < timeDataArray.length(); i++) {
-                timeSeriesList.add(Double.valueOf(timeDataArray.getString(i)));
+                timeSeriesList.add(timeDataArray.getDouble(i));
             }
         }
         return timeSeriesList;

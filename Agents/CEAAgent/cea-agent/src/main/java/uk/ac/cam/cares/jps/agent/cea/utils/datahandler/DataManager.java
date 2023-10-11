@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.datahandler;
 
+import org.apache.jena.arq.querybuilder.AskBuilder;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
@@ -28,54 +29,40 @@ public class DataManager {
      * @param route route to pass to access agent
      * @return building
      */
-    public String checkBuildingInitialised(String uriString, String route) {
+    public boolean checkBuildingInitialised(String uriString, String route) {
         WhereBuilder wb = new WhereBuilder();
-        SelectBuilder sb = new SelectBuilder();
+        AskBuilder ab = new AskBuilder();
 
         wb.addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                 .addPrefix("bot", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bot))
-                .addWhere("?building", "ontoBuiltEnv:hasOntoCityGMLRepresentation", "?s")
                 .addWhere("?building", "rdf:type", "bot:Building");
 
-        sb.addVar("?building").addWhere(wb);
+        ab.addWhere(wb);
 
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
+        ab.setVar(Var.alloc( "building"), NodeFactory.createURI(uriString));
 
-        JSONArray queryResultArray = new JSONArray(AccessAgentCaller.queryStore(route, sb.build().toString()));
+        JSONArray queryResultArray = new JSONArray(AccessAgentCaller.queryStore(route, ab.build().toString()));
 
-        String building = "";
-
-        if (!queryResultArray.isEmpty()) {
-            building = queryResultArray.getJSONObject(0).get("building").toString();
-        }
-
-        return building;
+        return queryResultArray.getJSONObject(0).getBoolean("ASK");
     }
 
     /**
      * Initialises building in KG with buildingUri as the bot:Building IRI, and link to ontoCityGMLRepresentation
-     * @param uriString city object id
      * @param buildingUri building IRI from other endpoints if exist
      * @param route route to pass to access agent
      * @return building
      */
-    public String initialiseBuilding(String uriString, String buildingUri, String route) {
+    public String initialiseBuilding(String buildingUri, String route) {
         UpdateBuilder ub = new UpdateBuilder();
-
-        if (buildingUri.isEmpty()) {
-            buildingUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv) + "Building_" + UUID.randomUUID() + "/";
-        }
 
         WhereBuilder wb =
                 new WhereBuilder()
                         .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
                         .addPrefix("owl", ontologyUriHelper.getOntologyUri(OntologyURIHelper.owl))
                         .addPrefix("bot", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bot))
-                        .addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "bot:Building")
-                        .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "owl:NamedIndividual")
-                        .addWhere(NodeFactory.createURI(buildingUri), "ontoBuiltEnv:hasOntoCityGMLRepresentation", NodeFactory.createURI(uriString));
+                        .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "owl:NamedIndividual");
 
         ub.addInsert(wb);
 
@@ -126,8 +113,7 @@ public class DataManager {
      * @param scalarIris map of iris in kg to data types
      * @param route route to pass to access agent
      */
-    public void initialiseData(Integer uriCounter, LinkedHashMap<String, List<String>> scalars, String buildingUri, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route){
-
+    public void initialiseData(Integer uriCounter, LinkedHashMap<String, List<Double>> scalars, String buildingUri, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route) {
         WhereBuilder wb =
                 new WhereBuilder()
                         .addPrefix("ontoubemmp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
@@ -364,7 +350,7 @@ public class DataManager {
      * @param route route to pass to access agent
      * @param uriCounter keep track of uris
      */
-    public void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<String>> scalars, Integer uriCounter) {
+    public void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<Double>> scalars, Integer uriCounter) {
         for (String measurement: CEAConstants.SCALARS) {
             WhereBuilder wb1 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", "?s");
@@ -448,7 +434,7 @@ public class DataManager {
      * @param measure om:Measure iri
      * @param value numerical value
      */
-    public void createSolarSuitableAreaUpdate(WhereBuilder builder, String facade, String quantity, String measure, String value) {
+    public void createSolarSuitableAreaUpdate(WhereBuilder builder, String facade, String quantity, String measure, Double value) {
         builder.addWhere(NodeFactory.createURI(facade), "ontoubemmp:hasSolarSuitableArea", NodeFactory.createURI(quantity))
                 .addWhere(NodeFactory.createURI(quantity), "rdf:type", "om:Area")
                 .addWhere(NodeFactory.createURI(quantity), "rdf:type", "owl:NamedIndividual")
