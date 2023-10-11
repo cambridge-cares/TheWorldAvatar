@@ -1,0 +1,30 @@
+{
+    "name": "FIA Testing Stack",
+    "stack": "http://localhost:38383",
+    "sources": [
+        {
+            "id": "castles-source",
+            "type": "vector",
+            "tiles": [
+                "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:castles&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            ]
+        }
+    ],
+    "layers": [
+        {
+            "id": "castles-layer",
+            "name": "UK Castles",
+            "source": "castles-source",
+            "source-layer": "castles",
+            "type": "symbol",
+            "layout": {
+                "visibility": "visible",
+                "icon-image": "my-castle",
+                "icon-size": 1.0
+            },
+            "paint": {
+                "icon-color": "#BB0A21"
+            }
+        }
+    ]
+}
