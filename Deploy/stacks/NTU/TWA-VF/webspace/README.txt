@@ -1,0 +1,1 @@
+Create files 'mapbox_api_key' and 'mapbox_username' in the webspace directory and add your Mapbox API key and username to them respectively.
