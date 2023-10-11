@@ -103,7 +103,8 @@ class KGClient(PySparqlClient):
             OPTIONAL {{ ?fcmodel_iri <{TS_HAS_MODEL_URL}> ?model_url ;
                                      <{TS_HAS_CHKPT_URL}> ?chkpt_url . }}
             OPTIONAL {{ ?fcmodel_iri <{TS_HASCOVARIATE}> ?covariate_iri . 
-                        ?covariate_iri <{RDF_TYPE}> ?covariate_type . }}
+                        ?covariate_iri ^<{OM_HASVALUE}>*/<{RDF_TYPE}> ?covariate_type . 
+                        FILTER (?covariate_type != <{OM_MEASURE}>) }}
             }}
         """
         query = remove_unnecessary_whitespace(query)
