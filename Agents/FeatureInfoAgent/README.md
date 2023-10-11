@@ -13,7 +13,7 @@ The FIA is a relatively simple HTTP agent built using the TWA agent framework. I
 
 At the time of writing, automatic discovery of data is not feasible, as such the developer deploying an instance of the FIA is responsible for writing SPARQL queries to both return the raw metadata as well as the data IRIs of time series data (so that these can then be looked up in the relational databases to actually get the time series data).
 
-These SPARQL queries are written on a class-by-class (T-Box) basis; this should mean that, for example, all IRIs that are A-Box instances of the `https://theworldavatar.io/ontobuildings/Building` T-Box class will reuse the same SPARQL query as they _should_ have data in the same format.
+These SPARQL queries are written on a class-by-class (TBox) basis; this should mean that, for example, all IRIs that are ABox instances of the `https://theworldavatar.io/ontobuildings/Building` TBox class will reuse the same SPARQL query as they _should_ have data in the same format.
 
 ## Restrictions
 
@@ -26,7 +26,7 @@ At the time of writing, the FIA has a few restrictions that all deploying develo
 
 ### Class discovery
 
-In addition to the above restrictions, the FIA uses a hardcoded SPARQL query to ask the KG what classes the received A-Box IRI belongs to. In essence, the query asks what `rdf:type` the A-Box IRI has, and what the super class of any returned T-Box IRI is, producing a list of the class hierarchy all the way up to `rdf:Resource`. It has been written in a way that uses all of the Blazegraph and Ontop endpoints within the stack, to be robust to the A-Boxes and T-Boxes being stored separately.
+In addition to the above restrictions, the FIA uses a hardcoded SPARQL query to ask the KG what classes the received ABox IRI belongs to. In essence, the query asks what `rdf:type` the ABox IRI has, and what the super class of any returned TBox IRI is, producing a list of the class hierarchy all the way up to `rdf:Resource`. It has been written in a way that uses all of the Blazegraph and Ontop endpoints within the stack, to be robust to the ABoxes and TBoxes being stored separately.
 
 If the query fails to return any results, then the FIA will not function; developers may need to update their triples/mapping until at least one of the queries does return something.
 
@@ -80,7 +80,7 @@ Follow the below configuration steps within the `fia-queries` subdirectory of th
 
 The configuration file should be a JSON file named `fia-config.json`, contained within it should be:
 
-- `entries`: This is a **required** array of objects defining a mapping between (T-Box) class IRIs and the names of files containing pre-written SPARQL queries. Each object needs to contain the following parameters:
+- `entries`: This is a **required** array of objects defining a mapping between (TBox) class IRIs and the names of files containing pre-written SPARQL queries. Each object needs to contain the following parameters:
    - Required:
      - `class`: Full IRI of the class.
    - Optional:
@@ -120,7 +120,7 @@ Within the [samples/fia/fia-config.json](./samples/fia/fia-config.json) file, a 
 
 To properly parse the meta data and time series queries, the agent requires the results from queries to fulfil a set formats. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
 
-- `[IRI]`: The IRI of the feature (A-Box) of interest, i.e. the feature selected within the TWA-VF (the IRI will be injected by the agent).
+- `[IRI]`: The IRI of the feature (ABox) of interest, i.e. the feature selected within the TWA-VF (the IRI will be injected by the agent).
 - `[ONTOP]`: The internal URL of the Ontop service within the stack (the URL will be injected by the agent).
 - `[ENDPOINTS-ALL]`: Internal URLs of all Blazegraph and Ontop endpoints, good for use with "SERVICE" keyword.
 - `[ENDPOINTS-BLAZEGRAPH]`: Internal URLs of all Blazegraph endpoints, good for use with "SERVICE" keyword.
