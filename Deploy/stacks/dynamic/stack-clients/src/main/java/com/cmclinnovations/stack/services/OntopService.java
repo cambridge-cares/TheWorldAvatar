@@ -47,12 +47,10 @@ public final class OntopService extends ContainerService {
 
         configDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
 
-        endpointConfig = new OntopEndpointConfig(containerName,
-                getHostName(), DEFAULT_PORT, "", null);
     }
 
     @Override
-    public void doPreStartUpConfiguration() {
+    protected void doPreStartUpConfigurationImpl() {
 
         ContainerSpec containerSpec = getContainerSpec();
 
@@ -95,6 +93,13 @@ public final class OntopService extends ContainerService {
     }
 
     @Override
+    protected void createEndpoints() {
+        EndpointConfig endpointConfig = new OntopEndpointConfig(
+                containerName, getHostName(), DEFAULT_PORT, "", null);
+        writeEndpointConfig(endpointConfig);
+    }
+
+    @Override
     public void doPostStartUpConfiguration() {
         DockerClient dockerClient = DockerClient.getInstance();
         dockerClient.createComplexCommand(dockerClient.getContainerId(containerName),
@@ -102,8 +107,6 @@ public final class OntopService extends ContainerService {
                 .withUser("root");
 
         OntopClient.getInstance(containerName).updateOBDA(null);
-
-        writeEndpointConfig(endpointConfig);
 
     }
 

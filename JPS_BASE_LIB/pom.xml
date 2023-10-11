@@ -8,7 +8,7 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.39.1-582-dcat-ontop-SNAPSHOT</version>
+    <version>1.39.2-582-dcat-ontop-SNAPSHOT</version>
 
     <!-- Project Properties -->
     <properties>

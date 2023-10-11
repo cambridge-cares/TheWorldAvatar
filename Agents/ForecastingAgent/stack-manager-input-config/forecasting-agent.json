@@ -1,12 +1,32 @@
 {
     "ServiceSpec": {
-        "Name": "forecasting_agent",
+        "Name": "forecasting-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/forecasting_agent:1.1.1",
+                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.1.1",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/ForecastingAgent/forecastingagent/fcmodels",
+                        "Target": "/app/forecastingagent/fcmodels"
+                    }
+                ],
                 "Env": [
-                    "NAMESPACE=excel",
-                    "DATABASE=excel"
+                    "NAMESPACE=kb",
+                    "DATABASE=postgres",
+                    "ROUNDING=6",
+                    "ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service",
+                    "ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5000/ForecastingAgent",
+                    "DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/",
+                    "DERIVATION_PERIODIC_TIMESCALE=100000",
+                    "REGISTER_AGENT=true",
+                    "SPARQL_QUERY_ENDPOINT=",
+                    "SPARQL_UPDATE_ENDPOINT=",
+                    "KG_USERNAME=",
+                    "KG_PASSWORD=",
+                    "FILE_SERVER_ENDPOINT=",
+                    "FILE_SERVER_USERNAME=",
+                    "FILE_SERVER_PASSWORD="
                 ],
                 "Configs": [
                     {

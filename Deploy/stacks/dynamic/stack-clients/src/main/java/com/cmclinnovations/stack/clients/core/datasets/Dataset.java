@@ -40,6 +40,8 @@ import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 
 public class Dataset {
     protected static final Logger LOGGER = LoggerFactory.getLogger(Dataset.class);
+    static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
+
     public static final String NAME_KEY = "name";
 
     private String name;
@@ -60,6 +62,8 @@ public class Dataset {
 
     private final boolean skip;
     private String rdfType;
+
+    private String baseIRI = DEFAULT_NAMESPACE;
 
     // for dcat cataloging
     private boolean exists; // used to determine whether this dataset exists in the catalog
@@ -162,6 +166,10 @@ public class Dataset {
 
     public boolean isSkip() {
         return skip;
+    }
+
+    public String baseIRI() {
+        return baseIRI;
     }
 
     public Iri getRdfType() {

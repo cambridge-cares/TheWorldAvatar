@@ -8,7 +8,9 @@ init_server
 
 # Pull these images here because the "--with-registry-auth" argument
 # used below only seems to add credentials for Docker Hub
-private_images=('docker.cmclinnovations.com/blazegraph:1.1.0' 'docker.cmclinnovations.com/geoserver:2.20.4')
+private_images=(
+    # Include list of images here that need to be pulled with auth
+)
 for private_image in "${private_images[@]}" ; do
     if [ -z "$(${EXECUTABLE} images -q "$private_image")" ]; then
         ${EXECUTABLE} pull -q "$private_image"
