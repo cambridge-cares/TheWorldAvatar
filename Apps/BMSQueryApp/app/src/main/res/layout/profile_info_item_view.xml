@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/component_margin_small"
+    android:minHeight="50dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
@@ -22,9 +23,10 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/font_size"
         android:layout_marginBottom="@dimen/component_margin_small"
-        android:textAlignment="center"
+        android:textAlignment="textStart"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/label" />
+        app:layout_constraintStart_toEndOf="@id/label"
+        app:layout_constraintEnd_toEndOf="parent" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

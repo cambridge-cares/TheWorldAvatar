@@ -159,6 +159,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         LOGGER.info("Retrieving OpenID discovery doc");
+        LOGGER.info("Discovery Uri: " + configuration.getDiscoveryUri());
         AuthorizationServiceConfiguration.fetchFromUrl(
                 configuration.getDiscoveryUri(),
                 this::handleConfigurationRetrievalResult,

@@ -17,23 +17,19 @@
         android:usesCleartextTraffic="true"
         android:screenOrientation="portrait">
 
-<!--        <activity android:name=".LoginActivity"-->
-<!--            android:exported="true"-->
-<!--            android:theme="@style/LoginTheme">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
+        <activity android:name=".LoginActivity"
+            android:exported="true"
+            android:theme="@style/LoginTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.BMSQueryApp.NoActionBar">
-                        <intent-filter>
-                            <action android:name="android.intent.action.MAIN" />
-                            <category android:name="android.intent.category.LAUNCHER" />
-                        </intent-filter>
         </activity>
 
         <activity android:name=".EquipmentInstanceActivity"
