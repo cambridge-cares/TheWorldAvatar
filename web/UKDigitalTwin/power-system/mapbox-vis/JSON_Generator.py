@@ -312,3 +312,4 @@ def query_to_geoJSON(endpoint, class_label):
 endpoint = ""
 class_label = 'UK_PowerPlants'
 query_to_geoJSON(endpoint, class_label)
+
