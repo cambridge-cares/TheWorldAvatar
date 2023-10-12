@@ -11,6 +11,7 @@ coverage.xml
 .coverage
 *.gv
 *.png
+*.sav
 assets
 
 *.egg-info
