@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  filter-agent:
+    image: ghcr.io/cambridge-cares/filter-agent:0.0.1-SNAPSHOT
+    configs:
+      - blazegraph
+    environment:
+      DEFAULT_NAMESPACE: kb
+    ports:
+      - "8080:8080"
