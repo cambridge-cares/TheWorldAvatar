@@ -9,11 +9,11 @@ TransportMode,Class,,,,,,Transport mode refers to the way people are transported
 Drive,Class,TransportMode,IS-A,,,,Drive describes the act of travelling via a motorized vehicle.,https://www.theworldavatar.com/kg/ontoisochrone/,Drive
 Cycle,Class,TransportMode,IS-A,,,,Cycle describes the act of travelling via a bicycle.,https://www.theworldavatar.com/kg/ontoisochrone/,Cycle
 Walk,Class,TransportMode,IS-A,,,,Walk describes the act of travelling on foot. ,https://www.theworldavatar.com/kg/ontoisochrone/,Walk
-RoadCondition,Class,,,,,,Road conditions describes the conditions of the road. ,https://www.theworldavatar.com/kg/ontoisochrone/,Road Condition
-Flooded,Class,RoadConditions,IS-A,,,,Road conditions under flooded circumstances.,https://www.theworldavatar.com/kg/ontoisochrone/,Flooded
-Normal,Class,RoadConditions,IS-A,,,,Road conditions under normal circumstances.,https://www.theworldavatar.com/kg/ontoisochrone/,Normal
+RoadCondition,Class,,,,,,Road condition describes the condition of the road. ,https://www.theworldavatar.com/kg/ontoisochrone/,Road Condition
+Flooded,Class,RoadCondition,IS-A,,,,Road condition under flooded circumstances.,https://www.theworldavatar.com/kg/ontoisochrone/,Flooded
+Normal,Class,RoadCondition,IS-A,,,,Road condition under normal circumstances.,https://www.theworldavatar.com/kg/ontoisochrone/,Normal
 hasTimeThreshold,Data Property,,,Isochrone,https://www.w3.org/2006/time#minute,,A relationship between an isochrone and its time threshold.,https://www.theworldavatar.com/kg/ontoisochrone/,has time threshold
-hasRoadCondition,Object Property,,,Isochrone,RoadConditions,,A relationship that describes the road condition of an isochrone.,https://www.theworldavatar.com/kg/ontoisochrone/,has road condition
+hasRoadCondition,Object Property,,,Isochrone,RoadCondition,,A relationship that describes the road condition of an isochrone.,https://www.theworldavatar.com/kg/ontoisochrone/,has road condition
 hasTotalPopulation,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered total population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has total population
 hasMenPopulation,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered men population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has men population
 hasWomenPopulation,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered women population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has women population

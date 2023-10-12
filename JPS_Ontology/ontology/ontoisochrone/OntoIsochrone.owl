@@ -66,7 +66,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoisochrone/hasRoadCondition">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoisochrone/Isochrone"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoisochrone/RoadConditions"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoisochrone/RoadCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the road condition of an isochrone.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoisochrone/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has road condition</rdfs:label>
@@ -250,8 +250,8 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoisochrone/Flooded">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoisochrone/RoadConditions"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road conditions under flooded circumstances.</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoisochrone/RoadCondition"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road condition under flooded circumstances.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoisochrone/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flooded</rdfs:label>
     </owl:Class>
@@ -274,8 +274,8 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoisochrone/Normal">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoisochrone/RoadConditions"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road conditions under normal circumstances.</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoisochrone/RoadCondition"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road condition under normal circumstances.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoisochrone/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Normal</rdfs:label>
     </owl:Class>
@@ -286,17 +286,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoisochrone/RoadCondition">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road conditions describes the conditions of the road. </rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road condition describes the condition of the road. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoisochrone/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Condition</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoisochrone/RoadConditions -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoisochrone/RoadConditions"/>
     
 
 
