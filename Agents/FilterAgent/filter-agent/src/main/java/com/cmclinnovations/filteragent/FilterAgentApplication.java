@@ -1,5 +1,8 @@
 package com.cmclinnovations.filteragent;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,10 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cmclinnovations.filteragent.objects.IriObject;
 import com.cmclinnovations.filteragent.objects.Substitution;
-import com.cmclinnovations.filteragent.utils.FileUtils;
 import com.cmclinnovations.filteragent.utils.ReplacementUtils;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -31,6 +32,7 @@ public class FilterAgentApplication {
 
 	private static final Logger LOGGER = LogManager.getLogger(FilterAgentApplication.class);
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final String QUERY_DIR = "/inputs/queries";
 
 	public static void main(String[] args) {
 		SpringApplication.run(FilterAgentApplication.class, args);
@@ -39,22 +41,24 @@ public class FilterAgentApplication {
 	@PostConstruct
 	private void init() {
 		blazegraphClient = BlazegraphClient.getInstance();
-		remoteStoreClient = blazegraphClient.getRemoteStoreClient(EnvConfig.DEFAULT_NAMESPACE);
 	}
 
 	@GetMapping(value = "/filter")
-	public String filter(@RequestParam("subs") String config) throws JsonProcessingException {
-		LOGGER.info("config: {}", config);
-		List<Substitution> substitutionRequest = OBJECT_MAPPER.readValue(config,
+	public String filter(@RequestParam("subs") String substitutionString, @RequestParam("query") String queryFile,
+			@RequestParam("namespace") String namespace) throws IOException {
+		LOGGER.info("config: {}", substitutionString);
+		List<Substitution> substitutionRequest = OBJECT_MAPPER.readValue(substitutionString,
 				new TypeReference<List<Substitution>>() {
 				});
 		LOGGER.info("substitutionRequest: {}", substitutionRequest);
 
-		String query = FileUtils.readStringFromResources("queries/query.sparql");
+		String query = Files.readString(Path.of(QUERY_DIR).resolve(queryFile + ".sparql"));
+
 		query = ReplacementUtils.userReplacements(substitutionRequest, query);
 		query = blazegraphClient.filterQuery(query);
 		LOGGER.info("query: {}", query);
 
+		remoteStoreClient = blazegraphClient.getRemoteStoreClient(namespace);
 		List<IriObject> iriObjects = OBJECT_MAPPER.readValue(
 				QueryClient.executeQuery(remoteStoreClient, query).toString(), new TypeReference<List<IriObject>>() {
 				});
