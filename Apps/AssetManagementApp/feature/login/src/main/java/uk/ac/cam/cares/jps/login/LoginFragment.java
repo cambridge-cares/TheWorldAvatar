@@ -64,14 +64,6 @@ public class LoginFragment extends Fragment {
             }
         });
 
-
-        viewModel.initAuth();
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 //        viewModel.getToastErrorMessage().observe(getViewLifecycleOwner(), errorMsgId -> Toast.makeText(requireContext(), errorMsgId, Toast.LENGTH_SHORT).show());
 
         binding.signInOrUpButton.setOnClickListener(bt -> viewModel.doAuth());
@@ -81,15 +73,22 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        viewModel.initAuth();
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        FragmentManager fragmentManager = getParentFragmentManager();
-        while (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
-        }
+//        FragmentManager fragmentManager = getParentFragmentManager();
+//        while (fragmentManager.getBackStackEntryCount() > 0) {
+//            fragmentManager.popBackStack();
+//        }
     }
 
     private void showLoading() {

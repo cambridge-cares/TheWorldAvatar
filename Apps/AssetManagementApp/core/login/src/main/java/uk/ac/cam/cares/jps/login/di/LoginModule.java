@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.login.AuthServerConfiguration;
 import uk.ac.cam.cares.jps.login.AuthStateManager;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.login.LoginSource;
+import uk.ac.cam.cares.jps.network.Connection;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -34,8 +35,8 @@ public class LoginModule {
 
     @Provides
     @Singleton
-    public LoginSource provideLoginSource(@ApplicationContext Context context, AuthStateManager authStateManager, AuthServerConfiguration configuration) {
-        return new LoginSource(context, authStateManager, configuration);
+    public LoginSource provideLoginSource(@ApplicationContext Context context, AuthStateManager authStateManager, AuthServerConfiguration configuration, Connection connection) {
+        return new LoginSource(context, authStateManager, configuration, connection);
     }
 
     @Provides

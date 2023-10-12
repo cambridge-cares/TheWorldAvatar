@@ -3,12 +3,16 @@ package uk.ac.cam.cares.jps.login;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.CONNECTION_ERROR;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.LOGIN_FAILURE;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SKEW_SYSTEM_CLOCK;
+import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SESSION_EXPIRED;
 
 import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
+
+import com.android.volley.Request;
+import com.android.volley.toolbox.StringRequest;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthState;
@@ -26,13 +30,19 @@ import net.openid.appauth.browser.BrowserMatcher;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
+
+import uk.ac.cam.cares.jps.network.Connection;
 
 public class LoginSource {
     private static final Logger LOGGER = LogManager.getLogger(LoginSource.class);
@@ -49,12 +59,33 @@ public class LoginSource {
     private final AtomicReference<AuthorizationRequest> authRequest = new AtomicReference<>();
     private CountDownLatch authIntentLatch = new CountDownLatch(1);
     private final AtomicReference<CustomTabsIntent> authIntent = new AtomicReference<>();
+    private Connection connection;
+
+    private class  AuthConfigurationCallback implements AuthorizationServiceConfiguration.RetrieveConfigurationCallback {
+        RepositoryCallback<Boolean> callback;
+        AuthConfigurationCallback(RepositoryCallback<Boolean> callback) {
+            this.callback = callback;
+        }
+        @Override
+        public void onFetchConfigurationCompleted(@Nullable AuthorizationServiceConfiguration config, @Nullable AuthorizationException ex) {
+            if (config == null) {
+                LOGGER.error("Failed to retrieve discovery document", ex);
+                callback.onFailure(new Throwable(CONNECTION_ERROR));
+                return;
+            }
+
+            LOGGER.info("Discovery document retrieved");
+            authStateManager.replace(new AuthState(config));
+            executor.submit(LoginSource.this::initializeClient);
+        }
+    }
 
     @Inject
-    public LoginSource(Context context, AuthStateManager authStateManager, AuthServerConfiguration configuration) {
+    public LoginSource(Context context, AuthStateManager authStateManager, AuthServerConfiguration configuration, Connection connection) {
         this.authStateManager = authStateManager;
         this.configuration = configuration;
         this.context = context;
+        this.connection = connection;
         executor = Executors.newSingleThreadExecutor();
 
         if (this.configuration.hasConfigurationChanged()) {
@@ -101,31 +132,9 @@ public class LoginSource {
         return new AuthorizationService(context, builder.build());
     }
 
-    private class  AuthConfigurationCallback implements AuthorizationServiceConfiguration.RetrieveConfigurationCallback {
-        RepositoryCallback<Boolean> callback;
-        AuthConfigurationCallback(RepositoryCallback<Boolean> callback) {
-            this.callback = callback;
-        }
-        @Override
-        public void onFetchConfigurationCompleted(@Nullable AuthorizationServiceConfiguration config, @Nullable AuthorizationException ex) {
-            if (config == null) {
-                LOGGER.error("Failed to retrieve discovery document", ex);
-                callback.onFailure(new Throwable(CONNECTION_ERROR));
-//            runOnUiThread(() -> Toast.makeText(this, "Connection failed, please check your network connection", Toast.LENGTH_SHORT).show());
-                return;
-            }
-
-            LOGGER.info("Discovery document retrieved");
-            authStateManager.replace(new AuthState(config));
-            executor.submit(LoginSource.this::initializeClient);
-        }
-    }
-
     private void initializeClient() {
         LOGGER.info("Using static client ID: " + configuration.getClientId());
         clientId.set(configuration.getClientId());
-        // todo: checkout why need to run on UI thread
-//        runOnUiThread(this::initializeAuthRequest);
         initializeAuthRequest();
     }
 
@@ -235,5 +244,50 @@ public class LoginSource {
                 tokenCallback);
     }
 
+    public void performActionWithFreshTokens(AuthState.AuthStateAction action) {
+        authStateManager.getCurrent().performActionWithFreshTokens(authService, action);
+    }
+
+    public void getUserInfo(RepositoryCallback<JSONObject> callback) {
+        AuthState.AuthStateAction getUserInfoAction = (accessToken, idToken, ex) -> {
+            if (ex != null) {
+                LOGGER.warn("Failed to refresh access token. Reauthorization is needed.");
+                callback.onFailure(new Throwable(SESSION_EXPIRED));
+            }
+
+            String userInfoEndpoint = getUserInfoEndPoint();
+            StringRequest request = new StringRequest(Request.Method.GET, userInfoEndpoint,
+                    response -> {
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            callback.onSuccess(jsonResponse);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    error -> {
+                        LOGGER.warn("No user info retrieved");
+                        callback.onFailure(error);
+                    }) {
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("Content-Type", "application/json");
+                    params.put("Authorization", "Bearer " + accessToken);
+                    return params;
+                }
+            };
+            connection.addToRequestQueue(request);
+        };
+        performActionWithFreshTokens(getUserInfoAction);
+    }
+
+    private String getUserInfoEndPoint() {
+        try {
+            return authStateManager.getCurrent().getAuthorizationServiceConfiguration().discoveryDoc.getUserinfoEndpoint().toString();
+        } catch (NullPointerException e) {
+            LOGGER.info("no user endpoint found from the current logged in AuthServer");
+            return "";
+        }
+    }
 
 }

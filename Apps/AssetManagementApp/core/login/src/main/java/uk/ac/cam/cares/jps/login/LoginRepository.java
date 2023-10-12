@@ -20,6 +20,7 @@ import net.openid.appauth.EndSessionRequest;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import javax.inject.Inject;
 
@@ -47,18 +48,11 @@ public class LoginRepository {
         loginSource.processAuthorizationResponse(data, repositoryCallback);
     }
 
-    public void performActionWithFreshTokens(AuthState.AuthStateAction action) {
-        loginSource.authStateManager.getCurrent().performActionWithFreshTokens(loginSource.authService, action);
+    public void getUserInfo(RepositoryCallback<JSONObject> repositoryCallback) {
+        loginSource.getUserInfo(repositoryCallback);
     }
 
-    public String getUserInfoEndPoint() {
-        try {
-            return loginSource.authStateManager.getCurrent().getAuthorizationServiceConfiguration().discoveryDoc.getUserinfoEndpoint().toString();
-        } catch (NullPointerException e) {
-            LOGGER.info("no user endpoint found from the current logged in AuthServer");
-            return "";
-        }
-    }
+
 
     public Intent getLogOutIntent() {
         AuthorizationServiceConfiguration config = loginSource.authStateManager.getCurrent().getAuthorizationServiceConfiguration();
@@ -95,8 +89,8 @@ public class LoginRepository {
 
     }
 
-    public void showSessionExpiredDialog(Fragment fragment) {
-        new MaterialAlertDialogBuilder(fragment.getContext())
+    public MaterialAlertDialogBuilder getSessionExpiredDialog(Fragment fragment) {
+        return new MaterialAlertDialogBuilder(fragment.getContext())
                 .setTitle(R.string.session_expired_title)
                 .setMessage(R.string.session_expired)
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
@@ -108,7 +102,6 @@ public class LoginRepository {
 
 //                    activity.startActivity(new Intent(activity, LoginActivity.class));
 //                    activity.finish();
-                })
-                .show();
+                });
     }
 }

@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.setting;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -34,6 +36,7 @@ public class SettingFragment extends Fragment {
         BasicConfigurator.configure();
         binding = FragmentSettingBinding.inflate(inflater);
         viewModel = new ViewModelProvider(this).get(SettingViewModel.class);
+        viewModel.getUserInfo();
         return binding.getRoot();
     }
 
@@ -62,5 +65,17 @@ public class SettingFragment extends Fragment {
             Toast.makeText(requireContext(), R.string.new_setting_saved, Toast.LENGTH_SHORT).show();
         });
 
+        ActivityResultLauncher<Intent> logoutLauncher = viewModel.getLogoutLauncher(this);
+        binding.logoutBt.setOnClickListener(view1 -> {
+            viewModel.logout(logoutLauncher);
+        });
+
+        viewModel.getEmail().observe(getViewLifecycleOwner(), email -> binding.emailTv.setText(email));
+        viewModel.getName().observe(getViewLifecycleOwner(), name -> binding.nameTv.setText(name));
+        viewModel.getShouldShowSessionExpired().observe(getViewLifecycleOwner(), shouldShowSessionExpired -> {
+            if (shouldShowSessionExpired) {
+                viewModel.getSessionExpiredDialog(this).show();
+            }
+        });
     }
 }

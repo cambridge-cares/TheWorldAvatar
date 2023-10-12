@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="account">Account</string>
+    <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="notification">Notification</string>
     <string name="in_app_notification">In-app Notification</string>
