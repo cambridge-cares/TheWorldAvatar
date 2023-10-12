@@ -1,0 +1,12 @@
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?iri WHERE {
+  ?type rdfs:label ?typelabel .
+  FILTER(CONTAINS(?typelabel, "[class]"))
+  ?class rdfs:subClassOf* ?type .
+  SERVICE [ONTOP] {
+    ?iri a ?class .
+    ?iri rdfs:label ?asset_name .
+    FILTER(CONTAINS(?asset_name, "[name]"))
+  }
+}
