@@ -750,6 +750,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobim/hasCapacity -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasCapacity">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates the maximum number of occupants a specific zone can accommodate</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has capacity</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobim/hasContextIdentifier -->
 
 
