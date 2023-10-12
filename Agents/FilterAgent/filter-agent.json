@@ -5,8 +5,12 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/filter-agent:0.0.1-SNAPSHOT",
-                "Env": [
-                    "DEFAULT_NAMESPACE=kb"
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "filter-queries",
+                        "Target": "/inputs/queries"
+                    }
                 ],
                 "Configs": [
                     {
