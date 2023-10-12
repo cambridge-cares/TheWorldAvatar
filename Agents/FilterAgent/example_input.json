@@ -1,0 +1,10 @@
+[
+    {
+        "pattern": "[class]",
+        "substitution": "GP"
+    },
+    {
+        "pattern": "[name]",
+        "substitution": "North"
+    }
+]
