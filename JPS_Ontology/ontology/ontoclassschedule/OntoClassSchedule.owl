@@ -181,7 +181,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Laboratory">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Course"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Session"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A hands-on, practical session focused on experiments or activities, typically associated with scientific or technical subjects.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -192,7 +192,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Lecture">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Course"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Session"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A formal instructional session where content is delivered to students, primarily through speech and visual aids.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -203,7 +203,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Seminar">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Course"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Session"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A presentation or discussion-based session where specific topics are explored in-depth, often with guest speakers or experts.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -238,7 +238,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Tutorial">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Course"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoClassSchedule.owl#Session"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An interactive session designed for detailed discussion, problem-solving, or study on specific topics.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
     </owl:Class>
