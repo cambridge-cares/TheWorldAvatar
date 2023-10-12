@@ -6,4 +6,5 @@
     <string name="schedule">Schedule</string>
     <string name="welcome">Welcome</string>
     <string name="mailbox">Mailbox</string>
+    <string name="qr_code_printing">QR Code Printing</string>
 </resources>

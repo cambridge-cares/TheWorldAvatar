@@ -2,13 +2,18 @@ package uk.ac.cam.cares.jps.home;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavDeepLinkRequest;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -32,6 +37,23 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            private boolean doubleBackToExitPressedOnce;
+
+            @Override
+            public void handleOnBackPressed() {
+                if (doubleBackToExitPressedOnce) {
+                    requireActivity().finishAffinity();
+                    return;
+                }
+
+                this.doubleBackToExitPressedOnce = true;
+                Toast.makeText(requireContext(), "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+                new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
+            }
+        });
 
         binding.settingBt.setOnClickListener(v -> {
             NavDeepLinkRequest request = NavDeepLinkRequest.Builder
