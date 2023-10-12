@@ -56,7 +56,7 @@ For a list all arguments that can be passed to the fine-tune script, see classes
 ## Conversion of Hugging Face models to other formats
 
 ```
-python convert_model.py <path-to-hf-model-directory> <path-to-output-directory> --target_format <>
+python convert_model.py <path-to-hf-model-directory> <path-to-output-directory> --target_format [onmt|ov|ort]
 ```
 
 ## Inference
@@ -81,12 +81,6 @@ For a list of all arguments that can be passed to the inference script, see clas
 
 ```
 python evaluate.py predictions.json evaluation_results.json --do_correct_spans --do_correct_relations
-```
-
-## Memory and CPU utilization profiling
-
-```
-python profile.py <cmd>
 ```
 
 ## Running jobs on CSD3 and similar SLURM environments
