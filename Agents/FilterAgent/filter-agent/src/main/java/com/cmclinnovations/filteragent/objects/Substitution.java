@@ -1,4 +1,4 @@
 package com.cmclinnovations.filteragent.objects;
 
-public record Substitution(String pattern, String substitution) {
+public record Substitution(String placeholder, String substitution) {
 }

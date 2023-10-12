@@ -13,7 +13,7 @@ public class ReplacementUtils {
 
     public static String userReplacements(List<Substitution> substitutionRequest, String query) {
         for (Substitution sub : substitutionRequest) {
-            query = StringUtils.replace(query, sub.pattern(), sub.substitution());
+            query = StringUtils.replace(query, sub.placeholder(), sub.substitution());
         }
         return query;
     }
