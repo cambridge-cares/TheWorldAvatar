@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/home_graph"
+    app:startDestination="@id/login_graph"
     android:id="@+id/app_navigation">
 
     <include app:graph="@navigation/home_graph"/>
@@ -12,5 +12,6 @@
     <include app:graph="@navigation/mailbox_graph"/>
     <include app:graph="@navigation/add_asset_graph"/>
     <include app:graph="@navigation/qr_print_graph"/>
+    <include app:graph="@navigation/login_graph"/>
 
 </navigation>

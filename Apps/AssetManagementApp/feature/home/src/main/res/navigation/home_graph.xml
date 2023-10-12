@@ -8,6 +8,10 @@
         android:id="@+id/home"
         android:name="uk.ac.cam.cares.jps.home.HomeFragment"
         tools:layout="@layout/fragment_home"
-        android:label="Home"/>
+        android:label="Home">
+        <deepLink
+            app:uri="android-app://uk.ac.cam.cares.jps.app/home">
+        </deepLink>
+    </fragment>
 
 </navigation>
