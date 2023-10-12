@@ -1,10 +1,10 @@
 [
     {
-        "pattern": "[class]",
+        "placeholder": "[class]",
         "substitution": "GP"
     },
     {
-        "pattern": "[name]",
+        "placeholder": "[name]",
         "substitution": "North"
     }
 ]
