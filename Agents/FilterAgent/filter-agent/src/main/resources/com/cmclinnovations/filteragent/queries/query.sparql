@@ -4,7 +4,7 @@ SELECT DISTINCT ?iri WHERE {
   ?type rdfs:label ?typelabel .
   FILTER(CONTAINS(?typelabel, "[class]"))
   ?class rdfs:subClassOf* ?type .
-  SERVICE [ONTOP] {
+  SERVICE <ontop> {
     ?iri a ?class .
     ?iri rdfs:label ?asset_name .
     FILTER(CONTAINS(?asset_name, "[name]"))
