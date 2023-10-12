@@ -6,10 +6,12 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
+import pandas as pd
 from contextlib import contextmanager
 
 from py4jps import agentlogging
 
+from dhoptimisation.utils import *
 from dhoptimisation.utils.baselib_gateway import jpsBaseLibGW
 from dhoptimisation.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
 
@@ -175,3 +177,35 @@ class TSClient:
         times = [t.toString() for t in times]
         
         return times, values
+
+
+    def retrieve_timeseries_as_dataframe(self, dataIRI, column_name, lowerbound=None, 
+                                         upperbound=None, index_name="time"):
+        """
+        Retrieve time series data for provided dataIRI between given bounds and 
+        returns as pandas dataframe with given column names
+
+        Arguments:
+            dataIRI (str): IRI of instance with hasTimeSeries relationship
+            lowerbound (str): Lower bound of time series data
+            upperbound (str): Upper bound of time series data
+            column_name {str}: column name for values
+            index_name {str}: column/index name for times
+        """
+        
+        # Retrieve time series data
+        times, values = self.retrieve_timeseries(dataIRI, lowerbound, upperbound)
+        if len(values) == 0:
+            raise_error(ValueError, 'No time series data available for dataIRI '\
+                        +f'"{dataIRI}" between {lowerbound} and {upperbound}.')
+        logger.info(f'Loaded {len(values)} values for dataIRI "{dataIRI}" '\
+                    +f'from "{lowerbound}" to "{upperbound}".')
+
+        # Create Dataframe
+        df = pd.DataFrame(zip(values, times), columns=[column_name, index_name])
+        # Remove time zone and convert to datetime
+        df[index_name] = pd.to_datetime(df[index_name]).dt.tz_convert('UTC').dt.tz_localize(None)
+        # Set time column as index (to ease later merging with other ts)
+        df.set_index(index_name, inplace=True)
+        
+        return df

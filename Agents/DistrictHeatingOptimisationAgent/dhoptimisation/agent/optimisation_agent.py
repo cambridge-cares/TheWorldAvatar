@@ -15,11 +15,13 @@ from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
+from dhoptimisation.utils import *
 from dhoptimisation.datamodel.iris import *
 from dhoptimisation.agent.config import *
+from dhoptimisation.agent.generator_models import *
+from dhoptimisation.agent.optimisation_tasks import *
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
-from dhoptimisation.agent.optimisation_tasks import *
 from dhoptimisation.utils.env_configs import DB_USER, DB_PASSWORD
 
 
@@ -64,6 +66,7 @@ class DHOptimisationAgent(DerivationAgent):
             opti_inputs {dict} -- optimisation model inputs with keys 'interval',
                                   'q_demand', 't_flow_efw', 't_return_efw', 't_flow_mu',
                                   't_return_mu' and corresponding IRI values as string
+            t1 {str} -- optimisation start datetime as string
             ts_client {TSClient} -- configures time series client object
             time_format {str} -- Python compliant time format
         """
@@ -116,7 +119,7 @@ class DHOptimisationAgent(DerivationAgent):
         # Otherwise append mapped IRIs to return dict
         opti_inputs.update(fc_mapping)
 
-        return opti_inputs, ts_client, time_format
+        return opti_inputs, t1, ts_client, time_format
 
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
@@ -151,7 +154,12 @@ class DHOptimisationAgent(DerivationAgent):
         derivIRI = derivation_inputs.getDerivationIRI()
 
         # Get validated optimisation model inputs
-        opti_inputs, ts_client, time_format = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
+        opti_inputs, opti_start_dt, ts_client, time_format = \
+            self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
+
+        # Get gas consumption and electricity co-generation models
+        consumption_models, cogen_models = get_generator_models(self.sparql_client,
+                                                                ts_client, opti_start_dt)
 
         # Optimise heat generation
         #TODO: mocked for now; to be properly implemented

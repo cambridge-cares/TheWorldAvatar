@@ -272,8 +272,8 @@ class KGClient(PySparqlClient):
         as well as heat boilers and gas turbine
 
         Returns:
-            providers (dict) -- dictionary with keys 'efw_plant', 
-                               'boilers' and 'gt'
+            providers (dict) -- dictionary with keys 'efw_plant', 'boilers' 
+                                and 'gt' and lists of IRIs as values
         """
 
         query = f"""
