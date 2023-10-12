@@ -13,6 +13,13 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 
 public class RouteSegmentization {
+
+    /** Drop table of routing_ways_segment if it exists.
+     *  Duplicate and store the segmentized roads in routing_ways_segment.
+     *  Recalculate the topology.
+     * @param remoteRDBStoreClient
+     * @param segmentization_length length to segmentize
+     */
     public void segmentize(RemoteRDBStoreClient remoteRDBStoreClient, double segmentization_length){
                 try (Connection connection = remoteRDBStoreClient.getConnection()) {
                 String segmentization_create_table="DROP TABLE IF EXISTS routing_ways_segment;\n" +
@@ -89,6 +96,11 @@ public class RouteSegmentization {
                 }
     }
 
+    /**
+     * Pass POI in arrays and finds the nearest nodes based on routing_ways_segment road data.
+     * @param remoteRDBStoreClient
+     * @param jsonArray POI in array format
+     */
     public void insertPoiData(RemoteRDBStoreClient remoteRDBStoreClient, JSONArray jsonArray) {
 
 
@@ -129,8 +141,14 @@ public class RouteSegmentization {
             throw new JPSRuntimeException(e);
         }
     }
-      
 
+    /**
+     * Finds the nearest node of the POI from routing_ways_segment table
+     * @param connection
+     * @param geom
+     * @return
+     * @throws SQLException
+     */
     private String findNearestNode(Connection connection, String geom) throws SQLException {
         String findNearestNode_sql = "SELECT id, ST_Distance(the_geom, '" + geom + "') AS distance\n" +
                 "FROM routing_ways_segment_vertices_pgr\n" +
@@ -152,9 +170,6 @@ public class RouteSegmentization {
         }
     }
 
-
-    
-    
     /**
      * Create connection to remoteStoreClient and execute SQL statement
      * @param connection PostgreSQL connection object

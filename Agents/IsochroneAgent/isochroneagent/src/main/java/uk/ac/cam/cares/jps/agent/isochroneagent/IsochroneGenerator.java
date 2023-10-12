@@ -11,6 +11,14 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class IsochroneGenerator {
+    /**
+     * Generates isochrone based on time threshold, time interval, transportmode and road conditions.
+     * It derives TransportMode, RoadCondition from the .sql file name, edgeTableSQL from its content.
+     * @param remoteRDBStoreClient
+     * @param upperTimeLimit Maximum time limit of the multiple isochrones.
+     * @param timeInterval Time increments between each isochrone
+     * @param EdgesTableSQLMap The transport mode and road conditions to be used for isochrone calculations
+     */
     public void generateIsochrone(RemoteRDBStoreClient remoteRDBStoreClient, int upperTimeLimit, int timeInterval, Map<String,String> EdgesTableSQLMap ){
 
         generateTable(remoteRDBStoreClient);
@@ -26,11 +34,20 @@ public class IsochroneGenerator {
 
                 for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
                     //Get transport mode and replace the .sql with empty spaces
-                    String transportMode = entry.getKey().replaceAll("\\.sql$", "");;
-                    String edgeTable = entry.getValue();
-        
-                    // Process each entry (key and value) as needed
-                    createIsochrone(remoteRDBStoreClient, upperTimeLimit, timeInterval, transportMode, edgeTable,  poiType);
+                    String strippedFileExtension = entry.getKey().replaceAll("\\.sql$", "");;
+
+                    String[] parts = strippedFileExtension.split("_");
+                    if (parts.length == 2) {
+                        String transportMode = parts[0];
+                        String roadCondition = parts[1];
+                        String edgeTable = entry.getValue();
+
+                        // Process each entry (key and value) as needed
+                        createIsochrone(remoteRDBStoreClient, upperTimeLimit, timeInterval, transportMode, roadCondition, edgeTable,  poiType);
+
+                    } else {
+                        System.out.println("The input string is not in the right format.");
+                    }
                 }
 
             }
@@ -43,6 +60,10 @@ public class IsochroneGenerator {
         }
     }
 
+    /**
+     * Create isochrone_aggregated table to store all final isochrone.
+     * @param remoteRDBStoreClient
+     */
     private void generateTable(RemoteRDBStoreClient remoteRDBStoreClient){
 
         String tableGeneration = "--CREATE ISOCHRONE TABLE\n" +
@@ -51,7 +72,10 @@ public class IsochroneGenerator {
                 "CREATE TABLE isochrone_aggregated (\n" +
                 "    minute integer,\n" +
                 "    transportmode VARCHAR,\n" +
+                "    transportmode_iri VARCHAR,\n" +
                 "    poi_type VARCHAR,\n" +
+                "    roadcondition VARCHAR,\n" +
+                "    roadcondition_iri VARCHAR,\n" +
                 "    isochrone_iri VARCHAR,\n" +
                 "    geometry_iri VARCHAR, \n" +
                 "    geom geometry\n" +
@@ -71,7 +95,17 @@ public class IsochroneGenerator {
 
     }
 
-    private void createIsochrone(RemoteRDBStoreClient remoteRDBStoreClient, int upperTimeLimit, int timeInterval, String transportMode, String edgeTable, String poiType){
+    /**
+     * Perform isochrone calculations based on the multiple point of interests, upperTimeLimit of isochrones, time interval between isocrhones, edgeTable.
+     * @param remoteRDBStoreClient
+     * @param upperTimeLimit
+     * @param timeInterval Time interval between isochrones
+     * @param transportMode Transport mode used to calculate isochrones
+     * @param roadCondition Road conditions of the isochrones
+     * @param edgeTable EdgeTable contains the cost table of the road data
+     * @param poiType Different points of interest
+     */
+    private void createIsochrone(RemoteRDBStoreClient remoteRDBStoreClient, int upperTimeLimit, int timeInterval, String transportMode, String roadCondition, String edgeTable, String poiType){
 
         String isochroneFunction = 
                 "DO $$ \n"+
@@ -96,6 +130,9 @@ public class IsochroneGenerator {
                 "    id bigint,\n" +
                 "    geom geometry,\n" +
                 "    transportmode VARCHAR,\n" +
+                "    transportmode_iri VARCHAR,\n" +
+                "    roadcondition VARCHAR,\n" +
+                "    roadcondition_iri VARCHAR,\n" +
                 "    poi_type VARCHAR,\n" +
                 "    minute integer\n" +
                 ");\n" +
@@ -105,6 +142,9 @@ public class IsochroneGenerator {
                 "    id bigint,\n" +
                 "    minute integer,\n" +
                 "    transportmode VARCHAR,\n" +
+                "    transportmode_iri VARCHAR,\n" +
+                "    roadcondition VARCHAR,\n" +
+                "    roadcondition_iri VARCHAR,\n" +
                 "    poi_type VARCHAR,\n" +
                 "    geom geometry\n" +
                 ");\n" +
@@ -158,48 +198,70 @@ public class IsochroneGenerator {
                 "    minute;\n" +
                 
                 "UPDATE eventspace_isochrones\n" +
-                "SET transportmode = '"+transportMode+"', poi_type = '"+poiType+"';\n" +
+                "SET transportmode = '"+transportMode+"', roadcondition = '"+roadCondition+"', poi_type = '"+poiType+"';\n" +
                 
                 
                 "--Store all the isochrones that passed through each node\n" +
-                "INSERT INTO isochrone_individual (minute, transportmode, poi_type, geom)\n" +
-                "SELECT minute,transportmode, poi_type, ST_Union(geom) AS geom\n" +
+                "INSERT INTO isochrone_individual (minute, transportmode, roadcondition, poi_type, geom)\n" +
+                "SELECT minute,transportmode, roadcondition, poi_type, ST_Union(geom) AS geom\n" +
                 "FROM eventspace_isochrones\n" +
-                "GROUP BY minute,transportmode, poi_type;\n" +
+                "GROUP BY minute,transportmode, roadcondition, poi_type;\n" +
                 
                 "END LOOP;\n" +
                 
                 "--Store all the dissolved aggregated isochrones\n" +
-                "INSERT INTO isochrone_aggregated (minute, transportmode, poi_type, geom)\n" +
+                "INSERT INTO isochrone_aggregated (minute, transportmode, roadcondition, poi_type, geom)\n" +
                 "SELECT\n" +
-                "    minute,transportmode, poi_type,\n" +
+                "    minute,transportmode, roadcondition, poi_type,\n" +
                 "    ST_UNION(geom) AS geom\n" +
                 "FROM\n" +
                 "    isochrone_individual\n" +
                 "WHERE minute !=0\n" +
                 "GROUP BY\n" +
-                "    minute,transportmode, poi_type;\n" +
+                "    minute,transportmode, roadcondition, poi_type;\n" +
 
                 "WITH unique_values AS (\n" +
                 "    SELECT\n" +
                 "        poi_type,\n" +
                 "        minute,\n" +
                 "        transportmode,\n" +
+                "        roadcondition,\n" +
                 "        'https://www.theworldavatar.com/kg/ontoisochrone/Isochrone/' || uuid_generate_v4()::text AS isochrone_iri,\n" +
                 "        'http://www.opengis.net/ont/geosparql#Geometry/' || uuid_generate_v4()::text AS geometry_iri\n" +
                 "    FROM isochrone_aggregated\n" +
                 "    WHERE isochrone_iri IS NULL\n" +
-                "    GROUP BY minute, poi_type, transportmode\n" +
+                "    GROUP BY minute, poi_type, transportmode, roadcondition\n" +
                 ")\n" +
                 "\n" +
                 "UPDATE isochrone_aggregated AS ia\n" +
                 "SET isochrone_iri = uv.isochrone_iri,\n" +
-                "    geometry_iri = uv.geometry_iri\n" +
+                "    geometry_iri = uv.geometry_iri,\n" +
+                "       transportmode_iri =  'https://www.theworldavatar.com/kg/ontoisochrone/"+transportMode+"/' || uuid_generate_v4()::text,\n" +
+            "       roadcondition_iri =  'https://www.theworldavatar.com/kg/ontoisochrone/"+roadCondition+"/' || uuid_generate_v4()::text\n" +
                 "FROM unique_values uv\n" +
                 "WHERE ia.isochrone_iri IS NULL\n" +
                 "    AND ia.poi_type = uv.poi_type\n" +
                 "    AND ia.transportmode = uv.transportmode\n"+
                 "    AND ia.minute = uv.minute;"+
+
+                "UPDATE isochrone_aggregated AS t1\n" +
+                "SET roadcondition_iri = t2.min_iri\n" +
+                "FROM (\n" +
+                "    SELECT roadcondition, MIN(roadcondition_iri) AS min_iri\n" +
+                "    FROM isochrone_aggregated\n" +
+                "    GROUP BY roadcondition\n" +
+                ") AS t2\n" +
+                "WHERE t1.roadcondition = t2.roadcondition;\n"+
+
+
+                "UPDATE isochrone_aggregated AS t1\n" +
+                "SET transportmode_iri = t2.min_iri\n" +
+                "FROM (\n" +
+                "    SELECT transportmode, MIN(transportmode_iri) AS min_iri\n" +
+                "    FROM isochrone_aggregated\n" +
+                "    GROUP BY transportmode\n" +
+                ") AS t2\n" +
+                "WHERE t1.transportmode = t2.transportmode;\n"+
 
                 "DROP TABLE eventspace_etas;\n" +
                 "DROP TABLE eventspace_delaunay;\n" +
@@ -218,6 +280,12 @@ public class IsochroneGenerator {
 
     }
 
+    /**
+     * Retrieve the different POI types.
+     * @param remoteRDBStoreClient
+     * @return
+     * @throws SQLException
+     */
     public List<String> getPoiTypes (RemoteRDBStoreClient remoteRDBStoreClient) throws SQLException {
         String getNearestNode_sql = "SELECT DISTINCT poi_type FROM poi_nearest_node";
     
@@ -249,7 +317,11 @@ public class IsochroneGenerator {
             statement.execute(sql);
         }
     }
-    
+
+    /**
+     * Smoothen the hard corners of all isochrones using ChaikinSmoothing.
+     * @param remoteRDBStoreClient
+     */
     private void smoothIsochrone(RemoteRDBStoreClient remoteRDBStoreClient){
 
         String smoothIsochrone_sql = "update isochrone_aggregated  set geom = ST_CollectionExtract(geom, 3);\n" +
@@ -267,7 +339,10 @@ public class IsochroneGenerator {
     }
 
 
-
+    /**
+     * Create reference table to indicate each isochrone is originated by which poi_iri.
+     * @param remoteRDBStoreClient
+     */
     public void createIsochroneBuilding (RemoteRDBStoreClient remoteRDBStoreClient){
 
     String createIsochroneBuildingTable_sqlString ="-- Drop the table if it exists\n" +

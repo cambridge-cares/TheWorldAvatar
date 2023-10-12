@@ -2,9 +2,6 @@ package uk.ac.cam.cares.jps.agent.isochroneagent;
 
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
-
-import com.cmclinnovations.stack.clients.core.StackClient;
-import com.cmclinnovations.stack.clients.core.datasets.GeoServerDataSubset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
@@ -46,6 +43,9 @@ public class IsochroneAgent extends JPSAgent {
     public double segmentization_length;
     public ArrayList<String> populationTableList;
 
+    /**
+     * Initialise agent
+     */
     public void init() {
         readConfig();
 
@@ -64,6 +64,9 @@ public class IsochroneAgent extends JPSAgent {
                 endpointConfig.getDbUser(), endpointConfig.getDbPassword());
     }
 
+    /**
+     * Read configuration settings from config.properties
+     */
     public void readConfig() {
         try (InputStream input = FileReader.getStream(PROPETIES_PATH)) {
             Properties prop = new Properties();
@@ -89,8 +92,14 @@ public class IsochroneAgent extends JPSAgent {
     }
 
     /**
-     * Process request params
-     * 
+     * Process request parameters and run functions within agent in the following flow
+     * 1) Read files
+     * 2) Retrieve POI locations from KG
+     * 3) Segmentize road networks, find nearest_nodes of POIs
+     * 4) Generate isochrones based on settings
+     * 5) Map population to the isochrones
+     * 6) Create geoserver layer using geoserverclient
+     * 7) Upload .obda mapping using ontopclient
      * @param requestParams
      * @return
      */
@@ -140,11 +149,11 @@ public class IsochroneAgent extends JPSAgent {
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            String workspaceName= "isochrone"; 
+            String workspaceName= "isochrone";
             String schema = "public";
             geoServerClient.createWorkspace(workspaceName);
             geoServerClient.createPostGISDataStore(workspaceName,"isochrone_aggregated" , dbName, schema);
-            
+
             GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
             geoServerClient.createPostGISLayer(workspaceName, dbName,"isochrone_aggregated" ,geoServerVectorSettings);
 
@@ -162,7 +171,13 @@ public class IsochroneAgent extends JPSAgent {
         }
         return response;
     }
-    
+
+    /**
+     * Check if the JSONObject in the processRequestParameters inputs are correct or missing.
+     * @param requestParams
+     * @return
+     * @throws BadRequestException
+     */
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (!requestParams.has(FUNCTION_KEY)) {

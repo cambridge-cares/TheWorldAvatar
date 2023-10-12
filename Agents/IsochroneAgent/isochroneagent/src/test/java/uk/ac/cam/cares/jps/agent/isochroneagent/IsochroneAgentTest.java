@@ -14,14 +14,11 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.nio.file.Path;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
-
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -34,13 +31,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
-
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 
 public class IsochroneAgentTest {
-
 
     @Mock
     private RemoteStoreClient remoteStoreClient;
@@ -111,7 +106,6 @@ public class IsochroneAgentTest {
                     doReturn("test").when(mock).getDbUser();
                     doReturn("test").when(mock).getDbPassword();
                 });
-                
 
         agent = new IsochroneAgent();
         String content = "db.name=test\nsegmentization_length=0.0002 \ntimeThreshold=15\ntimeInterval=5\nkgEndpoint=\npopulationTables=population, population_test, population_women";
@@ -136,13 +130,10 @@ public class IsochroneAgentTest {
         JSONObject input = new JSONObject();
         input.put("function", "15MSC");
         agent.processRequestParameters(input);
-
-
         verify(endpointConfigMock.constructed().get(0), times(1)).getDbUrl(anyString());
         verify(endpointConfigMock.constructed().get(0), times(1)).getDbUser();
         verify(endpointConfigMock.constructed().get(0), times(1)).getDbPassword();
         verify(routeSegmentizationMock.constructed().get(0), times(1)).segmentize(any(RemoteRDBStoreClient.class), anyDouble());
-//        verify(routeSegmentizationMock.constructed().get(0), times(1)).insertPoiData(any(RemoteRDBStoreClient.class),any(JSONArray.class));
         verify(isochroneGeneratorMock.constructed().get(0), times(1)).generateIsochrone(any(RemoteRDBStoreClient.class), anyInt(), anyInt(),  any(Map.class));
         verify(isochroneGeneratorMock.constructed().get(0), times(1)).createIsochroneBuilding(any(RemoteRDBStoreClient.class));
         verify(populationMapperMock.constructed().get(0), times(1)).checkAndAddColumns(any(RemoteRDBStoreClient.class), any(ArrayList.class));

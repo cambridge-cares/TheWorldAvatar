@@ -4,16 +4,27 @@ bot:    https://w3id.org/bot#
 obe: 	https://www.theworldavatar.com/kg/ontobuiltenv/
 iso:    https://www.theworldavatar.com/kg/ontoisochrone/
 geo:    http://www.opengis.net/ont/geosparql#
+time:   http://www.w3.org/2006/time#
 
 [MappingDeclaration] @collection [[
 mappingId	isochrone_transport
 target		<{isochrone_iri}> a iso:Isochrone ;
-                iso:calculatedUsing {transportmode}^^xsd:string;
-                iso:hasTimeThreshold {minute}^^xsd:integer;
+                iso:assumesTransportMode <{transportmode_iri}>;
+                iso:hasTimeThreshold {minute}^^time:minute;
+                iso:hasRoadCondition <{roadcondition_iri}>;
+                iso:hasTotalPopulation {population}^^xsd:integer;
+                iso:hasMalePopulation {population_men}^^xsd:integer;
+                iso:hasFemalePopulation {population_women}^^xsd:integer;
+                iso:hasReproductiveWomenPopulation {population_women_reproductive}^^xsd:integer;
+                iso:hasChildrenPopulation {population_childrenu5}^^xsd:integer;
+                iso:hasYouthPopulation {population_youth}^^xsd:integer;
+                iso:hasElderlyPopulation {population_elderly}^^xsd:integer;
                 geo:hasGeometry <{geometry_iri}>.
             <{geometry_iri}> a geo:Geometry;
                 geo:asWKT {geom}^^xsd:string.
-source      SELECT minute, transportmode, poi_type, isochrone_iri, geometry_iri, ST_AsText(ST_Force2D(geom)) as geom  FROM isochrone_aggregated
+            <{roadcondition_iri}> a iso:{roadcondition}.
+            <{transportmode_iri}> a iso:{transportmode}.
+source      SELECT minute, transportmode, transportmode_iri, poi_type, isochrone_iri, roadcondition, roadcondition_iri, geometry_iri, population, population_men, population_women, population_women_reproductive, population_childrenu5, population_youth, population_elderly,  ST_AsText(ST_Force2D(geom)) as geom  FROM isochrone_aggregated
 
 mappingId	isochrone_building
 target		<{isochrone_iri}> a iso:Isochrone ;

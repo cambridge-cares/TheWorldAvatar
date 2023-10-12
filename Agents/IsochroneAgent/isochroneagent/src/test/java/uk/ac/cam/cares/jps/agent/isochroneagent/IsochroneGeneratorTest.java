@@ -6,13 +6,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import java.sql.Connection;
-
-
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 

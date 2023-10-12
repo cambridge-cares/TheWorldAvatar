@@ -11,6 +11,11 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class PopulationMapper {
 
+    /**
+     * Execute SQL query to calculate population covered within by looping through the list of population tables.
+     * @param remoteRDBStoreClient
+     * @param populationTables
+     */
     public void mapPopulation(RemoteRDBStoreClient remoteRDBStoreClient, ArrayList<String> populationTables){
         
     
@@ -39,9 +44,11 @@ public class PopulationMapper {
         }
 
     }
-    
+
     /**
-     * Check and creates the columns for population tables
+     * Check for each populationtables in config.properties and add them if it doesnt exist
+     * @param remoteRDBStoreClient
+     * @param populationTables list of population tables
      */
     public void checkAndAddColumns(RemoteRDBStoreClient remoteRDBStoreClient, ArrayList<String> populationTables) {
 
@@ -62,10 +69,10 @@ public class PopulationMapper {
         }
     }
 
-        /**
+    /**
      * Check if the column columnName exists
      * @param connection PostgreSQL connection object
-     * @param columnName name of column to check
+     * @param columnName name of column to check (populationTable)
      * @return true if column columnName exists, false otherwise
      */
     private boolean isColumnExist(Connection connection,  String columnName)throws SQLException {
