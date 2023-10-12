@@ -98,7 +98,6 @@ public class RouteSegmentization {
             + "poi_iri VARCHAR, "
             + "poi_type VARCHAR, "
             + "nearest_node BIGINT,"
-            + "isochrone_iri VARCHAR,"
             + "geom geometry "
             + ")";
         

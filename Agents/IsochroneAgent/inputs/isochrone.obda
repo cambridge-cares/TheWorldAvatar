@@ -18,6 +18,6 @@ source      SELECT minute, transportmode, poi_type, isochrone_iri, geometry_iri,
 mappingId	isochrone_building
 target		<{isochrone_iri}> a iso:Isochrone ;
                 iso:originatedFrom <{poi_iri}>.
-            <{poi_iri}> a <{poi_type}>
+            <{poi_iri}> a <{poi_type}>.
 source      SELECT isochrone_iri, poi_iri, poi_type FROM isochrone_building_ref
 ]]
