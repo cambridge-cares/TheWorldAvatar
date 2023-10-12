@@ -13,6 +13,7 @@ import java.io.IOException;
 public final class InfluxDBService extends ContainerService {
 
     // Constants for environment variable keys and default values
+    public static final String TYPE = "influxdb";
     private static final String DEFAULT_INIT_MODE = "setup";
     private static final String DEFAULT_USERNAME = "admin";
     private static final String DEFAULT_ORG = "TestOrg";
@@ -58,21 +59,5 @@ public final class InfluxDBService extends ContainerService {
         // Write endpoint configuration to some storage (file, database, etc.)
         writeEndpointConfig(endpointConfig);
     
-        // Send the influxdb.conf file to the container
-        sendFiles(Map.of(
-                INFLUXDB_CONFIG_PATH.getFileName().toString(),
-                getConfigFileContent()),
-                INFLUXDB_CONFIG_PATH.getParent().toString());
-    }
-
-    // Helper method to get the content of the config file as a byte array
-    private byte[] getConfigFileContent() {
-        // Replace with actual logic for reading the file
-        // For example, read the file located at the standard path inside the container
-        try {
-            return Files.readAllBytes(INFLUXDB_CONFIG_PATH);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read InfluxDB configuration file", e);
-        }
     }
 }
