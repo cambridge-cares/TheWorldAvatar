@@ -38,7 +38,8 @@ def get_generator_models(kg_client:KGClient, ts_client:TSClient, tmax:str,
                          gas_modelpath=CONSUMPTION_MODEL_REPO,
                          cogen_modelpath=COGEN_MODEL_REPO):
     """
-    
+    Obtain gas consumption and electricity co-generation models for gas boilers
+    and gas turbine; loads pre-existing models if available, and fits new ones if not
     
     Arguments:
         kg_client {KGClient} -- pre-initialised SPARQL client
@@ -68,7 +69,6 @@ def get_generator_models(kg_client:KGClient, ts_client:TSClient, tmax:str,
         fp_gas = os.path.join(gas_modelpath, iri_encoded +'.sav')
         if os.path.exists(fp_gas):
             logger.info(f'Gas consumption model for generator "{iri}" already exists.')
-            pass
         else:
             # Fit and save new model
             logger.info(f'Create new gas consumption model for generator "{iri}".')
@@ -98,10 +98,13 @@ def get_generator_models(kg_client:KGClient, ts_client:TSClient, tmax:str,
         # Only create new model if not already saved
         fp_gas = os.path.join(gas_modelpath, iri_encoded +'.sav')
         fp_cogen = os.path.join(cogen_modelpath, iri_encoded +'.sav')
+        create_model=True
         if os.path.exists(fp_gas):
             logger.info(f'Gas consumption model for gas turbine "{iri}" already exists.')
-            pass
-        else:
+            if os.path.exists(fp_cogen):
+                logger.info(f'Electricity co-gen model for gas turbine "{iri}" already exists.')
+                create_model=False
+        if create_model:
             # Fit and save new model
             logger.info(f'Create new gas consumption model for generator "{iri}".')
             # Retrieve historical gas consumption and heat generation
