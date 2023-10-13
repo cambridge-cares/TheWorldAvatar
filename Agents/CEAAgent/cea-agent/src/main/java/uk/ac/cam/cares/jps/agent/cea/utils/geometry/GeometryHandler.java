@@ -71,8 +71,7 @@ public class GeometryHandler {
             return result;
         }
         catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
+            return geom;
         }
     }
 
@@ -108,7 +107,13 @@ public class GeometryHandler {
 
         GeometryFactory geometryFactory = new GeometryFactory();
 
-        return geometryFactory.createPolygon(transformed);
+        Geometry result = geometryFactory.createPolygon(transformed);
+
+        if (!result.isValid()) {
+            result = GeometryFixer.fix(result);
+        }
+
+        return result;
     }
 
     /**
@@ -171,10 +176,10 @@ public class GeometryHandler {
     public static List<Geometry> extractFootprint(JSONArray surfaceArray, String crs, Double height) {
         double distance = 0.0;
         double increment = 0.00001;
-        double limit = 0.0005;
+        double limit = 0.0001;
 
         List<Polygon> exteriors = new ArrayList<>();
-        List<LinearRing> holes = new ArrayList<>();
+//        List<LinearRing> holes = new ArrayList<>();
         GeometryFactory geometryFactory = new GeometryFactory();
         String geoType;
 
@@ -196,9 +201,9 @@ public class GeometryHandler {
                 exteriors.add(geometryFactory.createPolygon(exterior));
 
                 // store holes to add back in later
-                for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
-                    holes.add(polygon.getInteriorRingN(j));
-                }
+//                for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
+//                    holes.add(polygon.getInteriorRingN(j));
+//                }
             }
 
             // create GeometryCollection and perform union
@@ -244,8 +249,16 @@ public class GeometryHandler {
                         floor = 1;
                     }
 
+                    double area = 0;
+
+                    try {
+                        area = transformGeometry(geometry, crs, METER_EPSG_STRING).getArea();
+                    }
+                    catch (Exception e) {
+                    }
+
                     // calculate gross floor area for the geometry, since CEA treats each geometry object as a building
-                    double gfa = floor * geometry.getArea();
+                    double gfa = floor * area;
 
                     // CEA cannot work with geometry whose gross floor area is smaller than or equal to 100 m2
                     if (gfa > 100) {
@@ -255,8 +268,7 @@ public class GeometryHandler {
                 }
             }
 
-            // insert holes back
-            return insertHoles(geometries, holes);
+            return geometries;
         }
     }
 
