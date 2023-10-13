@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule">
         <owl:imports rdf:resource="http://www.w3.org/2006/time#"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12 October 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">13 October 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoClassSchedule is designed to represent and manage class schedules in an educational setting. It captures the relationships between sessions, courses, and various types of course offerings.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -54,7 +54,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule#hasDayOfWeek">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule#Session"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/Room"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#DayOfWeek"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates the specific day of the week on which a session occurs, such as Monday or Tuesday.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -65,6 +65,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule#hasSession">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule#Session"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -167,10 +168,25 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobim/Room -->
+    <!-- http://www.w3.org/2006/time#DayOfWeek -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Room"/>
+    <owl:Class rdf:about="http://www.w3.org/2006/time#DayOfWeek"/>
+    
+
+
+    <!-- https://w3id.org/bot#Zone -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Zone">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule#hasSession"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule#Session"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
@@ -225,7 +241,7 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule#hasDayOfWeek"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontobim/Room"/>
+                <owl:onClass rdf:resource="http://www.w3.org/2006/time#DayOfWeek"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
