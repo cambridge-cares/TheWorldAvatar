@@ -247,22 +247,23 @@ public class QueryClient {
         return zMap;
     }
 
-    private List<String> queryStaticPointSources() {
+    private Map<String, String> getBuildingToPsMap() {
         SelectQuery query = Queries.SELECT().prefix(P_DISP);
         Variable sps = query.var();
         Variable ocgmlIRI = query.var();
         GraphPattern gp = GraphPatterns.and(sps.isA(STATIC_POINT_SOURCE).andHas(HAS_OCGML_OBJECT, ocgmlIRI));
-        query.select(ocgmlIRI).where(gp).distinct();
+        query.select(ocgmlIRI, sps).where(gp).distinct();
         JSONArray pointSourceIRI = storeClient
                 .executeQuery(query.getQueryString());
-        List<String> pointSourceIRIList = new ArrayList<>();
+
+        Map<String, String> buildingToPsMap = new HashMap<>();
         for (int i = 0; i < pointSourceIRI.length(); i++) {
             String ontoCityGMLIRI = pointSourceIRI.getJSONObject(i).getString(ocgmlIRI.getQueryString().substring(1));
-            pointSourceIRIList.add(ontoCityGMLIRI);
+            String psIri = pointSourceIRI.getJSONObject(i).getString(sps.getQueryString().substring(1));
+            buildingToPsMap.put(ontoCityGMLIRI, psIri);
         }
 
-        return pointSourceIRIList;
-
+        return buildingToPsMap;
     }
 
     String getNamespaceCRS(String namespace) {
@@ -383,7 +384,7 @@ public class QueryClient {
     public List<StaticPointSource> getStaticPointSourcesWithinScope(Polygon scope)
             throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
-        List<String> pointSourceIRIAll = queryStaticPointSources();
+        List<String> pointSourceIRIAll = new ArrayList<>(getBuildingToPsMap().values());
         List<String> pointSourceOCGMLIRIWithinScope = getIRIofStaticPointSourcesWithinScope(scope, pointSourceIRIAll);
 
         SelectQuery query = Queries.SELECT().prefix(P_DISP, P_OM);
@@ -422,14 +423,14 @@ public class QueryClient {
     }
 
     List<StaticPointSource> getStaticPointSourcesWithinScope(Map<String, Building> iriToBuildingMap) {
-        List<String> pointSourceIRIAll = queryStaticPointSources();
+        Map<String, String> buildingToPsMap = getBuildingToPsMap();
         List<StaticPointSource> pointSourceList = new ArrayList<>();
 
-        pointSourceIRIAll.stream().filter(iriToBuildingMap::containsKey).forEach(ps -> {
-            StaticPointSource pointSource = new StaticPointSource(ps);
-            pointSource.setLocation(iriToBuildingMap.get(ps).getLocation());
-            pointSource.setHeight(iriToBuildingMap.get(ps).getHeight());
-            pointSource.setDiameter(2.0 * iriToBuildingMap.get(ps).getRadius());
+        buildingToPsMap.keySet().stream().filter(iriToBuildingMap::containsKey).forEach(building -> {
+            StaticPointSource pointSource = new StaticPointSource(buildingToPsMap.get(building));
+            pointSource.setLocation(iriToBuildingMap.get(building).getLocation());
+            pointSource.setHeight(iriToBuildingMap.get(building).getHeight());
+            pointSource.setDiameter(2.0 * iriToBuildingMap.get(building).getRadius());
 
             pointSourceList.add(pointSource);
         });
