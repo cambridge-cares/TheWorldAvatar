@@ -1,11 +1,10 @@
 package uk.ac.cam.cares.jps.agent.cea.tasks;
 
+import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -13,32 +12,37 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class CEAOutputHandler {
     private static final String FS = System.getProperty("file.separator");
+    private static final String PATTERN = "^B\\d+_(\\d+)";
+    private static final CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+            .setDelimiter(",")
+            .setHeader()
+            .setSkipHeaderRecord(true)
+            .build();
+    
     private static final Map<String, List<String>> SOLAR_SUPPLY;
 
-    private static final String ROOF_AREA = "PV_roof_tops_m2";
-    private static final String NORTH_AREA = "PV_walls_north_tops_m2";
-    private static final String SOUTH_AREA = "PV_walls_south_tops_m2";
-    private static final String WEST_AREA = "PV_walls_west_tops_m2";
-    private static final String EAST_AREA = "PV_walls_east_tops_m2";
+    private static final String ROOF_AREA = "PV_roofs_top_m2";
+    private static final String NORTH_AREA = "PV_walls_north_m2";
+    private static final String SOUTH_AREA = "PV_walls_south_m2";
+    private static final String WEST_AREA = "PV_walls_west_m2";
+    private static final String EAST_AREA = "PV_walls_east_m2";
 
     private static final String GRID = "GRID_kWh";
     private static final String ELECTRICITY = "E_sys_kWh";
     private static final String HEATING = "QH_sys_kWh";
     private static final String COOLING = "QC_sys_kWh";
 
-    private static final String ROOF_SUPPLY = "roofs_top_supply_kWH";
-    private static final String NORTH_SUPPLY = "walls_south_supply_kWH";
-    private static final String SOUTH_SUPPLY = "walls_north_supply_kWH";
-    private static final String WEST_SUPPLY = "walls_west_supply_kWH";
-    private static final String EAST_SUPPLY = "walls_east_supply_kWH";
+    private static final String ROOF_SUPPLY = "roofs_top_supply_kWh";
+    private static final String NORTH_SUPPLY = "walls_north_supply_kWh";
+    private static final String SOUTH_SUPPLY = "walls_south_supply_kWh";
+    private static final String WEST_SUPPLY = "walls_west_supply_kWh";
+    private static final String EAST_SUPPLY = "walls_east_supply_kWh";
 
 
-    /**
-     * Intialise SOLAR_SUPPLY
-     */
     static {
         Map<String, List<String>> map = new HashMap<>();
         List<String> EQ = new ArrayList<>();
@@ -68,23 +72,26 @@ public class CEAOutputHandler {
     public static CEAOutputData extractCEAOutputs(String directoryPath, List<String> iris) throws IOException {
         CEAOutputData result = new CEAOutputData();
 
-        String demandPath = directoryPath + FS + "demands";
+        String demandPath = directoryPath + FS + "demand";
         String solarPath = directoryPath + FS + "potentials" + FS + "solar";
 
         result.iris = iris;
 
-        result = extractArea(solarPath + FS + "PV_total_buildings.csv", result);
-        result.times = extractTimes(directoryPath);
+        List<String> geometryNames = getGeometryNames(solarPath + FS + "PV_total_buildings.csv");
 
-        List<String> geometryNames = getGeometryNames(solarPath + FS + "PV_total.csv");
+        extractArea(solarPath + FS + "PV_total_buildings.csv", result);
+        result.times = extractTimes(solarPath + FS + "PV_total.csv");
+        
+        initialiseCEAOutputTS(result);
 
         for (String geometryName : geometryNames) {
-            Pattern pattern = Pattern.compile("^B\\d{5}_(\\d+)");
+            Pattern pattern = Pattern.compile(PATTERN);
             Matcher matcher = pattern.matcher(geometryName);
-            int id = Integer.valueOf(matcher.group(1));
+            matcher.matches();
+            int id = Integer.parseInt(matcher.group(1));
 
-            result = extractDemand(demandPath, result, geometryName, id);
-            result = extractSolarSupply(solarPath, result, geometryName, id);
+            extractDemand(demandPath, result, geometryName, id);
+            extractSolarSupply(solarPath, result, geometryName, id);
         }
 
         return result;
@@ -98,13 +105,12 @@ public class CEAOutputHandler {
     public static List<String> extractTimes(String filePath) throws IOException {
         List<String> result = new ArrayList<>();
 
-        CSVParser parser = CSVParser.parse(new File(filePath), StandardCharsets.UTF_8, CSVFormat.DEFAULT);
-
-        for (CSVRecord record : parser) {
-           result.add(record.get("Date").replaceAll("\\s", "T"));
+        try (CSVParser parser = CSVParser.parse(new File(filePath), StandardCharsets.UTF_8, csvFormat)) {
+            for (CSVRecord record : parser) {
+                result.add(record.get("Date").replaceAll("\\s", "T"));
+            }
+            return result;
         }
-
-        return result;
     }
 
     /**
@@ -114,11 +120,13 @@ public class CEAOutputHandler {
      */
     public static List<String> getGeometryNames(String filePath) throws IOException {
         List<String> result = new ArrayList<>();
-        CSVParser parser = CSVParser.parse(new File(filePath), StandardCharsets.UTF_8, CSVFormat.DEFAULT);
-        for (CSVRecord record : parser) {
-            result.add(record.get("Name"));
+        try (CSVParser parser = CSVParser.parse(new File(filePath), StandardCharsets.UTF_8, csvFormat)) {
+            for (CSVRecord record : parser) {
+                result.add(record.get("Name"));
+            }
+
+            return result;
         }
-        return result;
     }
 
     /**
@@ -127,37 +135,26 @@ public class CEAOutputHandler {
      * @param ceaOutputData CEAOutputData containing information on timestamps and building IRIs
      * @param geometryName geometry name as used in CEA simulations
      * @param id corresponding id to building IRI
-     * @return CEAOutputData with added information on building energy demands
      */
-    public static CEAOutputData extractDemand(String directoryPath, CEAOutputData ceaOutputData, String geometryName, Integer id) throws IOException {
-        int iriSize = ceaOutputData.iris.size();
-        int timeSize = ceaOutputData.times.size();
-
-        List<Double> zeroList = Collections.nCopies(timeSize, 0.0);
-
-        List<List<Double>> gridList = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> electricityList = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> heatList = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> coolList = Collections.nCopies(iriSize, zeroList);
+    public static void extractDemand(String directoryPath, CEAOutputData ceaOutputData, String geometryName, Integer id) throws IOException {
+        List<List<Double>> gridList = ceaOutputData.GridConsumption;
+        List<List<Double>> electricityList = ceaOutputData.ElectricityConsumption;
+        List<List<Double>> heatList = ceaOutputData.HeatingConsumption;
+        List<List<Double>> coolList = ceaOutputData.CoolingConsumption;
 
         String fileName = geometryName + ".csv";
 
-        CSVParser parser = CSVParser.parse(new File(directoryPath + FS + fileName), StandardCharsets.UTF_8, CSVFormat.DEFAULT);
-        int i = 0;
-        for (CSVRecord record : parser) {
-            gridList.get(id).set(i, gridList.get(id).get(i) + Double.valueOf(record.get(GRID)));
-            electricityList.get(id).set(i, electricityList.get(id).get(i) + Double.valueOf(record.get(ELECTRICITY)));
-            heatList.get(id).set(i, heatList.get(id).get(i) + Double.valueOf(record.get(HEATING)));
-            coolList.get(id).set(i, coolList.get(id).get(i) + Double.valueOf(record.get(COOLING)));
-            i++;
-        }
-        
-        ceaOutputData.GridConsumption = nestedDoubleToString(gridList);
-        ceaOutputData.ElectricityConsumption = nestedDoubleToString(electricityList);
-        ceaOutputData.HeatingConsumption = nestedDoubleToString(heatList);
-        ceaOutputData.CoolingConsumption = nestedDoubleToString(coolList);
+        try (CSVParser parser = CSVParser.parse(new File(directoryPath + FS + fileName), StandardCharsets.UTF_8, csvFormat)) {
+            int i = 0;
 
-        return ceaOutputData;
+            for (CSVRecord record : parser) {
+                gridList.get(id).set(i, gridList.get(id).get(i) + Double.parseDouble(record.get(GRID)));
+                electricityList.get(id).set(i, electricityList.get(id).get(i) + Double.parseDouble(record.get(ELECTRICITY)));
+                heatList.get(id).set(i, heatList.get(id).get(i) + Double.parseDouble(record.get(HEATING)));
+                coolList.get(id).set(i, coolList.get(id).get(i) + Double.parseDouble(record.get(COOLING)));
+                i++;
+            }
+        }
     }
 
     /**
@@ -166,190 +163,145 @@ public class CEAOutputHandler {
      * @param ceaOutputData CEAOutputData containing information on timestamps and building IRIs
      * @param geometryName geometry name as used in CEA simulations
      * @param id corresponding id to building IRI
-     * @return CEAOutputData with added information on solar potentials
      */
-    public static CEAOutputData extractSolarSupply(String directoryPath, CEAOutputData ceaOutputData, String geometryName, Integer id) throws IOException {
-        int iriSize = ceaOutputData.iris.size();
-        int timeSize = ceaOutputData.times.size();
+    public static void extractSolarSupply(String directoryPath, CEAOutputData ceaOutputData, String geometryName, Integer id) throws IOException {
+        List<List<Double>> pvRoof = ceaOutputData.PVRoofSupply;
+        List<List<Double>> pvNorth = ceaOutputData.PVWallNorthSupply;
+        List<List<Double>> pvSouth = ceaOutputData.PVWallSouthSupply;
+        List<List<Double>> pvWest = ceaOutputData.PVWallWestSupply;
+        List<List<Double>> pvEast = ceaOutputData.PVWallEastSupply;
+        List<List<Double>> pvtPlateERoof = ceaOutputData.PVTPlateRoofESupply;
+        List<List<Double>> pvtPlateENorth = ceaOutputData.PVTPlateWallNorthESupply;
+        List<List<Double>> pvtPlateESouth = ceaOutputData.PVTPlateWallSouthESupply;
+        List<List<Double>> pvtPlateEWest = ceaOutputData.PVTPlateWallWestESupply;
+        List<List<Double>> pvtPlateEEast = ceaOutputData.PVTPlateWallEastESupply;
+        List<List<Double>> pvtPlateQRoof = ceaOutputData.PVTPlateRoofQSupply;
+        List<List<Double>> pvtPlateQNorth = ceaOutputData.PVTPlateWallNorthQSupply;
+        List<List<Double>> pvtPlateQSouth = ceaOutputData.PVTPlateWallSouthQSupply;
+        List<List<Double>> pvtPlateQWest = ceaOutputData.PVTPlateWallWestQSupply;
+        List<List<Double>> pvtPlateQEast = ceaOutputData.PVTPlateWallEastQSupply;
+        List<List<Double>> pvtTubeERoof = ceaOutputData.PVTTubeRoofESupply;
+        List<List<Double>> pvtTubeENorth = ceaOutputData.PVTTubeWallNorthESupply;
+        List<List<Double>> pvtTubeESouth = ceaOutputData.PVTTubeWallSouthESupply;
+        List<List<Double>> pvtTubeEWest = ceaOutputData.PVTTubeWallWestESupply;
+        List<List<Double>> pvtTubeEEast = ceaOutputData.PVTTubeWallEastESupply;
+        List<List<Double>> pvtTubeQRoof = ceaOutputData.PVTTubeRoofQSupply;
+        List<List<Double>> pvtTubeQNorth = ceaOutputData.PVTTubeWallNorthQSupply;
+        List<List<Double>> pvtTubeQSouth = ceaOutputData.PVTTubeWallSouthQSupply;
+        List<List<Double>> pvtTubeQWest = ceaOutputData.PVTTubeWallWestQSupply;
+        List<List<Double>> pvtTubeQEast = ceaOutputData.PVTTubeWallEastQSupply;
+        List<List<Double>> scPlateRoof = ceaOutputData.ThermalPlateRoofSupply;
+        List<List<Double>> scPlateNorth = ceaOutputData.ThermalPlateWallNorthSupply;
+        List<List<Double>> scPlateSouth = ceaOutputData.ThermalPlateWallSouthSupply;
+        List<List<Double>> scPlateWest = ceaOutputData.ThermalPlateWallWestSupply;
+        List<List<Double>> scPlateEast = ceaOutputData.ThermalPlateWallEastSupply;
+        List<List<Double>> scTubeRoof = ceaOutputData.ThermalTubeRoofSupply;
+        List<List<Double>> scTubeNorth = ceaOutputData.ThermalTubeWallNorthSupply;
+        List<List<Double>> scTubeSouth = ceaOutputData.ThermalTubeWallSouthSupply;
+        List<List<Double>> scTubeWest = ceaOutputData.ThermalTubeWallWestSupply;
+        List<List<Double>> scTubeEast = ceaOutputData.ThermalTubeWallEastSupply;
 
-        List<Double> zeroList = Collections.nCopies(timeSize, 0.0);
-
-        List<List<Double>> pvRoof = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvNorth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvSouth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvWest = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvEast = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateERoof = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateENorth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateESouth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateEWest = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateEEast = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateQRoof = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateQNorth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateQSouth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateQWest = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtPlateQEast = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeERoof = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeENorth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeESouth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeEWest = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeEEast = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeQRoof = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeQNorth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeQSouth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeQWest = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> pvtTubeQEast = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scPlateRoof = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scPlateNorth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scPlateSouth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scPlateWest = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scPlateEast = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scTubeRoof = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scTubeNorth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scTubeSouth = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scTubeWest = Collections.nCopies(iriSize, zeroList);
-        List<List<Double>> scTubeEast = Collections.nCopies(iriSize, zeroList);
-        
 
         for (Map.Entry<String, List<String>> entry : SOLAR_SUPPLY.entrySet()) {
             String generator = entry.getKey();
-            if (generator.contains("PVT")) {generator = "PVT";}
+            if (generator.contains("PVT")) {
+                generator = "PVT";
+            }
             String generatorType = entry.getKey();
             List<String> supplies = entry.getValue();
             String fileName = geometryName + "_" + generatorType + ".csv";
 
-            CSVParser parser = CSVParser.parse(new File(directoryPath + FS + fileName), StandardCharsets.UTF_8, CSVFormat.DEFAULT);
-            int i = 0;
-            for (CSVRecord record : parser) {
-                for (String supply : supplies) {
-                    String roofColumn = generator + ROOF_SUPPLY.replace("supply", supply);
-                    String northColumn = generator + NORTH_SUPPLY.replace("supply", supply);
-                    String southColumn = generator + SOUTH_SUPPLY.replace("supply", supply);
-                    String westColumn = generator + WEST_SUPPLY.replace("supply", supply);
-                    String eastColumn = generator + EAST_SUPPLY.replace("supply", supply);
+            try (CSVParser parser = CSVParser.parse(new File(directoryPath + FS + fileName), StandardCharsets.UTF_8, csvFormat)) {
+                int i = 0;
+                for (CSVRecord record : parser) {
+                    for (String supply : supplies) {
+                        String roofColumn = generator + "_" + ROOF_SUPPLY.replace("supply", supply);
+                        String northColumn = generator + "_" + NORTH_SUPPLY.replace("supply", supply);
+                        String southColumn = generator + "_" + SOUTH_SUPPLY.replace("supply", supply);
+                        String westColumn = generator + "_" + WEST_SUPPLY.replace("supply", supply);
+                        String eastColumn = generator + "_" + EAST_SUPPLY.replace("supply", supply);
 
-                    Double roof = Double.valueOf(record.get(roofColumn));
-                    Double north = Double.valueOf(record.get(northColumn));
-                    Double south = Double.valueOf(record.get(southColumn));
-                    Double west = Double.valueOf(record.get(westColumn));
-                    Double east = Double.valueOf(record.get(eastColumn));
+                        Double roof = Double.parseDouble(record.get(roofColumn));
+                        Double north = Double.parseDouble(record.get(northColumn));
+                        Double south = Double.parseDouble(record.get(southColumn));
+                        Double west = Double.parseDouble(record.get(westColumn));
+                        Double east = Double.parseDouble(record.get(eastColumn));
 
-                    // pv results
-                    if (generatorType.equals("PV")) {
-                        pvRoof.get(id).set(i, pvRoof.get(id).get(i) + roof);
-                        pvNorth.get(id).set(i, pvNorth.get(id).get(i) + north);
-                        pvSouth.get(id).set(i, pvSouth.get(id).get(i) + south);
-                        pvWest.get(id).set(i, pvWest.get(id).get(i) + west);
-                        pvEast.get(id).set(i, pvEast.get(id).get(i) + east);
-                    }
-                    // plate solar collector results
-                    else if (generatorType.equals("SC_FP")){
-                        scPlateRoof.get(id).set(i, scPlateRoof.get(id).get(i) + roof);
-                        scPlateNorth.get(id).set(i, scPlateNorth.get(id).get(i) + north);
-                        scPlateSouth.get(id).set(i, scPlateSouth.get(id).get(i) + south);
-                        scPlateWest.get(id).set(i, scPlateWest.get(id).get(i) + west);
-                        scPlateEast.get(id).set(i, scPlateEast.get(id).get(i) + east);
-                    }
-                    // tube solar collector results
-                    else if (generatorType.equals("SC_ET")){
-                        scTubeRoof.get(id).set(i, scTubeRoof.get(id).get(i) + roof);
-                        scTubeNorth.get(id).set(i, scTubeNorth.get(id).get(i) + north);
-                        scTubeSouth.get(id).set(i, scTubeSouth.get(id).get(i) + south);
-                        scTubeWest.get(id).set(i, scTubeWest.get(id).get(i) + west);
-                        scTubeEast.get(id).set(i, scTubeEast.get(id).get(i) + east);
-                    }
-                    // plate pvt results
-                    else if (generatorType.equals("PVT_FP")){
-                        // electricity results
-                        if (supply.equals("E")) {
-                            pvtPlateERoof.get(id).set(i, pvtPlateERoof.get(id).get(i) + roof);
-                            pvtPlateENorth.get(id).set(i, pvtPlateENorth.get(id).get(i) + north);
-                            pvtPlateESouth.get(id).set(i, pvtPlateESouth.get(id).get(i) + south);
-                            pvtPlateEWest.get(id).set(i, pvtPlateEWest.get(id).get(i) + west);
-                            pvtPlateEEast.get(id).set(i, pvtPlateEEast.get(id).get(i) + east);
+                        // pv results
+                        if (generatorType.equals("PV")) {
+                            pvRoof.get(id).set(i, pvRoof.get(id).get(i) + roof);
+                            pvNorth.get(id).set(i, pvNorth.get(id).get(i) + north);
+                            pvSouth.get(id).set(i, pvSouth.get(id).get(i) + south);
+                            pvWest.get(id).set(i, pvWest.get(id).get(i) + west);
+                            pvEast.get(id).set(i, pvEast.get(id).get(i) + east);
                         }
-                        // heat results
-                        else {
-                            pvtPlateQRoof.get(id).set(i, pvtPlateQRoof.get(id).get(i) + roof);
-                            pvtPlateQNorth.get(id).set(i, pvtPlateQNorth.get(id).get(i) + north);
-                            pvtPlateQSouth.get(id).set(i, pvtPlateQSouth.get(id).get(i) + south);
-                            pvtPlateQWest.get(id).set(i, pvtPlateQWest.get(id).get(i) + west);
-                            pvtPlateQEast.get(id).set(i, pvtPlateQEast.get(id).get(i) + east);
+                        // plate solar collector results
+                        else if (generatorType.equals("SC_FP")) {
+                            scPlateRoof.get(id).set(i, scPlateRoof.get(id).get(i) + roof);
+                            scPlateNorth.get(id).set(i, scPlateNorth.get(id).get(i) + north);
+                            scPlateSouth.get(id).set(i, scPlateSouth.get(id).get(i) + south);
+                            scPlateWest.get(id).set(i, scPlateWest.get(id).get(i) + west);
+                            scPlateEast.get(id).set(i, scPlateEast.get(id).get(i) + east);
+                        }
+                        // tube solar collector results
+                        else if (generatorType.equals("SC_ET")) {
+                            scTubeRoof.get(id).set(i, scTubeRoof.get(id).get(i) + roof);
+                            scTubeNorth.get(id).set(i, scTubeNorth.get(id).get(i) + north);
+                            scTubeSouth.get(id).set(i, scTubeSouth.get(id).get(i) + south);
+                            scTubeWest.get(id).set(i, scTubeWest.get(id).get(i) + west);
+                            scTubeEast.get(id).set(i, scTubeEast.get(id).get(i) + east);
+                        }
+                        // plate pvt results
+                        else if (generatorType.equals("PVT_FP")) {
+                            // electricity results
+                            if (supply.equals("E")) {
+                                pvtPlateERoof.get(id).set(i, pvtPlateERoof.get(id).get(i) + roof);
+                                pvtPlateENorth.get(id).set(i, pvtPlateENorth.get(id).get(i) + north);
+                                pvtPlateESouth.get(id).set(i, pvtPlateESouth.get(id).get(i) + south);
+                                pvtPlateEWest.get(id).set(i, pvtPlateEWest.get(id).get(i) + west);
+                                pvtPlateEEast.get(id).set(i, pvtPlateEEast.get(id).get(i) + east);
+                            }
+                            // heat results
+                            else {
+                                pvtPlateQRoof.get(id).set(i, pvtPlateQRoof.get(id).get(i) + roof);
+                                pvtPlateQNorth.get(id).set(i, pvtPlateQNorth.get(id).get(i) + north);
+                                pvtPlateQSouth.get(id).set(i, pvtPlateQSouth.get(id).get(i) + south);
+                                pvtPlateQWest.get(id).set(i, pvtPlateQWest.get(id).get(i) + west);
+                                pvtPlateQEast.get(id).set(i, pvtPlateQEast.get(id).get(i) + east);
+                            }
+                        }
+                        // tube pvt results
+                        else if (generatorType.equals("PVT_ET")) {
+                            // electricity results
+                            if (supply.equals("E")) {
+                                pvtTubeERoof.get(id).set(i, pvtTubeERoof.get(id).get(i) + roof);
+                                pvtTubeENorth.get(id).set(i, pvtTubeENorth.get(id).get(i) + north);
+                                pvtTubeESouth.get(id).set(i, pvtTubeESouth.get(id).get(i) + south);
+                                pvtTubeEWest.get(id).set(i, pvtTubeEWest.get(id).get(i) + west);
+                                pvtTubeEEast.get(id).set(i, pvtTubeEEast.get(id).get(i) + east);
+                            }
+                            // heat results
+                            else {
+                                pvtTubeQRoof.get(id).set(i, pvtTubeQRoof.get(id).get(i) + roof);
+                                pvtTubeQNorth.get(id).set(i, pvtTubeQNorth.get(id).get(i) + north);
+                                pvtTubeQSouth.get(id).set(i, pvtTubeQSouth.get(id).get(i) + south);
+                                pvtTubeQWest.get(id).set(i, pvtTubeQWest.get(id).get(i) + west);
+                                pvtTubeQEast.get(id).set(i, pvtTubeQEast.get(id).get(i) + east);
+                            }
                         }
                     }
-                    // tube pvt results
-                    else if (generatorType.equals("PVT_ET")) {
-                        // electricity results
-                        if (supply.equals("E")) {
-                            pvtTubeERoof.get(id).set(i, pvtTubeERoof.get(id).get(i) + roof);
-                            pvtTubeENorth.get(id).set(i, pvtTubeENorth.get(id).get(i) + north);
-                            pvtTubeESouth.get(id).set(i, pvtTubeESouth.get(id).get(i) + south);
-                            pvtTubeEWest.get(id).set(i, pvtTubeEWest.get(id).get(i) + west);
-                            pvtTubeEEast.get(id).set(i, pvtTubeEEast.get(id).get(i) + east);
-                        }
-                        // heat results
-                        else {
-                            pvtTubeQRoof.get(id).set(i, pvtTubeQRoof.get(id).get(i) + roof);
-                            pvtTubeQNorth.get(id).set(i, pvtTubeQNorth.get(id).get(i) + north);
-                            pvtTubeQSouth.get(id).set(i, pvtTubeQSouth.get(id).get(i) + south);
-                            pvtTubeQWest.get(id).set(i, pvtTubeQWest.get(id).get(i) + west);
-                            pvtTubeQEast.get(id).set(i, pvtTubeQEast.get(id).get(i) + east);
-                        }
-                    }
+                    i++;
                 }
-                i++;
             }
         }
-        
-        ceaOutputData.PVRoofSupply = nestedDoubleToString(pvRoof);
-        ceaOutputData.PVWallNorthSupply = nestedDoubleToString(pvNorth);
-        ceaOutputData.PVWallSouthSupply = nestedDoubleToString(pvSouth);
-        ceaOutputData.PVWallWestSupply = nestedDoubleToString(pvWest);
-        ceaOutputData.PVWallEastSupply = nestedDoubleToString(pvEast);
-
-        ceaOutputData.ThermalPlateRoofSupply = nestedDoubleToString(scPlateRoof);
-        ceaOutputData.ThermalPlateWallNorthSupply = nestedDoubleToString(scPlateNorth);
-        ceaOutputData.ThermalPlateWallSouthSupply = nestedDoubleToString(scPlateSouth);
-        ceaOutputData.ThermalPlateWallWestSupply = nestedDoubleToString(scPlateWest);
-        ceaOutputData.ThermalPlateWallEastSupply = nestedDoubleToString(scPlateEast);
-        ceaOutputData.ThermalTubeRoofSupply = nestedDoubleToString(scTubeRoof);
-        ceaOutputData.ThermalTubeWallNorthSupply = nestedDoubleToString(scTubeNorth);
-        ceaOutputData.ThermalTubeWallSouthSupply = nestedDoubleToString(scTubeSouth);
-        ceaOutputData.ThermalTubeWallWestSupply = nestedDoubleToString(scTubeWest);
-        ceaOutputData.ThermalTubeWallEastSupply = nestedDoubleToString(scTubeEast);
-
-        ceaOutputData.PVTPlateRoofESupply = nestedDoubleToString(pvtPlateERoof);
-        ceaOutputData.PVTPlateWallNorthESupply = nestedDoubleToString(pvtPlateENorth);
-        ceaOutputData.PVTPlateWallSouthESupply = nestedDoubleToString(pvtPlateESouth);
-        ceaOutputData.PVTPlateWallWestESupply = nestedDoubleToString(pvtPlateEWest);
-        ceaOutputData.PVTPlateWallEastESupply = nestedDoubleToString(pvtPlateEEast);
-        ceaOutputData.PVTPlateRoofQSupply = nestedDoubleToString(pvtPlateQRoof);
-        ceaOutputData.PVTPlateWallNorthQSupply = nestedDoubleToString(pvtPlateQNorth);
-        ceaOutputData.PVTPlateWallSouthQSupply = nestedDoubleToString(pvtPlateQSouth);
-        ceaOutputData.PVTPlateWallWestQSupply = nestedDoubleToString(pvtPlateQWest);
-        ceaOutputData.PVTPlateWallEastQSupply = nestedDoubleToString(pvtPlateQEast);
-
-        ceaOutputData.PVTTubeRoofESupply = nestedDoubleToString(pvtTubeERoof);
-        ceaOutputData.PVTTubeWallNorthESupply = nestedDoubleToString(pvtTubeENorth);
-        ceaOutputData.PVTTubeWallSouthESupply = nestedDoubleToString(pvtTubeESouth);
-        ceaOutputData.PVTTubeWallWestESupply = nestedDoubleToString(pvtTubeEWest);
-        ceaOutputData.PVTTubeWallEastESupply = nestedDoubleToString(pvtTubeEEast);
-        ceaOutputData.PVTTubeRoofQSupply = nestedDoubleToString(pvtTubeQRoof);
-        ceaOutputData.PVTTubeWallNorthQSupply = nestedDoubleToString(pvtTubeQNorth);
-        ceaOutputData.PVTTubeWallSouthQSupply = nestedDoubleToString(pvtTubeQSouth);
-        ceaOutputData.PVTTubeWallWestQSupply = nestedDoubleToString(pvtTubeQWest);
-        ceaOutputData.PVTTubeWallEastQSupply = nestedDoubleToString(pvtTubeQEast);
-
-        return ceaOutputData;
     }
 
     /**
      * Extracts CEA outputs on solar generator areas and return them as CEAOutputData
      * @param filePath path to CSV file containing the areas of solar generators
      * @param ceaOutputData CEAOutputData containing information on building IRIs
-     * @return CEAOutputData with added information on solar generator areas
      */
-    public static CEAOutputData extractArea(String filePath, CEAOutputData ceaOutputData) throws IOException {
+    public static void extractArea(String filePath, CEAOutputData ceaOutputData) throws IOException {
         int size = ceaOutputData.iris.size();
 
         List<Double> roofResult = new ArrayList<>(Collections.nCopies(size, 0.0));
@@ -358,45 +310,79 @@ public class CEAOutputHandler {
         List<Double> westResult = new ArrayList<>(Collections.nCopies(size, 0.0));
         List<Double> eastResult = new ArrayList<>(Collections.nCopies(size, 0.0));
 
-        CSVParser parser = CSVParser.parse(new File(filePath), StandardCharsets.UTF_8, CSVFormat.DEFAULT);
+        try (CSVParser parser = CSVParser.parse(new File(filePath), StandardCharsets.UTF_8, csvFormat)) {
+            for (CSVRecord record : parser) {
+                Pattern pattern = Pattern.compile(PATTERN);
+                Matcher matcher = pattern.matcher(record.get("Name"));
+                matcher.matches();
+                int id = Integer.parseInt(matcher.group(1));
 
-        for (CSVRecord record : parser) {
-            int id = Integer.parseInt(record.get("Name").split("_")[1]);
-            roofResult.set(id, roofResult.get(id) + Double.valueOf(record.get(ROOF_AREA)));
-            northResult.set(id, roofResult.get(id) + Double.valueOf(record.get(NORTH_AREA)));
-            southResult.set(id, roofResult.get(id) + Double.valueOf(record.get(SOUTH_AREA)));
-            westResult.set(id, roofResult.get(id) + Double.valueOf(record.get(WEST_AREA)));
-            eastResult.set(id, roofResult.get(id) + Double.valueOf(record.get(EAST_AREA)));
+                roofResult.set(id, roofResult.get(id) + Double.parseDouble(record.get(ROOF_AREA)));
+                northResult.set(id, northResult.get(id) + Double.parseDouble(record.get(NORTH_AREA)));
+                southResult.set(id, southResult.get(id) + Double.parseDouble(record.get(SOUTH_AREA)));
+                westResult.set(id, westResult.get(id) + Double.parseDouble(record.get(WEST_AREA)));
+                eastResult.set(id, eastResult.get(id) + Double.parseDouble(record.get(EAST_AREA)));
+            }
+
+            ceaOutputData.RoofSolarSuitableArea = roofResult;
+            ceaOutputData.NorthWallSolarSuitableArea = northResult;
+            ceaOutputData.SouthWallSolarSuitableArea = southResult;
+            ceaOutputData.WestWallSolarSuitableArea = westResult;
+            ceaOutputData.EastWallSolarSuitableArea = eastResult;
         }
+    }
+    
+    private static void initialiseCEAOutputTS(CEAOutputData ceaOutputData) {
+        int iriSize = ceaOutputData.iris.size();
+        int timeSize = ceaOutputData.times.size();
+        
+        ceaOutputData.GridConsumption = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ElectricityConsumption = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.HeatingConsumption = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.CoolingConsumption = initialiseZeroList(iriSize, timeSize);
+        
+        ceaOutputData.PVRoofSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVWallSouthSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVWallNorthSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVWallEastSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVWallWestSupply = initialiseZeroList(iriSize, timeSize);
 
-        ceaOutputData.RoofSolarSuitableArea = doubleToString(roofResult);
-        ceaOutputData.NorthWallSolarSuitableArea = doubleToString(northResult);
-        ceaOutputData.SouthWallSolarSuitableArea = doubleToString(southResult);
-        ceaOutputData.WestWallSolarSuitableArea = doubleToString(westResult);
-        ceaOutputData.EastWallSolarSuitableArea = doubleToString(eastResult);
+        ceaOutputData.PVTPlateRoofESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTPlateWallSouthESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTPlateWallNorthESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTPlateWallEastESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTPlateWallWestESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTPlateRoofQSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTPlateWallSouthQSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTPlateWallNorthQSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTPlateWallEastQSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTPlateWallWestQSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeRoofESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeWallSouthESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeWallNorthESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeWallEastESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeWallWestESupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeRoofQSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeWallSouthQSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeWallNorthQSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeWallEastQSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.PVTTubeWallWestQSupply = initialiseZeroList(iriSize, timeSize);
 
-        return ceaOutputData;
+        ceaOutputData.ThermalPlateRoofSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ThermalPlateWallSouthSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ThermalPlateWallNorthSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ThermalPlateWallEastSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ThermalPlateWallWestSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ThermalTubeRoofSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ThermalTubeWallSouthSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ThermalTubeWallNorthSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ThermalTubeWallEastSupply = initialiseZeroList(iriSize, timeSize);
+        ceaOutputData.ThermalTubeWallWestSupply = initialiseZeroList(iriSize, timeSize);
     }
 
-    /**
-     * Convert double values in a list of list to strings
-     * @param data list of list of doubles
-     * @return data as list of list of strings
-     */
-    private static List<List<String>> nestedDoubleToString(List<List<Double>> data) {
-        return data.stream()
-                .map(innerList -> doubleToString(innerList))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Convert double values in a list to strings
-     * @param data list of doubles
-     * @return data as list of strings
-     */
-    private static List<String> doubleToString(List<Double> data) {
-        return data.stream()
-                .map(value -> String.valueOf(value))
+    private static List<List<Double>> initialiseZeroList(Integer outerSize, Integer innerSize) {
+        return IntStream.range(0, outerSize)
+                .mapToObj(i -> new ArrayList<>(Collections.nCopies(innerSize, 0.0)))
                 .collect(Collectors.toList());
     }
 
