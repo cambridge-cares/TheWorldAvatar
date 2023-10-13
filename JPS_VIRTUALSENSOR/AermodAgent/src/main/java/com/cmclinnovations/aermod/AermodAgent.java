@@ -87,6 +87,17 @@ public class AermodAgent extends DerivationAgent {
         List<StaticPointSource> staticPointSources = new ArrayList<>();
         BuildingsData bd = null;
 
+        // compute srid
+        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180) / 6);
+        int srid;
+        if (scope.getCentroid().getCoordinate().getY() < 0) {
+            srid = Integer.valueOf("327" + centreZoneNumber);
+
+        } else {
+            srid = Integer.valueOf("326" + centreZoneNumber);
+        }
+
+        Map<String, Building> allBuildings = null;
         if (citiesNamespace != null) {
             String namespaceCRS = queryClient.getNamespaceCRS(citiesNamespace);
             queryClient.setcitiesNamespaceCRS(citiesNamespace, namespaceCRS);
@@ -99,6 +110,9 @@ public class AermodAgent extends DerivationAgent {
                 throw new JPSRuntimeException("Could not set static point source properties.");
             }
 
+        } else {
+            allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
+            staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
         }
 
         long timeBuffer = 1800; // 30 minutes
@@ -108,17 +122,20 @@ public class AermodAgent extends DerivationAgent {
         allSources.addAll(staticPointSources);
         allSources.addAll(ships);
 
-        List<Building> buildings = new ArrayList<>();
-        if (bd != null) {
+        List<Building> buildings; // that are near point sources
+        if (citiesNamespace != null) {
             try {
                 buildings = bd.getBuildings(allSources);
             } catch (ParseException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException("Could not set building properties.");
             }
-        }
-        if (!buildings.isEmpty()) {
-            queryClient.createBuildingsLayer(buildings, derivationInputs.getDerivationIRI(), simulationTime);
+            if (!buildings.isEmpty()) {
+                queryClient.createBuildingsLayer(buildings, derivationInputs.getDerivationIRI(), simulationTime);
+            }
+        } else {
+            // new ontop way
+            buildings = queryClient.getBuildings(allSources, allBuildings);
         }
 
         // update derivation of ships (on demand)
@@ -140,21 +157,6 @@ public class AermodAgent extends DerivationAgent {
 
         // create input files
         Aermod aermod = new Aermod(simulationDirectory);
-
-        // compute srid
-        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180) / 6);
-        int srid;
-        if (scope.getCentroid().getCoordinate().getY() < 0) {
-            srid = Integer.valueOf("327" + centreZoneNumber);
-
-        } else {
-            srid = Integer.valueOf("326" + centreZoneNumber);
-        }
-
-        // new ontop query
-        if (buildings.isEmpty()) {
-            buildings = queryClient.getBuildings(allSources, srid);
-        }
 
         // produces buildings input for aermod main code
         if (!buildings.isEmpty()) {
@@ -291,11 +293,10 @@ public class AermodAgent extends DerivationAgent {
         EndpointConfig endpointConfig = new EndpointConfig();
 
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        RemoteStoreClient ontopStoreClient = new RemoteStoreClient(endpointConfig.getOntopurl());
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
 
-        queryClient = new QueryClient(storeClient, ontopStoreClient, rdbStoreClient);
+        queryClient = new QueryClient(storeClient, endpointConfig.getOntopurl(), rdbStoreClient);
         super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX_DISP);
     }
 

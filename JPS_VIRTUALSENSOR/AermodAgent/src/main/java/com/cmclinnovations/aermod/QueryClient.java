@@ -29,6 +29,7 @@ import org.locationtech.jts.geom.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
 import com.cmclinnovations.aermod.sparqlbuilder.GeoSPARQL;
+import com.cmclinnovations.aermod.sparqlbuilder.ServiceEndpoint;
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
@@ -82,12 +83,12 @@ public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
 
     private RemoteStoreClient storeClient;
-    private RemoteStoreClient ontopStoreClient;
     private RemoteRDBStoreClient rdbStoreClient;
     private TimeSeriesClient<Long> tsClientLong;
     private TimeSeriesClient<Instant> tsClientInstant;
     private String citiesNamespace;
     private String namespaceCRS;
+    private ServiceEndpoint ontopService;
 
     // prefixes
     private static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
@@ -191,13 +192,12 @@ public class QueryClient {
         UNIT_MAP.put(WIND_DIRECTION, UNIT_DEGREE);
     }
 
-    public QueryClient(RemoteStoreClient storeClient, RemoteStoreClient ontopStoreClient,
-            RemoteRDBStoreClient rdbStoreClient) {
+    public QueryClient(RemoteStoreClient storeClient, String ontopEndpoint, RemoteRDBStoreClient rdbStoreClient) {
         this.storeClient = storeClient;
-        this.ontopStoreClient = ontopStoreClient;
         this.tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
         this.tsClientInstant = new TimeSeriesClient<>(storeClient, Instant.class);
         this.rdbStoreClient = rdbStoreClient;
+        ontopService = new ServiceEndpoint(ontopEndpoint);
     }
 
     String getCitiesNamespace(String citiesNamespaceIri) {
@@ -421,9 +421,25 @@ public class QueryClient {
 
     }
 
+    List<StaticPointSource> getStaticPointSourcesWithinScope(Map<String, Building> iriToBuildingMap) {
+        List<String> pointSourceIRIAll = queryStaticPointSources();
+        List<StaticPointSource> pointSourceList = new ArrayList<>();
+
+        pointSourceIRIAll.stream().filter(iriToBuildingMap::containsKey).forEach(ps -> {
+            StaticPointSource pointSource = new StaticPointSource(ps);
+            pointSource.setLocation(iriToBuildingMap.get(ps).getLocation());
+            pointSource.setHeight(iriToBuildingMap.get(ps).getHeight());
+            pointSource.setDiameter(2.0 * iriToBuildingMap.get(ps).getRadius());
+
+            pointSourceList.add(pointSource);
+        });
+
+        return pointSourceList;
+    }
+
     List<Ship> getShipsWithinTimeAndScopeViaTsClient(long simulationTime, Geometry scope, long timeBuffer) {
-        long simTimeUpperBound = simulationTime + 1800; // +30 minutes
-        long simTimeLowerBound = simulationTime - 1800; // -30 minutes
+        long simTimeUpperBound = simulationTime + timeBuffer; // +30 minutes
+        long simTimeLowerBound = simulationTime - timeBuffer; // -30 minutes
 
         Map<String, String> measureToShipMap = getMeasureToShipMap();
         List<String> measures = new ArrayList<>(measureToShipMap.keySet());
@@ -479,9 +495,10 @@ public class QueryClient {
         SelectQuery query = Queries.SELECT();
         Variable scope = query.var();
 
-        query.prefix(P_GEO).where(iri(scopeIri).has(PropertyPaths.path(HAS_GEOMETRY, AS_WKT), scope));
+        GraphPattern queryPattern = iri(scopeIri).has(PropertyPaths.path(HAS_GEOMETRY, AS_WKT), scope);
+        query.prefix(P_GEO).where(ontopService.service(queryPattern));
 
-        JSONArray queryResult = ontopStoreClient.executeQuery(query.getQueryString());
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         String wktLiteral = queryResult.getJSONObject(0).getString(scope.getQueryString().substring(1));
         Geometry scopePolygon = WKTReader.extract(wktLiteral).getGeometry();
         scopePolygon.setSRID(4326);
@@ -899,56 +916,94 @@ public class QueryClient {
         return iriToPolygonMap;
     }
 
-    List<Building> getBuildings(List<PointSource> allSources, int simulationSrid) {
+    List<Building> getBuildings(List<PointSource> allSources, Map<String, Building> allBuildings) {
         String sridIri = "<http://www.opengis.net/def/crs/EPSG/0/4326>";
         Polygon boundingBox = getBoundingBoxOfPointSources2(allSources);
 
         SelectQuery query = Queries.SELECT();
         Variable buildingVar = query.var();
         Variable wktVar = query.var();
-        Variable heightVar = query.var();
         Variable surfaceParentVar = query.var();
         Variable surfaceVar = query.var();
 
         GraphPattern queryPattern = GraphPatterns.and(
-                buildingVar.has(LOD0_FOOTPRINT, surfaceParentVar).andHas(MEASURED_HEIGHT, heightVar),
+                buildingVar.has(LOD0_FOOTPRINT, surfaceParentVar),
                 surfaceVar.has(PARENT, surfaceParentVar).andHas(AS_WKT, wktVar));
 
         Expression<?> expression = Expressions.and(GeoSPARQL.sfWithin(wktVar,
                 Rdf.literalOfType(sridIri + " " + boundingBox.toString(), iri(GEO.GEO_WKT_LITERAL.getIRIString()))));
 
-        query.select(buildingVar, wktVar, heightVar).where(queryPattern.filter(expression)).prefix(P_BLDG, P_GEO,
-                P_GRP, P_GEOF);
+        query.select(buildingVar).where(ontopService.service(queryPattern.filter(expression))).prefix(P_BLDG, P_GEO,
+                P_GRP, P_GEOF).distinct();
 
-        JSONArray queryResult = ontopStoreClient.executeQuery(query.getQueryString());
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<Building> buildings = new ArrayList<>();
 
         for (int i = 0; i < queryResult.length(); i++) {
             String buildingIri = queryResult.getJSONObject(i).getString(buildingVar.getQueryString().substring(1));
-            String wktLiteral = queryResult.getJSONObject(i).getString(wktVar.getQueryString().substring(1));
-            double buildingHeight = queryResult.getJSONObject(i).getDouble(heightVar.getQueryString().substring(1));
 
-            Polygon footPrintPolygon = (Polygon) WKTReader.extract(wktLiteral).getGeometry();
-
-            Coordinate[] transformedCoordinates = new Coordinate[footPrintPolygon.getExteriorRing()
-                    .getCoordinates().length];
-
-            for (int j = 0; j < footPrintPolygon.getExteriorRing().getCoordinates().length; j++) {
-                Coordinate originalCoordinate = footPrintPolygon.getExteriorRing().getCoordinates()[j];
-                double[] xyOriginal = { originalCoordinate.getX(), originalCoordinate.getY() };
-                double[] xyTransformed = CRSTransformer.transform("EPSG:" + 4326, "EPSG:" + simulationSrid,
-                        xyOriginal);
-                transformedCoordinates[j] = new Coordinate(xyTransformed[0], xyTransformed[1]);
-            }
-
-            Building building = new Building(footPrintPolygon.getExteriorRing(), buildingHeight);
-            building.setIri(buildingIri);
-            building.getFootprint().setSRID(4326);
-            buildings.add(building);
+            // if this throws an error then there's something wrong, bounding box is a
+            // subset of scope
+            buildings.add(allBuildings.get(buildingIri));
         }
 
         return buildings;
+    }
+
+    Map<String, Building> getBuildingsWithinScope(String scopeIri) {
+        SelectQuery query = Queries.SELECT();
+
+        Variable buildingVar = query.var();
+        Variable footPrintVar = query.var();
+        Variable heightVar = query.var();
+        Variable geometryVar = query.var();
+        Variable footPrintWktVar = query.var();
+        Variable scopeWktVar = query.var();
+
+        GraphPattern queryPattern = GraphPatterns.and(
+                buildingVar.has(LOD0_FOOTPRINT, footPrintVar).andHas(MEASURED_HEIGHT, heightVar),
+                geometryVar.has(PARENT, footPrintVar).andHas(AS_WKT, footPrintWktVar),
+                iri(scopeIri).has(PropertyPaths.path(HAS_GEOMETRY, AS_WKT), scopeWktVar))
+                .filter(Expressions.and(GeoSPARQL.sfWithin(footPrintWktVar, scopeWktVar)));
+
+        query.where(ontopService.service(queryPattern)).prefix(P_GRP, P_GEO, P_GEOF, P_BLDG).select(footPrintWktVar,
+                buildingVar, heightVar);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        Map<String, List<Polygon>> buildingToPolygonsMap = new HashMap<>();
+        Map<String, Double> buildingToHeightMap = new HashMap<>();
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String buildingIri = queryResult.getJSONObject(i).getString(buildingVar.getQueryString().substring(1));
+            String wktLiteral = queryResult.getJSONObject(i).getString(footPrintWktVar.getQueryString().substring(1));
+            double height = queryResult.getJSONObject(i).getDouble(heightVar.getQueryString().substring(1));
+
+            Polygon footPrintPolygon = (Polygon) WKTReader.extract(wktLiteral).getGeometry();
+
+            buildingToPolygonsMap.computeIfAbsent(buildingIri, k -> new ArrayList<>());
+            buildingToPolygonsMap.get(buildingIri).add(footPrintPolygon);
+
+            buildingToHeightMap.computeIfAbsent(buildingIri, k -> height);
+        }
+
+        Map<String, Building> iriToBuildingMap = new HashMap<>();
+
+        buildingToPolygonsMap.entrySet().forEach(entrySet -> {
+            String buildingIri = entrySet.getKey();
+            List<Polygon> footprintPolygons = entrySet.getValue();
+            double height = buildingToHeightMap.get(buildingIri);
+
+            Building building = new Building(footprintPolygons, height);
+            building.setIri(buildingIri);
+            building.getFootprint().setSRID(4326);
+            building.getLocation().setSRID(4326);
+
+            iriToBuildingMap.put(buildingIri, building);
+        });
+
+        return iriToBuildingMap;
     }
 
     // This method only retrieves items with an object Class ID of 26, which is the

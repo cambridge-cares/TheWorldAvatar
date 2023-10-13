@@ -4,7 +4,6 @@ public class StaticPointSource extends PointSource {
 
     private String ocgmlIri;
 
-    private double baseElevation = 0.0;
     private CityObjectType pointSourceOCGMLType;
 
     public enum CityObjectType {
@@ -16,17 +15,16 @@ public class StaticPointSource extends PointSource {
         pointSourceOCGMLType = cityObjType;
     }
 
+    public StaticPointSource(String iri) {
+        super(iri);
+    }
+
     public void setOcgmlIri(String ocgmlIri) {
         this.ocgmlIri = ocgmlIri;
     }
 
     public String getOcgmlIri() {
         return ocgmlIri;
-    }
-
-    public String getCityObjectIri() {
-        return ocgmlIri.replace("cityfurniture", "cityobject").replace("building", "cityobject");
-
     }
 
     public void setCityObjectType(CityObjectType objType) {
