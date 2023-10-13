@@ -1,8 +1,8 @@
 {
     "queries": [
         {
-            "class": "https://w3id.org/bot#Building",
-            "metaFile": "building_usage.sparql",
+            "class": "https://www.theworldavatar.com/kg/ontoisochrone/Isochrone",
+            "metaFile": "isochrone.sparql",
             "timeFile": ""
         }
     ]
