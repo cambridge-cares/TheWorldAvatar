@@ -233,8 +233,7 @@ def trigger_optimisation_task(params):
 
 
             # Request derivation update via Aermod Agent
-            # TODO: uncomment once Aermod is available in the stack
-            #derivation_client.unifiedUpdateDerivation(disp_deriv_iri)
+            derivation_client.unifiedUpdateDerivation(disp_deriv_iri)
             # NOTE: Aermod Agent queries emission derivations via StaticPointSources 
             # and requests update; all other derivation updates are handled by DIF 
             # directly as derivationscare directly linked via I/O relations in KG            
