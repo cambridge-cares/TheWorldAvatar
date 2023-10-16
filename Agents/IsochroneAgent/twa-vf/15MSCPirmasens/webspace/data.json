@@ -3,7 +3,7 @@
     "groups": [
         {
             "name": "Isochrone",
-            "stack": "http://localhost:3840",
+            "stack": "http://localhost:3838",
             "expanded": false,
             "sources": [
                 {
@@ -12,7 +12,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3840/geoserver/isochrone/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=isochrone%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
+                    "data": "http://localhost:3838/geoserver/isochrone/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=isochrone%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
                 },
                 {
                     "id": "bicycle",  
@@ -20,7 +20,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3840/geoserver/isochrone/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=isochrone%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Cycle%27"
+                    "data": "http://localhost:3838/geoserver/isochrone/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=isochrone%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Cycle%27"
                 },
                 {
                     "id": "car",  
@@ -28,7 +28,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3840/geoserver/isochrone/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=isochrone%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Drive%27"
+                    "data": "http://localhost:3838/geoserver/isochrone/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=isochrone%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Drive%27"
                 }
             ],
 

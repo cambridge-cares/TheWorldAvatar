@@ -20,7 +20,7 @@ WHERE {
                 [IRI] iso:originatesFrom ?poi_iri.
                 ?poi_iri a ?poi_type.
               
-                BIND ("Isochrone Type" AS ?label )
+                BIND ("Isochrone Origins" AS ?label )
                 BIND (replace(str(?poi_type), str(obe:), '') AS ?value)
             }
           UNION
