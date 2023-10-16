@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cmclinnovations.filteragent.objects.IriObject;
-import com.cmclinnovations.filteragent.objects.Substitution;
 import com.cmclinnovations.filteragent.utils.ReplacementUtils;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -47,14 +47,14 @@ public class FilterAgentApplication {
 	public String filter(@RequestParam("subs") String substitutionString, @RequestParam("query") String queryFile,
 			@RequestParam("namespace") String namespace) throws IOException {
 		LOGGER.info("config: {}", substitutionString);
-		List<Substitution> substitutionRequest = OBJECT_MAPPER.readValue(substitutionString,
-				new TypeReference<List<Substitution>>() {
+		Map<String, String> subsMap = OBJECT_MAPPER.readValue(substitutionString,
+				new TypeReference<Map<String, String>>() {
 				});
-		LOGGER.info("substitutionRequest: {}", substitutionRequest);
+		LOGGER.info("substitutionRequest: {}", subsMap);
 
 		String query = Files.readString(Path.of(QUERY_DIR).resolve(queryFile + ".sparql"));
 
-		query = ReplacementUtils.userReplacements(substitutionRequest, query);
+		query = ReplacementUtils.userReplacements(subsMap, query);
 		query = blazegraphClient.filterQuery(query);
 		LOGGER.info("query: {}", query);
 

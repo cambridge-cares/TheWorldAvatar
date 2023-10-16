@@ -3,7 +3,9 @@ This agent executes a configurable query and returns a list of iris.
 The purpose of this is to provide an endpoint to be used by filtering within the visualization but might have other applications.
 
 ## Deployment
-This agent requires to be spun up inside a stack. Read the [stack manager documentation](../../Deploy/stacks/dynamic/stack-manager/README.md) for instructions on how to do this, the service config can be found [here](./filter-agent.json). Something similar to the follow stack config will be needed.
+This agent requires to be spun up inside a stack. 
+Read the [stack manager documentation](../../Deploy/stacks/dynamic/stack-manager/README.md) for instructions on how to do this, the service config can be found [here](./filter-agent.json). 
+Something similar to the follow stack config will be needed.
 
 ```json
 {
@@ -43,9 +45,11 @@ Once spun up this agent will have an external endpoint at `localhost:<STACK PORT
 ## Use
 The following are the configurable parameters of the request to localhost:<STACK PORT NUMBER>/filter-agent/filter.
 - `namespace`: The Blazegraph namespace where the query should be sent.
-- `query`: Query to be used as a template. For example if `nhs_query.sparql` is in your directory this can be set to `nhs_query`.
-- `subs`: List of substitution containing string:value pairs that will be replaced in the query. Example can be found [here](./example_input.json). This will naturally need to be URL encoded.
+- `query`: Query to be used as a template. 
+For example if `nhs_query.sparql` is in your directory this can be set to `nhs_query`.
+- `subs`: Set of substitution containing string:value pairs that will be replaced in the query. 
+Example can be found [here](./example_input.json). This will naturally need to be URL encoded.
 
 For example the following is an example request.
 
-```http://localhost:3838/filter-agent/filter?namespace=nhs&query=nhs_query&subs=%5B%7B%22placeholder%22%3A%22%5Bclass%5D%22%2C%22substitution%22%3A%22GP%22%7D%2C%7B%22placeholder%22%3A%22%5Bname%5D%22%2C%22substitution%22%3A%22North%22%7D%5D```
+```http://localhost:3838/filter-agent/filter?namespace=nhs&query=nhs_query&subs=%7B%22class%22%3A%22GP%22%2C%22name%22%3A%22North%22%7D```

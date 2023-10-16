@@ -1,10 +1,4 @@
-[
-    {
-        "placeholder": "[class]",
-        "substitution": "GP"
-    },
-    {
-        "placeholder": "[name]",
-        "substitution": "North"
-    }
-]
+{
+    "class": "GP",
+    "name": "North"
+}
