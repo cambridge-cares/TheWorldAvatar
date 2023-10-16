@@ -47,7 +47,9 @@ class TimeseriesHandler {
 
                 // Dependent unit
                 var tableUnit = tableUnits[j];
-                tableName += " [" + tableUnit + "]";
+                if(tableUnit != null && tableUnit !== "null") {
+                    tableName += " [" + tableUnit + "]";
+                }
                 
                 // Get timestamps
                 var tableTimes = entry["time"];
@@ -56,16 +58,15 @@ class TimeseriesHandler {
                 var timeClass = null
                 var firstTime = tableTimes[0];
 
-                // Regex tokens to test before and after conversion to Moment format
-                var regexBeforeMoment = String(firstTime).match(/^\d{4}-\d{2}-\d{2}T\d{2}(:\d{2}){1,2}Z/);
-                var regexAfterMoment = String(firstTime).match(/^\d{4}-\d{2}-\d{2}\s\d{2}(:\d{2}){1,2}/);
-
-                if(regexBeforeMoment || regexAfterMoment) {
-                    timeClass = "dateTime"
-                } else if(String(firstTime).includes(":")) {
-                    timeClass = "offsetTime"
+                // Attempt to determine if time values are dates, times, or numbers
+                if(isNaN(Date.parse(firstTime)) && isNaN(Date.parse(firstTime.replaceAll("-", "/")))) {
+                    if(firstTime.includes(":")) {
+                        timeClass = "offsetTime"
+                    } else {
+                        timeClass = "number";
+                    }
                 } else {
-                    timeClass = "number";
+                    timeClass = "dateTime";
                 }
                 
                 // Align time series formats
@@ -74,7 +75,7 @@ class TimeseriesHandler {
                 // All times are local times!!
                 for(var t = 0; t < tableTimes.length; t++) {
                     // dateTime/Instant format
-                    if(timeClass === "dateTime") {
+                    if(timeClass === "dateTime" || entry["timeClass"] === "Instant") {
                         // @ts-ignore
                         tableTimes[t] = moment(tableTimes[t], "YYYY-MM-DDTHH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
                     }
@@ -149,8 +150,26 @@ class TimeseriesHandler {
      * @param {Integer} setID timeseries ID
      */
     public update(setID) {
+        // Find the correct data entry
+        var data = null;
+        this._selectedData.forEach(entry => {
+            if(data === null && entry["id"] === +setID) {
+                data = entry;
+            }
+        });
+        if(data == null) return;
+
+        // Update table
         this.updateTable(setID);
-        this.updateChart(setID);
+
+        // Update chart if values list is not String
+        let chartContainer = document.getElementById("time-series-chart-container");
+        if(data["valuesClass"] !== "String") {
+            this.updateChart(setID);
+            chartContainer.style.display = "block";
+        } else {
+            chartContainer.style.display = "none";
+        }
     }
 
     /**
@@ -217,7 +236,8 @@ class TimeseriesHandler {
         var dependents = [];
 
         for(var i = 0 ; i < independents.length; i++) {
-            if(data["timeClass"] === "dateTime") {
+
+            if(data["timeClass"] === "dateTime" || data["timeClass"] === "Instant") {
                 // @ts-ignore
                 independents[i] = moment(independents[i], "YYYY-MM-DD HH:mm:ss");
 
@@ -273,7 +293,7 @@ class TimeseriesHandler {
                             },
                             title: {
                                 display: true,
-                                text: "Time",
+                                text: "Date/Time",
                                 font: {
                                     weight: 700,
                                     size: 12

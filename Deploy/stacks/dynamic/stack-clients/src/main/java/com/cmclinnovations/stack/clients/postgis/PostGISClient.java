@@ -1,5 +1,7 @@
 package com.cmclinnovations.stack.clients.postgis;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -96,4 +98,14 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 postgreSQLEndpoint.getUsername(),
                 postgreSQLEndpoint.getPassword());
     }
+
+    public void resetSchema(String database) {
+        try (InputStream is = PostGISClient.class.getResourceAsStream("postgis_reset_schema.sql")) {
+            String sqlQuery = new String(is.readAllBytes()).replace("{database}", database);
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file 'postgis_reset_schema.sql'.", ex);
+        }
+    }
+
 }
