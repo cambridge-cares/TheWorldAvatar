@@ -17,7 +17,8 @@ CREATE TABLE "public"."precise_footprint_CityDB" AS (
         public.ST_UnaryUnion(
             public.ST_Collect(
                 public.ST_MakeValid(public.ST_Force2D("geometry"))
-            )
+            ),
+            0.00000001
         ) AS "U"
     FROM "surface_geometry"
         JOIN "thematic_surface" ON "surface_geometry"."root_id" = COALESCE(
@@ -38,7 +39,8 @@ CREATE TABLE "public"."rough_footprint_CityDB" AS (
         public.ST_UnaryUnion(
             public.ST_Collect(
                 public.ST_MakeValid(public.ST_Force2D("geometry"))
-            )
+            ),
+            0.00000001
         ) AS "U"
     FROM "surface_geometry"
         FULL JOIN "building" ON "surface_geometry"."root_id" = COALESCE(
