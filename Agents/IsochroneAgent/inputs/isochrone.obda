@@ -13,9 +13,9 @@ target		<{isochrone_iri}> a iso:Isochrone ;
                 iso:hasTimeThreshold {minute}^^time:minute;
                 iso:hasRoadCondition <{roadcondition_iri}>;
                 iso:hasTotalPopulation {population}^^xsd:integer;
-                iso:hasMalePopulation {population_men}^^xsd:integer;
-                iso:hasFemalePopulation {population_women}^^xsd:integer;
-                iso:hasReproductiveWomenPopulation {population_women_reproductive}^^xsd:integer;
+                iso:hasMenPopulation {population_men}^^xsd:integer;
+                iso:hasWomenPopulation {population_women}^^xsd:integer;
+                iso:hasWomenofReproductiveAge {population_women_reproductive}^^xsd:integer;
                 iso:hasChildrenPopulation {population_childrenu5}^^xsd:integer;
                 iso:hasYouthPopulation {population_youth}^^xsd:integer;
                 iso:hasElderlyPopulation {population_elderly}^^xsd:integer;
@@ -28,7 +28,7 @@ source      SELECT minute, transportmode, transportmode_iri, poi_type, isochrone
 
 mappingId	isochrone_building
 target		<{isochrone_iri}> a iso:Isochrone ;
-                iso:originatedFrom <{poi_iri}>.
+                iso:originatesFrom <{poi_iri}>.
             <{poi_iri}> a <{poi_type}>.
 source      SELECT isochrone_iri, poi_iri, poi_type FROM isochrone_building_ref
 ]]
