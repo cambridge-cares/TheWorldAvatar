@@ -157,8 +157,11 @@ public class QueryClient {
 
     public void updatePirmasensEmissions() {
         List<String> ocgmlIRIs = Arrays.asList(
-                "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/building/UUID_LOD2_Pirmasens_4f8d0f1a-3b21-40d4-8b90-89723e31a7ca/",
-                "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/building/UUID_LOD2_Pirmasens_c38d038b-a677-4e0c-95d9-f02c09cf991c/");
+                "https://www.theworldavatar.com/kg/Building/5d030b8f-439d-408a-bae5-c8f4667fdc69",
+                "https://www.theworldavatar.com/kg/Building/023a7cee-e39f-4961-91a2-14a5c5b16eee");
+        // List<String> ocgmlIRIs = Arrays.asList(
+        //         "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/building/UUID_LOD2_Pirmasens_4f8d0f1a-3b21-40d4-8b90-89723e31a7ca/",
+        //         "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/building/UUID_LOD2_Pirmasens_c38d038b-a677-4e0c-95d9-f02c09cf991c/");
         List<Double> noxEmissions = Arrays.asList(100.0, 100.0);
         List<Double> pm25Emissions = Arrays.asList(100.0, 100.0);
         List<Double> pm10Emissions = Arrays.asList(100.0, 100.0);
