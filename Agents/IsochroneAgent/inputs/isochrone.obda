@@ -8,7 +8,7 @@ time:   http://www.w3.org/2006/time#
 
 [MappingDeclaration] @collection [[
 mappingId	isochrone_transport
-target		<{isochrone_iri}> a iso:Isochrone ;
+target		<{iri}> a iso:Isochrone ;
                 iso:assumesTransportMode <{transportmode_iri}>;
                 iso:hasTimeThreshold {minute}^^time:minute;
                 iso:hasRoadCondition <{roadcondition_iri}>;
@@ -24,11 +24,11 @@ target		<{isochrone_iri}> a iso:Isochrone ;
                 geo:asWKT {geom}^^xsd:string.
             <{roadcondition_iri}> a iso:{roadcondition}.
             <{transportmode_iri}> a iso:{transportmode}.
-source      SELECT minute, transportmode, transportmode_iri, poi_type, isochrone_iri, roadcondition, roadcondition_iri, geometry_iri, population, population_men, population_women, population_women_reproductive, population_childrenu5, population_youth, population_elderly,  ST_AsText(ST_Force2D(geom)) as geom  FROM isochrone_aggregated
+source      SELECT minute, transportmode, transportmode_iri, poi_type, iri, roadcondition, roadcondition_iri, geometry_iri, population, population_men, population_women, population_women_reproductive, population_childrenu5, population_youth, population_elderly,  ST_AsText(ST_Force2D(geom)) as geom  FROM isochrone_aggregated
 
 mappingId	isochrone_building
-target		<{isochrone_iri}> a iso:Isochrone ;
+target		<{iri}> a iso:Isochrone ;
                 iso:originatesFrom <{poi_iri}>.
             <{poi_iri}> a <{poi_type}>.
-source      SELECT isochrone_iri, poi_iri, poi_type FROM isochrone_building_ref
+source      SELECT iri, poi_iri, poi_type FROM isochrone_building_ref
 ]]

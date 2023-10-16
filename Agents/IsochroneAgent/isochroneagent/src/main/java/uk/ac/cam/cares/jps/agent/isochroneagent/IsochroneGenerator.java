@@ -76,7 +76,7 @@ public class IsochroneGenerator {
                 "    poi_type VARCHAR,\n" +
                 "    roadcondition VARCHAR,\n" +
                 "    roadcondition_iri VARCHAR,\n" +
-                "    isochrone_iri VARCHAR,\n" +
+                "    iri VARCHAR,\n" +
                 "    geometry_iri VARCHAR, \n" +
                 "    geom geometry\n" +
                 ");";
@@ -226,20 +226,20 @@ public class IsochroneGenerator {
                 "        minute,\n" +
                 "        transportmode,\n" +
                 "        roadcondition,\n" +
-                "        'https://www.theworldavatar.com/kg/ontoisochrone/Isochrone/' || uuid_generate_v4()::text AS isochrone_iri,\n" +
+                "        'https://www.theworldavatar.com/kg/ontoisochrone/Isochrone/' || uuid_generate_v4()::text AS iri,\n" +
                 "        'http://www.opengis.net/ont/geosparql#Geometry/' || uuid_generate_v4()::text AS geometry_iri\n" +
                 "    FROM isochrone_aggregated\n" +
-                "    WHERE isochrone_iri IS NULL\n" +
+                "    WHERE iri IS NULL\n" +
                 "    GROUP BY minute, poi_type, transportmode, roadcondition\n" +
                 ")\n" +
                 "\n" +
                 "UPDATE isochrone_aggregated AS ia\n" +
-                "SET isochrone_iri = uv.isochrone_iri,\n" +
+                "SET iri = uv.iri,\n" +
                 "    geometry_iri = uv.geometry_iri,\n" +
                 "       transportmode_iri =  'https://www.theworldavatar.com/kg/ontoisochrone/"+transportMode+"/' || uuid_generate_v4()::text,\n" +
             "       roadcondition_iri =  'https://www.theworldavatar.com/kg/ontoisochrone/"+roadCondition+"/' || uuid_generate_v4()::text\n" +
                 "FROM unique_values uv\n" +
-                "WHERE ia.isochrone_iri IS NULL\n" +
+                "WHERE ia.iri IS NULL\n" +
                 "    AND ia.poi_type = uv.poi_type\n" +
                 "    AND ia.transportmode = uv.transportmode\n"+
                 "    AND ia.minute = uv.minute;"+
@@ -350,10 +350,10 @@ public class IsochroneGenerator {
                                                     "\n" +
                                                     "-- Create the table\n" +
                                                     "CREATE TABLE isochrone_building_ref AS\n" +
-                                                    "SELECT DISTINCT ia.isochrone_iri, pno.poi_iri, pno.poi_type\n" +
+                                                    "SELECT DISTINCT ia.iri, pno.poi_iri, pno.poi_type\n" +
                                                     "FROM isochrone_aggregated AS ia\n" +
                                                     "LEFT JOIN poi_nearest_node AS pno ON ia.poi_type = pno.poi_type\n" +
-                                                    "ORDER BY ia.isochrone_iri;";
+                                                    "ORDER BY ia.iri;";
     try (Connection connection = remoteRDBStoreClient.getConnection()) {
         executeSql(connection, createIsochroneBuildingTable_sqlString);
         System.out.println("isochrone_building_ref table created.");
