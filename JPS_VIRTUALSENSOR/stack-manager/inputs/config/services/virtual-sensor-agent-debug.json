@@ -6,9 +6,7 @@
 				"Image": "ghcr.io/cambridge-cares/virtual-sensor-agent:1.3-dev-aermod-vis-SNAPSHOT",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
-					"PYTHON_SERVICE_INTERPOLATION_URL=http://ship-stack-python-service:5000/getInterpolatedConc",
 					"DATABASE=postgres",
-					"GEOSERVER_WORKSPACE=dispersion",
 					"JPDA_ADDRESS=0.0.0.0:5005",
 					"JPDA_TRANSPORT=dt_socket",
 					"DEBUG=ON"
