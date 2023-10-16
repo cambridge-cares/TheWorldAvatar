@@ -318,7 +318,11 @@ public class Aermod {
 
     String addLeadingZero(String variable, int length) {
         while (variable.length() < length) {
-            variable = "0" + variable;
+            if (variable.startsWith("-")) {
+                variable = "-" + 0 + variable.substring(1, variable.length());
+            } else {
+                variable = "0" + variable;
+            }
         }
         return variable;
     }
