@@ -12,7 +12,7 @@ The agent has been implemented to work in the stack. Follow the instructions in 
 
 ### 2.2. Uploading OSM Data via stack-data-uploader
 1) Download desired bounding box from [BBBike.org](https://extract.bbbike.org/) (check junk email) or [GeoFabrik](https://download.geofabrik.de/) in `.pbf` format.
-2) `.pbf` uploaded via stack-data-uploader in [osm2pgrouting](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#osm-data) data type, following the instructions in the [stack-data-uploader]'s README.
+2) `.pbf` uploaded via [stack-data-uploader] in [osm2pgrouting](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#osm-data) data type.
 
 ### 2.3. Uploading population data via stack-data-uploader
 1) Download High Resolution Population Density Maps from [HDX - Meta Data For Good](https://data.humdata.org/dataset/germany-high-resolution-population-density-maps-demographic-estimates?).
@@ -30,7 +30,7 @@ SPARQL queries are used to retrieve the locations of POI.
 
 The SPARQL queries follow the format which requires the returned variable to be in this format: 
 1) `poi_iri` refers to the POI's iri. 
-2) `poi_type` refers to the iri type. 
+2) `poi_type` refers to the POI's iri type. 
 3) `geometry` refers to the WKT literals of the POI location. 
 
 SPARQL queries are created for [15MSC in Pirmasens](inputs/15MSC/POIqueries/) and [UR in King's Lynn](inputs/UR/POIqueries/) use cases. 
@@ -53,8 +53,6 @@ You will need to provide your credentials (GitHub username/personal access token
         repo_username.txt
         repo_password.txt
 ```
-
-
 
 ## 5. Deployment
 
@@ -92,8 +90,8 @@ The debugger port will be available at 5005.
 ### 7.1 Feature Info Agent
 The isochrones is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent.
 
-1) In the folder [webspace](twa-vf/15MSCPirmasens/webspace/), contains `data.json` prepared for TWA-VF that is meant to be placed inside [`stack-manager/inputs/data/webspace`](../../Deploy/stacks/dynamic/stack-manager/inputs/data/webspace/), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
-2) In the folder [FeatureInfoAgent](twa-vf/15MSCPirmasens/FeatureInfoAgent/queries/), contains SPARQL `queries` to be used with the agent [`FeatureInfoAgent`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#configuration).
+1) In the directory [twa-vf/15MSCPirmasens/webspace](twa-vf/15MSCPirmasens/webspace/), contains `data.json` prepared for TWA-VF that is meant to be placed inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
+2) In the directory [twa-vf/FeatureInfoAgent](twa-vf/FeatureInfoAgent/queries/), contains `SPARQL queries` and `fia-config.json` to be used with the agent [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#configuration).  Place the `fia-config.json` and `isochrone.sparql` inside `stack-manager/inputs/data/queries` as according the volume path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
 
 
 
