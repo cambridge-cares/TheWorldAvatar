@@ -4,6 +4,29 @@ DROP TABLE IF EXISTS "public"."building_without_footprint_CityDB";
 DROP TABLE IF EXISTS "public"."precise_footprint_CityDB";
 DROP TABLE IF EXISTS "public"."rough_footprint_CityDB";
 DROP TABLE IF EXISTS "public"."footprint_soup_CityDB";
+CREATE INDEX IF NOT EXISTS idx_building_log_id ON citydb.building (
+    (
+        COALESCE(
+            lod4_multi_surface_id,
+            lod3_multi_surface_id,
+            lod2_multi_surface_id,
+            lod1_multi_surface_id,
+            lod4_solid_id,
+            lod3_solid_id,
+            lod2_solid_id,
+            lod1_solid_id
+        )
+    )
+);
+CREATE INDEX IF NOT EXISTS idx_thematic_surface_lod_multi_surface_id ON citydb.thematic_surface (
+    (
+        COALESCE(
+            lod4_multi_surface_id,
+            lod3_multi_surface_id,
+            lod2_multi_surface_id
+        )
+    )
+);
 CREATE TABLE "public"."building_without_footprint_CityDB" AS (
     SELECT "building"."id",
         "cityobject"."gmlid",
