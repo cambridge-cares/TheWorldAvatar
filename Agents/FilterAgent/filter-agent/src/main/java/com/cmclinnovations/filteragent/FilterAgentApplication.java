@@ -3,8 +3,10 @@ package com.cmclinnovations.filteragent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -44,21 +46,23 @@ public class FilterAgentApplication {
 	}
 
 	@GetMapping(value = "/filter")
-	public String filter(@RequestParam("subs") String substitutionString, @RequestParam("query") String queryFile,
-			@RequestParam("namespace") String namespace) throws IOException {
+	public String filter(@RequestParam("subs") String substitutionString,
+			@RequestParam("query") Optional<String> queryFile, @RequestParam("namespace") Optional<String> namespace)
+			throws IOException {
 		LOGGER.info("config: {}", substitutionString);
 		Map<String, String> subsMap = OBJECT_MAPPER.readValue(substitutionString,
 				new TypeReference<Map<String, String>>() {
 				});
 		LOGGER.info("substitutionRequest: {}", subsMap);
 
-		String query = Files.readString(Path.of(QUERY_DIR).resolve(queryFile + ".sparql"));
+		String query = Files.readString(
+				Path.of(QUERY_DIR).resolve(queryFile.orElse(EnvConfig.DEFAULT_QUERY) + ".sparql"));
 
 		query = ReplacementUtils.userReplacements(subsMap, query);
 		query = blazegraphClient.filterQuery(query);
 		LOGGER.info("query: {}", query);
 
-		remoteStoreClient = blazegraphClient.getRemoteStoreClient(namespace);
+		remoteStoreClient = blazegraphClient.getRemoteStoreClient(namespace.orElse(EnvConfig.DEFAULT_NAMESPACE));
 		List<IriObject> iriObjects = OBJECT_MAPPER.readValue(
 				QueryClient.executeQuery(remoteStoreClient, query).toString(), new TypeReference<List<IriObject>>() {
 				});

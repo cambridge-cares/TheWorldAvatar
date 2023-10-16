@@ -45,8 +45,10 @@ Once spun up this agent will have an external endpoint at `localhost:<STACK PORT
 ## Use
 The following are the configurable parameters of the request to localhost:<STACK PORT NUMBER>/filter-agent/filter.
 - `namespace`: The Blazegraph namespace where the query should be sent.
+This defaults to the value specified by the `DEFAULT_NAMESPACE` environment variable.
 - `query`: Query to be used as a template. 
 For example if `nhs_query.sparql` is in your directory this can be set to `nhs_query`.
+This defaults to the value specified by the `DEFAULT_QUERY` environment variable.
 - `subs`: Set of substitution containing string:value pairs that will be replaced in the query. 
 Example can be found [here](./example_input.json). This will naturally need to be URL encoded.
 
