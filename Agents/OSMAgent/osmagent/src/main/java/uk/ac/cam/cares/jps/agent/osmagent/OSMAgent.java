@@ -5,8 +5,15 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.agent.osmagent.geometry.GeometryMatcher;
 import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageMatcher;
 import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageShareCalculator;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import javax.servlet.annotation.WebServlet;
+import java.nio.file.Path;
+
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,7 +25,24 @@ import org.json.JSONObject;
 @WebServlet(urlPatterns = "/update")
 
 public class OSMAgent extends JPSAgent {
-    private static final String PROPERTIES_PATH = "/usr/local/tomcat/resources/config.properties";
+    private static final String PROPERTIES_PATH = "/resources/config.properties";
+    private static final Path obdaFile = Path.of("/resources/building_usage.obda");
+    private static final String buildingSQLQuery ="SELECT cga.urival AS iri, ST_Transform(sg.geometry, 4326) AS geometry, CAST(b.measured_height AS numeric(10,2)) AS height_m,\n" +
+                                                    "p.ontobuilt,\n" +
+                                                    "p.propertyusage_iri,\n" +
+                                                    "p.usageshare,\n" +
+                                                    "p.name as name\n" +
+                                                    "FROM citydb.building b\n" +
+                                                    "INNER JOIN citydb.cityobject_genericattrib cga ON b.id = cga.cityobject_id\n" +
+                                                    "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.id\n" +
+                                                    "LEFT JOIN (\n" +
+                                                    "    SELECT u.building_iri, u.ontobuilt, u.propertyusage_iri, u.usageshare,\n" +
+                                                    "       COALESCE(p.name, o.name) AS name\n" +
+                                                    "FROM usage.usage AS u\n" +
+                                                    "LEFT JOIN osm.points AS p ON u.building_iri = p.building_iri\n" +
+                                                    "LEFT JOIN osm.polygons AS o ON u.building_iri = o.building_iri\n" +
+                                                    ") p ON cga.urival = p.building_iri WHERE cga.attrname = 'iri' AND sg.geometry IS NOT NULL";
+                                                    
     private EndpointConfig endpointConfig = new EndpointConfig();
 
     private String dbName;
@@ -82,6 +106,30 @@ public class OSMAgent extends JPSAgent {
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
             // buildings
             shareCalculator.updateUsageShare(usageTable);
+
+            //Create geoserver layer
+            GeoServerClient geoServerClient = GeoServerClient.getInstance();
+            String workspaceName= "building";
+            String schema = "public";
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(buildingSQLQuery);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("building_usage");
+            virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName,"building_usage" , dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName,"building_usage" ,geoServerVectorSettings);
+
+            //Upload Isochrone Ontop mapping
+            try {
+                OntopClient ontopClient = OntopClient.getInstance();
+                ontopClient.updateOBDA(obdaFile);
+            } catch (Exception e) {
+                System.out.println("Could not retrieve building_usage.obda file.");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
