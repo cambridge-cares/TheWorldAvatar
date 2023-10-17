@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 October 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 October 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlanningRegulations is an ontology developed to describe the regulations imposed for urban planning purposes.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -33,7 +33,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsAbsoluteHeight">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AbsoluteHeight"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows absolute height</rdfs:label>
@@ -46,7 +46,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsBuildingEdge">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsStoreyAggregate"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows building edge</rdfs:label>
@@ -58,7 +58,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsGrossFloorArea">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows Gross Floor Area</rdfs:label>
@@ -70,7 +70,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsGrossPlotRatio">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows Gross Plot Ratio</rdfs:label>
@@ -82,7 +82,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsSiteCoverage">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/SiteCoverage"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows site coverage</rdfs:label>
@@ -94,7 +94,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsStoreyAggregate">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows storey aggregate</rdfs:label>
@@ -106,8 +106,13 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/appliesTo">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/TypeRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that connects the planning regulation to their urban entity. Generally, all plots have general planning regulations, while area regulations applies to specific zones and type regulations applies to specific zone types.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">applies to</rdfs:label>
     </owl:ObjectProperty>
@@ -118,46 +123,10 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/forNeighbourZoneType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoningType"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">for neighbour zone type</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/forPlotContainedIn -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/forPlotContainedIn">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">for plot contained in</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/forProgramme -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/forProgramme">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Programme"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">for programme</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/forZoningType -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/forZoningType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoningType"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">for zoning type</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -166,8 +135,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/hasAdditionalType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has additional type</rdfs:label>
     </owl:ObjectProperty>
@@ -190,7 +159,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/isConstrainedBy">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is constrained by</rdfs:label>
@@ -214,7 +183,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresDepth">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AverageDepth"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires depth</rdfs:label>
@@ -226,7 +195,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresFloorToFloorHeight">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires floor to floor height</rdfs:label>
@@ -238,7 +207,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresPartyWall">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/PartyWall"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires party wall</rdfs:label>
@@ -262,7 +231,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresSetback">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires setback</rdfs:label>
@@ -274,7 +243,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresSiteArea">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/SiteArea"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires site area</rdfs:label>
@@ -286,7 +255,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresWidth">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AverageWidth"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires width</rdfs:label>
@@ -310,7 +279,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/forCornerPlot">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">for corner plot</rdfs:label>
@@ -322,7 +291,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/forFringePlot">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">for fringe plot</rdfs:label>
@@ -334,7 +303,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/hasExternalRef">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has external ref</rdfs:label>
@@ -346,7 +315,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/hasName">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has name</rdfs:label>
@@ -358,7 +327,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/plotAbuts1-3RoadCategory">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">plot abuts 1-3 road category</rdfs:label>
@@ -370,7 +339,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/plotAbutsGoodClassBungalowArea">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">plot abuts good class bungalow area</rdfs:label>
@@ -382,7 +351,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/plotInGoodClassBungalowArea">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">plot in good class bungalow area</rdfs:label>
@@ -406,8 +375,8 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area Regulation defines URA regulations that have geospatial boundary. In other words, these are regulations whose rules apply only to entities within the regulation geospatial boundary.</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area regulation are special planning regulations that take precedence over other regulations in specific geographic areas. They are usually enforced using geospatial boundaries, denoting that their rules and provisions apply exclusively to entities within the specified geospatial boundary. The intent behind area regulations is often to address unique or localised needs, challenges, or opportunities, and they can vary significantly from standard zoning or land use regulations.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area Regulation</rdfs:label>
     </owl:Class>
@@ -443,7 +412,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/DevelopmentControlPlan">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/TypeRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Development Control Plan as defined by URA. Developemnt Control Plans provide development control guidelines and parameters for developments. It explains the parameters such as building setbacks, building coverage, intensity and height in detail.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Development Control Plan as defined by URA. Development Control Plans provide development control guidelines and parameters for developments. It explains the parameters such as building setbacks, building coverage, intensity and height in detail.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Development Control Plan</rdfs:label>
     </owl:Class>
@@ -517,6 +486,17 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning regions as defined in https://data.gov.sg/dataset/master-plan-2019-region-boundary-no-sea</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning Region</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning regulations are a set of rules and guidelines established by competent authorities at the local, regional, or national level to control and manage the development and use of land and properties within a specific geographic area.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning Regulation</rdfs:label>
     </owl:Class>
     
 
@@ -604,21 +584,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/TypeRegulation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type regulation represent URA regulations that apply to entities based on the entities&amp;apos; type. In other words, type regulation rules will apply to urban entity that has the same type. For instance, a Commercial development control plan will apply to plots with commercial zoning type.</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type regulation is a form of specialised planning regulations that provide guidelines to any urban entities based on their type. For instance, a Commercial development control plan will apply to zones with commercial zone type. These regulations are designed to address specific land use or development needs associated with their zone uses. Note that these regulations might only provide a range of guidelines for specific restrictions, but individual plots may differ from these guidelines. For instance, Commercial Zone Type might have a maximum floor-to-floor height of 5m in the type regulation, but specific plots might have a lower maximum number.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type Regulation</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">URARegulation defines all formalised Urban Redevelopment Agency regulations, e.g. Development Control Plans, Urban Deign Guidelines, Height Control plans and others.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">URA Regulation</rdfs:label>
     </owl:Class>
     
 
@@ -738,10 +707,17 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Programme -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Zone -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Programme"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/ZoneType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
     
 
 
