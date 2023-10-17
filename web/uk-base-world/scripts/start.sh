@@ -19,7 +19,7 @@ done
 # Check for required arguments
 if [[ ! -v PASSWORD ]]; then 
     echo "No PASSWORD argument supplied, cannot continue."
-    exit -1
+    exit 1
 fi
 
 # Check for optional arguments
@@ -43,13 +43,8 @@ then
     ROOT=$(git rev-parse --show-toplevel)
     if [[ "$ROOT" == *"not a git"* ]]; then
         echo "Not within a valid Git repository, cannot continue."
-        exit -1
+        exit 1
     fi
-
-    # Copy in the FIA config and query
-    FIA_DIR="$ROOT/Agents/FeatureInfoAgent/queries"
-    cp "./inputs/config/fia-config.json" "$FIA_DIR/"
-    cp "./inputs/config/dukes_query.sparql" "$FIA_DIR/"
 
     # Clear any existing stack manager configs
     MANAGER_CONFIG="$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/config/"
@@ -70,6 +65,9 @@ then
     rm -rf "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/*"
     cp "./inputs/config/fia-config.json" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
     cp "./inputs/config/dukes_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/woodland_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/substation_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/power_line_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
 
     # Copy the visualisation files into the special volume populator folder
     mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/"
@@ -79,8 +77,9 @@ then
     if [ -n "$HOST" ]; then
         # HOST parameter supplied, inject into visualisation's data.json file
         echo "Injecting custom HOST paramater into visualisation files..."
-        sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/data.json"
-        sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/settings.json"
+        sed -i "s|http://localhost:38383|"http://localhost:$HOST"|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/data.json"
+        sed -i "s|http://localhost:38383|"http://localhost:$HOST"|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/legend.html"
+        sed -i "s|http://localhost:38383|"http://localhost:$HOST"|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/settings.json"
     fi
    
     # Copy in the custom grafana conf into the special volume populator folder
@@ -98,30 +97,35 @@ then
 
     # Copy in the stack uploader config(s)
     cp "./inputs/config/dukes_2023.json" "$UPLOAD_CONFIG/"
-
-    # Copy in the data for upload
-    UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
-    cp -r "./inputs/data/." "$UPLOAD_DATA/" 
+    cp -r ./inputs/config/pylons-and-veg/* "$UPLOAD_CONFIG/"
 
     # Run the stack manager to start a new stack
-    cd "$ROOT/Deploy/stacks/dynamic/stack-manager"
+    cd "$ROOT/Deploy/stacks/dynamic/stack-manager" || exit
     echo "Running the stack start up script..."
     ./stack.sh start UKBASEWORLD 38383
 
-    # Wait for the stack to start
-    echo 
-    read -p "Press enter to continue once the stack is up and running..."
-    
+    # Copy in the data for upload
+    UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
+    echo "Copying data..." 
+    cp -r "$START/inputs/data/." "$UPLOAD_DATA/" 
+
+    # Wait for the stack manager container to exit
+while docker ps --format '{{.Names}}' | grep -qE 'stack-manager'; do
+    sleep 1
+done
+    sleep 5
+
     # Run the uploader to upload data
-    cd "$ROOT/Deploy/stacks/dynamic/stack-data-uploader"
+    cd "$ROOT/Deploy/stacks/dynamic/stack-data-uploader" || exit
     echo "Running the stack uploader script..."
     ./stack.sh start UKBASEWORLD 
 
     # Get the name of the grafana container
-    GRAFANA=$(docker container ls | grep -o UKBASEWORLD-grafana.*)
+    GRAFANA=$(docker ps --format '{{.Names}}' | grep 'UKBASEWORLD-grafana' | head -n 1)
+
 
     # Copy in the custom grafana images
-    cd "$START"
+    cd "$START" || exit
     docker cp "./inputs/twa-logo.svg" $GRAFANA:"/usr/share/grafana/public/img/grafana_icon.svg"
     docker cp "./inputs/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/fav32.png"
     docker cp "./inputs/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/apple-touch-icon.png"
@@ -131,7 +135,7 @@ then
     # Create a new Grafana organisation via HTTP API
     echo "Using Grafana API to create a new organisation..."
     RESPONSE="$(curl -X POST -H "Content-Type: application/json" -d '{"name":"CMCL"}' http://admin:$PASSWORD@localhost:38383/dashboard/api/orgs)"
-    ORG_ID="$(echo $RESPONSE | grep -o [0-9])"
+    ORG_ID=$(echo "$RESPONSE" | grep -o '[0-9]*')
 
     # Change the Grafana admin account to be part of the new org
     echo "Using Grafana API to switch admin account to the new organisation..."
@@ -170,5 +174,5 @@ then
     echo "Visualisation should be available now at http://localhost:38383/visualisation/"
 else
     echo "Please copy in the data sets as described in the README before re-running this script."
-    exit -1
+    exit 1
 fi
