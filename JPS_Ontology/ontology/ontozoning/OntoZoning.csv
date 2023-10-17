@@ -1,9 +1,10 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoZoning,TBox,https://www.theworldavatar.com/kg/ontozoning/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoZoning,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
-OntoZoning,TBox,"OntoZoning is an ontology developed to represent relationships between zoning types, land uses and ZoneUses (more specific land uses).",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoZoning,TBox,"OntoZoning is an ontology developed to represent relationships between zones, their zone types and zone uses.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoZoning,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
-ZoneType,Class,,,,,,The zone type is a legally-binding description of the permittable ‘uses’ and ‘developments’ that are or may not be allowed to be constructed within a specific zone or area delineated. Zone types are defined by a competent authority and are usually tailored to specific contexts.,https://www.theworldavatar.com/kg/ontozoning/,Zoning Type
+Zone,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,A zone is a defined area or district within the physical world that has specific land use regulations and zoning ordinances. A zone generally is demarcated with a 3D spatial extent as its boundary.,https://www.theworldavatar.com/kg/ontozoning/,Zone
+ZoneType,Class,,,,,,The zone type is a legally-binding description of the permittable ‘uses’ and ‘developments’ that are or may not be allowed to be constructed within a specific zone or area delineated. Zone types are defined by a competent authority and are usually tailored to specific contexts.,https://www.theworldavatar.com/kg/ontozoning/,Zone Type
 AgricultureZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used for agricultural purposes and includes plant nursery.,https://www.theworldavatar.com/kg/ontozoning/,Agriculture Zone
 BeachAreaZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used for coastal recreational purposes for the enjoyment of the general public.,https://www.theworldavatar.com/kg/ontozoning/,Beach Area
 Business1Zone,Class,ZoneType,IS-A,,,,"A zoning type tailored to URA in Singapore. These are areas used or intended to be used mainly for clean industry, light industry, public utilities, and telecommunication uses and other public installations for which the relevant authority does not impose a nuisance buffer greater than 50m. General industrial uses that are able to meet the nuisance buffer requirements imposed by the relevant authority for general industries may be allowed in the B1 zones, subject to evaluation by the relevant authority and the competent authority.",https://www.theworldavatar.com/kg/ontozoning/,Business 1 Zone
@@ -339,8 +340,9 @@ allowsUse,Object Property,,,ZoneType,ZoneUse,,A relationship that denotes the al
 doesNotAllowUse,Object Property,,,ZoneType,ZoneUse,,A relationship that denotes the zone uses that are not permissible within a specific zone type.,https://www.theworldavatar.com/kg/ontozoning/,does not allow use
 hasMaxUseQuantum,Object Property,,,ZoneUse,UseQuantum,,,https://www.theworldavatar.com/kg/ontozoning/,has max use quantum
 hasMinUseQuantum,Object Property,,,ZoneUse,UseQuantum,,,https://www.theworldavatar.com/kg/ontozoning/,has min use quantum
+hasPlot,Object Property,,,Zone,https://www.theworldavatar.com/kg/ontoplot/Plot,,A relationship that indicates the plots that are within the boundaries of the specified zone.,https://www.theworldavatar.com/kg/ontozoning/,has plot
 hasUnit,Object Property,,,UseQuantum,https://www.ontology-of-units-of-measure.org/resource/om-2/Percentage UNION https://www.ontology-of-units-of-measure.org/resource/om-2/squareMetre,,,https://www.theworldavatar.com/kg/ontozoning/,has unit
-hasZone,Object Property,,,https://www.theworldavatar.com/kg/ontoplot/Plot,ZoneType,,,https://www.theworldavatar.com/kg/ontozoning/,has zone
+hasZoneType,Object Property,,,Zone,ZoneType,,A relationship indicates that the zone has a specific zone type associated with it. This association may be established by the relevant competent authority.,https://www.theworldavatar.com/kg/ontozoning/,has zone type
 isRelativeTo,Object Property,,,UseQuantum,ZoneUse UNION https://www.theworldavatar.com/kg/ontoplot/Plot,,,https://www.theworldavatar.com/kg/ontozoning/,is relative to
 mayAllowUse,Object Property,,,ZoneType,ZoneUse,,"A relationship that denotes the zone uses that may be allowed within a specific zone type, subject to the approval of the competent authority.",https://www.theworldavatar.com/kg/ontozoning/,may allow use
 hasValue ,Data Property,,,UseQuantum,decimal,,,https://www.theworldavatar.com/kg/ontozoning/,has value 

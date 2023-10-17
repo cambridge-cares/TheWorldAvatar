@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontozoning/">
         <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 October 2023</dc:date>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoZoning is an ontology developed to represent relationships between zoning types, land uses and ZoneUses (more specific land uses).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoZoning is an ontology developed to represent relationships between zones, their zone types and zone uses.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
@@ -79,6 +79,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontozoning/hasPlot -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasPlot">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that indicates the plots that are within the boundaries of the specified zone.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has plot</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontozoning/hasUnit -->
 
 
@@ -98,14 +111,15 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/hasZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/hasZoneType -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasZone">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasZoneType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship indicates that the zone has a specific zone type associated with it. This association may be established by the relevant competent authority.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has zone type</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -186,6 +200,13 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://ontology.eil.utoronto.ca/icity/LBCSv2/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Activity</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#Feature -->
+
+
+    <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
     
 
 
@@ -3856,13 +3877,25 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Zone -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Zone">
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A zone is a defined area or district within the physical world that has specific land use regulations and zoning ordinances. A zone generally is demarcated with a 3D spatial extent as its boundary.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zone</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontozoning/ZoneType -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoneType">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The zone type is a legally-binding description of the permittable �uses� and �developments� that are or may not be allowed to be constructed within a specific zone or area delineated. Zone types are defined by a competent authority and are usually tailored to specific contexts.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zoning Type</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zone Type</rdfs:label>
     </owl:Class>
     
 
