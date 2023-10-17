@@ -1,0 +1,40 @@
+[PrefixDeclaration]
+grp:		http://www.opengis.net/citygml/cityobjectgroup/2.0/
+sf:		    http://www.opengis.net/ont/sf#
+bldg:		http://www.opengis.net/citygml/building/2.0/
+xsd:		http://www.w3.org/2001/XMLSchema#
+geo:		http://www.opengis.net/ont/geosparql#
+citygml:	http://cui.unige.ch/citygml/2.0/
+
+[MappingDeclaration] @collection [[
+mappingId	Building
+target		<{iri}> a bldg:Building ;bldg:measuredHeight {"measured_height"}^^xsd:double . 
+source		SELECT measured_height, generic.urival AS iri
+            FROM citydb.building AS building, citydb.cityobject_genericattrib as generic
+            WHERE building.id=generic.cityobject_id AND generic.urival is not null
+
+mappingId	Non-Solid Geometry
+target		citygml:geometry/{"id"} a sf:Polygon ; geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {geometry_wkt}"^^geo:wktLiteral  ; geo:hasMetricArea {"area_sqm"}^^xsd:double . 
+source		SELECT "id", ST_ASTEXT(ST_TRANSFORM("geometry", 4326)) AS "geometry_wkt", ST_AREA("geometry") AS "area_sqm"
+			FROM citydb."surface_geometry"
+			WHERE "geometry" IS NOT NULL
+
+mappingId	Surface Geometry to City Object
+target		<{iri}> geo:hasGeometry citygml:geometry/{"id"} . 
+source		SELECT surface.id AS id, generic.urival as iri
+            FROM citydb."surface_geometry" AS surface, citydb.cityobject_genericattrib as generic
+            WHERE "geometry" IS NOT NULL AND surface.cityobject_id=generic.cityobject_id AND generic.urival IS NOT NULL
+
+
+mappingId	Building - LoDFootprint
+target		<{iri}> bldg:lod0FootPrint citygml:geometry/{"lod0_footprint_id"} . 
+source		SELECT generic.urival AS iri, "lod0_footprint_id"
+            FROM citydb."building" AS building, citydb.cityobject_genericattrib AS generic
+            WHERE building.id=generic.cityobject_id AND generic.urival IS NOT NULL
+
+mappingId	Surface Geometry - Parent
+target		citygml:geometry/{"id"} grp:parent citygml:geometry/{"parent_id"} . 
+source		SELECT "id", "parent_id"
+			FROM citydb."surface_geometry"
+]]
+
