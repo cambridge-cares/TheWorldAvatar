@@ -65,7 +65,7 @@ public class CityTilerClient extends ContainerClient {
         } else {
             sendFilesContent(containerId,
                     Map.of(COLOUR_CONFIG_FILE, colours.toString().getBytes()),
-                    COLOUR_CONFIG_DIR);
+                    "/");
         }
 
         try (TempDir configDir = makeRemoteTempDir(containerId)) {

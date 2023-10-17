@@ -25,11 +25,11 @@
             "importOptions": {
                 "sridIn": "27700"
             },
-            "name": "cambridge_gsl",
+            "name": "building-cambridge_gsl",
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "mapbox_layer",
-                    "sql": "@/inputs/config/building-cambridge.sql",
+                    "sql": "@/inputs/config/mapbox-footprint.sql",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geometry",
@@ -43,7 +43,6 @@
         {
             "type": "tabular",
             "skip": false,
-            "schema": "public",
             "subdirectory": "tabular",
             "table": "TOID_UPRN_MatchingTable",
             "ogr2ogrOptions": {
