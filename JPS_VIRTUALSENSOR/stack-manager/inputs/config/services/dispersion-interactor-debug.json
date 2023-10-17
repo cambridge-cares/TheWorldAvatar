@@ -19,6 +19,7 @@
 					"SHIPS_LAYER_NAME=ships",
 					"BUILDINGS_TABLE=buildings",
 					"STATIC_SOURCE_TABLE=static",
+					"VIRTUAL_SENSOR_AGENT_URL=http://ship-stack-virtual-sensor-agent:8080/VirtualSensorAgent/",
                     "JPDA_ADDRESS=0.0.0.0:5005",
                     "JPDA_TRANSPORT=dt_socket",
                     "DEBUG=ON"

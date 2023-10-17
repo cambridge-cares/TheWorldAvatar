@@ -18,7 +18,8 @@
 					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
 					"SHIPS_LAYER_NAME=ships",
 					"BUILDINGS_TABLE=buildings",
-					"STATIC_SOURCE_TABLE=static"
+					"STATIC_SOURCE_TABLE=static",
+					"VIRTUAL_SENSOR_AGENT_URL=http://ship-stack-virtual-sensor-agent:8080/VirtualSensorAgent/"
 				],
 				"Configs": [
 					{

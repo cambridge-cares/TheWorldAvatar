@@ -16,6 +16,7 @@ public class Config {
     public static final String SHIPS_LAYER_NAME = System.getenv("SHIPS_LAYER_NAME");
     public static final String BUILDINGS_TABLE = System.getenv("BUILDINGS_TABLE");
     public static final String STATIC_SOURCE_TABLE = System.getenv("STATIC_SOURCE_TABLE");
+    public static final String VIRTUAL_SENSOR_AGENT_URL = System.getenv("VIRTUAL_SENSOR_AGENT_URL");
 
     private Config() {
         throw new IllegalStateException();

@@ -392,10 +392,9 @@ public class QueryClient {
         ModifyQuery modify = Queries.MODIFY();
         // This next line needs to be added the ontodispersion TBox.
         String virtualSensorUpdateIri = Config.VIRTUAL_SENSOR_AGENT_IRI;
-        String virtualSensorUpdateUrl = "http://ship-stack-virtual-sensor-agent:8080/VirtualSensorAgent/";
         modify.insert(iri(virtualSensorUpdateIri).isA(service).andHas(hasOperation, operationIri));
-        modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(virtualSensorUpdateUrl)).andHas(hasInput,
-                inputIri));
+        modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(Config.VIRTUAL_SENSOR_AGENT_URL))
+                .andHas(hasInput, inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
         modify.insert(partIri.has(hasType, DISPERSION_OUTPUT));
         modify.prefix(P_DISP, P_OM, P_EMS);
