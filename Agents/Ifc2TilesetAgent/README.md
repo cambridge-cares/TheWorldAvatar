@@ -104,7 +104,7 @@ In `config/properties.yaml`, there are also optional properties for appending IR
 - sewage_tileset_iri
 - sewage_tileset_name
 
-**Note that this will be ignored if there are no root contents or a `building.glb` is generated.*
+**Note that this will be ignored if there are no root contents or a `building.glb` is generated. When there is a `building.glb`, the corresponding building instance and name in the Knowledge Graph will take precedence.*
 
 If you are deploying this on the stack, ensure that your `properties.yaml` and IFC file is placed at the corresponding bind mount location. A sample stack-based properties is available in `config/properties.yaml_stack` but requires editing for the name of your stack, desired namespaces, and optional IRIs or names.
 
@@ -153,6 +153,11 @@ The agent have been packaged into the following submodules:
 As Git does not allow empty directories, `.gitignore` files have been added to the subdirectories  of `<root>\data\`. This is important to set up the file structure for the code to run. 
 
 ## 4. Tips for BIM processing
+> Building name
+- In order to include the building name within the tileset, please ensure that a building name has been added in the IFC file before running the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent).
+- In Revit, you may add this information in the `Projection Information` under the `Manage` tab
+    - In the pop-up box, add your desired name to the `Building Name` field.
+
 >Geo-referencing
 - Do not move the Project Base Point or Survey Point when creating a new Revit file
     - Do not attempt to add any georeferenced point in the physical model, except as a parameter of a property set

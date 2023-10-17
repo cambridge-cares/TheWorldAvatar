@@ -148,5 +148,7 @@ def get_building_iri_name(query_endpoint: str, update_endpoint: str) -> str:
     if len(results) == 0:
         return "",""
     else:
+        if not results[0]["name"]:
+            logger.warning("Detected building instance but name is empty! Please verify the label of this instance...")
         # assume that there exists only one building in the KG subgraph for BIM models
         return results[0]["iri"], results[0]["name"]
