@@ -26,13 +26,15 @@ Here, `my-filter-queries` is a directory containing `.sparql` template queries t
 PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT DISTINCT ?iri WHERE {
-  ?type rdfs:label ?typelabel .
-  FILTER(CONTAINS(?typelabel, "[class]"))
-  ?class rdfs:subClassOf* ?type .
-  SERVICE <ontop> {
-    ?iri a ?class .
-    ?iri rdfs:label ?asset_name .
-    FILTER(CONTAINS(?asset_name, "[name]"))
+  SERVICE <http://nhs-blazegraph:8080/blazegraph/namespace/nhs/sparql> {
+    ?type rdfs:label ?typelabel .
+    FILTER(CONTAINS(?typelabel, "[class]"))
+    ?class rdfs:subClassOf* ?type .
+    SERVICE <ontop> {
+      ?iri a ?class .
+      ?iri rdfs:label ?asset_name .
+      FILTER(CONTAINS(?asset_name, "[name]"))
+    }
   }
 }
 ```
