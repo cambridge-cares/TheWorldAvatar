@@ -917,37 +917,50 @@ public class QueryClient {
         return iriToPolygonMap;
     }
 
+    /**
+     * queries for buildings near each static point
+     * 
+     * @param allSources
+     * @param allBuildings
+     * @return
+     */
     List<Building> getBuildings(List<PointSource> allSources, Map<String, Building> allBuildings) {
-        String sridIri = "<http://www.opengis.net/def/crs/EPSG/0/4326>";
-        Polygon boundingBox = getBoundingBoxOfPointSources2(allSources);
-
-        SelectQuery query = Queries.SELECT();
-        Variable buildingVar = query.var();
-        Variable wktVar = query.var();
-        Variable surfaceParentVar = query.var();
-        Variable surfaceVar = query.var();
-
-        GraphPattern queryPattern = GraphPatterns.and(
-                buildingVar.has(LOD0_FOOTPRINT, surfaceParentVar),
-                surfaceVar.has(PARENT, surfaceParentVar).andHas(AS_WKT, wktVar));
-
-        Expression<?> expression = Expressions.and(GeoSPARQL.sfWithin(wktVar,
-                Rdf.literalOfType(sridIri + " " + boundingBox.toString(), iri(GEO.GEO_WKT_LITERAL.getIRIString()))));
-
-        query.select(buildingVar).where(ontopService.service(queryPattern.filter(expression))).prefix(P_BLDG, P_GEO,
-                P_GRP, P_GEOF).distinct();
-
-        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-
         List<Building> buildings = new ArrayList<>();
 
-        for (int i = 0; i < queryResult.length(); i++) {
-            String buildingIri = queryResult.getJSONObject(i).getString(buildingVar.getQueryString().substring(1));
+        String sridIri = "<http://www.opengis.net/def/crs/EPSG/0/4326>";
 
-            // if this throws an error then there's something wrong, bounding box is a
-            // subset of scope
-            buildings.add(allBuildings.get(buildingIri));
-        }
+        allSources.stream().forEach(source -> {
+            Polygon boundingBox = getBoundingBoxOfPointSources2(source);
+
+            SelectQuery query = Queries.SELECT();
+            Variable buildingVar = query.var();
+            Variable wktVar = query.var();
+            Variable surfaceParentVar = query.var();
+            Variable surfaceVar = query.var();
+
+            GraphPattern queryPattern = GraphPatterns.and(
+                    buildingVar.has(LOD0_FOOTPRINT, surfaceParentVar),
+                    surfaceVar.has(PARENT, surfaceParentVar).andHas(AS_WKT, wktVar));
+
+            Expression<?> expression = Expressions
+                    .and(GeoSPARQL.sfWithin(wktVar, Rdf.literalOfType(sridIri + " " + boundingBox.toString(),
+                            iri(GEO.GEO_WKT_LITERAL.getIRIString()))));
+
+            query.select(buildingVar).where(ontopService.service(queryPattern.filter(expression)))
+                    .prefix(P_BLDG, P_GEO, P_GRP, P_GEOF).distinct();
+
+            JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+            for (int i = 0; i < queryResult.length(); i++) {
+                String buildingIri = queryResult.getJSONObject(i).getString(buildingVar.getQueryString().substring(1));
+
+                // if this throws an error then there's something wrong, bounding box is a
+                // subset of scope
+                if (allBuildings.get(buildingIri) != null && !buildings.contains(allBuildings.get(buildingIri))) {
+                    buildings.add(allBuildings.get(buildingIri));
+                }
+            }
+        });
 
         return buildings;
     }
@@ -1124,31 +1137,17 @@ public class QueryClient {
      * @param allSources
      * @return
      */
-    private Polygon getBoundingBoxOfPointSources2(List<PointSource> allSources) {
-        double buffer = 0.005;
-        GeometryFactory geoFactory = new GeometryFactory();
-        List<Point> convertedPoints = allSources.stream().map(s -> {
-            double[] xyOriginal = { s.getLocation().getX(), s.getLocation().getY() };
-            double[] xyTransformed = CRSTransformer.transform("EPSG:" + s.getLocation().getSRID(), "EPSG:4326",
-                    xyOriginal);
-            return geoFactory.createPoint(new Coordinate(xyTransformed[0], xyTransformed[1]));
-        }).collect(Collectors.toList());
+    private Polygon getBoundingBoxOfPointSources2(PointSource source) {
+        double buffer = 0.002;
+        double[] xyOriginal = { source.getLocation().getX(), source.getLocation().getY() };
+        double[] xyTransformed = CRSTransformer.transform("EPSG:" + source.getLocation().getSRID(), "EPSG:4326",
+                xyOriginal);
 
-        List<Double> xCoordinates = convertedPoints.stream().map(Point::getX).collect(Collectors.toList());
-        List<Double> yCoordinates = convertedPoints.stream().map(Point::getY).collect(Collectors.toList());
-
-        double xMin = Collections.min(xCoordinates);
-        double yMin = Collections.min(yCoordinates);
-        double xMax = Collections.max(xCoordinates);
-        double yMax = Collections.max(yCoordinates);
-
-        if (allSources.size() == 1) {
-            double expandRange = 0.001;
-            xMin -= expandRange;
-            xMax += expandRange;
-            yMin -= expandRange;
-            yMax += expandRange;
-        }
+        double expandRange = 0.001;
+        double xMin = xyTransformed[0] - expandRange;
+        double yMin = xyTransformed[1] + expandRange;
+        double xMax = xyTransformed[0] - expandRange;
+        double yMax = xyTransformed[0] + expandRange;
 
         Coordinate[] coordinates = { new Coordinate(xMin, yMin), new Coordinate(xMax, yMin),
                 new Coordinate(xMax, yMax), new Coordinate(xMin, yMax), new Coordinate(xMin, yMin) };
