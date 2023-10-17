@@ -96,3 +96,6 @@ obsolete/*
 **/credentials/repo_*
 JPS_VIRTUALSENSOR/ShipInputAgent/data/*.json
 *.tif
+web/uk-base-world/grafana_api_key
+web/uk-base-world/visualisation/mapbox_api_key
+web/uk-base-world/visualisation/mapbox_username
