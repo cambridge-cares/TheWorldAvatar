@@ -172,7 +172,7 @@ The Dockerfile will automatically copy all properties files and mapping folder a
 
 ##### Add Config to Stack Manager
 Before running the stack manager, you need to add the config files to the stack manager. The config files are located in `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/`.
-- Copy `stack-manager-config/pvlib-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
+- Copy `./PvLibAgent/stack-manager-config/pvlib-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
 - Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it does not exist, following the below structure.
 ```json
 {
