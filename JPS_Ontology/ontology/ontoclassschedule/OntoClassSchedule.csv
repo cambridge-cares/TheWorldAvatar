@@ -1,5 +1,5 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
-OntoClassSchedule,TBox,https://www.theworldavatar.com/kg/ontoclassschedule,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoClassSchedule,TBox,https://www.theworldavatar.com/kg/ontoclassschedule/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoClassSchedule,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoClassSchedule,TBox,"OntoClassSchedule is designed to represent and manage class schedules in an educational setting. It captures the relationships between sessions, courses, and various types of course offerings.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoClassSchedule,TBox,http://www.w3.org/2006/time#,http://www.w3.org/2002/07/owl#imports,,,,,,
