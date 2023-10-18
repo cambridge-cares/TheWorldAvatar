@@ -493,7 +493,7 @@ def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: p
     if orientation == 'ver':
         colorbar = plt.colorbar(scalar_mappable, ax=axs, cax=cax1)
     # Set the label for the colorbar
-    colorbar.set_label(label)
+    colorbar.set_label(label,fontsize = 15)
     return colorbar
 
 # Others ----------------------- #

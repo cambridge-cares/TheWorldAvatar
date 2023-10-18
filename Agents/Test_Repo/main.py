@@ -111,8 +111,6 @@ def generate_temp_rdf():
                 for key_3, value_3 in temp_dict[key_1][key].items():
                     clim_var = key_3
                     meas_uuid = CLIMA + 'ClimateMeasurement_' + str(uuid.uuid4())
-                    temp_uuid = CLIMA + 'Temperature_' + str(uuid.uuid4())
-                    val_uuid = CLIMA + 'Value_' + str(uuid.uuid4())
                     start_time = key[0:10] + "T"+ key[11:19] + "Z"
                     end_time = start_end_dict[start_time]
 
@@ -533,10 +531,10 @@ def perform_update():
 #get_the_metadat_of_nc_file()
 #convert_NetCDF_to_GeoTiff()
 #convert_NetCDF_to_GeoTiff()
-#generate_temp_rdf()
+# generate_temp_rdf()
 #consump_figure_using_tom_code()
 #make_geometry_valid()
-perform_update()
+#perform_update()
 
 # temp_dict = call_pickle('./Data/temp_dict in function get_all_data')
 # print(len(temp_dict))

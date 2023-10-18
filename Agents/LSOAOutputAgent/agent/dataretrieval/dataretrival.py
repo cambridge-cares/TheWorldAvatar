@@ -784,7 +784,8 @@ def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
     logger.info(f'{df.shape[0]/36} number of LSOA of which Climate tempeature data (max, mean, min of each 12 months) have been retrieved')
     return df
 
-# query = output_query_template('Temperature')
-# parse_to_file(query,'fuel poverty')
+query = output_query_template('Fuel poverty')
+parse_to_file(query,'fuel poverty')
+# retrieve_temp_from_KG()
 
 
