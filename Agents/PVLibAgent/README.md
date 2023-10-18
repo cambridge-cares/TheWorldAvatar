@@ -172,7 +172,7 @@ The Dockerfile will automatically copy all properties files and mapping folder a
 
 ##### Add Config to Stack Manager
 Before running the stack manager, you need to add the config files to the stack manager. The config files are located in `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/`.
-- Copy `./PvLibAgent/stack-manager-config/pvlib-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
+- Copy `./PVLibAgent/stack-manager-config/pvlib-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
 - Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it does not exist, following the below structure.
 ```json
 {
@@ -205,15 +205,15 @@ Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/D
 Select from one of the following to read weather data:
 - Read data from Irradiance Sensor
 ```
-curl -X GET http://localhost:3838/api/v1/evaluate?device=sensor&stack=true
+curl -X GET http://localhost:3838/pvlib-agent/api/v1/evaluate?device=sensor&stack=true
 ```
 -  Read data from Weather Station
 ```
-curl -X GET http://localhost:3838/api/v1/evaluate?device=weatherStation&stack=true
+curl -X GET http://localhost:3838/pvlib-agent/api/v1/evaluate?device=weatherStation&stack=true
 ```
 -  Read data from OpenMeteo API
 ```
-curl -X GET http://localhost:3838/api/v1/evaluate?device=openmeteo&stack=true
+curl -X GET http://localhost:3838/pvlib-agent/api/v1/evaluate?device=openmeteo&stack=true
 ```
 
 If the agent runs successfully, you should see a returned Object that is similar to the one shown below.
