@@ -9,7 +9,7 @@ services:
     image: pv_lib_agent_test:1.1.0
     container_name: pv_lib_agent_test
     ports:
-      - 1020:5000
+      - 1021:5000
 
   # Blazegraph
   blazegraph_test:

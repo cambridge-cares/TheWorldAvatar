@@ -165,7 +165,7 @@ A successful setup will result in 9 containers (optional 10):
 ##### Build the image
 First, build image with:
 ```
-docker build -t historical-ntuenergy-agent:1.0.0 .
+docker build -t pv_lib_agent:1.1.0 .
 ```
 The Dockerfile will automatically copy all properties files and mapping folder and set environment variables pointing to their location. Therefore, you do not need to shift the properties files and mapping folder nor add in environment variables manually.
 
@@ -221,25 +221,21 @@ If the agent runs successfully, you should see a returned Object that is similar
 {"AC Power(W)":7.922936051747742,"DC Power(W)":9.510628810971978,"timestamp":"Thu, 24 Nov 2022 09:54:51 GMT"}
 ```
 
-## 4. Agent tests
-Several unit tests are provided in the `tests` folder. Some tests are currently commented out as they required both
-Blazegraph and PostgreSQL to be running. To run those tests, the provided docker-compose.test.yml file can be used
-to spin up these services at the specified endpoints before uncommenting them. To run the tests, please follow the steps below:
+## 4. Dockerised agent tests
 
-1. Create a virtual environment with the following commands:
+The dockerised tests use one Docker container to initialise the agent and run pytest, and spin up the required Blazegraph and Postgres instances within the same stack.
+To run the dockerised tests, please follow the steps below:
+
+1. Build the docker image with the multi-stage dockerfile with the following command:
 ```
-python -m venv pvlib_venv
-pvlib_venv\Scripts\activate.bat
+docker build -t pv_lib_agent:1.1.0 .
 ```
-2. Install all required packages in virtual environment:
+This command will output two images, `pv_lib_agent:1.1.0` and `pv_lib_agent_test:1.1.0`. 
+The `pv_lib_agent_test:1.1.0` image will be used to run the tests.
+The Dockerfile will automatically copy all properties files and mapping folder 
+and set environment variables pointing to their location for testing. Therefore, you do not need to shift the properties files and mapping folder nor add in environment variables manually.
+
+2. Spin up the `pv_lib_agent_test:1.1.0` image and the required Blazegraph and Postgres test container instances with the following command:
 ```
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-3. Deploy Blazegraph and Postgresql as docker containers, uncomment and run the tests:
-```
-# Uncomment integration tests and start Docker services (if wanted)
-docker compose -f "tests\docker-compose.test.yml" up -d --build 
-# Run tests
-pytest
+docker compose -f "docker-compose-test.yml" up -d --build
 ```
