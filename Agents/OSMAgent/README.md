@@ -52,9 +52,9 @@ You will need to provide your credentials (GitHub username/personal access token
 ### 3.2. Agent Configuration
 In the [config.properties](osmagent/src/main/resources/config.properties) file, specify the following:
 - `db.name` - Database name containing both 3D building, OSM data and Landuse data (Optional). 
-Default value - `postgres` is set to according to the database name specified in [osm.json](inputs/config/osm.json). Change `db.name` if [osm.json](inputs/config/osm.json) database value is changed.
+Default value - `postgres` is set to according to the database name specified in [osm.json](inputs/config/osmagent.json). Change `db.name` if [osm.json](inputs/config/osmagent.json) database value is changed.
 - `osm.schema` - Schema name containing OSM data. 
-Default value - `osm` is set to the schema specified in [osm.json](inputs/config/osm.json). Change `osm.schema` and [`building_usage.obda`](osmagent/src/main/resources/building_usage.obda) if [osm.json](inputs/config/osm.json) schema is changed.
+Default value - `osm` is set to the schema specified in [osm.json](inputs/config/osmagent.json). Change `osm.schema` and [`building_usage.obda`](osmagent/src/main/resources/building_usage.obda) if [osm.json](inputs/config/osmagent.json) schema is changed.
 - `landuse.table` - Table name (inclusive of schema) containing land use data. Default value is set to `public.dlmsie02f` as per uploaded via psdt [here](https://github.com/cambridge-cares/pirmasens/blob/main/psdt/stack-data-uploader-inputs/config/dlm.json). Leave empty if there is no land use data available, no land use matching will be run.
 
 ## 4. Deployment
@@ -96,7 +96,7 @@ The result of OSMAgent - Building Usages is designed to be compatible with TWA-V
 
 
 #### To-Do in the future
-Current approach of SPARQL query in [building_usage.sparql](FeatureInfoAgent/queries/building_usage.sparql) involves processing an IRI string for visualisation purposes. This is done here as a work-around for performance reason as querying the same information semantically from the KG is dramatically slower. Note that extracting information from IRI strings is generally unacceptable and should not be copied or imitated. When performance issue is resolved, the semantically correct SPARQL query can be found [here](FeatureInfoAgent/native/).
+Current approach of SPARQL query in [`building_usage.sparql`](twa-vf/FeatureInfoAgent/queries/building_usage.sparql) involves processing an IRI string for visualisation purposes. This is done here as a work-around for performance reason as querying the same information semantically from the KG is dramatically slower. Note that extracting information from IRI strings is generally unacceptable and should not be copied or imitated. When performance issue is resolved, the semantically correct SPARQL query can be found [here](FeatureInfoAgent/native/).
 
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
