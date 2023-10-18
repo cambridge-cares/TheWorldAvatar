@@ -4,7 +4,7 @@ services:
   example:
     build:
       context: .
-      target: base
+      target: production
       dockerfile: Dockerfile
     image: pv_lib_agent:1.1.0
     container_name: pv_lib_agent
