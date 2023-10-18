@@ -1,67 +1,40 @@
 import random
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import networkx as nx
 
-from constants import RDFS_SUBCLASSOF
+from utils import Utils
 
 
 class GraphQueryGenerator:
-    def __init__(self, ontology: nx.DiGraph):
-        self.ontology = ontology
-        self.degree = dict(ontology.degree)
-
-    def get_prop2path(self, s: str):
-        prop2path = dict()
-
-        def dfs(n: str, edge_path: Tuple[str]):
-            for e in self.ontology.out_edges(n, data="label"):
-                h, t, prop = e
-                if prop != RDFS_SUBCLASSOF:
-                    prop2path[prop] = edge_path + (e,)
-                else:
-                    dfs(t, edge_path + (e,))
-
-        dfs(s, tuple())
-        return prop2path
+    def __init__(self, ontology: nx.DiGraph, prop_blacklist: List[str] = []):
+        G = Utils.flatten_subclassof(ontology)
+        G = Utils.remove_egdes_by_label(G, labels=prop_blacklist)
+        self.ontology = G
 
     def generate_query_template(
         self,
         edge_num: int,
         question_node: Optional[str] = None,
-        prop_blacklist: List[str] = [],
     ):
         if question_node is None:
             question_node = random.choices(
-                list(self.degree.keys()), weights=self.degree.values()
+                list(self.ontology.nodes()), weights=[self.ontology.degree[n] for n in self.ontology.nodes()]
             )[0]
 
         G = nx.MultiDiGraph()
         G.add_node(question_node, question_node=1)
-        for i in range(edge_num):
+        for _ in range(edge_num):
             n = random.choices(
-                list(G.nodes), weights=[int(self.degree[n] > 0) for n in G.nodes]
+                list(G.nodes()), weights=[int(self.ontology.degree[n] > 0) for n in G.nodes()]
             )[0]
-            
-            prop2path = self.get_prop2path(n)
-            if i == 0 and n == question_node:
-                in_edges = list(self.ontology.in_edges(n, data="label"))
-            else:
-                in_edges = []
+            print("Chosen node: ", n)
 
-            prop = random.choice(
-                [
-                    x
-                    for x in list(prop2path.keys()) + [x[2] for x in in_edges]
-                    if x not in prop_blacklist
-                ]
-            )
-            if prop in prop2path:
-                path = prop2path[prop]
-                G.add_edge(path[0][0], path[-1][1], label=prop, path=path)
-            else:
-                edge = random.choice([x for x in in_edges if x[2] == prop])
-                G.add_edge(edge[0], edge[1], label=edge[2])
+            out_edges = list(self.ontology.out_edges(n, data="label"))
+            in_edges = list(self.ontology.in_edges(n, data="label"))
+
+            edge = random.choice(out_edges + in_edges)
+            G.add_edge(edge[0], edge[1], label=edge[2])
 
         return G
 

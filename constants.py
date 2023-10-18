@@ -17,9 +17,11 @@ OWL_EQUIVALENTCLASS = OWL + "equivalentClass"
 OS = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
 OS_GITCOMMITHASH = OS + "gitCommitHash"
 
+OKIN = "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#"
+
 NAMESPACE2PREFIX = {
     OS: "os",
-    "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#": "okin",
+    OKIN: "okin",
     "http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#": "occ",
     RDF: "rdf",
     RDFS: "rdfs",
