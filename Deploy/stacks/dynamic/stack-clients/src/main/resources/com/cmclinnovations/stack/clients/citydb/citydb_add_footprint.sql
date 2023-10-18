@@ -148,7 +148,7 @@ UPDATE building AS b
 SET lod0_footprint_id = f.footprint_id
 FROM fp_parent AS f
 WHERE b.id = f.bid
-    AND b.lod0_footprint_id IS NULL
+    AND b.lod0_footprint_id IS NULL;
 INSERT INTO citydb.surface_geometry (
         gmlid,
         parent_id,
