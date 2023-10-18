@@ -3,7 +3,7 @@
 The OSMAgent is an agent that works with OpenStreetMap (OSM) data to link them to existing building IRI and instantiate the semantic representation of building usage information from OSM data.
 The workflow of the agent can be broadly outlined in the following steps:
 1) Categorize OSM tags according to [OntoBuiltEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) concept. 
-2) Identify and match OSM data with the 3D buildings uploaded as CityGML data and LoD0 footprint as extracted by the [DataIntegrationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-1524-integration-data-2/Agents/DataIntegrationAgent). To assign building IRI to OSM data, this is carried out through matching the geometry of the OSM data to the 3D buildings' footprint. 
+2) Identify and match OSM data with the 3D buildings uploaded as CityGML data and LoD0 footprint. This is perfomed by assigning building IRI to OSM data through matching the geometry of the OSM data to the 3D buildings' footprint. 
 3) Calculate building usage share for all OSM data with tagged building IRI and non-null usage information.
 4) If land use data is available, for 3D buildings without tagged OSM usage, the agent will tag it with the corresponding land use.  
 
@@ -19,12 +19,8 @@ The agent has been implemented to work in the stack. Follow the instructions in 
 ### 2.3. CityDb
 The agent works with 3D buildings uploaded from CityGML data, follow the instructions in the [stack-data-uploader]'s README.
 
-### 2.4. DataIntegrationAgent
-This agent is designed to work with the LoD0 footprint extracted by the DataIntegrationAgent, and assumed the presence of the 3D buildings and LoD0 footprint inside the stack PostgreSQL. 
-**Please ensure that the DataIntegrationAgent is deployed in the stack and ran first before building and running this agent.**
-
-### 2.5. Uploading Raw Data
-#### 2.5.1. OSM Data
+### 2.4. Uploading Raw Data
+#### 2.4.1. OSM Data
 Upload raw OSM data using [stack-data-uploader] as a set of points and polygons of `.gml` data. The data structure and config file to upload the raw OSM data in stack-data-uploader is located in [inputs] directory. 
 
 To prepare OSM data in `.gml` format
@@ -32,7 +28,7 @@ To prepare OSM data in `.gml` format
 2) Convert the `.pbf` file into `.osm` format using [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
 3) Import the `.osm` file  into QGIS using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, then export points and polygons layer as `points.gml` and `polygons.gml`.
 
-#### 2.5.2. Digitales Landschaftsmodell (DLM) Land Use Data
+#### 2.4.2. Digitales Landschaftsmodell (DLM) Land Use Data
 DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
 The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
 Please note that PSDT is a private repository, permission may be required.
@@ -92,7 +88,7 @@ The debugger port will be available at 5005.
 The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. 
 
 #### Setting up FIAgent
-1) Place [`building_usage.sparql`](FeatureInfoAgent/queries/building_usage.sparql) and [`fia-config.json`](FeatureInfoAgent/queries/fia-config.json) inside [`stack-manager/inputs/data/queries`]((https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data)) as according the volume path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
+1) Place [`building_usage.sparql`](twa-vf/FeatureInfoAgent/queries/building_usage.sparql) and [`fia-config.json`](twa-vf/FeatureInfoAgent/queries/fia-config.json) inside [`stack-manager/inputs/data/queries`]((https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data)) as according the volume path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
 2) Spin FeatureInfoAgent up along with the [stack-manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-the-feature-info-agent).
 
 #### Setting up TWA-VF
