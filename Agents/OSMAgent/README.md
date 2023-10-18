@@ -10,8 +10,8 @@ The workflow of the agent can be broadly outlined in the following steps:
 ## 2. Prerequisites
 ### 2.1. OntoBuiltEnvironment Classification
 In the [resource folder](osmagent/src/main/resources/), there are two CSV files that govern the classification of OSM usage and DLM land use to OntoBuiltEnvironment concepts:
-- `osm_tags.csv` contains the OSM tags and the corresponding OntoBuiltEnvironment classification.  
-- `dlm_landuse.csv` contains the DLM tags and the corresponding OntoBuiltEnvironment classification.
+- `osm_tags.csv` contains the [OSM tags](https://wiki.openstreetmap.org/wiki/Map_features) and the corresponding OntoBuiltEnvironment classification.  
+- `dlm_landuse.csv` contains the Digitales Landschaftsmodell (DLM) tags and the corresponding OntoBuiltEnvironment classification.
 
 ### 2.2. Stack Set Up
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack.
@@ -25,9 +25,7 @@ This agent is designed to work with the LoD0 footprint extracted by the DataInte
 
 ### 2.5. Uploading Raw Data
 #### 2.5.1. OSM Data
-Upload raw OSM data in the same stack PostgreSQL database as the 3D buildings using [stack-data-uploader] as a set of points and polygons of `.gml` data.
-The data structure and config file to upload the raw OSM data in stack-data-uploader is located in [inputs] directory. 
-Ensure that the database specified in [osm.json](inputs/config/osm.json) is the same database where the 3D buildings is located.
+Upload raw OSM data using [stack-data-uploader] as a set of points and polygons of `.gml` data. The data structure and config file to upload the raw OSM data in stack-data-uploader is located in [inputs] directory. 
 
 To prepare OSM data in `.gml` format
 1) Download desired bounding box from [BBBike.org](https://extract.bbbike.org/) (check junk email) or [GeoFabrik](https://download.geofabrik.de/) in `.pbf` format.
@@ -35,11 +33,15 @@ To prepare OSM data in `.gml` format
 3) Import the `.osm` file  into QGIS using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, then export points and polygons layer as `points.gml` and `polygons.gml`.
 
 #### 2.5.2. Digitales Landschaftsmodell (DLM) Land Use Data
-If unavailable within the database, DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
+DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
 The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
 Please note that PSDT is a private repository, permission may be required.
 
-**Please ensure that the DLM land use data is uploaded in the same PostgreSQL database as the 3D buildings and OSM data. 3D Buildings, OSM data and DLM data can have different schemas however all datasets are assumed to be in the same PostgresSQL database.**
+#### Important note
+The following datasets must exists in the same PostgreSQL database, they are allowed to have different schemas.  
+1)  DLM land use data
+2)  3D buildings 
+3)  OSM data
 
 ## 3. Build
 ### 3.1. GitHub Credentials
@@ -53,21 +55,31 @@ You will need to provide your credentials (GitHub username/personal access token
 
 ### 3.2. Agent Configuration
 In the [config.properties](osmagent/src/main/resources/config.properties) file, specify the following:
-- `db.name` - Database name containing both 3D building and OSM data. 
-Default is set to the database value specified in [osm.json](inputs/config/osm.json). Change `db.name` if [osm.json](inputs/config/osm.json) database value is changed.
+- `db.name` - Database name containing both 3D building, OSM data and Landuse data (Optional). 
+Default value - `postgres` is set to according to the database name specified in [osm.json](inputs/config/osm.json). Change `db.name` if [osm.json](inputs/config/osm.json) database value is changed.
 - `osm.schema` - Schema name containing OSM data. 
-Default is set to the schema value specified in [osm.json](inputs/config/osm.json). Change `osm.schema` and [`building_usage.obda`](FeatureInfoAgent/building_usage.obda) if [osm.json](inputs/config/osm.json) schema value is changed.
-- `landuse.table` -  Table name (inclusive of schema) containing land use data. 
-Leave empty if there is no land use data available, no land use matching will be run.
-
-### 3.3. Building Docker Image
-In the same directory as this README, run `docker compose build`. This will build the OSMAgent Docker Image
+Default value - `postgres` is set to the schema specified in [osm.json](inputs/config/osm.json). Change `osm.schema` and [`building_usage.obda`](osmagent/src/main/resources/building_usage.obda) if [osm.json](inputs/config/osm.json) schema is changed.
+- `landuse.table` - Table name (inclusive of schema) containing land use data. Default value is set to `public.dlmsie02f` as per uploaded in . Leave empty if there is no land use data available, no land use matching will be run.
 
 ## 4. Deployment
-The agent has been implemented to work in the stack, which requires the OSMAgent Docker container to be deployed in the stack. To do so, place [osmagent.json](stack-manager-input-config/osmagent.json) in the [stack-manager config directory]. 
-The agent container makes use of bind mounts to read in configuration details, please ensure that ```Source``` under ```Mounts``` in [osmagent.json](stack-manager-input-config/osmagent.json) is replaced with the absolute path to [resources folder](osmagent/src/main/resources).
+
+### 4.1 Building Docker Image
+In the same directory as this README, run `docker compose build`. This will build the OSMAgent Docker Image.
+
+### 4.2 Starting with the stack-manager
+The agent has been implemented to work in the stack. To do so, place [osmagent.json](stack-manager-input-config/osmagent.json) in the [stack-manager config directory]. 
+
+The agent container makes use of bind mounts to read in configuration details. Replace `<REPLACE_WITH_YOUR_DIRECTORY>` of the bind mount in [osmagent.json](stack-manager-input-config/osmagent.json) with the absolute path to OSMAgent's [resources folder](osmagent/src/main/resources) on your local machine.
+
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
-Please ensure that the stack the agent is spun up in is the same stack where the OSM and DLM data were uploaded.
+
+### 4.3 Running the Agent
+The agent is reachable at the `/update` endpoint. No request parameters is needed.
+
+To run the agent, run the following cURL command:
+```
+curl -X POST localhost:3838/osmagent/update
+```
 
 ## 5. Debugging
 To debug the agent, replace [`osmagent-debug.json`](stack-manager-input-config/osmagent-debug.json) instead of [`osmagent.json`](stack-manager-input-config/osmagent.json) in the [stack-manager config directory]. 
@@ -75,24 +87,19 @@ To debug the agent, replace [`osmagent-debug.json`](stack-manager-input-config/o
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.
 The debugger port will be available at 5005.
 
-## 6. Running the Agent
-The agent is reachable at the `/update` endpoint. No request parameters is required to run the agent at the `/update` endpoint.
 
-To run the agent, simply run the following cURL command:
-```
-curl -X POST localhost:3838/osmagent/update
-```
-
-## 7. TWA-VF Visualization
+## 6. TWA-VF Visualization
 The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. 
 
-Steps: 
-1) Upload [building_usage.obda](FeatureInfoAgent/building_usage.obda) via stack-data-uploader.
-2) Run the SPARQL Update in [building_class.sparql](FeatureInfoAgent/building_class.sparql).
-3) Place [building_usage.sparql](FeatureInfoAgent/queries/building_usage.sparql) and [fia-config.json](FeatureInfoAgent/queries/fia-config.json) into FeatureInfoAgent's [queries](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent/queries) subfolder.
-4) Spin FeatureInfoAgent up along with the [stack-manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-the-feature-info-agent).
+#### Setting up FIAgent
+1) Place [`building_usage.sparql`](FeatureInfoAgent/queries/building_usage.sparql) and [`fia-config.json`](FeatureInfoAgent/queries/fia-config.json) inside [`stack-manager/inputs/data/queries`]((https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data)) as according the volume path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
+2) Spin FeatureInfoAgent up along with the [stack-manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-the-feature-info-agent).
 
-### To-Do in the future
+#### Setting up TWA-VF
+1) Place [`data.json`](twa-vf/Pirmasens/webspace/data.json) inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here]((https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation)) in the stack-manager.
+
+
+#### To-Do in the future
 Current approach of SPARQL query in [building_usage.sparql](FeatureInfoAgent/queries/building_usage.sparql) involves processing an IRI string for visualisation purposes. This is done here as a work-around for performance reason as querying the same information semantically from the KG is dramatically slower. Note that extracting information from IRI strings is generally unacceptable and should not be copied or imitated. When performance issue is resolved, the semantically correct SPARQL query can be found [here](FeatureInfoAgent/native/).
 
 
