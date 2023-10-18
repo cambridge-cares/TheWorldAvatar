@@ -85,6 +85,15 @@ CREATE TABLE public.rough_footprint_CityDB AS (
             FROM precise_footprint_CityDB AS p
             WHERE p.building_id = COALESCE(b.id, t.building_id)
         )
+        AND (
+            COALESCE(
+                b.id,
+                t.building_id
+            ) IN (
+                SELECT id
+                FROM public.building_without_footprint_CityDB
+            )
+        )
     GROUP BY COALESCE(
             b.id,
             t.building_id
