@@ -58,8 +58,8 @@ In the [config.properties](osmagent/src/main/resources/config.properties) file, 
 - `db.name` - Database name containing both 3D building, OSM data and Landuse data (Optional). 
 Default value - `postgres` is set to according to the database name specified in [osm.json](inputs/config/osm.json). Change `db.name` if [osm.json](inputs/config/osm.json) database value is changed.
 - `osm.schema` - Schema name containing OSM data. 
-Default value - `postgres` is set to the schema specified in [osm.json](inputs/config/osm.json). Change `osm.schema` and [`building_usage.obda`](osmagent/src/main/resources/building_usage.obda) if [osm.json](inputs/config/osm.json) schema is changed.
-- `landuse.table` - Table name (inclusive of schema) containing land use data. Default value is set to `public.dlmsie02f` as per uploaded in . Leave empty if there is no land use data available, no land use matching will be run.
+Default value - `osm` is set to the schema specified in [osm.json](inputs/config/osm.json). Change `osm.schema` and [`building_usage.obda`](osmagent/src/main/resources/building_usage.obda) if [osm.json](inputs/config/osm.json) schema is changed.
+- `landuse.table` - Table name (inclusive of schema) containing land use data. Default value is set to `public.dlmsie02f` as per uploaded via psdt [here](https://github.com/cambridge-cares/pirmasens/blob/main/psdt/stack-data-uploader-inputs/config/dlm.json). Leave empty if there is no land use data available, no land use matching will be run.
 
 ## 4. Deployment
 
