@@ -3,8 +3,7 @@
     "groups": [
         {
             "name": "Buildings",
-            "stack": "http://localhost:3838",
-            "expanded": false,
+            "stack": "http://10.25.188.85:3838",
             "sources": [
                 {
                     "id": "building",  
@@ -12,185 +11,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson"
-                },
-                {
-                    "id": "ReligiousFacility",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27ReligiousFacility%27"
-                },
-                {
-                    "id": "IndustrialFacility",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27IndustrialFacility%27"
-                },
-                {
-                    "id": "PoliceStation",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27PoliceStation%27"
-                },
-                {
-                    "id": "CulturalFacility",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27CulturalFacility%27"
-                },
-                {
-                    "id": "DrinkingEstablishment",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27DrinkingEstablishment%27"
-                },
-                {
-                    "id": "FireStation",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27FireStation%27"
-                },
-                {
-                    "id": "SingleResidential",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27SingleResidential%27"
-                },
-                {
-                    "id": "Hotel",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Hotel%27"
-                },
-                {
-                    "id": "Non-domestic",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Non-domestic%27"
-                },
-                {
-                    "id": "UniversityFacility",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27UniversityFacility%27"
-                },
-                {
-                    "id": "Multi_Residential",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27MultiResidential%27"
-                },
-                {
-                    "id": "Domestic",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Domestic%27"
-                },
-                {
-                    "id": "EatingEstablishment",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27EatingEstablishment%27"
-                },
-                {
-                    "id": "TransportFacility",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27TransportFacility%27"
-                },
-                {
-                    "id": "School",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27School%27"
-                },
-                {
-                    "id": "RetailFacility",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27RetailFacility%27"
-                },
-                {
-                    "id": "SportsFacility",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27SportsFacility%27"
-                },
-                {
-                    "id": "Office",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Office%27"
-                },
-                {
-                    "id": "Clinic",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Clinic%27"
-                },
-                {
-                    "id": "Hospital",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Hospital%27"
-                }
-                ,
-                {
-                    "id": "Pharmacy",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Pharmacy%27"
-                }
-                ,
-                {
-                    "id": "Bank",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Bank%27"
+                    "data": "http://localhost:3838/geoserver/building/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
@@ -245,8 +66,9 @@
                 {
                     "id": "Religious Facility",
                     "name": "Religious Facility",
-                    "source": "ReligiousFacility",
+                    "source": "building",
                     "type": "fill-extrusion",
+                    "filter": ["in", "ReligiousFacility", ["get", "ontobuilt"]],
                     "minzoom": 8, 
                     "order": 23,
                     "layout": {
@@ -267,8 +89,10 @@
                 {
                     "id": "Industrial Facility",
                     "name": "Industrial Facility",
-                    "source": "IndustrialFacility",
+                    "source": "building",
+                    "filter": ["in", "IndustrialFacility", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
+
                     "minzoom": 8, 
                     "order": 23,
                     "layout": {
@@ -289,7 +113,8 @@
                 {
                     "id": "Police Station",
                     "name": "Police Station",
-                    "source": "PoliceStation",
+                    "source": "building",
+                    "filter": ["in", "PoliceStation", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -311,7 +136,8 @@
                 {
                     "id": "Cultural Facility",
                     "name": "Cultural Facility",
-                    "source": "CulturalFacility",
+                    "source": "building",
+                    "filter": ["in", "CulturalFacility", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -333,7 +159,8 @@
                 {
                     "id": "Drinking Establishment",
                     "name": "Drinking Establishment",
-                    "source": "DrinkingEstablishment",
+                    "source": "building",
+                    "filter": ["in", "DrinkingEstablishment", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -355,7 +182,8 @@
                 {
                     "id": "Fire Station",
                     "name": "Fire Station",
-                    "source": "FireStation",
+                    "source": "building",
+                    "filter": ["in", "FireStation", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -377,7 +205,8 @@
                 {
                     "id": "Single Residential",
                     "name": "Single Residential",
-                    "source": "SingleResidential",
+                    "source": "building",
+                    "filter": ["in", "SingleResidential", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -399,7 +228,8 @@
                 {
                     "id": "Hotel",
                     "name": "Hotel",
-                    "source": "Hotel",
+                    "source": "building",
+                    "filter": ["in", "Hotel", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -419,9 +249,10 @@
                     }
                 },
                 {
-                    "id": "Non-domestic",
-                    "name": "Non-domestic",
-                    "source": "Non-domestic",
+                    "id": "Non-Domestic",
+                    "name": "Non-Domestic",
+                    "source": "building",
+                    "filter": ["in", "Non-Domestic", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -443,7 +274,8 @@
                 {
                     "id": "University Facility",
                     "name": "University Facility",
-                    "source": "UniversityFacility",
+                    "source": "building",
+                    "filter": ["in", "UniversityFacility", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -463,9 +295,10 @@
                     }
                 },
                 {
-                    "id": "Multi_Residential",
-                    "name": "Multi_Residential",
-                    "source": "Multi_Residential",
+                    "id": "Multi-Residential",
+                    "name": "Multi-Residential",
+                    "source": "building",
+                    "filter": ["in", "MultiResidential", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -487,7 +320,8 @@
                 {
                     "id": "Domestic",
                     "name": "Domestic",
-                    "source": "Domestic",
+                    "source": "building",
+                    "filter": ["in", "Domestic", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -509,7 +343,8 @@
                 {
                     "id": "Eating Establishment",
                     "name": "Eating Establishment",
-                    "source": "EatingEstablishment",
+                    "source": "building",
+                    "filter": ["in", "EatingEstablishment", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -531,7 +366,8 @@
                 {
                     "id": "Transport Facility",
                     "name": "Transport Facility",
-                    "source": "TransportFacility",
+                    "source": "building",
+                    "filter": ["in", "TransportFacility", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -554,7 +390,8 @@
                 {
                     "id": "School",
                     "name": "School",
-                    "source": "School",
+                    "source": "building",
+                    "filter": ["in", "School", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -577,7 +414,8 @@
                 {
                     "id": "Retail Facility",
                     "name": "Retail Facility",
-                    "source": "RetailFacility",
+                    "source": "building",
+                    "filter": ["in", "RetailFacility", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -600,7 +438,8 @@
                 {
                     "id": "Sports Facility",
                     "name": "Sports Facility",
-                    "source": "SportsFacility",
+                    "source": "building",
+                    "filter": ["in", "SportsFacility", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -623,7 +462,8 @@
                 {
                     "id": "Office",
                     "name": "Office",
-                    "source": "Office",
+                    "source": "building",
+                    "filter": ["in", "Office", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -646,7 +486,8 @@
                 {
                     "id": "Clinic",
                     "name": "Clinic",
-                    "source": "Clinic",
+                    "source": "building",
+                    "filter": ["in", "Clinic", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -669,7 +510,8 @@
                 {
                     "id": "Hospital",
                     "name": "Hospital",
-                    "source": "Hospital",
+                    "source": "building",
+                    "filter": ["in", "Hospital", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -691,7 +533,8 @@
                 {
                     "id": "Pharmacy",
                     "name": "Pharmacy",
-                    "source": "Pharmacy",
+                    "source": "building",
+                    "filter": ["in", "Pharmacy", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -714,7 +557,8 @@
                 {
                     "id": "Bank",
                     "name": "Bank",
-                    "source": "Bank",
+                    "source": "building",
+                    "filter": ["in", "Bank", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 23,
@@ -731,128 +575,6 @@
                             ["get", "measured_height"],
                             8
                         ]
-                    }
-                }
-            ]
-        },
-        {
-            "name": "Digitales Landschaftsmodell",
-            "expanded": false,
-            "sources": [
-                {
-                    "id": "dlm-sie02f-source",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/pirmasens/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pirmasens%3Adlmsie02f&outputFormat=application%2Fjson"
-                }
-            ],
-                "layers": [
-                    {
-                        "id": "dlm-AX_FlaecheBesondererFunktionalerPraegung-layer",
-                        "name": "AX_FlaecheBesondererFunktionalerPraegung (Area Of Special Functional)",
-                        "source": "dlm-sie02f-source",
-                        "filter": ["in", "AX_FlaecheBesondererFunktionalerPraegung", ["get", "OBJART_TXT"]],
-                        "type": "fill",
-                        "visibility": "visible",
-                        "paint": {
-                            "fill-color": "#000000",             
-                            "fill-outline-color": "#000000",
-                            "fill-opacity": 0.20
-                        }
-                    },          
-                    {
-                        "id": "dlm-AX_FlaecheGemischterNutzung-layer",
-                        "name": "AX_FlaecheGemischterNutzung (Area of Mixed Use)",
-                        "source": "dlm-sie02f-source",
-                        "filter": ["in", "AX_FlaecheGemischterNutzung", ["get", "OBJART_TXT"]],
-                        "type": "fill",
-                        "visibility": "visible",
-                        "paint": {
-                            "fill-color": "#0000FF",             
-                            "fill-outline-color": "#000000",
-                            "fill-opacity": 0.20
-                        }
-                    },
-                    {
-                        "id": "dlm-AX_Friedhof-layer",
-                        "name": "AX_Friedhof (Cemetery)",
-                        "source": "dlm-sie02f-source",
-                        "filter": ["in", "AX_Friedhof", ["get", "OBJART_TXT"]],
-                        "type": "fill",
-                        "visibility": "visible",
-                        "paint": {
-                            "fill-color": "#FF00FF",             
-                            "fill-outline-color": "#000000",
-                            "fill-opacity": 0.20
-                        }
-                    },
-                    {
-                        "id": "dlm-AX_IndustrieUndGewerbeflaeche-layer",
-                        "name": "AX_IndustrieUndGewerbeflaeche (Industry And Commercial Area)",
-                        "source": "dlm-sie02f-source",
-                        "filter": ["in", "AX_IndustrieUndGewerbeflaeche", ["get", "OBJART_TXT"]],
-                        "type": "fill",
-                        "visibility": "visible",
-                        "paint": {
-                            "fill-color": "#FFFF00",             
-                            "fill-outline-color": "#000000",
-                            "fill-opacity": 0.20
-                        }
-                    },
-                    {
-                        "id": "dlm-AX_SportFreizeitUndErholungsflaeche-layer",
-                        "name": "AX_SportFreizeitUndErholungsflaeche (Sport Leisure And Recreation Area)",
-                        "source": "dlm-sie02f-source",
-                        "filter": ["in", "AX_SportFreizeitUndErholungsflaeche", ["get", "OBJART_TXT"]],
-                        "type": "fill",
-                        "visibility": "visible",
-                        "paint": {
-                            "fill-color": "#00FFFF",             
-                            "fill-outline-color": "#000000",
-                            "fill-opacity": 0.20
-                        }
-                    }
-                    ,                    
-                    {
-                        "id": "dlm-AX_Wohnbauflaeche-layer",
-                        "name": "AX_Wohnbauflaeche (Residential area)",
-                        "source": "dlm-sie02f-source",
-                        "filter": ["in", "AX_Wohnbauflaeche", ["get", "OBJART_TXT"]],
-                        "type": "fill",
-                        "visibility": "visible",
-                        "paint": {
-                            "fill-color": "#FFA500",             
-                            "fill-outline-color": "#000000",
-                            "fill-opacity": 0.20
-                        }
-                    }
-            ]
-
-        },
-        {
-            "name": "Population Data",
-            "stack": "http://165.232.172.16:3838",
-            "sources": [
-                {
-                    "id": "openpopgrid",
-                    "type": "raster",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/pirmasens/wms?service=WMS&version=1.1.0&request=GetMap&layers=pirmasens%3Apopulation_1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
-                    ]
-                }
-            ], 
-            "layers": [
-                {
-                    "id": "openpopgrid",
-                    "type": "raster",
-                    "name": "OpenPopGrid",
-                    "source": "openpopgrid",
-                    "minzoom": 8,
-                    "order": 1,
-                    "layout": {
-                        "visibility": "none"
                     }
                 }
             ]
