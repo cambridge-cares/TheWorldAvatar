@@ -1,10 +1,17 @@
 from typing import Iterable
 import networkx as nx
 
-from constants import RDFS_SUBCLASSOF
+from constants import NAMESPACE2PREFIX, RDFS_SUBCLASSOF
 
 
 class Utils:
+    @classmethod
+    def shortenIri(cls, iri: str):
+        for ns, p in NAMESPACE2PREFIX.items():
+            if iri.startswith(ns):
+                return f"{p}:{iri[len(ns):]}"
+        raise iri
+
     @classmethod
     def flatten_subclassof(cls, G: nx.DiGraph):
         def get_propedges(n: str):
