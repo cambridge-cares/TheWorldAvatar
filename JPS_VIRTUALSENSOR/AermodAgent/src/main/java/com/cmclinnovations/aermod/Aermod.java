@@ -767,4 +767,30 @@ public class Aermod {
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.DISPERSION_CONTOURS_TABLE, geoServerVectorSettings);
     }
+
+    void createElevationLayer(JSONObject geoJSON, String derivationIri) {
+        JSONArray features = geoJSON.getJSONArray("features");
+        for (int j = 0; j < features.length(); j++) {
+            JSONObject feature = features.getJSONObject(j);
+            JSONObject featureProperties = feature.getJSONObject("properties");
+            featureProperties.put("derivation", derivationIri);
+        }
+
+        GDALClient gdalClient = GDALClient.getInstance();
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.ELEVATION_CONTOURS_TABLE,
+                geoJSON.toString(), new Ogr2OgrOptions(), true); // true = append
+
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+
+        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+        virtualTable.setSql(String.format("select *, title as name from %s", EnvConfig.ELEVATION_CONTOURS_TABLE));
+        virtualTable.setEscapeSql(true);
+        virtualTable.setName("elevation");
+        virtualTable.addVirtualTableGeometry("wkb_geometry", "MultiPolygon", "4326");
+        geoServerVectorSettings.setVirtualTable(virtualTable);
+
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                EnvConfig.ELEVATION_CONTOURS_TABLE, geoServerVectorSettings);
+    }
 }

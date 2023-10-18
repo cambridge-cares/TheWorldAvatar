@@ -53,16 +53,23 @@ def get_aermod_geojson(aermod_output, srid):
     conc_list = data['AVERAGE CONC']
     conc_matrix = np.empty((len(x_set), len(y_set)))
 
+    elev_list = data['ZELEV']
+    elev_matrix = np.empty((len(x_set), len(y_set)))
+
     for i in range(len(conc_list)):
         x_index = x_set.index(data['X'][i])
         y_index = y_set.index(data['Y'][i])
         conc_matrix[x_index, y_index] = conc_list[i]
+        elev_matrix[x_index, y_index] = elev_list[i]
 
     contour_level = 30
     _, ax = plt.subplots()
 
     contourf = ax.contourf(x_matrix, y_matrix, conc_matrix,
                            levels=contour_level, cmap=plt.cm.jet)
+
+    contourf_elev = ax.contourf(x_matrix, y_matrix, elev_matrix,
+                                levels=contour_level, cmap=plt.cm.jet)
 
     plt.colorbar(contourf)
     ax.remove()
@@ -80,6 +87,10 @@ def get_aermod_geojson(aermod_output, srid):
     geojsonstring = geojsoncontour.contourf_to_geojson(
         contourf=contourf, fill_opacity=0.5)
 
-    response = {'contourgeojson': json.loads(geojsonstring), 'colourbar': url}
+    geojsonstring_elev = geojsoncontour.contourf_to_geojson(
+        contourf=contourf_elev, fill_opacity=0.5)
+
+    response = {'contourgeojson': json.loads(
+        geojsonstring), 'colourbar': url, 'contourgeojson_elev': json.loads(geojsonstring_elev)}
 
     return jsonify(response), 200

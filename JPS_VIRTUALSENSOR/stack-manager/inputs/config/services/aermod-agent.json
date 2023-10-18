@@ -21,7 +21,8 @@
 					"DISPERSION_RASTER_TABLE=dispersion_raster",
 					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri",
 					"BUILDINGS_TABLE=buildings",
-					"STATIC_SOURCE_TABLE=static"
+					"STATIC_SOURCE_TABLE=static",
+					"ELEVATION_CONTOURS_TABLE=elevation_contours"
 				],
 				"Configs": [
 					{

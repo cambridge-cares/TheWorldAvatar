@@ -158,12 +158,6 @@ public class AermodAgent extends DerivationAgent {
         // create input files
         Aermod aermod = new Aermod(simulationDirectory);
 
-        // produces buildings input for aermod main code
-        if (!buildings.isEmpty()) {
-            aermod.createBPIPPRMInput(allSources, buildings, srid);
-            aermod.runBPIPPRM();
-        }
-
         boolean usesElevation = false;
         if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE) && queryClient.hasElevationData(scope)) {
             usesElevation = true;
@@ -174,6 +168,12 @@ public class AermodAgent extends DerivationAgent {
                     queryClient.getReceptorElevation(scope, nx, ny, srid));
         } else {
             aermod.createAERMODReceptorInput(scope, nx, ny, srid);
+        }
+
+        // produces buildings input for aermod main code
+        if (!buildings.isEmpty()) {
+            aermod.createBPIPPRMInput(allSources, buildings, srid);
+            aermod.runBPIPPRM();
         }
 
         // Moved this part outside the if statement to ensure that the buildings.dat
@@ -202,6 +202,9 @@ public class AermodAgent extends DerivationAgent {
         // names, and raster filenames
         Map<String, DispersionOutput> zToOutputMap = new HashMap<>();
         zIriList.forEach(z -> zToOutputMap.put(z, new DispersionOutput()));
+
+        // fudge, otherwise object needs to be "final" in the loop
+        List<JSONObject> elevationJson = new ArrayList<>();
 
         Pollutant.getPollutantList().parallelStream()
                 .filter(pollutantType -> allSources.stream().allMatch(p -> p.hasPollutant(pollutantType)))
@@ -237,7 +240,16 @@ public class AermodAgent extends DerivationAgent {
                     JSONObject geoJSON = response.getJSONObject("contourgeojson");
                     aermod.createDispersionLayer(geoJSON, derivationInputs.getDerivationIRI(), pollutantType,
                             simulationTime, zMap.get(zIri));
+
+                    elevationJson.add(response.getJSONObject("contourgeojson_elev"));
                 }));
+
+        if ((!queryClient.tableExists(EnvConfig.ELEVATION_CONTOURS_TABLE) && usesElevation) ||
+                (queryClient.tableExists(EnvConfig.ELEVATION_CONTOURS_TABLE)
+                        && !queryClient.hasElevationContourData(derivationInputs.getDerivationIRI())
+                        && usesElevation)) {
+            aermod.createElevationLayer(elevationJson.get(0), derivationInputs.getDerivationIRI());
+        }
 
         boolean append = false;
         if (queryClient.tableExists(EnvConfig.DISPERSION_RASTER_TABLE)) {

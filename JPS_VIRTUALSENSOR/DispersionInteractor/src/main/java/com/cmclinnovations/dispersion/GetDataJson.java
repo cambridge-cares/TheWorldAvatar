@@ -178,8 +178,9 @@ public class GetDataJson extends HttpServlet {
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                     +
                     "&bbox={bbox-epsg-3857}"
-                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.BUILDINGS_TABLE)
-                    + String.format("&CQL_FILTER=derivation='%s' AND time=%d", derivationIri, timestep);
+                    + String.format("&layers=%s:%s", "the_world_avatar", "building-pirmasens_gsl");
+            // + String.format("&CQL_FILTER=derivation='%s' AND time=%d",
+            // derivationIri, timestep);
             JSONObject buildingSource = new JSONObject();
             buildingSource.put("id", "building-source");
             buildingSource.put("type", "vector");
@@ -191,14 +192,14 @@ public class GetDataJson extends HttpServlet {
             buildingLayer.put("type", "fill-extrusion");
             buildingLayer.put("name", "Buildings");
             buildingLayer.put("source", "building-source");
-            buildingLayer.put("source-layer", Config.BUILDINGS_TABLE);
+            buildingLayer.put("source-layer", "building-pirmasens_gsl");
             buildingLayer.put("minzoom", 4);
             buildingLayer.put("layout", visibility);
 
             JSONObject buildingLayerPaint = new JSONObject();
-            buildingLayerPaint.put("fill-extrusion-base", new JSONArray().put("get").put("base"));
-            buildingLayerPaint.put("fill-extrusion-color", new JSONArray().put("get").put("color"));
-            buildingLayerPaint.put("fill-extrusion-height", new JSONArray().put("get").put("height"));
+            buildingLayerPaint.put("fill-extrusion-base", 0);
+            buildingLayerPaint.put("fill-extrusion-color", "#666666");
+            buildingLayerPaint.put("fill-extrusion-height", new JSONArray().put("get").put("building_height"));
             buildingLayer.put("paint", buildingLayerPaint);
 
             layers.put(buildingLayer);
@@ -235,23 +236,30 @@ public class GetDataJson extends HttpServlet {
         // elevation
         if (Boolean.TRUE.equals(hasLayers.get(3))) {
             String elevationWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
-                    "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     + "&bbox={bbox-epsg-3857}"
-                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, "elevation");
+                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.ELEVATION_CONTOURS_TABLE)
+                    + String.format("&CQL_FILTER=derivation='%s'", derivationIri);
             JSONObject elevationSource = new JSONObject();
             elevationSource.put("id", "elevation-source");
-            elevationSource.put("type", "raster");
+            elevationSource.put("type", "vector");
             elevationSource.put("tiles", new JSONArray().put(elevationWms));
             sources.put(elevationSource);
 
             JSONObject elevationLayer = new JSONObject();
             elevationLayer.put("id", "elevation-layer");
-            elevationLayer.put("type", "raster");
+            elevationLayer.put("type", "fill");
             elevationLayer.put("name", "Elevation");
             elevationLayer.put("source", "elevation-source");
-            elevationLayer.put("source-layer", "elevation");
+            elevationLayer.put("source-layer", Config.ELEVATION_CONTOURS_TABLE);
             elevationLayer.put("minzoom", 4);
             elevationLayer.put("layout", new JSONObject().put("visibility", "none"));
+
+            JSONObject elevationPaint = new JSONObject();
+            elevationPaint.put("fill-color", new JSONArray().put("get").put("fill"));
+            elevationPaint.put("fill-opacity", 0.3);
+            elevationPaint.put("fill-outline-color", new JSONArray().put("get").put("stroke"));
+            elevationLayer.put("paint", elevationPaint);
 
             layers.put(elevationLayer);
         }

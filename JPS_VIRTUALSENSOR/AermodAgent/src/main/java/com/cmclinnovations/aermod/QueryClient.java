@@ -1486,12 +1486,16 @@ public class QueryClient {
                             x, y, simulationSrid);
 
                     ResultSet result = stmt.executeQuery(sqlString);
-                    if (result.next()) {
-                        elevationValues.add(result.getDouble("val"));
-                    } else {
-                        elevationValues.add(0.0);
+                    double val = 0.0;
+                    while (result.next() && val == 0.0) {
+                        val = result.getDouble("val");
+                    }
+
+                    if (val == 0.0) {
                         numRecWithoutElev++;
                     }
+
+                    elevationValues.add(val);
                 }
                 allValues.add(elevationValues);
             }
@@ -1503,5 +1507,12 @@ public class QueryClient {
             LOGGER.error(e.getMessage());
         }
         return allValues;
+    }
+
+    boolean hasElevationContourData(String derivationIri) {
+        String sql = String.format("select count(*) where derivation='%s' from %s", derivationIri,
+                EnvConfig.ELEVATION_CONTOURS_TABLE);
+        JSONArray queryResult = rdbStoreClient.executeQuery(sql);
+        return queryResult.getJSONObject(0).getInt("count") > 0;
     }
 }
