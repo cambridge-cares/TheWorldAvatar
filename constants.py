@@ -19,6 +19,8 @@ OS_GITCOMMITHASH = OS + "gitCommitHash"
 
 OKIN = "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#"
 
+OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/"
+
 NAMESPACE2PREFIX = {
     OS: "os",
     OKIN: "okin",
@@ -28,7 +30,7 @@ NAMESPACE2PREFIX = {
     "http://www.w3.org/2001/XMLSchema#": "xsd",
     OWL: "owl",
     "http://www.w3.org/2004/02/skos/core#": "skos",
-    "http://www.ontology-of-units-of-measure.org/resource/om-2/": "om",
+    OM: "om",
     "http://www.daml.org/2003/01/periodictable/PeriodicTable#": "pt",
     "http://purl.org/gc/": "gc",
     "http://semanticscience.org/resource/": "CHEMINF",

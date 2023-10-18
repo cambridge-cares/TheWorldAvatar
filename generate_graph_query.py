@@ -7,10 +7,11 @@ from utils import Utils
 
 
 class GraphQueryGenerator:
-    def __init__(self, ontology: nx.DiGraph, prop_blacklist: List[str] = []):
+    def __init__(self, ontology: nx.DiGraph, prop_blacklist: List[str] = [], questionnode_blacklist: List[str] = []):
         G = Utils.flatten_subclassof(ontology)
         G = Utils.remove_egdes_by_label(G, labels=prop_blacklist)
         self.ontology = G
+        self.questionnode_blacklist = questionnode_blacklist
 
     def generate_query_template(
         self,
@@ -18,8 +19,9 @@ class GraphQueryGenerator:
         question_node: Optional[str] = None,
     ):
         if question_node is None:
+            sampling_frame = [n for n in self.ontology.nodes() if n not in self.questionnode_blacklist]
             question_node = random.choices(
-                list(self.ontology.nodes()), weights=[self.ontology.degree[n] for n in self.ontology.nodes()]
+                sampling_frame, weights=[self.ontology.degree[n] for n in sampling_frame]
             )[0]
 
         G = nx.MultiDiGraph()
@@ -28,7 +30,6 @@ class GraphQueryGenerator:
             n = random.choices(
                 list(G.nodes()), weights=[int(self.ontology.degree[n] > 0) for n in G.nodes()]
             )[0]
-            print("Chosen node: ", n)
 
             out_edges = list(self.ontology.out_edges(n, data="label"))
             in_edges = list(self.ontology.in_edges(n, data="label"))
