@@ -226,12 +226,15 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
 
         HistoricalQueryBuilder queryBuilder;
         try {
-            queryBuilder = new HistoricalQueryBuilder(properties[0], kbClient, busNodeSpecs, branchSpecs, generatorSpecs, pvSpecs, venueInfo, classSchedule);
+            queryBuilder = new HistoricalQueryBuilder(properties[0], kbClient, busNodeSpecs, branchSpecs, generatorSpecs, pvSpecs, venueInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         queryBuilder.instantiateTriples();
+
+        CourseInstantiator courseInstantiator;
+        courseInstantiator = new CourseInstantiator(kbClient, classSchedule);
+        courseInstantiator.instantiateTriples();
 
         return jsonMessage;
     }
