@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplot/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 October 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 October 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlot is an ontology developed to describe the attributes of land plots and their buildable spaces.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -58,14 +58,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/forZoningCase">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Programme"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">for zoning case</rdfs:label>
     </owl:ObjectProperty>
@@ -280,7 +273,7 @@
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has source</rdfs:label>
     </owl:ObjectProperty>
@@ -430,10 +423,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation -->
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
     
 
 
@@ -682,17 +675,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/LandUse -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/ZoneUse -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Programme -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Programme"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
 </rdf:RDF>
 
 

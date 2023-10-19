@@ -26,7 +26,7 @@ StoreyAggregate,Class,,,,,,"Storey aggregate defines Buildable Space volume in s
 BuildingEdge,Class,StoreyAggregate,IS-A,,,,Building Edge is an uninterupted set of storeys starting from the groundfloor that share the same setback and form a uniform volume.,https://www.theworldavatar.com/kg/ontoplot/,Building Edge
 atStorey,Object Property,,,Setback,Storey,,,https://www.theworldavatar.com/kg/ontoplot/,at storey
 containsStorey,Object Property,,,StoreyAggregate,Storey,,,https://www.theworldavatar.com/kg/ontoplot/,contains storey
-forZoningCase,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontozoning/LandUse UNION https://www.theworldavatar.com/kg/ontozoning/Programme,,,https://www.theworldavatar.com/kg/ontoplot/,for zoning case
+forZoningCase,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontozoning/ZoneUse,,,https://www.theworldavatar.com/kg/ontoplot/,for zoning case
 hasAllowedAbsoluteHeight ,Object Property,,,BuildableSpace,AbsoluteHeight,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed absolute height 
 hasAllowedBuildingEdge,Object Property,,,BuildableSpace,StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed building edge
 hasAllowedFloorToFloorHeight,Object Property,,,Storey,FloorToFloorHeight,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed floor to floor height
@@ -43,7 +43,7 @@ hasNeighbour ,Object Property,,,Plot,Plot,,,https://www.theworldavatar.com/kg/on
 hasRequiredPartyWall,Object Property,,,BuildableSpace,PartyWall,,,https://www.theworldavatar.com/kg/ontoplot/,has required party wall
 hasRequiredSetback,Object Property,,,BuildableSpace,Setback,,,https://www.theworldavatar.com/kg/ontoplot/,has required setback
 hasSiteArea,Object Property,,,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,,https://www.theworldavatar.com/kg/ontoplot/,has site area
-hasSource,Object Property,,,AbsoluteHeight UNION FloorToFloorHeight UNION GrossFloorArea UNION GrossPlotRatio UNION Setback UNION SiteCoverage UNION StoreyAggregate,https://www.theworldavatar.com/kg/ontoplanningregulations/URARegulation,,,https://www.theworldavatar.com/kg/ontoplot/,has source
+hasSource,Object Property,,,AbsoluteHeight UNION FloorToFloorHeight UNION GrossFloorArea UNION GrossPlotRatio UNION Setback UNION SiteCoverage UNION StoreyAggregate,https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation,,,https://www.theworldavatar.com/kg/ontoplot/,has source
 hasWidth,Object Property,,,Plot,AverageWidth,,,https://www.theworldavatar.com/kg/ontoplot/,has width
 atLevel,Data Property,,,Storey,integer,,,https://www.theworldavatar.com/kg/ontoplot/,at level
 atLevelOfDetail,Data Property,,,BuildableSpace,String,,,https://www.theworldavatar.com/kg/ontoplot/,at level of detail
