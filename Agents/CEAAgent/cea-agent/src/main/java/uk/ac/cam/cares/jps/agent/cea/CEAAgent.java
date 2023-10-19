@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.agent.cea;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAMetaData;
 import uk.ac.cam.cares.jps.agent.cea.utils.AnnualValueHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.*;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -9,7 +11,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
@@ -19,8 +21,6 @@ import uk.ac.cam.cares.jps.agent.cea.tasks.RunCEATask;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import org.locationtech.jts.geom.Coordinate;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
@@ -108,10 +108,8 @@ public class CEAAgent extends JPSAgent {
             JSONArray uriArray = new JSONArray(uriArrayString);
 
             if (requestUrl.contains(URI_ACTION)) {
-                ArrayList<CEAInputData> testData = new ArrayList<>();
+                ArrayList<CEABuildingData> testData = new ArrayList<>();
                 ArrayList<String> uriStringArray = new ArrayList<>();
-                List<String> uniqueSurrounding = new ArrayList<>();
-                List<Coordinate> surroundingCoordinates = new ArrayList<>();
                 String crs = new String();
                 String terrainDb = defaultTerrainDb;
                 String terrainTable = defaultTerrainTable;
@@ -121,7 +119,6 @@ public class CEAAgent extends JPSAgent {
 
                 for (int i = 0; i < uriArray.length(); i++) {
                     String uri = uriArray.getString(i);
-                    uniqueSurrounding.add(uri);
 
                     // Only set route once - assuming all iris passed in same namespace
                     // Will not be necessary if namespace is passed in request params
@@ -146,39 +143,38 @@ public class CEAAgent extends JPSAgent {
 
                     uriStringArray.add(uri);
 
-                    String height = geometryQueryHelper.getBuildingGeometry(uri, ontopUrl, "height");
-
                     // Get footprint from ground thematic surface or find from surface geometries depending on data
-                    String footprint = geometryQueryHelper.getBuildingGeometry(uri, ontopUrl, "footprint");
+                    CEAGeometryData footprint = geometryQueryHelper.getBuildingGeometry(uri, ontopUrl, true);
 
                     // Get building usage, set default usage of MULTI_RES if not available in knowledge graph
                     Map<String, Double> usage = usageHelper.getBuildingUsages(uri, usageRoute);
-
-                    //just get crs once - assuming all iris in same namespace
-                    if (i == 0) {
-                        crs = geometryQueryHelper.getBuildingGeometry(uri, ontopUrl, "crs");
-                        if (crs.isEmpty()) {
-                            crs = BuildingURIHelper.getNamespace(uri).split("EPSG").length == 2 ? BuildingURIHelper.getNamespace(uri).split("EPSG")[1].split("/")[0] : "27700";
-                        }
-                    }
-
-                    ArrayList<CEAInputData> surrounding = surroundingsHelper.getSurroundings(footprint, ontopUrl, uniqueSurrounding, surroundingCoordinates, crs);
-
-                    List<Object> weather = new ArrayList<>();
-
-                    if (weatherHelper.getWeather(uri, geometryRoute, weatherRoute, crs, weather)) {
-                        testData.add(new CEAInputData(footprint, height, usage, surrounding, (List<OffsetDateTime>) weather.get(0), (Map<String, List<Double>>) weather.get(1), (List<Double>) weather.get(2)));
-                    }
-                    else{
-                        testData.add(new CEAInputData(footprint, height, usage, surrounding, null, null, null));
-                    }
+                    testData.add(new CEABuildingData(footprint, usage));
                 }
+
+                crs = testData.get(0).getGeometry().getCrs();
+
+                List<CEAGeometryData> surrounding = surroundingsHelper.getSurroundings(testData, uriStringArray, ontopUrl);
+
+                List<Object> weather = new ArrayList<>();
+
                 String terrainUrl = endpointConfig.getDbUrl(terrainDb);
+
                 TerrainHelper terrainHelper = new TerrainHelper(terrainUrl, dbUser, dbPassword);
-                byte[] terrain = terrainHelper.getTerrain(uriStringArray.get(0), geometryRoute, crs, surroundingCoordinates, terrainTable, ontologyUriHelper);
+
+                byte[] terrain = terrainHelper.getTerrain(uriStringArray.get(0), geometryRoute, surrounding, terrainTable, ontologyUriHelper);
+
+                CEAMetaData ceaMetaData;
+
+                if (weatherHelper.getWeather(testData.get(0).getGeometry(), surrounding, weatherRoute, crs, weather)) {
+                    ceaMetaData = new CEAMetaData(surrounding, (List<OffsetDateTime>) weather.get(0), (Map<String, List<Double>>) weather.get(1), (List<Double>) weather.get(2), terrain);
+                }
+                else {
+                    ceaMetaData = new CEAMetaData(surrounding, null, null, null, terrain);
+                }
+
                 // Manually set thread number to 0 - multiple threads not working so needs investigating
                 // Potentially issue is CEA is already multi-threaded
-                runCEA(testData, uriStringArray, 0, crs, terrain);
+                runCEA(testData, ceaMetaData, uriStringArray, 0, crs);
             }
             else if (requestUrl.contains(URI_UPDATE)) {
                 DataManager dataManager = new DataManager(ontologyUriHelper);
@@ -198,7 +194,7 @@ public class CEAAgent extends JPSAgent {
                     timeSeries.add(iriList);
                 }
 
-                LinkedHashMap<String, List<String>> scalars = new LinkedHashMap<>();
+                LinkedHashMap<String, List<Double>> scalars = new LinkedHashMap<>();
 
                 // parse PV area data
                 for(String scalar: CEAConstants.SCALARS){
@@ -211,16 +207,13 @@ public class CEAAgent extends JPSAgent {
 
                     String uri = uriArray.getString(i);
 
-                    String building = dataManager.checkBuildingInitialised(uri, ceaRoute);
-
-                    if(building != null && building.equals("")){
-                        // Check if bot:Building IRI has already been created in another endpoint
-                        building = dataManager.checkBuildingInitialised(uri, geometryRoute);
-                        building = dataManager.initialiseBuilding(uri, ceaRoute);
+                    if (!dataManager.checkBuildingInitialised(uri, ceaRoute)) {
+                        dataManager.initialiseBuilding(uri, ceaRoute);
                     }
-                    if(!dataManager.checkDataInitialised(building, tsIris, scalarIris, ceaRoute)) {
+
+                    if(!dataManager.checkDataInitialised(uri, tsIris, scalarIris, ceaRoute)) {
                         tsHelper.createTimeSeries(tsIris, ontologyUriHelper);
-                        dataManager.initialiseData(i, scalars, building, tsIris, scalarIris, ceaRoute);
+                        dataManager.initialiseData(i, scalars, uri, tsIris, scalarIris, ceaRoute);
                     }
                     else{
                         dataManager.updateScalars(ceaRoute, scalarIris, scalars, i);
@@ -248,8 +241,7 @@ public class CEAAgent extends JPSAgent {
                         storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
                     }
 
-                    String building = dataManager.checkBuildingInitialised(uri, ceaRoute);
-                    if(building.equals("")){
+                    if(!dataManager.checkBuildingInitialised(uri, ceaRoute)){
                         return requestParams;
                     }
 
@@ -258,7 +250,7 @@ public class CEAAgent extends JPSAgent {
                     Stream.of(CEAConstants.TIME_SERIES, CEAConstants.SCALARS).forEach(allMeasures::addAll);
 
                     for (String measurement: allMeasures) {
-                        ArrayList<String> result = dataRetriever.getDataIRI(building, measurement, ceaRoute);
+                        ArrayList<String> result = dataRetriever.getDataIRI(uri, measurement, ceaRoute);
                         if (!result.isEmpty()) {
                             String value;
                             if (CEAConstants.TIME_SERIES.contains(measurement)) {
@@ -342,7 +334,6 @@ public class CEAAgent extends JPSAgent {
      */
     private boolean validateUpdateInput(JSONObject requestParams) {
         boolean error = requestParams.get(KEY_IRI).toString().isEmpty() ||
-                requestParams.get(KEY_TARGET_URL).toString().isEmpty() ||
                 requestParams.get(CEAConstants.KEY_GRID_CONSUMPTION).toString().isEmpty() ||
                 requestParams.get(CEAConstants.KEY_ELECTRICITY_CONSUMPTION).toString().isEmpty() ||
                 requestParams.get(CEAConstants.KEY_HEATING_CONSUMPTION).toString().isEmpty() ||
@@ -433,11 +424,10 @@ public class CEAAgent extends JPSAgent {
      * @param uris list of input uris
      * @param threadNumber int tracking thread that is running
      * @param crs coordinate reference system
-     * @param terrain input data on terrain
      */
-    private void runCEA(ArrayList<CEAInputData> buildingData, ArrayList<String> uris, Integer threadNumber, String crs, byte[] terrain) {
+    private void runCEA(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, ArrayList<String> uris, Integer threadNumber, String crs) {
         try {
-            RunCEATask task = new RunCEATask(buildingData, new URI(targetUrl), uris, threadNumber, crs, terrain);
+            RunCEATask task = new RunCEATask(buildingData, ceaMetaData, new URI(targetUrl), uris, threadNumber, crs);
             CEAExecutor.execute(task);
         }
         catch(URISyntaxException e){

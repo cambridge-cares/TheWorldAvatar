@@ -69,7 +69,7 @@ public class SurroundingsHelper {
                 uri = queryResultArray.getJSONObject(i).get("building").toString();
 
                 if (!buildingIRIs.contains(uri)) {
-                    CEAGeometryData temp = geometryQueryHelper.getBuildingGeometry(uri, endpoint);
+                    CEAGeometryData temp = geometryQueryHelper.getBuildingGeometry(uri, endpoint, false);
                     surroundings.add(temp);
                 }
             }

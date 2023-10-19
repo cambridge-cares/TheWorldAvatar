@@ -31,8 +31,6 @@ public class TerrainHelper {
      * Gets terrain data for city object
      * @param uriString city object id
      * @param endpoint endpoint to city object geometry data
-     * @param crs coordinate reference system used by endpoint
-     * @param surroundingCoordinates  coordinates that formed the bounding box for surrounding query
      * @param table PostGIS table name
      * @return terrain data as byte[]
      */
@@ -69,7 +67,7 @@ public class TerrainHelper {
                 radius += 30;
             }
             else {
-                CEAGeometryData ceaGeometryData = new GeometryQueryHelper(uriHelper).getBuildingGeometry(uriString, endpoint);
+                CEAGeometryData ceaGeometryData = new GeometryQueryHelper(uriHelper).getBuildingGeometry(uriString, endpoint, true);
 
                 Envelope envelope = new Envelope();
 
