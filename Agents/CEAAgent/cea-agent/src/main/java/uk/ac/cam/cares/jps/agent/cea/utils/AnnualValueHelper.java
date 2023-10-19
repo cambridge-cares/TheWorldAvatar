@@ -74,6 +74,7 @@ public class AnnualValueHelper {
             i++;
         }
 
+        // check if WhereBuilders have only white space characters in its where statement
         UpdateBuilder ub = new UpdateBuilder()
                 .addInsert(wb);
 
@@ -93,11 +94,15 @@ public class AnnualValueHelper {
 
         Matcher m1 =  pattern.matcher(wb1.buildString());
 
-        boolean flag1 = m1.matches();
+        m1.matches();
+
+        boolean flag1 = m1.find();
 
         Matcher m2 =  pattern.matcher(wb2.buildString());
 
-        boolean flag2 = m2.matches();
+        m2.matches();
+
+        boolean flag2 = m2.find();
 
         // if there are no previously existing annual values
         if (!flag) {
@@ -203,6 +208,5 @@ public class AnnualValueHelper {
         else {
             return "";
         }
-
     }
 }
