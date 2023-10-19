@@ -34,7 +34,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsAbsoluteHeight">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AbsoluteHeight"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AbsoluteHeight"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows absolute height</rdfs:label>
     </owl:ObjectProperty>
@@ -59,7 +59,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsGrossFloorArea">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/GrossFloorArea"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows Gross Floor Area</rdfs:label>
     </owl:ObjectProperty>
@@ -71,7 +71,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsGrossPlotRatio">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/GrossPlotRatio"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows Gross Plot Ratio</rdfs:label>
     </owl:ObjectProperty>
@@ -83,7 +83,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsSiteCoverage">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/SiteCoverage"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/SiteCoverage"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows site coverage</rdfs:label>
     </owl:ObjectProperty>
@@ -209,7 +209,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresFloorToFloorHeight">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/FloorToFloorHeight"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires floor to floor height</rdfs:label>
     </owl:ObjectProperty>
@@ -221,7 +221,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresPartyWall">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/PartyWall"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PartyWall"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires party wall</rdfs:label>
     </owl:ObjectProperty>
@@ -233,7 +233,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresRoadBuffer">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/RoadBuffer"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadBuffer"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires road buffer</rdfs:label>
     </owl:ObjectProperty>
@@ -245,7 +245,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresSetback">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/Setback"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires setback</rdfs:label>
     </owl:ObjectProperty>
@@ -384,6 +384,46 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Area -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Distance -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/AbsoluteHeight -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/AbsoluteHeight">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Absolute Height defines the total vertical measurement of the building from its lowest underground storey to the highest roof. It should account for all storeys and their heights in this calculation</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Absolute Height</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation -->
 
 
@@ -443,6 +483,30 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/FloorToFloorHeight -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/FloorToFloorHeight">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Floor To Floor Height defines the height from the floor of the current storey to the floor of the next storey.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Floor To Floor Height</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/FrontSetback -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/FrontSetback">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/Setback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Front Setback applies to the side of the plot that has the main entrance facing the road.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Front Setback</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/GoodClassBungalowArea -->
 
 
@@ -450,6 +514,30 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/LandedHousingArea"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Good Class Bungalow Area</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/GrossFloorArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/GrossFloorArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Floor Area is the total floor area of an urban entity such as a land plot or building, typically measured in square feet or square meters. This measurement only considers the floor or footprint of each storey and their area, and does not include their walls or ceiling.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Floor Area</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/GrossPlotRatio -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/GrossPlotRatio">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Plot Ratio is the ratio of maximum allowable Gross Floor Area to the Land Area.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Plot Ratio</rdfs:label>
     </owl:Class>
     
 
@@ -490,6 +578,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/PartyWall -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/PartyWall">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/SideSetback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PartyWall setback refers to Side setback whose buffer distance is required to be 0m.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Party Wall</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningBoundary -->
 
 
@@ -521,6 +621,30 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning regulations are a set of rules and guidelines established by competent authorities at the local, regional, or national level to control and manage the development and use of land and properties within a specific geographic area.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning Regulation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/RearSetback -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/RearSetback">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/Setback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rear Setback applies to the side of the plot that is opposite of its front side.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rear Setback</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/RoadBuffer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadBuffer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/Setback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Buffer refers to setbacks related to the road category of the adjacent plot. A plot may have more than one road buffer if it is adjacent to multiple road plots.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Buffer</rdfs:label>
     </owl:Class>
     
 
@@ -592,6 +716,42 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/Setback -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/Setback">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setback defines the distance from the plot boundary that any development can occur.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setback</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/SideSetback -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/SideSetback">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/Setback"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Side Setback apply to the side of the plot that is not Front nor Rear.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Side Setback</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/SiteCoverage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/SiteCoverage">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Site Coverage defines the ratio of a land plot that can be occupied or covered by a building or structure. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Site Coverage</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/StreetBlockPlan -->
 
 
@@ -640,13 +800,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplot/AbsoluteHeight -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/AbsoluteHeight"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplot/AverageDepth -->
 
 
@@ -661,34 +814,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/FloorToFloorHeight"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/GrossFloorArea"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/PartyWall -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/PartyWall"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplot/Plot -->
 
 
@@ -696,31 +821,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplot/RoadBuffer -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/RoadBuffer"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/Setback -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Setback"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplot/SiteArea -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/SiteArea"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/SiteCoverage -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/SiteCoverage"/>
     
 
 
