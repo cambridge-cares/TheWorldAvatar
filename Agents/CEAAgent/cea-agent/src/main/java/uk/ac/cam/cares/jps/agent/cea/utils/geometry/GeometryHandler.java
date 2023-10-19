@@ -101,6 +101,10 @@ public class GeometryHandler {
         Coordinate[] coordinates = geometry.getCoordinates();
         Coordinate[] transformed = new Coordinate[coordinates.length];
 
+        if (sourceCRS.equals(targetCRS)) {
+            return geometry;
+        }
+
         for (int i = 0; i < coordinates.length; i++) {
             transformed[i] = transformCoordinate(coordinates[i], sourceCRS, targetCRS);
         }
@@ -169,14 +173,14 @@ public class GeometryHandler {
     /**
      *
      * @param surfaceArray
-     * @param crs CRS of surfaceArray as String
+     * @param originalCRS CRS of surfaceArray as String
      * @param height
      * @return
      */
-    public static List<Geometry> extractFootprint(JSONArray surfaceArray, String crs, Double height) {
+    public static List<Geometry> extractFootprint(JSONArray surfaceArray, String originalCRS, Double height) {
         double distance = 0.0;
-        double increment = 0.00001;
-        double limit = 0.0001;
+        double increment = 0.00005;
+        double limit = 0.001;
 
         List<Polygon> exteriors = new ArrayList<>();
 //        List<LinearRing> holes = new ArrayList<>();
@@ -185,20 +189,36 @@ public class GeometryHandler {
 
         List<Geometry> result = new ArrayList<>();
 
-        crs = "EPSG:" + crs;
+        originalCRS = "EPSG:" + originalCRS;
+
+        String crs = EPSG_4326;
 
         if (surfaceArray.length() == 1) {
-            result.add(toGeometry(surfaceArray.getJSONObject(0).getString("wkt").split("> ")[1]));
-            return result;
+            Geometry temp = toGeometry(surfaceArray.getJSONObject(0).getString("wkt").split("> ")[1]);
+            try {
+                result.add(transformGeometry(temp, originalCRS, EPSG_4326));
+
+                return result;
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                throw new JPSRuntimeException(e);
+            }
         }
         else {
             for (int i = 0; i < surfaceArray.length(); i++) {
                 // create Polygon object from WKT string
                 Polygon polygon = (Polygon) toGeometry(surfaceArray.getJSONObject(i).getString("wkt").split("> ")[1]);
-                LinearRing exterior = polygon.getExteriorRing();
+                try {
+                    polygon = (Polygon) transformGeometry(polygon, originalCRS, EPSG_4326);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    throw new JPSRuntimeException(e);
+                }
 
                 // get exterior ring for buffering
-                exteriors.add(geometryFactory.createPolygon(exterior));
+                exteriors.add(extractExterior(polygon));
 
                 // store holes to add back in later
 //                for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
@@ -235,7 +255,7 @@ public class GeometryHandler {
             List<Geometry> geometries = new ArrayList<>();
 
             if (geoType.equals("Polygon")) {
-                geometries.add(bufferPolygon(merged, crs, -1 * distance));
+                geometries.add(extractExterior((Polygon) bufferPolygon(merged, crs, -1 * distance)));
             }
             else {
                 for (int i = 0; i < merged.getNumGeometries(); i++) {
@@ -263,7 +283,7 @@ public class GeometryHandler {
                     // CEA cannot work with geometry whose gross floor area is smaller than or equal to 100 m2
                     if (gfa > 100) {
                         // deflate geometries back
-                        geometries.add(bufferPolygon(geometry, crs, -1 * distance));
+                        geometries.add(extractExterior((Polygon) bufferPolygon(geometry, crs, -1 * distance)));
                     }
                 }
             }
@@ -292,6 +312,10 @@ public class GeometryHandler {
                 ceaGeometries.set(i, ceaGeometryData);
             }
         }
+    }
+
+    public static Polygon extractExterior(Polygon polygon) {
+        return new GeometryFactory().createPolygon(polygon.getExteriorRing());
     }
 
     private static boolean checkSameCRS(List<CEAGeometryData> ceaGeometries) {

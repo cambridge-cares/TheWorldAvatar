@@ -104,7 +104,7 @@ public class GeometryQueryHelper {
 
             List<Geometry> geometry = GeometryHandler.extractFootprint(queryResultArray, crs, Double.parseDouble(height));
 
-            return new CEAGeometryData(geometry, crs, height);
+            return new CEAGeometryData(geometry, "4326", height);
         }
         catch (ParseException e) {
             e.printStackTrace();
