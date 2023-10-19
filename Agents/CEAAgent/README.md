@@ -1,7 +1,7 @@
 # CEA Agent
 ## 1. Agent Description
 
-The CEA Agent can be used to interact with the [City Energy Analyst (CEA)](https://www.cityenergyanalyst.com/)  and the data it produces on building energy demands and installable solar energy generators.
+CEA agent can be used to interact with the [City Energy Analyst (CEA)](https://www.cityenergyanalyst.com/)  and the data it produces on building energy demands and installable solar energy generators.
 
 The agent currently queries for building geometry, surrounding buildings geometries, building usage and historical weather data stored in knowledge graph, and terrain data from PostGIS, which are passed to CEA as inputs. The energy demands and potential energy of solar energy generators (which include photovoltaic panels, photovoltaic-thermal collectors, and solar collectors) calculated by CEA are extracted by the agent and stored on the knowledge graph.
 
@@ -17,31 +17,24 @@ You will need to provide your credentials (GitHub username/personal access token
     repo_password.txt
 ```
 ### 2.2. Stack Set Up
-The agent is designed to run in the stack. To start the stack, spin up the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager).
+The agent is designed to run in the stack. To start the stack, spin up [stack-manager].
 
 ### 2.3. Blazegraph Set Up
-The agent is designed to use the stack Blazegraph. Please ensure that the Blazegraph namespace corresponding to ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```, is set up in the stack Blazegraph.
+The agent is designed to use the stack Blazegraph. Please ensure that the Blazegraph namespace corresponding to ```cea.label``` in [CEAAgentConfig.properties], is set up in the stack Blazegraph.
 
 ### 2.4. Access Agent Set Up
-The agent is designed to use the [Access Agent](../AccessAgent). Spin the access agent up as part of the same stack as spun up by the Stack Manager. Please ensure that the routing information for the Blazegraph namespace corresponding to ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties``` is uploaded, see the [Access Agent README](../AccessAgent) for instruction on uploading routing information.
+The agent is designed to use the [Access Agent](../AccessAgent). Spin the access agent up as part of the same stack as spun up by the Stack Manager. Please ensure that the routing information for the Blazegraph namespace corresponding to ```cea.label``` in [CEAAgentConfig.properties] is uploaded, see the [Access Agent README](../AccessAgent) for instruction on uploading routing information.
 
 ### 2.5. PostGIS Set Up
-The agent is designed to use the stack PostGIS. The calculation results of CEA will be stored in the stack PostGIS database, which is specified as ```cea.database``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```. Please ensure the database specified by ```cea.database``` is set up in the stack PostGIS.
+The agent is designed to use the stack PostGIS. Time series outputs on energy demands and photovoltaic potentials calculated by CEA will be stored in the stack PostGIS database, which is specified as ```cea.database``` in [CEAAgentConfig.properties]. Please ensure the database specified by ```cea.database``` is set up in the stack PostGIS.
 
-### 2.6. TargetresourceID for Building Geometry Query
-For building geometry queries, the CEA agent defaults to TheWorldAvatar Blazegprah. The targetResourceIDs in ```./cea-agent/src/main/resources/CEAAgentConfig.properties``` provides mappings to namespaces in TheWorldAvatar Blazegraph (http://www.theworldavatar.com:83/citieskg/). The targetResourceID are passed to the access agent in order to query from TheWorldAvatar Blazegraph. Check that a targetResourceID to pass to the access agent exists for the namespace being used for SPARQL queries.
-Currently included are:
-- ```citieskg-berlin```
-- ```singaporeEPSG24500```
-- ```citieskg-singaporeEPSG4326```
-- ```citieskg-kingslynnEPSG3857```
-- ```citieskg-kingslynnEPSG27700```
-- ```citieskg-pirmasensEPSG32633```
-
-If not included, you will need to add the targetResourceID in ```./cea-agent/src/main/resources/CEAAgentConfig.properties``` and add the corresponding mapping from cityObject IRI to targetResourceID in accessAgentRoutes in the ```readConfig``` method of ```./cea-agent/src/main/java/uk/ac/cam/cares/jps/agent/cea/CEAAgent.java```.
+### 2.6. Ontop Endpoint for Building Geometry and Usage Query
+For building geometry and usage queries, the CEA agent defaults to the Ontop endpoint within the same stack. Please make sure the building geometry data and its corresponding OBDA are uploaded to the same stack as this agent via [stack-data-uploader].
+Please make sure that the [OSMAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OSMAgent) is spun up in the same stack and run, to get the building usage information of which this agent will query for.
 
 ### 2.7. Agent for Historical Weather Data
-The CEA agent will attempt to send request to [OpenMeteoAgent](../OpenMeteoAgent) for instantiation of historical weather data, which the CEA agent will attempt to query for to use as input to CEA. Please ensure that the OpenMeteoAgent is spun up in the same stack as this agent, by following the [OpenMeteoAgent README](../OpenMeteoAgent/README.md). 
+The CEA agent will attempt to send request to [OpenMeteoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OpenMeteoAgent) for instantiation of historical weather data, which the CEA agent will attempt to query for to use as input to CEA. Please ensure that the OpenMeteoAgent is spun up in the same stack as this agent, by following the [OpenMeteoAgent README](../OpenMeteoAgent/README.md). 
+Please ensure that the label corresponding to the Blazegraph namespace where the OpenMeteoAgent instantiates weather triples is provided as `weather.label` in [CEAgentConfig.Properties].
 
 ### 2.8. Build and Run
 In the same directory as this README, first build the Docker image by running
@@ -49,18 +42,18 @@ In the same directory as this README, first build the Docker image by running
 docker-compose build
 ```
 
-After the image is built, copy ```./stack-manager-input-config/cea-agent.json``` and place it in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
+After the image is built, copy [cea-agent.json] from ```./stack-manager-input/``` and place it in [stack-manager config services] directory. Then, in the [stack-manager] directory, run 
 ```
 ./stack.sh start <STACK NAME>
 ```
 Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager.
 
 ### 2.9. Debugging
-To debug, put ```./stack-manager-input-config/cea-agent-debug.json``` instead of ```./stack-manager-input-config/cea-agent.json```  in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
+To debug, put [cea-agent-debug.json] from ```./stack-manager-input/``` instead of [cea-agent.json]  in [stack-manager config services]. Then, in the [stack-manager]  directory, run 
 ```
 ./stack.sh start <STACK NAME>
 ```
-Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager. The debugger port will be available at 5005.
+The debugger port will be available at 5005.
 
 ## 3. Agent Endpoints
 The CEA Agent is reachable at http://localhost:3838/cea-agent, where 3838 is the default port number used by stack manager. If another port number was specified when spinning up the stack, please replace 3838 with the specified port number. The agent provides three endpoints: run endpoint (http://localhost:3838/cea-agent/run), where the agent runs CEA; update endpoint (http://localhost:3838/cea-agent/update), where the agent updates the knowledge graph with triples on CEA outputs; query endpoint (http://localhost:3838/cea-agent/run), where the agent returns CEA outputs. 
@@ -69,59 +62,48 @@ The CEA Agent is reachable at http://localhost:3838/cea-agent, where 3838 is the
 Available at http://localhost:3838/cea-agent/run.
 
 The run endpoint accepts the following request parameters:
-- ```iris```: array of cityObject IRIs.
-- ```geometryEndpoint```: (optional) endpoint where the geospatial information of the cityObjects from ```iris``` is stored; if not specified, agent will default to setting ```geometryEndpoint``` to TheWorldAvatar Blazegraph with the namespace retrieved from the cityObject IRI and the targetresourceID mappings provided in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```.
-- ```usageEndpoint```: (optional) endpoint where the building usage information of the cityObjects from ```iris``` is stored, if not specified, agent will default to setting ```usageEndpoint``` to be the stack Blazegraph namespace, labelled by ```usage.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```.
-- ```ceaEndpoint```: (optional) endpoint where the CEA triples, i.e. energy demand and solar energy generator information, instantiated by the agent is to be stored; if not specified, agent will default to setting ```ceaEndpoint``` to the stack Blazegraph namespace, labelled by ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```.
-- ```weatherEndpoint```: (optional) endpoint where historical weather information is stored; if not specified, agent will default to setting ```weatherEndpoint``` to TheWorldAvatar Blazegraph.
-- ```terrainDatabase``` (optional) database from which the agent will attempt to query terrain data; if not specified, it will be set to the stack database specified as ```postgis.database``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```.
-- ```terrainTable```: (optional) table from which the agent will attempt to query terrain data; if not specified, it will be set to the stack table specified as ```postgis.table``` in ```./cea-agent/src/main/resources/postgis.properties```. Please ensure that ```terrainTable``` is in public schema, since this is the set-up that the agent assumes.
-- ```graphName```: (optional) named graph to which the CEA triples belong to and will be instantiated under. If ```graphName``` is not specified, the agent will assume no graph usage.
+- ```iris```: array of building IRIs.
+- ```geometryEndpoint```: (optional) endpoint where the geospatial information of the buildings from ```iris``` is stored; if not specified, agent will default to querying building geometry from Ontop endpoint within the same stack.
+- ```usageEndpoint```: (optional) endpoint where the building usage information of the buildings from ```iris``` is stored, if not specified, agent will default to querying building usage from Ontop endpoint within the same stack.
+- ```ceaEndpoint```: (optional) endpoint where the CEA triples, i.e. energy demand and photovoltaic potential information, instantiated by the agent is to be stored; if not specified, agent will default to setting ```ceaEndpoint``` to the stack Blazegraph namespace, labelled by ```cea.label``` in [CEAAgentConfig.properties].
+- ```weatherEndpoint```: (optional) endpoint where historical weather information is stored; if not specified, agent will default to setting ```weatherEndpoint``` agent will default to setting ```ceaEndpoint``` to the stack Blazegraph namespace, labelled by ```cea.label``` in [CEAAgentConfig.properties].
+- ```terrainDatabase``` (optional) database from which the agent will attempt to query terrain data; if not specified, it will be set to the stack database specified as ```postgis.database``` in [CEAAgentConfig.properties].
+- ```terrainTable```: (optional) table, inclusive of schema prefix, from which the agent will attempt to query terrain data; if not specified, it will be set to the stack table specified as ```postgis.table``` in ```./cea-agent/src/main/resources/postgis.properties```.
 
 After receiving request to the run endpoint, the agent will query for the following CEA inputs from the endpoints specified in the request parameters: building geometry, surrounding buildings' geometry, building usage, historical weather data, and terrain data. The agent will then run CEA with the queried information as inputs, and send request with the CEA output data to the update endpoint afterwards. With the exception of building geometry query, whose results are necessary for the agent to run, if any of the CEA inputs queries fails, the agent will run CEA with its corresponding CEA default values for the missing inputs.
+Provide only the `iris` parameter in the request if agent is to query CEA inputs from the same stack as this agent with the default endpoints provided in [CEAAgentConfig.properties].
 
 Example request:
 ```
 { "iris" :
 ["http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG27700/sparql/cityobject/UUID_0595923a-3a83-4097-b39b-518fd23184cc/"],
-"geometryEndpoint" : "http://host.docker.internal:48888/kingslynnEPSG27700",
-"ceaEndpoint": "http://host.docker.internal:48888/cea"}
+"geometryEndpoint" : "http://localhost:3838/access-agent/kingslynnEPSG27700",
+"ceaEndpoint": "http://localhost:3838/access-agent/outputs"}
 ```
-In the above request example, the CEA Agent will be querying building geometry from the Blazegraph that ```http://host.docker.internal:48888/kingslynnEPSG27700``` is pointed to. All the other inputs for CEA will be queried from the default endpoints within stack as specified in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```. The CEA triples will be instantiated, with no graph reference, in the Blazegraph where ```http://host.docker.internal:48888/cea``` is pointed to.
-
-Example request:
-```
-{ "iris" :
-["http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG27700/sparql/cityobject/UUID_0595923a-3a83-4097-b39b-518fd23184cc/"],
-"geometryEndpoint" : "http://host.docker.internal:48888/kingslynnEPSG27700",
-"ceaEndpoint": "http://host.docker.internal:48888/cea",
-"graphName": "http://127.0.0.1:9999/blazegraph/namespace/cea/cea"}
-```
-In the above request example, the CEA Agent will be querying building geometry from the Blazegraph that ```http://host.docker.internal:48888/kingslynnEPSG27700``` is pointed to. All the other inputs for CEA will be queried from the default endpoints within stack as specified in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```. The CEA triples will be instantiated under the ```http://127.0.0.1:9999/blazegraph/namespace/cea/cea``` graph in the Blazegraph where ```http://host.docker.internal:48888/cea``` is pointed to.
+In the above request example, the CEA Agent will be querying building geometry from the Blazegraph that ```http://localhost:3838/access-agent/kingslynnEPSG27700``` is pointed to. All the other inputs for CEA will be queried from the default endpoints within stack as specified in [CEAAgentConfig.properties]. The CEA triples will be instantiated, with no graph reference, in the Blazegraph where ```http://localhost:3838/access-agent/outputs``` is pointed to.
 
 Example request:
 ```
 { "iris" :
 ["http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG27700/sparql/cityobject/UUID_0595923a-3a83-4097-b39b-518fd23184cc/"]}
 ```
-In the above request example, the CEA Agent will be querying building geometry from the ```citieskg-kingslynnEPSG27700``` namespace in TheWorldAvatar Blazegraph.  All the other inputs for CEA will be queried from the default endpoints within stack as specified in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```. The CEA triples will be instantiated in the stack Blazegraph.
+In the above request example, the CEA agent will be all the CEA inputs from the default endpoints within stack as specified in [CEAAgentConfig.properties]. The CEA triples will be instantiated in the stack Blazegraph.
 
 ### 3.2. Update
 
 Available at http://localhost:3838/cea-agent/update.
 
-Requests to the update endpoint is automatically sent by the CEA Agent after running and receiving requests to the run endpoint. The update endpoint updates the knowledge graph with CEA outputs.
+Requests to the update endpoint is automatically sent by the CEA agent after running and receiving requests to the run endpoint. The update endpoint updates the knowledge graph with CEA outputs.
 
 ### 3.3. Query
 
 Available at http://localhost:3838/cea-agent/query.
 
 The query endpoint accepts the following request parameters:
-- ```iris```: array of cityObject IRIs.
-- ```ceaEndpoint```: (optional) endpoint where the CEA triples, i.e. energy demand and solar energy generator information, instantiated by the agent is to be stored; if not specified, agent will default to setting ```ceaEndpoint``` to the stack Blazegraph namespace, labelled by ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```.
-- ```graphName```: (optional) named graph to which the CEA triples belong to and will be instantiated under. If ```graphName``` is not specified, the agent will assume no graph.
+- ```iris```: array of building IRIs.
+- ```ceaEndpoint```: (optional) endpoint where the CEA triples, i.e. energy demand and photovoltaic potential information, instantiated by the agent is to be stored; if not specified, agent will default to setting ```ceaEndpoint``` to the stack Blazegraph namespace, labelled by ```cea.label``` in [CEAAgentConfig.properties].
 
-After receiving request sent to the query endpoint, the agent will retrieve energy demand and solar energy generator information calculated by CEA for the cityObject IRIs provided in ```iris```. The energy demand and solar energy generator information will only be returned if the cityObject IRIs provided in ```iris``` has already been passed to the run endpoint of the CEA Agent beforehand.
+After receiving request sent to the query endpoint, the agent will retrieve energy demand and photovoltaic potential information calculated by CEA for the building IRIs provided in ```iris```. The energy demand and photovoltaic potential information will only be returned if the building IRIs provided in ```iris``` has already been passed to the run endpoint of the CEA Agent beforehand.
 
 Example request:
 ```
@@ -139,7 +121,7 @@ Example response:
     ],
     "acceptHeaders": "*/*",
     "method": "POST",
-    "requestUrl": "http://localhost:58085/cea-agent/query",
+    "requestUrl": "http://localhost:3838/cea-agent/query",
     "ceaOutputs": [
         {
             "EastWallSolarSuitableArea": "106.29 m^2",
@@ -193,12 +175,6 @@ Example response:
 ```
 
 ## 4. Information Retrieved from Knowledge Graph
-The agent will attempt to retrieve information on building geometry, surrounding buildings geometries, building usage and historical weather from knowledge graph to pass as input to CEA. The retrieval is done with SPARQL queries. The agent assumes that the IRIs in the knowledge graph queried to follow a consistent format. The assumption is that the IRIs inside the knowledge graph follow the format of `<{PREFIX}cityobject/{UUID}/>` where PREFIX is the prefix to IRIs in the namespace that the agent is working with.
-
-For example:
-- `http://127.0.0.1:9999/blazegraph/namespace/kings-lynn-open-data/sparql/cityobject/UUID_b5a7b032-1877-4c2b-9e00-714b33a426f7/` - the PREFIX is: `http://127.0.0.1:9999/blazegraph/namespace/kings-lynn-open-data/sparql/`
-
-- `http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG27700/sparql/cityobject/UUID_7cb00a09-528b-4016-b3d6-80c5a9442d95/` - the PREFIX is `http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG27700/sparql/`.
 
 ### 4.1. Coordinate Reference System (CRS)
 The agent will generate shapefile for the building and its surrounding buildings, which are passed to CEA as input. In order to generate the correct shapefile, the agent will be querying for CRS information with the following query:
@@ -230,7 +206,7 @@ PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/Onto
 SELECT  ?Footprint
 WHERE
   { GRAPH <{PREFIX}surfacegeometry/>
-      { ?surf  ocgml:cityObjectId  ?id ;
+      { ?surf  ocgml:buildingId  ?id ;
                ocgml:GeometryType  ?Footprint
         FILTER ( ! isBlank(?Footprint) )
    GRAPH <{PREFIX}thematicsurface/> 
@@ -246,7 +222,7 @@ PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/Onto
 SELECT  ?Footprint
 WHERE
   { GRAPH <{PREFIX}surfacegeometry/>
-      { ?surf  ocgml:cityObjectId  <{PREFIX}building/{UUID}/> ;
+      { ?surf  ocgml:buildingId  <{PREFIX}building/{UUID}/> ;
                ocgml:GeometryType  ?Footprint
         FILTER ( ! isBlank(?Footprint) )
       }}
@@ -286,7 +262,7 @@ WHERE
   { GRAPH <{PREFIX}cityobjectgenericattrib/>
       { ?o  ocgml:attrName      "height" ;
             ocgml:realVal       ?Height ;
-            ocgml:cityObjectId  <{PREFIX}cityobject/{UUID}/>}}
+            ocgml:buildingId  <{PREFIX}cityobject/{UUID}/>}}
 
 ```
 
@@ -297,7 +273,7 @@ PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
 
 SELECT  ?BuildingUsage ?UsageShare
 WHERE
-  { ?building  ontobuiltenv:hasOntoCityGMLRepresentation  <{PREFIX}building/{UUID}/> ;
+  { ?building  ontobuiltenv:hasOntoCityGMLRepresentation  <buildingIRI> ;
               ontobuiltenv:hasPropertyUsage  ?usage .
     ?usage a ?BuildingUsage
     OPTIONAL
@@ -347,3 +323,10 @@ WARNING: Please note that the CEA Agent assumes that the historical weather data
 ## 5. Information Retrieved from PostGIS
 ### 5.1. Terrain Data
 The agent will attempt to retrieve terrain data from the stack PostGIS. The queried area for the terrain data will have the building received in the request at the center. The queried area will cover the center building and its surrounding buildings that were retrieved in the surroundings query.
+
+[CEAAgentConfig.properties]: ./cea-agent/src/main/resources/CEAAgentConfig.properties
+[cea-agent.json]: ./stack-manager-input-config/cea-agent.json
+[cea-agent-debug.json]: ./stack-manager-input-config/cea-agent-debug.json
+[stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
+[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
+[stack-manager config services]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
