@@ -144,8 +144,8 @@ public class ClassAndProperties {
 
     public static final Iri Person = Pref_FIBO_AAP.iri("Person");
     public static final Iri PersonName = Pref_FIBO_AAP.iri("PersonName");
-    public static final Iri FormalOrganization = Pref_FIBO_ORG.iri("FormalOrganization");
-    public static final Iri OrganizationName = Pref_FIBO_ORG.iri("OrganizationName");
+    public static final Iri FormalOrganization = Pref_FIBO_ORG.iri("FormalOrganizations/FormalOrganization");
+    public static final Iri OrganizationName = Pref_FIBO_ORG.iri("Organizations/OrganizationName");
     public static final Iri IndependentParty = iri("https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty");
 
     public static final Iri AmountOfMoney = Pref_OM.iri("AmountOfMoney");
