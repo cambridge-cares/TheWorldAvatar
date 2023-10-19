@@ -144,6 +144,7 @@ public class IsochroneAgent extends JPSAgent {
 
             // Population matcher
             PopulationMapper populationMapper = new PopulationMapper();
+            populationMapper.addPostgisRasterAndGDALDriver(remoteRDBStoreClient, dbName);
             populationMapper.checkAndAddColumns(remoteRDBStoreClient, populationTableList);
             populationMapper.mapPopulation(remoteRDBStoreClient, populationTableList);
 

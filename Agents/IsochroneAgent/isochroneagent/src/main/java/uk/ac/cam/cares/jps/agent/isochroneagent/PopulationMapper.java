@@ -69,6 +69,19 @@ public class PopulationMapper {
         }
     }
 
+    public void addPostgisRasterAndGDALDriver(RemoteRDBStoreClient remoteRDBStoreClient, String DBname) throws SQLException {
+
+        String sql= "ALTER DATABASE "+DBname+" SET postgis.enable_outdb_rasters = True;\n" +
+                "ALTER DATABASE "+DBname+" SET postgis.gdal_enabled_drivers = 'GTiff';";
+
+        try (Connection connection = remoteRDBStoreClient.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(sql);
+            }
+        }
+
+    }
+
     /**
      * Check if the column columnName exists
      * @param connection PostgreSQL connection object
