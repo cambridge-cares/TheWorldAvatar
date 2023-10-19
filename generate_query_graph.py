@@ -28,7 +28,7 @@ class QueryGraphGenerator:
         sparql_client.setMethod(POST)
         self.sparql_client = sparql_client
 
-    def generate_queryTemplate(
+    def generate_query_template(
         self,
         edge_num: int,
         question_node: Optional[str] = None,
@@ -75,21 +75,22 @@ class QueryGraphGenerator:
         cls = Utils.shortenIri(cls)
         return f"{cls.split(':', maxsplit=1)[-1]}"
 
-    def make_query(
+    def make_sparql(
         self,
         triples: Iterable[str],
         result_vars: Optional[Iterable[str]] = None,
         limit: Optional[int] = None,
     ):
-        triples = "\n  ".join(triples)
-        select_vars = "\n  " + " ".join(result_vars) if result_vars is not None else "*"
+        triples = "\n  " + "\n  ".join(triples)
+        select_vars = " ".join(result_vars) if result_vars is not None else "*"
         limit_clause = f"\nLIMIT {limit}" if limit is not None else ""
         return f"""{QUERY_PREFIXES}
 
-SELECT {select_vars} WHERE {{{triples}
+SELECT DISTINCT {select_vars} WHERE {{{triples}
 }}{limit_clause}"""
 
-    def get_valueBinding_from_queryTemplate(self, query_template: nx.MultiDiGraph):
+    def template2sparql(self, query_template: nx.MultiDiGraph):
+        """Makes the SPARQL query that grounds all nodes in query_template"""
         triples = list()
         for h, t, prop in query_template.edges(data="label"):
             h, t, prop = (Utils.shortenIri(x) for x in (h, t, prop))
@@ -99,18 +100,17 @@ SELECT {select_vars} WHERE {{{triples}
                 triples.append(f"?{h_var} a {h} .")
             if t != "rdfs:Literal":
                 triples.append(f"?{t_var} a {t} .")
-        query = self.make_query(triples)
+        return self.make_sparql(triples, limit=1)
+
+    def template2graph(self, query_template: nx.MultiDiGraph):
+        """Grounds query_template to obtain a query graph"""
+        query = self.template2sparql(query_template)
         bindings = self.query_kg(query)["results"]["bindings"]
 
         if len(bindings) == 0:
             return None
-        return bindings[0]
+        binding = bindings[0]
 
-    def template2graph(self, query_template: nx.MultiDiGraph):
-        binding = self.get_valueBinding_from_queryTemplate(query_template)
-        if binding is None:
-            return None
-        
         def get_querygraph_entity(cls: str):
             if query_template.nodes[cls].get("template_node"):
                 return binding[self.cls2var(cls)]["value"]
@@ -129,14 +129,66 @@ SELECT {select_vars} WHERE {{{triples}
 
         return query_graph
 
-    def minimize_queryGraph(self, query_graph: nx.DiGraph):
+    def graph2sparql(self, query_graph: nx.DiGraph):
+        def get_sparql_entity(n: str):
+            if query_graph.nodes[n].get("template_node"):
+                return f"<{n}>"
+            if n.startswith("http"):  # is a class
+                return Utils.shortenIri(n)
+            return "?" + n
+
+        triples = list()
+        for h, t, prop in query_graph.edges(data="label"):
+            h, t = (get_sparql_entity(x) for x in (h, t))
+            prop = Utils.shortenIri(prop)
+            triples.append(f"{h} {prop} {t} .")
+
+        result_var = "?" + next(
+            n
+            for n, question_node in query_graph.nodes(data="question_node")
+            if question_node
+        )
+
+        return self.make_sparql(
+            triples=triples,
+            result_vars=[result_var],
+        )
+    
+    def get_hashable_kg_response(self, graph: nx.DiGraph):
+        return Utils.hash_kg_response(self.query_kg(self.graph2sparql(graph)))
+
+    def minimize_query_graph(self, query_graph: Optional[nx.DiGraph]):
+        if query_graph is None:
+            return None
+        
+        response_init = self.get_hashable_kg_response(query_graph)
+        for u, v in query_graph.edges():
+            _query_graph = query_graph.copy()
+            _query_graph.remove_edge(u, v)
+            response = self.get_hashable_kg_response(_query_graph)
+            if response == response_init:
+                query_graph = _query_graph
+
+        question_node = next(
+            n
+            for n, question_node in query_graph.nodes(data="question_node")
+            if question_node
+        )
+        connected_nodes = list(
+            nx.shortest_path(query_graph.to_undirected(), source=question_node).keys()
+        )
+        for n in list(query_graph.nodes()):
+            if n not in connected_nodes:
+                query_graph.remove_node(n)
+
         return query_graph
 
     def generate_queryGraph(
         self, edge_num: int = 1, question_node: Optional[str] = None
     ):
-        query_template = self.generate_queryTemplate(
+        query_template = self.generate_query_template(
             edge_num=edge_num, question_node=question_node
         )
         query_graph = self.template2graph(query_template)
-        return query_graph, query_template
+        query_graph_min = self.minimize_query_graph(query_graph)
+        return query_graph_min, query_graph, query_template
