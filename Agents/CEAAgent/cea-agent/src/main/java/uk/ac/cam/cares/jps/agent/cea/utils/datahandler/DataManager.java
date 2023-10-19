@@ -51,9 +51,8 @@ public class DataManager {
      * Initialises building in KG with buildingUri as the bot:Building IRI, and link to ontoCityGMLRepresentation
      * @param buildingUri building IRI from other endpoints if exist
      * @param route route to pass to access agent
-     * @return building
      */
-    public String initialiseBuilding(String buildingUri, String route) {
+    public void initialiseBuilding(String buildingUri, String route) {
         UpdateBuilder ub = new UpdateBuilder();
 
         WhereBuilder wb =
@@ -68,10 +67,7 @@ public class DataManager {
 
         UpdateRequest ur = ub.buildRequest();
 
-        //Use access agent
         AccessAgentCaller.updateStore(route, ur.toString());
-
-        return buildingUri;
     }
 
     /**
