@@ -24,6 +24,7 @@ RoadCategory2,Class,RoadCategory,IS-A,,,,,https://www.theworldavatar.com/kg/onto
 RoadCategory3,Class,RoadCategory,IS-A,,,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,Road Category 3
 RoadCategory4,Class,RoadCategory,IS-A,,,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,Road Category 4
 RoadCategory5,Class,RoadCategory,IS-A,,,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,Road Category 5
+CompetentAuthority,Class,,,,,,A competent authority is any public officer or statutory body established by written law with legislative power to make decisions and enforce regulations within their jurisdication.,https://www.theworldavatar.com/kg/ontoplanningregulations/,Competent Authority
 allowsGrossPlotRatio,Object Property,,,PlanningRegulation,https://www.theworldavatar.com/kg/ontoplot/GrossPlotRatio,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows Gross Plot Ratio
 allowsSiteCoverage,Object Property,,,PlanningRegulation,https://www.theworldavatar.com/kg/ontoplot/SiteCoverage,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,allows site coverage
 forNeighbourZoneType,Object Property,,,PlanningRegulation,https://www.theworldavatar.com/kg/ontozoning/ZoningType,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,for neighbour zone type
@@ -45,6 +46,7 @@ requiresFloorToFloorHeight,Object Property,,,PlanningRegulation,https://www.thew
 requiresPartyWall,Object Property,,,PlanningRegulation,https://www.theworldavatar.com/kg/ontoplot/PartyWall,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires party wall
 requiresSetback,Object Property,,,PlanningRegulation,https://www.theworldavatar.com/kg/ontoplot/Setback,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires setback
 requiresSiteArea,Object Property,,,PlanningRegulation,https://www.theworldavatar.com/kg/ontoplot/SiteArea,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,requires site area
+isLegislatedBy,Object Property,,,PlanningRegulation,CompetentAuthority,,A relationship that indicates which competent authority has establish the specified planning regulation.,https://www.theworldavatar.com/kg/ontoplanningregulations/,is legislated by
 forCornerPlot,Data Property,,,PlanningRegulation,boolean,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,for corner plot
 forFringePlot,Data Property,,,PlanningRegulation,boolean,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,for fringe plot
 hasExternalRef,Data Property,,,PlanningRegulation,String,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,has external ref

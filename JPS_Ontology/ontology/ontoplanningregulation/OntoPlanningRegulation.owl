@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 October 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 October 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlanningRegulations is an ontology developed to describe the regulations imposed for urban planning purposes.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -163,6 +163,19 @@
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is constrained by</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/isLegislatedBy -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/isLegislatedBy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/CompetentAuthority"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that indicates which competent authority has establish the specified planning regulation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is legislated by</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -379,6 +392,17 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area regulation are special planning regulations that take precedence over other regulations in specific geographic areas. They are usually enforced using geospatial boundaries, denoting that their rules and provisions apply exclusively to entities within the specified geospatial boundary. The intent behind area regulations is often to address unique or localised needs, challenges, or opportunities, and they can vary significantly from standard zoning or land use regulations.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area Regulation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/CompetentAuthority -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/CompetentAuthority">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A competent authority is any public officer or statutory body established by written law with legislative power to make decisions and enforce regulations within their jurisdication.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Competent Authority</rdfs:label>
     </owl:Class>
     
 
