@@ -111,20 +111,23 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
             return None
         binding = bindings[0]
 
-        def get_querygraph_entity(cls: str):
+        query_graph = nx.DiGraph()
+        for node, attr in query_template.nodes(data=True):
+            var = self.cls2var(node)
+            if attr.get("template_node"):
+                query_graph.add_node(binding[var]["value"], **{**attr, **binding[var]})
+            else:
+                query_graph.add_node(var, **attr)
+                query_graph.add_edge(var, node, label=RDF_TYPE)
+
+        def get_graph_entity(cls: str):
             if query_template.nodes[cls].get("template_node"):
                 return binding[self.cls2var(cls)]["value"]
             return self.cls2var(cls)
 
-        query_graph = nx.DiGraph()
-        for node, attr in query_template.nodes(data=True):
-            query_graph.add_node(get_querygraph_entity(node), **attr)
-            if not attr.get("template_node"):
-                query_graph.add_edge(get_querygraph_entity(node), node, label=RDF_TYPE)
-
         for h, t, attr in query_template.edges(data=True):
             query_graph.add_edge(
-                get_querygraph_entity(h), get_querygraph_entity(t), **attr
+                get_graph_entity(h), get_graph_entity(t), **attr
             )
 
         return query_graph
@@ -132,7 +135,11 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
     def graph2sparql(self, query_graph: nx.DiGraph):
         def get_sparql_entity(n: str):
             if query_graph.nodes[n].get("template_node"):
-                return f"<{n}>"
+                if n.startswith("http"):
+                    return f"<{n}>"
+                return (
+                    f'"{n}"^^{Utils.shortenIri(query_graph.nodes[n].get("datatype"))}'
+                )
             if n.startswith("http"):  # is a class
                 return Utils.shortenIri(n)
             return "?" + n
@@ -141,7 +148,8 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
         for h, t, prop in query_graph.edges(data="label"):
             h, t = (get_sparql_entity(x) for x in (h, t))
             prop = Utils.shortenIri(prop)
-            triples.append(f"{h} {prop} {t} .")
+            if t != "rdfs:Literal":
+                triples.append(f"{h} {prop} {t} .")
 
         result_var = "?" + next(
             n
@@ -153,14 +161,14 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
             triples=triples,
             result_vars=[result_var],
         )
-    
+
     def get_hashable_kg_response(self, graph: nx.DiGraph):
         return Utils.hash_kg_response(self.query_kg(self.graph2sparql(graph)))
 
     def minimize_query_graph(self, query_graph: Optional[nx.DiGraph]):
         if query_graph is None:
             return None
-        
+
         response_init = self.get_hashable_kg_response(query_graph)
         for u, v in query_graph.edges():
             _query_graph = query_graph.copy()
@@ -183,7 +191,7 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
 
         return query_graph
 
-    def generate_queryGraph(
+    def generate_query_graph(
         self, edge_num: int = 1, question_node: Optional[str] = None
     ):
         query_template = self.generate_query_template(
