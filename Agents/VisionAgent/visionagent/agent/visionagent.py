@@ -48,6 +48,16 @@ class VisionAgent:
 
         return image
 
+    def run_one_frame(self):
+        cap = cv2.VideoCapture(self.video_source)
+
+        ret, frame = cap.read()
+        if not ret:
+            raise Exception("Failed to grab frame")
+
+        outputs, height, width = self.perform_detection(frame)
+        return frame, outputs, height, width
+
     def run(self):
         cap = cv2.VideoCapture(self.video_source)
 
