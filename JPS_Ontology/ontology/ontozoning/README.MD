@@ -5,7 +5,7 @@ OntoZoning is an ontology developed to represent relationships between zones and
 *Figure 1. Data model for OntoZoning*
 ```mermaid
     erDiagram 
-    "Zone" ||--o{ "geo:Feature" : rdfs:subClassOf
+    "Zone" ||--o{ "geo:Feature" : "rdfs:subClassOf"
     "Zone" ||--o{ "ontoplot:Plot" : hasPlot
     "Zone" ||--o{ "ZoneType" : hasZoneType
     "ZoneType" ||--o{ "ZoneUse" : allowsUse
