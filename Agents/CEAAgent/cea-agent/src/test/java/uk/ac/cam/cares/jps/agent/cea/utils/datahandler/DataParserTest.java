@@ -17,15 +17,15 @@ public class DataParserTest {
     public void testGetList() {
         JSONObject testJSON = new JSONObject();
 
-        List<String> testList = new ArrayList<>();
-        testList.add("test");
-        testList.add("test1");
+        List<Double> testList = new ArrayList<>();
+        testList.add(0.0);
+        testList.add(1.0);
 
         JSONArray testArray = new JSONArray(testList);
 
         testJSON.put("test", testArray);
 
-        List<String> result = DataParser.getList(testJSON, "test");
+        List<Double> result = DataParser.getList(testJSON, "test");
 
         assertEquals(testList.size(), result.size());
         assertIterableEquals(testList, result);
