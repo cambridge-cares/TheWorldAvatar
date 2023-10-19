@@ -10,7 +10,7 @@ class Utils:
         for ns, p in NAMESPACE2PREFIX.items():
             if iri.startswith(ns):
                 return f"{p}:{iri[len(ns):]}"
-        raise iri
+        return iri
 
     @classmethod
     def flatten_subclassof(cls, G: nx.DiGraph):

@@ -36,3 +36,5 @@ NAMESPACE2PREFIX = {
     "http://semanticscience.org/resource/": "CHEMINF",
     "http://purl.obolibrary.org/obo/": "CHMO",
 }
+
+QUERY_PREFIXES = "\n".join([f"PREFIX {v}: <{k}>" for k, v in NAMESPACE2PREFIX.items()])

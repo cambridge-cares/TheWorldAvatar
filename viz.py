@@ -3,7 +3,7 @@ import networkx as nx
 from utils import Utils
 
 
-def plotGraph(G: nx.MultiDiGraph):
+def plotGraph(G: nx.MultiDiGraph, filepath: str = "graph.svg"):
     G = nx.relabel_nodes(G, mapping={n: Utils.shortenIri(n) for n in G.nodes()})
     labels = {
         e: Utils.shortenIri(prop) for e, prop in nx.get_edge_attributes(G, "label").items()
@@ -22,4 +22,4 @@ def plotGraph(G: nx.MultiDiGraph):
 
     A = nx.drawing.nx_agraph.to_agraph(G)
     A.layout("dot")
-    A.draw("graph.svg")
+    A.draw(filepath)
