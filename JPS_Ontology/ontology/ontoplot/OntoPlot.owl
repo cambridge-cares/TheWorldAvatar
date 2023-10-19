@@ -385,6 +385,13 @@
     
 
 
+    <!-- http://www.opengis.net/ont/geosparql#Feature -->
+
+
+    <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/AbsoluteHeight -->
 
 
@@ -508,6 +515,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot">
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A plot is an area of land that is often delineated with a physical boundary to denote land ownership rights. It is frequently adopted as a basic spatial unit for a cadastre or land registration system. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plot</rdfs:label>
