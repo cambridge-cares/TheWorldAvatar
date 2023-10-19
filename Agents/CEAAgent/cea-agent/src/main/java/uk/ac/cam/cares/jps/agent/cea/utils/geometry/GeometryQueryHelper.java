@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
@@ -14,6 +15,7 @@ import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,10 +38,10 @@ public class GeometryQueryHelper {
      * @param endpoint SPARQL endpoint
      * @return building geometry related information
      */
-    public CEAGeometryData getBuildingGeometry(String uriString, String endpoint) {
+    public CEAGeometryData getBuildingGeometry(String uriString, String endpoint, Boolean flag) {
         String height = getBuildingHeight(uriString, endpoint);
 
-        CEAGeometryData ceaGeometryData = getLod0Footprint(uriString, endpoint, height);
+        CEAGeometryData ceaGeometryData = getLod0Footprint(uriString, endpoint, height, flag);
 
         return ceaGeometryData;
     }
@@ -64,7 +66,11 @@ public class GeometryQueryHelper {
 
             JSONArray queryResultArray = storeClient.executeQuery(sb.build().toString());
 
-            String height = queryResultArray.getJSONObject(0).getString("height");
+            String height = "10.0";
+
+            if (!queryResultArray.isEmpty()) {
+                 height = queryResultArray.getJSONObject(0).getString("height");
+            }
 
             return height;
         }
@@ -74,7 +80,7 @@ public class GeometryQueryHelper {
         }
     }
 
-    public CEAGeometryData getLod0Footprint(String uriString, String endpoint, String height) {
+    public CEAGeometryData getLod0Footprint(String uriString, String endpoint, String height, Boolean flag) {
         try {
             RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
 
@@ -102,11 +108,21 @@ public class GeometryQueryHelper {
 
             crs = crs.split(">")[0];
 
-            List<Geometry> geometry = GeometryHandler.extractFootprint(queryResultArray, crs, Double.parseDouble(height));
+            List<Geometry> geometry = new ArrayList<>();
 
+            if (flag) {
+                geometry = GeometryHandler.extractFootprint(queryResultArray, crs, Double.parseDouble(height));
+            }
+            else{
+                for (int i = 0; i < queryResultArray.length(); i++) {
+                    Polygon temp = (Polygon) GeometryHandler.toGeometry(queryResultArray.getJSONObject(i).getString("wkt").split("> ")[1]);
+                    temp = (Polygon) GeometryHandler.transformGeometry(temp, "EPSG:"+crs, GeometryHandler.EPSG_4326);
+                    geometry.add(GeometryHandler.extractExterior(temp));
+                }
+            }
             return new CEAGeometryData(geometry, "4326", height);
         }
-        catch (ParseException e) {
+        catch (Exception e) {
             e.printStackTrace();
             return null;
         }

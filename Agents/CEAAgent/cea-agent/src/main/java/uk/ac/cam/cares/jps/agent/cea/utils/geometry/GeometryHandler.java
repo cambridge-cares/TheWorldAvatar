@@ -26,10 +26,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GeometryHandler {
-    private static final String EPSG_4326 = "EPSG:4326";
-    private static final Integer METER_EPSG = 3395;
-    private static final String METER_EPSG_STRING = "EPSG:" + METER_EPSG;
-    private static final Double FLOOR_HEIGHT = 3.2;
+    public static final String EPSG_4326 = "EPSG:4326";
+    public static final Integer METER_EPSG = 3395;
+    public static final String METER_EPSG_STRING = "EPSG:" + METER_EPSG;
+    public static final Double FLOOR_HEIGHT = 3.2;
 
     public static Geometry toGeometry(String geometryString) {
         return WKTReader.extract(geometryString).getGeometry();
