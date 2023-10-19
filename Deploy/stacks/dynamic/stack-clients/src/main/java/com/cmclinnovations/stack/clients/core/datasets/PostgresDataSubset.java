@@ -50,6 +50,7 @@ public abstract class PostgresDataSubset extends DataSubset {
             logger.warn("No Subdirectory specified, Continuing with SQL process and creation without data upload");
         }
         runSQLPostProcess(database);
+        PostGISClient.getInstance().resetSchema(database);
     }
 
     public abstract void loadData(Path dataSubsetDir, String database, String baseIRI);
