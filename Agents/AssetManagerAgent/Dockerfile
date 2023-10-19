@@ -25,12 +25,14 @@ WORKDIR /app
 # Copy in the properties file
 COPY ./config/agent.properties /root/agent.properties
 COPY ./config/ontologyMap.properties /root/ontologyMap.properties
+COPY ./config/tsSearch.properties /root/tsSearch.properties
 RUN mkdir /root/folderQR
 RUN mkdir /root/manuals
 
 # Set the required environment variable
 ENV AGENTPROPERTIES "/root/agent.properties"
 ENV ONTOMAPPROPERTIES "/root/ontologyMap.properties"
+ENV TSSEARCH "/root/tsSearch.properties"
 ENV FOLDERQR "/root/folderQR/"
 ENV FOLDERMANUAL "/root/manuals/"
 

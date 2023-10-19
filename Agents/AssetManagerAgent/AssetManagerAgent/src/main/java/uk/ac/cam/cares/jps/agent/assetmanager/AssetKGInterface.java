@@ -893,4 +893,8 @@ public class AssetKGInterface {
         return assetRetriever.getItemListByDocIRI(InvoiceIRI, POiri, DOiri);
       }
 
+      public Boolean itemMeasuresBool(String dbName, String IRI, JSONArray pred, int searchDepth){
+        return assetRetriever.getMeasuresExistence (dbName, IRI, pred, searchDepth);
+      }
+
 }

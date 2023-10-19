@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.assetmanager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.model.Triple;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.query.algebra.Service;
@@ -10,11 +11,18 @@ import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfSubject;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.beust.ah.A;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -23,6 +31,8 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import static uk.ac.cam.cares.jps.agent.assetmanager.ClassAndProperties.*;
 import static uk.ac.cam.cares.jps.agent.assetmanager.QueryUtil.*;
+
+import java.util.ArrayList;
 
 public class AssetRetriever {
     private RemoteStoreClient storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab;
@@ -574,6 +584,67 @@ public class AssetRetriever {
         result.put(storeClientOffice.executeQuery(query));
         result.put(storeClientLab.executeQuery(query));
         return result;
+    }
+
+    public Boolean getMeasuresExistence (String dbName, String IRI, JSONArray pred, int searchDepth) {
+        //Do (pseudo-)BFS to the specified depth with all the checked predicates
+        //We don't know what the asset type is for general use, so need to do this
+        //If the asset is known, please input from the request parameter
+
+        //WHy don't I do normal BFS? -> Every single check will require a query which may take time
+        //This method allows us to check the breadth in 1 query, albeit the agent may not find the timeseries despite existing
+
+        if(dbName.isBlank() || dbName==null){return false;}
+
+        RemoteStoreClient storeClientDB = new RemoteStoreClient(dbName);
+        LOGGER.info("Starting TS search...");
+        for (int d = 1; d<= searchDepth; d++){
+            SelectQuery query = Queries.SELECT();
+            GraphPattern[] tripleArr = new GraphPattern[pred.length()];
+            ArrayList<GraphPattern> tripleList = new ArrayList<GraphPattern>();
+
+            Variable lastObj;
+            for (int i = 0; i <d; i++){
+                RdfSubject subject;
+                RdfPredicate predicate;
+                Variable object;
+
+                object = query.var();
+                lastObj = object;
+                if (i == 0){
+                    subject = iri(IRI);
+                }
+                else{
+                    subject = lastObj;
+                }
+
+                if (i == d-1){
+                    //Use predicate from the JSONArray
+                    for (int predInd = 0; predInd < pred.length(); predInd++){
+                        predicate = iri(pred.getString(predInd));
+                        tripleList.add(GraphPatterns.tp(subject, predicate, object));
+                    }
+                    query.where(GraphPatterns.union(tripleList.toArray(tripleArr)));
+                }
+                else{
+                    predicate = query.var();
+                    query.where(GraphPatterns.tp(subject, predicate, object));
+                }
+                LOGGER.debug("TS SEARCH QUERY::" + query.getQueryString());
+                
+                JSONArray reqResult = storeClientDB.executeQuery(query.getQueryString());
+                if (reqResult.length() > 1){
+                    return true;
+                }
+
+                //NOTE
+                //Could also run the algo backward wiht IRI as object instead.
+                //Keep in mind the graph is "technically bidirectional"
+
+            }
+        }
+        return false;
+
     }
 
 }

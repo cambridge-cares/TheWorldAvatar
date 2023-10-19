@@ -46,9 +46,10 @@ public class AssetManagerAgent extends JPSAgent{
     public final String KEY_ONTOMAPPROPERTIES = "ONTOMAPPROPERTIES";
     public final String KEY_FOLDERqr = "FOLDERQR";
     public final String KEY_FOLDERmanual = "FOLDERMANUAL";
+    public final String KEY_TSSEARCH = "TSSEARCH";
 
     //Properties params
-    public String ENDPOINT_KG_ASSET, ENDPOINT_KG_OFFICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_KG_LAB;
+    public String ENDPOINT_KG_ASSET, ENDPOINT_KG_OFFICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_KG_LAB, ENDPOINT_KG_BMS;
     public String ENDPOINT_PRINTER;
     public Double TARGET_QR_SIZE;
     public String URL_MANUAL;
@@ -88,14 +89,15 @@ public class AssetManagerAgent extends JPSAgent{
             }
 
             String[] args = new String[] {
-                ENDPOINT_KG_ASSET, 
-                ENDPOINT_KG_OFFICE,
-                ENDPOINT_KG_LAB, 
-                ENDPOINT_KG_PURCHASEDOC, 
-                ENDPOINT_PRINTER, 
-                FOLDER_QR, 
-                FOLDER_MANUAL,
-                URL_MANUAL
+                ENDPOINT_KG_ASSET, //0
+                ENDPOINT_KG_OFFICE, //1
+                ENDPOINT_KG_LAB, //2
+                ENDPOINT_KG_PURCHASEDOC, //3 
+                ENDPOINT_PRINTER,  //4
+                FOLDER_QR,  //5
+                FOLDER_MANUAL, //6
+                URL_MANUAL, //7
+                ENDPOINT_KG_BMS //8
             };
             
             try {
@@ -126,7 +128,19 @@ public class AssetManagerAgent extends JPSAgent{
             }
             else if (urlPath.contains("retrieve")){
                 String ID = assetData.getString("ID");
-                jsonMessage = retrieveAssetInstance(args, ID);
+                String dbName = "";
+                JSONArray pred = new JSONArray();
+                int searchDepth = -1;
+                if (assetData.has("dbName")){
+                    dbName = assetData.getString("dbName");
+                }
+                if(assetData.has("checkedPredicates")){
+                    pred = assetData.getJSONArray("checkedPredicates");
+                }
+                if(assetData.has("searchDepth")){
+                    searchDepth = assetData.getInt("searchDepth");
+                }
+                jsonMessage = retrieveAssetInstance(args, ID, dbName, pred, searchDepth);
             }
 
             else if (urlPath.contains("getuidata")){
@@ -195,6 +209,7 @@ public class AssetManagerAgent extends JPSAgent{
                 ENDPOINT_KG_OFFICE= prop.getProperty("endpoint.kg.office");
                 ENDPOINT_KG_LAB= prop.getProperty("endpoint.kg.lab");
                 ENDPOINT_KG_PURCHASEDOC  = prop.getProperty("endpoint.kg.purchasedocs");
+                ENDPOINT_KG_BMS = prop.getProperty("endpoint.kg.bms");
                 KG_USERNAME = prop.getProperty("auth.kg.user");
                 KG_PASSWORD = prop.getProperty("auth.kg.pass");
                 ENDPOINT_PRINTER = prop.getProperty("endpoint.printer");
@@ -411,10 +426,99 @@ public class AssetManagerAgent extends JPSAgent{
     }
 
     //retrieve
-    public JSONObject retrieveAssetInstance (String[] arg, String ID){
+    public JSONObject retrieveAssetInstance (String[] arg, String ID, String dbName, JSONArray pred, int searchDepth){
         JSONObject message = new JSONObject();
+        String IRI;
+        String db;
+        JSONArray checkedPred = pred;
+        int depth = searchDepth;
+
+        if (depth < 0){
+            depth = getMaxDepth();
+        }
+
+        try {
+            if(validateID(ID)){
+                IRI = instanceHandler.existenceChecker.getIRIStringbyID(ID);
+            }else{
+                IRI = ID;
+                ID = instanceHandler.existenceChecker.getIDbyIRIString(IRI);
+            }
+
+            if (IRI == null) {
+                throw new JPSRuntimeException("ID/IRI not detected in the asset KG.");
+            }
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Failed to get ID/IRI. ID has to be a valid ID or an IRI.", e);
+        }
+        
+        if (dbName.isBlank()){
+            /*
+            String[] splits = IRI.split("/");
+            db = splits[splits.length - 2]; //DB name is always the second last, before the UUID
+            //Assumes the endpoint is the same as the assetendpoint, just a different namespace
+            db = arg[0].substring(0, arg[0].lastIndexOf("namespace") + 9) + "/" + db + "/sparql";
+            */
+            db = arg[8];
+        }
+        else {
+            db = dbName;
+        }
+        
+        if (checkedPred.isEmpty()){
+            checkedPred = getAllCheckedPred();
+        }
         message.accumulate("Result", instanceHandler.retrieve(ID));
+        message.accumulate("Result", instanceHandler.itemMeasuresBool(db, IRI, pred, depth));
         return message;
+    }
+
+    private JSONArray getAllCheckedPred() {
+        //TODO read from prop file or something and get all checked predicate for measured
+        try {
+            JSONArray result = new JSONArray();
+            String rawPred = getTsSearchParam("predicate");
+            for (String predicate : rawPred.split(",")){
+                predicate = predicate.trim();
+                result.put(predicate);
+            }
+
+            return result; 
+
+        } catch (Exception e) {
+           throw new JPSRuntimeException("Failed to parse checked predicates from properties file", e);
+        }
+    }
+
+    private int getMaxDepth() {
+        //TODO get the maximum depth from a prop file or smth idk
+        try {
+            return Integer.parseInt(getTsSearchParam("depth"));    
+        } catch (Exception e) {
+            // TODO: handle exception
+            throw new JPSRuntimeException("Failed to parse depth from properties file", e);
+        }
+        
+    }
+
+    private String getTsSearchParam(String key) throws IOException{
+        String propFile = System.getenv(KEY_TSSEARCH);
+        try (InputStream input = new FileInputStream(propFile)) {
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+
+            try {
+                // Read the mappings folder from the properties file
+                return prop.getProperty(key);
+            }
+            catch (Exception e) {
+                throw new IOException ("The endpoint keys cannot be retrieved from the properties file: ", e);
+            }
+        }
+        catch (Exception e) {
+            throw new JPSRuntimeException("Failed to read properties file: ", e);
+        }
     }
 
     public JSONObject addManual(String[] arg, String targetID, String comments, String documentType, String encoded, String fileName) {
