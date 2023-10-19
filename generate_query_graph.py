@@ -1,9 +1,10 @@
 import random
-from typing import Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional
 
 from SPARQLWrapper import JSON, POST, SPARQLWrapper
 import networkx as nx
-from constants import QUERY_PREFIXES, RDF_TYPE
+from constants.prefixes import QUERY_PREFIXES, RDF_TYPE, RDFS_LITERAL
+from constants.functions import Comparative
 
 from utils import Utils
 
@@ -12,7 +13,7 @@ class QueryGraphGenerator:
     def __init__(
         self,
         ontology: nx.DiGraph,
-        numerical_classes: List[str] = [],
+        numcls2prop: Dict[str, str] = dict(),
         prop_blacklist: List[str] = [],
         questionnode_blacklist: List[str] = [],
         kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
@@ -20,7 +21,7 @@ class QueryGraphGenerator:
         G = Utils.flatten_subclassof(ontology)
         G = Utils.remove_egdes_by_label(G, labels=prop_blacklist)
         self.ontology = G
-        self.numerical_classes = numerical_classes
+        self.numcls2prop = numcls2prop
         self.questionnode_blacklist = questionnode_blacklist
 
         sparql_client = SPARQLWrapper(kg_endpoint)
@@ -56,14 +57,34 @@ class QueryGraphGenerator:
             edge = random.choice(out_edges + in_edges)
             G.add_edge(edge[0], edge[1], label=edge[2])
 
-        for n, question_node in G.nodes(data="question_node"):
+        for n, question_node in list(G.nodes(data="question_node")):
             if question_node:
                 continue
             if random.uniform(0, 1) < 0.8:
-                G.nodes[n]["template_node"] = True
-                if n in self.numerical_classes:
-                    comparative = random.choice(["<", "<=", ">", ">=", "=", "≈"])
-                    G.nodes[n]["function"] = comparative
+                if n not in self.numcls2prop:
+                    G.nodes[n]["template_node"] = True
+                elif RDFS_LITERAL not in G.neighbors(n):
+                    comparative = random.choice(list(Comparative))
+
+                    var = self.cls2var(n)
+                    val_node = var + "Val"
+                    func_node = var + comparative.value
+
+                    G.add_nodes_from(
+                        [
+                            (val_node, dict(template_node=True, literal=True, label="rdfs:Literal")),  # value node
+                            (
+                                func_node,
+                                dict(func=comparative, label=comparative.value),
+                            ),  # function node
+                        ]
+                    )
+                    G.add_edges_from(
+                        [
+                            (n, val_node, dict(label=self.numcls2prop[n])),
+                            (val_node, func_node, dict(label="func")),
+                        ]
+                    )
 
         return G
 
@@ -102,7 +123,7 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
                 triples.append(f"?{t_var} a {t} .")
         return self.make_sparql(triples, limit=1)
 
-    def template2graph(self, query_template: nx.MultiDiGraph):
+    def template2query(self, query_template: nx.MultiDiGraph):
         """Grounds query_template to obtain a query graph"""
         query = self.template2sparql(query_template)
         bindings = self.query_kg(query)["results"]["bindings"]
@@ -126,9 +147,7 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
             return self.cls2var(cls)
 
         for h, t, attr in query_template.edges(data=True):
-            query_graph.add_edge(
-                get_graph_entity(h), get_graph_entity(t), **attr
-            )
+            query_graph.add_edge(get_graph_entity(h), get_graph_entity(t), **attr)
 
         return query_graph
 
@@ -197,6 +216,6 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
         query_template = self.generate_query_template(
             edge_num=edge_num, question_node=question_node
         )
-        query_graph = self.template2graph(query_template)
+        query_graph = self.template2query(query_template)
         query_graph_min = self.minimize_query_graph(query_graph)
         return query_graph_min, query_graph, query_template

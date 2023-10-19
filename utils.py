@@ -1,7 +1,7 @@
-from typing import Dict, Iterable, List
+from typing import Iterable
 import networkx as nx
 
-from constants import NAMESPACE2PREFIX, RDFS_SUBCLASSOF
+from constants.prefixes import NAMESPACE2PREFIX, RDFS_SUBCLASSOF
 
 
 class Utils:

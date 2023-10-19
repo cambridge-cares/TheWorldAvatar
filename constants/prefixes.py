@@ -2,6 +2,7 @@ RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 RDF_TYPE = RDF + "type"
 
 RDFS = "http://www.w3.org/2000/01/rdf-schema#"
+RDFS_LITERAL = RDFS + "Literal"
 RDFS_SUBCLASSOF = RDFS + "subClassOf"
 RDFS_DOMAIN = RDFS + "domain"
 RDFS_RANGE = RDFS + "range"
