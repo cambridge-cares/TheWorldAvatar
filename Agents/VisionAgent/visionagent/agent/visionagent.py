@@ -3,7 +3,8 @@ import numpy as np
 from visionagent.utils.tools import load_model
 
 class VisionAgent:
-    def __init__(self):
+    def __init__(self, video_source=0):
+        self.video_source = video_source
         self.net = load_model("visionagent/resources/yolov3.weights", "visionagent/resources/yolov3.cfg")
         with open("visionagent/resources/coco.names", "r") as f:
             self.classes = [line.strip() for line in f.readlines()]
@@ -45,11 +46,10 @@ class VisionAgent:
                 cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(image, f"{label} {round(confidence, 2)}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        
         return image
 
     def run(self):
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(self.video_source)
 
         while True:
             ret, frame = cap.read()
