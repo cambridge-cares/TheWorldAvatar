@@ -43,14 +43,14 @@ public class EndpointConfig {
 
     private static final Logger LOGGER = LogManager.getLogger(EndpointConfig.class);
 
-    public EndpointConfig() {
+    public EndpointConfig(String namespace) {
         ContainerClient containerClient = new ContainerClient();
         BlazegraphEndpointConfig blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph",
                 BlazegraphEndpointConfig.class);
 
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
-        this.kgurl = blazegraphEndpointConfig.getUrl("lab");
+        this.kgurl = blazegraphEndpointConfig.getUrl(namespace);
     }
 
     /**

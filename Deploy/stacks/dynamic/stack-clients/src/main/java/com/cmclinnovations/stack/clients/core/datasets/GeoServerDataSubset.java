@@ -10,9 +10,9 @@ public abstract class GeoServerDataSubset extends PostgresDataSubset {
     @Override
     void loadInternal(Dataset parent) {
         super.loadInternal(parent);
-        createLayer(parent.getWorkspaceName(), parent.getDatabase());
+        createLayers(parent.getWorkspaceName(), parent.getDatabase());
     }
 
-    public abstract void createLayer(String workspaceName, String database);
+    public abstract void createLayers(String workspaceName, String database);
 
 }
