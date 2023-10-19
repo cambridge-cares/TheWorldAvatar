@@ -38,7 +38,7 @@ public class TerrainHelper {
         RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
 
         // query for the coordinate reference system used by the terrain data
-        String sridQuery = String.format("SELECT ST_SRID(rast) as srid FROM public.%s LIMIT 1", table);
+        String sridQuery = String.format("SELECT ST_SRID(rast) as srid FROM %s LIMIT 1", table);
 
         Coordinate centerCoordinate;
 
@@ -133,7 +133,7 @@ public class TerrainHelper {
 
         // query result to be converted to TIF format
         String query = String.format("SELECT ST_AsTIFF(ST_Union(ST_Clip(rast, %s))) as data ", terrainBoundary);
-        query = query + String.format("FROM public.%s ", table);
+        query = query + String.format("FROM %s ", table);
         query = query + String.format("WHERE ST_Intersects(rast, %s);", terrainBoundary);
 
         return query;
