@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Dict, Iterable, List
 import networkx as nx
 
 from constants import NAMESPACE2PREFIX, RDFS_SUBCLASSOF
@@ -37,3 +37,28 @@ class Utils:
         ]
         G.remove_edges_from(remove_edges)
         return G
+    
+    @classmethod
+    def hash_kg_response(self, response):
+        bindings = response["results"]["bindings"]
+
+        if bindings is None:
+            return tuple()
+
+        # [
+        #     Dict[
+        #         str,
+        #         {
+        #             "datatype": NotRequired[str],
+        #             "type": str
+        #             "value" str
+        #         }
+        #     ]
+        # ]
+        _results = [[(k, v["value"]) for k, v in row.items()] for row in bindings]
+
+        for row in _results:
+            row.sort(key=lambda x: x[0])
+        _results.sort(key=lambda row: tuple(x[1] for x in row))
+
+        return tuple(tuple(row) for row in _results)
