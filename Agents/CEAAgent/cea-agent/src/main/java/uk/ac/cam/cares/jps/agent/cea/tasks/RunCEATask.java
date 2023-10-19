@@ -549,10 +549,12 @@ public class RunCEATask implements Runnable {
                     e.printStackTrace();
                     throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
                 }
-            } catch ( NullPointerException | URISyntaxException e) {
+            }
+            catch ( NullPointerException | URISyntaxException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
-            } finally {
+            }
+            finally {
                 stop();
             }
         }
