@@ -26,6 +26,15 @@ Prefix | Namespace
 
 - Planning regulations are typically, enforced on all land plots. The introduction of this concept allows regulations such as Site Coverage, Gross Plot Ratio, and setbacks to be tailored to each plot's unique requirements.
 - However, planners have the flexibility to prioritise specific regulations in designated zones or for different zone uses to address their localised needs. In such scenarios, the `AreaRegulation` and `TypeRegulation` concepts offer a structured way to encompass and manage these regulations.
+- All definitions of the regulated attributes are available in the ontology. This non-exhaustive list of planning regulations includes:
+    - AbsoluteHeight
+    - BuildingHeight
+    - BuildingMassRatio
+    - FloorToFloorHeight 
+    - GrossFloorArea
+    - GrossPlotRatio
+    - Setback
+    - SiteCoverage
 
 >CompetentAuthority
 
