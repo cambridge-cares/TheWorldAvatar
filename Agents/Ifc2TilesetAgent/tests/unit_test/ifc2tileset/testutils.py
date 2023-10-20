@@ -33,14 +33,16 @@ def gen_sample_tileset(
     return tileset
 
 
-def gen_content_metadata(building_iri: str, building_name: str):
-    return {
+def gen_content_metadata(building_iri: str, building_name: Optional[str] = ""):
+    meta_dict = {
         "class": "ContentMetaData",
         "properties": {
-            "name": building_name,
             "iri": building_iri
         }
     }
+    if building_name:
+            meta_dict["properties"]["name"] = building_name
+    return meta_dict
 
 
 def append_tileset_contents(expected_tileset: dict, geometry_file_paths: List[str], building_iri: Optional[str] = "", building_name: Optional[str] = ""):

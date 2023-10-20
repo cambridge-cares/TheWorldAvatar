@@ -78,6 +78,11 @@ def test_retrieve_metadata(init_assets, expected, kg_client):
         C.SAMPLE_BUILDING_IRI,
         C.SAMPLE_BUILDING_NAME
     ), (
+        # when building exists but no name is available, ensure that only an iri is retrieved
+        ["nameless_building"],
+        C.SAMPLE_BUILDING_IRI,
+        ""
+    ), (
         # when there is no building, no values should be returned
         [],
         "",

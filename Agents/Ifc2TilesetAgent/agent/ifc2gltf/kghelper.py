@@ -139,7 +139,7 @@ def get_building_iri_name(query_endpoint: str, update_endpoint: str) -> str:
         .add_select_var("name") \
         .add_where_triple("iri", RDF_PREFIX + ":type", BOT_PREFIX + ":Building", 1) \
         .add_where_triple("iri", BIM_PREFIX + ":hasIfcRepresentation", "buildingrep", 5) \
-        .add_where_triple("buildingrep", RDFS_PREFIX + ":label", "name", 5) \
+        .add_optional_triple("buildingrep", RDFS_PREFIX + ":label", "name", 5) \
         .build()
 
     logger.debug("Executing query...")
@@ -148,7 +148,9 @@ def get_building_iri_name(query_endpoint: str, update_endpoint: str) -> str:
     if len(results) == 0:
         return "",""
     else:
-        if not results[0]["name"]:
-            logger.warning("Detected building instance but name is empty! Please verify the label of this instance...")
+        # If there is no name result or name key is an empty string, log a warning 
+        if "name" not in results[0] or not results[0]["name"]:
+            logger.warning("Detected building instance but name is empty! Please consult the Ifc2OntoBIM Agent's README on how to add the building name...")
+            return results[0]["iri"], ""
         # assume that there exists only one building in the KG subgraph for BIM models
         return results[0]["iri"], results[0]["name"]

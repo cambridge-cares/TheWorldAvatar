@@ -145,10 +145,13 @@ CONTENT_METADATA_SCHEMA = {"classes":
 SAMPLE_BUILDING_INST = "Building_1"
 SAMPLE_BUILDING_IRI = base_namespace + SAMPLE_BUILDING_INST
 SAMPLE_BUILDING_NAME = "TestBuilding"
-building_triple = f"""\
+building_nameless_triple = f"""\
 base:{SAMPLE_BUILDING_INST} bot:hasStorey base:Storey_5a9f7642-2d12-11b2-8040-cdbcaabc8e65;
                             rdf:type bot:Building;
                             ontobim:hasIfcRepresentation base:IfcBuildingRepresentation_130.
+"""
+
+building_triple = building_nameless_triple + f"""\
 base:IfcBuildingRepresentation_130 rdf:type ontobim:IfcModelRepresentation;
                                    ontobim:hasIfcId '0jvyVdjY901wSsMTGJsL4G'^^xsd:string;
                                    rdfs:label '{SAMPLE_BUILDING_NAME}'^^xsd:string.
@@ -195,6 +198,7 @@ SAMPLE_ROOT_METADATA = {
 
 SAMPLE_ONTOBIM_TRIPLESTORE = dict(
     building=building_triple,
+    nameless_building = building_nameless_triple,
     wall=_elem_to_triple(sample_wall),
     water_meter=_elem_to_triple(sample_water_meter),
     fridge=_elem_to_triple(sample_fridge),

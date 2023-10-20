@@ -48,6 +48,9 @@ def test_append_content_metadata_schema():
     [
         # When there is only a bounding box and nothing else
         (list(range(12)), [], [], dict()),
+        # When there is only a building with no name, ensure content is used with metadata attached
+        (list(range(12)), ["./data/glb/building.glb"], [TEST_BUILDING_IRI, ""],
+         dict(content={"uri": "./data/glb/building.glb", "metadata": gen_content_metadata(TEST_BUILDING_IRI)})),
         # When there is only a building, ensure content is used with metadata attached
         (list(range(12)), ["./data/glb/building.glb"], [TEST_BUILDING_IRI, TEST_BUILDING_NAME],
          dict(content={"uri": "./data/glb/building.glb", "metadata": gen_content_metadata(TEST_BUILDING_IRI, TEST_BUILDING_NAME)})),

@@ -68,10 +68,13 @@ def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Opti
         building_dict = {
             "class": "ContentMetaData",
             "properties": {
-                NAME_VAR: root_metadata[1],
                 IRI_VAR: root_metadata[0]
             }
         }
+        # If there is a building name, add it to the tileset
+        if root_metadata[1]:
+            building_dict["properties"][NAME_VAR] = root_metadata[1]
+
     # If there are geometry contents available
     if geometry_file_paths:
         # And if there is only one item in the list, use the "content" nomenclature
