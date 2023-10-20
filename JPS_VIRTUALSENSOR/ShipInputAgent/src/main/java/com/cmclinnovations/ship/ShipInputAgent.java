@@ -73,6 +73,7 @@ public class ShipInputAgent extends HttpServlet {
         // in a servlet
         try {
             fileNamesAsInt = Arrays.asList(dataDir.listFiles()).stream()
+                    .filter(f -> !f.getName().contentEquals(".gitignore"))
                     .map(f -> Integer.parseInt(FilenameUtils.removeExtension(f.getName())))
                     .collect(Collectors.toList());
         } catch (NumberFormatException e) {
