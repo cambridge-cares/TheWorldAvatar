@@ -104,7 +104,7 @@ In `config/properties.yaml`, there are also optional properties for appending IR
 - sewage_tileset_iri
 - sewage_tileset_name
 
-**Note that this will be ignored if there are no root contents or a `building.glb` is generated. When there is a `building.glb`, the corresponding building instance and name in the Knowledge Graph will take precedence.*
+**Note that this will be ignored if there are no root contents or a `building.glb` is generated. When there is a `building.glb`, the corresponding building instance and name in the Knowledge Graph will take precedence. If the building name is NOT available, NO name will be appended to the tileset. Please check the [Ifc2OntoBim agent's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to add the building name.*
 
 If you are deploying this on the stack, ensure that your `properties.yaml` and IFC file is placed at the corresponding bind mount location. A sample stack-based properties is available in `config/properties.yaml_stack` but requires editing for the name of your stack, desired namespaces, and optional IRIs or names.
 
