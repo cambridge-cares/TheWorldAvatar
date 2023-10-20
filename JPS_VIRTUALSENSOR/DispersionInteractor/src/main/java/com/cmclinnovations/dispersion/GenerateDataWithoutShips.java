@@ -28,7 +28,15 @@ public class GenerateDataWithoutShips extends HttpServlet {
         String derivation = req.getParameter("derivation");
 
         List<Long> timesteps = new ArrayList<>();
-        timesteps.add(Instant.now().getEpochSecond());
+        String[] timestepsFromInput = req.getParameterValues("timestep");
+
+        if (timestepsFromInput == null) {
+            timesteps.add(Instant.now().getEpochSecond());
+        } else {
+            for (String timestepFromInput : timestepsFromInput) {
+                timesteps.add(Long.parseLong(timestepFromInput));
+            }
+        }
 
         timesteps.stream().forEach(timestep -> {
             queryClient.updateSimulationTime(derivation, timestep);
