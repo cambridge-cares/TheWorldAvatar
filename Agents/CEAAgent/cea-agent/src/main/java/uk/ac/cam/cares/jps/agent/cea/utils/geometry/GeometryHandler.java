@@ -18,6 +18,7 @@ import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.ArrayList;
@@ -194,7 +195,13 @@ public class GeometryHandler {
         String crs = EPSG_4326;
 
         if (surfaceArray.length() == 1) {
-            Geometry temp = toGeometry(surfaceArray.getJSONObject(0).getString("wkt").split("> ")[1]);
+            String wkt = surfaceArray.getJSONObject(0).getString("wkt");
+
+            if (wkt.contains("EPSG")) {
+                wkt = wkt.split("> ")[1];
+            }
+
+            Geometry temp = toGeometry(wkt);
             try {
                 result.add(transformGeometry(temp, originalCRS, EPSG_4326));
 
@@ -207,8 +214,14 @@ public class GeometryHandler {
         }
         else {
             for (int i = 0; i < surfaceArray.length(); i++) {
+                String wkt = surfaceArray.getJSONObject(i).getString("wkt");
+
+                if (wkt.contains("EPSG")) {
+                    wkt = wkt.split("> ")[1];
+                }
+
                 // create Polygon object from WKT string
-                Polygon polygon = (Polygon) toGeometry(surfaceArray.getJSONObject(i).getString("wkt").split("> ")[1]);
+                Polygon polygon = (Polygon) toGeometry(wkt);
                 try {
                     polygon = (Polygon) transformGeometry(polygon, originalCRS, EPSG_4326);
                 }

@@ -104,9 +104,15 @@ public class GeometryQueryHelper {
 
             JSONArray queryResultArray = storeClient.executeQuery(query.toString());
 
-            String crs = queryResultArray.getJSONObject(0).getString("crs").split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
+            String crs = queryResultArray.getJSONObject(0).getString("crs");
 
-            crs = crs.split(">")[0];
+            if (crs.contains("EPSG")) {
+                crs = crs.split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
+                crs = crs.split(">")[0];
+            }
+            else {
+                crs = "4326";
+            }
 
             List<Geometry> geometry = new ArrayList<>();
 
@@ -115,7 +121,13 @@ public class GeometryQueryHelper {
             }
             else{
                 for (int i = 0; i < queryResultArray.length(); i++) {
-                    Polygon temp = (Polygon) GeometryHandler.toGeometry(queryResultArray.getJSONObject(i).getString("wkt").split("> ")[1]);
+                    String wkt = queryResultArray.getJSONObject(i).getString("wkt");
+
+                    if (wkt.contains("EPSG")) {
+                        wkt = wkt.split("> ")[1];
+                    }
+
+                    Polygon temp = (Polygon) GeometryHandler.toGeometry(wkt);
                     temp = (Polygon) GeometryHandler.transformGeometry(temp, "EPSG:"+crs, GeometryHandler.EPSG_4326);
                     geometry.add(GeometryHandler.extractExterior(temp));
                 }
