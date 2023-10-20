@@ -42,7 +42,8 @@ public class ClassAndProperties {
     public static final Prefix Pref_SAREF = SparqlBuilder.prefix("saref", iri(P_SAREF));
     public static final Prefix Pref_OM = SparqlBuilder.prefix("om2", iri(P_OM));
     public static final Prefix Pref_FIBO_AAP = SparqlBuilder.prefix("FIBOaap", iri(P_FIBO_AAP));
-    public static final Prefix Pref_FIBO_ORG = SparqlBuilder.prefix("FIBOorg",iri(P_FIBO_ORG));
+    public static final Prefix Pref_FIBO_ORG_FORMAL = SparqlBuilder.prefix("FIBOorgFormal",iri(P_FIBO_ORG+"/FormalOrganizations/"));
+    public static final Prefix Pref_FIBO_ORG_ORGS = SparqlBuilder.prefix("FIBOorgOrg",iri(P_FIBO_ORG+"/Organizations/"));
     public static final Prefix Pref_BOT = SparqlBuilder.prefix("bot", iri(P_BOT));
     public static final Prefix Pref_P2P_ITEM = SparqlBuilder.prefix("P2Pitem", iri(P_P2P_ITEM)); 
     public static final Prefix Pref_P2P_DOCLINE = SparqlBuilder.prefix("P2Pdocline", iri(P_P2P_DOCLINE)); 
@@ -144,8 +145,8 @@ public class ClassAndProperties {
 
     public static final Iri Person = Pref_FIBO_AAP.iri("Person");
     public static final Iri PersonName = Pref_FIBO_AAP.iri("PersonName");
-    public static final Iri FormalOrganization = Pref_FIBO_ORG.iri("FormalOrganizations/FormalOrganization");
-    public static final Iri OrganizationName = Pref_FIBO_ORG.iri("Organizations/OrganizationName");
+    public static final Iri FormalOrganization = Pref_FIBO_ORG_FORMAL.iri("FormalOrganization");
+    public static final Iri OrganizationName = Pref_FIBO_ORG_ORGS.iri("OrganizationName");
     public static final Iri IndependentParty = iri("https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty");
 
     public static final Iri AmountOfMoney = Pref_OM.iri("AmountOfMoney");

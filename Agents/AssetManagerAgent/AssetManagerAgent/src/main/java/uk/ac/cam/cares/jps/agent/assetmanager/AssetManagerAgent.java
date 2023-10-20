@@ -469,6 +469,7 @@ public class AssetManagerAgent extends JPSAgent{
             checkedPred = getAllCheckedPred();
         }
         message.accumulate("Result", instanceHandler.retrieve(ID));
+        
         message.accumulate("Result", instanceHandler.itemMeasuresBool(db, IRI, pred, depth));
         return message;
     }

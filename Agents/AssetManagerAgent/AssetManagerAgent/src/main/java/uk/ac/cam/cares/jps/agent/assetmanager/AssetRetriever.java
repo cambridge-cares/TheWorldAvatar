@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfSubject;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.beust.ah.A;
@@ -83,7 +84,7 @@ public class AssetRetriever {
         //Asset namespace query
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         Variable deviceIRIVar = SparqlBuilder.var("deviceIRI");
         Variable deviceTypeIRI = SparqlBuilder.var("deviceTypeIRI");
@@ -143,8 +144,8 @@ public class AssetRetriever {
         query.where(personNameIRI.has(hasPersonName, deviceOwnerLiteral));
         //Optional IRIs
         //Workspace
-        query.where(GraphPatterns.optional(PersonIRI.has(hasAllocatedWorkspace, WorkspaceIRI)));
-        query.where(GraphPatterns.optional(WorkspaceIRI.has(hasWorkspaceIdentifier, WorkspaceIDLiteral)));
+        query.where(GraphPatterns.optional(PersonIRI.has(hasAllocatedWorkspace, WorkspaceIRI),
+            WorkspaceIRI.has(hasWorkspaceIdentifier, WorkspaceIDLiteral)));
         //Serial number
         query.where(GraphPatterns.optional(deviceIRIVar.has(serialNumber, serialNumberLiteral)));
         //model number
@@ -152,28 +153,35 @@ public class AssetRetriever {
         //manual URL
         query.where(GraphPatterns.optional(deviceIRIVar.has(RDFS.SEEALSO, manualURL)));
         //Price
-        query.where(GraphPatterns.optional(deviceIRIVar.has(hasPrice, amountOfMoneyVar)));
-        query.where(GraphPatterns.optional(amountOfMoneyVar.has(hasValue, priceMeasureIRI)));
-        query.where(GraphPatterns.optional(priceMeasureIRI.has(hasNumericalValue, priceLiteralVar)));
-        query.where(GraphPatterns.optional(priceMeasureIRI.has(hasUnit, priceCurrencyIRI)));
+        query.where(GraphPatterns.optional(deviceIRIVar.has(hasPrice, amountOfMoneyVar),
+            amountOfMoneyVar.has(hasValue, priceMeasureIRI),
+            priceMeasureIRI.has(hasNumericalValue, priceLiteralVar),
+            priceMeasureIRI.has(hasUnit, priceCurrencyIRI)
+        ));
 
         //Specsheet 
-        query.where(GraphPatterns.optional(SpecSheetIRI.isA(SpecSheet)));
-        query.where(GraphPatterns.optional(deviceIRIVar.has(hasDataSheet, SpecSheetIRI)));
-        query.where(GraphPatterns.optional(SpecSheetIRI.has(availableAt, SpecSheetFileLiteral)));
-        query.where(GraphPatterns.optional(SpecSheetIRI.has(RDFS.COMMENT, SpecSheetPageLiteral)));
+        query.where(GraphPatterns.optional(
+            deviceIRIVar.has(hasDataSheet, SpecSheetIRI),
+            SpecSheetIRI.isA(SpecSheet),
+            
+            GraphPatterns.optional(SpecSheetIRI.has(availableAt, SpecSheetFileLiteral)),
+            GraphPatterns.optional(SpecSheetIRI.has(RDFS.COMMENT, SpecSheetPageLiteral))
+        ));
         
         //Manual
-        query.where(GraphPatterns.optional(ManualIRI.isA(SpecSheet)));
-        query.where(GraphPatterns.optional(deviceIRIVar.has(hasDataSheet, ManualIRI)));
-        query.where(GraphPatterns.optional(ManualIRI.has(availableAt, ManualFileLiteral)));
+        query.where(GraphPatterns.optional(
+            deviceIRIVar.has(hasDataSheet, ManualIRI),    
+            ManualIRI.isA(Manual),
+
+            GraphPatterns.optional(ManualIRI.has(availableAt, ManualFileLiteral))
+        ));
         //Supplier & manufacturer
-        query.where(GraphPatterns.optional(deviceIRIVar.has(isSuppliedBy, SupplierOrgIRI)));
-        query.where(GraphPatterns.optional(SupplierOrgIRI.has(hasName, SupplierNameIRI)));
-        query.where(GraphPatterns.optional(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral)));
-        query.where(GraphPatterns.optional(deviceIRIVar.has(isManufacturedBy, SupplierOrgIRI)));
-        query.where(GraphPatterns.optional(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI)));
-        query.where(GraphPatterns.optional(ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral)));
+        query.where(GraphPatterns.optional(deviceIRIVar.has(isSuppliedBy, SupplierOrgIRI),
+            SupplierOrgIRI.has(hasName, SupplierNameIRI),
+            SupplierNameIRI.has(hasLegalName, SupplierNameLiteral)));
+        query.where(GraphPatterns.optional(deviceIRIVar.has(isManufacturedBy, ManufacturerOrgIRI),
+            ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI),
+            ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral)));
 
         handleAssetData(storeClientAsset.executeQuery(query.getQueryString()));
         
@@ -194,7 +202,7 @@ public class AssetRetriever {
     void retrieveDeviceNamespace (Iri deviceIRI) {
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         Variable deviceTypeIRI = SparqlBuilder.var("deviceTypeIRI");
         Variable roomIRI = SparqlBuilder.var("roomIRI");
@@ -218,36 +226,42 @@ public class AssetRetriever {
         
         //Query
         //get device type
-        query.where(deviceIRI.has(RDF.TYPE, deviceTypeIRI));
+        query.where(deviceIRI.isA(deviceTypeIRI));
         //get location
-        query.where(GraphPatterns.optional(roomIRI.has(containsElement, deviceIRI)));
-        query.where(GraphPatterns.optional(roomIRI.isA(roomTypeIRI)));
+        query.where(GraphPatterns.optional(roomIRI.has(containsElement, deviceIRI),
+            roomIRI.isA(roomTypeIRI),
 
-        query.where(GraphPatterns.optional(deviceIRI.has(isStoredIn, storageIRI)));
+            deviceIRI.has(isStoredIn, storageIRI)));
 
-        query.where(GraphPatterns.optional(IFCReprIRI.has(RDFS.LABEL, roomName)));
-        query.where(GraphPatterns.optional(roomIRI.has(hasIfcRepresentation, IFCReprIRI)));
-        query.where(GraphPatterns.optional(roomIRI.isA(roomTypeIRI)));
-        query.where(GraphPatterns.optional(facilityIRI.has(hasRoom, roomIRI)));
-        query.where(GraphPatterns.optional(facilityIRI.isA(facilityTypeIRI)));
-        query.where(GraphPatterns.optional(facilityIRI.has(RDFS.LABEL, facilityName)));
-        query.where(GraphPatterns.optional(locationIRI.has(hasFacility, facilityIRI)));
-        query.where(GraphPatterns.optional(locationIRI.has(hasIfcRepresentation, locationIFCReprIRI)));
-        query.where(GraphPatterns.optional(locationIFCReprIRI.has(RDFS.LABEL, buildingName)));
-        query.where(GraphPatterns.optional(cabinetIRI.isA(cabinetTypeIRI)));
-        query.where(GraphPatterns.optional(deviceIRI.has(isStoredIn, cabinetIRI)));
-        query.where(GraphPatterns.optional(cabinetIRI.has(hasFurnitureIdentifier, storageIDLiteral)));
+        query.where(GraphPatterns.optional(IFCReprIRI.has(RDFS.LABEL, roomName),
+            roomIRI.has(hasIfcRepresentation, IFCReprIRI),
+            roomIRI.isA(roomTypeIRI),
+            facilityIRI.has(hasRoom, roomIRI),
+            facilityIRI.isA(facilityTypeIRI),
+            facilityIRI.has(RDFS.LABEL, facilityName),
+            locationIRI.has(hasFacility, facilityIRI),
+            locationIRI.has(hasIfcRepresentation, locationIFCReprIRI),
+            locationIFCReprIRI.has(RDFS.LABEL, buildingName),
+            cabinetIRI.isA(cabinetTypeIRI),
+            deviceIRI.has(isStoredIn, cabinetIRI),
+            cabinetIRI.has(hasFurnitureIdentifier, storageIDLiteral),
 
-        query.where(GraphPatterns.optional(deviceIRI.has(hasCurrentLocation, LocationString)));
+            deviceIRI.has(hasCurrentLocation, LocationString)
+        ));
 
 
         //Workspace
-        query.where(GraphPatterns.optional(deviceIRI.has(isLocatedAt, WorkspaceIRI)));
-        query.where(GraphPatterns.optional(WorkspaceIRI.has(hasIdentifier, WorkspaceIDLiteral)));
+        query.where(GraphPatterns.optional(deviceIRI.has(isLocatedAt, WorkspaceIRI),
+            WorkspaceIRI.has(hasIdentifier, WorkspaceIDLiteral)
+        ));
 
+        JSONArray result = storeClientOffice.executeQuery(query.getQueryString());
+        if (result.length() == 0){
+            result = storeClientLab.executeQuery(query.getQueryString());
+        }
 
         
-        handleDeviceData(storeClientOffice.executeQuery(query.getQueryString()));
+        handleDeviceData(result);
     }
 
     void handleDeviceData (JSONArray requestResult) {
@@ -279,7 +293,7 @@ public class AssetRetriever {
     void retrievePurchaseDocNamespace (Iri itemIRI) {
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         Variable itemNameLiteral = SparqlBuilder.var("itemName");
         Variable itemCommentLiteral = SparqlBuilder.var("itemComment");
@@ -307,31 +321,44 @@ public class AssetRetriever {
         //item data
         query.where(itemIRI.has(itemName, itemNameLiteral));
         query.where(itemIRI.has(RDFS.COMMENT, itemCommentLiteral));
+        query.where(itemIRI.has(hasAttribute, ServiceCategoryIRI));
         query.where(ServiceCategoryIRI.has(attributeName, ServiceCategoryTypeLiteral));
         query.where(ServiceCategoryIRI.has(attributeValue, ServiceCategoryNameLiteral));
         //OPTIONAL QUERIES
 
         //Invoice, DO and PO
         //Invoice
-        query.where(GraphPatterns.optional(invoiceLineIRI.has(hasItem, itemIRI)));
-        query.where(GraphPatterns.optional(InvoiceIRI.has(hasInvoiceLine, invoiceLineIRI)));
-        query.where(GraphPatterns.optional(InvoiceIRI.has(invoiceNumber, InvoiceNumLiteral)));
+        query.where(GraphPatterns.optional(invoiceLineIRI.has(hasItem, itemIRI), 
+            InvoiceIRI.has(hasInvoiceLine, invoiceLineIRI),
+            InvoiceIRI.has(invoiceNumber, InvoiceNumLiteral),
+            GraphPatterns.optional(invoiceLineIRI.has(hasPriceDetails, priceDetailsIRI)),
+            priceDetailsIRI.has(hasPrice, priceIRI),
+            priceIRI.has(hasValue, priceMeasureIRI),
+            priceMeasureIRI.has(hasNumericalValue, priceLiteral),
+            priceMeasureIRI.has(hasUnit, priceCurrencyIRI)
+        ));
         //DO
-        query.where(GraphPatterns.optional(DeliveryOrderLineIRI.has(hasItem, itemIRI)));
-        query.where(GraphPatterns.optional(DeliveryOrderIRI.has(hasDeliveryOrderLine, DeliveryOrderLineIRI)));
-        query.where(GraphPatterns.optional(DeliveryOrderIRI.has(deliveryOrderNumber, DeliveryOrderNumLiteral)));
+        query.where(GraphPatterns.optional(DeliveryOrderLineIRI.has(hasItem, itemIRI),
+            DeliveryOrderIRI.has(hasDeliveryOrderLine, DeliveryOrderLineIRI),
+            DeliveryOrderIRI.has(deliveryOrderNumber, DeliveryOrderNumLiteral),
+            GraphPatterns.optional(DeliveryOrderLineIRI.has(hasPriceDetails, priceDetailsIRI)),
+            priceDetailsIRI.has(hasPrice, priceIRI),
+            priceIRI.has(hasValue, priceMeasureIRI),
+            priceMeasureIRI.has(hasNumericalValue, priceLiteral),
+            priceMeasureIRI.has(hasUnit, priceCurrencyIRI)
+        ));
 
         //PO
-        query.where(GraphPatterns.optional(PurchaseOrderLineIRI.has(hasItem, itemIRI)));
-        query.where(GraphPatterns.optional(PurchaseOrderIRI.has(hasPurchaseOrderLine, PurchaseOrderLineIRI)));
-        query.where(GraphPatterns.optional(PurchaseOrderIRI.has(purchaseOrderNumber, PurchaseOrderNumLiteral)));
+        query.where(GraphPatterns.optional(PurchaseOrderLineIRI.has(hasItem, itemIRI),
+            PurchaseOrderIRI.has(hasPurchaseOrderLine, PurchaseOrderLineIRI),
+            PurchaseOrderIRI.has(purchaseOrderNumber, PurchaseOrderNumLiteral),
+            GraphPatterns.optional(PurchaseOrderLineIRI.has(hasPriceDetails, priceDetailsIRI)),
+            priceDetailsIRI.has(hasPrice, priceIRI),
+            priceIRI.has(hasValue, priceMeasureIRI),
+            priceMeasureIRI.has(hasNumericalValue, priceLiteral),
+            priceMeasureIRI.has(hasUnit, priceCurrencyIRI)
+        ));
         
-        //Price
-        query.where(GraphPatterns.optional(invoiceLineIRI.has(hasPriceDetails, priceDetailsIRI)));
-        query.where(GraphPatterns.optional(priceDetailsIRI.has(hasPrice, priceIRI)));
-        query.where(GraphPatterns.optional(priceIRI.has(hasValue, priceMeasureIRI)));
-        query.where(GraphPatterns.optional(priceMeasureIRI.has(hasNumericalValue, priceLiteral)));
-        query.where(GraphPatterns.optional(priceMeasureIRI.has(hasUnit, priceCurrencyIRI)));
         
 
         handlePurchaseDocData(storeClientPurchDoc.executeQuery(query.getQueryString()));
@@ -402,17 +429,24 @@ public class AssetRetriever {
          * 
          * Assume there is only one result possible. Any more than 1 is considered a duplicate and throws an error
          */
-
+        LOGGER.debug("RetrieveResultLength::"+ requestResult.length());
+        LOGGER.debug("RetrieveResult::" + requestResult);
+        
         switch (requestResult.length()) {
             case 0:
-                result = null;
+                for(String key : keyArray){
+                    result.put(key, "");
+                }
                 break;
             case 1:
-            
-             for(String key : keyArray){
-                result.put(key, requestResult.getJSONObject(0).getString(key));
-             }
-
+                for(String key : keyArray){
+                    try {
+                        result.put(key, requestResult.getJSONObject(0).getString(key));
+                    } catch (JSONException e) {
+                        result.put(key, "");
+                    }
+                }
+                break;
             default:
                 throw new JPSRuntimeException("Duplicate data on retrieve. Check the knowledge graph for duplicates.");
         }
@@ -448,7 +482,7 @@ public class AssetRetriever {
     private JSONArray getAllPersonIRI() {
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         Variable PersonIRI = SparqlBuilder.var("PersonIRI");
         Variable PersonNameIRI = SparqlBuilder.var("PersonNameIRI");
@@ -467,7 +501,7 @@ public class AssetRetriever {
         GroupBy group = SparqlBuilder.groupBy();
         group.by(SupplierNameLiteral, SupplierOrgIRI, SupplierNameIRI);
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(query.var().has(isSuppliedBy, SupplierOrgIRI));
         query.where(SupplierOrgIRI.has(hasName, SupplierNameIRI));
@@ -486,7 +520,7 @@ public class AssetRetriever {
 
         SelectQuery query = Queries.SELECT(ManufacturerOrgIRI, ManufacturerNameIRI, ManufacturerNameLiteral);
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(query.var().has(isManufacturedBy, ManufacturerOrgIRI));
         query.where(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
@@ -511,7 +545,7 @@ public class AssetRetriever {
         group.by(itemIRI, assetIRI, assetID);
         query.groupBy(group);
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
 
         if(!(InvoiceIRI == null || InvoiceIRI.isBlank())){
@@ -552,7 +586,7 @@ public class AssetRetriever {
         JSONArray result = new JSONArray();
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(IFCReprIRI.has(RDFS.LABEL, roomName));
         query.where(roomIRI.has(hasIfcRepresentation, IFCReprIRI));
