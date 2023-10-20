@@ -4,15 +4,14 @@
 3) Set openweather API key in stack-manager/inputs/config/services/weather-agent.json, see ../Agents/WeatherAgent folder for more details
 4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
 5) Elevation data (optional):
-AERMOD agent will try to query elevation data from a table named `elevation` in the default database. Although AERMOD agent can query the data stored in any SRID, it's not recommended to store data with different SRIDs in the same table (also not possible with the current settings), hence it's recommended to convert any elevation data to a uniform SRID, e.g. 4326. An example is provided in `stack-data-uploader/inputs/config/elevation.json`. Note that this config file is written for data in SRID=32632 and it needs to be changed according to your source data. The raw data files should be stored in `stack-data-uploader/inputs/data/elevation`, any format supported by gdal should work, see https://gdal.org/drivers/raster/index.html for more info.
+AERMOD agent will try to query elevation data from a table named `elevation` in the default database. AERMOD agent can query the data stored in any SRID, but the table needs to contain data in one SRID only, hence it's recommended to convert any elevation data to a uniform SRID, e.g. 4326. An example is provided in `stack-data-uploader/inputs/config/elevation.json`. Note that this config file is written for data in SRID=32632 and it needs to be changed according to your source data. The raw data files should be stored in `stack-data-uploader/inputs/data/elevation`, any format supported by gdal should work, see https://gdal.org/drivers/raster/index.html for more info.
+6) Buildings data (optional for ships, compulsory for static point source use cases):
+An example config file is given in `stack-data-uploader/inputs/config/building-pirmasens.json`, corresponding raw data should be populated in `stack-data-uploader/inputs/data/pirmasens_final_citygml`
 
-
-Stack needs to be up and running:
-1) execute
+To start up the stack, execute
 ```
 ./startup.sh
 ```
-
 in this folder to spin up pull docker images, spin up containers (using stack manager) and copy files into container volumes.
 
 Make sure you have access to the CMCL Docker registry. You can test your access by runing 
