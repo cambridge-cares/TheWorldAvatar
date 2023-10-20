@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Queue;
 
 /**
- * A class holding the required information to support the enforcement of the Facility data model.
+ * A class holding the required information to support the enforcement of the Organisation data model.
  * This class cannot be accessed outside the subpackage, and is intended to be a data model for holding room information.
  *
  * @author qhouyee

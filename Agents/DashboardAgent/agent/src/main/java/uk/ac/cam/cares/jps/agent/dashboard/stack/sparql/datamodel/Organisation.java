@@ -5,11 +5,11 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import java.util.*;
 
 /**
- * A class storing the required information to display the time series of any Facility in the dashboard.
+ * A class storing the required information to display the time series of all facilities associated with an organisation in the dashboard.
  *
  * @author qhouyee
  */
-public class Facility {
+public class Organisation {
     // Key value pair is asset name and its stored information respectively
     private final Map<String, Asset> ASSETS = new HashMap<>();
     private final Map<String, Room> ROOMS = new HashMap<>();
@@ -17,7 +17,7 @@ public class Facility {
     private final Set<String> UNIQUE_THRESHOLDS = new HashSet<>();
 
     /**
-     * Constructor to initialise a facility object with one room and measure.
+     * Constructor to initialise an organisation object with one room and measure.
      *
      * @param roomName      Name of the room to be included.
      * @param measureName   Name of the measure associated with the room.
@@ -25,12 +25,12 @@ public class Facility {
      * @param measureIri    Corresponding dataIRI of the measure associated with the room.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    public Facility(String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
+    public Organisation(String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
         addRoom(roomName, measureName, unit, measureIri, timeSeriesIri);
     }
 
     /**
-     * Constructor to initialise a facility object with one asset and measure.
+     * Constructor to initialise an organisation object with one asset and measure.
      *
      * @param assetName     Name of the asset to be included.
      * @param assetType     Type of the asset to be included.
@@ -39,7 +39,7 @@ public class Facility {
      * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    public Facility(String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
+    public Organisation(String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
         addAsset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
     }
 

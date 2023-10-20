@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SparqlClientTest {
+    private static final String SAMPLE_ORGANISATION_NAME = "Org 1";
     private static final String SAMPLE_BUILDING_INSTANCE = TestUtils.genInstance("Building");
     private static final String SAMPLE_OFFICE_INSTANCE = TestUtils.genInstance("Office");
     private static final String SAMPLE_OFFICE_NAME = "Admin Office";
@@ -173,6 +174,8 @@ class SparqlClientTest {
 
     public static void insertFacilityTriples(String endpoint) {
         StringBuilder builder = SparqlQueryTest.genExpectedPrefixesString();
+        String organisationRepresentation = TestUtils.genInstance("Organisation");
+        String organisationNameRepresentation = TestUtils.genInstance("OrganisationName");
         String directorRoomRepresentation = TestUtils.genInstance("Representation");
         String staffRoomRepresentation = TestUtils.genInstance("Representation");
         String storageRoomRepresentation = TestUtils.genInstance("Representation");
@@ -181,8 +184,12 @@ class SparqlClientTest {
                 .append(SAMPLE_BUILDING_INSTANCE).append("> rdf:type bot:Building;")
                 .append("ontobim:hasFacility <").append(SAMPLE_LAB_INSTANCE).append(">;")
                 .append("ontobim:hasFacility <").append(SAMPLE_OFFICE_INSTANCE).append(">.")
+                // The organisation managing the facilities
+                .append("<").append(organisationRepresentation).append("> <https://www.omg.org/spec/Commons/Designators/hasName> <").append(organisationNameRepresentation).append(">.")
+                .append("<").append(organisationNameRepresentation).append("> rdfs:label \"").append(SAMPLE_ORGANISATION_NAME).append("\".")
                 // Lab has assets
                 .append("<").append(SAMPLE_LAB_INSTANCE).append("> rdfs:label \"").append(SAMPLE_LAB_NAME).append("\";")
+                .append("<https://www.theworldavatar.com/kg/ontoassetmanagement/isManagedBy> <").append(organisationRepresentation).append(">;")
                 .append("ontobim:hasRoom <").append(SAMPLE_LAB_BIO_ROOM_INSTANCE).append(">;")
                 .append("ontobim:hasRoom <").append(SAMPLE_LAB_PILOT_ROOM_INSTANCE).append(">.")
                 .append("<").append(SAMPLE_LAB_BIO_ROOM_INSTANCE).append("> rdf:type ontobim:Room.")
@@ -205,6 +212,7 @@ class SparqlClientTest {
                 .append(genThresholdTriples(SAMPLE_OFFICE_INSTANCE, "ontodevice:hasMaxThreshold", "om:RelativeHumidity", RELATIVE_HUMIDITY_MAX_THRESHOLD))
                 // Link facility to rooms
                 .append("<").append(SAMPLE_OFFICE_INSTANCE).append("> rdfs:label \"").append(SAMPLE_OFFICE_NAME).append("\";")
+                .append("<https://www.theworldavatar.com/kg/ontoassetmanagement/isManagedBy> <").append(organisationRepresentation).append(">;")
                 .append("ontobim:hasRoom <").append(SAMPLE_OFFICE_DIRECTOR_ROOM_INSTANCE).append(">;")
                 .append("ontobim:hasRoom <").append(SAMPLE_OFFICE_STAFF_ROOM_INSTANCE).append(">;")
                 .append("ontobim:hasRoom <").append(SAMPLE_OFFICE_STORAGE_ROOM_INSTANCE).append(">.")

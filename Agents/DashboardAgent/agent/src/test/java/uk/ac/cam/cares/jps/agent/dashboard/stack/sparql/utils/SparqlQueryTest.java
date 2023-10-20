@@ -24,7 +24,7 @@ public class SparqlQueryTest {
         // Generate expected query
         StringBuilder expectedQuery = new StringBuilder();
         expectedQuery.append(genExpectedPrefixesString())
-                .append("SELECT DISTINCT ?facilityname ?roomname ?measure ?measurename ?unit ?timeseries ?minthreshold ?maxthreshold ")
+                .append("SELECT DISTINCT ?orgname ?facilityname ?roomname ?measure ?measurename ?unit ?timeseries ?minthreshold ?maxthreshold ")
                 .append("WHERE {")
                 .append(genExpectedFacilityString())
                 .append("?room ontobim:hasIfcRepresentation/rdfs:label ?roomname.")
@@ -42,7 +42,7 @@ public class SparqlQueryTest {
         String endpoint = "http://www.test.org/blazegraph/namespace/kb/sparql";
         StringBuilder expectedQuery = new StringBuilder();
         expectedQuery.append(genExpectedPrefixesString())
-                .append("SELECT DISTINCT ?facilityname ?elementname ?elementtype ?measure ?measurename ?unit ?timeseries ")
+                .append("SELECT DISTINCT ?orgname ?facilityname ?elementname ?elementtype ?measure ?measurename ?unit ?timeseries ")
                 .append("WHERE {")
                 .append(genExpectedFacilityString())
                 .append("?room bot:containsElement ?element.")
@@ -85,7 +85,8 @@ public class SparqlQueryTest {
         StringBuilder result = new StringBuilder();
         result.append("?building rdf:type bot:Building;")
                 .append("   ontobim:hasFacility ?facility.")
-                .append("?facility rdfs:label ?facilityname;")
+                .append("?facility <https://www.theworldavatar.com/kg/ontoassetmanagement/isManagedBy>/<https://www.omg.org/spec/Commons/Designators/hasName>/rdfs:label ?orgname;")
+                .append("   rdfs:label ?facilityname;")
                 .append("   ontobim:hasRoom ?room.")
                 .append("?room rdf:type ontobim:Room.");
         return result;

@@ -8,6 +8,7 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
  * @author qhouyee
  */
 public class SparqlQuery {
+    public static final String ORGANISATION_NAME = "orgname";
     public static final String FACILITY_NAME = "facilityname";
     public static final String ROOM_NAME = "roomname";
     public static final String ELEMENT_NAME = "elementname";
@@ -47,6 +48,7 @@ public class SparqlQuery {
         StringBuilder query = new StringBuilder();
         query.append(genPrefixes())
                 .append("SELECT DISTINCT")
+                .append(StringHelper.formatSparqlVarName(ORGANISATION_NAME))
                 .append(StringHelper.formatSparqlVarName(FACILITY_NAME))
                 .append(StringHelper.formatSparqlVarName(ROOM_NAME))
                 .append(StringHelper.formatSparqlVarName(MEASURE))
@@ -86,6 +88,7 @@ public class SparqlQuery {
         StringBuilder query = new StringBuilder();
         query.append(genPrefixes())
                 .append("SELECT DISTINCT")
+                .append(StringHelper.formatSparqlVarName(ORGANISATION_NAME))
                 .append(StringHelper.formatSparqlVarName(FACILITY_NAME))
                 .append(StringHelper.formatSparqlVarName(ELEMENT_NAME))
                 .append(StringHelper.formatSparqlVarName(ELEMENT_TYPE))
@@ -156,7 +159,9 @@ public class SparqlQuery {
         StringBuilder query = new StringBuilder();
         query.append("?building rdf:type bot:Building;")
                 .append("   ontobim:hasFacility ?facility.")
-                .append("?facility rdfs:label").append(StringHelper.formatSparqlVarName(FACILITY_NAME)).append(";")
+                .append("?facility <https://www.theworldavatar.com/kg/ontoassetmanagement/isManagedBy>/<https://www.omg.org/spec/Commons/Designators/hasName>/rdfs:label")
+                .append(StringHelper.formatSparqlVarName(ORGANISATION_NAME)).append(";")
+                .append("   rdfs:label").append(StringHelper.formatSparqlVarName(FACILITY_NAME)).append(";")
                 .append("   ontobim:hasRoom ?room.")
                 .append("?room rdf:type ontobim:Room.");
         return query;

@@ -18,7 +18,7 @@ import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlAction;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlQuery;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
-import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.datamodel.Facility;
+import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.datamodel.Organisation;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import org.w3c.dom.Document;
 
@@ -35,7 +35,7 @@ import java.util.*;
 public class SparqlClient {
     private final List<String> SPATIAL_ZONE_SPARQL_ENDPOINTS = new ArrayList<>();
     private final List<String> REMAINING_SPARQL_ENDPOINTS = new ArrayList<>();
-    private final Map<String, Facility> SPATIAL_ZONES = new HashMap<>();
+    private final Map<String, Organisation> ORGANISATIONS = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
     /**
@@ -66,7 +66,7 @@ public class SparqlClient {
      * @return An array of all available spatial zones to monitor.
      */
     protected String[] getAllSpatialZones() {
-        Set<String> spatialZones = this.SPATIAL_ZONES.keySet();
+        Set<String> spatialZones = this.ORGANISATIONS.keySet();
         return spatialZones.toArray(new String[spatialZones.size()]);
     }
 
@@ -77,7 +77,7 @@ public class SparqlClient {
      * @return A map linking all rooms and assets to their measures.
      */
     protected Map<String, Queue<String[]>> getAllSpatialZoneMetaData(String spatialZone) {
-        return this.SPATIAL_ZONES.get(spatialZone).getAllMeasures();
+        return this.ORGANISATIONS.get(spatialZone).getAllMeasures();
     }
 
     /**
@@ -186,6 +186,7 @@ public class SparqlClient {
         // Execute SELECT query and upon execution, run the following lines for each result row
         conn.querySelect(SparqlQuery.genFacilityRoomMeasureQuery(), (qs) -> {
             // Retrieve relevant information
+            String orgName = qs.getLiteral(SparqlQuery.ORGANISATION_NAME).toString();
             String facilityName = qs.getLiteral(SparqlQuery.FACILITY_NAME).toString();
             String roomName = qs.getLiteral(SparqlQuery.ROOM_NAME).toString();
             String measureIri = qs.getResource(SparqlQuery.MEASURE).toString();
@@ -203,26 +204,26 @@ public class SparqlClient {
             String minThreshold = "";
             String maxThreshold = "";
             // Ensure that there are literals to process
-            if (qs.getLiteral(SparqlQuery.MIN_THRESHOLD)!=null && qs.getLiteral(SparqlQuery.MAX_THRESHOLD)!=null) {
+            if (qs.getLiteral(SparqlQuery.MIN_THRESHOLD) != null && qs.getLiteral(SparqlQuery.MAX_THRESHOLD) != null) {
                 Literal minLiteral = qs.getLiteral(SparqlQuery.MIN_THRESHOLD);
                 Literal maxLiteral = qs.getLiteral(SparqlQuery.MAX_THRESHOLD);
                 // Retrieves their value (typically an integer) and convert it into String
                 minThreshold = String.valueOf(minLiteral.getValue());
                 maxThreshold = String.valueOf(maxLiteral.getValue());
             }
-            // Check if the facility already exists in the map
-            if (this.SPATIAL_ZONES.containsKey(facilityName)) {
-                // If it does exist, add the asset to the existing facility object
-                Facility facility = this.SPATIAL_ZONES.get(facilityName);
-                facility.addRoom(roomName, measureName, unit, measureIri, timeSeriesIri);
+            // Check if the organisation already exists in the map
+            if (this.ORGANISATIONS.containsKey(facilityName)) {
+                // If it does exist, add the room to the existing organisation object
+                Organisation organisation = this.ORGANISATIONS.get(facilityName);
+                organisation.addRoom(roomName, measureName, unit, measureIri, timeSeriesIri);
                 if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
-                    facility.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
+                    organisation.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
             } else {
-                // If it does not exist, initialise a new facility object and add it in
-                Facility facility = new Facility(roomName, measureName, unit, measureIri, timeSeriesIri);
+                // If it does not exist, initialise a new organisation object and add it in
+                Organisation organisation = new Organisation(roomName, measureName, unit, measureIri, timeSeriesIri);
                 if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
-                    facility.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
-                this.SPATIAL_ZONES.put(facilityName, facility);
+                    organisation.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
+                this.ORGANISATIONS.put(facilityName, organisation);
             }
         });
     }
@@ -241,6 +242,7 @@ public class SparqlClient {
             // Execute SELECT query and upon execution, run the following lines for each result row
             conn.querySelect(SparqlQuery.genFacilityAssetMeasureQuery(serviceEndpoint), (qs) -> {
                 // Retrieve relevant information
+                String orgName = qs.getLiteral(SparqlQuery.ORGANISATION_NAME).toString();
                 String facilityName = qs.getLiteral(SparqlQuery.FACILITY_NAME).toString();
                 String assetName = qs.getLiteral(SparqlQuery.ELEMENT_NAME).toString();
                 String assetType = qs.getResource(SparqlQuery.ELEMENT_TYPE).getLocalName();
@@ -255,15 +257,15 @@ public class SparqlClient {
                     unit = null;
                 }
                 String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
-                // Check if the facility already exists in the map
-                if (this.SPATIAL_ZONES.containsKey(facilityName)) {
-                    // If it does exist, add the asset to the existing facility object
-                    Facility facility = this.SPATIAL_ZONES.get(facilityName);
-                    facility.addAsset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
+                // Check if the organisation already exists in the map
+                if (this.ORGANISATIONS.containsKey(facilityName)) {
+                    // If it does exist, add the asset to the existing organisation object
+                    Organisation organisation = this.ORGANISATIONS.get(facilityName);
+                    organisation.addAsset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
                 } else {
-                    // If it does not exist, initialise a new facility object and add it in
-                    Facility facility = new Facility(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
-                    this.SPATIAL_ZONES.put(facilityName, facility);
+                    // If it does not exist, initialise a new organisation object and add it in
+                    Organisation organisation = new Organisation(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
+                    this.ORGANISATIONS.put(facilityName, organisation);
                 }
             });
         }
