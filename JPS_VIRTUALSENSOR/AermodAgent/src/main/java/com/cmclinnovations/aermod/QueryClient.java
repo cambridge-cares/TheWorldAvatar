@@ -384,7 +384,7 @@ public class QueryClient {
     public List<StaticPointSource> getStaticPointSourcesWithinScope(Polygon scope)
             throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
-        List<String> pointSourceIRIAll = new ArrayList<>(getBuildingToPsMap().values());
+        List<String> pointSourceIRIAll = new ArrayList<>(getBuildingToPsMap().keySet());
         List<String> pointSourceOCGMLIRIWithinScope = getIRIofStaticPointSourcesWithinScope(scope, pointSourceIRIAll);
 
         SelectQuery query = Queries.SELECT().prefix(P_DISP, P_OM);
