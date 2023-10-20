@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from datetime import datetime
 from visionagent.utils.tools import load_model
 
 class VisionAgent:
@@ -18,6 +19,10 @@ class VisionAgent:
         return outputs, height, width
 
     def draw_boxes(self, image, outputs, height, width):
+
+        detected_objects = []
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         boxes = []
         confidences = []
         class_ids = []
@@ -46,7 +51,14 @@ class VisionAgent:
                 cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(image, f"{label} {round(confidence, 2)}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        return image
+                detected_object = {
+                    'timestamp':timestamp,
+                    'class': label,
+                    'confidence': round(confidence, 2)
+                }
+                detected_objects.append(detected_object)
+
+        return image, detected_objects
 
     def run_one_frame(self):
         cap = cv2.VideoCapture(self.video_source)
