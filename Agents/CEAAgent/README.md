@@ -34,7 +34,7 @@ Please make sure that the [OSMAgent](https://github.com/cambridge-cares/TheWorld
 
 ### 2.7. Agent for Historical Weather Data
 The CEA agent will attempt to send request to [OpenMeteoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OpenMeteoAgent) for instantiation of historical weather data, which the CEA agent will attempt to query for to use as input to CEA. Please ensure that the OpenMeteoAgent is spun up in the same stack as this agent, by following the [OpenMeteoAgent README](../OpenMeteoAgent/README.md). 
-Please ensure that the label corresponding to the Blazegraph namespace where the OpenMeteoAgent instantiates weather triples is provided as `weather.label` in [CEAgentConfig.Properties].
+Please ensure that `weather.label` in [CEAgentConfig.properties] is the same value as `route.label` in OpenMeteoAgent's [config.properties](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/OpenMeteoAgent/openmeteo-agent/src/main/resources/config.properties).
 
 ### 2.8. Build and Run
 In the same directory as this README, first build the Docker image by running
@@ -176,115 +176,58 @@ Example response:
 
 ## 4. Information Retrieved from Knowledge Graph
 
-### 4.1. Coordinate Reference System (CRS)
-The agent will generate shapefile for the building and its surrounding buildings, which are passed to CEA as input. In order to generate the correct shapefile, the agent will be querying for CRS information with the following query:
-
+### 4.1. Building Footprint and Coordinate Reference System (CRS)
+The agent will attempt to retrieve the building footprint and its CRS used, to generate shapefile to pass to CEA as input, with the following query: 
 ```
-PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+PREFIX grp:	 <http://www.opengis.net/citygml/cityobjectgroup/2.0/>
+PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
 
-SELECT  ?CRS
+SELECT ?wkt (geof:getSRID(?wkt) AS ?crs)
 WHERE
-  { GRAPH <{PREFIX}databasesrs/>
-      { <{PREFIX}> ocgml:srid  ?CRS}}
-```
-If no CRS is stored in the namespace please insert the data in the databasesrs graph. For example:
-```
-PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
-
-INSERT DATA
 {
-GRAPH <{PREFIX}databasesrs/> {
-<{PREFIX}>	ocgml:srid	27700 .
-<{PREFIX}>	ocgml:srsname "EPSG:27700" .
-}}
+  <buildingIRI> bldg:lod0FootPrint ?fp .
+  ?g grp:parent ?fp;
+    geo:asWKT ?wkt .
+}
 ```
-### 4.2. Building Footprint
-The agent will query for the footprint geometry of the building. The agent will first try querying for the thematic surface with surface id 35, which corresponds to a ground surface:
-```
-PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
 
-SELECT  ?Footprint
+If the above query fails, the request will fail, since footprint geometry is necessary for CEA to run.
+
+### 4.2. Building Height
+The agent will attempt to retrieve the building height with the following query:
+
+```
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+SELECT ?height
 WHERE
-  { GRAPH <{PREFIX}surfacegeometry/>
-      { ?surf  ocgml:buildingId  ?id ;
-               ocgml:GeometryType  ?Footprint
-        FILTER ( ! isBlank(?Footprint) )
-   GRAPH <{PREFIX}thematicsurface/> 
-       { ?id ocgml:buildingId <{PREFIX}building/{UUID}/>;
-    		 ocgml:objectClassId ?groundSurfId.
-   FILTER(?groundSurfId = 35) 
-   }}}
-```
-If unsuccessful, the agent will query all building surface geometries with the following query, where the ground surface geometries are selected by searching for the surface with the minimum constant height:
-```
-PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
-
-SELECT  ?Footprint
-WHERE
-  { GRAPH <{PREFIX}surfacegeometry/>
-      { ?surf  ocgml:buildingId  <{PREFIX}building/{UUID}/> ;
-               ocgml:GeometryType  ?Footprint
-        FILTER ( ! isBlank(?Footprint) )
-      }}
+{
+  <buildingIRI> bldg:measuredHeight ?height .
+}
 ```
 
-After getting the ground surface geometries of the building, the agent will merge the ground surface geometries to extract the footprint geometry.
+If the height query fails, the agent will set the building height to 10.0m.
 
-### 4.3. Building Height
-For building height, there are three different possible queries that can retrieve the building height. Each of the following queries are tried, in the order they are listed, until a result is retrieved. If all the queries return empty results, a default value of 10.0m for building height is set.
-
-First query to for building height:
-```
-PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
-
-SELECT  ?Height
-WHERE
-  { GRAPH <{PREFIX}building/>
-      { <{PREFIX}building/{UUID}/> ocgml:measuredHeigh  ?Height}}
-```
-
-Second query to try for building height:
-```
-PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
-
-SELECT  ?Height
-WHERE
-  { GRAPH <{PREFIX}building/>
-      { <{PREFIX}building/{UUID}/> ocgml:measuredHeight  ?Height}}
-```
-
-Third query to try for building height:
-```
-PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
-
-SELECT  ?Height
-WHERE
-  { GRAPH <{PREFIX}cityobjectgenericattrib/>
-      { ?o  ocgml:attrName      "height" ;
-            ocgml:realVal       ?Height ;
-            ocgml:buildingId  <{PREFIX}cityobject/{UUID}/>}}
-
-```
-
-### 4.4. Building Usage
-The agent queries for the building usage, and the usage share if the building is a multi-usage building, with the following query:
+### 4.3. Building Usage
+The agent will attempt to retrieve the building usage, and the usage share if the building is a multi-usage building, with the following query:
 ```
 PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
 
 SELECT  ?BuildingUsage ?UsageShare
 WHERE
-  { ?building  ontobuiltenv:hasOntoCityGMLRepresentation  <buildingIRI> ;
-              ontobuiltenv:hasPropertyUsage  ?usage .
+{ 
+    <buildingIRI> ontobuiltenv:hasPropertyUsage  ?usage .
     ?usage a ?BuildingUsage
     OPTIONAL
-      { ?usage ontobuiltenv:hasUsageShare ?UsageShare}
-  }
+      {?usage ontobuiltenv:hasUsageShare ?UsageShare}
+}
 ORDER BY DESC(?UsageShare)
 ```
 
 If no building usage is returned from the query, the default value of ```MULTI_RES``` building usage is set, consistent with the default building usage type used by the CEA. In the case of multiple usages for one building, the OntoBuiltEnv usage concepts are first mapped to the CEA defined usage types according to the mapping at the bottom section of this README; then, since CEA only allows up to three usage types per building, the top three usages and their usage share are passed to CEA as input.
 
-#### 4.4.1. Building Usage Mapping
+#### 4.3.1. Building Usage Mapping
 The agent will attempt to query for the building usage type, which are stored with ```OntoBuiltEnv``` concepts, to pass to CEA as input.
 
 In the CEA, there are 19 defined building usage types. In the ```OntoBuiltEnv``` ontology, there are 23 classes for building usage type (see left 2 columns of table below). After querying for the ```OntoBuiltEnv``` concepts, the agent will map the concepts to the CEA defined usage types as shown in the right 2 columns of the following mapping table:
@@ -318,11 +261,11 @@ In the CEA, there are 19 defined building usage types. In the ```OntoBuiltEnv```
 ### 4.5. Historical Weather Data
 The agent will attempt to retrieve historical weather data for the location of the building in the request received, to use as input to CEA. Then, the agent will create a EPW file based on the retrieved historical data, which will be passed to CEA as the weather input. The historical weather data need to be at least 1 year duration in hourly format for CEA to run successfully. In the event where the retrieved historical weather data do not satisfy the aforementioned requirement by CEA or where the agent fails to retrieve historical weather data, the agent will run CEA with the default EPW file defined by CEA's own database as the weather input.
 
-WARNING: Please note that the CEA Agent assumes that the historical weather data is stored in the stack Blazegraph and PostgreSQL database.
+WARNING: Please note that the CEA Agent, by default, assumes that the historical weather data is stored in the Blazegraph and PostgreSQL of the same stack as this agent.
 
 ## 5. Information Retrieved from PostGIS
 ### 5.1. Terrain Data
-The agent will attempt to retrieve terrain data from the stack PostGIS. The queried area for the terrain data will have the building received in the request at the center. The queried area will cover the center building and its surrounding buildings that were retrieved in the surroundings query.
+The agent will attempt to retrieve terrain data from the stack PostGIS. The queried area for the terrain data will have the building received in the request at the center. The queried area will cover the target buildings in the `iri` request parameter and its surrounding buildings that were retrieved in the surroundings query.
 
 [CEAAgentConfig.properties]: ./cea-agent/src/main/resources/CEAAgentConfig.properties
 [cea-agent.json]: ./stack-manager-input-config/cea-agent.json
