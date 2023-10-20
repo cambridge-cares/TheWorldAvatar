@@ -1,5 +1,6 @@
 {
     "name": "elevation",
+	"skip": true,
     "database": "postgres",
     "workspace": "dispersion",
     "datasetDirectory": "elevation",
