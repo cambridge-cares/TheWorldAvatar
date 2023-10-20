@@ -23,6 +23,7 @@ OntoApplication is developed to represent assets and its related information (e.
 | [p2p-invoice](https://purl.org/p2p-o/invoice)                      | `https://purl.org/p2p-o/invoice#` |
 | [p2p-item](https://purl.org/p2p-o/item)                      | `https://purl.org/p2p-o/item#` |
 | [ontobim](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobim)                      | `https://www.theworldavatar.com/kg/ontobim/` |
+| [ontocape_technical_system](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocape/upper_level/technical_system.owl) | `http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#`     |
 
 ## 3. Data Model
 The ontology can be divided into these respective domains:
@@ -143,6 +144,7 @@ The ontology can be divided into these respective domains:
     erDiagram
     "p2p-docline:DocumentLine" ||--o{ "p2p-item:Item" : "p2p-docline:hasItem"
     "p2p-item:Item" ||--o{ "bot:Element" : references
+    "p2p-item:Item" ||--o{ "ontocape_technical_system:TechnicalSystem" : references
     "p2p-item:Item" ||--o{ "fibo-organizations:Organization" : isSuppliedBy
     "p2p-item:Item" ||--o{ "fibo-organizations:Organization" : isManufacturedBy
     "fibo-organizations:Organization" ||--o{ "icontact:Address" : hasAddress
@@ -158,6 +160,7 @@ The ontology can be divided into these respective domains:
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "bot:Element" : isStoredAt
+    "bot:Element" ||--o{ "ontocape_technical_system:TechnicalSystem" : isStoredAt
     "bot:Element" ||--o{ "fibo-parties:IndependentParty" : assignedTo
     "bot:Element" ||--o{ "fibo-parties:IndependentParty" : previouslyAssignedTo
     "bot:Element" ||--o{ "Workspace" : isLocatedAt
@@ -186,7 +189,40 @@ The ontology can be divided into these respective domains:
         hasCurrentLocation string
     }
 ```
-### 3.8. Furniture and Workspace
+### 3.8. Technical System
+```mermaid
+    erDiagram
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "bot:Element" : isStoredAt
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "ontocape_technical_system:TechnicalSystem" : isStoredAt
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "fibo-parties:IndependentParty" : assignedTo
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "fibo-parties:IndependentParty" : previouslyAssignedTo
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "Workspace" : isLocatedAt
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "MaintenanceSchedule" : hasMaintenanceSchedule
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "fibo-organizations:Organization" : isSuppliedBy
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "fibo-organizations:Organization" : isManufacturedBy
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "DataSheet" : hasDataSheet
+    "DataSheet" }|--|| "SpecSheet" : "rdfs:subClassOf"
+    "DataSheet" }|--|| "Manual" : "rdfs:subClassOf"
+    "DataSheet" {
+        availableAt anyURI
+    }
+    "MaintenanceSchedule" ||--o{ "MaintenanceTask" : hasTask
+    "MaintenanceTask" ||--o{ "time:Instant" : performedAt
+    "MaintenanceTask" ||--o{ "time:Instant" : scheduledFor
+    "MaintenanceTask" ||--o{ "fibo-parties:IndependentParty" : isPerformedBy
+    "MaintenanceTask" ||--o{ "time:Interval" : hasInterval
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "AssetUpdateHistory" : hasUpdateHistory
+    "AssetUpdateHistory" ||--o{ "AssetDataUpdate" : hasAssetUpdate
+    "AssetDataUpdate" ||--o{ "fibo-parties:IndependentParty" : wasExecutedBy
+    "ontocape_technical_system:TechnicalSystem" ||--o{ "Project" : allocatedTo
+    "ontocape_technical_system:TechnicalSystem" {
+        serialNumber string
+        hasItemInventoryIdentifier string
+        hasServiceTag string
+        hasCurrentLocation string
+    }
+```
+### 3.9. Furniture and Workspace
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "Workspace" : isLocatedAt
@@ -203,7 +239,7 @@ The ontology can be divided into these respective domains:
     "Cabinet" }|--|| "BuiltInCabinet" : "rdfs:subClassOf"
     "Cabinet" }|--|| "PedestalCabinet" : "rdfs:subClassOf"
 ```
-### 3.9. Project, Research Grant, Budget and Budget Category
+### 3.10. Project, Research Grant, Budget and Budget Category
 ```mermaid
     erDiagram
     "bot:Element" ||--o{ "Project" : allocatedTo
