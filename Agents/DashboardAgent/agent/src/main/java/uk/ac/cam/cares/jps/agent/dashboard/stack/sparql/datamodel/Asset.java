@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel;
+package uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.datamodel;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;

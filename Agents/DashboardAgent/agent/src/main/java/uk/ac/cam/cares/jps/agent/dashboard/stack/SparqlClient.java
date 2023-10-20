@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.http.HttpResponse;
 
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QueryParseException;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdfconnection.RDFConnection;
@@ -19,7 +18,7 @@ import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlAction;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlQuery;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
-import uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel.Facility;
+import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.datamodel.Facility;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import org.w3c.dom.Document;
 

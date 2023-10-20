@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel;
+package uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.datamodel;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
