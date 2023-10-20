@@ -34,7 +34,7 @@ def detect_route():
     
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
-    
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=9048)
-    logger.info('App started')
+    logger.info('The Vision Agent has started')
