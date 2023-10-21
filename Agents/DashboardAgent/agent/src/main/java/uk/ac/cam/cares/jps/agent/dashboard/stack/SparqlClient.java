@@ -61,23 +61,23 @@ public class SparqlClient {
     }
 
     /**
-     * Get all spatial zones within the knowledge graph. This method is accessible for the stack client's usage.
+     * Get all organisations within the knowledge graph that has facilities with measures for analytical use. This method is accessible for the stack client's usage.
      *
-     * @return An array of all available spatial zones to monitor.
+     * @return An array of all available organisations to monitor.
      */
-    protected String[] getAllSpatialZones() {
-        Set<String> spatialZones = this.ORGANISATIONS.keySet();
-        return spatialZones.toArray(new String[spatialZones.size()]);
+    protected String[] getAllOrganisations() {
+        Set<String> organisations = this.ORGANISATIONS.keySet();
+        return organisations.toArray(new String[organisations.size()]);
     }
 
     /**
-     * Get all assets and rooms alongside their time series information from a specific spatial zone in the knowledge graph.
+     * Get all assets and rooms alongside their time series information associated with the spatial zones managed by the specified organisation in the knowledge graph.
      *
-     * @param spatialZone The spatial zone to retrieve all their associated time series.
-     * @return A map linking all rooms and assets to their measures.
+     * @param organisation The organisation with time series measures available in their facilities.
+     * @return A map linking all rooms and assets to their measures within the specified organisation's facilities.
      */
-    protected Map<String, Queue<String[]>> getAllSpatialZoneMetaData(String spatialZone) {
-        return this.ORGANISATIONS.get(spatialZone).getAllMeasures();
+    protected Map<String, Queue<String[]>> getAllSpatialZoneMetaData(String organisation) {
+        return this.ORGANISATIONS.get(organisation).getAllMeasures();
     }
 
     /**
@@ -212,18 +212,18 @@ public class SparqlClient {
                 maxThreshold = String.valueOf(maxLiteral.getValue());
             }
             // Check if the organisation already exists in the map
-            if (this.ORGANISATIONS.containsKey(facilityName)) {
+            if (this.ORGANISATIONS.containsKey(orgName)) {
                 // If it does exist, add the room to the existing organisation object
-                Organisation organisation = this.ORGANISATIONS.get(facilityName);
-                organisation.addRoom(roomName, measureName, unit, measureIri, timeSeriesIri);
+                Organisation organisation = this.ORGANISATIONS.get(orgName);
+                organisation.addRoom(facilityName, roomName, measureName, unit, measureIri, timeSeriesIri);
                 if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
                     organisation.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
             } else {
                 // If it does not exist, initialise a new organisation object and add it in
-                Organisation organisation = new Organisation(roomName, measureName, unit, measureIri, timeSeriesIri);
+                Organisation organisation = new Organisation(facilityName, roomName, measureName, unit, measureIri, timeSeriesIri);
                 if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
                     organisation.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
-                this.ORGANISATIONS.put(facilityName, organisation);
+                this.ORGANISATIONS.put(orgName, organisation);
             }
         });
     }
@@ -258,13 +258,13 @@ public class SparqlClient {
                 }
                 String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
                 // Check if the organisation already exists in the map
-                if (this.ORGANISATIONS.containsKey(facilityName)) {
+                if (this.ORGANISATIONS.containsKey(orgName)) {
                     // If it does exist, add the asset to the existing organisation object
-                    Organisation organisation = this.ORGANISATIONS.get(facilityName);
-                    organisation.addAsset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
+                    Organisation organisation = this.ORGANISATIONS.get(orgName);
+                    organisation.addAsset(facilityName, assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
                 } else {
                     // If it does not exist, initialise a new organisation object and add it in
-                    Organisation organisation = new Organisation(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
+                    Organisation organisation = new Organisation(facilityName, assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
                     this.ORGANISATIONS.put(facilityName, organisation);
                 }
             });

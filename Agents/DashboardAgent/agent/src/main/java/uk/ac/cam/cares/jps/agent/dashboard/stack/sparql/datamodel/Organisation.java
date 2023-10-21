@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.datamodel;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A class storing the required information to display the time series of all facilities associated with an organisation in the dashboard.
@@ -15,23 +16,26 @@ public class Organisation {
     private final Map<String, Room> ROOMS = new HashMap<>();
     private final Queue<String[]> FACILITY_THRESHOLDS = new ArrayDeque<>();
     private final Set<String> UNIQUE_THRESHOLDS = new HashSet<>();
+    private final Map<String, Facility> FACILITIES = new HashMap<>();
 
     /**
      * Constructor to initialise an organisation object with one room and measure.
      *
+     * @param facilityName  Name of the facility that the room is found in.
      * @param roomName      Name of the room to be included.
      * @param measureName   Name of the measure associated with the room.
      * @param unit          Measure unit symbol
      * @param measureIri    Corresponding dataIRI of the measure associated with the room.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    public Organisation(String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        addRoom(roomName, measureName, unit, measureIri, timeSeriesIri);
+    public Organisation(String facilityName, String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        addRoom(facilityName, roomName, measureName, unit, measureIri, timeSeriesIri);
     }
 
     /**
      * Constructor to initialise an organisation object with one asset and measure.
      *
+     * @param facilityName  Name of the facility that the asset is found in.
      * @param assetName     Name of the asset to be included.
      * @param assetType     Type of the asset to be included.
      * @param measureName   Name of the measure associated with the asset.
@@ -39,14 +43,15 @@ public class Organisation {
      * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    public Organisation(String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        addAsset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
+    public Organisation(String facilityName, String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        addAsset(facilityName, assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
     }
 
     /**
-     * A getter method to retrieve all available rooms, assets and their corresponding time series and information in the facility.
+     * A getter method to retrieve all available rooms, assets and their corresponding time series and information in the facilities managed by an organisation.
      * Format: {asset1: [measure1, dataIRI, timeseriesIRI, unit, assetType], [measure2, dataIRI, timeseriesIRI, null(if no unit), assetType]],
      * room1: [[measureName, dataIRI, timeseriesIRI, unit], [measureName, dataIRI, timeseriesIRI, unit]], ...],
+     * facilities: [[facility1, asset1InFacility1,...],[facility2, room1InFacility2,...]]
      * thresholds: [[measureName, min, max],...]}
      *
      * @return A map linking all assets and rooms to their measures.
@@ -62,6 +67,13 @@ public class Organisation {
             String roomName = room.getRoomName();
             measures.put(roomName, room.getRoomData());
         }
+        // Retrieve all facility data through the use of streams and collect them as a queue
+        Queue<String[]> facilityDataQueue = this.FACILITIES.values()
+                .stream()
+                .map(Facility::getFacilityData)
+                .collect(Collectors.toCollection(ArrayDeque::new));
+        // If the queue has values, add the facility key
+        if (!facilityDataQueue.isEmpty()) measures.put(StringHelper.FACILITY_KEY, facilityDataQueue);
         // Only add the thresholds if there are values
         if (!this.FACILITY_THRESHOLDS.isEmpty()) measures.put(StringHelper.THRESHOLD_KEY, this.FACILITY_THRESHOLDS);
         return measures;
@@ -70,12 +82,14 @@ public class Organisation {
     /**
      * Add a room into this class.
      *
+     * @param facilityName  Name of the facility that the asset is found in.
      * @param roomName      Name of the room to be included.
      * @param unit          Measure unit symbol
      * @param measureIri    Corresponding dataIRI of the measure associated with the room.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    public void addRoom(String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
+    public void addRoom(String facilityName, String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        this.addFacilityItem(facilityName, roomName);
         // Check if the room already exists in the map using its name as a key
         if (this.ROOMS.containsKey(roomName)) {
             // If there is a preceding room object, add only the measure to the right room
@@ -91,13 +105,15 @@ public class Organisation {
     /**
      * Add an asset into this class.
      *
+     * @param facilityName  Name of the facility that the asset is found in.
      * @param assetName     Name of the asset to be included.
      * @param assetType     Type of the asset to be included.
      * @param unit          Measure unit symbol
      * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    public void addAsset(String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
+    public void addAsset(String facilityName, String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        this.addFacilityItem(facilityName, assetName);
         // Check if the asset already exists in the map using its name as a key
         if (this.ASSETS.containsKey(assetName)) {
             // If there is a preceding asset object, add only the measure to the right asset
@@ -124,6 +140,25 @@ public class Organisation {
             // If not, add it to the queue and the set
             this.FACILITY_THRESHOLDS.offer(thresholdData);
             this.UNIQUE_THRESHOLDS.add(String.join("", thresholdData));
+        }
+    }
+
+    /**
+     * Add the associated asset or room for the facility into the facility mapping.
+     *
+     * @param facilityName Name of the facility.
+     * @param itemName     Name of the asset or room in the facility.
+     */
+    private void addFacilityItem(String facilityName, String itemName) {
+        // Check if there is an existing facility
+        if (this.FACILITIES.containsKey(facilityName)) {
+            // If there is one, add the room name to the existing contents
+            Facility facility = this.FACILITIES.get(facilityName);
+            facility.addItem(itemName);
+        } else {
+            // If it does not exist, create a new facility object with the facility and room name
+            Facility facility = new Facility(facilityName, itemName);
+            this.FACILITIES.put(facilityName, facility);
         }
     }
 }

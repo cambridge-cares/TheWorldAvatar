@@ -6,6 +6,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils;
  * @author qhouyee
  */
 public class StringHelper {
+    public static String FACILITY_KEY = "facilities";
     public static String ASSET_KEY = "assets";
     public static String ROOM_KEY = "Rooms";
     public static String THRESHOLD_KEY = "threshold";

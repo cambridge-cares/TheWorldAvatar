@@ -68,12 +68,12 @@ public class StackClient {
     }
 
     /**
-     * Get all spatial zones within the knowledge graph.
+     * Get all organisations who are managing spatial zones within the knowledge graph.
      *
-     * @return An array of all available spatial zones to monitor.
+     * @return An array of all available organisations and their associated spatial zones to monitor.
      */
-    public String[] getAllSpatialZones() {
-        return this.SPARQL_CLIENT.getAllSpatialZones();
+    public String[] getAllOrganisations() {
+        return this.SPARQL_CLIENT.getAllOrganisations();
     }
 
     /**
@@ -104,8 +104,8 @@ public class StackClient {
     }
 
     /**
-     * Get all time series associated with assets from a specific spatial zone and rooms in the knowledge graph with groups of measures tied to group of asset types.
-     * The final format is as follows:
+     * Get all time series associated with the spatial zones managed by an organisation, namely their assets and rooms' measures in the knowledge graph.
+     * The measure groups are tied to group of asset types. The final format is as follows:
      * { assetType1: {
      * assets: [AssetName1, AssetName2, AssetName3],
      * measure1: [[AssetName1, ColName1, TableName1, Database, unit],[AssetName2, ColName2, TableName1, Database, unit],[AssetName3, ColName3, TableName1, Database, unit]],
@@ -124,12 +124,12 @@ public class StackClient {
      * }
      * }
      *
-     * @param spatialZone The spatial zone of interest.
+     * @param organisation The organisation of interest.
      * @return A map: {assetType: {assets:[asset name list], measure[[measureDetails],[measureDetails]]}, room : {measure: [[measureDetails],[measureDetails]]}}.
      */
-    public Map<String, Map<String, List<String[]>>> getAllTimeSeries(String spatialZone) {
-        LOGGER.debug("Retrieving the spatial zone metadata...");
-        Map<String, Queue<String[]>> measures = this.SPARQL_CLIENT.getAllSpatialZoneMetaData(spatialZone);
+    public Map<String, Map<String, List<String[]>>> getAllTimeSeries(String organisation) {
+        LOGGER.debug("Retrieving the spatial zone metadata for organisation: " + organisation + "...");
+        Map<String, Queue<String[]>> measures = this.SPARQL_CLIENT.getAllSpatialZoneMetaData(organisation);
         LOGGER.debug("Retrieving the time series metadata from PostGIS...");
         return this.POSTGIS_CLIENT.getMeasureColAndTableName(measures);
     }

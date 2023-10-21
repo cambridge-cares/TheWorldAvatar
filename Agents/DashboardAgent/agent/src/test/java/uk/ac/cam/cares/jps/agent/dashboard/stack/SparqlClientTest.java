@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.IntegrationTestUtils;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.datamodel.OrganisationTest;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlQueryTest;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
@@ -73,31 +74,40 @@ class SparqlClientTest {
 
 
     @Test
-    void testGetAllSpatialZones_AllMeasures() {
+    void testGetAllOrganisations_NoMeasures() {
+        // Create a new Sparql client - note there should be no username and password for the test container
+        SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
+        // Execute method
+        String[] results = client.getAllOrganisations();
+        // Verify if no organisation is retrieved if there are no related triples
+        assertEquals(0, results.length);
+    }
+
+    @Test
+    void testGetAllOrganisations_AllMeasures() {
         // Insert these triples into the blazegraph
         insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
         insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
         // Create a new Sparql client - note there should be no username and password for the test container
         SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
         // Execute method
-        String[] results = client.getAllSpatialZones();
+        String[] results = client.getAllOrganisations();
         // Verify if result is as expected
-        assertEquals(2, results.length); // Both facilities should be returned
-        assertEquals(SAMPLE_OFFICE_NAME, results[0]);
-        assertEquals(SAMPLE_LAB_NAME, results[1]);
+        assertEquals(1, results.length); // There should only be one organisation
+        assertEquals(SAMPLE_ORGANISATION_NAME, results[0]);
     }
 
     @Test
-    void testGetAllSpatialZones_OnlyRoomMeasures() {
+    void testGetAllOrganisations_OnlyRoomMeasures() {
         // Insert these triples into the blazegraph
         insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
         // Create a new Sparql client - note there should be no username and password for the test container
         SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
         // Execute method
-        String[] results = client.getAllSpatialZones();
+        String[] results = client.getAllOrganisations();
         // Verify if result is as expected
-        assertEquals(1, results.length); // Only one office facility should be returned as asset measures in lab is not available
-        assertEquals(SAMPLE_OFFICE_NAME, results[0]);
+        assertEquals(1, results.length); // There should only be one organisation
+        assertEquals(SAMPLE_ORGANISATION_NAME, results[0]);
     }
 
     @Test
@@ -108,9 +118,10 @@ class SparqlClientTest {
         // Create a new Sparql client - note there should be no username and password for the test container
         SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
         // Execute method
-        Map<String, Queue<String[]>> results = client.getAllSpatialZoneMetaData(SAMPLE_LAB_NAME);
+        Map<String, Queue<String[]>> results = client.getAllSpatialZoneMetaData(SAMPLE_ORGANISATION_NAME);
         // Verify if result is as expected
-        assertEquals(3, results.size()); // Three assets should be returned
+        assertEquals(7, results.size()); // Three assets, two rooms, one threshold and one facility should be returned
+        OrganisationTest.verifyFacilityQueueResults(results, new String[]{SAMPLE_OFFICE_NAME, SAMPLE_LAB_NAME}, new String[]{SAMPLE_OFFICE_NAME, SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, SAMPLE_OFFICE_STAFF_ROOM_NAME}, new String[]{SAMPLE_LAB_NAME, SAMPLE_LAB_SMART_SENSOR_NAME, SAMPLE_LAB_FRIDGE_NAME, SAMPLE_LAB_MAKE_UP_AIR_UNIT_NAME});
         // For smart sensor
         Queue<String[]> resultQueue = results.get(SAMPLE_LAB_SMART_SENSOR_NAME);
         assertEquals(5, resultQueue.size()); // Five measures should be available
@@ -143,8 +154,9 @@ class SparqlClientTest {
         // Create a new Sparql client - note there should be no username and password for the test container
         SparqlClient client = new SparqlClient(IntegrationTestUtils.SPARQL_ENDPOINT, "", "");
         // Execute method
-        Map<String, Queue<String[]>> results = client.getAllSpatialZoneMetaData(SAMPLE_OFFICE_NAME);
+        Map<String, Queue<String[]>> results = client.getAllSpatialZoneMetaData(SAMPLE_ORGANISATION_NAME);
         // Verify if result is as expected
+        OrganisationTest.verifyFacilityQueueResults(results, new String[]{SAMPLE_OFFICE_NAME}, new String[]{SAMPLE_OFFICE_NAME, SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, SAMPLE_OFFICE_STAFF_ROOM_NAME});
         // Should only have two thresholds
         Queue<String[]> resultQueue = results.get(StringHelper.THRESHOLD_KEY);
         while (!resultQueue.isEmpty()) {

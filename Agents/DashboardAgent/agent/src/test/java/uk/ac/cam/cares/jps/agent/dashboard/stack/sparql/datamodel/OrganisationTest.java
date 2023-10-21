@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class OrganisationTest {
+public class OrganisationTest {
+    private static final String FACILITY_NAME = "Home";
     private static final String ASSET_LAMP_ONE_NAME = "Lamp1";
     private static final String ASSET_LAMP_TWO_NAME = "Lamp2";
     private static final String ASSET_LAMP_TYPE = "Lamp";
@@ -35,12 +35,12 @@ class OrganisationTest {
         String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, assetElectricityMeasureIri, assetElectricityTimeSeriesIri);
-        sample.addRoom(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, assetElectricityMeasureIri, assetElectricityTimeSeriesIri);
+        sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         // Execute method
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
         // Test results
-        assertEquals(2, results.size()); // Only one asset and room expected
+        assertEquals(3, results.size()); // Expect only one asset and room, and their facility
         // Retrieve and verify contents of asset
         Queue<String[]> assetMetadataResult = results.get(ASSET_LAMP_ONE_NAME);
         assertEquals(1, assetMetadataResult.size()); // Only one measure expected
@@ -51,6 +51,7 @@ class OrganisationTest {
         assertEquals(1, roomMetadataResult.size()); // Only one measure expected
         metadata = roomMetadataResult.poll();
         RoomTest.verifyRoomMeasureArrayContents(MEASURE_ELEC_NAME, roomElectricityMeasureIri, roomElectricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+        verifyFacilityQueueResults(results, new String[]{FACILITY_NAME}, new String[]{FACILITY_NAME, ASSET_LAMP_ONE_NAME, ROOM_ONE_NAME});
     }
 
     @Test
@@ -59,11 +60,12 @@ class OrganisationTest {
         String electricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String electricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
         // Execute method
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
         // Test results
-        assertEquals(1, results.size()); // Only one asset expected
+        assertEquals(2, results.size()); // Only one asset and its facility expected
+        verifyFacilityQueueResults(results, new String[]{FACILITY_NAME}, new String[]{FACILITY_NAME, ASSET_LAMP_ONE_NAME});
         for (String assetKey : results.keySet()) {
             assertEquals(ASSET_LAMP_ONE_NAME, assetKey); // Asset key should be asset name
             Queue<String[]> assetMetadataResult = results.get(assetKey);
@@ -80,11 +82,12 @@ class OrganisationTest {
         String electricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String electricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
         // Execute method
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
         // Test results
-        assertEquals(1, results.size()); // Only one room expected
+        assertEquals(2, results.size()); // Only one room and its facility expected
+        verifyFacilityQueueResults(results, new String[]{FACILITY_NAME}, new String[]{FACILITY_NAME, ROOM_ONE_NAME});
         for (String assetKey : results.keySet()) {
             assertEquals(ROOM_ONE_NAME, assetKey); // Room key should be room name
             Queue<String[]> assetMetadataResult = results.get(assetKey);
@@ -101,11 +104,11 @@ class OrganisationTest {
         String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         // Execute method
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
         // Retrieve and test results
-        assertEquals(1, results.size()); // Do not expect threshold to be available
+        assertEquals(2, results.size()); // Do not expect threshold to be available
         assertFalse(results.containsKey(StringHelper.THRESHOLD_KEY));
     }
 
@@ -117,12 +120,12 @@ class OrganisationTest {
         String lampTwoElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String lampTwoElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampOneElectricityMeasureIri, lampOneElectricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampOneElectricityMeasureIri, lampOneElectricityTimeSeriesIri);
         // Execute method
-        sample.addAsset(ASSET_LAMP_TWO_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampTwoElectricityMeasureIri, lampTwoElectricityTimeSeriesIri);
+        sample.addAsset(FACILITY_NAME, ASSET_LAMP_TWO_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampTwoElectricityMeasureIri, lampTwoElectricityTimeSeriesIri);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
-        assertEquals(2, results.size()); // Two assets expected
+        assertEquals(3, results.size()); // Two assets and their facility expected
         // Retrieve and verify contents of first asset
         Queue<String[]> assetMetadataResult = results.get(ASSET_LAMP_ONE_NAME);
         assertEquals(1, assetMetadataResult.size()); // Only one measure expected
@@ -143,12 +146,12 @@ class OrganisationTest {
         String lampStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
         String lampStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampElectricityMeasureIri, lampElectricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampElectricityMeasureIri, lampElectricityTimeSeriesIri);
         // Execute method
-        sample.addAsset(ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, lampStateMeasureIri, lampStateTimeSeriesIri);
+        sample.addAsset(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, lampStateMeasureIri, lampStateTimeSeriesIri);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
-        assertEquals(1, results.size()); // Only one asset expected
+        assertEquals(2, results.size()); // Only one asset and its facility  expected
         Queue<String[]> assetMetadataResult = results.get(ASSET_LAMP_ONE_NAME);
         assertEquals(2, assetMetadataResult.size()); // Two measures expected
         // Verifies its contents
@@ -170,14 +173,14 @@ class OrganisationTest {
         String fridgeStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
         String fridgeStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampOneElectricityMeasureIri, lampOneElectricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampOneElectricityMeasureIri, lampOneElectricityTimeSeriesIri);
         // Execute method
-        sample.addAsset(ASSET_LAMP_TWO_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampTwoElectricityMeasureIri, lampTwoElectricityTimeSeriesIri);
-        sample.addAsset(ASSET_FRIDGE_ONE_NAME, ASSET_FRIDGE_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, fridgeElectricityMeasureIri, fridgeElectricityTimeSeriesIri);
-        sample.addAsset(ASSET_FRIDGE_ONE_NAME, ASSET_FRIDGE_TYPE, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, fridgeStateMeasureIri, fridgeStateTimeSeriesIri);
+        sample.addAsset(FACILITY_NAME, ASSET_LAMP_TWO_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampTwoElectricityMeasureIri, lampTwoElectricityTimeSeriesIri);
+        sample.addAsset(FACILITY_NAME, ASSET_FRIDGE_ONE_NAME, ASSET_FRIDGE_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, fridgeElectricityMeasureIri, fridgeElectricityTimeSeriesIri);
+        sample.addAsset(FACILITY_NAME, ASSET_FRIDGE_ONE_NAME, ASSET_FRIDGE_TYPE, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, fridgeStateMeasureIri, fridgeStateTimeSeriesIri);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
-        assertEquals(3, results.size()); // Three assets expected
+        assertEquals(4, results.size()); // Three assets and their facility expected
         // Retrieve and verify contents of first asset
         Queue<String[]> assetMetadataResult = results.get(ASSET_LAMP_ONE_NAME);
         assertEquals(1, assetMetadataResult.size()); // Only one measure expected
@@ -205,12 +208,12 @@ class OrganisationTest {
         String roomStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
         String roomStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
         // Execute method
-        sample.addRoom(ROOM_TWO_NAME, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, roomStateMeasureIri, roomStateTimeSeriesIri);
+        sample.addRoom(FACILITY_NAME, ROOM_TWO_NAME, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, roomStateMeasureIri, roomStateTimeSeriesIri);
         // Test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
-        assertEquals(2, results.size()); // Two rooms expected
+        assertEquals(3, results.size()); // Two rooms and their facility expected
         // Retrieve and verify contents of first room
         Queue<String[]> roomMetadataResult = results.get(ROOM_ONE_NAME);
         assertEquals(1, roomMetadataResult.size()); // Only one measure expected
@@ -231,12 +234,12 @@ class OrganisationTest {
         String roomStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
         String roomStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         // Execute method
-        sample.addRoom(ROOM_ONE_NAME, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, roomStateMeasureIri, roomStateTimeSeriesIri);
+        sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, roomStateMeasureIri, roomStateTimeSeriesIri);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
-        assertEquals(1, results.size()); // Only one room expected
+        assertEquals(2, results.size()); // Only one room and its facility expected
         Queue<String[]> roomMetadataResult = results.get(ROOM_ONE_NAME);
         assertEquals(2, roomMetadataResult.size()); // Two measures expected
         // Verifies its contents
@@ -252,12 +255,12 @@ class OrganisationTest {
         String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         // Execute method
         sample.addThresholds(THRESHOLD_NAME, THRESHOLD_MIN, THRESHOLD_MAX);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
-        assertEquals(2, results.size()); // Expect two results - one for room, and one for threshold
+        assertEquals(3, results.size()); // Expect three results - one for room, one for facility, and one for threshold
         assertTrue(results.containsKey(StringHelper.THRESHOLD_KEY));
         Queue<String[]> thresholdMetadataResult = results.get(StringHelper.THRESHOLD_KEY);
         assertEquals(1, thresholdMetadataResult.size()); // One threshold expected
@@ -273,13 +276,13 @@ class OrganisationTest {
         String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         // Execute method twice
         sample.addThresholds(THRESHOLD_NAME, THRESHOLD_MIN, THRESHOLD_MAX);
         sample.addThresholds(THRESHOLD_NAME, THRESHOLD_MIN, THRESHOLD_MAX);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
-        assertEquals(2, results.size()); // Expect two results - one for room, and one for threshold
+        assertEquals(3, results.size()); // Expect two results - one for room, one for facility, and one for threshold
         assertTrue(results.containsKey(StringHelper.THRESHOLD_KEY));
         Queue<String[]> thresholdMetadataResult = results.get(StringHelper.THRESHOLD_KEY);
         assertEquals(1, thresholdMetadataResult.size()); // One threshold expected due to duplication
@@ -287,5 +290,33 @@ class OrganisationTest {
         assertEquals(THRESHOLD_NAME, metadata[0]);
         assertEquals(THRESHOLD_MIN, metadata[1]);
         assertEquals(THRESHOLD_MAX, metadata[2]);
+    }
+
+    public static void verifyFacilityQueueResults(Map<String, Queue<String[]>> results, String[] expectedFacilityNames, String[]... expectedItemNames) {
+        // Map the expected item names to their facility
+        Map<String, String[]> facilityItemMapping = new HashMap<>();
+        // Ensure that expectedItemNames has a facility name at the first position
+        for (String[] expectedGroupData : expectedItemNames) {
+            facilityItemMapping.put(expectedGroupData[0], expectedGroupData);
+        }
+        // Retrieve the facility item
+        Queue<String[]> facilities = results.get(StringHelper.FACILITY_KEY);
+        // Verify that the number of facilities correspond to the facility queue
+        assertEquals(expectedFacilityNames.length, facilities.size());
+        List<String> expectedFacilityNameList = Arrays.asList(expectedFacilityNames);
+        // For each facility, verify its results
+        while (!facilities.isEmpty()) {
+            // Retrieve the only variable
+            String[] facilityMetadata = facilities.poll();
+            assertTrue(expectedFacilityNameList.contains(facilityMetadata[0])); // Ensure first metadata is a facility name
+            List<String> expectedItems = Arrays.asList(facilityItemMapping.get(facilityMetadata[0]));
+            // Ensure that the length includes all the items plus one for the facility name itself
+            assertEquals(expectedItems.size(), facilityMetadata.length);
+            // Verify that the corresponding metadata follows
+            for (int i = 1; i < expectedItemNames.length; i++) {
+                assertTrue(expectedItems.contains(facilityMetadata[i]));
+            }
+        }
+        results.remove(StringHelper.FACILITY_KEY);
     }
 }

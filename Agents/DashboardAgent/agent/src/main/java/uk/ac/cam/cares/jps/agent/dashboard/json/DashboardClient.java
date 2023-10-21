@@ -57,7 +57,7 @@ public class DashboardClient {
         this.createServiceAccountToken();
         this.createDataSources();
         // For each spatial zone, a separate dashboard should be generated
-        String[] spatialZoneArray = this.SERVICE_CLIENT.getAllSpatialZones();
+        String[] spatialZoneArray = this.SERVICE_CLIENT.getAllOrganisations();
         for (String spatialZone : spatialZoneArray) {
             this.createDashboard(spatialZone);
         }

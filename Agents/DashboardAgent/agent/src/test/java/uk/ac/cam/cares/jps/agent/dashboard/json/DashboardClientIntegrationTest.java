@@ -63,7 +63,7 @@ class DashboardClientIntegrationTest {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
             // Mock that this returns an empty string array as this test is not for creating dashboards
-            Mockito.when(mock.getAllSpatialZones()).thenReturn(new String[]{});
+            Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
         })) {
             StackClient mockStackClient = new StackClient();
             DashboardClient client = new DashboardClient(mockStackClient, IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
@@ -86,7 +86,7 @@ class DashboardClientIntegrationTest {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
             // Mock that this returns an empty string array as this test is not for creating dashboards
-            Mockito.when(mock.getAllSpatialZones()).thenReturn(new String[]{});
+            Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
         })) {
             StackClient mockStackClient = new StackClient();
             DashboardClient client = new DashboardClient(mockStackClient, IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
@@ -110,7 +110,7 @@ class DashboardClientIntegrationTest {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
             // Mock that this returns an empty string array as this test is not for creating dashboards
-            Mockito.when(mock.getAllSpatialZones()).thenReturn(new String[]{});
+            Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
             Mockito.when(mock.getPostGisCredentials()).thenReturn(new String[]{IntegrationTestUtils.TEST_POSTGIS_JDBC,
                     IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD});
@@ -136,7 +136,7 @@ class DashboardClientIntegrationTest {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
             // Mock that this returns an empty string array as this test is not for creating dashboards
-            Mockito.when(mock.getAllSpatialZones()).thenReturn(new String[]{});
+            Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
             Mockito.when(mock.getPostGisCredentials()).thenReturn(new String[]{IntegrationTestUtils.TEST_POSTGIS_JDBC,
                     IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD});
