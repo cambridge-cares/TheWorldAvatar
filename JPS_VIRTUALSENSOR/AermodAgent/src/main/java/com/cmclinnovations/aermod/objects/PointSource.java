@@ -1,7 +1,6 @@
 package com.cmclinnovations.aermod.objects;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.locationtech.jts.geom.Point;

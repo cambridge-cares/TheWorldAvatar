@@ -34,7 +34,6 @@ import com.cmclinnovations.aermod.objects.Pollutant;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
-import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
@@ -114,6 +113,8 @@ public class AermodAgent extends DerivationAgent {
             allBuildings = queryClient.getBuildingsWithinScope(scopeIri);
             staticPointSources = queryClient.getStaticPointSourcesWithinScope(allBuildings);
         }
+
+        staticPointSources.removeIf(s -> s.getLocation() == null);
 
         long timeBuffer = 1800; // 30 minutes
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
