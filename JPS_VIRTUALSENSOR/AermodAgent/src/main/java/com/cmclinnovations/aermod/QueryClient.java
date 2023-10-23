@@ -1099,7 +1099,7 @@ public class QueryClient {
     private Polygon getBoundingBoxOfPointSources(List<PointSource> allSources) {
         double buffer = 500;
         GeometryFactory geoFactory = new GeometryFactory();
-        List<Point> convertedPoints = allSources.stream().filter(s -> s.getLocation() != null).map(s -> {
+        List<Point> convertedPoints = allSources.stream().map(s -> {
             double[] xyOriginal = { s.getLocation().getX(), s.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform("EPSG:" + s.getLocation().getSRID(), namespaceCRS,
                     xyOriginal);
