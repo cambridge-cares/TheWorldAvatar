@@ -169,10 +169,10 @@ public class Aermod {
         }
     }
 
-    public void createAERMODBuildingsInput(String citiesNamespace) {
+    public void createAERMODBuildingsInput(boolean createEmptyFile) {
         StringBuilder sb = new StringBuilder();
 
-        if (citiesNamespace == null) {
+        if (createEmptyFile) {
             sb.append(" ");
         } else {
             Path filepath = bpipprmDirectory.resolve("building.dat");

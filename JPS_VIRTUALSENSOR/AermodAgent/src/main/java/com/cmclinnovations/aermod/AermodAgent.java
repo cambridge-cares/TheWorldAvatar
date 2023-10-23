@@ -179,7 +179,7 @@ public class AermodAgent extends DerivationAgent {
         // Moved this part outside the if statement to ensure that the buildings.dat
         // file is created in all cases.
         // It will be blank if citiesNamespace is null.
-        aermod.createAERMODBuildingsInput(citiesNamespace);
+        aermod.createAERMODBuildingsInput(buildings.isEmpty());
 
         aermod.create144File(weatherData);
 
