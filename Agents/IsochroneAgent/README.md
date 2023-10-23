@@ -20,10 +20,10 @@ The agent has been implemented to work in the stack. Follow the instructions in 
 
 ## 3. Agent Configuration 
 ### 3.1 Config Properties
-Items to configure in table: 
+Items to configure in [config.properties](inputs/config.properties): 
 1) `timeThreshold` - The time cutoff of an isochrone in minutes. Default value is set at 15 minutes. 
 2) `timeInterval` - The time increment value of each isochrone in minutes. Default value is set at 5 mintues time interval. 
-3) `populationTable` - The exact table names of the population tables should follow the names of population table as per [uploaded via stack-data-uploader](#23-uploading-population-data-via-stack-data-uploader). 
+3) `populationTables` - The exact table names of the population tables should follow the names of population table as per [uploaded via stack-data-uploader](#23-uploading-population-data-via-stack-data-uploader). 
 
 ### 3.2 SPARQL Queries
 SPARQL queries are used to retrieve the locations of POI. 
@@ -33,7 +33,12 @@ The SPARQL queries follow the format which requires the returned variable to be 
 2) `poi_type` refers to the POI's iri type. 
 3) `geometry` refers to the WKT literals of the POI location. 
 
-SPARQL queries are created for [15MSC in Pirmasens](inputs/15MSC/POIqueries/) and [UR in King's Lynn](inputs/UR/POIqueries/) use cases. 
+SPARQL queries are created for [15MSC in Pirmasens](inputs/15MSC/POIqueries/) and [UR in King's Lynn](inputs/UR/POIqueries/) use cases.
+
+To use the example created in [15MSC in Pirmasens](inputs/15MSC/POIqueries/), replace `[ONTOP]` with your Ontop endpoint as per the format below: 
+```
+<http://<STACK-NAME>-ontop:8080/sparql/>
+```
 
 ### 3.3 EdgeTableSQL
 [EdgeTable](https://docs.pgrouting.org/2.5/en/pgRouting-concepts.html#description-of-the-edges-sql-query-for-dijkstra-like-functions) describes the characteristic of the road networks. It is used to define the transport mode and road conditions during the calculation of isochrone. 
@@ -74,7 +79,7 @@ To run the agent, simply run the following cURL command:
 ```
 curl -X POST localhost:3838/isochroneagent/update?function=15MSC
 ```
-#### Urban Resillience Planning (UR)
+#### Urban Resilience Planning (UR)
 ```
 curl -X POST localhost:3838/isochroneagent/update?function=UR
 ```
