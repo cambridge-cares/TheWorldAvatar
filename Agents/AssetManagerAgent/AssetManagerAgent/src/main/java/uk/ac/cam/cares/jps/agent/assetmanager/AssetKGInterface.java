@@ -548,6 +548,7 @@ public class AssetKGInterface {
             query.insert(deviceIRIVar.has(isManufacturedBy, ManufacturerOrgIRI));
             query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
             query.insert(ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral));
+            query.insert(ManufacturerNameIRI.has(RDFS.LABEL, Rdf.literalOf(ManufacturerNameLiteral)));
         }
         if(!SupplierNameLiteral.isBlank()){
             query.insert(SupplierOrgIRI.isA(FormalOrganization));
@@ -555,6 +556,7 @@ public class AssetKGInterface {
             query.insert(deviceIRIVar.has(isSuppliedBy, SupplierOrgIRI));
             query.insert(SupplierOrgIRI.has(hasName, SupplierNameIRI));
             query.insert(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral));
+            query.insert(SupplierNameIRI.has(RDFS.LABEL, Rdf.literalOf(SupplierNameLiteral)));
         }
 
         storeClientAsset.executeUpdate(query.getQueryString());
@@ -722,6 +724,7 @@ public class AssetKGInterface {
             query.insert(itemIRI.has(isManufacturedBy, ManufacturerOrgIRI));
             query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
             query.insert(ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral));
+            query.insert(ManufacturerNameIRI.has(RDFS.LABEL, Rdf.literalOf(ManufacturerNameLiteral)));
         }
         if(!SupplierNameLiteral.isBlank()){
             query.insert(SupplierOrgIRI.isA(FormalOrganization));
@@ -729,6 +732,7 @@ public class AssetKGInterface {
             query.insert(itemIRI.has(isSuppliedBy, SupplierOrgIRI));
             query.insert(SupplierOrgIRI.has(hasName, SupplierNameIRI));
             query.insert(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral));
+            query.insert(SupplierNameIRI.has(RDFS.LABEL, Rdf.literalOf(SupplierNameLiteral)));
         }
 
         //Projects and service codes
