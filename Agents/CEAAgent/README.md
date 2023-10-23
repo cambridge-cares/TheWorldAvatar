@@ -55,6 +55,11 @@ To debug, put [cea-agent-debug.json] from ```./stack-manager-input/``` instead o
 ```
 The debugger port will be available at 5005.
 
+### 2.10. Visualisation
+Visualisation of CEA results in [TWA Visualisation Framework] can be achieved with [FeatureInfoAgent].
+Copy the `.sparql` and `.json` files in [feature-info-agent-input](./feature-info-agent-input), and place them inside [stack-manager]'s `/input/data/fia-queries` directory, according to the path specified in the stack-manager config file [feature-info-agent.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
+Then, spin up FeatureInfoAgent inside the stack.
+
 ## 3. Agent Endpoints
 The CEA Agent is reachable at http://localhost:3838/cea-agent, where 3838 is the default port number used by stack manager. If another port number was specified when spinning up the stack, please replace 3838 with the specified port number. The agent provides three endpoints: run endpoint (http://localhost:3838/cea-agent/run), where the agent runs CEA; update endpoint (http://localhost:3838/cea-agent/update), where the agent updates the knowledge graph with triples on CEA outputs; query endpoint (http://localhost:3838/cea-agent/run), where the agent returns CEA outputs. 
 
@@ -273,3 +278,5 @@ The agent will attempt to retrieve terrain data from the stack PostGIS. The quer
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 [stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
 [stack-manager config services]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[TWA Visualisation Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework
+[FeatureInfoAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent
