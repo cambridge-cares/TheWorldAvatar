@@ -48,7 +48,7 @@ def create_update_endpoint():
 
     update_agent.add_url_pattern(
         '/update', 'update_derivation',
-        update_agent.update_derivations, methods=['POST']
+        update_agent.update_derivations, methods=['GET']
     )
 
     return update_agent.app
