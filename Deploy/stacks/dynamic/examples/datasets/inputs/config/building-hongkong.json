@@ -1,0 +1,44 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "building-hongkong",
+    "dataSubsets": [
+        {
+            "type": "XtoCityDB",
+            "skip": false,
+            "table": "raw_gdal",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-select": [
+                        "id, height,@relations"
+                    ]
+                }
+            },
+            "columnMap": {
+                "IDval": "parent",
+                "IDname": "rawID",
+                "footprint": "geometry",
+                "elevation": "elevation",
+                "height": "average_height"
+            },
+            "importOptions": {
+                "sridIn": "4326"
+            },
+            "preprocessSql": "@/inputs/config/building-hongkong_preprocess_building.sql",
+            "name": "building-hongkong_gsl",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "mapbox_layer",
+                    "sql": "@/inputs/config/mapbox-footprint-flipxy.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometry",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "polygon"
+            }
+        }
+    ]
+}

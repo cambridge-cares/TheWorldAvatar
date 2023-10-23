@@ -184,7 +184,8 @@ def pubchem_1DNMR_insert(uuid, i, prov_uuid, unit_uuid, solvent_uuid, it_uuid, d
         intensity = data['peaks'].get('intensity')[k]
         k = k + 1
         text= f"""<{ONTOSPECIES_KB_URL}/SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> os:hasPeak <{ONTOSPECIES_KB_URL}/Peak_{str(k)}_SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> .
-            <{ONTOSPECIES_KB_URL}/Peak_{str(k)}_SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> os:hasX1 \'{shift1}\'^^xsd:float ;
+            <{ONTOSPECIES_KB_URL}/Peak_{str(k)}_SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> rdf:type os:Peak ;
+                os:hasX1 \'{shift1}\'^^xsd:float ;
                 os:hasY \'{intensity}\'^^xsd:float .
             """
         text_peak = text_peak + text
@@ -222,7 +223,8 @@ def pubchem_2DNMR_insert(uuid, i, prov_uuid, unit_uuid, solvent_uuid, it_uuid, d
         intensity = data['peaks'].get('intensity')[k]
         k = k + 1
         text= f"""<{ONTOSPECIES_KB_URL}/SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> os:hasPeak <{ONTOSPECIES_KB_URL}/Peak_{str(k)}_SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> .
-            <{ONTOSPECIES_KB_URL}/Peak_{str(k)}_SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> os:hasX1 \'{shift1}\'^^xsd:float ;
+            <{ONTOSPECIES_KB_URL}/Peak_{str(k)}_SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> rdf:type os:Peak ;
+                os:hasX1 \'{shift1}\'^^xsd:float ;
                 os:hasX2 \'{shift2}\'^^xsd:float ;
                 os:hasY \'{intensity}\'^^xsd:float .
             """
@@ -257,7 +259,8 @@ def pubchem_ms_insert(uuid, i, prov_uuid, im_uuid, it_uuid, data):
         intensity = data['peaks'].get('intensity')[k]
         k = k + 1
         text= f"""<{ONTOSPECIES_KB_URL}/SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> os:hasPeak <{ONTOSPECIES_KB_URL}/Peak_{str(k)}_SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> .
-            <{ONTOSPECIES_KB_URL}/Peak_{str(k)}_SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> os:hasX1 \'{shift1}\'^^xsd:float ;
+            <{ONTOSPECIES_KB_URL}/Peak_{str(k)}_SpectraGraph_{data.get('key')}_{str(i)}_Species_{uuid}> rdf:type os:Peak;
+                os:hasX1 \'{shift1}\'^^xsd:float ;
                 os:hasY \'{intensity}\'^^xsd:float .
             """
         text_peak = text_peak + text

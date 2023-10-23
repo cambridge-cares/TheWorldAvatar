@@ -34,7 +34,7 @@
 		}
     },
     "endpoints": {
-        "cea-agent": {
+        "openmeteo-agent": {
           "url": "http://localhost:8080/openmeteo-agent/",
           "externalPath": "/openmeteo-agent/"
         }
