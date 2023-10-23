@@ -30,8 +30,8 @@ import sys     # for command line arguments (sys.argv)
 import os      # To detect file, to check filename, etc.
 
 import logging # For error/waarning messages
-#logging.basicConfig( level=logging.WARNING )
-logging.basicConfig( level=logging.ERROR )
+logging.basicConfig( level=logging.WARNING )
+#logging.basicConfig( level=logging.ERROR )
 #logging.disable( logging.CRITICAL )
 
 import tools
@@ -197,10 +197,10 @@ class TBoxCleaner:
     def isKnownClass( self, value, strict = False ):
         for c in self.clNames:
             if strict:
-                if value.strip() == c.strip():
+                if str(value).strip() == c.strip():
                     return True
             else:
-                if value.lower().strip() == c.lower().strip():
+                if str(value).lower().strip() == c.lower().strip():
                     return True
 
         return False
@@ -209,10 +209,10 @@ class TBoxCleaner:
     def isKnownObjProp( self, value, strict = False ):
         for c in self.opNames:
             if strict:
-                if value.strip() == c.strip():
+                if str(value).strip() == c.strip():
                     return True
             else:
-                if value.lower().strip() == c.lower().strip():
+                if str(value).lower().strip() == c.lower().strip():
                     return True
 
         return False
@@ -221,10 +221,10 @@ class TBoxCleaner:
     def isKnownDataProp( self, value, strict = False ):
         for c in self.dpNames:
             if strict:
-                if value.strip() == c.strip():
+                if str(value).strip() == c.strip():
                     return True
             else:
-                if value.lower().strip() == c.lower().strip():
+                if str(value).lower().strip() == c.lower().strip():
                     return True
 
         return False
@@ -393,7 +393,7 @@ class TBoxCleaner:
             errCount += 1
 
         # Check repeating entries of other category:
-        if self.isKnownObjProp(  line[0], strict = False ) or \
+        if self.isKnownObjProp ( line[0], strict = False ) or \
            self.isKnownDataProp( line[0], strict = False ):
             logging.warning( " Data Prop name '" + line[0] + "' repeats an existing name " + \
                              "in different category (ObjProp/DataProp) " + \
@@ -415,26 +415,36 @@ class TBoxCleaner:
         #errCount += 1
 
         # Check the exact matching the property type:
-        if "object property" == line[1].strip().lower():
-            if not "Object Property" == line[1]:
-                logging.warning( " Expected 'Object Property' but found '" + \
-                                 line[1] + "' " + file_line + "." )
-                errCount += 1
+        if "Object Property" == line[1]:
+            # Do nothing, this is correct value
+            pass
+        elif "object property" == line[1].strip().lower():
+            logging.warning( " Expected 'Object Property' but found '" + \
+                             line[1] + "' " + file_line + "." )
+            errCount += 1
 
         # TODO Columns 0,1,4,5 are required.
 
         # TODO Column 6 is optional.
         # TODO cell 6 can be empty or "only"
+        if self.isEmptyCell(line[6]):
+            pass
+        elif "only" == line[6]:
+            pass
+        else:
+            logging.error( " Invalid value '" + line[6] + "' in " + file_line + \
+                           " in col " + COLUMN_LETTERS[6] + "." )
 
         # Check whether 'Comment' exists (column 7):
         if self.isEmptyCell(line[7]):
-            logging.error( " Missing Comment for Obj Property '" + line[0] + "' " + file_line + \
-                           " in col " + COLUMN_LETTERS[7] + "." )
+            logging.error( " Missing Comment for Obj Property '" + line[0] + \
+                           "' " + file_line + " in col " + COLUMN_LETTERS[7] + "." )
             errCount += 1
         elif isinstance( line[7], str ):
             if len( line[7] ) < 20:
-                logging.warning( " Obj Property '" + line[0] + "' may have incompete 'comment': '" + \
-                  line[7] + "' " + file_line + " col " + COLUMN_LETTERS[7] + "." )
+                logging.warning( " Obj Property '" + line[0] + "' may have " + \
+                                 "incompete 'comment': '" + line[7] + "' " + \
+                                 file_line + " col " + COLUMN_LETTERS[7] + "." )
                 errCount += 1
         else:
             logging.warning( " Wrong Comment '" + line[7] + "' for Obj Property '" + \
@@ -684,58 +694,65 @@ class TBoxCleaner:
 
         self.errCount += self.validateClassLine( line, file_line )
 
+        #self.addClass( line )
         self.classes.append( line )
-        self.clNames.append( line[0] )
+        self.clNames.append( str(line[0]).strip() )
 
         #print( self.classes )
         pass # extractClasses()
 
+    def addClass( self, line ):
+        logging.error( "No implemented 333333" )
+        pass # addClass( line )
+    def addObjProp( self, line ):
+        logging.error( "No implemented 333333" )
+        pass # addObjProp( line )
+    def addDataProp( self, line ):
+        logging.error( "No implemented 333333" )
+        pass # addDataProp( line )
+
     def extractObjProp( self, line, file_line ):
 
-        if "object property" == line[1].strip().lower():
-            if not "Object Property" == line[1]:
-                logging.warning( " Expected 'Object Property' but found '" + line[1] + "'." )
+        self.errCount += self.validateObjLine( line, file_line )
+
+        #self.addObjProp( line )
+        self.objProp.append( line )
+        self.opNames.append( line[0].strip() )
+
+        # Domain:
+        words = line[4].split( "UNION" )
+        self.objPropDomain = [ w.strip() for w in words ] #line[4].split( "UNION" )
+        for w in self.objPropDomain:
+            pos = w.lower().find( "union" )
+            if pos >= 0:
+                logging.warning( " Found '" + w[pos:pos+5] + "' in " + file_line + \
+                                 " col " + COLUMN_LETTERS[4] + ", it may " \
+                                 "be confused with the UNION keyword." )
                 self.errCount += 1
 
-            self.errCount += self.validateObjLine( line, file_line )
-
-            self.objProp.append( line )
-            self.opNames.append( line[0] )
-
-            # Domain:
-            words = line[4].split( "UNION" )
-            self.objPropDomain = [ w.strip() for w in words ] #line[4].split( "UNION" )
-            for w in self.objPropDomain:
-                pos = w.lower().find( "union" )
-                if pos >= 0:
-                    logging.warning( " Found '" + w[pos:pos+5] + "' in " + file_line + \
-                                     " col " + COLUMN_LETTERS[4] + ", it may " \
-                                     "be confused with the UNION keyword." )
-                    self.errCount += 1
-
-                if w not in self.clNames:
-                    logging.error( " Unknown class '" + w + "' in property " \
-                                   "'" + line[0] + "' " + file_line + \
-                                   " col " + COLUMN_LETTERS[4] + "." )
-                    self.errCount += 1
+            if w not in self.clNames:
+                logging.error( " Unknown class '" + w + "' in property " \
+                               "'" + line[0] + "' " + file_line + \
+                               " col " + COLUMN_LETTERS[4] + "." )
+                self.errCount += 1
             #print( ">>>>>>>>>>>>> obj prop Domain(s):", self.objPropDomain )
             
-            # Range:
-            words = line[5].split( "UNION" )
-            self.objPropRange = [ w.strip() for w in words ] #line[4].split( "UNION" )
-            for w in self.objPropRange:
-                pos = w.lower().find( "union" )
-                if pos >= 0:
-                    logging.warning( " Found '" + w[pos:pos+5] + "' in " + file_line + \
-                                     " col " + COLUMN_LETTERS[4] + ", it may " \
-                                     "be confused with the UNION keyword." )
-                    self.errCount += 1
+        # Range:
+        words = line[5].split( "UNION" )
+        self.objPropRange = [ w.strip() for w in words ] #line[4].split( "UNION" )
+        for w in self.objPropRange:
+            pos = w.lower().find( "union" )
+            if pos >= 0:
+                logging.warning( " Found '" + w[pos:pos+5] + "' in " + file_line + \
+                                 " col " + COLUMN_LETTERS[4] + ", it may " \
+                                 "be confused with the UNION keyword." )
+                self.errCount += 1
 
-                if w not in self.clNames:
-                    logging.error( " Unknown class '" + w + "' in property " \
-                                   "'" + line[0] + "' " + file_line + \
-                                   " col " + COLUMN_LETTERS[5] + "." )
-                    self.errCount += 1
+            if w not in self.clNames:
+                logging.error( " Unknown class '" + w + "' in property " \
+                               "'" + line[0] + "' " + file_line + \
+                               " col " + COLUMN_LETTERS[5] + "." )
+                self.errCount += 1
 
             #print( ">>>>>>>>>>>>> obj prop Range(s):", self.objPropRange )
  
@@ -746,8 +763,9 @@ class TBoxCleaner:
     def extractDataProp( self, line, file_line ):
         self.errCount += self.validateDataLine( line, file_line )
 
+        #self.addDataProp( line )
         self.datProp.append( line )
-        self.dpNames.append( line[0] )
+        self.dpNames.append( line[0].strip() )
 
         # Domain:
         words = line[4].split( "UNION" )
@@ -768,15 +786,15 @@ class TBoxCleaner:
 
             #print( ">>>>>>>>>>>>> obj prop Domain(s):", self.objPropDomain )
             
-            # Range:
+        # Range:
         words = line[5].split( "UNION" )
         self.objPropRange = [ w.strip() for w in words ] #line[4].split( "UNION" )
         for w in self.objPropRange:
             pos = w.lower().find( "union" )
             if pos >= 0:
-                logging.warning( " Found '" + w[pos:pos+5] + "' word in " + file_line + \
-                                 " col " + COLUMN_LETTERS[4] + ", it may " \
-                                 "be confused with the UNION keyword." )
+                logging.warning( " Found '" + w[pos:pos+5] + "' word in " + \
+                                 file_line + " col " + COLUMN_LETTERS[4] + \
+                                 ", it may be confused with the UNION keyword." )
                 self.errCount += 1
             #print( ">>>>>>>>>>>>> obj prop Range(s):", self.objPropRange )
 
@@ -784,6 +802,16 @@ class TBoxCleaner:
  
         #print( self.datProp )
         pass # extractDataProp()
+
+    def mergeObjProp(self):
+        logging.error( "Not implemented mergeObjProp()" )
+
+        pass # mergeObjProp()
+
+    def mergeDataProp(self):
+        logging.error( "Not implemented mergeDataProp()" )
+
+        pass # mergeDataProp()
 
     def saveCsv( self, filename ):
 
@@ -793,6 +821,9 @@ class TBoxCleaner:
         #print( self.objProp )
         #print( self.datProp )
 
+        # TODO
+        self.mergeObjProp()
+        self.mergeDataProp()
         # TODO
         #self.CheckClasses()
         #self.CheckObjProp()
@@ -806,18 +837,29 @@ class TBoxCleaner:
         self.dataOut = []
         for il, line in enumerate(tmp):
             l = []
-            for c in line:
+            for ic,c in enumerate(line):
+                if ic >= self.nCol:
+                    logging.warning( " Too many columns for class/property '" + \
+                                     line[0] + "' during saving to csv file." + \
+                                     " Extra cell '" + str(c) + "'." )
+                    continue
+
                 if isinstance( c, float ):
                     if math.isnan( c ):
                         l.append( "" )
                     else:
                         l.append( c )
+                elif isinstance( c, str ):
+                    l.append( c.strip() )
                 else:
                     l.append( c )
-
+                    #logging.warning( " Unknown type '" + str(type(c)) + "' of" + \
+                    #                 " '" + str(c) + "' during saving to csv. " )
+                    # 
             self.dataOut.append( l )
 
         for line in self.dataOut:
+            # For debugging:
             #print( line[0] )
             #print( line )
             pass

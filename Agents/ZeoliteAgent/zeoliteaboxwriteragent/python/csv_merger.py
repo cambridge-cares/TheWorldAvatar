@@ -42,10 +42,20 @@ def get_input_files( inDir, pathOut ):
     return pathsIn
     pass # get_input_files()
 
+
+def isSingleton( entity ):
+    #print( "is singleton?", entity )
+    if entity.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
+        #print( "In merger found om-2" )
+        return True
+
+    return False
+
 def merge_files( pathsIn, pathOut ):
     fOut = open( pathOut, "w" )
     pathOut = os.path.abspath( pathOut )
 
+    singletons = []
     for count,f in enumerate( pathsIn ):
         if not os.path.isfile( f ):
             logging.error( "Failed to open file '" + str(f) + "'." ) 
@@ -67,6 +77,12 @@ def merge_files( pathsIn, pathOut ):
                     continue
                 if count > 0 and "ontology" == words[1].lower():
                     continue
+                if isSingleton( words[0] ):
+                    if words[0] in singletons:
+                        continue
+                    else:
+                        singletons.append( words[0] )
+
                 fOut.write( line )
 
     fOut.close()
