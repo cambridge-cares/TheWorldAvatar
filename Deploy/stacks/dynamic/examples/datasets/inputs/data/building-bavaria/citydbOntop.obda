@@ -36,6 +36,13 @@ target		:cityobject/{"id"} a core:_CityObject ; rdfs:label {"name"}^^www:XMLSche
 source		SELECT "creation_date", "id", "name", "termination_date"
 			FROM "citydb"."cityobject"
 
+mappingId   City Object IRI
+target      <{iri}> obda:isCanonicalIRIOf :cityobject/{"id"} .
+source      SELECT "cityobject_id" AS "id", "urival" AS "iri"
+			FROM "citydb"."cityobject_genericattrib" JOIN "citydb"."cityobject" ON
+			"citydb"."cityobject"."id" = "citydb"."cityobject_genericattrib"."cityobject_id"
+			WHERE "attrname" = 'iri'
+
 mappingId	Bridge Construction Element - LoD3ImplicitRep
 target		:bridge_constr_element/{"id"} brid:lod3ImplicitRepresentation :geometry/{"lod3_implicit_rep_id"} . 
 source		SELECT "id", "lod3_implicit_rep_id"
