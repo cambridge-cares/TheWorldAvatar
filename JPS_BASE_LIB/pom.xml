@@ -8,7 +8,7 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.39.2-899-use-post-instead-of-get-for-derivation-SNAPSHOT</version>
+    <version>1.40.0</version>
 
     <!-- Project Properties -->
     <properties>
