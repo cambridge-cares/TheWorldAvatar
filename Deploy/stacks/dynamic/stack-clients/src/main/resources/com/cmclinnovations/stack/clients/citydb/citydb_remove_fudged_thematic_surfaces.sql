@@ -1,2 +1,4 @@
-DELETE FROM citydb.thematic_surface
-WHERE id IN ({idList})
+DELETE FROM
+    citydb.thematic_surface
+WHERE
+    id IN ('{idList}')

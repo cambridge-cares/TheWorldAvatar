@@ -1,0 +1,31 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "building-bavaria",
+    "dataSubsets": [
+        {
+            "type": "CityDB",
+            "skip": false,
+            "importOptions": {
+                "sridIn": "25832"
+            },
+            "name": "building-bavaria_gsl",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "mapbox_layer",
+                    "sql": "@/inputs/config/mapbox-footprint.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometry",
+                        "type": "Polygon",
+                        "srid": 25832
+                    }
+                },
+                "defaultStyle": "polygon"
+            }
+        }
+    ],
+    "mappings": [
+        "citydbOntop.obda"
+    ]
+}

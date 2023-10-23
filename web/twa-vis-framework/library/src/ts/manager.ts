@@ -89,11 +89,13 @@ class Manager {
         // Enter Mapbox account name and API key here!
         await $.get("mapbox_username", {}, function (result) {
             MapHandler.MAP_USER = result;
+            console.log("USERNAME = " + MapHandler.MAP_USER);
         }).fail(function () {
             console.error("Could not read Mapbox username from 'mapbox_username' secret file.");
         });
         await $.get("mapbox_api_key", {}, function (result) {
             MapHandler.MAP_API = result;
+            console.log("KEY = " + MapHandler.MAP_API);
         }).fail(function () {
             console.error("Could not read Mapbox API key from 'mapbox_api_key' secret file.");
         });
@@ -110,7 +112,7 @@ class Manager {
         this.mapHandler.initialiseMap(mapOptions);
 
         this.controlHandler.showControls();
-        this.controlHandler.rebuildTree(Manager.DATA_STORE);
+        //this.controlHandler.rebuildTree(Manager.DATA_STORE);
 
         this.panelHandler.toggleMode();
 
@@ -234,6 +236,8 @@ class Manager {
 
         let promise =  Manager.DATA_STORE.loadDataGroups(dataJSON) as Promise<any>;
         return promise.then(() => {
+            // Rebuild the layer tree
+            this.controlHandler.rebuildTree(Manager.DATA_STORE);
             if(this.dataLoadCallback != null) this.dataLoadCallback();
         });
     }
@@ -257,24 +261,26 @@ class Manager {
     }
 
     /**
+     * Loads custom image and link content.
      * 
+     * @returns Promise object, resolves when all loading is complete.
      */
     public loadImagesAndLinks() {
         let promises = [];
 
-            if(Manager.PROVIDER === MapProvider.MAPBOX) {
+        // Load images
+        if(Manager.PROVIDER === MapProvider.MAPBOX) {
             let iconFile = "./icons.json";
-                let iconPromise = (<MapHandler_Mapbox> this.mapHandler).addIcons(iconFile);
-                promises.push(iconPromise);
-            }
+            let iconPromise = (<MapHandler_Mapbox> this.mapHandler).addIcons(iconFile);
+            promises.push(iconPromise);
+        }
 
-        let linksFile = "./links.json"
-            promises.push(this.panelHandler.addLinks(linksFile));
+        // Load links
+        let linksFile = "./links.json";
+        promises.push(this.panelHandler.addLinks(linksFile));
 
-        let promise = Promise.all(promises).catch(function(err) {
-            console.warn("Loading icons and/or links has failed, these will be skipped."); 
-        });
-        return promise;
+        // Return combined promise
+        return Promise.allSettled(promises);
     }
     
     /**
@@ -305,7 +311,6 @@ class Manager {
      */
     public plotData() {
         this.mapHandler.plotData(Manager.DATA_STORE);
-        this.controlHandler.rebuildTree(Manager.DATA_STORE);
     }
 
     /**

@@ -1,0 +1,15 @@
+prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: 	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix castle:  <https://theworldavatar.io/ontology/ontocastle/ontocastle.owl#>
+
+SELECT ?Property ?Value ?Unit WHERE {
+	SERVICE [ONTOP] {
+		{
+			BIND ("Name" AS ?Property)
+			[IRI] castle:hasName ?Value .
+		} UNION {
+            BIND ("Country" AS ?Property)
+			[IRI] castle:hasCountry ?Value .
+        }
+	}
+}

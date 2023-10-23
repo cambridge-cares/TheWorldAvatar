@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  example:
+    image:  ntu-energy-cluster-agent:1.0.0
+    build: .
+    container_name: ntu-energy-cluster-agent
+    ports:
+      - 1030:5000

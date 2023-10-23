@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -128,7 +129,7 @@ public class CityDBClient extends ContainerClient {
         addIRIs(database, baseIRI);
     }
 
-    private void updateDatabase(String database, String sridIn) {
+    public void updateDatabase(String database, String sridIn) {
 
         String containerId = getContainerId("postgis");
 
@@ -147,7 +148,7 @@ public class CityDBClient extends ContainerClient {
 
     }
 
-    private void addIRIs(String database, String baseIRI) {
+    public void addIRIs(String database, String baseIRI) {
         String sqlFilename = "citydb_add_uuids_and_iris.sql";
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
             String sqlQuery = new String(is.readAllBytes()).replace("{baseIRI}", baseIRI);
@@ -158,28 +159,19 @@ public class CityDBClient extends ContainerClient {
     }
 
     public long[] applyThematicSurfacesFix(String database) {
-        String sqlFilename = "citydb_fudge_thematic_surfaces.sql";
-        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
-            String sqlQuery = new String(is.readAllBytes());
-            JSONArray result = PostGISClient.getInstance().getRemoteStoreClient(database).executeQuery(sqlQuery);
-            return IntStream.range(0, result.length()).mapToLong(i -> result.getJSONObject(i).getLong("id")).toArray();
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
-        }
+        return applySQLFileReturnID(database, "citydb_fudge_thematic_surfaces.sql");
     }
 
     public void revertThematicSurfacesFix(String database, long[] fudgedThematicSurfaceIDs) {
-        String sqlFilename = "citydb_remove_fudged_thematic_surfaces.sql";
-        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
-            String sqlQuery = new String(is.readAllBytes());
-            String idList = Arrays.stream(fudgedThematicSurfaceIDs)
-                    .mapToObj(Long::toString)
-                    .collect(Collectors.joining(","));
-            sqlQuery = sqlQuery.replaceFirst("\\{idList\\}", idList);
-            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
-        }
+        applySQLFileByID(database, "citydb_remove_fudged_thematic_surfaces.sql", fudgedThematicSurfaceIDs);
+    }
+
+    public long[] applyThematicSurfacesShift(String database) {
+        return applySQLFileReturnID(database, "citydb_shift_thematic_surfaces.sql");
+    }
+
+    public void revertThematicSurfacesShift(String database, long[] shiftedThematicSurfaceIDs) {
+        applySQLFileByID(database, "citydb_remove_shifted_thematic_surfaces.sql", shiftedThematicSurfaceIDs);
     }
 
     public void writeOutToCityGML(String database, String filePath, String lineage) {
@@ -233,4 +225,85 @@ public class CityDBClient extends ContainerClient {
 
         handleErrors(errorStream, execId, logger);
     }
+
+    public void populateCityDBbySQL(String database, String lineage, Map<String, String> columnMap) {
+        String sqlFilename = "citydb_populate_citydb.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes()).replace("{lineage}", lineage);
+            for (Map.Entry<String, String> entry : columnMap.entrySet()) {
+                sqlQuery = sqlQuery.replace("{" + entry.getKey() + "}", entry.getValue());
+            }
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+    }
+
+    public void preparePGforCityDB(String database, String table, String preprocessSql, double minArea,
+            Map<String, String> columnMap) {
+        if (null == preprocessSql) {
+            String sqlFilename = "citydb_preprocess_building.sql";
+            try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+                preprocessSql = new String(is.readAllBytes()).replace("{table}", String.valueOf(table))
+                        .replace("{minArea}", String.valueOf(minArea));
+                for (Map.Entry<String, String> entry : columnMap.entrySet()) {
+                    preprocessSql = preprocessSql.replace("{" + entry.getKey() + "}", entry.getValue());
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+            }
+        }
+        PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(preprocessSql);
+    }
+
+    private void applySQLFile(String database, String sqlFilename) {
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes());
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+    }
+
+    private long[] applySQLFileReturnID(String database, String sqlFilename) {
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes());
+            JSONArray result = PostGISClient.getInstance().getRemoteStoreClient(database).executeQuery(sqlQuery);
+            return IntStream.range(0, result.length()).mapToLong(i -> result.getJSONObject(i).getLong("id")).toArray();
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+    }
+
+    private void applySQLFileByID(String database, String sqlFilename, long[] id) {
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes());
+            String idList = Arrays.stream(id)
+                    .mapToObj(Long::toString)
+                    .collect(Collectors.joining("','"));
+            sqlQuery = sqlQuery.replaceFirst("\\{idList\\}", idList);
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+    }
+
+    public void addBuildingHeight(String database) {
+        applySQLFile(database, "citydb_add_building_height.sql");
+    }
+
+    public void discoverThematicSurface(String database, double critAreaRatio) {
+        String sqlFilename = "citydb_thematic_surface_discovery.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes()).replace("{critAreaRatio}", String.valueOf(critAreaRatio));
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+    }
+
+    public void addFootprint(String database) {
+        applySQLFile(database, "citydb_add_footprint.sql");
+    }
+
 }

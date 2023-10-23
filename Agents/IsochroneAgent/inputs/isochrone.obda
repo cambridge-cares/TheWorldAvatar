@@ -1,0 +1,34 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+obe: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+iso:    https://www.theworldavatar.com/kg/ontoisochrone/
+geo:    http://www.opengis.net/ont/geosparql#
+time:   http://www.w3.org/2006/time#
+
+[MappingDeclaration] @collection [[
+mappingId	isochrone_transport
+target		<{iri}> a iso:Isochrone ;
+                iso:assumesTransportMode <{transportmode_iri}>;
+                iso:hasTimeThreshold {minute}^^time:minute;
+                iso:hasRoadCondition <{roadcondition_iri}>;
+                iso:hasTotalPopulation {population}^^xsd:integer;
+                iso:hasMenPopulation {population_men}^^xsd:integer;
+                iso:hasWomenPopulation {population_women}^^xsd:integer;
+                iso:hasWomenofReproductiveAge {population_women_reproductive}^^xsd:integer;
+                iso:hasChildrenPopulation {population_childrenu5}^^xsd:integer;
+                iso:hasYouthPopulation {population_youth}^^xsd:integer;
+                iso:hasElderlyPopulation {population_elderly}^^xsd:integer;
+                geo:hasGeometry <{geometry_iri}>.
+            <{geometry_iri}> a geo:Geometry;
+                geo:asWKT {geom}^^xsd:string.
+            <{roadcondition_iri}> a iso:{roadcondition}.
+            <{transportmode_iri}> a iso:{transportmode}.
+source      SELECT minute, transportmode, transportmode_iri, poi_type, iri, roadcondition, roadcondition_iri, geometry_iri, population, population_men, population_women, population_women_reproductive, population_childrenu5, population_youth, population_elderly,  ST_AsText(ST_Force2D(geom)) as geom  FROM isochrone_aggregated
+
+mappingId	isochrone_building
+target		<{iri}> a iso:Isochrone ;
+                iso:originatesFrom <{poi_iri}>.
+            <{poi_iri}> a <{poi_type}>.
+source      SELECT iri, poi_iri, poi_type FROM isochrone_building_ref
+]]

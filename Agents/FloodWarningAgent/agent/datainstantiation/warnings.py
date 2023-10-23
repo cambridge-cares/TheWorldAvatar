@@ -96,35 +96,48 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
         # ... to be deleted (i.e. not active anymore)
         warnings_to_delete = [w for w in warnings_kg if w not in warning_uris]
 
+        # Ensure that independent steps are all executed, irrespective of errors
+        # in other steps; only raise exception at the end
+        exception_list = []
+
         # 4) Instantiate missing flood areas and warnings
-        if warnings_to_instantiate or areas_to_instantiate:
-            print('Instantiating flood warnings and areas ...')
-            instantiated_areas, instantiated_warnings = \
-                instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
-                                                     warnings_to_instantiate, current_warnings, 
-                                                     kgclient=kg_client, 
-                                                     derivation_client=derivation_client)
-            print('Instantiation finished.')
+        try:
+            if warnings_to_instantiate or areas_to_instantiate:
+                print('Instantiating flood warnings and areas ...')
+                instantiated_areas, instantiated_warnings = \
+                    instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
+                                                        warnings_to_instantiate, current_warnings, 
+                                                        kgclient=kg_client, 
+                                                        derivation_client=derivation_client)
+                print('Instantiation finished.')
+        except Exception as e:
+            exception_list.append(f"Instantiation of new flood warnings failed: {str(e)}")
 
         # 5) Update outdated flood warnings
-        if warnings_to_update:
-            print('Updating flood warnings ...')
-            updated_warnings = \
-                update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
-                                                   kgclient=kg_client,
-                                                   derivation_client=derivation_client)
-            print('Updating finished.')
+        try:
+            if warnings_to_update:
+                print('Updating flood warnings ...')
+                updated_warnings = \
+                    update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
+                                                    kgclient=kg_client,
+                                                    derivation_client=derivation_client)
+                print('Updating finished.')
+        except Exception as e:
+            exception_list.append(f"Update of instantiated flood warnings failed: {str(e)}")
 
         # 6) Delete inactive flood warnings
-        if warnings_to_delete:
-            print('Deleting inactive flood warnings ...')
-            deleted_warnings, drop_times_iris = \
-                delete_instantiated_flood_warnings(warnings_to_delete, kgclient=kg_client)
-            print('Deleting finished.')
+        try:
+            if warnings_to_delete:
+                print('Deleting inactive flood warnings ...')
+                deleted_warnings, drop_times_iris = \
+                    delete_instantiated_flood_warnings(warnings_to_delete, kgclient=kg_client)
+                print('Deleting finished.')
 
-            # Derivation markup:
-            # Drop timestamps of deleted flood warnings & derivation instances
-            derivation_client.dropTimestampsOf(drop_times_iris)
+                # Derivation markup:
+                # Drop timestamps of deleted flood warnings & derivation instances
+                derivation_client.dropTimestampsOf(drop_times_iris)
+        except Exception as e:
+            exception_list.append(f"Deletion of obsolete flood warnings failed: {str(e)}")
         
         # It has been observed that some floodwarnings do not disappear from the
         # visualisation, although corresponding warnings are successfully deleted
@@ -139,6 +152,12 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
         # Deactivate all flood areas without associated warning in KG
         areas_to_deactivate = [a for a in areas_active_postgis if a in areas_wo_warning_kg]
         postgis_client.set_flood_area_activity(activity=False, area_uri=areas_to_deactivate)
+
+        # Raise an exception if any of the steps failed
+        if exception_list:
+            msg = 'One or more processing steps failed: \n'
+            msg += '\n'.join(exception_list)
+            raise Exception(msg)
 
         # Print update summary 
         print(f'Instantiated areas: {instantiated_areas}')
