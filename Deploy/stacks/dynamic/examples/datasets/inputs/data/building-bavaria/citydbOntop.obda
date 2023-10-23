@@ -42,12 +42,12 @@ source		SELECT "id", "lod3_implicit_rep_id"
 			FROM "citydb"."bridge_constr_element"
 
 mappingId	City Model
-target		:citymodel/{"id"} a core:CityModel ; rdfs:label {"name"}^^www:XMLSchema#string ; core:creationDate {"creation_date"}^^www:XMLSchema#dateTime ; core:terminationDate {"termination_date"}^^www:XMLSchema#dateTime ; geo:asWKT {"envelope_wkt"}^^geo:wktLiteral . 
+target		:citymodel/{"id"} a core:CityModel ; rdfs:label {"name"}^^www:XMLSchema#string ; core:creationDate {"creation_date"}^^www:XMLSchema#dateTime ; core:terminationDate {"termination_date"}^^www:XMLSchema#dateTime ; geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {envelope_wkt}"^^geo:wktLiteral . 
 source		SELECT "creation_date", ST_ASTEXT(ST_TRANSFORM("envelope", 4326)) AS "envelope_wkt", "id", "name", "termination_date"
 			FROM "citydb"."citymodel"
 
 mappingId	Address
-target		:address/{"id"} a core:Address ; rdfs:label {"streetaddress"}^^www:XMLSchema#string ; geo:asWKT {multi_point_wkt}^^geo:wktLiteral . 
+target		:address/{"id"} a core:Address ; rdfs:label {"streetaddress"}^^www:XMLSchema#string ; geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {multi_point_wkt}"^^geo:wktLiteral . 
 source		SELECT "id", "multi_point", ST_ASTEXT(ST_TRANSFORM("multi_point", 4326)) AS "multi_point_wkt", "po_box", "state", "street", "zip_code", CONCAT("street", ' ', "house_number") AS "streetaddress"
 			FROM "citydb"."address"
 
@@ -97,7 +97,7 @@ source		SELECT "id", "lod2_multi_surface_id"
 			FROM "citydb"."traffic_area"
 
 mappingId	Solid Geometry
-target		:solidgeometry/{"id"} a sf:PolyhderalSurface ; geo:asWKT {"geometry_wkt"}^^geo:wktLiteral . 
+target		:solidgeometry/{"id"} a sf:PolyhderalSurface ; geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {geometry_wkt}"^^geo:wktLiteral . 
 source		SELECT "id", ST_ASTEXT(ST_TRANSFORM("solid_geometry", 4326)) AS "geometry_wkt"
 			FROM "citydb"."surface_geometry"
 			WHERE "solid_geometry" IS NOT NULL
@@ -123,7 +123,7 @@ source		SELECT "id", "lod3_solid_id"
 			FROM "citydb"."tunnel"
 
 mappingId	Generic City Object Attribute
-target		:genericcityobject/{"id"} a gen:GenericCityObject ; gen:value {"realval"}^^www:XMLSchema#double ; rdfs:label {"attrname"}^^www:XMLSchema#string ; geo:asWKT {"geomval_wkt"}^^geo:wktLiteral . 
+target		:genericcityobject/{"id"} a gen:GenericCityObject ; gen:value {"realval"}^^www:XMLSchema#double ; rdfs:label {"attrname"}^^www:XMLSchema#string ; geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {geomval_wkt}"^^geo:wktLiteral . 
 source		SELECT ST_ASTEXT(ST_TRANSFORM("geomval", 4326)) AS "geomval_wkt", "id", "realval", "attrname"
 			FROM "citydb"."cityobject_genericattrib"
 
@@ -311,7 +311,7 @@ source		SELECT "id", "lod4_implicit_rep_id"
 			FROM "citydb"."building_furniture"
 
 mappingId	Non-Solid Geometry
-target		:geometry/{"id"} a sf:Polygon ; geo:asWKT "{geometry_wkt}"^^geo:wktLiteral ; geo:hasMetricArea {"area_sqm"}^^www:XMLSchema#double . 
+target		:geometry/{"id"} a sf:Polygon ; geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {geometry_wkt}"^^geo:wktLiteral ; geo:hasMetricArea {"area_sqm"}^^www:XMLSchema#double . 
 source		SELECT "id", ST_ASTEXT(ST_TRANSFORM("geometry", 4326)) AS "geometry_wkt", ST_AREA("geometry") AS "area_sqm"
 			FROM "citydb"."surface_geometry"
 			WHERE "geometry" IS NOT NULL
@@ -338,7 +338,7 @@ source		SELECT "cityobject_id", "id"
 			WHERE "geometry" IS NOT NULL
 
 mappingId	Breakline relief
-target		:breakline_relief/{"id"} a dem:BreaklineRelief ; geo:asWKT {"break_lines_wkt"}^^geo:wktLiteral . 
+target		:breakline_relief/{"id"} a dem:BreaklineRelief ; geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {break_lines_wkt}"^^geo:wktLiteral . 
 source		SELECT "break_lines", ST_ASTEXT(ST_TRANSFORM("break_lines", 4326)) AS "break_lines_wkt", "id", "objectclass_id", "ridge_or_valley_lines"
 			FROM "citydb"."breakline_relief"
 
@@ -755,7 +755,7 @@ source		SELECT "extent", "id", "lod"
 			FROM "citydb"."relief_component"
 
 mappingId	Surface Data
-target		:surface_data/{"id"} a app:_SurfaceData ; app:specularColor {"x3d_specular_color"}^^www:XMLSchema#string ; app:preferWorldFile {"gt_prefer_worldfile"}^^www:XMLSchema#boolean ; app:isFront {"is_front"}^^www:XMLSchema#boolean ; app:ambientIntensity {"x3d_ambient_intensity"}^^www:XMLSchema#decimal ; app:shininess {"x3d_shininess"}^^www:XMLSchema#decimal ; app:borderColor {"tex_border_color"}^^www:XMLSchema#string ; app:isSmooth {"x3d_is_smooth"}^^www:XMLSchema#boolean ; app:orientation {"gt_orientation"}^^www:XMLSchema#string ; app:emissiveColor {"x3d_emissive_color"}^^www:XMLSchema#string ; rdfs:label {"name"}^^www:XMLSchema#string ; app:textureType {"tex_texture_type"}^^www:XMLSchema#string ; app:diffuseColor {"x3d_diffuse_color"}^^www:XMLSchema#string ; app:transparency {"x3d_transparency"}^^www:XMLSchema#decimal ; geo:asWKT {"gt_reference_point_wkt"}^^geo:wktLiteral . 
+target		:surface_data/{"id"} a app:_SurfaceData ; app:specularColor {"x3d_specular_color"}^^www:XMLSchema#string ; app:preferWorldFile {"gt_prefer_worldfile"}^^www:XMLSchema#boolean ; app:isFront {"is_front"}^^www:XMLSchema#boolean ; app:ambientIntensity {"x3d_ambient_intensity"}^^www:XMLSchema#decimal ; app:shininess {"x3d_shininess"}^^www:XMLSchema#decimal ; app:borderColor {"tex_border_color"}^^www:XMLSchema#string ; app:isSmooth {"x3d_is_smooth"}^^www:XMLSchema#boolean ; app:orientation {"gt_orientation"}^^www:XMLSchema#string ; app:emissiveColor {"x3d_emissive_color"}^^www:XMLSchema#string ; rdfs:label {"name"}^^www:XMLSchema#string ; app:textureType {"tex_texture_type"}^^www:XMLSchema#string ; app:diffuseColor {"x3d_diffuse_color"}^^www:XMLSchema#string ; app:transparency {"x3d_transparency"}^^www:XMLSchema#decimal ; geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {gt_reference_point_wkt}"^^geo:wktLiteral . 
 source		SELECT "description", "gmlid", "gt_orientation", "gt_prefer_worldfile", ST_ASTEXT(ST_TRANSFORM("gt_reference_point", 4326)) AS "gt_reference_point_wkt", "id", "is_front", "name", "objectclass_id", "tex_border_color", "tex_image_id", "tex_texture_type", "tex_wrap_mode", "x3d_ambient_intensity", "x3d_diffuse_color", "x3d_emissive_color", "x3d_is_smooth", "x3d_shininess", "x3d_specular_color", "x3d_transparency"
 			FROM "citydb"."surface_data"
 
