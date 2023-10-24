@@ -407,7 +407,7 @@ public class QueryClient {
         Variable scopeWkt = query.var();
 
         QueryElement location = Rdf.literalOfType(
-                "<http://www.opengis.net/def/crs/EPSG/0/4326> " + vsLocation.toString(),
+                "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> " + vsLocation.toString(),
                 iri(org.eclipse.rdf4j.model.vocabulary.GEO.WKT_LITERAL));
 
         Operand sfWithin = GeoSPARQL.sfWithin(location, scopeWkt);

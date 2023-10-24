@@ -927,7 +927,7 @@ public class QueryClient {
     List<Building> getBuildings(List<PointSource> allSources, Map<String, Building> allBuildings) {
         List<Building> buildings = new ArrayList<>();
 
-        String sridIri = "<http://www.opengis.net/def/crs/EPSG/0/4326>";
+        String sridIri = "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>";
 
         allSources.stream().forEach(source -> {
             Polygon boundingBox = getBoundingBoxOfPointSources2(source);
