@@ -10,7 +10,7 @@ class AssetDisplayComponent extends DynamicComponent {
     // Call the super class constructor
     super(title);
     // Create a new card container
-    let card_container: HTMLElement = super.createDiv({ classes: ["asset-card-container"] });
+    let card_container: HTMLElement = createDiv({ classes: ["asset-card-container"] });
     // Set up the counter to number each asset
     let counter: number = 1;
     // Create the asset map and then create a card for each asset
@@ -54,9 +54,9 @@ class AssetDisplayComponent extends DynamicComponent {
    */
   private createCardElement(parentElement: HTMLElement, assetName: string, assetSpecifications: string[], counter: number): void {
     // Create a new card element
-    let card: HTMLElement = super.createDiv({ classes: ["asset-card"] });
+    let card: HTMLElement = createDiv({ classes: ["asset-card"] });
     // Create a new title element from the asset name input
-    let cardTitle: HTMLElement = super.createDiv({ classes: ["json-key", "asset-card-line"] });
+    let cardTitle: HTMLElement = createDiv({ classes: ["json-key", "asset-card-line"] });
     cardTitle.style.borderBottom = "1px solid #d3d3d3";
     cardTitle.style.paddingBottom = "0.3em";
     cardTitle.textContent = counter + ") " + assetName;
@@ -81,7 +81,7 @@ class AssetDisplayComponent extends DynamicComponent {
    */
   private genCardLine(card: HTMLElement, assetInfoCategory: string, assetInfo: string): void {
     // Initialise new HTML elements
-    let cardLine: HTMLElement = super.createDiv({ classes: ["asset-card-line"] }); // container for the entire text
+    let cardLine: HTMLElement = createDiv({ classes: ["asset-card-line"] }); // container for the entire text
     let emptySpace: HTMLElement = document.createElement("span"); // to realign the starting position of text
     let category: HTMLElement = document.createElement("span"); // category of this information
     let separator: HTMLElement = document.createElement("span");
