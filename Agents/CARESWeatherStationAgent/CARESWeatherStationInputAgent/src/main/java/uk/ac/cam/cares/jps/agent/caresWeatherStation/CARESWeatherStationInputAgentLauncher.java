@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.caresWeatherStation;
 
 import org.json.JSONObject;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -105,12 +106,12 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         return validate;
     }
 
-    // TODO: Use proper argument parsing
     /**
      * Main method that runs through all steps to update the data received from the CARES weather station API.
      * defined in the provided properties file.
      * @param args The command line arguments. Three properties files should be passed here in order: 1) input agent
      *             2) time series client 3) API connector.
+     * @throws IOException
      */
 
     public static JSONObject initializeAgent(String[] args) {
@@ -192,6 +193,15 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
             LOGGER.info("No new readings are available.");
             jsonMessage.accumulate("Result", "No new readings are available.");
         }
+
+        try {
+            SparqlHandler sparqlHandler = new SparqlHandler(args[0], args[1]);
+            sparqlHandler.instantiateIfNotExist();
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Unable to carry out queries or insert data into the sparql store!", e);
+        }
+
+
         return jsonMessage;
     }
 
