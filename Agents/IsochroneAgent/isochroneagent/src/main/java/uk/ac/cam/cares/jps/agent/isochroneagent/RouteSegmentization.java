@@ -8,6 +8,7 @@ import java.sql.Statement;
 import org.postgis.PGgeometry;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
@@ -150,9 +151,13 @@ public class RouteSegmentization {
      * @throws SQLException
      */
     private String findNearestNode(Connection connection, String geom) throws SQLException {
-        String findNearestNode_sql = "SELECT id, ST_Distance(the_geom, '" + geom + "') AS distance\n" +
+
+        String geomConvert= "ST_GeometryFromText('"+geom+"', 4326)";
+        
+
+        String findNearestNode_sql = "SELECT id, ST_Distance(the_geom, " + geomConvert + ") AS distance\n" +
                 "FROM routing_ways_segment_vertices_pgr\n" +
-                "ORDER BY the_geom <-> '" + geom + "'\n" +
+                "ORDER BY the_geom <-> " + geomConvert + "\n" +
                 "LIMIT 1;\n";
     
         try (Statement statement = connection.createStatement()) {
