@@ -209,14 +209,16 @@ public class CARESWeatherStationInputAgentLauncherTest {
 
         // Use a mock for the input agent
         try(MockedConstruction<CARESWeatherStationInputAgent> mockAgent = Mockito.mockConstruction(CARESWeatherStationInputAgent.class)) {
-            // Use a mock for the connector that returns the dummy readings
-            try(MockedConstruction<CARESWeatherStationAPIConnector> ignored = Mockito.mockConstruction(CARESWeatherStationAPIConnector.class,
-                    (mock, context) -> {
-                        Mockito.when(mock.getWeatherReadings()).thenReturn(readings);
-                    })) {
-                CARESWeatherStationInputAgentLauncher.initializeAgent(args);
-                // Ensure that the update of the agent was invoked
-                Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).updateData(readings);
+            try(MockedConstruction<SparqlHandler> mockHandler = Mockito.mockConstruction(SparqlHandler.class)) {
+                // Use a mock for the connector that returns the dummy readings
+                try(MockedConstruction<CARESWeatherStationAPIConnector> ignored = Mockito.mockConstruction(CARESWeatherStationAPIConnector.class,
+                (mock, context) -> {
+                    Mockito.when(mock.getWeatherReadings()).thenReturn(readings);
+                })) {
+                    CARESWeatherStationInputAgentLauncher.initializeAgent(args);
+                    // Ensure that the update of the agent was invoked
+                    Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).updateData(readings);
+                }
             }
         }
     }

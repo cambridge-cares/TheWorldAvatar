@@ -45,9 +45,7 @@ public class SparqlHandler {
      * Namespaces for ontologies
      */
     public static final String ONTOEMS_NS = "https://www.theworldavatar.com/kg/ontoems/";
-	public static final String ONTOBIM_NS = "https://www.theworldavatar.com/kg/ontobim/";
     public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
-    public static final String BOT_NS = "https://w3id.org/bot#";
     public static final String OM_NS = "http://www.ontology-of-units-of-measure.org/resource/om-2/"; 
 
 	/**
