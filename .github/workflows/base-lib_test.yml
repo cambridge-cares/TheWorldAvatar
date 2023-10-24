@@ -48,15 +48,7 @@ jobs:
         with:
           java-version: "11"
           distribution: "adopt"
-
-      # Step that does that actual cache save and restore
-      - name: Cache local Maven repository
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven--
+          cache: "maven"
 
       # Build the code without test
       - name: Build code (no tests)
@@ -66,7 +58,7 @@ jobs:
       # Run all tests (even if some fail)
       - name: Run all tests
         working-directory: ./JPS_BASE_LIB
-        run: mvn -s settings.xml -Dmaven.test.failure.ignore=true test
+        run: mvn -X -s settings.xml -Dmaven.test.failure.ignore=true test
         
       # Produce test report
       - name: Test report
