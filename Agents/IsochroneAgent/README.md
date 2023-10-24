@@ -24,6 +24,7 @@ Items to configure in [config.properties](inputs/config.properties):
 1) `timeThreshold` - The time cutoff of an isochrone in minutes. Default value is set at 15 minutes. 
 2) `timeInterval` - The time increment value of each isochrone in minutes. Default value is set at 5 mintues time interval. 
 3) `populationTables` - The exact table names of the population tables should follow the names of population table as per [uploaded via stack-data-uploader](#23-uploading-population-data-via-stack-data-uploader). 
+4) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. 
 
 ### 3.2 SPARQL Queries
 SPARQL queries are used to retrieve the locations of POI. 
@@ -31,7 +32,7 @@ SPARQL queries are used to retrieve the locations of POI.
 The SPARQL queries follow the format which requires the returned variable to be in this format: 
 1) `poi_iri` refers to the POI's iri. 
 2) `poi_type` refers to the POI's iri type. 
-3) `geometry` refers to the WKT literals of the POI location. 
+3) `geometry` refers to the WKT literals of the POI location in EPSG 4326. 
 
 SPARQL queries are created for [15MSC in Pirmasens](inputs/15MSC/POIqueries/) and [UR in King's Lynn](inputs/UR/POIqueries/) use cases.
 
