@@ -29,9 +29,8 @@ abstract class DynamicComponent {
   */
   private renderCoreStructure(title: string): void {
     // Create a title element
-    let titleElement: HTMLElement = document.createElement("button");
+    let titleElement: HTMLElement = createHTMLElement("button", { id: this.id_title });
     titleElement.textContent = title;
-    titleElement.setAttribute("id", this.id_title);
     // Add an event for the title, so that on clicking, it will expand the content
     titleElement.addEventListener("click", () => this.toggleContent());
     // Create an empty content container for developers to add later
@@ -55,8 +54,6 @@ abstract class DynamicComponent {
       this.container_content.style.opacity = "0";
     }
   }
-
- 
 
   /**
     * Retrieve the container's HTML content element for further modifications.

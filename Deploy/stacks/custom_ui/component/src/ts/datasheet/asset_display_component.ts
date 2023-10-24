@@ -82,17 +82,13 @@ class AssetDisplayComponent extends DynamicComponent {
   private genCardLine(card: HTMLElement, assetInfoCategory: string, assetInfo: string): void {
     // Initialise new HTML elements
     let cardLine: HTMLElement = createDiv({ classes: ["asset-card-line"] }); // container for the entire text
-    let emptySpace: HTMLElement = document.createElement("span"); // to realign the starting position of text
-    let category: HTMLElement = document.createElement("span"); // category of this information
-    let separator: HTMLElement = document.createElement("span");
-    let information: HTMLElement = document.createElement("span");
+    let emptySpace: HTMLElement = createHTMLElement("span", { classes: ["empty-icon"] }); // to realign the starting position of text
+    let category: HTMLElement = createHTMLElement("span", { classes: ["json-key"] }); // category of this information
+    let separator: HTMLElement = createHTMLElement("span", { classes: ["json-separator"] });
+    let information: HTMLElement = createHTMLElement("span", { classes: ["json-value"] });
     //Add the classes and their text content accordingly
-    emptySpace.classList.add("empty-icon");
-    category.classList.add("json-key");
     category.textContent = assetInfoCategory;
-    separator.classList.add("json-separator");
     separator.textContent = ":";
-    information.classList.add("json-value");
     information.textContent = assetInfo;
     // Append these into the card in the right order
     cardLine.appendChild(emptySpace);
