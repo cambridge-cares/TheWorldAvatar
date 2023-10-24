@@ -1,9 +1,11 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import org.apache.jena.arq.querybuilder.AskBuilder;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
@@ -110,8 +112,8 @@ public class GeometryQueryHelper {
                 crs = crs.split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
                 crs = crs.split(">")[0];
             }
-            else {
-                crs = "4326";
+            else if (crs.contains("CRS84")){
+                crs = "CRS84";
             }
 
             List<Geometry> geometry = new ArrayList<>();
@@ -120,14 +122,20 @@ public class GeometryQueryHelper {
                 geometry = GeometryHandler.extractFootprint(queryResultArray, crs, Double.parseDouble(height));
             }
             else{
+                boolean flag84 = false;
+                if (crs.equals("CRS84")) {
+                    crs = "4326";
+                    flag84 = true;
+                }
                 for (int i = 0; i < queryResultArray.length(); i++) {
                     String wkt = queryResultArray.getJSONObject(i).getString("wkt");
 
-                    if (wkt.contains("EPSG")) {
-                        wkt = wkt.split("> ")[1];
+                    Polygon temp = (Polygon) GeometryHandler.toGeometry(wkt);
+
+                    if (flag84) {
+                        temp = GeometryHandler.swapCoordinates(temp);
                     }
 
-                    Polygon temp = (Polygon) GeometryHandler.toGeometry(wkt);
                     temp = (Polygon) GeometryHandler.transformGeometry(temp, "EPSG:"+crs, GeometryHandler.EPSG_4326);
                     geometry.add(GeometryHandler.extractExterior(temp));
                 }
@@ -137,6 +145,36 @@ public class GeometryQueryHelper {
         catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public boolean checkCRS84(String endpoint) {
+        try {
+            RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
+            WhereBuilder wb = new WhereBuilder()
+                    .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
+                    .addPrefix("bldg", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bldg))
+                    .addPrefix("grp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.grp));
+
+            wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
+                    .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
+                    .addWhere("?geometry", "geo:asWKT", "?wkt");
+
+            SelectBuilder sb = new SelectBuilder()
+                    .addPrefix("geof", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geof))
+                    .addWhere(wb)
+                    .addVar("geof:getSRID(?wkt)", "?crs")
+                    .setDistinct(true);
+
+            JSONArray queryResultArray = storeClient.executeQuery(sb.build().toString());
+
+            if (!queryResultArray.isEmpty()) {
+                return queryResultArray.length() == 1 && queryResultArray.getJSONObject(0).getString("crs").contains("CRS84");
+            }
+
+            return false;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 }

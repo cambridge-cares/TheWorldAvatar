@@ -36,7 +36,7 @@ public class SurroundingsHelper {
             List<CEAGeometryData> surroundings = new ArrayList<>();
             GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
 
-            Double buffer = 100.00;
+            Double buffer = 50.0;
 
             List<Geometry> geometries = new ArrayList<>();
 
@@ -54,7 +54,12 @@ public class SurroundingsHelper {
 
             Geometry envelope = geoCol.getEnvelope();
 
-            Geometry boundingBoxGeometry = GeometryHandler.bufferPolygon(envelope, "EPSG:" + crs, buffer);
+            Polygon boundingBoxGeometry = (Polygon) GeometryHandler.bufferPolygon(envelope, "EPSG:" + crs, buffer);
+
+            // CRS84 and EPSG:4326 has coordinate swapped
+            if (geometryQueryHelper.checkCRS84(endpoint) && crs.equals("4326")) {
+                boundingBoxGeometry = GeometryHandler.swapCoordinates(boundingBoxGeometry);
+            }
 
             String boundingBox = boundingBoxGeometry.toText();
 
@@ -89,7 +94,7 @@ public class SurroundingsHelper {
      * @return returns a query string
      */
     private Query getBuildingsWithinBoundsQuery(String boundingBox, String crs) throws ParseException {
-        boundingBox = "\"<" + ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg) + crs + "> " + boundingBox + "\"^^geo:wktLiteral";
+        boundingBox = "\"" + boundingBox + "\"^^geo:wktLiteral";
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))

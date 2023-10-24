@@ -18,7 +18,6 @@ import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.ArrayList;
@@ -187,8 +186,14 @@ public class GeometryHandler {
 //        List<LinearRing> holes = new ArrayList<>();
         GeometryFactory geometryFactory = new GeometryFactory();
         String geoType;
+        boolean flag84 = false;
 
         List<Geometry> result = new ArrayList<>();
+
+        if (originalCRS.equals("CRS84")) {
+            originalCRS = "4326";
+            flag84 = true;
+        }
 
         originalCRS = "EPSG:" + originalCRS;
 
@@ -197,11 +202,12 @@ public class GeometryHandler {
         if (surfaceArray.length() == 1) {
             String wkt = surfaceArray.getJSONObject(0).getString("wkt");
 
-            if (wkt.contains("EPSG")) {
-                wkt = wkt.split("> ")[1];
+            Geometry temp = toGeometry(wkt);
+
+            if (flag84) {
+                temp = swapCoordinates(temp);
             }
 
-            Geometry temp = toGeometry(wkt);
             try {
                 result.add(transformGeometry(temp, originalCRS, EPSG_4326));
 
@@ -216,12 +222,13 @@ public class GeometryHandler {
             for (int i = 0; i < surfaceArray.length(); i++) {
                 String wkt = surfaceArray.getJSONObject(i).getString("wkt");
 
-                if (wkt.contains("EPSG")) {
-                    wkt = wkt.split("> ")[1];
-                }
-
                 // create Polygon object from WKT string
                 Polygon polygon = (Polygon) toGeometry(wkt);
+
+                if (flag84) {
+                    polygon = swapCoordinates(polygon);
+                }
+
                 try {
                     polygon = (Polygon) transformGeometry(polygon, originalCRS, EPSG_4326);
                 }
@@ -329,6 +336,20 @@ public class GeometryHandler {
 
     public static Polygon extractExterior(Polygon polygon) {
         return new GeometryFactory().createPolygon(polygon.getExteriorRing());
+    }
+
+    public static Polygon swapCoordinates(Geometry polygon) {
+        Coordinate[] coordinates = polygon.getCoordinates();
+
+        for (Coordinate coordinate : coordinates) {
+            double temp = coordinate.getX();
+            coordinate.setX(coordinate.getY());
+            coordinate.setY(temp);
+        }
+
+        coordinates[0] = coordinates[coordinates.length-1];
+
+        return new GeometryFactory().createPolygon(coordinates);
     }
 
     private static boolean checkSameCRS(List<CEAGeometryData> ceaGeometries) {

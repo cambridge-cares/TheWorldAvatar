@@ -125,10 +125,7 @@ public class WeatherHelper extends JPSAgent {
 
         try {
             // coordinate in (longitude, latitude) format
-            Coordinate transformedCoordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
-
-            // coordinate in (latitude, longitude) format
-            Coordinate coordinate = new Coordinate(transformedCoordinate.getY(), transformedCoordinate.getX(), transformedCoordinate.getZ());
+            Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
 
             String stationIRI = getWeatherStation(coordinate, 2.0, weatherRoute);
 
