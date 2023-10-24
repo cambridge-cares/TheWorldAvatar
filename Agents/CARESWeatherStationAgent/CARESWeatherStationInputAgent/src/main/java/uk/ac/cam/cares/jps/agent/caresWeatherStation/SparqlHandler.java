@@ -54,50 +54,8 @@ public class SparqlHandler {
      * Prefixes
      */ 
 	private static final Prefix PREFIX_ONTOEMS = SparqlBuilder.prefix("ontoems", iri(ONTOEMS_NS));
-	private static final Prefix PREFIX_ONTOBIM = SparqlBuilder.prefix("ontobim", iri(ONTOBIM_NS));
     private static final Prefix PREFIX_RDFS = SparqlBuilder.prefix("rdfs", iri(RDFS_NS));
-    private static final Prefix PREFIX_BOT = SparqlBuilder.prefix("saref", iri(BOT_NS));
     private static final Prefix PREFIX_OM = SparqlBuilder.prefix("om", iri(OM_NS));
-
-    /*
-     * stationID = label
-     * tz= convert to appropriate timestamp format
-     * obsTimeUtc= ignore
-     * obsTimeLocal= ignore
-     * epoch= ignore
-     * lat= ignore
-     * lon= ignore
-     * solarRadiationHigh= om:Irradiance
-     * uvHigh= 	<https://www.theworldavatar.com/kg/ontoems/UVIndex>
-winddirAvg= WindDirection
-humidityHigh= om:RelativeHumidity
-humidityLow= om:RelativeHumidity
-humidityAvg= om:RelativeHumidity
-qcStatus= ignore
-tempHigh= om:Temperature
-tempLow= om:Temperature
-tempAvg= om:Temperature
-windspeedHigh= windspeed
-windspeedLow= windspeed
-windspeedAvg= windspeed
-windgustHigh= windgust
-windgustLow= windgust
-windgustAvg= windgust
-dewptHigh= dew point
-dewptLow= dew point
-dewptAvg= dew point
-windchillHigh= wind chill (add to ontoems) subclass of <https://www.theworldavatar.com/kg/ontoems/FeelsLikeTemperature>
-windchillLow= wind chill (add to ontoems)
-windchillAvg= wind chill (add to ontoems)
-heatindexHigh= heat index (add to ontoems) subclass of <https://www.theworldavatar.com/kg/ontoems/FeelsLikeTemperature>
-heatindexLow= heat index (add to ontoems)
-heatindexAvg= heat index (add to ontoems)
-pressureMax= Pressure
-pressureMin= Pressure
-pressureTrend= Pressure (ignore for now)
-precipRate= precipitation rate (add to ontoems)
-precipTotal= Rainfall with sum function
-     */
 
 	/**
      * Relationships
@@ -120,7 +78,6 @@ precipTotal= Rainfall with sum function
     private static final Iri heatIndex = PREFIX_ONTOEMS.iri("HeatIndex");
     private static final Iri precipitationRate = PREFIX_ONTOEMS.iri("PrecipitationRate");
     private static final Iri rainfall = PREFIX_ONTOEMS.iri("Rainfall");
-
     private static final Iri relativeHumidity = PREFIX_OM.iri("RelativeHumidity");
     private static final Iri temperature = PREFIX_OM.iri("Temperature");  
     private static final Iri pressure = PREFIX_OM.iri("Pressure");
@@ -146,7 +103,8 @@ precipTotal= Rainfall with sum function
 
     /**
      * Standard constructor
-     * 
+     * @param agentPropertiesFile the filepath of the agent.properties file
+     * @param clientPropertiesFile the filepath of the client.properties file
      */
     public SparqlHandler(String agentPropertiesFile, String clientPropertiesFile) throws IOException {
         try (InputStream input = new FileInputStream(agentPropertiesFile)) {
@@ -170,7 +128,8 @@ precipTotal= Rainfall with sum function
             readMappings(mappingFolder);
         }
         try {
-            loadTSClientConfigs(clientPropertiesFile);
+            //load configs from client.properties file for setting up remote store client
+            loadRSClientConfigs(clientPropertiesFile);
         }
             catch (Exception e) {
                 throw new JPSRuntimeException ("Unable to load properties from the timeseries config file!");
@@ -204,7 +163,7 @@ precipTotal= Rainfall with sum function
     }
 
     /**
-     * Query for all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
+     * Carries out multiple queries and checks for ABoxes, if the ABoxes do not exist, they will be instantiated
      */
     public void instantiateIfNotExist() {
        List<String> quantityIRIs;
@@ -225,21 +184,25 @@ precipTotal= Rainfall with sum function
     }
 
     /**
-     * Query for all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
+     * Check whether all data IRIs has a rdf:type om:Measure and if not, add the data to the remote store
+     * @param IRI the data IRI to check for
      */
     private void instantiateMeasureIfNotExist(String IRI) {
-        
         SelectQuery query = Queries.SELECT();
         Variable var = SparqlBuilder.var("var");
-        //create triple pattern
+        //create triple pattern:
+        // <IRI> rdf:type ?var
         TriplePattern queryPattern = iri(IRI).isA(var);
         query.prefix(PREFIX_OM).select(var).where(queryPattern);
         kbClient.setQuery(query.getQueryString());
         try {
             JSONArray queryResult = kbClient.executeQuery();
+            // if the query result is not empty and the rdf:type is equivalent to om:Measure
             if(!queryResult.isEmpty() && queryResult.getJSONObject(0).getString("var") == measure.toString()){
                 LOGGER.info(IRI + " already has a rdf:type om:Measure!");
             } else {
+                //create triple pattern:
+                // <IRI> rdf:type om:Measure .
                 queryPattern = iri(IRI).isA(measure);
                 InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_OM);
                 kbClient.executeUpdate(insertQuery.getQueryString());
@@ -250,10 +213,17 @@ precipTotal= Rainfall with sum function
         }
     }
     
+    /**
+     * Check for existence of quantity IRI linked to each data IRI and if they do not exist, create the IRIs and instantiate them
+     * @param IRI the data IRI to check for
+     * @param jsonKey a key used to identify what type of quantity does each data IRI represents
+     */
     private String instantiateQuantityIfNotExist(String IRI, String jsonKey) {
         final String quantityIRI;
         Variable quantity = SparqlBuilder.var("quantity");
         SelectQuery query = Queries.SELECT();
+        //create triple pattern:
+        // ?quantity om:hasValue <IRI> .
         TriplePattern queryPattern = quantity.has(hasValue, iri(IRI));
         query.prefix(PREFIX_OM).select(quantity).where(queryPattern);
         kbClient.setQuery(query.getQueryString());
@@ -264,14 +234,16 @@ precipTotal= Rainfall with sum function
                 quantityIRI = queryResult.getJSONObject(0).getString("quantity");
             } else {
                 quantityIRI = ONTOEMS_NS + "Quantity_" + UUID.randomUUID();
+                //create triple pattern:
+                // <quantityIRI> om:hasValue <IRI> .
                 queryPattern = iri(quantityIRI).has(hasValue, iri(IRI));
                 InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_OM);
                 kbClient.executeUpdate(insertQuery.getQueryString());
                 LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.toString());
 
-                //default will be om:Quantity
                 Iri quantityType = null;
                 //check jsonKey against om:Quantity subclasses
+                //this is based on the variables retrievable via the API
                 if (jsonKey.contains("solarRadiation")) {
                     quantityType = irradiance;
                 } else if (jsonKey.contains("uv")) {
@@ -299,9 +271,10 @@ precipTotal= Rainfall with sum function
                 } else if (jsonKey.contains("precip") && !jsonKey.contains("Rate")) {
                     quantityType = rainfall;
                 }
-                //check with MH how to represent pressure trend
 
                 if (quantityType != null) {
+                //create triple pattern:
+                // <quantityIRI> rdf:type <quantityType> .
                 queryPattern = iri(quantityIRI).isA(quantityType);
                 insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_OM, PREFIX_ONTOEMS);
                 kbClient.executeUpdate(insertQuery.getQueryString());
@@ -315,6 +288,11 @@ precipTotal= Rainfall with sum function
         return quantityIRI;
     }
 
+    /**
+     * check for aggregate function of each quantity (e.g. min, max, avg) and instantiate them
+     * @param quantityIRI the quantity IRI to check for
+     * @param jsonKey a key used to identify the type of aggregate function attached to each quantity
+     */
     private void instantiateAggregateFunctionIfNotExist(String quantityIRI, String jsonKey) {
         Iri aggregateFunctionIRI = null;
         String queryString = null;
@@ -335,6 +313,10 @@ precipTotal= Rainfall with sum function
         }
         if (aggregateFunctionIRI != null) {
             try {
+                //create triple pattern:
+                // <quantityIRI> om:hasAggregateFunction <aggregateFunctionIRI> .
+                // <aggregateFunctionIRI> rdf:type om:Function .
+                // <aggregateFunctionIRI> rdfs:label "aggregateFunctionLabel" .
                 TriplePattern queryPattern = iri(quantityIRI).has(hasAggregateFunction, aggregateFunctionIRI);
                 TriplePattern queryPattern2 = aggregateFunctionIRI.isA(function).andHas(label, aggregateFunctionLabel);
                 InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern, queryPattern2).prefix(PREFIX_OM, PREFIX_RDFS);
@@ -347,40 +329,61 @@ precipTotal= Rainfall with sum function
         }
     }
 
+    /**
+     * Check for reporting station instance and instantiate it if it does not exist
+     * @param quantityIRIs a list of quantity IRIs that should be linked to the reporting station instance via ontoems:reports
+     */
     private void InstantiateReportingStationIfNotExist(List<String> quantityIRIs) {
         SelectQuery query = Queries.SELECT();
         Variable reportingStationVar = SparqlBuilder.var("reportingStation");
+        //create triple pattern:
+        // ?reportStation ontoems:reports <quantityIRI 01> ;
+        //                ontoems:reports <quantityIRI 02> ;
+        //                ontoems:reports <quantityIRI 03> ;
+        //                            .
+        //                            .
+        //                            .
         TriplePattern queryPattern = reportingStationVar.has(reports,  iri(quantityIRIs.get(0)));
         for (int i = 1; i < quantityIRIs.size(); i++) {   
             String IRIString = quantityIRIs.get(i);
             queryPattern = queryPattern.andHas(reports, iri(IRIString));
         }
-            query.prefix(PREFIX_ONTOEMS).select(reportingStationVar).where(queryPattern);
-            kbClient.setQuery(query.getQueryString());
-            try {
-                JSONArray queryResult = kbClient.executeQuery();
-                if(!queryResult.isEmpty()){
-                    //if one of the quantity IRI is already linked to the reporting station via ontoems:reports
-                    //then all of the quantity IRIs should be linked as well
-                    LOGGER.info("The reporting station already exist: " + queryResult.getJSONObject(0).getString("reportingStation"));
-                } else {
-                    String reportingStationIRI = ONTOEMS_NS + "reportingStation_" + UUID.randomUUID();
-                    queryPattern = iri(reportingStationIRI).isA(reportingStation).andHas(reports, iri(quantityIRIs.get(0)));
-                    for (int i = 1; i < quantityIRIs.size(); i++) {   
-                        String IRIString = quantityIRIs.get(i);
-                        queryPattern = queryPattern.andHas(reports, iri(IRIString));
-                    }
-                    InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_ONTOEMS);
-                    kbClient.executeUpdate(insertQuery.getQueryString());
-                    LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.toString());
-                    
+        query.prefix(PREFIX_ONTOEMS).select(reportingStationVar).where(queryPattern);
+        kbClient.setQuery(query.getQueryString());
+        try {
+            JSONArray queryResult = kbClient.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info("The reporting station already exist: " + queryResult.getJSONObject(0).getString("reportingStation"));
+            } else {
+                String reportingStationIRI = ONTOEMS_NS + "reportingStation_" + UUID.randomUUID();
+                //create triple pattern:
+                // <reportingStationIRI> rdf:type ontoems:ReportingStation ;
+                //                       ontoems:reports <quantityIRI 01> ;
+                //                       ontoems:reports <quantityIRI 02> ;
+                //                       ontoems:reports <quantityIRI 03> ;
+                //                            .
+                //                            .
+                //                            .
+                queryPattern = iri(reportingStationIRI).isA(reportingStation).andHas(reports, iri(quantityIRIs.get(0)));
+                for (int i = 1; i < quantityIRIs.size(); i++) {
+                    String IRIString = quantityIRIs.get(i);
+                    queryPattern = queryPattern.andHas(reports, iri(IRIString));
                 }
-            } catch (Exception e){
-                throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString(), e);
+                InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_ONTOEMS);
+                kbClient.executeUpdate(insertQuery.getQueryString());
+                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.toString());   
             }
+        } catch (Exception e){
+            throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString(), e);
         }
+    }
 
-    private void loadTSClientConfigs(String filepath) throws IOException {
+    /**
+     * load cofigs for the remot store client
+     * @param filepath filepath of client.properties file
+     * @throws IOException
+     */
+    private void loadRSClientConfigs(String filepath) throws IOException {
         // Check whether properties file exists at specified location
         File file = new File(filepath);
         if (!file.exists()) {
@@ -389,7 +392,6 @@ precipTotal= Rainfall with sum function
 
         // Try-with-resource to ensure closure of input stream
         try (InputStream input = new FileInputStream(file)) {
-
             // Load properties file from specified path
             Properties prop = new Properties();
             prop.load(input);
