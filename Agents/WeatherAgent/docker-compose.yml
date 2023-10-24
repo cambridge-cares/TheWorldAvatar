@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   weatheragent:
-    image: docker.cmclinnovations.com/weatheragent:1.1.1
+    image: ghcr.io/cambridge-cares/weatheragent:1.2-dev-aermod-vis-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
