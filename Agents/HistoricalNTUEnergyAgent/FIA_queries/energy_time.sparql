@@ -1,0 +1,45 @@
+PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+PREFIX powsys: <http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#>
+PREFIX powbehave: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#>
+PREFIX env: <http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl>
+prefix ontocape: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
+
+SELECT ?Measurement ?Name ?Unit
+WHERE {
+    {
+        [IRI] powsys:hasBusNode ?busnode.
+        ?busnode powbehave:hasActivePowerAbsorbed ?activePower.
+        ?activePower om:hasValue ?Measurement.
+        BIND("Absorbed Active Power" AS ?Name).
+        BIND("kiloWatt" AS ?Unit)
+    } UNION {
+        [IRI] powsys:hasBusNode ?busnode.
+        ?busnode powbehave:hasReactivePowerAbsorbed ?reactivePower.
+        ?reactivePower om:hasValue ?Measurement.
+        BIND("Absorbed Reactive Power" AS ?Name).
+        BIND("kVAR" AS ?Unit)
+    }
+    UNION {
+        [IRI] ontocape:contains ?pv.
+        ?pv powsys:hasGeneratedPower ?generatedPower.
+        ?generatedPower om:hasValue ?Measurement.
+        BIND("PV Generated Power" AS ?Name).
+        BIND("kiloWatt" AS ?Unit)
+    }
+    UNION {
+        [IRI] powsys:hasBusNode ?busnode.
+        ?busnode powbehave:hasVoltageAngle ?voltageAngle.
+        ?voltageAngle om:hasValue ?Measurement.
+        BIND("Voltage Angle" AS ?Name).
+        BIND("degree" AS ?Unit)
+    }
+    UNION {
+        [IRI] powsys:hasBusNode ?busnode.
+        ?busnode powbehave:hasVoltageMagnitude ?voltageMagnitude.
+        ?voltageMagnitude om:hasValue ?Measurement.
+        BIND("Voltage Magnitude" AS ?Name).
+        BIND("kiloVolt" AS ?Unit)
+    }
+}

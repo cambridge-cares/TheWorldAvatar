@@ -1,9 +1,9 @@
 {
     "ServiceSpec": {
-        "Name": "dhemission-agent",
+        "Name": "dh-emission-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dhemission-agent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/dh-emission-agent:1.0.0",
                 "Env": [
                     "NAMESPACE=kb",
                     "DATABASE=postgres",

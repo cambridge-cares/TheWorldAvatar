@@ -38,8 +38,10 @@ public abstract class PostgresDataSubset extends DataSubset {
     void loadInternal(Dataset parent) {
         String database = parent.getDatabase();
         Path dataSubsetDirectory = parent.getDirectory().resolve(this.getSubdirectory());
+        PostGISClient.getInstance().resetSchema(database);
         loadData(dataSubsetDirectory, database, parent.baseIRI());
         runSQLPostProcess(database);
+        PostGISClient.getInstance().resetSchema(database);
     }
 
     public abstract void loadData(Path dataSubsetDir, String database, String baseIRI);

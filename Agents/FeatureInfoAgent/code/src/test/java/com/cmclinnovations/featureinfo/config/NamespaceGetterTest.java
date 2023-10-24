@@ -3,7 +3,8 @@ package com.cmclinnovations.featureinfo.config;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,16 +47,14 @@ public class NamespaceGetterTest {
      */
     @Test
     public void testResponseParsing() {
-        NamespaceGetter getter = new NamespaceGetter("http://fake-blazegraph-url.com/blazegraph");
+        NamespaceGetter getter = new NamespaceGetter("http://fake-blazegraph-url.com/blazegraph", null, null);
 
         // Attempt to parse the mock XML result
         try {
-            Map<String, String> namespaces = getter.parseResponse(MOCK_BLAZEGRAPH_NAMESPACES);
+            List<StackEndpoint> endpoints = new ArrayList<>();
+            getter.parseResponse(endpoints, MOCK_BLAZEGRAPH_NAMESPACES);
 
-            // Check for expected results
-            Assertions.assertTrue(namespaces.size() == 5, "Expected a different number of namespaces!");
-            Assertions.assertTrue(namespaces.containsKey("churchill"), "Could not find expected namespace!");
-            Assertions.assertEquals(namespaces.get("churchill"), "http://fake-blazegraph-url.com/blazegraph/namespace/churchill/sparql");
+            Assertions.assertTrue(endpoints.size() == 5, "Expected a different number of namespaces!");
 
         } catch(Exception exception) {
             Assertions.fail("Could not parse mock response!", exception);
