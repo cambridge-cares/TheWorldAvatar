@@ -1,0 +1,17 @@
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX om:		  <http://www.ontology-of-units-of-measure.org/resource/om-2/>	
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dabgeo:	  <http://www.purl.org/oema/infrastructure/>
+
+SELECT DISTINCT ?building ?propertyUsage ?propertyType ?latlong ?label
+WHERE {
+  ?building obe:hasWGS84LatitudeLongitude ?latlong. 
+  ?building obe:hasPropertyUsage ?propertyUsage.
+  ?propertyUsage rdf:type ?propertyType;
+                rdf:type obe:Hospital.
+  OPTIONAL {
+    ?propertyUsage obe:hasPropertyLabel ?label.
+  }
+}
+LIMIT 300

@@ -1,48 +1,61 @@
-# This Dockerfile has been adapted from the VS Code example at https://code.visualstudio.com/docs/containers/quickstart-python
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+
+# ---------------------------------------------
+# Base image build starts here
+# ---------------------------------------------
 
 # Base image is a lightweight version of Python
-FROM python:3.7.11-slim-buster
+FROM python:3.7.11-slim-buster AS base
 
-# Install required software
-# RUN apt update && apt install -y git
-
-# Install Java
+# Install Java and Git
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
+# Copy Stack-Client resource from published Docker image
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
-# Expose the port on which our server will run
-EXPOSE 5000
-
-# Turns off buffering for easier container logging
+# Set unbuffered mode for Python
 ENV PYTHONUNBUFFERED=1
 
 # Install the required Python libraries
 COPY requirements.txt .
+RUN python -m pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
 
-# Set the default working directory, then copy the Python source code into it
+# Set default work directory
 WORKDIR /app
-ADD PVLibAgent /app/PVLibAgent
+COPY ./PVLibAgent ./PVLibAgent
 
-# Copy in properties files
-COPY ./resources/model_parameters.properties /app/PVLibAgent/resources/model_parameters.properties
+# Install StackClients py4jps resource
+RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
+    jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
 
-# Copy in properties files
-COPY ./resources/ts_client.properties /app/PVLibAgent/kg_utils/resources/ts_client.properties
+# Install gunicorn for production
+RUN pip install gunicorn==20.0.4
 
-# Copy in properties files
-COPY ./resources/dataIRIs.properties /app/PVLibAgent/resources/dataIRIs.properties
+# Production image build starts here
+FROM base AS production
 
-# Switch to a non-root user before running the server, for security reasons
-# (See https://code.visualstudio.com/docs/containers/python-user-rights)
-RUN useradd appuser && chown -R appuser /app
+# Copy in properties files for production
+COPY ./resources/model_parameters.properties ./PVLibAgent/resources/model_parameters.properties
+COPY ./resources/ts_client.properties ./PVLibAgent/kg_utils/resources/ts_client.properties
+COPY ./resources/dataIRIs.properties ./PVLibAgent/resources/dataIRIs.properties
 
-# Creating the user doesn't create their home directory for some reason, so create it now
-RUN mkdir /home/appuser
-RUN chown -R appuser:appuser /home/appuser
-RUN chmod -R 755 /home/appuser
+CMD gunicorn --bind 0.0.0.0:5000 PVLibAgent:app
 
-# Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the 'python_agent' module
-# Note that port 5000 is *inside the container*; this can be mapped to a port on the host when running the container on the command line or in docker-compose.yml
-USER appuser
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "PVLibAgent:app"]
+# ---------------------------------------------
+# Testing image build starts here
+# ---------------------------------------------
+FROM base AS testing
+
+# Copy tests
+COPY ./tests ./tests
+
+# Copy in properties files, including the specific one for testing
+COPY ./resources/model_parameters.properties ./PVLibAgent/resources/model_parameters.properties
+#COPY ./tests/ts_client_test.properties ./PVLibAgent/kg_utils/resources/ts_client.properties
+COPY ./PVLibAgent/kg_utils/resources/ts_client.properties ./PVLibAgent/kg_utils/resources/ts_client.properties
+COPY ./resources/dataIRIs.properties ./PVLibAgent/resources/dataIRIs.properties
+
+CMD pytest & gunicorn --bind 0.0.0.0:5000 PVLibAgent:app
