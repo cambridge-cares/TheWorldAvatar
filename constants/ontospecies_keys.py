@@ -61,6 +61,8 @@ IDENTIFIER_KEYS = [
 USE_KEY = "Use"
 CHEMCLASS_KEY = "ChemicalClass"
 
+SPECIES_ATTRIBUTE_KEYS = PROPERTY_KEYS + IDENTIFIER_KEYS + [USE_KEY, CHEMCLASS_KEY]
+
 PROPERTY_LABELS = {
     "AtomChiralCount": ["atom chiral count", "atom stereocenter count"],
     "AtomChiralDefCount": [

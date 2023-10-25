@@ -22,6 +22,7 @@ from constants.ontospecies_keys import (
     KEY2LABELS,
     PROPERTY_KEYS,
     IDENTIFIER_KEYS,
+    SPECIES_ATTRIBUTE_KEYS,
     USE_KEY,
     CHEMCLASS_KEY,
 )
@@ -300,8 +301,7 @@ SELECT ?ChemicalClassLabel WHERE {{
     def locate_concept_and_literal(self, entity_iri: str):
         query_graph, class_label = self.locate_concept_name(entity_iri)
 
-        key_sampling_frame = PROPERTY_KEYS + IDENTIFIER_KEYS + [USE_KEY, CHEMCLASS_KEY]
-        key = random.choice(key_sampling_frame)
+        key = random.choice(SPECIES_ATTRIBUTE_KEYS)
         key_label = random.choice(KEY2LABELS[key])
 
         (
@@ -339,9 +339,9 @@ SELECT ?ChemicalClassLabel WHERE {{
             query_graph.nodes[key]["qualifier_key"] = qualifier_key
             query_graph.nodes[key]["qualifier_value"] = qualifier_value
 
-            qualifier_template = " ({QK} is {QV})"
-            verbalization += qualifier_template.format(
-                QK=qualifier_key, QV=qualifier_value
-            )
+            # qualifier_template = " ({QK} is {QV})"
+            # verbalization += qualifier_template.format(
+            #     QK=qualifier_key, QV=qualifier_value
+            # )
 
         return query_graph, verbalization
