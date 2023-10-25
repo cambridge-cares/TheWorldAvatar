@@ -3,6 +3,7 @@
 ## Usage
 Merge this directory with [stack directory](../dynamic/) and replace `README`s in data directories with files detailed. 
 Then spin up a stack called `pirmasens` on port `1990`.
+Need the usual secrets for the default stack as well as the Mapbox tokens.
 
 ## Filtering
 If not filtering on particular variable put in as `"'null'"`.
