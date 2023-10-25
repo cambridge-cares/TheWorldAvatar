@@ -183,18 +183,13 @@ SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
         entity_name = random.choice(values)
 
         query_graph = nx.DiGraph()
-        query_graph.add_node("Species", iri=entity_iri)
-        query_graph.add_node("SpeciesId", label=entity_name)
-        query_graph.add_edge("Species", "SpeciesId", label="hasIdentifier")
-
-        return entity_name, query_graph
+        query_graph.add_node("Species", iri=entity_iri, label=entity_name)
+        return query_graph, entity_name 
 
     def locate_concept_name(self, entity_iri: str):
         query_graph = nx.DiGraph()
-        query_graph.add_node("Species", iri=entity_iri)
-        query_graph.add_edge("Species", "os:Species", label=RDF_TYPE)
-
-        return "chemical species", query_graph
+        query_graph.add_node("Species", iri=entity_iri, rdf_type="os:Species", label="os:Species")
+        return query_graph, "chemical species"
 
     def get_operator_value_qualifier_property(self, entity_iri: str, key: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -303,7 +298,7 @@ SELECT ?ChemicalClassLabel WHERE {{
         return operator, value, qualifier_key, qualifier_value
 
     def locate_concept_and_literal(self, entity_iri: str):
-        class_label, query_graph = self.locate_concept_name()
+        query_graph, class_label = self.locate_concept_name(entity_iri)
 
         key_sampling_frame = PROPERTY_KEYS + IDENTIFIER_KEYS + [USE_KEY, CHEMCLASS_KEY]
         key = random.choice(key_sampling_frame)
@@ -316,7 +311,7 @@ SELECT ?ChemicalClassLabel WHERE {{
             qualifier_value,
         ) = self.get_operator_value_qualifier(entity_iri, key)
         if value is None:
-            return None
+            return None, None
 
         query_graph.add_node(key, label=value)
         query_graph.add_edge("Species", key, label="os:has" + key)
@@ -349,4 +344,4 @@ SELECT ?ChemicalClassLabel WHERE {{
                 QK=qualifier_key, QV=qualifier_value
             )
 
-        return verbalization, query_graph
+        return query_graph, verbalization
