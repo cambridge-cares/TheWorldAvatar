@@ -5,7 +5,7 @@ Merge this directory with [stack directory](../dynamic/) and replace `README`s i
 Then spin up a stack called `pirmasens` on port `1990`.
 
 ## Filtering
-If not filtering on particular variable put in as `"'null'"`
+If not filtering on particular variable put in as `"'null'"`.
 For filtering the requests should resemble the following
 - Filter on area only http://localhost:1990/filter-agent/filter?subs=%7B%22area%22%3A%225000%22%2C%22zonetype%22%3A%22%27null%27%22%7D
 - Filter on zone type only http://localhost:1990/filter-agent/filter?subs=%7B%22area%22%3A%22%27null%27%22%2C%22zonetype%22%3A%22%27Industry%27%22%7D
