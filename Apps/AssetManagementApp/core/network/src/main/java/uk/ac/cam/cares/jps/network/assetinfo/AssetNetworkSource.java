@@ -96,7 +96,7 @@ public class AssetNetworkSource {
         for (String key : rawInput.keySet()) {
             switch (key) {
                 case "ServiceCategoryName":
-                    result.put(SERVICE_CATEGORY, rawInput.get(key));
+                    result.put(SERVICE_CODE, rawInput.get(key));
                     break;
                 case "PurchaseOrderNum":
                     result.put(PURCHASE_ORDER_NUMBER, rawInput.get(key));
@@ -132,7 +132,7 @@ public class AssetNetworkSource {
                     result.put(ASSIGNED_TO, rawInput.get(key));
                     break;
                 case "manualURL":
-                    result.put(MANUAL_URL, rawInput.get(key));
+                    result.put(MANUAL_SECTION_TITLE, rawInput.get(key));    // todo: check again
                     break;
                 case "workspaceName":
                     result.put(WORKSPACE, rawInput.get(key));
@@ -157,6 +157,12 @@ public class AssetNetworkSource {
                     break;
                 case "InvoiceNum":
                     result.put(INVOICE_NUMBER, rawInput.get(key));
+                    break;
+                case "ServiceCategoryType":
+                    result.put(SERVICE_CATEGORY, rawInput.get(key));
+                    break;
+                case "SpecSheet":
+                    result.put(SPEC_SHEET_SECTION_TITLE, rawInput.get(key));    // todo: check again
                     break;
                 default:
                     break;

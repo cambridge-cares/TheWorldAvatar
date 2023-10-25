@@ -7,7 +7,6 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.FACILITY;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.INVOICE_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.ITEM_DESCRIPTION;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.ROOM;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_COMMENT;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_FILE_URI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_URL;
@@ -16,7 +15,7 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MODEL_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.PURCHASE_ORDER_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.PURCHASE_PRICE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.REFERENCE_LABEL;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.WORKSPACE;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.ROOM;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SERIAL_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SERVICE_CATEGORY;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SERVICE_CODE;
@@ -26,16 +25,17 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_PAGE_NO;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.STORED_IN;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.TYPE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.VENDOR;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.WORKSPACE;
 
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -58,7 +58,6 @@ public class AssetInfoRepository {
     SettingRepository settingRepository;
     List<String> visibleProperties = new ArrayList<>();
     AssetInfo assetInfo;
-    Random random = new Random();
     Map<String, String> keyConversionTable = getKeyConversionTable();
 
     @Inject
@@ -79,6 +78,10 @@ public class AssetInfoRepository {
             public void onSuccess(Map<String, Integer> result) {
                 visibleProperties.clear();
                 for (Map.Entry<String, Integer> entry : result.entrySet()) {
+                    if (Arrays.asList("inAppNotification", "mail").contains(entry.getKey())) {
+                        continue;
+                    }
+
                     if (entry.getValue() == 1) {
                         visibleProperties.add(entry.getKey());
                     }

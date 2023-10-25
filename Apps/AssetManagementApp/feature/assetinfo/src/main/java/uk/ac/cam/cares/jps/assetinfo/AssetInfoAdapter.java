@@ -32,7 +32,6 @@ import uk.ac.cam.cares.jps.model.AssetInfo;
 
 
 public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.ViewHolder>{
-    // todo: remove space and case when comparing/searching for the key?
     Map<String, List<Pair<String, String>>> propertiesBySections = new LinkedHashMap<>();
     boolean skipEmptyField = true;
 
@@ -112,10 +111,16 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
 
         for (String key : map.keySet()) {
             if (Arrays.asList(HAS_TIME_SERIES, SPEC_SHEET_FILE_URI, MANUAL_FILE_URI).contains(key)) {
+                // FILE_URI are for new asset, different from URL in get asset info
                 continue;
             }
+
             if (!allKeys.contains(key)) {
-                result.add(new Pair<>(key, map.get(key)));
+                if (skipEmptyField && !map.get(key).isEmpty()) {
+                    result.add(new Pair<>(key, map.get(key)));
+                } else if (!skipEmptyField) {
+                    result.add(new Pair<>(key, map.get(key)));
+                }
             }
         }
 
