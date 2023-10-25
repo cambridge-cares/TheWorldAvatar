@@ -43,7 +43,9 @@ class Locator:
                 seed_entities = [x.strip() for x in f.readlines()]
                 seed_entities = [x for x in seed_entities if x]
         self.seed_entities = seed_entities
-        self.entity2attrs = dict()
+        self.entity2propertykeys = dict()
+        self.entity2uses = dict()
+        self.entity2chemclasses = dict()
 
     def sample_entities(self):
         species_attr_values = "\n    ".join(
@@ -150,65 +152,8 @@ SELECT DISTINCT ?PropertyNameValue ?PropertyNameUnitLabel ?ReferenceStateValue ?
 
         return operator, value, qualifier_key, qualifier_value
 
-    def get_value_identifier(self, entity_iri: str, key: str):
-        query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-SELECT DISTINCT ?IdentifierNameValue WHERE {{
-    <{SpeciesIri}> os:has{IdentifierName} [ os:value ?IdentifierNameValue ] .
-}}"""
-        query = query_template.format(SpeciesIri=entity_iri, IdentifierName=key)
-        response_bindings = self.kg_client.query(query)
-        if len(response_bindings) == 0:
-            return None
-        return random.choice(response_bindings)["IdentifierNameValue"]["value"]
-
-    def get_value_use(self, entity_iri: str):
-        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-SELECT ?UseLabel WHERE {{
-    <{SpeciesIri}> os:hasUse [ rdfs:label ?UseLabel ] .
-}}"""
-        query = query_template.format(SpeciesIri=entity_iri)
-        response_bindings = self.kg_client.query(query)
-        if len(response_bindings) == 0:
-            return None
-        return random.choice(response_bindings)["UseLabel"]["value"]
-
-    def get_value_chemclass(self, entity_iri: str):
-        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-SELECT ?ChemicalClassLabel WHERE {{
-    <{SpeciesIri}> os:hasChemicalClass* ?x .
-	?x ?y ?z .
-	?z rdfs:subClassOf* [ rdf:type os:ChemicalClass ; 
-                          rdfs:label ?ChemicalClassLabel ] .
-}}"""
-        query = query_template.format(SpeciesIri=entity_iri)
-        response_bindings = self.kg_client.query(query)
-        if len(response_bindings) == 0:
-            return None
-        return random.choice(response_bindings)["ChemicalClassLabel"]["value"]
-
-    def get_operator_value_qualifier(self, entity_iri: str, key: str):
-        operator, value, qualifier_key, qualifier_value = None, None, None, None
-
-        if key in PROPERTY_KEYS:
-            (
-                operator,
-                value,
-                qualifier_key,
-                qualifier_value,
-            ) = self.get_operator_value_qualifier_property(entity_iri, key)
-        elif key in IDENTIFIER_KEYS:
-            value = self.get_value_identifier(entity_iri, key)
-        elif key == USE_KEY:
-            value = self.get_value_use(entity_iri)
-        elif key == CHEMCLASS_KEY:
-            value = self.get_value_chemclass(entity_iri)
-
-        return operator, value, qualifier_key, qualifier_value
-
-    def get_attrs_property(self, entity_iri: str):
-        if entity_iri not in self.entity2attrs:
+    def get_property_keys(self, entity_iri: str):
+        if entity_iri not in self.entity2propertykeys:
             query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 SELECT DISTINCT * WHERE {{
   VALUES (?p) {{{bindings}
@@ -222,13 +167,43 @@ SELECT DISTINCT * WHERE {{
                 bindings=hasproperty_values, SpeciesIri=entity_iri
             )
             response_bindings = self.kg_client.query(query)
-            self.entity2attrs[entity_iri] = set(
+            self.entity2propertykeys[entity_iri] = set(
                 [
                     binding["p"]["value"].split("#has", maxsplit=1)[-1]
                     for binding in response_bindings
                 ]
             )
-        return self.entity2attrs[entity_iri]
+        return self.entity2propertykeys[entity_iri]
+
+    def get_uses(self, entity_iri: str):
+        if entity_iri not in self.entity2uses:
+            query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    SELECT DISTINCT ?UseLabel WHERE {{
+        <{SpeciesIri}> os:hasUse [ rdfs:label ?UseLabel ] .
+    }}"""
+            query = query_template.format(SpeciesIri=entity_iri)
+            response_bindings = self.kg_client.query(query)
+            uses = [x["UseLabel"]["value"] for x in response_bindings]
+            self.entity2uses[entity_iri] = uses
+        return self.entity2uses[entity_iri]
+    
+    def get_chemclasses(self, entity_iri: str):
+        if entity_iri not in self.entity2chemclasses:
+            query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    SELECT ?ChemicalClassLabel WHERE {{
+        <{SpeciesIri}> os:hasChemicalClass* ?x .
+        ?x ?y ?z .
+        ?z rdfs:subClassOf* [ rdf:type os:ChemicalClass ; 
+                            rdfs:label ?ChemicalClassLabel ] .
+    }}"""
+            query = query_template.format(SpeciesIri=entity_iri)
+            response_bindings = self.kg_client.query(query)
+            chemclasses = [x["ChemicalClassLabel"]["value"] for x in response_bindings]
+            self.entity2chemclasses[entity_iri] = chemclasses
+        return self.entity2chemclasses[entity_iri]
+
 
     def locate_concept_and_literal(
         self, entity_iri: str, query_graph: Optional[nx.DiGraph] = None
@@ -240,24 +215,46 @@ SELECT DISTINCT * WHERE {{
 
         unsampled_property_keys = [
             x
-            for x in self.get_attrs_property(entity_iri)
+            for x in self.get_property_keys(entity_iri)
             if x not in query_graph.nodes()
         ]
         key_sampling_frame = unsampled_property_keys + [USE_KEY, CHEMCLASS_KEY] * (len(unsampled_property_keys) // 2)
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
-        (
-            operator,
-            value,
-            qualifier_key,
-            qualifier_value,
-        ) = self.get_operator_value_qualifier(entity_iri, key)
+        operator, value, qualifier_key, qualifier_value = None, None, None, None
+
+        if key in PROPERTY_KEYS:
+            (
+                operator,
+                value,
+                qualifier_key,
+                qualifier_value,
+            ) = self.get_operator_value_qualifier_property(entity_iri, key)
+        elif key == USE_KEY:
+            sampled_uses = query_graph.nodes.get(USE_KEY, dict()).get("label", [])
+            sampling_frame = [x for x in self.get_uses(entity_iri) if x not in sampled_uses]
+            if len(sampling_frame) > 0:
+                value = random.choice(sampling_frame)
+        elif key == CHEMCLASS_KEY:
+            sampled_chemclasses = query_graph.nodes.get(CHEMCLASS_KEY, dict()).get("label", [])
+            sampling_frame = [x for x in self.get_chemclasses(entity_iri) if x not in sampled_chemclasses]
+            if len(sampling_frame) > 0:
+                value = random.choice(sampling_frame)
+
         if value is None:
             return None, None
 
-        query_graph.add_node(key, label=value, literal=True, template_node=True)
-        query_graph.add_edge("Species", key, label="os:has" + key)
+        if key in query_graph.nodes():
+            assert key in [USE_KEY, CHEMCLASS_KEY]
+            label = query_graph.nodes[key]["label"]
+            if not isinstance(label, list):
+                query_graph.nodes[key]["label"] = [label, value]
+            else:
+                label.append(value)
+        else:
+            query_graph.add_node(key, label=value, literal=True, template_node=True)
+            query_graph.add_edge("Species", key, label="os:has" + key)
 
         if operator is None:
             verbalization = "{K} is {V}".format(K=key_label, V=value)

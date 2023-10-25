@@ -1,3 +1,4 @@
+import copy
 import random
 from typing import Dict, Iterable, List, Optional
 
@@ -191,7 +192,7 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
 
         response_init = self.get_hashable_kg_response(query_graph)
         for u, v in query_graph.edges():
-            _query_graph = query_graph.copy()
+            _query_graph = copy.deepcopy(query_graph)
             _query_graph.remove_edge(u, v)
             response = self.get_hashable_kg_response(_query_graph)
             if response == response_init:
