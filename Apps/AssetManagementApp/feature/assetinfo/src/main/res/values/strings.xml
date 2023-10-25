@@ -13,4 +13,5 @@
     <string name="edit">edit</string>
     <string name="edit_asset">Edit Asset</string>
     <string name="delete">Delete</string>
+    <string name="invalid_qr_code">The QR code scanned is invalid.</string>
 </resources>

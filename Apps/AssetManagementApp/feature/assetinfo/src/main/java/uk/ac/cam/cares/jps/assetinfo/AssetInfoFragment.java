@@ -158,6 +158,7 @@ public class AssetInfoFragment extends Fragment {
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             hideShimmer();
             binding.errorView.setVisibility(View.VISIBLE);
+            ((TextView) binding.errorView.findViewById(R.id.error_msg_tv)).setText(error);
         });
         viewModel.getAssetInfoByIri(uri);
 

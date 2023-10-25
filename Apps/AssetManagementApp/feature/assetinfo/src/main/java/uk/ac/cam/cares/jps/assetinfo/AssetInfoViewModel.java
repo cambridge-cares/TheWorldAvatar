@@ -40,8 +40,12 @@ public class AssetInfoViewModel extends ViewModel {
             @Override
             public void onFailure(Throwable error) {
                 LOGGER.error(error.getMessage());
-                // todo: should separate the type of error and show the corresponding error message
-                errorMessage.postValue(R.string.network_error);
+                if (error.getMessage().equals("Invalid IRI")) {
+                    errorMessage.postValue(R.string.invalid_qr_code);
+                } else {
+                    errorMessage.postValue(R.string.network_error);
+                }
+
             }
         };
         assetInfoRepository.getAssetInfoByIri(assetUri, callback);

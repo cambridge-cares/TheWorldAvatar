@@ -25,6 +25,7 @@
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
         android:text="@string/network_error"
+        android:id="@+id/error_msg_tv"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:textAlignment="center"
         android:gravity="center"/>

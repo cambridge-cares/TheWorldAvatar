@@ -27,6 +27,9 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.TYPE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.VENDOR;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.WORKSPACE;
 
+import com.android.volley.ServerError;
+import com.android.volley.VolleyError;
+
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -107,7 +110,11 @@ public class AssetInfoRepository {
                 },
                 error -> {
                     LOGGER.error(error.getMessage());
-                    callback.onFailure(error);
+                    if (error instanceof ServerError && ((ServerError)error).networkResponse.statusCode == 500) {
+                        callback.onFailure(new Throwable("Invalid IRI"));
+                    } else {
+                        callback.onFailure(new Throwable("Network Issue"));
+                    }
                 }
         );
     }

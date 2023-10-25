@@ -42,7 +42,6 @@ public class AssetNetworkSource {
 
     public void getAssetInfoByIri(String iri, Response.Listener<AssetInfoModel> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String requestUri = NetworkConfiguration.constructUrlBuilder(retrievePath)
-//                .addQueryParameter("iri", iri)
                 .build().toString();
         LOGGER.info(requestUri);
 
@@ -50,7 +49,6 @@ public class AssetNetworkSource {
             Gson gson = new Gson();
             Type type = new TypeToken<HashMap<String, String>>() {}.getType();
             try {
-//                JSONObject rawResponse = new JSONObject(response);
                 AssetInfoModel assets = new AssetInfoModel(keyConversion(gson.fromJson(rawResponse.getJSONArray("Result").get(0).toString(), type)));
                 assets.setHasTimeSeries((Boolean) rawResponse.getJSONArray("Result").get(1));
                 onSuccessUpper.onResponse(assets);
@@ -163,6 +161,9 @@ public class AssetNetworkSource {
                     break;
                 case "SpecSheet":
                     result.put(SPEC_SHEET_SECTION_TITLE, rawInput.get(key));    // todo: check again
+                    break;
+                case "deviceIRI":
+                    result.put(IRI, rawInput.get(key));
                     break;
                 default:
                     break;
