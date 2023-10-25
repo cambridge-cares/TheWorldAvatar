@@ -67,10 +67,11 @@ public class GeoObject {
      * @return SQL query string
      */
     public static String getQuery() {
-        return "SELECT cga.urival AS urival, sg.geometry as geometry, ST_AsText(sg.geometry) AS geostring, ST_SRID(sg.geometry) AS srid " +
+        return "SELECT cga.urival AS urival, ST_Collect(sg.geometry) as geometry, ST_AsText(ST_Collect(sg.geometry)) AS geostring, ST_SRID(ST_Collect(sg.geometry)) AS srid " +
                 "FROM citydb.building b " +
                 "INNER JOIN citydb.cityobject_genericattrib cga ON b.id = cga.cityobject_id " +
-                "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.id " +
-                "WHERE cga.attrname = 'iri' AND sg.geometry IS NOT NULL";
+                "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.parent_id " +
+                "WHERE cga.attrname = 'iri' AND sg.geometry IS NOT NULL " +
+                "GROUP BY urival";
     }
 }
