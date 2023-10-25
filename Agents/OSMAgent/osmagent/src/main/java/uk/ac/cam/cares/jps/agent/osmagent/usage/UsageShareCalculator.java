@@ -24,7 +24,7 @@ import java.io.*;
  */
 
 public class UsageShareCalculator {
-        private static final String LANDUSE_PATH = "/usr/local/tomcat/resources/dlm_landuse.csv";
+        private static final String LANDUSE_PATH = "/resources/dlm_landuse.csv";
 
         private RemoteRDBStoreClient rdbStoreClient;
 
