@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
     }
 
     private void buildAllPropertiesList(AssetInfo assetInfo) {
-        Map<String, String> map = (Map<String, String>) assetInfo.getProperties().clone();
+        Map<String, String> map = (Map<String, String>) ((HashMap<String, String>)assetInfo.getProperties()).clone();
 
         List<Pair<String, String>> basicPropertyLists = getOrderedPropertiesList(map, basicInfoOrder);
         if (basicPropertyLists.size() != 0) {

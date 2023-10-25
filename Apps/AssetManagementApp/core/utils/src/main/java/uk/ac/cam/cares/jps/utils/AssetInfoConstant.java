@@ -17,8 +17,8 @@ public class AssetInfoConstant {
     static public final String LOCATION_SECTION_TITLE = "Location";
     static public final String BUILDING = "Building";
     static public final String FACILITY = "Facility";
-    static public final String LOCATED_IN = "Located in";
-    static public final String SEAT_LOCATION = "Seat Location";
+    static public final String ROOM = "Room";
+    static public final String WORKSPACE = "Workspace";
     static public final String STORED_IN = "Stored in";
 
     // SUPPLIER & MANUFACTURE KEYS
@@ -66,7 +66,7 @@ public class AssetInfoConstant {
 
     // ORDERED KEYS
     static public final List<String> basicInfoOrder = new ArrayList<>(Arrays.asList(REFERENCE_LABEL, TYPE, ASSIGNED_TO, IRI, INVENTORY_ID));
-    static public final List<String> locationInfoOrder = new ArrayList<>(Arrays.asList(BUILDING, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN));
+    static public final List<String> locationInfoOrder = new ArrayList<>(Arrays.asList(BUILDING, FACILITY, ROOM, WORKSPACE, STORED_IN));
     static public final List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList(VENDOR, MANUFACTURER, MANUFACTURE_URL, SERIAL_NUMBER, MODEL_NUMBER));
     static public final List<String> itemInfoOrder = new ArrayList<>(Arrays.asList(ITEM_DESCRIPTION, PURCHASE_PRICE, SERVICE_CATEGORY, SERVICE_CODE));
     static public final List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER));

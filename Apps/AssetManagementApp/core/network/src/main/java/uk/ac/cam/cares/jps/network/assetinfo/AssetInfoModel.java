@@ -3,16 +3,17 @@ package uk.ac.cam.cares.jps.network.assetinfo;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class AssetInfoModel {
 
-    private HashMap<String, String> properties;
+    private Map<String, String> properties;
 
-    public AssetInfoModel(HashMap<String, String> properties) {
+    public AssetInfoModel(Map<String, String> properties) {
         this.properties = properties;
     }
 
-    public HashMap<String, String> getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
 

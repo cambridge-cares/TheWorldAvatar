@@ -2,11 +2,12 @@ package uk.ac.cam.cares.jps.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 public class AssetInfo implements Serializable {
-    HashMap<String, String> properties;
+    Map<String, String> properties;
 
-    public AssetInfo(HashMap<String, String> properties) {
+    public AssetInfo(Map<String, String> properties) {
         this.properties = properties;
     }
 
@@ -14,7 +15,7 @@ public class AssetInfo implements Serializable {
         this.properties = new HashMap<>();
     }
 
-    public HashMap<String, String> getProperties() {
+    public Map<String, String> getProperties() {
         return properties;
     }
     public void addProperties(String key, String value) {

@@ -7,7 +7,7 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.FACILITY;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.INVOICE_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.ITEM_DESCRIPTION;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.LOCATED_IN;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.ROOM;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_COMMENT;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_FILE_URI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_URL;
@@ -16,7 +16,7 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MODEL_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.PURCHASE_ORDER_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.PURCHASE_PRICE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.REFERENCE_LABEL;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SEAT_LOCATION;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.WORKSPACE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SERIAL_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SERVICE_CATEGORY;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SERVICE_CODE;
@@ -26,11 +26,6 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_PAGE_NO;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.STORED_IN;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.TYPE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.VENDOR;
-
-import android.os.Handler;
-
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -45,13 +40,9 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
-import io.reactivex.CompletableSource;
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.UndeliverableException;
-import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.setting.SettingRepository;
@@ -149,8 +140,8 @@ public class AssetInfoRepository {
 
             assetData.put(keyConversionTable.get(BUILDING), assetInfo.getProperty(BUILDING));
             assetData.put(keyConversionTable.get(FACILITY), assetInfo.getProperty(FACILITY));
-            assetData.put(keyConversionTable.get(LOCATED_IN), assetInfo.getProperty(LOCATED_IN));
-            assetData.put(keyConversionTable.get(SEAT_LOCATION), assetInfo.getProperty(SEAT_LOCATION));
+            assetData.put(keyConversionTable.get(ROOM), assetInfo.getProperty(ROOM));
+            assetData.put(keyConversionTable.get(WORKSPACE), assetInfo.getProperty(WORKSPACE));
             assetData.put(keyConversionTable.get(STORED_IN), assetInfo.getProperty(STORED_IN));
 
             assetData.put(keyConversionTable.get(ASSIGNED_TO), assetInfo.getProperty(ASSIGNED_TO));
@@ -194,8 +185,8 @@ public class AssetInfoRepository {
 
         table.put(BUILDING, "BuildingLocation");
         table.put(FACILITY, "FacilityLocation");
-        table.put(LOCATED_IN, "RoomLocation");
-        table.put(SEAT_LOCATION, "WorkspaceName");
+        table.put(ROOM, "RoomLocation");
+        table.put(WORKSPACE, "WorkspaceName");
         table.put(STORED_IN, "storage");
 
         table.put(ASSIGNED_TO, "AssignedTo");
