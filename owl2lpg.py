@@ -6,8 +6,8 @@ from typing import DefaultDict, Dict, List, Optional, Tuple
 import rdflib
 import networkx as nx
 
-from constants import (
-    OS,
+from constants.namespaces import OS
+from constants.predicates import (
     OS_GITCOMMITHASH,
     OWL_CLASS,
     OWL_DATATYPEPROPERTY,

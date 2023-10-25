@@ -1,0 +1,331 @@
+import random
+import random
+import math
+from typing import Optional
+from collections import defaultdict
+
+from SPARQLWrapper import SPARQLWrapper, JSON
+from constants.functions import (
+    COMPARATIVE_LABELS,
+    COMPARATIVES,
+    AROUND,
+    EQUAL,
+    GREATER_THAN,
+    GREATER_THAN_EQUAL,
+    INSIDE,
+    LESS_THAN,
+    LESS_THAN_EQUAL,
+)
+
+from constants.ontospecies_keys import (
+    KEY2LABELS,
+    PROPERTY_KEYS,
+    IDENTIFIER_KEYS,
+    USE_KEY,
+    CHEMCLASS_KEY,
+)
+
+
+def get_lt(value: float):
+    if value == 0:
+        lt = -1.0
+    elif value > 0:
+        lt = value * 0.9
+    else:
+        lt = value * 1.1
+
+    if random.getrandbits(1):
+        lt_int = math.floor(lt)
+        if lt_int < value:
+            lt = lt_int
+
+    return lt
+
+
+def get_gt(value: float):
+    if value == 0:
+        gt = 1.0
+    elif value > 0:
+        gt = value * 1.1
+    else:
+        gt = value * 0.9
+
+    if random.getrandbits(1):
+        gt_int = math.ceil(gt)
+        if gt_int > value:
+            gt = gt_int
+
+    return gt
+
+
+class KgClient:
+    def __init__(self, kg_endpoint: str):
+        client = SPARQLWrapper(endpoint=kg_endpoint)
+        client.setReturnFormat(JSON)
+        self.client = client
+
+    def query(self, query: str):
+        self.client.setQuery(query)
+        return self.client.queryAndConvert()["results"]["bindings"]
+
+
+class Locator:
+    def __init__(
+        self,
+        kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
+        seed_entities_filepath: Optional[str] = None,
+    ):
+        self.kg_client = KgClient(kg_endpoint)
+
+        if seed_entities_filepath is None:
+            seed_entities = self.sample_entities()
+        else:
+            with open(seed_entities_filepath, "r") as f:
+                seed_entities = [x.strip() for x in f.readlines()]
+                seed_entities = [x for x in seed_entities if x]
+        self.seed_entities = seed_entities
+
+    def sample_entities(self):
+        query = """"PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
+SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {
+  ?x a os:Species .
+  VALUES (?p) {
+    (os:hasAtomChiralCount)
+    (os:hasAtomChiralDefCount)
+    (os:hasAtomChiralUndefCount)
+    (os:hasBondChiralCount)
+    (os:hasBondChiralDefCount)
+    (os:hasBondChiralUndefCount)
+    (os:hasCanonicalizedCompound)
+    (os:hasCharge)
+    (os:hasCompoundComplexity)
+    (os:hasCovalentUnitCount)
+    (os:hasExactMass)
+    (os:hasHeavyAtomCount)
+    (os:hasHydrogenBondAcceptorCount)
+    (os:hasHydrogenBondDonorCount)
+    (os:hasIsotopeAtomCount)
+    (os:hasMolecularWeight)
+    (os:hasMonoIsotopicWeight)
+    (os:hasRotatableBondCount)
+    (os:hasSubStructureKeysFingerprint)
+    (os:hasTautomerCount)
+    (os:hasXLogP3)
+    (os:hasAutoignitionTemperature)
+    (os:hasCaco2Permeability)
+    (os:hasCollisionCrossSection)
+    (os:hasHydrophobicity)
+    (os:hasIonizationPotential)
+    (os:hasIsoelectricPoint)
+    (os:hasLogP)
+    (os:hasLogS)
+    (os:hasPolarSurfaceArea)
+    (os:hasBoilingPoint)
+    (os:hasDensity)
+    (os:hasDissociationConstants)
+    (os:hasEnthalpyOfSublimation)
+    (os:hasFlashPoint)
+    (os:hasStandardEnthalpyOfFormation)
+    (os:hasHeatOfCombustion)
+    (os:hasHeatOfVaporization)
+    (os:hasHenrysLawConstant)
+    (os:hasMeltingPoint)
+    (os:hasOpticalRotation)
+    (os:hasSolubility)
+    (os:hasSurfaceTension)
+    (os:hasVaporDensity)
+    (os:hasVaporPressure)
+    (os:hasViscosity)
+    (os:hasChebiID)
+    (os:hasCID)
+    (os:hasEmpiricalFormula)
+    (os:hasInChI)
+    (os:hasInChIKey)
+    (os:hasIUPACName)
+    (os:hasMolecularFormula)
+    (os:hasSMILES)
+    (os:hasUse)
+    (os:hasChemicalClass)
+  }
+  ?x ?p ?o .
+}
+GROUP BY ?x
+ORDER BY DESC(?degree)
+LIMIT 100"""
+        bindings = self.kg_client.query(query)
+        return [x["x"]["value"] for x in bindings]
+
+    def get_entity_name(self, entity_iri: str):
+        query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
+    VALUES ( ?hasIdentifierName ) {{ ( os:hasInChI ) ( os:hasIUPACName ) ( os:hasMolecularFormula ) ( os:hasSMILES ) }}
+    <{SpeciesIri}> ?hasIdentifierName ?IdentifierName .
+    ?IdentifierName os:value ?IdentifierNameValue .
+}}"""
+        query = query_template.format(SpeciesIri=entity_iri)
+
+        response_bindings = self.kg_client.query(query)
+        value_bindings = [
+            {k: v["value"] for k, v in x.items()} for x in response_bindings
+        ]
+
+        hasIdentifierName2IdentifierNameValues = defaultdict(list)
+        for binding in value_bindings:
+            hasIdentifierName2IdentifierNameValues[binding["hasIdentifierName"]].append(
+                binding["IdentifierNameValue"]
+            )
+
+        values = random.choice(
+            [v for _, v in hasIdentifierName2IdentifierNameValues.items()]
+        )
+        return random.choice(values)
+
+    def get_concept_name(self):
+        return "chemical species"
+
+    def get_operator_value_qualifier_property(self, entity_iri: str, key: str):
+        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
+SELECT DISTINCT ?PropertyNameValue ?PropertyNameUnitLabel ?ReferenceStateValue ?ReferenceStateUnitLabel WHERE {{
+    <{SpeciesIri}> os:has{PropertyName} ?PropertyName .
+    ?PropertyName os:value ?PropertyNameValue ; os:unit ?PropertyNameUnit . 
+    ?PropertyNameUnit rdfs:label ?PropertyNameUnitLabel .
+    OPTIONAL {{
+        ?PropertyName os:hasReferenceState ?ReferenceState .
+        ?ReferenceState os:value ?ReferenceStateValue ; os:unit ?ReferenceStateUnit .
+        ?ReferenceStateUnit rdfs:label ?ReferenceStateUnitLabel .
+    }}
+}}"""
+        query = query_template.format(SpeciesIri=entity_iri, PropertyName=key)
+
+        response_bindings = self.kg_client.query(query)
+        if len(response_bindings) == 0:
+            return None, None, None, None
+
+        response_binding = random.choice(response_bindings)
+        if (
+            response_binding["PropertyNameValue"]["datatype"]
+            != "http://www.w3.org/2001/XMLSchema#float"
+        ):
+            raise ValueError("Unexpected datatype: " + str(response_binding))
+        property_value = float(response_binding["PropertyNameValue"]["value"])
+
+        operator = random.choice(COMPARATIVES)
+        if operator in [LESS_THAN, LESS_THAN_EQUAL]:
+            value = str(get_lt(property_value))
+        elif operator in [GREATER_THAN, GREATER_THAN_EQUAL]:
+            value = str(get_gt(property_value))
+        elif operator in [EQUAL, AROUND]:
+            value = str(property_value)
+        elif operator == INSIDE:
+            value = "between {low} and {high}".format(
+                low=get_lt(property_value), high=get_gt(property_value)
+            )
+        else:
+            raise ValueError("Unrecognised comparative: " + operator)
+
+        qualifier_key = "reference state"
+        qualifier_value = response_binding.get("ReferenceStateValue", dict()).get(
+            "value"
+        )
+
+        return operator, value, qualifier_key, qualifier_value
+
+    def get_value_identifier(self, entity_iri: str, key: str):
+        query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+SELECT DISTINCT ?IdentifierNameValue WHERE {{
+    <{SpeciesIri}> os:has{IdentifierName} ?IdentifierName .
+    ?IdentifierName os:value ?IdentifierNameValue .
+}}"""
+        query = query_template.format(SpeciesIri=entity_iri, IdentifierName=key)
+        response_bindings = self.kg_client.query(query)
+        if len(response_bindings) == 0:
+            return None
+        return random.choice(response_bindings)["IdentifierNameValue"]["value"]
+
+    def get_value_use(self, entity_iri: str):
+        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+SELECT ?UseLabel WHERE {{
+    <{SpeciesIri}> os:hasUse ?Use .
+    ?Use rdfs:label ?UseLabel .
+}}"""
+        query = query_template.format(SpeciesIri=entity_iri)
+        response_bindings = self.kg_client.query(query)
+        if len(response_bindings) == 0:
+            return None
+        return random.choice(response_bindings)["UseLabel"]["value"]
+
+    def get_value_chemclass(self, entity_iri: str):
+        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+SELECT ?ChemicalClassLabel WHERE {{
+    <{SpeciesIri}> os:hasChemicalClass* ?x .
+	?x ?y ?z .
+	?z rdfs:subClassOf* ?ChemicalClass .
+	?ChemicalClass rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassLabel .
+}}"""
+        query = query_template.format(SpeciesIri=entity_iri)
+        response_bindings = self.kg_client.query(query)
+        if len(response_bindings) == 0:
+            return None
+        return random.choice(response_bindings)["ChemicalClassLabel"]["value"]
+
+    def get_operator_value_qualifier(self, entity_iri: str, key: str):
+        operator, value, qualifier_key, qualifier_value = None, None, None, None
+
+        if key in PROPERTY_KEYS:
+            (
+                operator,
+                value,
+                qualifier_key,
+                qualifier_value,
+            ) = self.get_operator_value_qualifier_property(entity_iri, key)
+        elif key in IDENTIFIER_KEYS:
+            value = self.get_value_identifier(entity_iri, key)
+        elif key == USE_KEY:
+            value = self.get_value_use(entity_iri)
+        elif key == CHEMCLASS_KEY:
+            value = self.get_value_chemclass(entity_iri)
+
+        return operator, value, qualifier_key, qualifier_value
+
+    def get_concept_and_literal(self, entity_iri: str):
+        class_label = self.get_concept_name()
+
+        key_sampling_frame = PROPERTY_KEYS + IDENTIFIER_KEYS + [USE_KEY, CHEMCLASS_KEY]
+        key = random.choice(key_sampling_frame)
+        key_label = random.choice(KEY2LABELS[key])
+
+        (
+            operator,
+            value,
+            qualifier_key,
+            qualifier_value,
+        ) = self.get_operator_value_qualifier(entity_iri, key)
+        if value is None:
+            return None
+
+        if operator is None:
+            template = "the {C} whose {K} is {V}"
+            verbalization = template.format(C=class_label, K=key_label, V=value)
+        else:
+            operator_label = random.choice(COMPARATIVE_LABELS[operator])
+            template = "the {C} whose {K} is {OP} {V}"
+            verbalization = template.format(
+                C=class_label, K=key_label, OP=operator_label, V=value
+            )
+
+        if (
+            qualifier_key is not None
+            and qualifier_value is not None
+            and random.getrandbits(1)
+        ):
+            qualifier_template = " ({QK} is {QV})"
+            verbalization += qualifier_template.format(
+                QK=qualifier_key, QV=qualifier_value
+            )
+
+        return verbalization
