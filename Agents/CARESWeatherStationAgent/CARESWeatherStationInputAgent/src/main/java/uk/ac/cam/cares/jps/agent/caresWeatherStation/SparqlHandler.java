@@ -212,7 +212,7 @@ public class SparqlHandler {
                 queryPattern = iri(IRI).isA(measure);
                 InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_OM);
                 kbClient.executeUpdate(insertQuery.getQueryString());
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.toString());
+                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
             }
         } catch (Exception e) {
             throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString());
@@ -245,7 +245,7 @@ public class SparqlHandler {
                 queryPattern = iri(quantityIRI).has(hasValue, iri(IRI));
                 InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_OM);
                 kbClient.executeUpdate(insertQuery.getQueryString());
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.toString());
+                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
 
                 Iri quantityType = null;
                 //check jsonKey against om:Quantity subclasses
@@ -284,7 +284,7 @@ public class SparqlHandler {
                 queryPattern = iri(quantityIRI).isA(quantityType);
                 insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_OM, PREFIX_ONTOEMS);
                 kbClient.executeUpdate(insertQuery.getQueryString());
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.toString());
+                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
                 }
             }
         } catch (Exception e) {
@@ -328,7 +328,7 @@ public class SparqlHandler {
                 InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern, queryPattern2).prefix(PREFIX_OM, PREFIX_RDFS);
                 queryString = insertQuery.getQueryString();
                 kbClient.executeUpdate(insertQuery.getQueryString());
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.toString());
+                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
             } catch (Exception e) {
                 throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryString, e);
             }
@@ -377,7 +377,7 @@ public class SparqlHandler {
                 }
                 InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_ONTOEMS, PREFIX_RDFS);
                 kbClient.executeUpdate(insertQuery.getQueryString());
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.toString());   
+                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());   
             }
         } catch (Exception e){
             throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString(), e);
