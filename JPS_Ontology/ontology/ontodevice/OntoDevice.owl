@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 September 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">18 October 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -498,6 +498,26 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/services -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/services">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device or technical system and the zone it is servicing or providing a service for.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">services</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -699,6 +719,13 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
     
 
 

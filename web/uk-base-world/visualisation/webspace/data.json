@@ -1,106 +1,501 @@
 {
-    "name": "UK Base World",
-    "groups": [
-        {
-            "name": "Power Generation Sites",
-            "stack": "http://localhost:38383/",
-            "sources": [
-                {
-                    "id": "uk-power-source",  
-                    "type": "vector",
-                    "tiles": [
-                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+	"name": "All Layers",
+	"groups": [
+		{
+			"name": "Environment",
+			"groups": [
+				{
+					"name": "Forestry",
+					"stack": "http://localhost:38383",
+					"sources": [
+						{
+							"id": "forestry",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						}
+					],
+                    "layers": [
+                        {
+                            "id": "forestry-woodland",
+                            "type": "fill",
+                            "name": "Woodland",
+                            "source": "forestry",
+                            "source-layer": "forestry",
+                            "filter": ["==", "category", "Woodland"],
+                            "minzoom": 5,
+                            "paint": {
+                                "fill-color": ["get", "colour"]
+                            },
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "forestry-non-woodland",
+                            "type": "fill",
+                            "name": "Non-Woodland",
+                            "source": "forestry",
+                            "source-layer": "forestry",
+                            "filter": ["==", "category", "Non woodland"],
+                            "minzoom": 5,
+                            "paint": {
+                                "fill-color": ["get", "colour"]
+                            },
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
                     ]
-                }
-                
-            ], 
-            "layers": [
-                {
-                    "id": "power_renewable_layer",
-                    "name": "Renewable",
-                    "source": "uk-power-source",
-                    "type": "circle",
-                    "source-layer": "dukes_2023",
-                    "filter": [
-                        "!",
-                        [
-                            "in",
-                            ["get", "type"],
-                            ["literal", ["Fossil Fuel", "Nuclear"]]
-                        ]
-                    ],
-                    "layout": {
-                        "visibility": "visible",
-                        "circle-sort-key": [
-                            "*", -1.0, ["get", "capacity"]
-                        ]
-                    },
-                    "paint": {
-                        "circle-stroke-color": "#000000",
-                        "circle-stroke-width": 1,
-                        "circle-opacity": 0.85,
-                        "circle-radius": [
-                            "interpolate",
-                            ["linear"],
-                            ["get", "capacity"],
-                            0, 4,
-                            100, 8,
-                            1000, 14,
-                            2250, 28
-                        ],
-                        "circle-color": [
-                            "case",
-                            ["==", ["get", "primary_fuel"], "Biomass"], "#66ff66",
-                            ["==", ["get", "primary_fuel"], "MSW"], "#006600",
-                            ["==", ["get", "primary_fuel"], "Wind"], "#99ccff",
-                            ["==", ["get", "primary_fuel"], "Hydro"], "#006699",
-                            ["==", ["get", "primary_fuel"], "Solar"], "#ffff99",
-                            "#FFFFFF"
-                        ]
-                    }
-                },
-                {
-                    "id": "power_fossil_layer",
-                    "name": "Non-renewable",
-                    "source": "uk-power-source",
-                    "type": "circle",
-                    "source-layer": "dukes_2023",
-                    "filter": [
-                        "in",
-                        ["get", "type"],
-                        ["literal", ["Fossil Fuel", "Nuclear"]]
-                    ],
-                    "layout": {
-                        "visibility": "visible",
-                        "circle-sort-key": [
-                            "*", -1.0, ["get", "capacity"]
-                        ]
-                    },
-                    "paint": {
-                        "circle-stroke-color": "#000000",
-                        "circle-stroke-width": 1,
-                        "circle-opacity": 0.85,
-                        "circle-radius": [
-                            "interpolate",
-                            ["linear"],
-                            ["get", "capacity"],
-                            0, 4,
-                            100, 8,
-                            1000, 14,
-                            2250, 28
-                        ],
-                        "circle-color": [
-                            "case",
-                            ["==", ["get", "primary_fuel"], "Diesel/Gas Oil"], "#cccccc",
-                            ["==", ["get", "primary_fuel"], "Coal"], "#333333",
-                            ["==", ["get", "primary_fuel"], "Sour Gas"], "#ff9999",
-                            ["==", ["get", "primary_fuel"], "Natural Gas"], "#660000",
-                            ["==", ["get", "primary_fuel"], "Nuclear"], "#999900",
-                            "#FFFFFF"
-                        ]
-                    }
-                }
+				}
             ]
-        }
-    ]
+		},
+		{
+			"name": "Power Network",
+			"groups": [
+				{
+					"name": "National Grid",
+					"stack": "http://localhost:38383",
+					"sources": [
+						{
+							"id": "national-grid-poles",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_poles&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						},
+						{
+							"id": "national-grid-towers",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						},
+						{
+							"id": "substations-points",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_substations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						},
+						{
+							"id": "national-grid-overhead-lines",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						},
+						{
+							"id": "national-grid-cables",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						}
+					],
+					"layers": [
+						{
+							"id": "national-grid-poles",
+							"type": "symbol",
+							"name": "Poles",
+							"source": "national-grid-poles",
+							"source-layer": "ng_poles",
+							"treeable": true,
+							"minzoom": 10,
+							"layout": {
+								"icon-allow-overlap": true,
+								"icon-ignore-placement": true,
+								"icon-image": ["get", "icon"],
+								"icon-size": [
+									"interpolate",
+									["linear"],
+									["zoom"],
+									12,
+									0.1,
+									16,
+									0.66
+								]
+							}
+						},
+						{
+							"id": "national-grid-towers",
+							"type": "symbol",
+							"name": "Towers",
+							"source": "national-grid-towers",
+							"source-layer": "ng_towers",
+							"treeable": true,
+							"layout": {
+								"icon-allow-overlap": true,
+								"icon-ignore-placement": true,
+								"icon-image": ["get", "icon"],
+								"icon-size": [
+									"interpolate",
+									["linear"],
+									["zoom"],
+									5,
+									0.02,
+									12,
+									0.1,
+									16,
+									0.66
+								]
+							}
+						},
+						{
+							"id": "substations-points",
+							"type": "symbol",
+							"name": "Substations",
+							"source": "substations-points",
+							"source-layer": "ng_substations",
+							"treeable": true,
+							"layout": {
+								"icon-allow-overlap": true,
+								"icon-ignore-placement": true,
+								"icon-image": ["get", "icon"],
+								"icon-size": [
+									"interpolate",
+									["linear"],
+									["zoom"],
+									5,
+									0.15,
+									12,
+									0.33,
+									16,
+									0.75
+								]
+							}
+						},
+						{
+							"id": "national-grid-overhead-lines",
+							"type": "line",
+							"name": "Overhead Lines",
+							"source": "national-grid-overhead-lines",
+							"minzoom": 8,
+							"source-layer": "ng_overhead_lines",
+							"treeable": true,
+							"paint": {
+								"line-color": ["get", "line_colour"],
+								"line-width": [
+									"to-number",
+									[
+										"slice",
+										["get",	"line_width"],
+										0,
+										-1
+									]
+								]
+							}
+						},
+						{
+							"id": "national-grid-cables-outline",
+							"type": "line",
+							"name": "Underground Cables",
+							"source": "national-grid-cables",
+							"minzoom": 8,
+							"source-layer": "ng_underground_cables",
+							"treeable": true,
+							"paint": {
+								"line-color": "#895a5a",
+								"line-width": [
+									"to-number",
+									[
+										"slice",
+										["get",	"line_width"],
+										0,
+										-1
+									]
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "UK Power Networks",
+					"stack": "http://localhost:38383",
+					"sources": [
+						{
+							"id": "high-overhead-lines",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						},
+						{
+							"id": "medium-overhead-lines",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						},
+						{
+							"id": "high-distribution-overhead-lines",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						},
+						{
+							"id": "low-distribution-overhead-lines",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_low_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						},
+						{
+							"id": "high-poles-towers",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						},
+						{
+							"id": "medium-poles-towers",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						}
+					],
+					"layers": [
+						{
+							"id": "high-overhead-lines",
+							"type": "line",
+							"name": "High Voltage OHL",
+							"source": "high-overhead-lines",
+							"source-layer": "ukpn_overhead_lines_high",
+							"treeable": true,
+							"minzoom": 8,
+							"paint": {
+								"line-color": ["get", "line_colour"],
+								"line-width": [
+									"to-number",
+									[
+										"slice",
+										["get",	"line_width"],
+										0,
+										-1
+									]
+								]
+							}
+						},
+						{
+							"id": "medium-overhead-lines",
+							"type": "line",
+							"name": "Medium Voltage OHL",
+							"source": "medium-overhead-lines",
+							"source-layer": "ukpn_overhead_lines_medium",
+							"treeable": true,
+							"minzoom": 8,
+							"paint": {
+								"line-color": ["get", "line_colour"],
+								"line-width": [
+									"to-number",
+									[
+										"slice",
+										["get",	"line_width"],
+										0,
+										-1
+									]
+								]
+							}
+						},
+						{
+							"id": "high-distribution-overhead-lines",
+							"type": "line",
+							"name": "High Distribution Voltage OHL",
+							"source": "high-distribution-overhead-lines",
+							"source-layer": "ukpn_overhead_lines_high_distribution",
+							"treeable": true,
+							"minzoom": 8,
+							"paint": {
+								"line-color": ["get", "line_colour"],
+								"line-width": [
+									"to-number",
+									[
+										"slice",
+										["get",	"line_width"],
+										0,
+										-1
+									]
+								]
+							}
+						},
+						{
+							"id": "low-distribution-overhead-lines",
+							"type": "line",
+							"name": "Low Distribution Voltage OHL",
+							"source": "low-distribution-overhead-lines",
+							"source-layer": "ukpn_overhead_lines_low_distribution",
+							"treeable": true,
+							"minzoom": 8,
+							"paint": {
+								"line-color": ["get", "line_colour"],
+								"line-width": [
+									"to-number",
+									[
+										"slice",
+										["get",	"line_width"],
+										0,
+										-1
+									]
+								]
+							}
+						},
+						{
+							"id": "high-poles-towers",
+							"type": "symbol",
+							"name": "High Voltage Pole Towers",
+							"source": "high-poles-towers",
+							"source-layer": "ukpn_poles_towers_high",
+							"treeable": true,
+							"minzoom": 12,
+							"layout": {
+								"icon-allow-overlap": true,
+								"icon-ignore-placement": true,
+								"icon-image": ["get", "icon"],
+								"icon-size": [
+									"interpolate",
+									["linear"],
+									["zoom"],
+									5,
+									0.02,
+									12,
+									0.1,
+									16,
+									0.66
+								]
+							}
+						},
+						{
+							"id": "medium-poles-towers",
+							"type": "symbol",
+							"name": "Medium Pole Towers",
+							"source": "medium-poles-towers",
+							"source-layer": "ukpn_poles_towers_medium",
+							"treeable": true,
+							"minzoom": 13,
+							"layout": {
+								"icon-allow-overlap": true,
+								"icon-ignore-placement": true,
+								"icon-image": ["get", "icon"],
+								"icon-size": [
+									"interpolate",
+									["linear"],
+									["zoom"],
+									5,
+									0.02,
+									12,
+									0.1,
+									16,
+									0.66
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Power Generation",
+					"stack": "http://localhost:38383/",
+					"sources": [
+						{
+							"id": "uk-power-source",
+							"type": "vector",
+							"tiles": [
+								"http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+							]
+						}
+					],
+					"layers": [
+						{
+							"id": "power_renewable_layer",
+							"name": "Renewable Sites",
+							"source": "uk-power-source",
+							"source-layer": "dukes_2023",
+							"type": "circle",
+							"filter": [
+								"!",
+								[
+									"in",
+									["get", "type"],
+									["literal", ["Fossil Fuel", "Nuclear"]]
+								]
+							],
+							"layout": {
+								"visibility": "visible",
+								"circle-sort-key": [
+									"*", -1.0, ["get", "capacity"]
+								]
+							},
+							"paint": {
+								"circle-stroke-color": "#000000",
+								"circle-stroke-width": 1,
+								"circle-opacity": 0.65,
+								"circle-radius": [
+									"interpolate",
+									["linear"],
+									["get", "capacity"],
+									0, 4,
+									100, 8,
+									1000, 14,
+									2250, 28
+								],
+								"circle-color": [
+									"case",
+									["==", ["get", "primary_fuel"], "Biomass"], "#66ff66",
+									["==", ["get", "primary_fuel"], "MSW"], "#006600",
+									["==", ["get", "primary_fuel"], "Wind"], "#99ccff",
+									["==", ["get", "primary_fuel"], "Hydro"], "#006699",
+									["==", ["get", "primary_fuel"], "Pumped hydro"], "#006699",
+									["==", ["get", "primary_fuel"], "Solar"], "#ffff99",
+									"#FFFFFF"
+								]
+							}
+						},
+						{
+							"id": "power_fossil_layer",
+							"name": "Non-renewable Sites",
+							"source": "uk-power-source",
+							"source-layer": "dukes_2023",
+							"type": "circle",
+							"filter": [
+								"in",
+								["get", "type"],
+								["literal", ["Fossil Fuel", "Nuclear"]]
+							],
+							"layout": {
+								"visibility": "visible",
+								"circle-sort-key": [
+									"*", -1.0, ["get", "capacity"]
+								]
+							},
+							"paint": {
+								"circle-stroke-color": "#000000",
+								"circle-stroke-width": 1,
+								"circle-opacity": 0.65,
+								"circle-radius": [
+									"interpolate",
+									["linear"],
+									["get", "capacity"],
+									0, 4,
+									100, 8,
+									1000, 14,
+									2250, 28
+								],
+								"circle-color": [
+									"case",
+									["==", ["get", "primary_fuel"], "Diesel/Gas Oil"], "#cccccc",
+									["==", ["get", "primary_fuel"], "Coal"], "#333333",
+									["==", ["get", "primary_fuel"], "Sour Gas"], "#ff9999",
+									["==", ["get", "primary_fuel"], "Natural Gas"], "#660000",
+									["==", ["get", "primary_fuel"], "Nuclear"], "#999900",
+									"#FFFFFF"
+								]
+							}
+						}
+					]
+				}
+			]
+		}	
+	]
 }
