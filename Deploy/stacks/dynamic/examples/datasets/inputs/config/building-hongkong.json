@@ -25,11 +25,11 @@
                 "sridIn": "4326"
             },
             "preprocessSql": "@/inputs/config/building-hongkong_preprocess_building.sql",
-            "name": "hongkong_gsl",
+            "name": "building-hongkong_gsl",
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "mapbox_layer",
-                    "sql": "@/inputs/config/building-hongkong_mapbox.sql",
+                    "sql": "@/inputs/config/mapbox-footprint-flipxy.sql",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geometry",

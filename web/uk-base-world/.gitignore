@@ -2,7 +2,6 @@ mapbox_api_key
 mapbox_username
 grafana_api_key
 
-*.csv
 *.log
 *.xlsx
 *.temp

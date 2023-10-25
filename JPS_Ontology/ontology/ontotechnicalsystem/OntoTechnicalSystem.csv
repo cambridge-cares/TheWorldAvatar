@@ -3,6 +3,7 @@ OntoTechnicalSystem,TBox,https://www.theworldavatar.com/kg/ontotechnicalsystem/,
 OntoTechnicalSystem,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoTechnicalSystem,TBox,An ontology for technical systems.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoTechnicalSystem,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+HVACSystem,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,IS-A,,,,"A system designed to provide heating, ventilation, and air conditioning functionalities.",https://www.theworldavatar.com/kg/ontotechnicalsystem/,HVAC system
 LabEquipmentSystem,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,IS-A,,,,A system that is comprised of lab equipments or is used to assist in/run experiments in a lab environment.,https://www.theworldavatar.com/kg/ontotechnicalsystem/,Lab equipment system
 FiltrationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for filtering liquid or gas in a lab environment.,https://www.theworldavatar.com/kg/ontotechnicalsystem/,Filtration system
 CrossFlowFiltrationSystem,Class,FiltrationSystem,IS-A,,,,"A system that utilizes cross-flow filtration or tangential flow filtration and it is usually used for chemical engineering, biochemical engineering and protein purification.",https://www.theworldavatar.com/kg/ontotechnicalsystem/,Cross-flow filtration system
