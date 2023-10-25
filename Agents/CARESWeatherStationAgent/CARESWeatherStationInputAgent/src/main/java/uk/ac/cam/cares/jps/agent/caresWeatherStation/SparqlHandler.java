@@ -99,12 +99,15 @@ public class SparqlHandler {
     String bgUsername;
     String bgPassword;
 
+    //weather station ID
+    private String stationId;
+
     /**
      * Standard constructor
      * @param agentPropertiesFile the filepath of the agent.properties file
      * @param clientPropertiesFile the filepath of the client.properties file
      */
-    public SparqlHandler(String agentPropertiesFile, String clientPropertiesFile) throws IOException {
+    public SparqlHandler(String agentPropertiesFile, String clientPropertiesFile, String apiPropertiesFile) throws IOException {
         try (InputStream input = new FileInputStream(agentPropertiesFile)) {
             // Load properties file from specified path
             Properties prop = new Properties();
@@ -128,10 +131,15 @@ public class SparqlHandler {
         try {
             //load configs from client.properties file for setting up remote store client
             loadRSClientConfigs(clientPropertiesFile);
+        } catch (Exception e) {
+            throw new JPSRuntimeException ("Unable to load properties from the timeseries config file!");
         }
-            catch (Exception e) {
-                throw new JPSRuntimeException ("Unable to load properties from the timeseries config file!");
-            }
+        try {
+            //load configs from api.properties file
+            loadAPIconfigs(apiPropertiesFile);
+        } catch (Exception e) {
+            throw new JPSRuntimeException ("Unable to load properties from the api config file!");
+        }
     }
 
     /**
@@ -362,12 +370,12 @@ public class SparqlHandler {
                 //                            .
                 //                            .
                 //                            .
-                queryPattern = iri(reportingStationIRI).isA(reportingStation).andHas(reports, iri(quantityIRIs.get(0)));
+                queryPattern = iri(reportingStationIRI).isA(reportingStation).andHas(reports, iri(quantityIRIs.get(0))).andHas(label, "Weather Station " + stationId);
                 for (int i = 1; i < quantityIRIs.size(); i++) {
                     String IRIString = quantityIRIs.get(i);
                     queryPattern = queryPattern.andHas(reports, iri(IRIString));
                 }
-                InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_ONTOEMS);
+                InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_ONTOEMS, PREFIX_RDFS);
                 kbClient.executeUpdate(insertQuery.getQueryString());
                 LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.toString());   
             }
@@ -416,6 +424,26 @@ public class SparqlHandler {
             kbClient.setQueryEndpoint(sparqlQueryEndpoint);
             kbClient.setUser(bgUsername);
             kbClient.setPassword(bgPassword);
+        }
+    }
+
+    /**
+     * Reads the stationId from a properties file and saves it in fields.
+     * @param filepath Path to the properties file from which to read the stationId
+     */
+    private void loadAPIconfigs(String filepath) throws IOException{
+        File file=new File(filepath);
+        if(!file.exists()){
+            throw new FileNotFoundException("There was no properties file found in the specified path: "+filepath);
+        }
+        try(InputStream input= new FileInputStream(file)){
+            Properties prop=new Properties();
+            prop.load(input);
+            if (prop.containsKey("weather.stationId")){
+                this.stationId=prop.getProperty("weather.stationId");
+            }else{
+                throw new IOException("The properties file is missing \"weather.stationId=<stationId>\"");
+            }
         }
     }
 

@@ -195,7 +195,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         }
 
         try {
-            SparqlHandler sparqlHandler = new SparqlHandler(args[0], args[1]);
+            SparqlHandler sparqlHandler = new SparqlHandler(args[0], args[1], args[2]);
             sparqlHandler.instantiateIfNotExist();
         } catch (Exception e) {
             throw new JPSRuntimeException("Unable to carry out queries or insert data into the sparql store!", e);
