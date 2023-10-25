@@ -50,7 +50,8 @@ class KGClient(PySparqlClient):
             SELECT DISTINCT ?data_iri ?ts_iri ?fc_iri ?unit ?rdb_url ?time_format
             WHERE {{   
             VALUES ?iri {{ <{iri_to_forecast}> }} 
-            ?iri <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts_iri .
+            ?iri <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts_iri ;
+                    <{OM_HASVALUE}>* ?data_iri .
             ?ts_iri ^<{TS_HASTIMESERIES}> ?data_iri ;
                      <{TS_HASRDB}> ?rdb_url .
             OPTIONAL {{ ?data_iri <{OM_HASUNIT}> ?unit . }}

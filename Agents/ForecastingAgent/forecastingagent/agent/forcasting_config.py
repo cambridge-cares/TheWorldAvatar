@@ -242,6 +242,7 @@ def get_rdb_endpoint(ts_details:dict):
         "YYYY-MM-DDTHH:MM:SSZ": "%Y-%m-%dT%H:%M:%SZ",
         "YYYYMMDDTHHMMSSZ": "%Y%m%dT%H%M%SZ",
         "YYYY-MM-DDTHH:MM:SS.SSSSSSZ": "%Y-%m-%dT%H:%M:%S.%fZ",
+        "OFFSETDATETIME": "%Y-%m-%d %H:%M:%S%z",
     }
     if time_format not in iso_to_python_format.values():
         # Retrieve mapped Python compliant format; return itself if not mapped
