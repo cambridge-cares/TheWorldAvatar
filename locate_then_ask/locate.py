@@ -298,10 +298,14 @@ SELECT ?ChemicalClassLabel WHERE {{
 
         return operator, value, qualifier_key, qualifier_value
 
-    def locate_concept_and_literal(self, entity_iri: str):
-        query_graph, class_label = self.locate_concept_name(entity_iri)
+    def locate_concept_and_literal(self, entity_iri: str, query_graph: Optional[nx.DiGraph] = None):
+        if query_graph is None:
+            query_graph, _ = self.locate_concept_name(entity_iri)
+        else:
+            query_graph = query_graph.copy()
 
-        key = random.choice(SPECIES_ATTRIBUTE_KEYS)
+        key_sampling_frame = [x for x in SPECIES_ATTRIBUTE_KEYS if x not in query_graph.nodes()]
+        key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
         (
@@ -317,8 +321,7 @@ SELECT ?ChemicalClassLabel WHERE {{
         query_graph.add_edge("Species", key, label="os:has" + key)
 
         if operator is None:
-            template = "the {C} whose {K} is {V}"
-            verbalization = template.format(C=class_label, K=key_label, V=value)
+            verbalization = "{K} is {V}".format(K=key_label, V=value)
         else:
             operator_label = random.choice(COMPARATIVE_LABELS[operator])
 
@@ -326,9 +329,8 @@ SELECT ?ChemicalClassLabel WHERE {{
             query_graph.add_node(func_node, label=operator, func=True, template_node=True)
             query_graph.add_edge(key, func_node)
 
-            template = "the {C} whose {K} is {OP} {V}"
-            verbalization = template.format(
-                C=class_label, K=key_label, OP=operator_label, V=value
+            verbalization = "{K} is {OP} {V}".format(
+                K=key_label, OP=operator_label, V=value
             )
 
         if (
@@ -343,5 +345,17 @@ SELECT ?ChemicalClassLabel WHERE {{
             # verbalization += qualifier_template.format(
             #     QK=qualifier_key, QV=qualifier_value
             # )
+
+        return query_graph, verbalization
+
+    def locate_intersection(self, entity_iri: str):
+        verbalized_conds = []
+        query_graph, verbalized_cond = self.locate_concept_and_literal(entity_iri)
+        verbalized_conds.append(verbalized_cond)
+
+        query_graph, verbalized_cond = self.locate_concept_and_literal(entity_iri, query_graph)
+        verbalized_conds.append(verbalized_cond)
+
+        verbalization = "the chemical species whose {conds}".format(conds=" and ".join(verbalized_conds))
 
         return query_graph, verbalization
