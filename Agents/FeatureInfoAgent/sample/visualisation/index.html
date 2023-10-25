@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>FIA Test Stack</title>
+
+        <!-- JS -->
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
+        <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+        <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
+        <script src="./twa-vf/twa-vf.min.js" charset="utf-8"></script>
+
+        <!-- CSS -->
+        <link href='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css' rel='stylesheet' />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
+        <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+        <link href="./twa-vf/twa-vf.min.css" rel="stylesheet" />
+
+    </head>
+    <body>
+        <!-- Container the map will be added to -->
+        <div id="map"></div>
+
+        <!-- Element for depth of field overlay -->
+        <div id="tiltShift"></div>
+
+        <!-- Element the map controls will be added to (normally on the left) -->
+        <div id="controlsContainer">
+            <div id="controlContainer">
+
+                <!-- Camera controls -->
+                <div id="cameraContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p>Camera</p>
+                        <div class="tooltip">
+                            <label class="switch"><input type="checkbox" onclick="MapboxUtils.setTiltshift(this.checked)"><span class="slider round"><p>DoF</p></label>
+                            <span class="tooltiptext">Toggle depth of field effect</span>
+                        </div>
+                    </div>
+                    <div class="controlContents">
+                        <a href="#" onclick="MapboxUtils.resetCamera()">Reset to default</a><br/>
+                    </div>
+                </div>
+
+                <!-- Terrain controls -->
+                <div id="terrainContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p>Imagery</p>
+                        <div class="tooltip">
+                            <label class="switch"><input type="checkbox" onclick="MapboxUtils.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
+                            <span class="tooltiptext">Toggle 3D terrain</span>
+                        </div>
+                    </div>
+                    <div id="imageryContainer" class="controlContents">
+                    </div>
+                </div>
+
+                <!-- Layer controls -->
+                <div id="layerContainer" class="controlBlock">
+                    <div id="controlTitle"  class="controlTitle">
+                        <p>Layers</p>
+                        <div class="tooltip" id="placenameContainer">
+                            <label class="switch"><input type="checkbox" onclick="MapboxUtils.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
+                            <span class="tooltiptext">Toggle place names, labels, and roads </span>
+                        </div>
+                    </div>
+                    <div class="controlContents">
+                        <div id="layerTreeContainer">
+                            <div class="hummingbird-treeview-converter"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="helpandsearch">
+                    <!-- Search icon -->
+                    <div id="searchIconContainer" class="controlBlock expanded" onclick="manager.openSearch()">
+                        <div class="tooltip" id="coordEditor">
+                            <i class="fas fa-search fa-lg"></i>
+                            <span class="tooltiptext right" style="width: 100px !important;">Feature search</span>
+                        </div>
+                    </div>
+
+                    <!-- Help icon -->
+                    <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                        <div class="tooltip" id="coordEditor">
+                            <i class="fas fa-question fa-lg"></i>
+                            <span class="tooltiptext right">Help</span>
+                        </div>
+                    </div>
+                 </div>
+                 
+            </div>
+        </div>
+
+        <!-- Side panel for content and metdata -->
+        <div id="sidePanel" class="large expanded">
+            <div class="tooltip" id="slideButtonContainer">
+                <i class="fas fa-chevron-right" id="slideButton" width="16px" class="leftButton" height="16px" onclick="manager.getPanelHandler().toggleExpansion()"></i>
+                <span class="tooltiptext">Show/Hide</span>
+            </div>
+            <div class="tooltip" id="expandButtonContainer">
+                <i class="fas fa-compress-alt" id="expandButton" width="16px" class="rightButton" height="16px" onclick="manager.getPanelHandler().toggleMode()"></i>
+                <span class="tooltiptext">Expand/Collapse</span>
+            </div>
+            <div id="sidePanelInner">
+                <ul>
+                    <li><a href="#sidePanelGeneral">Info</a></li>
+                    <li><a href="#sidePanelLegend">Legend</a></li>
+                    <li><a href="#sidePanelLinks">Links</a></li>
+                </ul>
+                <div id="sidePanelGeneral">
+                    <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
+                    <div id="contentContainer"></div>
+                    <div id="legendContainer"></div>
+                    <div id="footerContainer">
+                        <div id="footerContent"></div>
+                    </div>
+                </div>
+                <div id="sidePanelLegend"></div>
+                <div id="sidePanelLinks"></div>
+            </div>
+            <div id="returnContainer" style="display: none;">
+                <div id="innerReturnContainer">
+                    <a href="#" onclick="manager.getPanelHandler().returnToDefault()"><i class="fas fa-arrow-left" width="16px" height="16px"></i> Return</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code entry point -->
+        <script type="module">
+            // Log the version of the DTVF being used.
+            getVisVersion().then(result => console.log("Using TWA-VF " + result));
+
+            $("#sidePanelInner").tabs();
+
+            // Create a new manager instance
+            var manager = new Manager(MapProvider.MAPBOX);
+            window.manager = manager;
+
+            // Set credentials
+            manager.readCredentials().then(() => {
+                
+                // Only start the map after data definitions have been read.
+                var dataPromise = manager.loadDefinitions();
+                dataPromise.then(() => start());
+
+                /**
+                 * Starts the visualisation setup process.
+                 */
+                function start() {
+                    // Initialise the map object
+                    manager.initialiseMap();
+                
+                    // Set the default content in the "General" tab of the side panel
+                    manager.getPanelHandler().setTitle("<h1>FIA Test Stack</h1>");
+                    manager.getPanelHandler().setContent(`
+                        <p>
+                            This visualisation's sole purpose is to provide an in situ test of the FeatureInfoAgent with sample data. For more details, see the 
+                            README file within the 'Agents/FeatureInfoAgent/sample' directory of The World Avatar repository.
+                        </p>
+                        <p>
+                            Sample data used in this example is generated and no regard has been given for correctness. It is not suggested that people use this
+                            example as a starting point for their own projects.
+                        </p>
+                    `);
+                    manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+
+                    // Save general tab state as default
+                    manager.getPanelHandler().storeDefault();
+
+                    // Once the underlying style has loaded...
+                    MapHandler.MAP.on("style.load", function() {
+                        
+                        // Load registered images and linked files
+                        manager.loadImagesAndLinks().then(() => {
+
+                            // Plot the data
+                            manager.plotData();
+                        });
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

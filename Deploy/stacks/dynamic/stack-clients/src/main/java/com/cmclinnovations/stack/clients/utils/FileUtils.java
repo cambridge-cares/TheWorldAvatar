@@ -127,4 +127,7 @@ public final class FileUtils {
         return path;
     }
 
+    public static boolean hasFileExtension(Path file, String extension) {
+        return file.toString().endsWith("." + extension);
+    }
 }
