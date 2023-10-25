@@ -499,12 +499,12 @@ For information on how to restart the stack with the FIA agent, please see the [
 
 We should now have the FIA configured and running within our stack, ready to serve metadata. First however, we need to make a small change to our visualisation's `data.json` file to point it towards our FIA instance.
 
-Within the "NHS Sites" group, we can add a `stack` parameter with the base URL of our stack (this is usually `http://localhost:3838` if running locally). The TWA-VF will then append the information required by the FIA when the user selects a location anywhere within that group's data (or within the data of its sub-groups).
+Within the "NHS Sites" group, we can add a `stack` parameter with the base URL of our stack (this is usually `http://localhost:38383` if running locally). The TWA-VF will then append the information required by the FIA when the user selects a location anywhere within that group's data (or within the data of its sub-groups).
 
 ```json
 {
     "name": "NHS Sites",
-    "stack": "http://localhost:3838",
+    "stack": "http://localhost:38383",
     "groups": [
         ...
     ]
