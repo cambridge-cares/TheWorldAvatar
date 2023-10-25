@@ -10,31 +10,28 @@ It is recommended that you read the through the [TWA-VF Overview](../docs/overvi
 
 A small amount of sample data has been committed to demonstrate the power of the TWA-VF to visualise different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
 
-- **New York**:
-  - Tiled 3D buildings, loaded from a remote CMCL server.
-  - 2D river data from a WMS endpoint provided by Cornell University.
-  - Sample tile sets to demonstrate clipping planes.
-  - No metadata or timeseries present in this data set.
+* **New York**:
+  * Tiled 3D buildings, loaded from a remote CMCL server.
+  * 2D river data from a WMS endpoint provided by Cornell University.
+  * Sample tile sets to demonstrate clipping planes.
+  * No metadata or time series present in this data set.
 
-It's also worth noting that with this example visualisation, no stack or FeatureInfoAgent is running, hence there is no support for dynamic metadata and timeseries data is unavailable. This is something that we plan to work on in future.
+It's also worth noting that with this example visualisation, no stack or FeatureInfoAgent is running, hence there is no support for dynamically loaded meta or time series data. This is something that we plan to work on in future.
 
 <br/>
 
 ## Building the Image
 
+The `docker-compose.yml` file contains the required configuration to build a Docker image for the example visualisation. This uses the `ghcr.io/cambridge-cares/twa-vf` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container (allowing the built in Apache HTTP server to host those files).
 
-The `docker-compose.yml` file contains the required configuration to build a Docker Image for the example visualisation. This uses the `twa-vf` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container.
+Once the requirements below have been addressed, the example visualisation image can be launched using the `run.sh` script. The `run.sh` script optionally accepts a `TAG=[TAG]` argument that allows the user to specify which version of the TWA-VF base image should be used to run the visualisation; if no tag is passed, then the current contents of the `../library/VERSION` file are used. This may require a copy of the TWA-VF to be built locally or pulled from the registry before running the script.
 
-- Files to be hosted must be contained within the `webspace` directory.
-- A valid Mapbox username and API token must be provided (still required in Cesium visualisations).
-- A connection to the internet is required to contact remote resources and use the mapping libraries.
+### Requirements
 
-Once the requirements have been addressed, the image can be built using the below commands, run from within this directory.
-
-- To build the Image:
-  - `docker compose -f docker-compose.yml build --force-rm`
-- To generate a Container (i.e. run the Image):
-  - `docker compose -f docker-compose.yml up -d --force-recreate`
+* Files to be hosted must be contained within the `webspace` directory.
+* A valid Mapbox username and API token must be provided (still required in Cesium visualisations).
+* A connection to the internet is required to contact remote resources and use the mapping libraries.
+* Build the TWA-VF locally or pull a pre-built TWA-VF image from the GitHub registry.
 
 <br/>
 

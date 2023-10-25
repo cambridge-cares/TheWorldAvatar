@@ -31,7 +31,7 @@ This allows the compilation to run on the local machine and the final JS and CSS
 
 <br/>
 
-### Runtime requirements
+## Runtime requirements
 
 To function correctly, visualisations using this framework also needs to include the below JavaScript libraries. Note that at the time of writing, the TWA-VF is a client based library so each of these requirements is imported as a remote, client-side resource via the head section of the visualisation's `index.html` file.
 
@@ -104,9 +104,23 @@ The following automated GitHub actions have been setup for the TWA-VF (all defin
 
 ## Planned changes
 
-A number of future changes are planned for the TWA-VF in addition to the issues currently listed on GitHub. Namely the upgrade to a more platform-like tool, comprised of multiple configurable pages, built using some of the more widely used JavaScript frameworks (Node.js, React etc.).
+An overview of bug reports, feature requests, and open PRs can be see using the [TWA Visualisation Framework](https://github.com/orgs/cambridge-cares/projects/1) project. Any new reports or requests should be linked to this project to ensure that it contains a complete overview of all related information.
 
-Plans for this upgrade are not currently published to the public repository, developers that need access to these documents should check the 4Cs section on MS Teams, or contact CMCL.
+### Issues
+
+Bugs should be reported as GitHub issues using the `TWA-VF:` prefix along with a short name for the issue. A detailed description of the issue along with reproduction steps, and if possible, [an image of the issue](https://gist.github.com/NawalJAhmed/2168f7659c08b6a033e7f6daf8db69a6).
+
+Issue reporting a bug should also use the provided `bug` tag and link to the TWA Visualisation Framework project.
+
+### Features
+
+Feature requests should be added in a similar manner to bug reports, using the provided `enhancement` tag instead. After filing, any non-trivial feature should be discussed with the development team and the issue updated with the (hopefully clearly scoped) requirements that the feature needs to meet, along with the planned technical approach (if known). 
+
+### Overhaul
+
+A future overhaul of the framework is planned; namely to upgrade to a more platform-like system, comprised of multiple configurable pages and views, built using some of the more widely used JavaScript frameworks (Node.js, React etc.).
+
+Plans for this upgrade are not currently available on this public repository, developers that need access to these documents should check the `Visualisations` channel within the 4Cs section on Microsoft Teams, or contact CMCL directly.
 
 <br/>
 

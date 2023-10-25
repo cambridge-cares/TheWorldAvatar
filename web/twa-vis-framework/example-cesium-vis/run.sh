@@ -3,8 +3,13 @@
 #
 # Use this script to run the example visualisation. It expects a single parameter
 # (named "TAG") that lists the tag to be used for the "ghcr.io/cambridge-cares/twa-vf"
-# that hosts the visualisation.
+# image that hosts the visualisation. Note that this image needs to be pulled
+# manually first.
+# 
+# If no TAG parameter is supplied, the tag will be pulled from the current contents
+# of the "../library/VERSION" file will be used.
 #
+
 
 # Parse arguments
 for ARGUMENT in "$@"

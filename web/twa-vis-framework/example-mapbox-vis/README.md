@@ -13,39 +13,38 @@ A small amount of sample data has been committed to demonstrate the power of the
 - **Cambridge**:
   - Based in and around Cambridge, this data set mimics a single stack that contains data on college locations and buildings.
   - The colleges layer demonstrates how clustering can be achieved.
-  - No metadata or timeseries present in this data set.
+  - No metadata or time series present in this data set.
 - **Singapore**:
   - Based in Singapore, this data set includes details of rail lines and stations.
   - Shows examples of setting up data-driven styling within the `data.json` file.
-  - No metadata or timeseries present in this data set.
+  - No metadata or time series present in this data set.
 - **India**:
   - Based in India, this data set shows rasterised locations of Aqueducts and Canals.
   - This data is pulled from a public WMS endpoint provided by Stanford University.
-  - No metadata or timeseries present in this data set.
+  - No metadata or time series present in this data set.
 
 In most deployed visualisations, an online stack of microservices will provide data endpoints through which data can be queried/loaded onto the visualisation. In this example, no online stack is used, solely to remove a lengthy prerequisite step. Instead, sample data in local GeoJSON files have been added (to be hosted by the visualisation's web server) and, in one case, a community provided WMS endpoint connected to.
 
 In production, it is advised that all data is loaded into a geospatial data provider (like GeoServer) and a WMS endpoint used; local files can be utilised but then do not offer the optimisation and caching of services like GeoServer. For more information on how to do this, see the README for the [Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader).
 
-It's also worth noting that with this example visualisation, no stack or FeatureInfoAgent is running, hence there is no support for dynamic metadata and timeseries data is unavailable. This is something that we plan to work on in future.
+It's also worth noting that with this example visualisation, no stack or FeatureInfoAgent is running, hence there is no support for dynamically loaded meta or time series data. To spin up a full TWA Stack that supports a visualisation and contains the ability to dynamically load meta data, please see the [Mapbox Tutorial](../docs/tutorial-mapbox.md).
 
 <br/>
 
 ## Building the Image
 
-The `docker-compose.yml` file contains the required configuration to build a Docker Image for the example visualisation. This uses the `twa-vf` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container.
+The `docker-compose.yml` file contains the required configuration to build a Docker image for the example visualisation. This uses the `ghcr.io/cambridge-cares/twa-vf` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container (allowing the built in Apache HTTP server to host those files).
 
-- Files to be hosted must be contained within the `webspace` directory.
-- A valid Mapbox username and API token must be provided.
-- A connection to the internet is required to contact remote resources and use the mapping libraries.
+Once the requirements below have been addressed, the example visualisation image can be launched using the `run.sh` script. The `run.sh` script optionally accepts a `TAG=[TAG]` argument that allows the user to specify which version of the TWA-VF base image should be used to run the visualisation; if no tag is passed, then the current contents of the `../library/VERSION` file are used. This may require a copy of the TWA-VF to be built locally or pulled from the registry before running the script.
 
-Once the requirements have been addressed, the image can be built using the below commands, run from within this directory.
+### Requirements
 
-- To build the Image:
-  - `docker compose -f docker-compose.yml build --force-rm`
-- To generate a Container (i.e. run the Image):
-  - `docker compose -f docker-compose.yml up -d --force-recreate`
+* Files to be hosted must be contained within the `webspace` directory.
+* A valid Mapbox username and API token must be provided.
+* A connection to the internet is required to contact remote resources and use the mapping libraries.
+* Build the TWA-VF locally or pull a pre-built TWA-VF image from the GitHub registry.
 
+<br/>
 
 ## Images
 
