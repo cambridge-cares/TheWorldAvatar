@@ -24,9 +24,6 @@ import java.nio.file.Paths;
 
 public class CARESWeatherStationInputAgentLauncherTest {
 
-
-    private static final Logger LOGGER = LogManager.getLogger(CARESWeatherStationInputAgentLauncherTest.class);
-
     // Temporary folder to place a properties file
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -209,6 +206,7 @@ public class CARESWeatherStationInputAgentLauncherTest {
 
         // Use a mock for the input agent
         try(MockedConstruction<CARESWeatherStationInputAgent> mockAgent = Mockito.mockConstruction(CARESWeatherStationInputAgent.class)) {
+            // Use a mock for SparqlHandler
             try(MockedConstruction<SparqlHandler> mockHandler = Mockito.mockConstruction(SparqlHandler.class)) {
                 // Use a mock for the connector that returns the dummy readings
                 try(MockedConstruction<CARESWeatherStationAPIConnector> ignored = Mockito.mockConstruction(CARESWeatherStationAPIConnector.class,
