@@ -53,13 +53,25 @@ def get_aermod_geojson(aermod_output, srid):
     conc_list = data['AVERAGE CONC']
     conc_matrix = np.empty((len(x_set), len(y_set)))
 
+    average_conc = sum(conc_list)/len(conc_list)
+    logger.info('Average concentration = ' + str(average_conc))
+
+    if (average_conc / 1e5 > 1):
+        use_g = True
+    else:
+        use_g = False
+
     elev_list = data['ZELEV']
     elev_matrix = np.empty((len(x_set), len(y_set)))
 
     for i in range(len(conc_list)):
         x_index = x_set.index(data['X'][i])
         y_index = y_set.index(data['Y'][i])
-        conc_matrix[x_index, y_index] = conc_list[i]
+        if (use_g):
+            conc_value = conc_list[i] / 1e6
+        else:
+            conc_value = conc_list[i]
+        conc_matrix[x_index, y_index] = conc_value
         elev_matrix[x_index, y_index] = elev_list[i]
 
     contour_level = 30
@@ -73,7 +85,10 @@ def get_aermod_geojson(aermod_output, srid):
 
     plt.colorbar(contourf)
     ax.remove()
-    plt.title("Concentration ($\mu$g/m$^3$)")
+    if (use_g):
+        plt.title("Concentration (g/m$^3$)")
+    else:
+        plt.title("Concentration ($\mu$g/m$^3$)")
     plt.savefig("colorbar.png", bbox_inches='tight', transparent=True, dpi=300)
 
     files = {'colorbar': open('colorbar.png', 'rb')}
