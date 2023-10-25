@@ -8,7 +8,7 @@ PREFIX hint:  <http://www.bigdata.com/queryHints#>
 PREFIX zone:  <https://www.theworldavatar.com/kg/ontozoning/>
 
 
-SELECT (COALESCE(?propertyde, ?property) as ?Property) ?Value ?Unit WHERE { 
+SELECT (COALESCE(?propertyde, ?property) as ?Property) ?Value ?Unit WHERE {
   hint:Query hint:optimizer "None" .
   {
   	SERVICE [ONTOP] {
@@ -20,26 +20,32 @@ SELECT (COALESCE(?propertyde, ?property) as ?Property) ?Value ?Unit WHERE {
   UNION
   {
     SELECT ?propertyde ?property (ROUND(?value*100)/100 AS ?Value) ?Unit WHERE { 
-    {
-      SERVICE [ONTOP] {
-        [IRI] geo:hasDefaultGeometry [geo:hasMetricArea ?value]
+      {
+        SERVICE [ONTOP] {
+          [IRI] geo:hasDefaultGeometry [geo:hasMetricArea ?value]
+        }
+        BIND('m^2' AS ?Unit)
+        BIND('Grundstücksfläche'@de AS ?propertyde)
       }
-      BIND('m^2' AS ?Unit)
-      BIND('Grundstücksfläche'@de AS ?propertyde)
-    }
-    UNION
-    {
-    SERVICE [ONTOP] {
-      ?regs regs:appliesTo [IRI] ;
-          ?allows [om:hasValue [om:hasNumericalValue ?value; om:hasUnit ?unit]] .
-    }
-    ?allows rdfs:label ?propertyde .
-    FILTER(LANGMATCHES(LANG(?propertyde), "de")) 
-    ?allows rdfs:label ?property .
-    FILTER(LANGMATCHES(LANG(?property), "")) 
-    OPTIONAL{?unit om:symbol ?Unit .
-        FILTER(?Unit!='1')
-    }
+      UNION
+      {
+        SERVICE [ONTOP] {
+          ?regs regs:appliesTo [IRI] ;
+              ?allows [om:hasValue [om:hasNumericalValue ?value; om:hasUnit ?unit]] .
+        }
+        OPTIONAL{
+          ?allows rdfs:label ?propertyde .
+          FILTER(LANGMATCHES(LANG(?propertyde), "de"))
+        }
+        OPTIONAL{
+          ?allows rdfs:label ?property .
+          FILTER(LANGMATCHES(LANG(?property), ""))
+        }
+        OPTIONAL{
+          ?unit om:symbol ?Unit .
+          FILTER(?Unit!='1')
+        }
+      }
     }
   }
-}}
+}
