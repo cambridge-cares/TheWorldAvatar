@@ -1,0 +1,14 @@
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "feature-info-agent",
+            "filter-agent"
+        ]
+    },
+    "volumes": {
+        "vis-files": "spacefinder_webspace",
+        "fia-queries": "spacefinder_queries",
+        "filter-queries": "spacefinder_filters"
+    }
+}

@@ -1,0 +1,45 @@
+PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX plt:   <https://www.theworldavatar.com/kg/ontoplot/>
+PREFIX regs:  <https://www.theworldavatar.com/kg/ontoplanningregulations/>
+PREFIX om:    <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX geo:   <http://www.opengis.net/ont/geosparql#>
+PREFIX hint:  <http://www.bigdata.com/queryHints#>
+PREFIX zone:  <https://www.theworldavatar.com/kg/ontozoning/>
+
+
+SELECT (COALESCE(?propertyde, ?property) as ?Property) ?Value ?Unit WHERE { 
+  hint:Query hint:optimizer "None" .
+  {
+  	SERVICE [ONTOP] {
+  	  ?zone zone:hasPlot [IRI] ;
+        zone:hasZoneType [rdfs:label ?Value] .
+    }
+    BIND('Flächennutzung'@de AS ?propertyde)
+  }
+  UNION
+  {
+    SELECT ?propertyde ?property (ROUND(?value*100)/100 AS ?Value) ?Unit WHERE { 
+    {
+      SERVICE [ONTOP] {
+        [IRI] geo:hasDefaultGeometry [geo:hasMetricArea ?value]
+      }
+      BIND('m^2' AS ?Unit)
+      BIND('Grundstücksfläche'@de AS ?propertyde)
+    }
+    UNION
+    {
+    SERVICE [ONTOP] {
+      ?regs regs:appliesTo [IRI] ;
+          ?allows [om:hasValue [om:hasNumericalValue ?value; om:hasUnit ?unit]] .
+    }
+    ?allows rdfs:label ?propertyde .
+    FILTER(LANGMATCHES(LANG(?propertyde), "de")) 
+    ?allows rdfs:label ?property .
+    FILTER(LANGMATCHES(LANG(?property), "")) 
+    OPTIONAL{?unit om:symbol ?Unit .
+        FILTER(?Unit!='1')
+    }
+    }
+  }
+}}

@@ -1,0 +1,8 @@
+{
+    "queries": [
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoplot/Plot",
+            "metaFile": "plot_query.sparql"
+        }
+    ]
+}
