@@ -1,10 +1,11 @@
 {
     "database": "postgres",
     "workspace": "the_world_avatar",
-    "datasetDirectory": "building-bavaria",
+    "datasetDirectory": "building-data",
     "dataSubsets": [
         {
             "type": "CityDB",
+            "subdirectory": "building-bavaria",
             "skip": false,
             "importOptions": {
                 "sridIn": "25832"
