@@ -183,7 +183,7 @@ SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
         entity_name = random.choice(values)
 
         query_graph = nx.DiGraph()
-        query_graph.add_node("Species", iri=entity_iri, label=entity_name)
+        query_graph.add_node("Species", iri=entity_iri, label=entity_name, template_node=True)
         return query_graph, entity_name 
 
     def locate_concept_name(self, entity_iri: str):
@@ -313,7 +313,7 @@ SELECT ?ChemicalClassLabel WHERE {{
         if value is None:
             return None, None
 
-        query_graph.add_node(key, label=value)
+        query_graph.add_node(key, label=value, literal=True, template_node=True)
         query_graph.add_edge("Species", key, label="os:has" + key)
 
         if operator is None:
@@ -323,7 +323,7 @@ SELECT ?ChemicalClassLabel WHERE {{
             operator_label = random.choice(COMPARATIVE_LABELS[operator])
 
             func_node =  key + "_func"
-            query_graph.add_node(func_node, label=operator)
+            query_graph.add_node(func_node, label=operator, func=True, template_node=True)
             query_graph.add_edge(key, func_node)
 
             template = "the {C} whose {K} is {OP} {V}"
