@@ -185,8 +185,8 @@ public class GeometryMatcher {
                     "public.ST_Transform(\"geometryProperty\"," + srid + ")) AND building_iri IS NULL";
         }
         else {
-            String subQuery = "(SELECT ogc_fid, SUM(public.ST_Area(public.ST_Intersection(public.ST_GeomFromText(\'" + geometry + "\'," + srid +
-                    "),public.ST_Transform(\"geometryProperty\"," + srid + ")))) AS matchedarea, public.ST_Area(\"geometryProperty\") AS area FROM " + table +
+            String subQuery = "(SELECT ogc_fid, public.ST_Area(public.ST_Intersection(public.ST_GeomFromText(\'" + geometry + "\'," + srid +
+                    "),public.ST_Transform(\"geometryProperty\"," + srid + "))) AS matchedarea, public.ST_Area(\"geometryProperty\") AS area FROM " + table +
                     " WHERE \"geometryProperty\" IS NOT NULL AND landuse IS NULL AND building_iri is NULL) AS q";
 
             query = "SELECT q.ogc_fid AS id FROM " + subQuery + " WHERE (matchedarea / area) >= " + threshold;
