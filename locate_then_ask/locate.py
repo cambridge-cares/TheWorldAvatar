@@ -5,6 +5,8 @@ from typing import Optional
 from collections import defaultdict
 
 from SPARQLWrapper import SPARQLWrapper, JSON
+import networkx as nx
+
 from constants.functions import (
     COMPARATIVE_LABELS,
     COMPARATIVES,
@@ -16,7 +18,6 @@ from constants.functions import (
     LESS_THAN,
     LESS_THAN_EQUAL,
 )
-
 from constants.ontospecies_keys import (
     KEY2LABELS,
     PROPERTY_KEYS,
@@ -24,6 +25,7 @@ from constants.ontospecies_keys import (
     USE_KEY,
     CHEMCLASS_KEY,
 )
+from constants.predicates import RDF_TYPE
 
 
 def get_lt(value: float):
@@ -156,12 +158,11 @@ LIMIT 100"""
         bindings = self.kg_client.query(query)
         return [x["x"]["value"] for x in bindings]
 
-    def get_entity_name(self, entity_iri: str):
+    def locate_entity_name(self, entity_iri: str):
         query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
     VALUES ( ?hasIdentifierName ) {{ ( os:hasInChI ) ( os:hasIUPACName ) ( os:hasMolecularFormula ) ( os:hasSMILES ) }}
-    <{SpeciesIri}> ?hasIdentifierName ?IdentifierName .
-    ?IdentifierName os:value ?IdentifierNameValue .
+    <{SpeciesIri}> ?hasIdentifierName [ os:value ?IdentifierNameValue ] .
 }}"""
         query = query_template.format(SpeciesIri=entity_iri)
 
@@ -179,10 +180,21 @@ SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
         values = random.choice(
             [v for _, v in hasIdentifierName2IdentifierNameValues.items()]
         )
-        return random.choice(values)
+        entity_name = random.choice(values)
 
-    def get_concept_name(self):
-        return "chemical species"
+        query_graph = nx.DiGraph()
+        query_graph.add_node("Species", iri=entity_iri)
+        query_graph.add_node("SpeciesId", label=entity_name)
+        query_graph.add_edge("Species", "SpeciesId", label="hasIdentifier")
+
+        return entity_name, query_graph
+
+    def locate_concept_name(self, entity_iri: str):
+        query_graph = nx.DiGraph()
+        query_graph.add_node("Species", iri=entity_iri)
+        query_graph.add_edge("Species", "os:Species", label=RDF_TYPE)
+
+        return "chemical species", query_graph
 
     def get_operator_value_qualifier_property(self, entity_iri: str, key: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -236,8 +248,7 @@ SELECT DISTINCT ?PropertyNameValue ?PropertyNameUnitLabel ?ReferenceStateValue ?
     def get_value_identifier(self, entity_iri: str, key: str):
         query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 SELECT DISTINCT ?IdentifierNameValue WHERE {{
-    <{SpeciesIri}> os:has{IdentifierName} ?IdentifierName .
-    ?IdentifierName os:value ?IdentifierNameValue .
+    <{SpeciesIri}> os:has{IdentifierName} [ os:value ?IdentifierNameValue ] .
 }}"""
         query = query_template.format(SpeciesIri=entity_iri, IdentifierName=key)
         response_bindings = self.kg_client.query(query)
@@ -249,8 +260,7 @@ SELECT DISTINCT ?IdentifierNameValue WHERE {{
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 SELECT ?UseLabel WHERE {{
-    <{SpeciesIri}> os:hasUse ?Use .
-    ?Use rdfs:label ?UseLabel .
+    <{SpeciesIri}> os:hasUse [ rdfs:label ?UseLabel ] .
 }}"""
         query = query_template.format(SpeciesIri=entity_iri)
         response_bindings = self.kg_client.query(query)
@@ -264,8 +274,8 @@ PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 SELECT ?ChemicalClassLabel WHERE {{
     <{SpeciesIri}> os:hasChemicalClass* ?x .
 	?x ?y ?z .
-	?z rdfs:subClassOf* ?ChemicalClass .
-	?ChemicalClass rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassLabel .
+	?z rdfs:subClassOf* [ rdf:type os:ChemicalClass ; 
+                          rdfs:label ?ChemicalClassLabel ] .
 }}"""
         query = query_template.format(SpeciesIri=entity_iri)
         response_bindings = self.kg_client.query(query)
@@ -292,8 +302,8 @@ SELECT ?ChemicalClassLabel WHERE {{
 
         return operator, value, qualifier_key, qualifier_value
 
-    def get_concept_and_literal(self, entity_iri: str):
-        class_label = self.get_concept_name()
+    def locate_concept_and_literal(self, entity_iri: str):
+        class_label, query_graph = self.locate_concept_name()
 
         key_sampling_frame = PROPERTY_KEYS + IDENTIFIER_KEYS + [USE_KEY, CHEMCLASS_KEY]
         key = random.choice(key_sampling_frame)
@@ -308,11 +318,19 @@ SELECT ?ChemicalClassLabel WHERE {{
         if value is None:
             return None
 
+        query_graph.add_node(key, label=value)
+        query_graph.add_edge("Species", key, label="os:has" + key)
+
         if operator is None:
             template = "the {C} whose {K} is {V}"
             verbalization = template.format(C=class_label, K=key_label, V=value)
         else:
             operator_label = random.choice(COMPARATIVE_LABELS[operator])
+
+            func_node =  key + "_func"
+            query_graph.add_node(func_node, label=operator)
+            query_graph.add_edge(key, func_node)
+
             template = "the {C} whose {K} is {OP} {V}"
             verbalization = template.format(
                 C=class_label, K=key_label, OP=operator_label, V=value
@@ -323,9 +341,12 @@ SELECT ?ChemicalClassLabel WHERE {{
             and qualifier_value is not None
             and random.getrandbits(1)
         ):
+            query_graph.nodes[key]["qualifier_key"] = qualifier_key
+            query_graph.nodes[key]["qualifier_value"] = qualifier_value
+
             qualifier_template = " ({QK} is {QV})"
             verbalization += qualifier_template.format(
                 QK=qualifier_key, QV=qualifier_value
             )
 
-        return verbalization
+        return verbalization, query_graph

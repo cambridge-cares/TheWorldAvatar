@@ -1,7 +1,8 @@
 from typing import Iterable
 import networkx as nx
 
-from constants.prefixes import NAMESPACE2PREFIX, RDFS_SUBCLASSOF
+from constants.namespaces import NAMESPACE2PREFIX
+from constants.predicates import RDFS_SUBCLASSOF
 
 
 class Utils:
