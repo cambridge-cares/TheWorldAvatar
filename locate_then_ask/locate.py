@@ -1,3 +1,4 @@
+import copy
 import random
 from typing import Optional
 from collections import defaultdict
@@ -233,7 +234,7 @@ SELECT DISTINCT * WHERE {{
         if query_graph is None:
             query_graph, _ = self.locate_concept_name(entity_iri)
         else:
-            query_graph = query_graph.copy()
+            query_graph = copy.deepcopy(query_graph)
 
         key_sampling_frame = [
             x
@@ -285,15 +286,14 @@ SELECT DISTINCT * WHERE {{
 
         return query_graph, verbalization
 
-    def locate_intersection(self, entity_iri: str):
+    def locate_intersection(self, entity_iri: str, cond_num: int=2):
         verbalized_conds = []
-        query_graph, verbalized_cond = self.locate_concept_and_literal(entity_iri)
-        verbalized_conds.append(verbalized_cond)
-
-        query_graph, verbalized_cond = self.locate_concept_and_literal(
-            entity_iri, query_graph
-        )
-        verbalized_conds.append(verbalized_cond)
+        query_graph = None
+        
+        for _ in range(cond_num):
+            query_graph, verbalized_cond = self.locate_concept_and_literal(entity_iri, query_graph)
+            if verbalized_cond is not None:
+                verbalized_conds.append(verbalized_cond)
 
         verbalization = "the chemical species whose {conds}".format(
             conds=" and ".join(verbalized_conds)

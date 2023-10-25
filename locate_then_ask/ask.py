@@ -1,3 +1,4 @@
+import copy
 import random
 
 import networkx as nx
@@ -10,7 +11,7 @@ class Asker:
         pass
 
     def ask_query_name(self, query_graph: nx.DiGraph, verbalization: str):
-        query_graph = query_graph.copy()
+        query_graph = copy.deepcopy(query_graph)
         query_graph.nodes["Species"]["question_node"] = True
 
         verbalization = "What is " + verbalization
@@ -18,7 +19,7 @@ class Asker:
         return query_graph, verbalization
     
     def ask_count(self, query_graph: nx.DiGraph, verbalization: str):
-        query_graph = query_graph.copy()
+        query_graph = copy.deepcopy(query_graph)
         query_graph.nodes["Species"]["question_node"] = True
         query_graph.add_node("Species_func", label="count", func=True, template_node=True)
         query_graph.add_edge("Species", "Species_func")
@@ -32,7 +33,7 @@ class Asker:
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
-        query_graph = query_graph.copy()
+        query_graph = copy.deepcopy(query_graph)
         query_graph.add_node(key, question_node=True)
         query_graph.add_edge("Species", key, label="os:has" + key)
 
