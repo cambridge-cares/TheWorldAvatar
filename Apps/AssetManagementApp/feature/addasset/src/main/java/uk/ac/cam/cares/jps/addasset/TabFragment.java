@@ -2,11 +2,11 @@ package uk.ac.cam.cares.jps.addasset;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.BUILDING;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.FACILITY;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.LOCATED_IN;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.ROOM;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.LOCATION_SECTION_TITLE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_FILE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_SECTION_TITLE;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SEAT_LOCATION;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.WORKSPACE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_FILE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_SECTION_TITLE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.STORED_IN;
@@ -31,7 +31,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -177,13 +176,13 @@ public class TabFragment extends Fragment {
         setIsMissingObserver(facilityProperty, facilityInputText);
         linearLayout.addView(facilityInputText);
 
-        LocationDropDownDataModel roomProperty = (LocationDropDownDataModel) viewModel.getInputFieldModels().get(LOCATED_IN);
+        LocationDropDownDataModel roomProperty = (LocationDropDownDataModel) viewModel.getInputFieldModels().get(ROOM);
         PropertyAutoCompleteTextView roomInputText = new PropertyAutoCompleteTextView(requireContext(), roomProperty);
         roomProperty.getMutableInstances().observe(this.getViewLifecycleOwner(), rooms -> ((PropertyAutoCompleteTextView) roomInputText).updateAdapterList(rooms));
         setIsMissingObserver(roomProperty, roomInputText);
         linearLayout.addView(roomInputText);
 
-        LocationDropDownDataModel workspaceProperty = (LocationDropDownDataModel) viewModel.getInputFieldModels().get(SEAT_LOCATION);
+        LocationDropDownDataModel workspaceProperty = (LocationDropDownDataModel) viewModel.getInputFieldModels().get(WORKSPACE);
         PropertyAutoCompleteTextView workspaceInputText = new PropertyAutoCompleteTextView(requireContext(), workspaceProperty);
         workspaceProperty.getMutableInstances().observe(this.getViewLifecycleOwner(), workspaces -> ((PropertyAutoCompleteTextView) workspaceInputText).updateAdapterList(workspaces));
         setIsMissingObserver(workspaceProperty, workspaceInputText);
@@ -213,9 +212,11 @@ public class TabFragment extends Fragment {
                 property.setFieldValue(selected);
 
                 clearLowerLevelDropdown(currentViewInd + 1, locationInputTextViews);
-                loadSubLevelOptions(
-                        properties.get(currentViewInd + 1),
-                        (Instance) locationInputTextViews.get(currentViewInd).getAdapter().getItem(i1));
+                if (currentViewInd + 1 < properties.size()) {
+                    loadSubLevelOptions(
+                            properties.get(currentViewInd + 1),
+                            (Instance) locationInputTextViews.get(currentViewInd).getAdapter().getItem(i1));
+                }
             };
             view.setOnItemClickedListener(onItemClickListener);
 
@@ -237,7 +238,7 @@ public class TabFragment extends Fragment {
                     property.setFieldValue(editable.toString());
 
                     clearLowerLevelDropdown(currentViewInd + 1, locationInputTextViews);
-                    if (property.getMatched(editable.toString()) != null) {
+                    if (property.getMatched(editable.toString()) != null && currentViewInd + 1 < properties.size()) {
                         loadSubLevelOptions(
                                 properties.get(currentViewInd + 1),
                                 property.getMatched(editable.toString()));

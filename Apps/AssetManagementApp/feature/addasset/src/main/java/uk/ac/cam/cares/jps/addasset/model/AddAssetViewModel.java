@@ -47,9 +47,9 @@ public class AddAssetViewModel extends ViewModel {
     // use field keys to define each field view's appearance and behaviour
     private final List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, BUILDING);
     private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, SERVICE_CODE, SERVICE_CATEGORY);
-    private final List<String> locationFieldKeys = Arrays.asList(BUILDING, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
+    private final List<String> locationFieldKeys = Arrays.asList(BUILDING, FACILITY, ROOM, WORKSPACE, STORED_IN);
     private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_FILE, MANUAL_FILE);
-    private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, FACILITY, LOCATED_IN, SEAT_LOCATION, STORED_IN);
+    private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, FACILITY, ROOM, WORKSPACE, STORED_IN);
     private final List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
     private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SPEC_SHEET_COMMENT, MANUAL_COMMENT);
 
@@ -153,8 +153,8 @@ public class AddAssetViewModel extends ViewModel {
                 hasError = true;
             }
 
-            if (inputFieldModels.get(LOCATED_IN).getFieldValue().isEmpty()) {
-                inputFieldModels.get(LOCATED_IN).getIsMissingField().setValue(true);
+            if (inputFieldModels.get(ROOM).getFieldValue().isEmpty()) {
+                inputFieldModels.get(ROOM).getIsMissingField().setValue(true);
                 hasError = true;
             }
         }
