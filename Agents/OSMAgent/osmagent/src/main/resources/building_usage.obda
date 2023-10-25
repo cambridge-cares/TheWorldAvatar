@@ -16,6 +16,6 @@ source      SELECT DISTINCT COALESCE(p.name, o.name) AS name,
             u.propertyusage_iri, 
             u.usageshare 
             FROM usage.usage AS u 
-            LEFT JOIN osm.points AS p ON u.building_iri = p.building_iri 
-            LEFT JOIN osm.polygons AS o ON u.building_iri = o.building_iri
+            LEFT JOIN public.points AS p ON u.building_iri = p.building_iri 
+            LEFT JOIN public.polygons AS o ON u.building_iri = o.building_iri
 ]]

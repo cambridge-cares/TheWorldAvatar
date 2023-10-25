@@ -39,8 +39,8 @@ public class OSMAgent extends JPSAgent {
                                                     "    SELECT u.building_iri, u.ontobuilt, u.propertyusage_iri, u.usageshare,\n" +
                                                     "       COALESCE(p.name, o.name) AS name\n" +
                                                     "FROM usage.usage AS u\n" +
-                                                    "LEFT JOIN osm.points AS p ON u.building_iri = p.building_iri\n" +
-                                                    "LEFT JOIN osm.polygons AS o ON u.building_iri = o.building_iri\n" +
+                                                    "LEFT JOIN public.points AS p ON u.building_iri = p.building_iri\n" +
+                                                    "LEFT JOIN public.polygons AS o ON u.building_iri = o.building_iri\n" +
                                                     ") p ON cga.urival = p.building_iri WHERE cga.attrname = 'iri' AND sg.geometry IS NOT NULL";
                                                     
     private EndpointConfig endpointConfig = new EndpointConfig();
