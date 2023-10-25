@@ -29,10 +29,6 @@ from locate_then_ask.utils import get_gt, get_lt
 
 
 class Locator:
-    SPECIES_ATTR_VALUES = "\n    ".join(
-        ["(os:has{p})".format(p=p) for p in SPECIES_ATTRIBUTE_KEYS]
-    )
-
     def __init__(
         self,
         kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
@@ -50,6 +46,9 @@ class Locator:
         self.entity2attrs = dict()
 
     def sample_entities(self):
+        species_attr_values = "\n    ".join(
+            ["(os:has{p})".format(p=p) for p in SPECIES_ATTRIBUTE_KEYS]
+        )
         query = """"PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
   ?x a os:Species .
@@ -60,7 +59,7 @@ SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
 GROUP BY ?x
 ORDER BY DESC(?degree)
 LIMIT 100""".format(
-            bindings=self.SPECIES_ATTR_VALUES
+            bindings=species_attr_values
         )
         bindings = self.kg_client.query(query)
         return [x["x"]["value"] for x in bindings]
@@ -208,7 +207,7 @@ SELECT ?ChemicalClassLabel WHERE {{
 
         return operator, value, qualifier_key, qualifier_value
 
-    def get_attrs(self, entity_iri: str):
+    def get_attrs_property(self, entity_iri: str):
         if entity_iri not in self.entity2attrs:
             query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 SELECT DISTINCT * WHERE {{
@@ -216,8 +215,11 @@ SELECT DISTINCT * WHERE {{
   }}
   <{SpeciesIri}> ?p ?o .
 }}"""
+            hasproperty_values = "\n    ".join(
+                ["(os:has{p})".format(p=p) for p in PROPERTY_KEYS]
+            )
             query = query_template.format(
-                bindings=self.SPECIES_ATTR_VALUES, SpeciesIri=entity_iri
+                bindings=hasproperty_values, SpeciesIri=entity_iri
             )
             response_bindings = self.kg_client.query(query)
             self.entity2attrs[entity_iri] = set(
@@ -236,11 +238,12 @@ SELECT DISTINCT * WHERE {{
         else:
             query_graph = copy.deepcopy(query_graph)
 
-        key_sampling_frame = [
+        unsampled_property_keys = [
             x
-            for x in self.get_attrs(entity_iri)
-            if x in [USE_KEY, CHEMCLASS_KEY] or x not in query_graph.nodes()
+            for x in self.get_attrs_property(entity_iri)
+            if x not in query_graph.nodes()
         ]
+        key_sampling_frame = unsampled_property_keys + [USE_KEY, CHEMCLASS_KEY] * (len(unsampled_property_keys) // 2)
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
