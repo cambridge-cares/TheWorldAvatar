@@ -1,10 +1,7 @@
 import random
-import random
-import math
 from typing import Optional
 from collections import defaultdict
 
-from SPARQLWrapper import SPARQLWrapper, JSON
 import networkx as nx
 
 from constants.functions import (
@@ -26,50 +23,8 @@ from constants.ontospecies_keys import (
     USE_KEY,
     CHEMCLASS_KEY,
 )
-from constants.predicates import RDF_TYPE
-
-
-def get_lt(value: float):
-    if value == 0:
-        lt = -1.0
-    elif value > 0:
-        lt = value * 0.9
-    else:
-        lt = value * 1.1
-
-    if random.getrandbits(1):
-        lt_int = math.floor(lt)
-        if lt_int < value:
-            lt = lt_int
-
-    return lt
-
-
-def get_gt(value: float):
-    if value == 0:
-        gt = 1.0
-    elif value > 0:
-        gt = value * 1.1
-    else:
-        gt = value * 0.9
-
-    if random.getrandbits(1):
-        gt_int = math.ceil(gt)
-        if gt_int > value:
-            gt = gt_int
-
-    return gt
-
-
-class KgClient:
-    def __init__(self, kg_endpoint: str):
-        client = SPARQLWrapper(endpoint=kg_endpoint)
-        client.setReturnFormat(JSON)
-        self.client = client
-
-    def query(self, query: str):
-        self.client.setQuery(query)
-        return self.client.queryAndConvert()["results"]["bindings"]
+from locate_then_ask.kg_client import KgClient
+from locate_then_ask.utils import get_gt, get_lt
 
 
 class Locator:
@@ -281,7 +236,9 @@ SELECT DISTINCT * WHERE {{
             query_graph = query_graph.copy()
 
         key_sampling_frame = [
-            x for x in self.get_attrs(entity_iri) if x not in query_graph.nodes()
+            x
+            for x in self.get_attrs(entity_iri)
+            if x in [USE_KEY, CHEMCLASS_KEY] or x not in query_graph.nodes()
         ]
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
