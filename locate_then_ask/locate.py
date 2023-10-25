@@ -73,6 +73,10 @@ class KgClient:
 
 
 class Locator:
+    SPECIES_ATTR_VALUES = "\n    ".join(
+        ["(os:has{p})".format(p=p) for p in SPECIES_ATTRIBUTE_KEYS]
+    )
+
     def __init__(
         self,
         kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
@@ -87,75 +91,21 @@ class Locator:
                 seed_entities = [x.strip() for x in f.readlines()]
                 seed_entities = [x for x in seed_entities if x]
         self.seed_entities = seed_entities
+        self.entity2attrs = dict()
 
     def sample_entities(self):
         query = """"PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-
-SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {
+SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
   ?x a os:Species .
-  VALUES (?p) {
-    (os:hasAtomChiralCount)
-    (os:hasAtomChiralDefCount)
-    (os:hasAtomChiralUndefCount)
-    (os:hasBondChiralCount)
-    (os:hasBondChiralDefCount)
-    (os:hasBondChiralUndefCount)
-    (os:hasCanonicalizedCompound)
-    (os:hasCharge)
-    (os:hasCompoundComplexity)
-    (os:hasCovalentUnitCount)
-    (os:hasExactMass)
-    (os:hasHeavyAtomCount)
-    (os:hasHydrogenBondAcceptorCount)
-    (os:hasHydrogenBondDonorCount)
-    (os:hasIsotopeAtomCount)
-    (os:hasMolecularWeight)
-    (os:hasMonoIsotopicWeight)
-    (os:hasRotatableBondCount)
-    (os:hasSubStructureKeysFingerprint)
-    (os:hasTautomerCount)
-    (os:hasXLogP3)
-    (os:hasAutoignitionTemperature)
-    (os:hasCaco2Permeability)
-    (os:hasCollisionCrossSection)
-    (os:hasHydrophobicity)
-    (os:hasIonizationPotential)
-    (os:hasIsoelectricPoint)
-    (os:hasLogP)
-    (os:hasLogS)
-    (os:hasPolarSurfaceArea)
-    (os:hasBoilingPoint)
-    (os:hasDensity)
-    (os:hasDissociationConstants)
-    (os:hasEnthalpyOfSublimation)
-    (os:hasFlashPoint)
-    (os:hasStandardEnthalpyOfFormation)
-    (os:hasHeatOfCombustion)
-    (os:hasHeatOfVaporization)
-    (os:hasHenrysLawConstant)
-    (os:hasMeltingPoint)
-    (os:hasOpticalRotation)
-    (os:hasSolubility)
-    (os:hasSurfaceTension)
-    (os:hasVaporDensity)
-    (os:hasVaporPressure)
-    (os:hasViscosity)
-    (os:hasChebiID)
-    (os:hasCID)
-    (os:hasEmpiricalFormula)
-    (os:hasInChI)
-    (os:hasInChIKey)
-    (os:hasIUPACName)
-    (os:hasMolecularFormula)
-    (os:hasSMILES)
-    (os:hasUse)
-    (os:hasChemicalClass)
-  }
+  VALUES (?p) {{{bindings}
+  }}
   ?x ?p ?o .
-}
+}}
 GROUP BY ?x
 ORDER BY DESC(?degree)
-LIMIT 100"""
+LIMIT 100""".format(
+            bindings=self.SPECIES_ATTR_VALUES
+        )
         bindings = self.kg_client.query(query)
         return [x["x"]["value"] for x in bindings]
 
@@ -184,12 +134,16 @@ SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
         entity_name = random.choice(values)
 
         query_graph = nx.DiGraph()
-        query_graph.add_node("Species", iri=entity_iri, label=entity_name, template_node=True)
-        return query_graph, entity_name 
+        query_graph.add_node(
+            "Species", iri=entity_iri, label=entity_name, template_node=True
+        )
+        return query_graph, entity_name
 
     def locate_concept_name(self, entity_iri: str):
         query_graph = nx.DiGraph()
-        query_graph.add_node("Species", iri=entity_iri, rdf_type="os:Species", label="os:Species")
+        query_graph.add_node(
+            "Species", iri=entity_iri, rdf_type="os:Species", label="os:Species"
+        )
         return query_graph, "chemical species"
 
     def get_operator_value_qualifier_property(self, entity_iri: str, key: str):
@@ -298,13 +252,37 @@ SELECT ?ChemicalClassLabel WHERE {{
 
         return operator, value, qualifier_key, qualifier_value
 
-    def locate_concept_and_literal(self, entity_iri: str, query_graph: Optional[nx.DiGraph] = None):
+    def get_attrs(self, entity_iri: str):
+        if entity_iri not in self.entity2attrs:
+            query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+SELECT DISTINCT * WHERE {{
+  VALUES (?p) {{{bindings}
+  }}
+  <{SpeciesIri}> ?p ?o .
+}}"""
+            query = query_template.format(
+                bindings=self.SPECIES_ATTR_VALUES, SpeciesIri=entity_iri
+            )
+            response_bindings = self.kg_client.query(query)
+            self.entity2attrs[entity_iri] = set(
+                [
+                    binding["p"]["value"].split("#has", maxsplit=1)[-1]
+                    for binding in response_bindings
+                ]
+            )
+        return self.entity2attrs[entity_iri]
+
+    def locate_concept_and_literal(
+        self, entity_iri: str, query_graph: Optional[nx.DiGraph] = None
+    ):
         if query_graph is None:
             query_graph, _ = self.locate_concept_name(entity_iri)
         else:
             query_graph = query_graph.copy()
 
-        key_sampling_frame = [x for x in SPECIES_ATTRIBUTE_KEYS if x not in query_graph.nodes()]
+        key_sampling_frame = [
+            x for x in self.get_attrs(entity_iri) if x not in query_graph.nodes()
+        ]
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
@@ -325,8 +303,10 @@ SELECT ?ChemicalClassLabel WHERE {{
         else:
             operator_label = random.choice(COMPARATIVE_LABELS[operator])
 
-            func_node =  key + "_func"
-            query_graph.add_node(func_node, label=operator, func=True, template_node=True)
+            func_node = key + "_func"
+            query_graph.add_node(
+                func_node, label=operator, func=True, template_node=True
+            )
             query_graph.add_edge(key, func_node)
 
             verbalization = "{K} is {OP} {V}".format(
@@ -353,9 +333,13 @@ SELECT ?ChemicalClassLabel WHERE {{
         query_graph, verbalized_cond = self.locate_concept_and_literal(entity_iri)
         verbalized_conds.append(verbalized_cond)
 
-        query_graph, verbalized_cond = self.locate_concept_and_literal(entity_iri, query_graph)
+        query_graph, verbalized_cond = self.locate_concept_and_literal(
+            entity_iri, query_graph
+        )
         verbalized_conds.append(verbalized_cond)
 
-        verbalization = "the chemical species whose {conds}".format(conds=" and ".join(verbalized_conds))
+        verbalization = "the chemical species whose {conds}".format(
+            conds=" and ".join(verbalized_conds)
+        )
 
         return query_graph, verbalization
