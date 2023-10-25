@@ -1,31 +1,21 @@
 {
-    "name": "All Data",
-    "groups": [
+    "name": "Spacefinder",
+    "stack": "http://localhost:1990",
+    "sources": [
         {
-            "name": "Pirmasens",
-            "stack": "http://localhost:1990/",
-            "sources": [
-                {
-                    "id": "plots",
-                    "type": "vector",
-                    "tiles": [
-                        "http://localhost:1990/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:plots&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
-                }
-            ],
-            "layers": [
-                {
-                    "id": "plots",
-                    "name": "Plots",
-                    "source": "plots",
-                    "source-layer": "plots",
-                    "type": "fill",
-                    "paint": {
-                        "fill-color": "#31ff61",
-                        "fill-opacity": 0.5
-                    }
-                }
-            ]
+            "id": "plots",
+            "type": "wms",
+            "uri": "http://localhost:1990/geoserver/ows?SERVICE=WMS&",
+            "wmsLayer": "plots",
+            "transparency": true,
+            "format": "image/png"
+        }
+    ],
+    "layers": [
+        {
+            "id": "plots",
+            "name": "Hudson River Sediment",
+            "source": "plots"
         }
     ]
 }

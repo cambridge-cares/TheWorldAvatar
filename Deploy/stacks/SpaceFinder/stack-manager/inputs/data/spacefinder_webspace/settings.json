@@ -2,10 +2,14 @@
     "start": {
         "center": [
             7.613702,
-            49.221851
+            49.221851,
+            10000
         ],
-        "zoom": 12,
-        "bearing": 0,
-        "pitch": 45
+        "heading": 0,
+        "pitch": -90,
+        "roll": 0
+    },
+    "fields": {
+        "name": "gml:name"
     }
 }
