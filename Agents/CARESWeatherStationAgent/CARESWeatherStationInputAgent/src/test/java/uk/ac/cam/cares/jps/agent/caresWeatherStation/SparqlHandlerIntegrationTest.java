@@ -104,10 +104,14 @@ public class SparqlHandlerIntegrationTest {
         String clientPropertiesFile = Paths.get(folder.getRoot().toString(), "cient.properties").toString();
         writePropertyFile(clientPropertiesFile, Arrays.asList("sparql.query.endpoint=" + endpoint, "sparql.update.endpoint=" + endpoint));
         
+        // Create and write content to temporary client.properties file
+        String apiPropertiesFile = Paths.get(folder.getRoot().toString(), "api.properties").toString();
+        writePropertyFile(apiPropertiesFile, Arrays.asList("weather.stationId=12345"));
+
         //create SparqlHandler
         try {
             SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                sparqlHandler = new SparqlHandler(agentPropertiesFile, clientPropertiesFile);
+                sparqlHandler = new SparqlHandler(agentPropertiesFile, clientPropertiesFile, apiPropertiesFile);
             });
         }
         catch (Exception e) {
@@ -284,11 +288,21 @@ public class SparqlHandlerIntegrationTest {
         }
 
         //check rdf:type of reporting station instance
-        queryPattern = iri(queryResult.getJSONObject(0).getString("var")).isA(var2);
+        String reportingStationIRI = queryResult.getJSONObject(0).getString("var");
+        queryPattern = iri(reportingStationIRI).isA(var2);
         query = Queries.SELECT();
         query.select(var2).where(queryPattern);
         kbClient.setQuery(query.getQueryString());
         queryResult = kbClient.executeQuery();
         Assert.assertEquals("https://www.theworldavatar.com/kg/ontoems/ReportingStation", queryResult.getJSONObject(0).getString("var2"));
+
+        //check label of reporting station instance
+        queryPattern = iri(reportingStationIRI).has(iri("http://www.w3.org/2000/01/rdf-schema#label"), var2);
+        query = Queries.SELECT();
+        query.select(var2).where(queryPattern);
+        kbClient.setQuery(query.getQueryString());
+        queryResult = kbClient.executeQuery();
+        Assert.assertEquals("Weather Station 12345", queryResult.getJSONObject(0).getString("var2"));
+
     }
 }
