@@ -31,7 +31,7 @@ It's also worth noting that with this example visualisation, no stack or Feature
 
 <br/>
 
-## Building the Image
+## Running the visualisation
 
 The `docker-compose.yml` file contains the required configuration to build a Docker image for the example visualisation. This uses the `ghcr.io/cambridge-cares/twa-vf` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container (allowing the built in Apache HTTP server to host those files).
 
