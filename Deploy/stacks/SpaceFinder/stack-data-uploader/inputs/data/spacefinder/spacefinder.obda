@@ -1,0 +1,64 @@
+[PrefixDeclaration]
+:       https://www.theworldavatar.com/kg/ontoplot/postgres/plots/
+z:      https://www.theworldavatar.com/kg/ontozoning/postgres/plots/
+zone:   https://www.theworldavatar.com/kg/ontozoning/
+plt:    https://www.theworldavatar.com/kg/ontoplot/
+regs:   https://www.theworldavatar.com/kg/ontoplanningregulations/
+rdf:    http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
+owl:    http://www.w3.org/2002/07/owl#
+xsd:    http://www.w3.org/2001/XMLSchema#
+geo:    http://www.opengis.net/ont/geosparql#
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+mappingId       plots
+target          :{ogc_fid} a plt:Plot ;
+                    geo:hasDefaultGeometry :geometry/{ogc_fid} .
+                z:{zone} zone:hasPlot :{ogc_fid} .
+                :geometry/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral ;
+                    geo:hasMetricArea "{area}"^^xsd:double .
+                :reg/buildingheight/{ogc_fid} regs:allowsBuildingHeight :allowedbuildingheight/{ogc_fid} ;
+                    regs:appliesTo :{ogc_fid} .
+                :reg/sitecoverage/{ogc_fid} regs:allowsSiteCoverage :allowedsitecoverage/{ogc_fid} ;
+                    regs:appliesTo :{ogc_fid} .
+                :allowedsitecoverage/{ogc_fid} om:hasValue :allowedsitecoveragemeasure/{ogc_fid} .
+                :allowedsitecoveragemeasure/{ogc_fid} om:hasUnit om:one ;
+                    om:hasNumericalValue "{grz}"^^xsd:float .
+                :reg/buildingmassratio/{ogc_fid} regs:allowsBuildingMassRatio :allowedbuildingmassratio/{ogc_fid} ;
+                    regs:appliesTo :{ogc_fid} .
+                :allowedbuildingmassratio/{ogc_fid} om:hasValue :allowedbuildingmassratiomeasure/{ogc_fid} .
+                :allowedbuildingmassratiomeasure/{ogc_fid} om:hasUnit om:one ;
+                    om:hasNumericalValue "{bmz}"^^xsd:float .
+                :reg/heightabovenormalnull/{ogc_fid} regs:allowsHeightAboveNormalNull :allowedheightabovenormalnull/{ogc_fid} ;
+                    regs:appliesTo :{ogc_fid} .
+                :allowedheightabovenormalnull/{ogc_fid} om:hasValue :allowedheightabovenormalnullmeasure/{ogc_fid} .
+                :allowedheightabovenormalnullmeasure/{ogc_fid} om:hasUnit om:metre ;
+                    om:hasNumericalValue "{ok}"^^xsd:float .
+source          SELECT ogc_fid,
+                area,
+                "GRZ" AS grz,
+                "OK" AS ok,
+                COALESCE("GFZ",2.4) AS gfz,
+                COALESCE("BMZ",COALESCE("GFZ",2.4)*3.5) AS bmz,
+                "Zone" as zone,
+                ST_ASTEXT(wkb_geometry) AS wkt
+                FROM plots
+
+mappingId       max-height-plots
+target          :allowedbuildingheight/{ogc_fid} om:hasValue :allowedbuildingheightmeasure/{ogc_fid} .
+                :allowedbuildingheightmeasure/{ogc_fid} om:hasUnit om:metre ;
+                    om:hasNumericalValue "{height}"^^xsd:float .
+source          SELECT ogc_fid, "OK" - Max(i.val) AS height
+                FROM elevation r, plots p, ST_Intersection(r.rast, p.wkb_geometry) i
+                WHERE ST_Intersects(p.wkb_geometry, r.rast)
+                GROUP BY ogc_fid
+
+mappingId       zone
+target          z:{zone} a zone:Zone ;
+                    zone:hasZoneType zone:ZoneType/{zone} .
+                zone:ZoneType/{zone} a zone:ZoneType ;
+                    rdfs:label "{zone}"@de .
+source          SELECT DISTINCT "Zone" as zone
+                FROM "plots"
+]]

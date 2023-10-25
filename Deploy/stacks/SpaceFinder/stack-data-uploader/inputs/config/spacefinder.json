@@ -1,0 +1,39 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "spacefinder",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "name": "rdf",
+            "type": "rdf",
+            "skip": false,
+            "subdirectory": "rdf"
+        },
+        {
+            "name": "plots",
+            "type": "vector",
+            "skip": false,
+            "subdirectory": "plots",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "plots",
+                    "sql": "SELECT CONCAT('https://www.theworldavatar.com/kg/ontoplot/postgres/plots/', ogc_fid) AS iri, 'http://pirmasens-blazegraph:8080/blazegraph/namespace/spacefinder/sparql' as endpoint, wkb_geometry AS geom FROM plots",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        }
+    ],
+    "mappings": [
+        "spacefinder.obda"
+    ]
+}

@@ -1,0 +1,7 @@
+@prefix regs: <https://www.theworldavatar.com/kg/ontoplanningregulations/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+regs:allowsHeightAboveNormalNull rdfs:label "Oberkante"@de .
+regs:allowsBuildingMassRatio rdfs:label "Baumassenzahl"@de .
+regs:allowsBuildingHeight rdfs:label "Maximale Gebäudehöhe"@de .
+regs:allowsSiteCoverage rdfs:label "Grundflächenzahl"@de .
