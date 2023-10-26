@@ -9,6 +9,10 @@ class AssetDisplayComponent extends DynamicComponent {
   constructor(title: string) {
     // Call the super class constructor
     super(title);
+    // Add an event for the title, so that on clicking, it will expand the content
+    this.container_title.addEventListener("click", () => this.toggleContent());
+    // Create an empty content container for developers to add later
+    this.container_content.style.height = "0";
     // Create a new card container
     let card_container: HTMLElement = createDiv({ classes: ["asset-card-container"] });
     // Set up the counter to number each asset
@@ -19,8 +23,23 @@ class AssetDisplayComponent extends DynamicComponent {
       counter++;
     });
     // Append the card container to the additional content container
-    super.getContent().appendChild(card_container);
+    this.container_content.appendChild(card_container);
   };
+
+  /**
+   * Toggle the content on and off whenever the collapsible button is clicked.
+ */
+  private toggleContent(): void {
+    if (this.container_content.style.height === "0px") {
+      // Height will accommodate content
+      this.container_content.style.height = "auto";
+      // Hide the text so that the animation is not as jarring
+      this.container_content.style.opacity = "1";
+    } else {
+      this.container_content.style.height = "0";
+      this.container_content.style.opacity = "0";
+    }
+  }
 
   /**
    * Create the asset map to populate the cards
