@@ -88,6 +88,8 @@ The time-series client property file needs to contain all credentials and endpoi
 - `db.password` the password to access the Postgres database
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
+- `sparql.username` the username to access the SPARQL endpoint
+- `sparql.password` the password to access the SPARQL endpoint
 
 More information can be found in the example property file `client.properties` in the `config` folder.
 
