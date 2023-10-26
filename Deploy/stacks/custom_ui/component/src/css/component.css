@@ -29,6 +29,11 @@
   transition: opacity 0.2s ease-out, height 0.2s ease-out;
 }
 
+.line-item {
+  display: flex;
+  margin: 4px 0;
+}
+
 /* Application-specific classes   */
 .asset-card-container {
   display: flex;
@@ -45,11 +50,6 @@
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
-.asset-card-line {
-  display: flex;
-  margin: 4px 0;
-}
-
 .asset-card-line:nth-child(even) {
-  background: rgb(238,238,238);
+  background: rgb(238, 238, 238);
 }
