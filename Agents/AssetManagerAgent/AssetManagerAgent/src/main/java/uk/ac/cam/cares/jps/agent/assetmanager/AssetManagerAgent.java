@@ -432,6 +432,7 @@ public class AssetManagerAgent extends JPSAgent{
         String db;
         JSONArray checkedPred = pred;
         int depth = searchDepth;
+        Boolean isBMSdevice = false;
 
         if (depth < 0){
             depth = getMaxDepth();
@@ -446,13 +447,16 @@ public class AssetManagerAgent extends JPSAgent{
             }
 
             //When ID is not there, the asset is possibly a BMS device, check for lab namespace
-            if (IRI == null) {
-                ID = instanceHandler.existenceChecker.getLabelbyIRIString(IRI);
+            if (IRI == null || ID == null){
+                if (IRI == null) {
+                    ID = instanceHandler.existenceChecker.getLabelbyIRIString(IRI);
+                }
+                else if (ID == null) {
+                    IRI = instanceHandler.existenceChecker.getIRIbyLabelString(ID);
+                }
+                isBMSdevice = true;
             }
-            else if (ID == null) {
-                IRI = instanceHandler.existenceChecker.getIRIbyLabelString(ID);
-            }
-
+            
             //If still null, then item doesn't exist
             if (ID == null || IRI == null) {throw new JPSRuntimeException("ID/IRI not detected in the asset KG.");}
         } catch (Exception e) {
@@ -476,7 +480,12 @@ public class AssetManagerAgent extends JPSAgent{
             checkedPred = getAllCheckedPred();
         }
         message.accumulate("ID", new JSONArray(new String[] {ID, IRI}));
-        message.accumulate("Result", instanceHandler.retrieve(ID));
+        if(!isBMSdevice){
+            message.accumulate("Result", instanceHandler.retrieve(ID));
+        }
+        else{
+            message.accumulate("Result", new JSONArray(new String[] {}));
+        }
         
         message.accumulate("Result", instanceHandler.itemMeasuresBool(db, IRI, pred, depth));
         return message;
