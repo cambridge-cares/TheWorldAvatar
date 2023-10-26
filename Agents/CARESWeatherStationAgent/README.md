@@ -36,9 +36,29 @@ taken at a timestamp between the first and third image.
 ![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading2.png "A weather data reading in between the two extreme time stamps")
 ![Shows part of the response body of a successful weather readings request.](docs/img/sample_reading3.png "The latest weather data reading")
 
-
 ## Usage 
-This part of the README describes the usage of the input agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client which maintains both instances in a knowledge graph and a Postgres database to store the data, these will be required to be set-up before.  
+This part of the README describes the usage of the input agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client which maintains both instances in a knowledge graph and a Postgres database to store the data, these will be required to be set-up before. 
+
+The agent instantiates the weather reading retrieved via the API as timeseries in the knowledge graph. In addition, it will check and instantiate the ABoxes for the weather station and the quantities it measures based on these ontologies [OntoEMS](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl), [ontology-of-units-of-measure](https://github.com/cambridge-cares/OM/blob/master/om-2.0.rdf), [OntoTimeSeries](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl). An example of the ABox is shown below:
+```
+<ReportingStation> rdf:type	ontoems:ReportingStation ;
+                   ontoems:reports <Quantity> .
+
+<Quantity> rdf:type	ontoems:DewPoint ;
+           om:hasValue <measure> ;
+           om:hasAggregateFunction <om:minimum> .
+
+<measure> rdf:type om:Measure ;
+          ontotimeseries:hasTimeSeries <timeseries> .
+
+<om:minimum> rdf:type om:Function ;
+             rdfs:label "minimum" .
+
+<timeseries> rdf:type ontotimeseries:InstantaneousTimeSeries ;
+             ontotimeseries:hasRDB "JDBC URL" ;	
+             ontotimeseries:hasTimeUnit	"OffsetDateTime" .			 
+```
+
 
 The [next section](#requirements) will explain the requirements to run the agent.
 
@@ -126,23 +146,21 @@ The CARESWeatherStation Agent is set up to use the Maven repository at https://m
 repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-Modify `api.properties` and `client.properties` in the `config` folder accordingly. You should not modify the `agent.properties` file as the Dockerfile will set the environment variable 
-CARESWeatherStation_AGENT_MAPPINGS to point towards the location of the mapping folder. The Dockerfile will copy all 3 properties files and mapping folder and set environment variables pointing 
-to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually.
+The agent can be deployed as a standalone or as part of the stack.
+
+#### Standalone Deployment
+
+Modify `api.properties` and `client.properties` in the `config` folder accordingly.
 
 To build and start the agent, open up the command prompt in the same directory as this README, run
 ```
 docker-compose up -d
 ```
-Note that when building the agent on the Claudius server use the following command
-```
-DOCKER_BUILDKIT=1 docker build .
-```
 
 The agent is reachable at "caresweatherstation-agent/retrieve" on localhost port 1080.
 
 
-#### Run the agent
+##### Run the agent
 To run the agent, a POST request must be sent to http://localhost:1080/caresweatherstation-agent/retrieve with a correct JSON Object.
 Follow the request shown below.
 
@@ -154,6 +172,42 @@ Content-Type: application/json
 In curl syntax:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"CARESWeatherStation_AGENTPROPERTIES\",\"apiProperties\":\"CARESWeatherStation_APIPROPERTIES\",\"clientProperties\":\"CARESWeatherStation_CLIENTPROPERTIES\"}" http://localhost:1080/caresweatherstation-agent/retrieve
+```
+
+If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
+```
+{"Result":["Input agent object initialized.","Time series client object initialized.","API connector object initialized.","Retrieved 10 weather station readings.","Data updated with new readings from API.","Timeseries Data has been updated."]}
+```
+
+If the returned JSON Object is as shown below, it means that the request was written wrongly. Check whether the URL, keys and values are written correctly.
+```
+{"Result":"Request parameters are not defined correctly."}
+```
+
+#### Stack Deployment
+
+Modify `api.properties` and `client.properties` in the `config` folder accordingly.
+
+Open up the command prompt in the same directory as this README, run the command below to build the docker image:
+```
+docker-compose build
+```
+Open `stack-manager-input-config-service/cares-weather-station-agent.json` and under the `Mounts` section, modify the `Source` and insert the filepath of where the `config` folder is located at (For Windows users using WSL on Docker, the file path should start with `/mnt/c/`, which is equivalent to `C://`).
+
+Copy `stack-manager-input-config-service/cares-weather-station-agent.json` to the services folder under your stack-manager directory (By default it should be `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`) and start up the stack.
+
+##### Run the agent
+To run the agent, a POST request must be sent to http://localhost:3838/cares-weather-station-agent/retrieve with a correct JSON Object.
+Follow the request shown below.
+
+```
+POST http://localhost:3838/cares-weather-station-agent/retrieve
+Content-Type: application/json
+{"agentProperties":"CARESWeatherStation_AGENTPROPERTIES","apiProperties":"CARESWeatherStation_APIPROPERTIES","clientProperties":"CARESWeatherStation_CLIENTPROPERTIES"}
+```
+In curl syntax:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"CARESWeatherStation_AGENTPROPERTIES\",\"apiProperties\":\"CARESWeatherStation_APIPROPERTIES\",\"clientProperties\":\"CARESWeatherStation_CLIENTPROPERTIES\"}" http://localhost:3838/cares-weather-station-agent/retrieve
 ```
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
