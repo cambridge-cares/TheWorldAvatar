@@ -6,5 +6,7 @@ services:
     build: .
     container_name: caresWeatherStation-agent
     pull_policy: if_not_present
+    volumes:
+      - './config:/root/config'
     ports:
       - "1080:8080"

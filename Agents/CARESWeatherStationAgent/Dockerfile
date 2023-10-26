@@ -24,29 +24,17 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-# Copy in the properties file
-COPY ./config/agent.properties /root/agent.properties
+# Set the required environment variable
+ENV CARESWeatherStation_AGENTPROPERTIES="/root/config/agent.properties"
 
 # Set the required environment variable
-ENV CARESWeatherStation_AGENTPROPERTIES="/root/agent.properties"
-
-# Copy in the properties file
-COPY ./config/api.properties /root/api.properties
+ENV CARESWeatherStation_APIPROPERTIES="/root/config/api.properties"
 
 # Set the required environment variable
-ENV CARESWeatherStation_APIPROPERTIES="/root/api.properties"
-
-# Copy in the properties file
-COPY ./config/client.properties /root/client.properties
+ENV CARESWeatherStation_CLIENTPROPERTIES="/root/config/client.properties"
 
 # Set the required environment variable
-ENV CARESWeatherStation_CLIENTPROPERTIES="/root/client.properties"
-
-# Copy in the mapping folder
-COPY ./config/mappings /root/mappings
-
-# Set the required environment variable
-ENV CARESWeatherStation_AGENT_MAPPINGS="/root/mappings"
+ENV CARESWeatherStation_AGENT_MAPPINGS="/root/config/mappings"
 
 COPY --from=builder /root/CARESWeatherStationInputAgent/output/caresweatherstation-agent##1.4.0.war $CATALINA_HOME/webapps/
 
