@@ -29,6 +29,7 @@ city:		http://cui.unige.ch/citygml/2.0/
 tun:		http://www.opengis.net/citygml/tunnel/2.0/
 xml:		http://www.w3.org/XML/1998/namespace
 data:		http://mydata.example.org/
+twa:        https://www.theworldavatar.com/kg/
 
 [MappingDeclaration] @collection [[
 mappingId	City Object
@@ -37,11 +38,11 @@ source		SELECT "creation_date", "id", "name", "termination_date"
 			FROM "citydb"."cityobject"
 
 mappingId   City Object IRI
-target      <{iri}> obda:isCanonicalIRIOf city:cityobject/{"id"} .
-source      SELECT "cityobject_id" AS "id", "urival" AS "iri"
+target      twa:cityobject/{uuid} obda:isCanonicalIRIOf city:cityobject/{"id"} .
+source      SELECT "cityobject_id" AS "id", "strval" AS "uuid"
 			FROM "citydb"."cityobject_genericattrib" JOIN "citydb"."cityobject" ON
 			"citydb"."cityobject"."id" = "citydb"."cityobject_genericattrib"."cityobject_id"
-			WHERE "attrname" = 'iri'
+			WHERE "attrname" = 'uuid'
 
 mappingId	Bridge Construction Element - LoD3ImplicitRep
 target		city:bridge_constr_element/{"id"} brid:lod3ImplicitRepresentation city:geometry/{"lod3_implicit_rep_id"} . 
