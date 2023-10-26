@@ -132,9 +132,9 @@ SELECT DISTINCT ?PropertyNameValue ?PropertyNameUnitLabel ?ReferenceStateValue ?
 
         operator = random.choice(COMPARATIVES)
         if operator in [LESS_THAN, LESS_THAN_EQUAL]:
-            value = get_lt(property_value)
-        elif operator in [GREATER_THAN, GREATER_THAN_EQUAL]:
             value = get_gt(property_value)
+        elif operator in [GREATER_THAN, GREATER_THAN_EQUAL]:
+            value = get_lt(property_value)
         elif operator in [EQUAL, AROUND]:
             value = property_value
         elif operator == INSIDE:
