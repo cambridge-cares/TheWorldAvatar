@@ -157,25 +157,17 @@ public class SparqlHandlerIntegrationTest {
         //there are 6 data IRIs and each of them should be a rdf:type om:Measure
         Assert.assertEquals(6, queryResult.length());
 
-        //check whether a quantity IRI has been created for each data IRI and linked via om:hasValue
+        //check for label of each data IRI
+        String[] list = {"Temperature","Dew Point","Heat Index","Wind Chill","Precipitation Rate", "Rainfall"};
+        //check label of reporting station instance
         for (int i = 0; i < IRIs.size(); i++) {
-            queryPattern = var.has(iri("http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"), iri(IRIs.get(i)));
-            query = Queries.SELECT();
-            query.select(var).where(queryPattern);
-            kbClient.setQuery(query.getQueryString());
-            queryResult = kbClient.executeQuery();
-            Assert.assertTrue(queryResult != null);
-            Assert.assertTrue(queryResult.getJSONObject(0).getString("var").contains("https://www.theworldavatar.com/kg/ontoems/Quantity_"));
-        }
-
-        //check total number of quantity IRI created for duplicates
-        Variable var2 = SparqlBuilder.var("var2");
-        queryPattern = var.has(iri("http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"), var2);
+        queryPattern = iri(IRIs.get(i)).has(iri("http://www.w3.org/2000/01/rdf-schema#label"), var);
         query = Queries.SELECT();
         query.select(var).where(queryPattern);
         kbClient.setQuery(query.getQueryString());
         queryResult = kbClient.executeQuery();
-        Assert.assertEquals(6, queryResult.length());
+        Assert.assertEquals(list[i], queryResult.getJSONObject(0).getString("var"));
+        }
     }
 
     @Test

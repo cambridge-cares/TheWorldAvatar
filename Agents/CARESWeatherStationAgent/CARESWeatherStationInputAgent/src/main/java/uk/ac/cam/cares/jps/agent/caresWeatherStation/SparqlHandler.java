@@ -180,7 +180,7 @@ public class SparqlHandler {
             // The IRIs used by the current mapping
             List<String> iris = mapping.getAllIRIs();
             for (int i = 0; i < iris.size(); i++) {
-                instantiateMeasureIfNotExist(iris.get(i));
+                instantiateMeasureIfNotExist(iris.get(i), mapping.getJSONKey(iris.get(i)));
                 String quantityIRI = instantiateQuantityIfNotExist(iris.get(i), mapping.getJSONKey(iris.get(i)));
                 quantityIRIs.add(quantityIRI);
             }
@@ -193,29 +193,61 @@ public class SparqlHandler {
      * Check whether all data IRIs has a rdf:type om:Measure and if not, add the data to the remote store
      * @param IRI the data IRI to check for
      */
-    private void instantiateMeasureIfNotExist(String IRI) {
-        SelectQuery query = Queries.SELECT();
-        Variable var = SparqlBuilder.var("var");
-        //create triple pattern:
-        // <IRI> rdf:type ?var
-        TriplePattern queryPattern = iri(IRI).isA(var);
-        query.prefix(PREFIX_OM).select(var).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        try {
-            JSONArray queryResult = kbClient.executeQuery();
-            // if the query result is not empty and the rdf:type is equivalent to om:Measure
-            if(!queryResult.isEmpty() && queryResult.getJSONObject(0).getString("var") == measure.toString()){
+    private void instantiateMeasureIfNotExist(String IRI, String jsonKey) {
+        //this is based on the variables retrievable via the API
+        String measureLabel = null;
+        if (jsonKey.contains("solarRadiation")) {
+            measureLabel = "Irradiance";
+        } else if (jsonKey.contains("uv")) {
+            measureLabel = "UV Index";
+        } else if (jsonKey.contains("winddir")) {
+            measureLabel = "Wind Direction";
+        } else if (jsonKey.contains("humidity")) {
+            measureLabel = "Relative Humidity";
+        } else if (jsonKey.contains("temp")) {
+            measureLabel = "Temperature";
+        } else if (jsonKey.contains("windspeed")) {
+            measureLabel = "Wind Speed";
+        } else if (jsonKey.contains("windgust")) {
+            measureLabel = "Wind Gust";
+        } else if (jsonKey.contains("dewpt")) {
+            measureLabel = "Dew Point";
+        } else if (jsonKey.contains("windchill")) {
+            measureLabel = "Wind Chill";
+        } else if (jsonKey.contains("heatindex")) {
+            measureLabel = "Heat Index";
+        } else if (jsonKey.contains("pressure") && !jsonKey.contains("trend")) {
+            measureLabel = "Pressure";
+        } else if (jsonKey.contains("precipRate")) {
+            measureLabel = "Precipitation Rate";
+        } else if (jsonKey.contains("precip") && !jsonKey.contains("Rate")) {
+            measureLabel = "Rainfall";
+        }
+
+        if (measureLabel != null) {
+            SelectQuery query = Queries.SELECT();
+            Variable var = SparqlBuilder.var("var");
+            //create triple pattern:
+            // <IRI> rdf:type ?var
+            TriplePattern queryPattern = iri(IRI).isA(var);
+            query.prefix(PREFIX_OM).select(var).where(queryPattern);
+            kbClient.setQuery(query.getQueryString());
+            try {
+                JSONArray queryResult = kbClient.executeQuery();
+                // if the query result is not empty and the rdf:type is equivalent to om:Measure
+                if (!queryResult.isEmpty() && queryResult.getJSONObject(0).getString("var") == measure.toString()){
                 LOGGER.info(IRI + " already has a rdf:type om:Measure!");
-            } else {
-                //create triple pattern:
-                // <IRI> rdf:type om:Measure .
-                queryPattern = iri(IRI).isA(measure);
-                InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_OM);
-                kbClient.executeUpdate(insertQuery.getQueryString());
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
+                } else {
+                    //create triple pattern:
+                    // <IRI> rdf:type om:Measure .
+                    queryPattern = iri(IRI).isA(measure).andHas(label, measureLabel);
+                    InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_OM, PREFIX_RDFS);
+                    kbClient.executeUpdate(insertQuery.getQueryString());
+                    LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
+                }
+            } catch (Exception e) {
+                throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString());
             }
-        } catch (Exception e) {
-            throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString());
         }
     }
     
