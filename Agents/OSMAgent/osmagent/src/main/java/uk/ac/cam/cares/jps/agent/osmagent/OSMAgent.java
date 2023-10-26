@@ -27,21 +27,7 @@ import org.json.JSONObject;
 public class OSMAgent extends JPSAgent {
     private static final String PROPERTIES_PATH = "/resources/config.properties";
     private static final Path obdaFile = Path.of("/resources/building_usage.obda");
-    private static final String buildingSQLQuery ="SELECT cga.urival AS iri, ST_Transform(sg.geometry, 4326) AS geometry, CAST(b.measured_height AS numeric(10,2)) AS height_m,\n" +
-                                                    "p.ontobuilt,\n" +
-                                                    "p.propertyusage_iri,\n" +
-                                                    "p.usageshare,\n" +
-                                                    "p.name as name\n" +
-                                                    "FROM citydb.building b\n" +
-                                                    "INNER JOIN citydb.cityobject_genericattrib cga ON b.id = cga.cityobject_id\n" +
-                                                    "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.id\n" +
-                                                    "LEFT JOIN (\n" +
-                                                    "    SELECT u.building_iri, u.ontobuilt, u.propertyusage_iri, u.usageshare,\n" +
-                                                    "       COALESCE(p.name, o.name) AS name\n" +
-                                                    "FROM usage.usage AS u\n" +
-                                                    "LEFT JOIN public.points AS p ON u.building_iri = p.building_iri\n" +
-                                                    "LEFT JOIN public.polygons AS o ON u.building_iri = o.building_iri\n" +
-                                                    ") p ON cga.urival = p.building_iri WHERE cga.attrname = 'iri' AND sg.geometry IS NOT NULL";
+
                                                     
     private EndpointConfig endpointConfig = new EndpointConfig();
 
@@ -137,4 +123,51 @@ public class OSMAgent extends JPSAgent {
 
         return requestParams;
     }
+
+
+    private static final String buildingSQLQuery ="WITH \"uuid_table\" AS (\n" +
+            "    SELECT\n" +
+            "        \"strval\" AS \"uuid\",\n" +
+            "        \"cityobject_id\"\n" +
+            "    FROM\n" +
+            "        \"cityobject_genericattrib\"\n" +
+            "    WHERE\n" +
+            "        \"attrname\" = 'uuid'\n" +
+            "),\n" +
+            "\"iri_table\" AS (\n" +
+            "    SELECT\n" +
+            "        \"urival\" AS \"iri\",\n" +
+            "        \"cityobject_id\"\n" +
+            "    FROM\n" +
+            "        \"cityobject_genericattrib\"\n" +
+            "    WHERE\n" +
+            "        \"attrname\" = 'iri'\n" +
+            "),\n" +
+            "\"usageTable\" AS (\n" +
+            "    SELECT\n" +
+            "        \"building_iri\" AS \"iri\",\n" +
+            "        \"propertyusage_iri\",\n" +
+            "        \"ontobuilt\",\t\n" +
+            "        \"usageshare\"\n" +
+            "    FROM\n" +
+            "        usage.usage\n" +
+            ")\n" +
+            "SELECT\n" +
+            "    \"building\".\"id\" AS \"building_id\",\n" +
+            "    COALESCE(\"measured_height\", 100.0) AS \"building_height\",\n" +
+            "    public.ST_Transform(\"geometry\",4326),\n" +
+            "    \"uuid\",\n" +
+            "    \"iri_table\".\"iri\",\n" +
+            "    \"propertyusage_iri\",\n" +
+            "    \"ontobuilt\",\t\n" +
+            "    \"usageshare\"\n" +
+            "FROM\n" +
+            "    \"building\"\n" +
+            "    JOIN \"surface_geometry\" ON \"surface_geometry\".\"root_id\" = \"building\".\"lod0_footprint_id\"\n" +
+            "    JOIN \"uuid_table\" ON \"building\".\"id\" = \"uuid_table\".\"cityobject_id\"\n" +
+            "    JOIN \"iri_table\" ON \"building\".\"id\" = \"iri_table\".\"cityobject_id\"\n" +
+            "    LEFT JOIN \"usageTable\" ON \"iri_table\".\"iri\" = \"usageTable\".\"iri\"\n" +
+            "WHERE\n" +
+            "    \"surface_geometry\".\"geometry\" IS NOT NULL AND\n" +
+            "    COALESCE(\"measured_height\", 100.0) != '0'\n";
 }
