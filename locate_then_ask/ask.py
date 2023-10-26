@@ -33,6 +33,13 @@ class Asker:
         )
         select_clause = "SELECT ?" + question_node
 
+        if query_graph.nodes["Species"].get("template_node"):
+            graph_patterns = [
+                'VALUES ?Species {{ "{label}" }}'.format(label=query_graph.nodes["Species"]["label"])
+            ]
+        else:
+            graph_patterns = []
+
         def make_graph_pattern(s: str, o: str):
             p = query_graph.edges[s, o]["label"]
             if p.startswith("os:has"):
@@ -91,9 +98,9 @@ class Asker:
             else:
                 raise ValueError("Unrecognized predicate: " + p)
 
-        graph_patterns = [
+        graph_patterns.extend([
             make_graph_pattern(s, o) for s, o in nx.dfs_edges(query_graph, "Species")
-        ]
+        ])
         where_clause = "WHERE {{\n  {group_graph_pattern}\n}}".format(
             group_graph_pattern="\n  ".join(graph_patterns)
         )
