@@ -71,11 +71,11 @@ inputs/
     dataset2.json       # Configuration file for dataset2
   data/                 # Directory in which the data files should be stored
     dataset1/           # Data directory for dataset1
-      subdirectory/     # Data subdirectory for dataset1
-        data.csv        # Only one data subset so no need for a subdirectory
+      datasubset1/     # Data subdirectory for data subset1
+        data.csv        # Data file for dataset1
     dataset2/           # Data directory for dataset2
-      datasubset1/      # Data directory for data subset1
-        polygon.geojson # Data file
+      datasubset2/      # Data subdirectory for data subset2
+        polygon.geojson # Data file for dataset2
       datasubset2/      # Data directory for data subset2
         table.csv
 ```
