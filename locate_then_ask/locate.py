@@ -191,9 +191,10 @@ SELECT DISTINCT * WHERE {{
             for x in self.get_property_keys(entity_iri)
             if x not in sampled_property_keys
         ]
-        key_sampling_frame = unsampled_property_keys + [USE_KEY, CHEMCLASS_KEY] * (
-            len(unsampled_property_keys) // 4
-        )
+        key_sampling_frame = unsampled_property_keys + (
+            [USE_KEY] * (len(self.get_uses(entity_iri)) > 0)
+            + [CHEMCLASS_KEY] * (len(self.get_chemclasses(entity_iri)) > 0)
+        ) * (len(unsampled_property_keys) // 4)
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
