@@ -11,7 +11,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.jena.ontology.ObjectProperty;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
@@ -36,11 +35,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -119,7 +116,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the class.
 			OWLClass clas = createClass(className);
 			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
-			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, getOWLLiteralWithLanguage(label));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), labelAnnotation)));
 		}
@@ -139,7 +136,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the class.
 			OWLClass clas = createClass(className);
 			OWLAnnotationProperty comment = dataFactory.getRDFSComment();
-			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, dataFactory.getOWLLiteral(definition));
+			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, getOWLLiteralWithLanguage(definition));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), definitionLiteral)));
 		}
@@ -158,7 +155,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLObjectProperty objectProperty = createObjectProperty(property);
 			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
-			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, getOWLLiteralWithLanguage(label));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(objectProperty.getIRI(), labelAnnotation)));
 		}
@@ -178,7 +175,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLObjectProperty objectProperty = createObjectProperty(property);
 			OWLAnnotationProperty comment = dataFactory.getRDFSComment();
-			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, dataFactory.getOWLLiteral(definition));
+			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, getOWLLiteralWithLanguage(definition));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(objectProperty.getIRI(), definitionLiteral)));
 		}
@@ -197,7 +194,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLDataProperty dataProperty = createDataProperty(property);
 			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
-			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, getOWLLiteralWithLanguage(label));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(dataProperty.getIRI(), labelAnnotation)));
 		}
@@ -216,7 +213,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLDataProperty dataProperty = createDataProperty(property);
 			OWLAnnotationProperty comment = dataFactory.getRDFSComment();
-			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, dataFactory.getOWLLiteral(definition));
+			OWLAnnotation definitionLiteral = dataFactory.getOWLAnnotation(comment, getOWLLiteralWithLanguage(definition));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(dataProperty.getIRI(), definitionLiteral)));
 		}
@@ -1538,7 +1535,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	private void representComment() throws JPSRuntimeException{
 		String comment = tBoxConfig.gettBoxComment();
 		if (comment != null && !comment.isEmpty()) {
-			OWLLiteral commentValue = dataFactory.getOWLLiteral(comment);
+			OWLLiteral commentValue = getOWLLiteralWithLanguage(comment);
 			OWLAnnotationProperty commentProperty = dataFactory.getRDFSComment();
 			OWLAnnotation commentPropertyAttributeWithValue = dataFactory.getOWLAnnotation(commentProperty, commentValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, commentPropertyAttributeWithValue));
@@ -1625,5 +1622,22 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		} else{
 			return null;
 		}
+	}
+
+	/**
+	 * Returns OWL literal with language handling
+	 * 
+	 * @param stringLiteral
+	 * @return
+	 */
+	private OWLLiteral getOWLLiteralWithLanguage(String stringLiteral) {
+		OWLLiteral owlLiteral;
+		String[] split = stringLiteral.split("@");
+		if (1 == split.length) {
+			owlLiteral = dataFactory.getOWLLiteral(stringLiteral);
+		} else {
+			owlLiteral = dataFactory.getOWLLiteral(split[0], split[1]);
+		}
+		return owlLiteral;
 	}
 }
