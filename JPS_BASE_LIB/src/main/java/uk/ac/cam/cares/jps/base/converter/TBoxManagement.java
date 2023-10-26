@@ -18,6 +18,7 @@ import org.semanticweb.owlapi.model.AddOntologyAnnotation;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAnnotationValue;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -232,7 +233,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the class.
 			OWLClass clas = createClass(className);
 			OWLAnnotationProperty isDefinedBy = dataFactory.getRDFSIsDefinedBy();
-			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, dataFactory.getOWLLiteral(url));
+			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, IRI.create(url)); 
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), definedByLiteral)));
 		}
@@ -251,7 +252,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLObjectProperty objectProperty = createObjectProperty(property);
 			OWLAnnotationProperty isDefinedBy = dataFactory.getRDFSIsDefinedBy();
-			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, dataFactory.getOWLLiteral(url));
+			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, IRI.create(url));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(objectProperty.getIRI(), definedByLiteral)));
 		}
@@ -270,7 +271,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// it creates the property.
 			OWLDataProperty dataProperty = createDataProperty(property);
 			OWLAnnotationProperty isDefinedBy = dataFactory.getRDFSIsDefinedBy();
-			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, dataFactory.getOWLLiteral(url));
+			OWLAnnotation definedByLiteral = dataFactory.getOWLAnnotation(isDefinedBy, IRI.create(url));
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLAnnotationAssertionAxiom(dataProperty.getIRI(), definedByLiteral)));
 		}
