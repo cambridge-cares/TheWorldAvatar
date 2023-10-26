@@ -115,7 +115,9 @@ class WeatherQueryClient {
      * @return
      */
     String createStation(double lat, double lon, String name) {
-        String stationIri = ontoems + "weatherstation_" + UUID.randomUUID();
+        String stationUuid = "weatherstation_" + UUID.randomUUID();
+        String stationIri = ontoems + stationUuid;
+        String geomUuid = "geometry_" + UUID.randomUUID();
 
         // create geojson object for PostGIS
         JSONObject geojson = new JSONObject();
@@ -124,7 +126,8 @@ class WeatherQueryClient {
         geometry.put("type", "Point");
         geometry.put("coordinates", new JSONArray().put(lon).put(lat));
         properties.put("iri", stationIri);
-        properties.put("geom_iri", stationIri + "/geometry");
+        properties.put("station_uuid", stationUuid);
+        properties.put("geom_uuid", geomUuid);
         properties.put("type", "weather");
         if (name != null) {
             properties.put("name", name);
