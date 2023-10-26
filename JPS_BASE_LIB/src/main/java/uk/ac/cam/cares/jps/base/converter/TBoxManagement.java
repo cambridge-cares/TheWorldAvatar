@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -18,7 +19,6 @@ import org.semanticweb.owlapi.model.AddOntologyAnnotation;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLAnnotationValue;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -67,7 +67,10 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	
 	public static final String OWL_VERSIONINFO = "versionInfo";
 	public static final String OWL_URL = "http://www.w3.org/2002/07/owl#";
-	
+
+	// Regex to match strings with language tags like "Castle"@en
+	private static final Pattern STRING_WITH_LANG_TAG_PATTERN = Pattern.compile("\"[^\"]*\"\\@[a-zA-Z]+");
+
 	/**
 	 * Creates an OWL class using the name provided. If the name of the parent 
 	 * class is also provided, it creates the subClassOf relation as well.
@@ -1426,11 +1429,12 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 */
 	private OWLLiteral getOWLLiteralWithLanguage(String stringLiteral) {
 		OWLLiteral owlLiteral;
-		String[] split = stringLiteral.split("@");
-		if (1 == split.length) {
-			owlLiteral = dataFactory.getOWLLiteral(stringLiteral);
+		if (STRING_WITH_LANG_TAG_PATTERN.matcher(stringLiteral).matches()) {
+			int atIndex = stringLiteral.lastIndexOf("@");
+			owlLiteral = dataFactory.getOWLLiteral(stringLiteral.substring(1, atIndex - 1),
+					stringLiteral.substring(atIndex + 1));
 		} else {
-			owlLiteral = dataFactory.getOWLLiteral(split[0], split[1]);
+			owlLiteral = dataFactory.getOWLLiteral(stringLiteral);
 		}
 		return owlLiteral;
 	}
