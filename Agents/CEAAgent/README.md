@@ -3,7 +3,9 @@
 
 CEA agent can be used to interact with the [City Energy Analyst (CEA)](https://www.cityenergyanalyst.com/)  and the data it produces on building energy demands and installable solar energy generators.
 
-The agent currently queries for building geometry, surrounding buildings geometries, building usage and historical weather data stored in knowledge graph, and terrain data from PostGIS, which are passed to CEA as inputs. The energy demands and potential energy of solar energy generators (which include photovoltaic panels, photovoltaic-thermal collectors, and solar collectors) calculated by CEA are extracted by the agent and stored on the knowledge graph.
+The agent currently attempts to query for building geometry, surrounding buildings geometries, building usage and historical weather data stored in knowledge graph, and terrain data from PostGIS, which are passed to CEA as inputs. 
+With the exception of building geometry data, which is a necessary input, all the other inputs are optional and the agent will run CEA with its corresponding default CEA values for un-retrievable inputs.
+The energy demands and potential energy of solar energy generators (which include photovoltaic panels, photovoltaic-thermal collectors, and solar collectors) calculated by CEA are extracted by the agent and stored on the knowledge graph.
 
 ## 2. Build Instructions
 
@@ -85,7 +87,7 @@ Example request:
 "geometryEndpoint" : "http://localhost:3838/access-agent/kingslynnEPSG27700",
 "ceaEndpoint": "http://localhost:3838/access-agent/outputs"}
 ```
-In the above request example, the CEA Agent will be querying building geometry from the Blazegraph that ```http://localhost:3838/access-agent/kingslynnEPSG27700``` is pointed to. All the other inputs for CEA will be queried from the default endpoints within stack as specified in [CEAAgentConfig.properties]. The CEA triples will be instantiated, with no graph reference, in the Blazegraph where ```http://localhost:3838/access-agent/outputs``` is pointed to.
+In the above request example, the CEA Agent will be querying building geometry from the Blazegraph that ```http://localhost:3838/access-agent/kingslynnEPSG27700``` is pointed to. All the other inputs for CEA will be queried from the default endpoints within stack as specified in [CEAAgentConfig.properties]. The CEA triples will be instantiated in the Blazegraph where ```http://localhost:3838/access-agent/outputs``` is pointed to.
 
 Example request:
 ```
