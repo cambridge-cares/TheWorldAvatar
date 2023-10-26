@@ -29,7 +29,7 @@ public class TBoxCSV extends DataSubset {
 
         Path subdirectory = this.getSubdirectory();
         if (null == subdirectory) {
-            throw new RuntimeException("No subdirectory specified - required for TBoxCSV data");
+            throw new RuntimeException("No 'subdirectory' specified - required for TBoxCSV data");
         }
         Path datasubsetDir = dataset.getDirectory().resolve(subdirectory);
         if (!Files.exists(datasubsetDir)) {

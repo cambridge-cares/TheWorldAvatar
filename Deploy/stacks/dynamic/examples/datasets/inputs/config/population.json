@@ -2,7 +2,7 @@
     "name": "population",
     "database": "postgres",
     "workspace": "the_world_avatar",
-    "datasetDirectory": "population-data",
+    "datasetDirectory": "population",
     "dataSubsets": [
         {
             "type": "raster",
