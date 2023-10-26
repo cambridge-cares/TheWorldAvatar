@@ -185,7 +185,7 @@ SELECT DISTINCT * WHERE {{
             uses = [x["UseLabel"]["value"] for x in response_bindings]
             self.entity2uses[entity_iri] = uses
         return self.entity2uses[entity_iri]
-    
+
     def get_chemclasses(self, entity_iri: str):
         if entity_iri not in self.entity2chemclasses:
             query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -202,7 +202,6 @@ SELECT DISTINCT * WHERE {{
             self.entity2chemclasses[entity_iri] = chemclasses
         return self.entity2chemclasses[entity_iri]
 
-
     def locate_concept_and_literal(
         self, entity_iri: str, query_graph: Optional[nx.DiGraph] = None
     ):
@@ -211,12 +210,19 @@ SELECT DISTINCT * WHERE {{
         else:
             query_graph = copy.deepcopy(query_graph)
 
+        sampled_property_keys = [
+            p[len("os:has"):]
+            for _, _, p in query_graph.edges(data="label")
+            if p.startswith("os:has")
+        ]
         unsampled_property_keys = [
             x
             for x in self.get_property_keys(entity_iri)
-            if x not in query_graph.nodes()
+            if x not in sampled_property_keys
         ]
-        key_sampling_frame = unsampled_property_keys + [USE_KEY, CHEMCLASS_KEY] * (len(unsampled_property_keys) // 4)
+        key_sampling_frame = unsampled_property_keys + [USE_KEY, CHEMCLASS_KEY] * (
+            len(unsampled_property_keys) // 4
+        )
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
@@ -230,13 +236,27 @@ SELECT DISTINCT * WHERE {{
                 qualifier_value,
             ) = self.get_operator_value_qualifier_property(entity_iri, key)
         elif key == USE_KEY:
-            sampled_uses = [v for u, v, label in query_graph.edges(data="label") if label == "os:hasUse"]
-            sampling_frame = [x for x in self.get_uses(entity_iri) if x not in sampled_uses]
+            sampled_uses = [
+                v
+                for u, v, label in query_graph.edges(data="label")
+                if label == "os:hasUse"
+            ]
+            sampling_frame = [
+                x for x in self.get_uses(entity_iri) if x not in sampled_uses
+            ]
             if len(sampling_frame) > 0:
                 value = random.choice(sampling_frame)
         elif key == CHEMCLASS_KEY:
-            sampled_chemclasses = [v for u, v, label in query_graph.edges(data="label") if label == "os:hasChemicalClass"]
-            sampling_frame = [x for x in self.get_chemclasses(entity_iri) if x not in sampled_chemclasses]
+            sampled_chemclasses = [
+                v
+                for u, v, label in query_graph.edges(data="label")
+                if label == "os:hasChemicalClass"
+            ]
+            sampling_frame = [
+                x
+                for x in self.get_chemclasses(entity_iri)
+                if x not in sampled_chemclasses
+            ]
             if len(sampling_frame) > 0:
                 value = random.choice(sampling_frame)
 
@@ -247,7 +267,9 @@ SELECT DISTINCT * WHERE {{
         literal_num = len([n for n in query_graph.nodes() if n.startswith("literal")])
         literal_node = "literal_" + str(literal_num)
 
-        query_graph.add_node(literal_node, label=value, literal=True, template_node=True)
+        query_graph.add_node(
+            literal_node, label=value, literal=True, template_node=True
+        )
         query_graph.add_edge("Species", literal_node, label=predicate)
 
         if operator is None:
@@ -280,12 +302,14 @@ SELECT DISTINCT * WHERE {{
 
         return query_graph, verbalization
 
-    def locate_intersection(self, entity_iri: str, cond_num: int=2):
+    def locate_intersection(self, entity_iri: str, cond_num: int = 2):
         verbalized_conds = []
         query_graph = None
-        
+
         for _ in range(cond_num):
-            query_graph, verbalized_cond = self.locate_concept_and_literal(entity_iri, query_graph)
+            query_graph, verbalized_cond = self.locate_concept_and_literal(
+                entity_iri, query_graph
+            )
             if verbalized_cond is not None:
                 verbalized_conds.append(verbalized_cond)
 

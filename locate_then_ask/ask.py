@@ -37,8 +37,13 @@ class Asker:
         return query_graph, query_sparql, verbalization
 
     def ask_query_attr(self, query_graph: nx.DiGraph, verbalization: str):
+        sampled_keys = [
+            p[len("os:has") :]
+            for _, _, p in query_graph.edges(data="label")
+            if p.startswith("os:has")
+        ]
         key_sampling_frame = [
-            x for x in SPECIES_ATTRIBUTE_KEYS if x not in query_graph.nodes()
+            x for x in SPECIES_ATTRIBUTE_KEYS if x not in sampled_keys
         ]
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])

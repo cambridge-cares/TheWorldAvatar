@@ -71,7 +71,7 @@ class GraphToSparqlConverter:
                         left=operand_left, right=operand_right
                     )
                 else:
-                    return "FILTER ( {left} > -0.1 && {right} < 0.1 )".format(
+                    return "FILTER ( {left} > -0.1 && {left} < 0.1 )".format(
                         left=operand_left
                     )
             else:
