@@ -45,6 +45,7 @@ public abstract class PostgresDataSubset extends DataSubset {
         Path subdirectory = this.getSubdirectory();
         if (null != subdirectory) {
             Path dataSubsetDirectory = parent.getDirectory().resolve(subdirectory);
+            PostGISClient.getInstance().resetSchema(database);
             loadData(dataSubsetDirectory, database, parent.baseIRI());
         } else {
             logger.warn("No Subdirectory specified, Continuing with SQL process and creation without data upload");
