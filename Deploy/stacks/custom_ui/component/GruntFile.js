@@ -5,6 +5,7 @@ module.exports = function (grunt) {
             dist: {
                 src: [
                     "./output/ts/dynamic_component.js",
+                    "./output/ts/utils.js",
                     "./output/ts/*/*.js"
                 ],
                 dest: "./output/component.temp.js"
