@@ -54,7 +54,8 @@ public class DispersionPostGISClient {
         String sqlTemplate = "CREATE TABLE %s (" +
                 "iri character varying," +
                 "geom geometry," +
-                "geom_iri character varying)";
+                "main_uuid character varying," +
+                "geom_uuid character varying)";
 
         String sql = String.format(sqlTemplate, tableName);
         try (Statement stmt = conn.createStatement()) {
@@ -143,9 +144,11 @@ public class DispersionPostGISClient {
     String addScope(Polygon polygon, Connection conn) {
         String scopeIri = null;
         try {
-            scopeIri = QueryClient.PREFIX + UUID.randomUUID();
-            String geomIri = QueryClient.PREFIX + UUID.randomUUID();
-            InsertValuesStepN<?> insertStep = getContext(conn).insertInto(table).values(scopeIri, polygon, geomIri);
+            String scopeUuid = UUID.randomUUID().toString();
+            scopeIri = QueryClient.PREFIX + scopeUuid;
+            String geomUuid = UUID.randomUUID().toString();
+            InsertValuesStepN<?> insertStep = getContext(conn).insertInto(table).values(scopeIri, polygon, scopeUuid,
+                    geomUuid);
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(insertStep.toString());
             }

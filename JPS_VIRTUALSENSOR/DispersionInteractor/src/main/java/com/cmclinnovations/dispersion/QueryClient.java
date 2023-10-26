@@ -471,11 +471,11 @@ public class QueryClient {
         List<String> inputs = new ArrayList<>(dispersionOutputs);
 
         // output (OntoEMS reporting station)
-        String stationIri = ONTO_EMS + "virtualsensor_" + UUID.randomUUID();
+        String mainUuid = "virtualsensor_" + UUID.randomUUID();
+        String stationIri = ONTO_EMS + mainUuid;
         Iri station = iri(stationIri);
 
         // Update triples for station in blazegraph
-        String locationIri = PREFIX + UUID.randomUUID();
         modify.insert(station.isA(REPORTING_STATION));
 
         List<String> dataListForTimeSeries = new ArrayList<>();
@@ -507,9 +507,10 @@ public class QueryClient {
         feature.put("type", "Feature");
         feature.put("geometry", geometry);
         feature.put("iri", stationIri);
+        feature.put("main_uuid", mainUuid);
         feature.put("name", "Virtual sensor");
         feature.put("endpoint", sparqlEndpoint);
-        feature.put("geom_iri", locationIri);
+        feature.put("geom_uuid", UUID.randomUUID());
 
         modify.prefix(P_DISP, P_OM, P_EMS);
         storeClient.executeUpdate(modify.getQueryString());
