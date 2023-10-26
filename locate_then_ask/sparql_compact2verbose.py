@@ -12,7 +12,9 @@ class SparqlCompact2VerboseConverter:
         print(sparql_compact)
         sparql_compact = sparql_compact.strip()
         select_clause, sparql_compact = sparql_compact.split("WHERE", maxsplit=1)
+
         select_clause = select_clause.strip()
+        select_clause = select_clause.replace("SELECT", "SELECT DISTINCT")
 
         sparql_compact = sparql_compact.strip()
         assert sparql_compact.startswith("{"), sparql_compact
