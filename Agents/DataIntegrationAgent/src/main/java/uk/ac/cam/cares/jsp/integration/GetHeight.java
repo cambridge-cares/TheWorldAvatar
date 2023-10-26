@@ -18,20 +18,20 @@ public class GetHeight {
     private SqlConnectionPool pool;
     List<GeoObject3D> allObject3D = new ArrayList<>();
     
-    protected void preCalculation(String[] config, String thematicParams) throws SQLException {
+    protected void preCalculation(String[] config) throws SQLException {
 
         GeoObject3D object3D = new GeoObject3D();
         this.config = config;
         object3D.setConfig(config);
         object3D.setSqlConnectionPool();
-        this.allObject3D = object3D.getObject3D();   
-        calculateHeight(this.allObject3D, thematicParams);
+        // this.allObject3D = object3D.getObject3D();   
+        calculateHeight();
     }
 
     /**
      * Get Max Z and Min Z of building to calculate height and store in building table as measeured height
      */
-    private void calculateHeight(List<GeoObject3D> allObject3D, String thematicParams){
+    private void calculateHeight(){
         this.pool = new SqlConnectionPool(config);
         try (Connection srcConn = this.pool.get3DConnection()) {
             if (!srcConn.isValid(60)) {
@@ -39,36 +39,18 @@ public class GetHeight {
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }else{
                 try (Statement stmt = srcConn.createStatement()) {
-                    for(int i = 0; i < allObject3D.size(); i++){
-                        GeoObject3D object3D = allObject3D.get(i);
-                        int objectid = object3D.getId();
-                        double minZ = 0.0;
-                        double maxZ = 0.0;
-                        String maxZsql = null;
-                        String minZsql = "SELECT public.ST_Zmin(geometry) FROM surface_geometry WHERE id IN (SELECT lod0_footprint_id FROM building WHERE id = " + objectid + " AND lod0_footprint_id is not null)";
-                        if(thematicParams.equals("true")){
-                            maxZsql = "SELECT MAX(public.ST_Zmax(sg.geometry)) as maxZ FROM surface_geometry sg " + 
-                                            "JOIN thematic_surface ts ON ts.lod2_multi_surface_id = sg.parent_id " +
-                                            "JOIN building b ON b.id = ts.building_id WHERE b.id =" + objectid;
-                        }else{
-                            maxZsql = "SELECT MAX(public.ST_Zmax(sg.geometry)) as maxZ FROM surface_geometry sg " + 
-                                            "JOIN building b ON b.lod3_multi_surface_id = sg.root_id AND b.id =" + objectid;
-                        }
-                        
-                        ResultSet resultMin = stmt.executeQuery(minZsql);
-                        if (resultMin.next()){
-                            minZ = resultMin.getDouble("st_zmin");
-                        }
-                        ResultSet resultMax = stmt.executeQuery(maxZsql);
-                        if (resultMax.next()) {
-                             maxZ = resultMax.getDouble("maxZ");                                                  
-                        }
-                        double height = maxZ - minZ;
-                        if(height > 0){
-                                String upSql = "UPDATE building SET measured_height = " + height +  " WHERE id = " + objectid + ";";
-                                stmt.executeUpdate(upSql);
-                        }
-                    }                                     
+                    String upSql = "UPDATE building SET measured_height = h FROM (" +
+                                    "SELECT COALESCE(building.id,thematic_surface.building_id) AS bid, " + 
+                                    "MAX(public.ST_ZMax(geometry)) - MIN(public.ST_ZMin(geometry)) AS h " +
+                                    "FROM surface_geometry FULL JOIN building ON surface_geometry.root_id = COALESCE(" +
+                                    "building.lod4_multi_surface_id, building.lod3_multi_surface_id," +
+                                    "building.lod2_multi_surface_id, building.lod1_multi_surface_id, " +
+                                    "building.lod4_solid_id, building.lod3_solid_id, building.lod2_solid_id, building.lod1_solid_id) FULL JOIN " +
+                                    "thematic_surface ON surface_geometry.root_id = COALESCE(thematic_surface.lod4_multi_surface_id, " +
+                                    "thematic_surface.lod3_multi_surface_id, thematic_surface.lod2_multi_surface_id) WHERE geometry IS NOT NULL " +
+                                    "GROUP BY building.id, thematic_surface.building_id) AS x " +
+                                    "WHERE building.measured_height IS NULL AND x.bid = building.id;";
+                    stmt.executeUpdate(upSql);                                                    
                 }
                 
             }
