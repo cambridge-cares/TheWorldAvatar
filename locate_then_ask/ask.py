@@ -10,7 +10,7 @@ class Asker:
     def __init__(self):
         pass
 
-    def ask_query_name(self, query_graph: nx.DiGraph, verbalization: str):
+    def ask_query_name(self, query_graph: nx.MultiDiGraph, verbalization: str):
         query_graph = copy.deepcopy(query_graph)
         query_graph.nodes["Species"]["question_node"] = True
 
@@ -18,7 +18,7 @@ class Asker:
 
         return query_graph, verbalization
     
-    def ask_count(self, query_graph: nx.DiGraph, verbalization: str):
+    def ask_count(self, query_graph: nx.MultiDiGraph, verbalization: str):
         query_graph = copy.deepcopy(query_graph)
         query_graph.nodes["Species"]["question_node"] = True
         query_graph.add_node("Species_func", label="count", func=True, template_node=True)
@@ -28,7 +28,7 @@ class Asker:
 
         return query_graph, verbalization
     
-    def ask_query_attr(self, query_graph: nx.DiGraph, verbalization: str):
+    def ask_query_attr(self, query_graph: nx.MultiDiGraph, verbalization: str):
         key_sampling_frame = [x for x in SPECIES_ATTRIBUTE_KEYS if x not in query_graph.nodes()]
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])

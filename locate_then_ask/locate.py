@@ -90,14 +90,14 @@ SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
         )
         entity_name = random.choice(values)
 
-        query_graph = nx.DiGraph()
+        query_graph = nx.MultiDiGraph()
         query_graph.add_node(
             "Species", iri=entity_iri, label=entity_name, template_node=True
         )
         return query_graph, entity_name
 
     def locate_concept_name(self, entity_iri: str):
-        query_graph = nx.DiGraph()
+        query_graph = nx.MultiDiGraph()
         query_graph.add_node(
             "Species", iri=entity_iri, rdf_type="os:Species", label="os:Species"
         )
@@ -206,7 +206,7 @@ SELECT DISTINCT * WHERE {{
 
 
     def locate_concept_and_literal(
-        self, entity_iri: str, query_graph: Optional[nx.DiGraph] = None
+        self, entity_iri: str, query_graph: Optional[nx.MultiDiGraph] = None
     ):
         if query_graph is None:
             query_graph, _ = self.locate_concept_name(entity_iri)
@@ -218,7 +218,7 @@ SELECT DISTINCT * WHERE {{
             for x in self.get_property_keys(entity_iri)
             if x not in query_graph.nodes()
         ]
-        key_sampling_frame = unsampled_property_keys + [USE_KEY, CHEMCLASS_KEY] * (len(unsampled_property_keys) // 2)
+        key_sampling_frame = unsampled_property_keys + [USE_KEY, CHEMCLASS_KEY] * (len(unsampled_property_keys) // 4)
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
@@ -232,12 +232,12 @@ SELECT DISTINCT * WHERE {{
                 qualifier_value,
             ) = self.get_operator_value_qualifier_property(entity_iri, key)
         elif key == USE_KEY:
-            sampled_uses = query_graph.nodes.get(USE_KEY, dict()).get("label", [])
+            sampled_uses = [v for u, v, label in query_graph.edges(data="label") if label == "os:hasUse"]
             sampling_frame = [x for x in self.get_uses(entity_iri) if x not in sampled_uses]
             if len(sampling_frame) > 0:
                 value = random.choice(sampling_frame)
         elif key == CHEMCLASS_KEY:
-            sampled_chemclasses = query_graph.nodes.get(CHEMCLASS_KEY, dict()).get("label", [])
+            sampled_chemclasses = [v for u, v, label in query_graph.edges(data="label") if label == "os:hasChemicalClass"]
             sampling_frame = [x for x in self.get_chemclasses(entity_iri) if x not in sampled_chemclasses]
             if len(sampling_frame) > 0:
                 value = random.choice(sampling_frame)
@@ -245,27 +245,23 @@ SELECT DISTINCT * WHERE {{
         if value is None:
             return None, None
 
-        if key in query_graph.nodes():
-            assert key in [USE_KEY, CHEMCLASS_KEY]
-            label = query_graph.nodes[key]["label"]
-            if not isinstance(label, list):
-                query_graph.nodes[key]["label"] = [label, value]
-            else:
-                label.append(value)
-        else:
-            query_graph.add_node(key, label=value, literal=True, template_node=True)
-            query_graph.add_edge("Species", key, label="os:has" + key)
+        predicate = "os:has" + key
+        literal_num = len([n for n in query_graph.nodes() if n.startswith("literal")])
+        literal_node = "literal_" + str(literal_num)
+
+        query_graph.add_node(literal_node, label=value, literal=True, template_node=True)
+        query_graph.add_edge("Species", literal_node, label=predicate)
 
         if operator is None:
             verbalization = "{K} is {V}".format(K=key_label, V=value)
         else:
             operator_label = random.choice(COMPARATIVE_LABELS[operator])
 
-            func_node = key + "_func"
+            func_node = literal_node + "_func"
             query_graph.add_node(
                 func_node, label=operator, func=True, template_node=True
             )
-            query_graph.add_edge(key, func_node)
+            query_graph.add_edge(literal_node, func_node)
 
             verbalization = "{K} is {OP} {V}".format(
                 K=key_label, OP=operator_label, V=value
@@ -276,8 +272,8 @@ SELECT DISTINCT * WHERE {{
             and qualifier_value is not None
             and random.getrandbits(1)
         ):
-            query_graph.nodes[key]["qualifier_key"] = qualifier_key
-            query_graph.nodes[key]["qualifier_value"] = qualifier_value
+            query_graph.nodes[literal_node]["qualifier_key"] = qualifier_key
+            query_graph.nodes[literal_node]["qualifier_value"] = qualifier_value
 
             # qualifier_template = " ({QK} is {QV})"
             # verbalization += qualifier_template.format(
