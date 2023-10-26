@@ -96,8 +96,8 @@ public class SparqlHandler {
     //endpoints and credentials
     String sparqlQueryEndpoint;
     String sparqlUpdateEndpoint;
-    String bgUsername;
-    String bgPassword;
+    String sparqlUser;
+    String sparqlPassword;
 
     //weather station ID
     private String stationId;
@@ -444,18 +444,14 @@ public class SparqlHandler {
             } else {
                 throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
             }
-            if (prop.containsKey("bg.username")) {
-                this.bgUsername = prop.getProperty("bg.username");
+            if (prop.containsKey("sparql.username")) {
+                this.sparqlUser = prop.getProperty("sparql.username");
             }
-            if (prop.containsKey("bg.password")) {
-                this.bgPassword = prop.getProperty("bg.password");
+            if (prop.containsKey("sparql.password")) {
+                this.sparqlPassword = prop.getProperty("sparql.password");
             }
 
-            kbClient = new RemoteStoreClient();
-            kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
-            kbClient.setQueryEndpoint(sparqlQueryEndpoint);
-            kbClient.setUser(bgUsername);
-            kbClient.setPassword(bgPassword);
+            kbClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint, sparqlUser, sparqlPassword);
         }
     }
 
