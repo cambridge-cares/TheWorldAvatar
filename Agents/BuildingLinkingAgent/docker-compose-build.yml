@@ -1,4 +1,0 @@
-version: '3.8'
-services:
-  building-linking:
-    build: .
