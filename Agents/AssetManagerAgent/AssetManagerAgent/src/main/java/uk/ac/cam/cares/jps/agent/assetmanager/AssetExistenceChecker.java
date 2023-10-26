@@ -508,4 +508,14 @@ public class AssetExistenceChecker {
         return storeClientLab;
     }
 
+    public String getLabelbyIRIString(String IRI){
+        //TODO Write this thing
+        return null;
+    }
+
+    public String getIRIbyLabelString(String ID){
+        //TODO Write this thing too
+        return null;
+    }
+
 }

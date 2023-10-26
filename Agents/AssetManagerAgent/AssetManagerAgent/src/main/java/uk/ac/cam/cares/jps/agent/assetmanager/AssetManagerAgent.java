@@ -445,9 +445,16 @@ public class AssetManagerAgent extends JPSAgent{
                 ID = instanceHandler.existenceChecker.getIDbyIRIString(IRI);
             }
 
+            //When ID is not there, the asset is possibly a BMS device, check for lab namespace
             if (IRI == null) {
-                throw new JPSRuntimeException("ID/IRI not detected in the asset KG.");
+                ID = instanceHandler.existenceChecker.getLabelbyIRIString(IRI);
             }
+            else if (ID == null) {
+                IRI = instanceHandler.existenceChecker.getIRIbyLabelString(ID);
+            }
+
+            //If still null, then item doesn't exist
+            if (ID == null || IRI == null) {throw new JPSRuntimeException("ID/IRI not detected in the asset KG.");}
         } catch (Exception e) {
             throw new JPSRuntimeException("Failed to get ID/IRI. ID has to be a valid ID or an IRI.", e);
         }
@@ -468,6 +475,7 @@ public class AssetManagerAgent extends JPSAgent{
         if (checkedPred.isEmpty()){
             checkedPred = getAllCheckedPred();
         }
+        message.accumulate("ID", new JSONArray(new String[] {ID, IRI}));
         message.accumulate("Result", instanceHandler.retrieve(ID));
         
         message.accumulate("Result", instanceHandler.itemMeasuresBool(db, IRI, pred, depth));

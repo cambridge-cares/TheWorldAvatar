@@ -228,25 +228,28 @@ public class AssetRetriever {
         //get device type
         query.where(deviceIRI.isA(deviceTypeIRI));
         //get location
-        query.where(GraphPatterns.optional(roomIRI.has(containsElement, deviceIRI),
-            roomIRI.isA(roomTypeIRI),
-
-            deviceIRI.has(isStoredIn, storageIRI)));
-
-        query.where(GraphPatterns.optional(IFCReprIRI.has(RDFS.LABEL, roomName),
-            roomIRI.has(hasIfcRepresentation, IFCReprIRI),
-            roomIRI.isA(roomTypeIRI),
-            facilityIRI.has(hasRoom, roomIRI),
-            facilityIRI.isA(facilityTypeIRI),
-            facilityIRI.has(RDFS.LABEL, facilityName),
-            locationIRI.has(hasFacility, facilityIRI),
-            locationIRI.has(hasIfcRepresentation, locationIFCReprIRI),
-            locationIFCReprIRI.has(RDFS.LABEL, buildingName),
-            cabinetIRI.isA(cabinetTypeIRI),
+        //TODO FIX HERE
+        query.where(
+                GraphPatterns.optional(roomIRI.has(containsElement, deviceIRI),
+                roomIRI.isA(roomTypeIRI),
+                IFCReprIRI.has(RDFS.LABEL, roomName),
+                roomIRI.has(hasIfcRepresentation, IFCReprIRI),
+                roomIRI.isA(roomTypeIRI),
+                facilityIRI.has(hasRoom, roomIRI),
+                facilityIRI.isA(facilityTypeIRI),
+                facilityIRI.has(RDFS.LABEL, facilityName),
+                locationIRI.has(hasFacility, facilityIRI),
+                locationIRI.has(hasIfcRepresentation, locationIFCReprIRI),
+                locationIFCReprIRI.has(RDFS.LABEL, buildingName)
+                )
+                //Add union for assets outside of CARES?
+                //deviceIRI.has(hasCurrentLocation, LocationString)
+        );
+            
+            //Separete here
+        query.where(GraphPatterns.optional(cabinetIRI.isA(cabinetTypeIRI),
             deviceIRI.has(isStoredIn, cabinetIRI),
-            cabinetIRI.has(hasFurnitureIdentifier, storageIDLiteral),
-
-            deviceIRI.has(hasCurrentLocation, LocationString)
+            cabinetIRI.has(hasFurnitureIdentifier, storageIDLiteral)
         ));
 
 
@@ -638,13 +641,15 @@ public class AssetRetriever {
             ArrayList<GraphPattern> tripleList = new ArrayList<GraphPattern>();
 
             Variable lastObj;
+            Variable object;
+
+            object = query.var();
+            lastObj = object;
             for (int i = 0; i <d; i++){
                 RdfSubject subject;
                 RdfPredicate predicate;
-                Variable object;
-
+                
                 object = query.var();
-                lastObj = object;
                 if (i == 0){
                     subject = iri(IRI);
                 }
@@ -652,7 +657,7 @@ public class AssetRetriever {
                     subject = lastObj;
                 }
 
-                if (i == d-1){
+                if (i == (d-1)){
                     //Use predicate from the JSONArray
                     for (int predInd = 0; predInd < pred.length(); predInd++){
                         predicate = iri(pred.getString(predInd));
@@ -671,6 +676,7 @@ public class AssetRetriever {
                     return true;
                 }
 
+                lastObj = object;
                 //NOTE
                 //Could also run the algo backward wiht IRI as object instead.
                 //Keep in mind the graph is "technically bidirectional"
