@@ -15,23 +15,27 @@ from constants.ontospecies_keys import (
     PROPERTY_KEYS,
     USE_KEY,
 )
+from locate_then_ask.sparql_compact2verbose import SparqlCompact2VerboseConverter
 
 
 class GraphToSparqlConverter:
+    def __init__(self):
+        self.compact2verbose = SparqlCompact2VerboseConverter()
+        
     def make_graph_pattern(self, query_graph: nx.DiGraph, s: str, o: str):
         p = query_graph.edges[s, o]["label"]
         if p.startswith("os:has"):
             key = p[len("os:has") :]
             if key in PROPERTY_KEYS or key in IDENTIFIER_KEYS:
-                return "{s} {p} {o}".format(s="?" + s, p=p, o="?" + key)
+                return "{s} {p} {o} .".format(s="?" + s, p=p, o="?" + key)
             elif key in [USE_KEY, CHEMCLASS_KEY]:
                 if query_graph.nodes[o].get("template_node"):
                     literal = query_graph.nodes[o]["label"]
-                    return "{s} {p} {o}".format(
+                    return "{s} {p} {o} .".format(
                         s="?" + s, p=p, o='"{literal}"'.format(literal=literal)
                     )
                 else:
-                    return "{s} {p} {o}".format(s="?" + s, p=p, o="?" + key)
+                    return "{s} {p} {o} .".format(s="?" + s, p=p, o="?" + key)
             else:
                 raise ValueError("Unrecognized predicate: " + p)
         elif p == "func":
@@ -110,4 +114,8 @@ class GraphToSparqlConverter:
     def convert(self, query_graph: nx.DiGraph):
         select_clause = self.make_select_clause(query_graph)
         where_clause = self.make_where_clause(query_graph)
-        return "{SELECT} {WHERE}".format(SELECT=select_clause, WHERE=where_clause)
+        
+        sparql_compact = "{SELECT} {WHERE}".format(SELECT=select_clause, WHERE=where_clause)
+        sparql_verbose = self.compact2verbose.convert(sparql_compact)
+
+        return sparql_compact, sparql_verbose

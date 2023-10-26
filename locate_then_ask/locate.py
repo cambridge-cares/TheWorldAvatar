@@ -19,7 +19,6 @@ from constants.functions import (
 from constants.ontospecies_keys import (
     KEY2LABELS,
     PROPERTY_KEYS,
-    IDENTIFIER_KEYS,
     SPECIES_ATTRIBUTE_KEYS,
     USE_KEY,
     CHEMCLASS_KEY,
