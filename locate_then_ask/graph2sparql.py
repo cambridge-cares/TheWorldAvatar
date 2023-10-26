@@ -94,8 +94,8 @@ class GraphToSparqlConverter:
     def make_where_clause(self, query_graph: nx.DiGraph):
         if query_graph.nodes["Species"].get("template_node"):
             graph_patterns = [
-                'VALUES ?Species {{ "{label}" }}'.format(
-                    label=query_graph.nodes["Species"]["label"]
+                'VALUES ?Species {{ {bindings} }}'.format(
+                    bindings = " ".join(['"{label}"'.format(label=name) for name in query_graph.nodes["Species"]["label"]])
                 )
             ]
         else:

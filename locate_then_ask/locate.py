@@ -1,6 +1,6 @@
 import copy
 import random
-from typing import Optional
+from typing import Dict, Iterable, List, Optional
 from collections import defaultdict
 
 import networkx as nx
@@ -19,7 +19,6 @@ from constants.functions import (
 from constants.ontospecies_keys import (
     KEY2LABELS,
     PROPERTY_KEYS,
-    SPECIES_ATTRIBUTE_KEYS,
     USE_KEY,
     CHEMCLASS_KEY,
 )
@@ -33,39 +32,47 @@ class Locator:
         kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
     ):
         self.kg_client = KgClient(kg_endpoint)
+        self.entity2identifiers: Dict[str, Dict[str, List[str]]] = dict() # entity_iri -> IdentifierName -> names
         self.entity2propertykeys = dict()
-        self.entity2uses = dict()
-        self.entity2chemclasses = dict()
+        self.entity2uses: Dict[str, List[str]] = dict()
+        self.entity2chemclasses: Dict[str, List[str]] = dict()
 
-    def locate_entity_name(self, entity_iri: str):
-        query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
-    VALUES ( ?hasIdentifierName ) {{ ( os:hasInChI ) ( os:hasIUPACName ) ( os:hasMolecularFormula ) ( os:hasSMILES ) }}
-    <{SpeciesIri}> ?hasIdentifierName [ os:value ?IdentifierNameValue ] .
-}}"""
-        query = query_template.format(SpeciesIri=entity_iri)
+    def get_identifiers(self, entity_iri: str):
+        if entity_iri not in self.entity2identifiers:
+            query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
+        VALUES ?hasIdentifierName {{ os:hasInChI os:hasIUPACName os:hasMolecularFormula os:hasSMILES }}
+        <{SpeciesIri}> ?hasIdentifierName [ os:value ?IdentifierNameValue ] .
+    }}"""
+            query = query_template.format(SpeciesIri=entity_iri)
 
-        response_bindings = self.kg_client.query(query)
-        value_bindings = [
-            {k: v["value"] for k, v in x.items()} for x in response_bindings
-        ]
+            response_bindings = self.kg_client.query(query)
+            value_bindings = [
+                {k: v["value"] for k, v in x.items()} for x in response_bindings
+            ]
 
-        hasIdentifierName2IdentifierNameValues = defaultdict(list)
-        for binding in value_bindings:
-            hasIdentifierName2IdentifierNameValues[binding["hasIdentifierName"]].append(
-                binding["IdentifierNameValue"]
-            )
+            accum = defaultdict(list)
+            for binding in value_bindings:
+                accum[binding["hasIdentifierName"]].append(
+                    binding["IdentifierNameValue"]
+                )
+            self.entity2identifiers[entity_iri] = {k.split("#has", maxsplit=1)[-1]: v for k, v in accum.items()}
+        return self.entity2identifiers[entity_iri]
 
-        values = random.choice(
-            [v for _, v in hasIdentifierName2IdentifierNameValues.items()]
-        )
-        entity_name = random.choice(values)
+    def locate_entity_name(self, entity_iris: Iterable[str]):
+        entity_names = []
+        for entity_iri in entity_iris:
+            identifier_name = random.choice(list(self.get_identifiers(entity_iri).keys()))
+            entity_name = random.choice(self.get_identifiers(entity_iri)[identifier_name])
+            entity_names.append(entity_name)
 
         query_graph = nx.DiGraph()
         query_graph.add_node(
-            "Species", iri=entity_iri, label=entity_name, template_node=True
+            "Species", iri=entity_iri, label=entity_names, template_node=True
         )
-        return query_graph, entity_name
+
+        verbalization = " and ".join(entity_names)
+        return query_graph, verbalization
 
     def locate_concept_name(self, entity_iri: str):
         query_graph = nx.DiGraph()

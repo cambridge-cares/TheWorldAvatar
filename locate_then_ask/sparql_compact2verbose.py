@@ -9,6 +9,7 @@ from constants.ontospecies_keys import (
 class SparqlCompact2VerboseConverter:
     def convert(self, sparql_compact: str):
         """sparql_compact: SELECT ?x WHERE {graph_patterns...}"""
+        print(sparql_compact)
         sparql_compact = sparql_compact.strip()
         select_clause, sparql_compact = sparql_compact.split("WHERE", maxsplit=1)
         select_clause = select_clause.strip()
@@ -22,26 +23,32 @@ class SparqlCompact2VerboseConverter:
         while len(sparql_compact) > 0:
             sparql_compact = sparql_compact.strip()
             if sparql_compact.startswith("VALUES"):
-                """sparql_compact: VALUES ?Species { {literal} }"""
+                """sparql_compact: VALUES ?Species { {literal} {literal} ... }"""
                 sparql_compact = sparql_compact[len("VALUES") :].strip()
                 assert sparql_compact.startswith("?Species"), sparql_compact
                 sparql_compact = sparql_compact[len("?Species") :].strip()
                 assert sparql_compact.startswith("{"), sparql_compact
                 sparql_compact = sparql_compact[1:].strip()
-                assert sparql_compact.startswith('"'), sparql_compact
-                ptr = 1
-                while ptr < len(sparql_compact) and sparql_compact[ptr] != '"':
-                    ptr += 1
-                assert sparql_compact[ptr] == '"'
-                literal = sparql_compact[: ptr + 1]
-                sparql_compact = sparql_compact[ptr + 1 :].strip()
-                assert sparql_compact.startswith("}")
-                sparql_compact = sparql_compact[1:]
+
+                ptr = 0
+                while ptr < len(sparql_compact) and sparql_compact[ptr] != '}':
+                    assert sparql_compact[ptr] == '"', sparql_compact
+                    _ptr = ptr + 1
+                    while _ptr < len(sparql_compact) and sparql_compact[_ptr] != '"':
+                        _ptr += 1
+                    assert sparql_compact[_ptr] == '"'
+                    
+                    ptr = _ptr + 1
+                    while ptr < len(sparql_compact) and sparql_compact[ptr].isspace():
+                        ptr += 1
+
+                literals = sparql_compact[:ptr].strip()
+                sparql_compact = sparql_compact[ptr + 1:]
 
                 template = """
-    VALUES ?SpeciesIdentifierValue {{ {literal} }}
+    VALUES ?SpeciesIdentifierValue {{ {literals} }}
     ?Species rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier [ rdf:type/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ] ."""
-                graph_patterns.append(template.format(literal=literal))
+                graph_patterns.append(template.format(literals=literals))
                 continue
 
             """sparql_compact: ?Species os:has{key} [?{key}|{literal}]"""
