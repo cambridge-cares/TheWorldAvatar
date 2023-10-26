@@ -38,11 +38,11 @@ source		SELECT "creation_date", "id", "name", "termination_date"
 			FROM "citydb"."cityobject"
 
 mappingId   City Object IRI
-target      twa:cityobject/{uuid} obda:isCanonicalIRIOf city:cityobject/{"id"} .
-source      SELECT "cityobject_id" AS "id", "strval" AS "uuid"
-			FROM "citydb"."cityobject_genericattrib" JOIN "citydb"."cityobject" ON
-			"citydb"."cityobject"."id" = "citydb"."cityobject_genericattrib"."cityobject_id"
-			WHERE "attrname" = 'uuid'
+target      twa:{class}/{uuid} obda:isCanonicalIRIOf city:cityobject/{"id"} .
+source      SELECT "objectclass"."classname" AS "class", "strval" AS "uuid", "cityobject"."id" AS "id"
+			FROM "citydb"."cityobject_genericattrib" JOIN "citydb"."cityobject" ON "citydb"."cityobject"."id" = "citydb"."cityobject_genericattrib"."cityobject_id"
+			JOIN "citydb"."objectclass" ON "citydb"."objectclass"."id" = "citydb"."cityobject"."objectclass_id"
+			WHERE "citydb"."cityobject_genericattrib"."attrname"='uuid'
 
 mappingId	Bridge Construction Element - LoD3ImplicitRep
 target		city:bridge_constr_element/{"id"} brid:lod3ImplicitRepresentation city:geometry/{"lod3_implicit_rep_id"} . 
