@@ -90,14 +90,14 @@ SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
         )
         entity_name = random.choice(values)
 
-        query_graph = nx.MultiDiGraph()
+        query_graph = nx.DiGraph()
         query_graph.add_node(
             "Species", iri=entity_iri, label=entity_name, template_node=True
         )
         return query_graph, entity_name
 
     def locate_concept_name(self, entity_iri: str):
-        query_graph = nx.MultiDiGraph()
+        query_graph = nx.DiGraph()
         query_graph.add_node(
             "Species", iri=entity_iri, rdf_type="os:Species", label="os:Species"
         )
@@ -133,15 +133,13 @@ SELECT DISTINCT ?PropertyNameValue ?PropertyNameUnitLabel ?ReferenceStateValue ?
 
         operator = random.choice(COMPARATIVES)
         if operator in [LESS_THAN, LESS_THAN_EQUAL]:
-            value = str(get_lt(property_value))
+            value = get_lt(property_value)
         elif operator in [GREATER_THAN, GREATER_THAN_EQUAL]:
-            value = str(get_gt(property_value))
+            value = get_gt(property_value)
         elif operator in [EQUAL, AROUND]:
-            value = str(property_value)
+            value = property_value
         elif operator == INSIDE:
-            value = "between {low} and {high}".format(
-                low=get_lt(property_value), high=get_gt(property_value)
-            )
+            value = (get_lt(property_value), get_gt(property_value))
         else:
             raise ValueError("Unrecognised comparative: " + operator)
 
@@ -206,7 +204,7 @@ SELECT DISTINCT * WHERE {{
 
 
     def locate_concept_and_literal(
-        self, entity_iri: str, query_graph: Optional[nx.MultiDiGraph] = None
+        self, entity_iri: str, query_graph: Optional[nx.DiGraph] = None
     ):
         if query_graph is None:
             query_graph, _ = self.locate_concept_name(entity_iri)
@@ -261,7 +259,7 @@ SELECT DISTINCT * WHERE {{
             query_graph.add_node(
                 func_node, label=operator, func=True, template_node=True
             )
-            query_graph.add_edge(literal_node, func_node)
+            query_graph.add_edge(literal_node, func_node, label="func")
 
             verbalization = "{K} is {OP} {V}".format(
                 K=key_label, OP=operator_label, V=value
