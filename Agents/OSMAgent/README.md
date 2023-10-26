@@ -3,7 +3,7 @@
 The OSMAgent is an agent that works with OpenStreetMap (OSM) data to link them to existing building IRI and instantiate the semantic representation of building usage information from OSM data.
 The workflow of the agent can be broadly outlined in the following steps:
 1) Categorize OSM tags according to [OntoBuiltEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) concept. 
-2) Identify and match OSM data with the 3D buildings uploaded as CityGML data and LoD0 footprint. This is perfomed by assigning building IRI to OSM data through matching the geometry of the OSM data to the 3D buildings' footprint. 
+2) Identify and match OSM data with the 3D buildings uploaded as CityGML data and LoD0 footprint. This is performed by assigning building IRI to OSM data through matching the geometry of the OSM data to the 3D buildings' footprint. 
 3) Calculate building usage share for all OSM data with tagged building IRI and non-null usage information.
 4) If land use data is available, for 3D buildings without tagged OSM usage, the agent will tag it with the corresponding land use.  
 
