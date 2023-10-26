@@ -21,7 +21,7 @@ from locate_then_ask.sparql_compact2verbose import SparqlCompact2VerboseConverte
 class GraphToSparqlConverter:
     def __init__(self):
         self.compact2verbose = SparqlCompact2VerboseConverter()
-        
+
     def make_graph_pattern(self, query_graph: nx.DiGraph, s: str, o: str):
         p = query_graph.edges[s, o]["label"]
         if p.startswith("os:has"):
@@ -114,8 +114,10 @@ class GraphToSparqlConverter:
     def convert(self, query_graph: nx.DiGraph):
         select_clause = self.make_select_clause(query_graph)
         where_clause = self.make_where_clause(query_graph)
-        
-        sparql_compact = "{SELECT} {WHERE}".format(SELECT=select_clause, WHERE=where_clause)
+
+        sparql_compact = "{SELECT} {WHERE}".format(
+            SELECT=select_clause, WHERE=where_clause
+        )
         sparql_verbose = self.compact2verbose.convert(sparql_compact)
 
         return sparql_compact, sparql_verbose

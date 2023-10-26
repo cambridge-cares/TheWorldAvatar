@@ -1,5 +1,6 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 
+
 class KgClient:
     def __init__(self, kg_endpoint: str):
         client = SPARQLWrapper(endpoint=kg_endpoint)

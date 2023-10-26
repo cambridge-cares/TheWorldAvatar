@@ -14,12 +14,12 @@ class Asker:
     def __init__(self):
         self.graph2sparql = GraphToSparqlConverter()
 
-    def ask_query_name(self, query_graph: nx.DiGraph, verbalization: str):
+    def ask_name(self, query_graph: nx.DiGraph, verbalization: str):
         query_graph = copy.deepcopy(query_graph)
         query_graph.nodes["Species"]["question_node"] = True
 
         query_sparql = self.graph2sparql.convert(query_graph)
-        verbalization = "What is " + verbalization
+        verbalization = "What are " + verbalization
 
         return query_graph, query_sparql, verbalization
 
@@ -36,7 +36,7 @@ class Asker:
 
         return query_graph, query_sparql, verbalization
 
-    def ask_query_attr(self, query_graph: nx.DiGraph, verbalization: str):
+    def ask_attribute(self, query_graph: nx.DiGraph, verbalization: str):
         sampled_keys = [
             p[len("os:has") :]
             for _, _, p in query_graph.edges(data="label")

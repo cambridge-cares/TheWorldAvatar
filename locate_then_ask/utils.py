@@ -1,6 +1,7 @@
 import random
 import math
 
+
 def get_lt(value: float):
     if value == 0:
         lt = -1.0

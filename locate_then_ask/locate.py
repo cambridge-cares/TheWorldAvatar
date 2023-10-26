@@ -31,39 +31,11 @@ class Locator:
     def __init__(
         self,
         kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
-        seed_entities_filepath: Optional[str] = None,
     ):
         self.kg_client = KgClient(kg_endpoint)
-
-        if seed_entities_filepath is None:
-            seed_entities = self.sample_entities()
-        else:
-            with open(seed_entities_filepath, "r") as f:
-                seed_entities = [x.strip() for x in f.readlines()]
-                seed_entities = [x for x in seed_entities if x]
-        self.seed_entities = seed_entities
         self.entity2propertykeys = dict()
         self.entity2uses = dict()
         self.entity2chemclasses = dict()
-
-    def sample_entities(self):
-        species_attr_values = "\n    ".join(
-            ["(os:has{p})".format(p=p) for p in SPECIES_ATTRIBUTE_KEYS]
-        )
-        query = """"PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
-  ?x a os:Species .
-  VALUES (?p) {{{bindings}
-  }}
-  ?x ?p ?o .
-}}
-GROUP BY ?x
-ORDER BY DESC(?degree)
-LIMIT 100""".format(
-            bindings=species_attr_values
-        )
-        bindings = self.kg_client.query(query)
-        return [x["x"]["value"] for x in bindings]
 
     def locate_entity_name(self, entity_iri: str):
         query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -210,7 +182,7 @@ SELECT DISTINCT * WHERE {{
             query_graph = copy.deepcopy(query_graph)
 
         sampled_property_keys = [
-            p[len("os:has"):]
+            p[len("os:has") :]
             for _, _, p in query_graph.edges(data="label")
             if p.startswith("os:has")
         ]
