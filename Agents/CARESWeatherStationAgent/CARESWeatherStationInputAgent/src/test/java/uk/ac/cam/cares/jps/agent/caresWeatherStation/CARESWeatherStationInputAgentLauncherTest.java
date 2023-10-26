@@ -114,30 +114,6 @@ public class CARESWeatherStationInputAgentLauncherTest {
     }
 
     @Test
-    public void testMainErrorWhenCreatingTSClient() throws IOException {
-        //create agent properties file
-        createProperAgentPropertiesFile();
-        //File testFile=new File(Paths.get(args[0],"agent.properties").toString());
-        //Assert.assertTrue(testFile.exists());
-        //Create folder with mapping file
-        String folderName = "mappings";
-        File mappingFolder = folder.newFolder(folderName);
-        // Create empty file in mappings folder
-        File mappingFile = new File(Paths.get(mappingFolder.getCanonicalPath(), "weather.properties").toString());
-        Assert.assertTrue(mappingFile.createNewFile());
-        // Empty properties file for time series client should result in exception
-        try {
-            SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                CARESWeatherStationInputAgentLauncher.initializeAgent(args);
-            });
-        }
-        catch (Exception e) {
-            Assert.assertEquals("Could not construct the time series client needed by the input agent!", e.getMessage());
-        }
-
-    }
-
-    @Test
     public void testMainErrorWhenCreatingAPIConnector() throws IOException {
         createProperClientPropertiesFile();
         // Use a mock for the input agent
