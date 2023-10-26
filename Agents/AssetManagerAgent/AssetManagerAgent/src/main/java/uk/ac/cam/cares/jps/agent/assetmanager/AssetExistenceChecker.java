@@ -509,13 +509,32 @@ public class AssetExistenceChecker {
     }
 
     public String getLabelbyIRIString(String IRI){
-        //TODO Write this thing
-        return null;
+        JSONArray reqResult = getLiteralbyIRI(iri(IRI), iri(RDFS.LABEL), storeClientLab);
+        LOGGER.info("Query label::"+IRI+" : "+reqResult);
+        switch (reqResult.length()) {
+            case 0:
+                //Asset doesn't exist on bms, office and lab namespace
+                return null;
+                
+            case 1:
+                return reqResult.getJSONObject(0).getString("object");
+            default:
+                throw new JPSRuntimeException("Asset IRI is connected to several ID: " + IRI + ". Check the knowledge graph for duplicates.", null);
+        }
     }
 
     public String getIRIbyLabelString(String ID){
-        //TODO Write this thing too
-        return null;
+        JSONArray reqResult = getIRIbyLiteral(ID, iri(RDFS.LABEL), storeClientLab);
+        LOGGER.info("Query label::"+ID+" : "+reqResult);
+        switch (reqResult.length()) {
+            case 0:
+                //Asset doesn't exist on bms, office and lab namespace
+                return null;
+            case 1:
+                return reqResult.getJSONObject(0).getString("Subject");
+            default:
+                throw new JPSRuntimeException("Asset ID is connected to several IRI: " + ID + ". Check the knowledge graph for duplicates.", null);
+        }
     }
 
 }
