@@ -96,7 +96,10 @@ LIMIT 100"""
         if ask_strategy == "name":
             return self.asker.ask_name(query_graph, verbalization)
         elif ask_strategy == "attribute":
-            return self.asker.ask_attribute(query_graph, verbalization)
+            attr_num = random.sample(population=[1, 2, 3], counts=[2, 1, 1], k=1)[0]
+            return self.asker.ask_attribute(
+                query_graph=query_graph, verbalization=verbalization, attr_num=attr_num
+            )
         else:
             raise ValueError("Unrecognized ask_strategy: " + ask_strategy)
 

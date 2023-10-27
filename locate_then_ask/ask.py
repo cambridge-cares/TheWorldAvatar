@@ -51,7 +51,9 @@ class Asker:
             verbalization=verbalization,
         )
 
-    def ask_attribute(self, query_graph: nx.DiGraph, verbalization: str):
+    def ask_attribute(self, query_graph: nx.DiGraph, verbalization: str, attr_num: int = 1):
+        query_graph = copy.deepcopy(query_graph)
+
         sampled_keys = [
             p[len("os:has") :]
             for _, _, p in query_graph.edges(data="label")
@@ -60,15 +62,18 @@ class Asker:
         key_sampling_frame = [
             x for x in SPECIES_ATTRIBUTE_KEYS if x not in sampled_keys
         ]
-        key = random.choice(key_sampling_frame)
-        key_label = random.choice(KEY2LABELS[key])
+        keys = random.sample(key_sampling_frame, k=min(attr_num, len(key_sampling_frame)))
+        keys_label = []
 
-        query_graph = copy.deepcopy(query_graph)
-        query_graph.add_node(key, question_node=True)
-        query_graph.add_edge("Species", key, label="os:has" + key)
+        for key in keys:
+            query_graph.add_node(key, question_node=True)
+            query_graph.add_edge("Species", key, label="os:has" + key)
+            
+            key_label = random.choice(KEY2LABELS[key])
+            keys_label.append(key_label)
 
         query_sparql = self.graph2sparql.convert(query_graph)
-        verbalization = "For {E}, what is its {K}".format(E=verbalization, K=key_label)
+        verbalization = "For {E}, what is its {K}".format(E=verbalization, K=" and ".join(keys_label))
 
         return AskDatum(
             query_graph=query_graph,
