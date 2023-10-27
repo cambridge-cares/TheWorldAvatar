@@ -39,10 +39,11 @@ taken at a timestamp between the first and third image.
 ## Usage 
 This part of the README describes the usage of the input agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client which maintains both instances in a knowledge graph and a Postgres database to store the data, these will be required to be set-up before. 
 
-The agent instantiates the weather reading retrieved via the API as timeseries in the knowledge graph. In addition, it will check and instantiate the ABoxes for the weather station and the quantities it measures based on these ontologies [OntoEMS](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl), [ontology-of-units-of-measure](https://github.com/cambridge-cares/OM/blob/master/om-2.0.rdf), [OntoTimeSeries](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl). An example of the ABox is shown below:
+The agent instantiates the weather reading retrieved via the API as timeseries in the knowledge graph. In addition, it will check and instantiate the ABoxes for the weather station and the quantities it measures based on these ontologies [ontology-of-units-of-measure](https://github.com/cambridge-cares/OM/blob/master/om-2.0.rdf), [simple features geometries](http://schemas.opengis.net/sf/1.0/simple_features_geometries.rdf), [geoSPARQL](http://schemas.opengis.net/geosparql/1.0/geosparql_vocab_all.rdf), [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontodevice/OntoDevice.owl), [OntoEMS](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl), , [OntoTimeSeries](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl). An example of the ABox is shown below:
 ```
 <ReportingStation> rdf:type	ontoems:ReportingStation ;
-                   ontoems:reports <Quantity> .
+                   ontoems:reports <Quantity> ;
+                   ontodevice:hasGeoLocation <Point> .
 
 <Quantity> rdf:type	ontoems:DewPoint ;
            om:hasValue <measure> ;
@@ -51,12 +52,15 @@ The agent instantiates the weather reading retrieved via the API as timeseries i
 <measure> rdf:type om:Measure ;
           ontotimeseries:hasTimeSeries <timeseries> .
 
-<om:minimum> rdf:type om:Function ;
-             rdfs:label "minimum" .
-
 <timeseries> rdf:type ontotimeseries:InstantaneousTimeSeries ;
              ontotimeseries:hasRDB "JDBC URL" ;	
-             ontotimeseries:hasTimeUnit	"OffsetDateTime" .			 
+             ontotimeseries:hasTimeUnit	"OffsetDateTime" .
+
+<om:minimum> rdf:type om:Function ;
+             rdfs:label "minimum" .	
+
+<Point> rdf:type sf:Point ;
+        geo:asWKT "POINT(103.774 1.304)"^^<geo:wktLiteral> .		 
 ```
 
 
