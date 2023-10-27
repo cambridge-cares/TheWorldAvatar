@@ -73,7 +73,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
             try {
             loadTSClientConfigs(clientProperties);
             } catch (IOException e) {
-                throw new JPSRuntimeException(LOADTSCONFIG_ERROR_MSG);
+                throw new JPSRuntimeException(LOADTSCONFIG_ERROR_MSG, e);
             }
             String[] args = new String[] {agentProperties,clientProperties,apiProperties};
             jsonMessage = initializeAgent(args);
@@ -219,7 +219,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
 
         try {
             SparqlHandler sparqlHandler = new SparqlHandler(args[0], args[1], args[2]);
-            sparqlHandler.instantiateIfNotExist();
+            sparqlHandler.instantiateIfNotExist(weatherDataReadings);
         } catch (Exception e) {
             throw new JPSRuntimeException("Unable to carry out queries or insert data into the sparql store!", e);
         }

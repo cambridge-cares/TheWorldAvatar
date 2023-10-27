@@ -6,6 +6,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.testcontainers.containers.GenericContainer;
@@ -48,6 +49,12 @@ public class SparqlHandlerIntegrationTest {
     
     // Remote store client to query triple store
     private RemoteStoreClient kbClient;
+
+    // Readings used by several tests
+    JSONObject weatherDataReadings;
+
+    // Default list of timestamps
+    private final String[] timestamps = {"2022-07-11T16:10:00Z", "2022-07-11T16:15:00Z", "2022-07-11T16:20:00Z", "2022-07-11T16:25:00Z"};
 
     // Default lists of JSON keys (also defining the type)
     private final String[] keys = {"tempMax","dewpt","heatindexLow","windchillAvg","precipRate", "precipTotal"};
@@ -119,6 +126,27 @@ public class SparqlHandlerIntegrationTest {
         }
     }
 
+    @Before
+    public void createExampleReadings() {
+        double value =0.0;
+        weatherDataReadings = new JSONObject();
+        JSONArray jsArr= new JSONArray();
+        for(int i=0; i<timestamps.length;i++) {
+            JSONObject currentWeatherData = new JSONObject();
+            currentWeatherData.put(CARESWeatherStationInputAgent.timestampKey, timestamps[i]);
+            JSONObject measurements = new JSONObject();
+            for(String key: keys) {
+                measurements.put(key, value);
+            }
+            currentWeatherData.put("metric_si",measurements);
+            currentWeatherData.put("lat", 1.304);
+            currentWeatherData.put("lon", 103.774);
+            jsArr.put(i,currentWeatherData);
+            value++;
+        }
+        weatherDataReadings.put("observations",jsArr);
+    }
+
 
     // Cleaning up containers after each test, otherwise unused containers will first be killed when all tests finished
     @After
@@ -142,10 +170,10 @@ public class SparqlHandlerIntegrationTest {
     @Test
     public void testMeasureForInstantiateIfNotExist() {
         //first run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist();
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
 
         //second run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist();
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
 
         //test for correct instantiation and presence of duplicates
         Variable var = SparqlBuilder.var("var");
@@ -173,10 +201,10 @@ public class SparqlHandlerIntegrationTest {
     @Test
     public void testQuantityForInstantiateIfNotExist() {
         //first run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist();
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
 
         //second run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist();
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
 
         //check whether a quantity IRI has been created for each data IRI and linked via om:hasValue
         Variable var = SparqlBuilder.var("var");
@@ -216,10 +244,10 @@ public class SparqlHandlerIntegrationTest {
     @Test
     public void testAggregateFunctionForInstantiateIfNotExist() {
         //first run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist();
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
 
         //second run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist();
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
 
         Variable var = SparqlBuilder.var("var");
         Variable var2 = SparqlBuilder.var("var2");
@@ -256,10 +284,10 @@ public class SparqlHandlerIntegrationTest {
     @Test
     public void testReportingStationForInstantiateIfNotExist() {
         //first run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist();
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
 
         //second run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist();
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
 
         Variable var = SparqlBuilder.var("var");
         Variable var2 = SparqlBuilder.var("var2");
@@ -296,5 +324,43 @@ public class SparqlHandlerIntegrationTest {
         queryResult = kbClient.executeQuery();
         Assert.assertEquals("Weather Station 12345", queryResult.getJSONObject(0).getString("var2"));
 
+    }
+
+    @Test
+    public void testGeoLocationForInstantiateIfNotExist() {
+        //first run of instantiateIfNotExist()
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
+
+        //second run of instantiateIfNotExist()
+        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
+
+        Variable var = SparqlBuilder.var("var");
+        Variable var2 = SparqlBuilder.var("var2");
+
+        //check for number of triples that has ontodevice:hasGeoLocation as the predicate
+        TriplePattern queryPattern = var.has(iri("https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation"), var2);
+        SelectQuery query = Queries.SELECT();
+        query.select(var2).where(queryPattern);
+        kbClient.setQuery(query.getQueryString());
+        JSONArray queryResult = kbClient.executeQuery();
+        Assert.assertTrue(queryResult != null);
+        Assert.assertEquals(1, queryResult.length());
+
+        //check rdf:type of GeoLocation Instance
+        String geoLocationIRI = queryResult.getJSONObject(0).getString("var2");
+        queryPattern = iri(geoLocationIRI).isA(var2);
+        query = Queries.SELECT();
+        query.select(var2).where(queryPattern);
+        kbClient.setQuery(query.getQueryString());
+        queryResult = kbClient.executeQuery();
+        Assert.assertEquals("http://www.opengis.net/ont/sf#Point", queryResult.getJSONObject(0).getString("var2"));
+        
+        //check for wktLiteral
+        queryPattern = iri(geoLocationIRI).has(iri("http://www.opengis.net/ont/geosparql#asWKT"), var2);
+        query = Queries.SELECT();
+        query.select(var2).where(queryPattern);
+        kbClient.setQuery(query.getQueryString());
+        queryResult = kbClient.executeQuery();
+        Assert.assertEquals("POINT(103.774 1.304)", queryResult.getJSONObject(0).getString("var2"));
     }
 }
