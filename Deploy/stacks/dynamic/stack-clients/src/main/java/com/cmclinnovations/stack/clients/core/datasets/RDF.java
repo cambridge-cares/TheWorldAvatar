@@ -1,5 +1,7 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
+import java.nio.file.Path;
+
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 
 public class RDF extends DataSubset {
@@ -11,8 +13,12 @@ public class RDF extends DataSubset {
 
     @Override
     void loadInternal(Dataset parent) {
+        Path subdirectory = this.getSubdirectory();
+        if (null == subdirectory) {
+            throw new RuntimeException("No 'subdirectory' specified - required for RDF data");
+        }
         BlazegraphClient.getInstance().uploadRDFFiles(
-                parent.getDirectory().resolve(this.getSubdirectory()), parent.getNamespace());
+                parent.getDirectory().resolve(subdirectory), parent.getNamespace());
     }
 
 }
