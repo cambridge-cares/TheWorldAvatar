@@ -1,14 +1,14 @@
 /**
  * This component provides a list of parameters that users can select to search for the related urban entities visualised in the TWA-VF.
-*/
+ */
 class SeachEntityComponent extends DynamicComponent {
   private baseStackUrl: string;
 
   /**
-    * Create a new HTML element to support the application requirements.
-    * @param {string} title - The title displayed.
-    * @param {any} mapboxMapHandler - The map object created for Mapbox.
-    * @param {string} layerId - The ID name of the layer to set filters on.
+   * Create a new HTML element to support the application requirements.
+   * @param {string} title - The title displayed.
+   * @param {any} mapboxMapHandler - The map object created for Mapbox.
+   * @param {string} layerId - The ID name of the layer to set filters on.
   */
   constructor(title: string, stackUrl: string, mapboxMapHandler: any, layerId: string) {
     // Call the super class constructor
@@ -18,18 +18,28 @@ class SeachEntityComponent extends DynamicComponent {
     let parentElement: HTMLElement = this.container_content;
     // Create a dropdown component for zone types
     new SelectDropdownComponent("Zone Type").render(parentElement);
-
-    const submitButton = createHTMLElement('button');
+    // Create a submit button
+    let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement('button');
     submitButton.textContent = "Submit";
     submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, layerId));
-
     parentElement.appendChild(submitButton);
   };
 
   /**
-     * Initialises all default container attributes for this component.
-      * @returns {void}
-     */
+   * Override method to ensure the content is rendered as the first child node of the parent element.
+   * @param {HTMLElement} parentElement - The parent element to append this component to.
+  */
+  public override render(parentElement: HTMLElement): void {
+    this.container.appendChild(this.container_title);
+    this.container.appendChild(this.container_content);
+    // Override this part of the method
+    parentElement.insertBefore(this.container, parentElement.firstChild);
+  };
+
+  /**
+   * Initialises all default container attributes for this component.
+   * @returns {void}
+  */
   private initContainerAttributes(): void {
     // Follows the convention of the other control elements
     this.container.id = "searchContainer";
@@ -41,17 +51,17 @@ class SeachEntityComponent extends DynamicComponent {
   };
 
   /**
-    * An event handler that triggers when a button is clicked. 
-    * This event retrieves all search parameter inputs from the the users, 
-    * and retrieves the associated plots that meet this criteria. 
-    * The map will filter and only show the plots that fit the criteria.
-    * @param {any} mapboxMapHandler - The map object created for Mapbox.
-    * @param {string} layerId - The ID name of the layer to set filters on.
-    * @returns {void}
-    */
+   * An event handler that triggers when a button is clicked. 
+   * This event retrieves all search parameter inputs from the the users, 
+   * and retrieves the associated plots that meet this criteria. 
+   * The map will filter and only show the plots that fit the criteria.
+   * @param {any} mapboxMapHandler - The map object created for Mapbox.
+   * @param {string} layerId - The ID name of the layer to set filters on.
+   * @returns {void}
+  */
   private handleSubmit(mapboxMapHandler: any, layerId: string): void {
     // Reset the filters
-    mapboxMapHandler.setFilter(layerId, null)
+    mapboxMapHandler.setFilter(layerId, null);
     // Retrieve the options for the zone type search parameter
     let zoneTypes: string = this.retrieveSelectedOptions(this.container_content.firstElementChild);
     // Define the request parameters
@@ -74,7 +84,7 @@ class SeachEntityComponent extends DynamicComponent {
         // The filter agent returns an empty string if no plot(s) of interest is found, so checking the length is not viable
         if (plotResults[0].length > 0) {
           // Filter expression
-          let zoneFilterExpression = ["in", ['get', 'iri'], ['literal', plotResults]];
+          let zoneFilterExpression: [string, string[], [string, string[]]] = ["in", ['get', 'iri'], ['literal', plotResults]];
           mapboxMapHandler.setFilter(layerId, zoneFilterExpression);
         }
       },
@@ -86,11 +96,11 @@ class SeachEntityComponent extends DynamicComponent {
   };
 
   /**
-    * Retrieve the selected checkbox options from the specified dropdown container.
-    * This method will parse the results into a string format suitable for the Filter agent.
-    * @param {Element} dropDownContainer - The container element with the input elements to extract data from.
-    * @returns {void}
-    */
+   * Retrieve the selected checkbox options from the specified dropdown container.
+   * This method will parse the results into a string format suitable for the Filter agent.
+   * @param {Element} dropDownContainer - The container element with the input elements to extract data from.
+   * @returns {void}
+  */
   private retrieveSelectedOptions(dropDownContainer: Element): string {
     // Initialise the array to store the values of each checkbox-option selected
     let selectedOptions: string[] = [];
@@ -111,16 +121,5 @@ class SeachEntityComponent extends DynamicComponent {
       optionsString = wrappedValues.join(','); // Add ',' between each option
     }
     return optionsString;
-  };
-
-  /**
-   * Override method to ensure the content is renderede as the first child node of the parent element.
-   * @param {HTMLElement} parentElement - The parent element to append this component to.
-   */
-  public override render(parentElement: HTMLElement): void {
-    this.container.appendChild(this.container_title);
-    this.container.appendChild(this.container_content);
-    // oV
-    parentElement.insertBefore(this.container, parentElement.firstChild);
   };
 };
