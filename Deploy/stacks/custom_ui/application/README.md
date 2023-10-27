@@ -9,6 +9,9 @@ At the moment, the available applications are:
 1) asset_display
 To display asset datasheets within the VF alongside the metadata. It is intended to create a more convenient and seamless user experience to read data from multiple sources in one interface.
 
+2) search_entity
+To search for specific urban entities based on user inputs. It is currently only available for Mapbox, and work for Cesium is in development.
+
 ### 1.1 Component File Reference
 Add the following lines in the `index.html` to reference the generated component css and js files. Please adjust the directory paths depending on the actual location for your needs. One suggestion is to keep it within the same `twa-vf` directory as the `twa-vf` css and js files to keep this simple and organised.
 
