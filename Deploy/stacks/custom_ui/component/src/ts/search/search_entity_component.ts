@@ -2,7 +2,7 @@
  * This component provides a list of parameters that users can select to search for the related urban entities visualised in the TWA-VF.
 */
 class SeachEntityComponent extends DynamicComponent {
-  private readonly baseStackUrl: string = "http://10.25.188.130:3838";
+  private baseStackUrl: string;
 
   /**
     * Create a new HTML element to support the application requirements.
@@ -10,9 +10,10 @@ class SeachEntityComponent extends DynamicComponent {
     * @param {any} mapboxMapHandler - The map object created for Mapbox.
     * @param {string} layerId - The ID name of the layer to set filters on.
   */
-  constructor(title: string, mapboxMapHandler: any, layerId: string) {
+  constructor(title: string, stackUrl: string, mapboxMapHandler: any, layerId: string) {
     // Call the super class constructor
     super(title);
+    this.baseStackUrl = stackUrl;
     this.initContainerAttributes();
     let parentElement: HTMLElement = this.container_content;
     // Create a dropdown component for zone types
