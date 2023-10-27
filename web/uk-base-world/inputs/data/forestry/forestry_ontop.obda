@@ -1,0 +1,32 @@
+[PrefixDeclaration]
+forestry:  http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl#
+ex:        http://example.org/
+owl:       http://www.w3.org/2002/07/owl#
+rdf:       http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:       http://www.w3.org/XML/1998/namespace
+xsd:       http://www.w3.org/2001/XMLSchema#
+foaf:      http://xmlns.com/foaf/0.1/
+obda:      https://w3id.org/obda/vocabulary#
+rdfs:      http://www.w3.org/2000/01/rdf-schema#
+geo:       http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId	forestry-map-cells
+target		forestry:forestrymap/cell/{ogc_fid} a forestry:{woodland_type}, forestry:{category} ;
+                rdfs:label {name}^^xsd:string ;
+                geo:hasMetricArea {area}^^xsd:float ;
+                geo:hasDefaultGeometry forestry:forestrymap/geometry/default/{ogc_fid} ;
+                geo:hasCentroid forestry:forestrymap/geometry/centroid/{ogc_fid} .
+            forestry:forestrymap/geometry/default/{ogc_fid} a geo:Geometry ;
+                geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt_poly}"^^geo:wktLiteral .
+            forestry:forestrymap/geometry/centroid/{ogc_fid} a geo:Geometry ;
+                geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt_centroid}"^^geo:wktLiteral .
+source      SELECT ogc_fid , 
+                REPLACE(REPLACE("IFT_IOA",'\\','Or'),' ','') AS woodland_type ,
+                REPLACE(INITCAP("CATEGORY"),' ','') AS category ,
+                ST_AsText("wkb_geometry") AS wkt_poly ,
+                ST_AsText(ST_Centroid("wkb_geometry")) AS wkt_centroid , 
+                "Area_ha"*10000 AS area ,
+                CONCAT(forestry."IFT_IOA", ' (', "OBJECTID_1", ')') as name
+            FROM forestry
+]]
