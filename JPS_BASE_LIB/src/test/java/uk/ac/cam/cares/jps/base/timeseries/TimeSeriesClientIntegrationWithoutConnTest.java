@@ -43,13 +43,13 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
     // machine the test is run on.
 
     // Create Docker container with Blazegraph image from CMCL registry (image uses
-    // port 9999)
+    // port 8080)
     // For more information regarding the registry, see:
     // https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
     private GenericContainer<?> blazegraph = new GenericContainer<>(
-            DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
-            .withExposedPorts(9999);
+            DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
+            .withExposedPorts(8080);
     // Create Docker container with postgres 13.3 image from Docker Hub
     @Container
     private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");

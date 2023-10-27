@@ -22,8 +22,8 @@ class CloningToolIntegrationTest {
  
 	static final int N_TEST_TRIPLES = 4000;
 	
-	static final String BLAZEGRAPH_IMAGE = "ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"; 
-	static final int BLAZEGRAPH_INTERNAL_PORT = 9999;
+	static final String BLAZEGRAPH_IMAGE = "ghcr.io/cambridge-cares/blazegraph:1.1.0"; 
+	static final int BLAZEGRAPH_INTERNAL_PORT = 8080;
 	
 	static String testData;
 	

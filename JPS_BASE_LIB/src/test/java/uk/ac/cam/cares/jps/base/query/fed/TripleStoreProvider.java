@@ -138,12 +138,6 @@ public class TripleStoreProvider {
 	/**
 	 * Creates a container for a given image. If the image is not found in the local repository, 
 	 * it is downloaded once. 
-	 * <p>
-	 * The image name "ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0" 
-	 * requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-	 * For this reason, method {@link #createBlazegraphContainerByBuilder(String)} is used instead in case of Blazegraph.
-	 * For more information regarding the registry, 
-	 * see {@link https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry}.
 	 * 
 	 * @param imageName
 	 * @return
@@ -185,7 +179,7 @@ public class TripleStoreProvider {
 	 * @return
 	 */
 	private GenericContainer<?> createBlazegraphTripleStore(int port) {
-		String imageName = "blazegraphtest";
+		String imageName = "ghcr.io/cambridge-cares/blazegraph:1.1.0";
 		GenericContainer<?> tripleStore = null;
 		try {
 			tripleStore = createContainerByImage(imageName).withExposedPorts(port);

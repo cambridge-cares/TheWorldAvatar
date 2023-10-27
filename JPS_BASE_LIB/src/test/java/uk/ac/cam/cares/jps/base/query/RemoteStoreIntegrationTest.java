@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.startupcheck.MinimumDurationRunningStartupCheckStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -42,14 +44,15 @@ public class RemoteStoreIntegrationTest {
 
 	@Container
 	private static GenericContainer<?> blazegraph = new GenericContainer<>(
-			DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
-												 .withExposedPorts(9999);
-	
+			DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
+			.withExposedPorts(8080)
+			.withStartupCheckStrategy(new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(3)));
+
 	@BeforeAll
 	public static void initialise() throws URISyntaxException {
 		// start containers
 		blazegraph.start();
-		
+
 		String endpoint = new URIBuilder().setScheme("http").setHost(blazegraph.getHost())
 				.setPort(blazegraph.getFirstMappedPort())
 				.setPath("/blazegraph/namespace/kb/sparql").build().toString();
@@ -74,12 +77,12 @@ public class RemoteStoreIntegrationTest {
 				.getPath();
 		File testOwl = new File(filepath);
 		storeClient.uploadFile(testOwl);
-		
+
 		// construct a simple query to check that triples have been uploaded
 		SelectQuery query = Queries.SELECT();
-        query.where(query.var().has(query.var(),query.var()));
-        
-        // length is the number of triples uploaded to blazegraph
+		query.where(query.var().has(query.var(), query.var()));
+
+		// length is the number of triples uploaded to blazegraph
 		Assertions.assertTrue(storeClient.executeQuery(query.getQueryString()).length() > 1);
 	}
 
@@ -114,7 +117,8 @@ public class RemoteStoreIntegrationTest {
 		String o1 = "http://" + UUID.randomUUID().toString();
 		String p2 = "http://" + UUID.randomUUID().toString();
 		String o2 = UUID.randomUUID().toString();
-		String update = "insert data {<" + s + "> <" + p1 + "> <" + o1 + ">. <" + s + "> <" + p2 + "> \"" + o2 + "\". }";
+		String update = "insert data {<" + s + "> <" + p1 + "> <" + o1 + ">. <" + s + "> <" + p2 + "> \"" + o2
+				+ "\". }";
 		storeClient.executeUpdate(update);
 
 		// construct a simple query to check that triples have been uploaded
