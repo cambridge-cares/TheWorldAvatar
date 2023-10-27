@@ -9,7 +9,6 @@ from constants.ontospecies_keys import (
 class SparqlCompact2VerboseConverter:
     def convert(self, sparql_compact: str):
         """sparql_compact: SELECT ?x WHERE {graph_patterns...}"""
-        print(sparql_compact)
         sparql_compact = sparql_compact.strip()
         select_clause, sparql_compact = sparql_compact.split("WHERE", maxsplit=1)
 

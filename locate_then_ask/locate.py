@@ -68,7 +68,7 @@ class Locator:
 
         query_graph = nx.DiGraph()
         query_graph.add_node(
-            "Species", iri=entity_iri, label=entity_names, template_node=True
+            "Species", iri=entity_iris, label=entity_names, template_node=True
         )
 
         verbalization = " and ".join(entity_names)
