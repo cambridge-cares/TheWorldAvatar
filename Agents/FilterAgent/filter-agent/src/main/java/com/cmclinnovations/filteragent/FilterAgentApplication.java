@@ -29,8 +29,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 @SpringBootApplication
 @RestController
 public class FilterAgentApplication {
-	BlazegraphClient blazegraphClient;
-	RemoteStoreClient remoteStoreClient;
+	private BlazegraphClient blazegraphClient;
 
 	private static final Logger LOGGER = LogManager.getLogger(FilterAgentApplication.class);
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -61,7 +60,8 @@ public class FilterAgentApplication {
 		query = blazegraphClient.filterQuery(query);
 		LOGGER.info("query: {}", query);
 
-		remoteStoreClient = blazegraphClient.getRemoteStoreClient(namespace.orElse(EnvConfig.DEFAULT_NAMESPACE));
+		RemoteStoreClient remoteStoreClient = blazegraphClient
+				.getRemoteStoreClient(namespace.orElse(EnvConfig.DEFAULT_NAMESPACE));
 		List<IriObject> iriObjects = OBJECT_MAPPER.readValue(
 				QueryClient.executeQuery(remoteStoreClient, query).toString(), new TypeReference<List<IriObject>>() {
 				});
