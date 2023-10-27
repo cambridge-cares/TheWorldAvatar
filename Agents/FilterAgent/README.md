@@ -3,7 +3,9 @@ This agent executes a configurable query and returns a list of iris.
 The purpose of this is to provide an endpoint to be used by filtering within the visualization but might have other applications.
 
 ## Deployment
-This agent must be spun up as part of a stack deployment workflow. Before spinning up the stack, place the [service config] (./filter-agent.json) into the stack-manager's `./input/config/services` directory. The stack configuration is similar to the following snippet:
+This agent must be spun up as part of a stack deployment workflow.
+The Filter Agent is a built-in stack service
+A stack-manager config similar to the following will deploy this agent:
 
 ```json
 {
@@ -18,7 +20,9 @@ This agent must be spun up as part of a stack deployment workflow. Before spinni
 }
 ```
 
-Once the service config has been placed, spin up the stack as per the [documented workflow](../../Deploy/stacks/dynamic/stack-manager/README.md). The filter agent should be spun up along with the entire stack. There is no need to build or deploy the filter agent and its image separately.
+Spin up a stack as per the [documented workflow](../../Deploy/stacks/dynamic/stack-manager/README.md). 
+The filter agent should be spun up along with the entire stack. 
+There is no need to build or deploy the filter agent and its image separately.
 
 Here, `my-filter-queries` is a directory containing `.sparql` template queries that will be used for the filtering. An example of such is the following.
 
@@ -47,12 +51,13 @@ Once spun up this agent will have an external endpoint at `localhost:<STACK PORT
 ## Use
 The following are the configurable parameters of the request to localhost:<STACK PORT NUMBER>/filter-agent/filter.
 - `namespace`: The Blazegraph namespace where the query should be sent.
-This defaults to the value specified by the `DEFAULT_NAMESPACE` environment variable.
+This defaults to the value specified by the `DEFAULT_NAMESPACE` environment variable and is set to `kb` in the default stack config.
 - `query`: Query to be used as a template. 
 For example if `nhs_query.sparql` is in your directory this can be set to `nhs_query`.
-This defaults to the value specified by the `DEFAULT_QUERY` environment variable.
+This defaults to the value specified by the `DEFAULT_QUERY` environment variable and is set to `query` in the default stack config.
 - `subs`: Set of substitution containing string:value pairs that will be replaced in the query. 
-Example can be found [here](./example_input.json). This will naturally need to be URL encoded.
+Example can be found [here](./example_input.json). 
+This will naturally need to be URL encoded.
 
 For example the following is an example request.
 
