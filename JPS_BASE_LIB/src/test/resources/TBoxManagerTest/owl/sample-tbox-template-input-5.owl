@@ -1,20 +1,21 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#"
-     xml:base="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"
-     xmlns:OntoKin="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    xml:base="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"
+    xmlns:OntoKin="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl">
         <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">21 April 2023</dc:date>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms.</rdfs:comment>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
+            c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoKin is an ontology
+            developed for representing chemical kinetic reaction mechanisms.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
     </owl:Ontology>
-    
 
 
     <!-- 
@@ -26,48 +27,48 @@
      -->
 
 
-    
+    <!--
+    http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient -->
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#RateCoefficient"/>
+    <owl:Class
+        rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient">
+        <owl:equivalentClass
+            rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#RateCoefficient" />
     </owl:Class>
-    
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies -->
+    <!--
+    http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species"/>
+    <owl:Class
+        rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies">
+        <owl:equivalentClass
+            rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species" />
     </owl:Class>
-    
 
 
     <!-- http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#RateCoefficient -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#RateCoefficient">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The coefficients used to evaluate the reaction rate expression.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
+    <owl:Class
+        rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#RateCoefficient">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The coefficients used
+            to evaluate the reaction rate expression.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl" />
     </owl:Class>
-    
 
 
     <!-- http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species -->
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ensemble of chemically identical molecular entities (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ensemble of
+            chemically identical molecular entities (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl" />
     </owl:Class>
 </rdf:RDF>
 
 
-
 <!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
-
-

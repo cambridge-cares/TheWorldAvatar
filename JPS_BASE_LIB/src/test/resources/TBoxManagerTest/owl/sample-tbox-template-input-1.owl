@@ -50,7 +50,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A reaction mechanism refers to a set of elementary reactions with specific rate laws, for example to model the combustion of hydrogen.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"/>
     </owl:Class>
 </rdf:RDF>
 
