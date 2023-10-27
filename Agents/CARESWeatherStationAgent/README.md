@@ -39,13 +39,13 @@ taken at a timestamp between the first and third image.
 ## Usage 
 This part of the README describes the usage of the input agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client which maintains both instances in a knowledge graph and a Postgres database to store the data, these will be required to be set-up before. 
 
-The agent instantiates the weather reading retrieved via the API as timeseries in the knowledge graph. In addition, it will check and instantiate the ABoxes for the weather station and the quantities it measures based on these ontologies [ontology-of-units-of-measure](https://github.com/cambridge-cares/OM/blob/master/om-2.0.rdf), [simple features geometries](http://schemas.opengis.net/sf/1.0/simple_features_geometries.rdf), [geoSPARQL](http://schemas.opengis.net/geosparql/1.0/geosparql_vocab_all.rdf), [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontodevice/OntoDevice.owl), [OntoEMS](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl), , [OntoTimeSeries](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl). An example of the ABox is shown below:
+The agent instantiates the weather reading retrieved via the API as timeseries in the knowledge graph. In addition, it will check and instantiate the ABoxes for the weather station and the quantities it measures based on these ontologies [ontology-of-units-of-measure](https://github.com/cambridge-cares/OM/tree/master), [simple features geometries](http://schemas.opengis.net/sf/1.0/simple_features_geometries.rdf), [geoSPARQL](http://schemas.opengis.net/geosparql/1.0/geosparql_vocab_all.rdf), [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontodevice/OntoDevice.owl), [OntoEMS](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl), , [OntoTimeSeries](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl). An example of the ABox is shown below:
 ```
-<ReportingStation> rdf:type	ontoems:ReportingStation ;
+<ReportingStation> rdf:type ontoems:ReportingStation ;
                    ontoems:reports <Quantity> ;
                    ontodevice:hasGeoLocation <Point> .
 
-<Quantity> rdf:type	ontoems:DewPoint ;
+<Quantity> rdf:type ontoems:DewPoint ;
            om:hasValue <measure> ;
            om:hasAggregateFunction <om:minimum> .
 
@@ -185,11 +185,6 @@ If the agent runs successfully, you should see a returned JSON Object that is si
 {"Result":["Input agent object initialized.","Time series client object initialized.","API connector object initialized.","Retrieved 10 weather station readings.","Data updated with new readings from API.","Timeseries Data has been updated."]}
 ```
 
-If the returned JSON Object is as shown below, it means that the request was written wrongly. Check whether the URL, keys and values are written correctly.
-```
-{"Result":"Request parameters are not defined correctly."}
-```
-
 #### Stack Deployment
 
 Modify `api.properties` and `client.properties` in the `config` folder accordingly.
@@ -219,9 +214,4 @@ curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 ```
 {"Result":["Input agent object initialized.","Time series client object initialized.","API connector object initialized.","Retrieved 10 weather station readings.","Data updated with new readings from API.","Timeseries Data has been updated."]}
-```
-
-If the returned JSON Object is as shown below, it means that the request was written wrongly. Check whether the URL, keys and values are written correctly.
-```
-{"Result":"Request parameters are not defined correctly."}
 ```
