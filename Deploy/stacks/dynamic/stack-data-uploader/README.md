@@ -18,9 +18,10 @@ You will need to substitute in appropriate values before running any commands.
 7. [OBDA Mapping file](#obda-mapping-file)
 8. [Using Specific Data Sets](#using-specific-data-sets)
 9. [Value by File Name](#value-by-file-name)
-10. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
-11. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
-12. [Troubleshooting](#troubleshooting)
+10. [Processing Data Without Upload](#processing-without-upload)
+11. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
+12. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
+13. [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -41,7 +42,7 @@ Descriptions of each example can be found in the [Example datasets](#example-dat
 #### 3. Copy in data files
 
 The source files need to be copied into the [`inputs/data/`](./inputs/data/) directory.
-The structure of this directory is described in the [Datasets and subsets](#datasets-and-subsets) section.
+The structure of this directory is described in the [Datasets and subsets](#datasets-and-subsets) section. All data must be in a subdirectory two levels below `data` folder
 
 #### 4. Create a configuration file
 Create a JSON file in the [`inputs/config/`](./inputs/config/) directory to define how the data is to be uploaded.
@@ -62,7 +63,7 @@ By default all dataset configuration files in the [`inputs/configs/`](./inputs/c
 When a dataset's name matches with that of the stack then only that configuration file and its *external datasets* will be loaded.
 
 Below is an example where there are two datasets.
-One of which (*dataset1*) contains one data subset and another (*dataset2*) that contains two data subsets, each with their own subdirectory.
+One of which (*dataset1*) contains one data subset and another (*dataset2*) that contains two data subsets, each with their own subdirectory. Note that every data file exists in a subdirectory, even if there are no sibling data on the same level. Data will not be uploaded unless it is two levels below `data` in a subdirectory.
 ```sh
 inputs/
   config/               # Directory in which the dataset configuration files should be stored
@@ -70,10 +71,11 @@ inputs/
     dataset2.json       # Configuration file for dataset2
   data/                 # Directory in which the data files should be stored
     dataset1/           # Data directory for dataset1
-      data.csv          # Only one data subset so no need for a subdirectory
+      datasubset1/     # Data subdirectory for data subset1
+        data.csv        # Data file for dataset1
     dataset2/           # Data directory for dataset2
-      datasubset1/      # Data directory for data subset1
-        polygon.geojson # Data file
+      datasubset2/      # Data subdirectory for data subset2
+        polygon.geojson # Data file for dataset2
       datasubset2/      # Data directory for data subset2
         table.csv
 ```
@@ -678,6 +680,10 @@ For example one can avoid long SQL queries in their configs by putting them in a
     }
   ```
 Note that this file path is the path inside the container.
+
+## Processing Without Upload
+
+If a subdirectory is not specified in a `dataSubset` node, no data will be uploaded, however for some types of data this is useful to run only the post processing. For example it is possible to run arbitrary sql by specifying sql queries or pointing to `.sql` files and specifying a table. It is also useful to create layers in GeoServer on already uploaded data.
 
 ## Debugging the Stack Data Uploader in VSCode
 
