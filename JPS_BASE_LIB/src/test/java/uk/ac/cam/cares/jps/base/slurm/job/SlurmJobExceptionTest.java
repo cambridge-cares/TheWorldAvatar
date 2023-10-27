@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.*;
 
-import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
-
 public class SlurmJobExceptionTest {
 
 	// Create arbitrary Throwable cause (ArithmeticException: / by zero)

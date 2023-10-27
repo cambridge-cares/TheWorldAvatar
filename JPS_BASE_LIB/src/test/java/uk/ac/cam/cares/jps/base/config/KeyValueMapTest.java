@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class KeyValueMapTest {

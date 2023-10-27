@@ -8,7 +8,6 @@ import java.net.URISyntaxException;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class ScenarioHelperTest {
 

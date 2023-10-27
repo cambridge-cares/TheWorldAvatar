@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.listener;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,9 +15,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import uk.ac.cam.cares.jps.base.listener.BaseChimneyOntologyModelManager;
-import uk.ac.cam.cares.jps.base.listener.BaseOntologyModelManager;
 
 public class BaseChimneyOntologyModelManagerTest {
 

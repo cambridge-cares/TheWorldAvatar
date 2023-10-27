@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.converter;
 
 import org.junit.Test;
-import uk.ac.cam.cares.jps.base.converter.SpringConfiguration;
 import static org.junit.Assert.assertNotNull;
 
 public class SpringConfigurationTest {

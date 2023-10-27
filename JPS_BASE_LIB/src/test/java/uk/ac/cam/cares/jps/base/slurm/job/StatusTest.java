@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.slurm.job;
 
-import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import junit.framework.TestCase;
 
 public class StatusTest extends TestCase{

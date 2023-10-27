@@ -8,8 +8,6 @@ import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.cam.cares.jps.base.query.MockStoreClient;
-
 class MockStoreClientTest {
 	
 	private static String testQuery1 = "SELECT ?o WHERE {<http://www.example.com/test/s1> <http://www.example.com/test/p1> ?o.}";

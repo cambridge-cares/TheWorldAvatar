@@ -7,8 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.ac.cam.cares.jps.base.util.StoreClientHelper;
-
 import javax.sql.rowset.serial.SerialException;
 import java.sql.Blob;
 import java.sql.SQLException;

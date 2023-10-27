@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.After;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * This class contains unit tests for PythonHelper.

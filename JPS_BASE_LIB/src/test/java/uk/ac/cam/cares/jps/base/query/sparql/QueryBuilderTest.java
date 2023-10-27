@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.base.query.sparql;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 
 
 

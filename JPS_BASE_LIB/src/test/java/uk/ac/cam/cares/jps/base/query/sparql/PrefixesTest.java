@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.base.query.sparql;
 
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
 public class PrefixesTest extends TestCase {
 

@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.discovery;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.discovery.MediaType;
 
 public class MediaTypeTest extends TestCase {
 

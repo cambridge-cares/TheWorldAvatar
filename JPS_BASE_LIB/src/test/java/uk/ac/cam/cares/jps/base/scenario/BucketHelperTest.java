@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.base.scenario;
 
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;

@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.config;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.IKeys;
 
 public class IKeysTest extends TestCase {
 	public void testIKeys() {

@@ -6,7 +6,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
 import static org.mockito.ArgumentMatchers.anyString;

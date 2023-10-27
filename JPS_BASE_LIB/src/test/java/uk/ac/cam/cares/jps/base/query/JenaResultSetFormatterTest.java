@@ -10,8 +10,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-
 import java.util.ArrayList;
 import java.util.List;
 

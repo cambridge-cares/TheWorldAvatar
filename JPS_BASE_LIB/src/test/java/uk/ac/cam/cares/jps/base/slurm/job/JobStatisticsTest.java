@@ -2,12 +2,8 @@ package uk.ac.cam.cares.jps.base.slurm.job;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.ac.cam.cares.jps.base.slurm.job.JobStatistics;
-
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class JobStatisticsTest {

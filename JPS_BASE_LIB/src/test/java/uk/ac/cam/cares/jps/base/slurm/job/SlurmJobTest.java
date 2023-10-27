@@ -4,8 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
-import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 
 public class SlurmJobTest {
 	

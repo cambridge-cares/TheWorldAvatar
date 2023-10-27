@@ -17,9 +17,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
-
 import java.lang.reflect.Field;
 
 

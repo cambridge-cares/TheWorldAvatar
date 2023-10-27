@@ -16,8 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 
-import uk.ac.cam.cares.jps.base.query.LocalStoreClient;
-
 class LocalStoreClientTest {
 
 	private static String testData = 

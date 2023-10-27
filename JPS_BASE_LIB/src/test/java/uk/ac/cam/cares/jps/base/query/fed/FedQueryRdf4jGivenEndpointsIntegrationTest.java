@@ -3,9 +3,6 @@ package uk.ac.cam.cares.jps.base.query.fed;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryFactory;
-import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryInterface;
-
 /**
  * One of multiple test configurations, see {@link QueryProvider} for details.
  */

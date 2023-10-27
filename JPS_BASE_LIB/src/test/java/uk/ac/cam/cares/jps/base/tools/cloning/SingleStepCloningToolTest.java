@@ -9,7 +9,6 @@ import org.apache.jena.update.UpdateRequest;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
-import uk.ac.cam.cares.jps.base.tools.cloning.SingleStepCloningTool;
 
 class SingleStepCloningToolTest {
 

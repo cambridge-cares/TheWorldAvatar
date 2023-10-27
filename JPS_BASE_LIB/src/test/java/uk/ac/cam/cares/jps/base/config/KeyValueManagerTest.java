@@ -3,12 +3,10 @@ package uk.ac.cam.cares.jps.base.config;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.stubbing.Answer;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
-import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
 

@@ -15,11 +15,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import uk.ac.cam.cares.jps.base.slurm.job.Property;
-import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
-import uk.ac.cam.cares.jps.base.slurm.job.Status;
-import uk.ac.cam.cares.jps.base.slurm.job.Workspace;
-
 class WorkspaceTest {
 	
 	@Test

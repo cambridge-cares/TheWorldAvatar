@@ -1,13 +1,11 @@
 package uk.ac.cam.cares.jps.base.slurm.job;
 
 import static org.junit.jupiter.api.Assertions.*;
-import uk.ac.cam.cares.jps.base.slurm.job.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Scanner;
 
 

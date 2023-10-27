@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 
 /**
  * JUnit tests for FileBasedStoreClient

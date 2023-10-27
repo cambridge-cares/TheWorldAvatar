@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.cam.cares.jps.base.cache.LRUCache;
-
 class LRUCacheTest {
 
 	@Test

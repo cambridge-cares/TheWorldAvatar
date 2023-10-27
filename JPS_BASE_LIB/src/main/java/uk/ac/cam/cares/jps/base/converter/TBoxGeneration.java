@@ -1,11 +1,8 @@
 package uk.ac.cam.cares.jps.base.converter;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,14 +13,11 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jfree.ui.ExtensionFileFilter;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import com.opencsv.CSVReader;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.Dialogs;

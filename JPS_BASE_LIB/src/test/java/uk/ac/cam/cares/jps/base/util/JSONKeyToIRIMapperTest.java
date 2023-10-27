@@ -7,8 +7,6 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
-
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;

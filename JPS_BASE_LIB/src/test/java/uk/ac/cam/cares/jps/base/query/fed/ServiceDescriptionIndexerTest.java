@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer;
 import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer.PostingsListElement;
 import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer.ServiceDescriptionSummary;
 

@@ -1,15 +1,11 @@
 package uk.ac.cam.cares.jps.base.config;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.nio.file.Paths;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentLocatorTest extends TestCase {

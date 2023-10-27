@@ -18,7 +18,6 @@ import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.router.AgentRouter;
 
 class AgentRouterTest {
 

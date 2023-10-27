@@ -4,9 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.MockStoreClient;
-import uk.ac.cam.cares.jps.base.query.RDBStoreRouter;
-
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertNotNull;

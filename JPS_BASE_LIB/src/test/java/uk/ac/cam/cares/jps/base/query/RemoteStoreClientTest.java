@@ -25,7 +25,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.any;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
  * This class covers both unit tests and regression tests on RemoteStoreClient,<p>

@@ -18,10 +18,6 @@ import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
-import uk.ac.cam.cares.jps.base.slurm.job.Property;
-import uk.ac.cam.cares.jps.base.slurm.job.Status;
-import uk.ac.cam.cares.jps.base.slurm.job.Utils;
-import uk.ac.cam.cares.jps.base.slurm.job.Workspace;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 
 class UtilsTest {

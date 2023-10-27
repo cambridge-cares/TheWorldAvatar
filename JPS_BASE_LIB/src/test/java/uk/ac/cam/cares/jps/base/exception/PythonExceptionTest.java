@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.exception.PythonException;
-
 class PythonExceptionTest {
 	
 	//set arbitrary inputs

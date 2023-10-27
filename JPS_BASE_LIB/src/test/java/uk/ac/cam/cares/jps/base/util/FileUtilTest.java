@@ -21,8 +21,6 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 /**
  * This class contains unit tests for FileUtil.
  * 

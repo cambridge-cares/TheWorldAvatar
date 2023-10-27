@@ -28,7 +28,6 @@ import org.junit.rules.TemporaryFolder;
 
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
-import uk.ac.cam.cares.jps.base.tools.RenamingTool;
 
 /**
  * JUnit tests for RenameTool

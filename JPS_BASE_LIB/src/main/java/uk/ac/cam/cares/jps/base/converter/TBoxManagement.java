@@ -11,7 +11,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.jena.ontology.ObjectProperty;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
@@ -36,11 +35,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**

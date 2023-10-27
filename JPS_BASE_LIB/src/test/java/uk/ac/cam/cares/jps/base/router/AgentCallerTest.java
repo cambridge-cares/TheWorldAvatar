@@ -14,7 +14,6 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.http.Http;
-import uk.ac.cam.cares.jps.base.router.AgentCaller;
 
 @WireMockTest()
 class AgentCallerTest {

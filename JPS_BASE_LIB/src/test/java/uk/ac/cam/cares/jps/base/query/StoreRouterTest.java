@@ -13,8 +13,6 @@ import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.MockStoreClient;
-import uk.ac.cam.cares.jps.base.query.StoreRouter;
 
 class StoreRouterTest {
 

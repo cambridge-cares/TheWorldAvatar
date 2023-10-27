@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.converter;
 
-import uk.ac.cam.cares.jps.base.converter.TBoxConfiguration;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

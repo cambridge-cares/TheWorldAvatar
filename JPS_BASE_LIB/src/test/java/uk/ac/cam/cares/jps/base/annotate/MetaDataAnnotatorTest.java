@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
-import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 
 public class MetaDataAnnotatorTest {

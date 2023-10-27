@@ -29,8 +29,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-
 /**
  * requires docker to be installed to run, hence the @Ignore until everyone is
  * expected to have docker installed

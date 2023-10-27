@@ -15,7 +15,6 @@ import org.testcontainers.utility.DockerImageName;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.tools.cloning.CloningTool;
 
 @Disabled("These integration tests are quite slow") 
 @Testcontainers

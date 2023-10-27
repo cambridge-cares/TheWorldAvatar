@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeAll;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
-import uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;

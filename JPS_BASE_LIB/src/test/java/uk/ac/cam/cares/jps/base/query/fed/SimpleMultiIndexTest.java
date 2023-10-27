@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.query.fed.SimpleMultiIndex;
 
 public class SimpleMultiIndexTest extends TestCase {
 	

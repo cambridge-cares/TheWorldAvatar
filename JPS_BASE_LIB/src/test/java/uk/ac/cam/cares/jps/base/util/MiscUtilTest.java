@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import java.util.ArrayList;
-import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**

@@ -30,7 +30,6 @@ import javax.ws.rs.BadRequestException;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 public class JPSAgentTest extends TestCase {
 

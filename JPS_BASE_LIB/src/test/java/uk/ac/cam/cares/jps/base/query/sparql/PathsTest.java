@@ -2,8 +2,6 @@ package uk.ac.cam.cares.jps.base.query.sparql;
 
 import org.junit.Test;
 
-import uk.ac.cam.cares.jps.base.query.sparql.Paths;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PathsTest {

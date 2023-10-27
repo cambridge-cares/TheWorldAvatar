@@ -12,9 +12,6 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryFactory;
-import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryInterface;
-import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer;
 
 /**
  * One of multiple test configurations, see {@link QueryProvider} for details.

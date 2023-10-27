@@ -16,9 +16,6 @@ import com.google.gson.JsonParser;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClientTest;
-import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryFactory;
-import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryInterface;
-import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 

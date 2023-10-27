@@ -13,8 +13,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.*;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.listener.BaseOntologyModelManager;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;

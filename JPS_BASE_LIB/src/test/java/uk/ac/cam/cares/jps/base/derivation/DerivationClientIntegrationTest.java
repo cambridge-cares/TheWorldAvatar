@@ -14,8 +14,6 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.jupiter.api.AfterAll;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;

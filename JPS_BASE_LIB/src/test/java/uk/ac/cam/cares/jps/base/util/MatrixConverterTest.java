@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-
 /**
  * This class contains unit tests for MatrixConverter.
  * 

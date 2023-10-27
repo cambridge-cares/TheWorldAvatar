@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import org.junit.Test;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-
 import java.lang.reflect.Field;
 import static org.junit.Assert.*;
 

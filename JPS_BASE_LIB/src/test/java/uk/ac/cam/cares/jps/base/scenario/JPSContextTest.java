@@ -2,8 +2,6 @@ package uk.ac.cam.cares.jps.base.scenario;
 
 import org.json.JSONObject;
 import org.junit.After;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 

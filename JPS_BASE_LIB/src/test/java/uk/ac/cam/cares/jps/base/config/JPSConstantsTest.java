@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.base.config;
 
 import static org.junit.jupiter.api.Assertions.*;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
-
 import org.junit.jupiter.api.Test;
 
 class JPSConstantsTest {

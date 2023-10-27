@@ -21,12 +21,10 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
 
-import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.query.fed.BlazegraphRepositoryWrapper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /**

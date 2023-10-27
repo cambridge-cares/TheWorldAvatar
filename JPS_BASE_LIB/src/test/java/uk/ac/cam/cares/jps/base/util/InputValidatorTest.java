@@ -15,8 +15,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.cam.cares.jps.base.util.InputValidator;
-
 public class InputValidatorTest {
 	private String iriofnetwork = null;
 	private String filePath = null;

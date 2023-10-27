@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import org.cts.CRSFactory;
 import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;

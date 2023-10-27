@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.slurm.job;
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.slurm.job.Property;
 
 public class PropertyTest extends TestCase{
 

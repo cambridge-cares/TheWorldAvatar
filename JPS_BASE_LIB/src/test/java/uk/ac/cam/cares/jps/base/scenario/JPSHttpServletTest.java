@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
@@ -27,15 +26,12 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 
 

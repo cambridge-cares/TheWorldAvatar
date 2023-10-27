@@ -12,8 +12,6 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.fed.BlazegraphRepositoryWrapper;
-import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer;
 
 public class BlazegraphRepositoryWrapperIntegrationTest extends TestCase {
 	

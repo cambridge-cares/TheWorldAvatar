@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
 class JPSRuntimeExceptionTest {
 	
 	// Create arbitrary Throwable cause (ArithmeticException: / by zero)

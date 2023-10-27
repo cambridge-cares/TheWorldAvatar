@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
-import uk.ac.cam.cares.jps.base.tools.cloning.CloningTool;
 
 class CloningToolTest {
 	

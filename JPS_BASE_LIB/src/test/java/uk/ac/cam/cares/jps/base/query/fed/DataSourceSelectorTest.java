@@ -6,9 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.cam.cares.jps.base.query.fed.DataSourceSelector;
 import uk.ac.cam.cares.jps.base.query.fed.ParsedQueryTreeVisitor.ServiceGraphPatternSummary;
-import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer;
 
 public class DataSourceSelectorTest extends QueryProvider {
 	

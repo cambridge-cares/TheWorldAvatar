@@ -10,9 +10,6 @@ import org.junit.Test;
 
 
 
-import uk.ac.cam.cares.jps.base.query.sparql.JenaModelWrapper;
-import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
-
 import java.lang.reflect.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

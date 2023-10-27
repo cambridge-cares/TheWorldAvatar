@@ -1,12 +1,7 @@
 package uk.ac.cam.cares.jps.base.query.fed;
 
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryFactory;
-import uk.ac.cam.cares.jps.base.query.fed.FederatedQueryInterface;
 
 // https://rdf4j.org/documentation/programming/federation/
 /**

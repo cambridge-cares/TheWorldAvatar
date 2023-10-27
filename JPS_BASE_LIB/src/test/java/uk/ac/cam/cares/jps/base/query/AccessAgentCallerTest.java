@@ -15,8 +15,6 @@ import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
-import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
 public class AccessAgentCallerTest {
