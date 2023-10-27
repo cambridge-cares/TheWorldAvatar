@@ -90,24 +90,23 @@ class Locator:
         return query_graph, "chemical species"
 
     def get_operator_value_qualifier_property(self, entity_iri: str, key: str):
+        predicate = "os:has{PropertyName}/os:value".format(PropertyName=key)
+
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
-SELECT DISTINCT ?PropertyNameValue ?PropertyNameUnitLabel ?ReferenceStateValue ?ReferenceStateUnitLabel WHERE {{
+SELECT DISTINCT * WHERE {{
     <{SpeciesIri}> os:has{PropertyName} ?PropertyName .
-    ?PropertyName os:value ?PropertyNameValue ; os:unit ?PropertyNameUnit . 
-    ?PropertyNameUnit rdfs:label ?PropertyNameUnitLabel .
+    ?PropertyName os:value ?PropertyNameValue ; os:unit/rdfs:label ?PropertyNameUnitLabel .
     OPTIONAL {{
-        ?PropertyName os:hasReferenceState ?ReferenceState .
-        ?ReferenceState os:value ?ReferenceStateValue ; os:unit ?ReferenceStateUnit .
-        ?ReferenceStateUnit rdfs:label ?ReferenceStateUnitLabel .
+        ?PropertyName os:hasReferenceState [ os:value ?ReferenceStateValue ; os:unit/rdfs:label ?ReferenceStateUnitLabel ] .
     }}
 }}"""
         query = query_template.format(SpeciesIri=entity_iri, PropertyName=key)
 
         response_bindings = self.kg_client.query(query)
         if len(response_bindings) == 0:
-            return None, None, None, None
+            return None, None, None, None, None
 
         response_binding = random.choice(response_bindings)
         if (
@@ -134,7 +133,7 @@ SELECT DISTINCT ?PropertyNameValue ?PropertyNameUnitLabel ?ReferenceStateValue ?
             "value"
         )
 
-        return operator, value, qualifier_key, qualifier_value
+        return predicate, operator, value, qualifier_key, qualifier_value
 
     def get_property_keys(self, entity_iri: str):
         if entity_iri not in self.entity2propertykeys:
@@ -213,20 +212,22 @@ SELECT DISTINCT * WHERE {{
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
-        operator, value, qualifier_key, qualifier_value = None, None, None, None
+        predicate, operator, value, qualifier_key, qualifier_value = None, None, None, None, None
 
         if key in PROPERTY_KEYS:
             (
+                predicate,
                 operator,
                 value,
                 qualifier_key,
                 qualifier_value,
             ) = self.get_operator_value_qualifier_property(entity_iri, key)
         elif key == USE_KEY:
+            predicate = "os:hasUse/rdfs:label"
             sampled_uses = [
                 v
                 for u, v, label in query_graph.edges(data="label")
-                if label == "os:hasUse"
+                if label == predicate
             ]
             sampling_frame = [
                 x for x in self.get_uses(entity_iri) if x not in sampled_uses
@@ -234,10 +235,11 @@ SELECT DISTINCT * WHERE {{
             if len(sampling_frame) > 0:
                 value = random.choice(sampling_frame)
         elif key == CHEMCLASS_KEY:
+            predicate = "os:hasChemicalClass/rdfs:label"
             sampled_chemclasses = [
                 v
                 for u, v, label in query_graph.edges(data="label")
-                if label == "os:hasChemicalClass"
+                if label == predicate
             ]
             sampling_frame = [
                 x
@@ -250,7 +252,6 @@ SELECT DISTINCT * WHERE {{
         if value is None:
             return None, None
 
-        predicate = "os:has" + key
         literal_num = len([n for n in query_graph.nodes() if n.startswith("literal")])
         literal_node = "literal_" + str(literal_num)
 

@@ -6,16 +6,23 @@ from typing import Tuple
 import networkx as nx
 
 from constants.ontospecies_keys import (
+    CHEMCLASS_KEY,
+    IDENTIFIER_KEYS,
     KEY2LABELS,
+    PROPERTY_KEYS,
+    SPECIES_ABSTRACT_ATTRIBUTE_KEYS,
     SPECIES_ATTRIBUTE_KEYS,
+    USE_KEY,
 )
 from locate_then_ask.graph2sparql import GraphToSparqlConverter
+
 
 @dataclass
 class AskDatum:
     query_graph: nx.DiGraph
     query_sparql: Tuple[str, str]
     verbalization: str
+
 
 class Asker:
     def __init__(self):
@@ -51,29 +58,69 @@ class Asker:
             verbalization=verbalization,
         )
 
-    def ask_attribute(self, query_graph: nx.DiGraph, verbalization: str, attr_num: int = 1):
+    def ask_attribute(
+        self, query_graph: nx.DiGraph, verbalization: str, attr_num: int = 1
+    ):
         query_graph = copy.deepcopy(query_graph)
 
-        sampled_keys = [
-            p[len("os:has") :]
-            for _, _, p in query_graph.edges(data="label")
-            if p.startswith("os:has")
-        ]
-        key_sampling_frame = [
-            x for x in SPECIES_ATTRIBUTE_KEYS if x not in sampled_keys
-        ]
-        keys = random.sample(key_sampling_frame, k=min(attr_num, len(key_sampling_frame)))
-        keys_label = []
+        will_sample_concrete_attribute = random.sample(
+            population=[True, False],
+            counts=[len(SPECIES_ATTRIBUTE_KEYS), 
+                    0
+                    # len(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)
+                    ],
+            k=1,
+        )[0]
 
-        for key in keys:
-            query_graph.add_node(key, question_node=True)
-            query_graph.add_edge("Species", key, label="os:has" + key)
-            
+        if will_sample_concrete_attribute:
+            sampled_keys = [
+                p.split("/", maxsplit=1)[0][len("os:has") :]
+                for _, _, p in query_graph.edges(data="label")
+                if p.startswith("os:has")
+            ]
+            key_sampling_frame = [
+                x for x in SPECIES_ATTRIBUTE_KEYS if x not in sampled_keys
+            ]
+            keys = random.sample(
+                key_sampling_frame, k=min(attr_num, len(key_sampling_frame))
+            )
+            keys_label = []
+
+            for key in keys:
+                if key in PROPERTY_KEYS + IDENTIFIER_KEYS:
+                    obj = key
+                    predicate = "os:has{Name}".format(Name=key)
+                elif key in [USE_KEY, CHEMCLASS_KEY]:
+                    obj = key + "Label"
+                    predicate = "os:has{Name}/rdfs:label".format(Name=key)
+
+                query_graph.add_node(obj, question_node=True)
+                query_graph.add_edge("Species", obj, label=predicate)
+
+                key_label = random.choice(KEY2LABELS[key])
+                keys_label.append(key_label)
+
+            query_sparql = self.graph2sparql.convert(query_graph)
+            template = "For {E}, what {be} its {K}"
+            verbalization = template.format(
+                E=verbalization,
+                be="are" if len(keys_label) > 0 else "is",
+                K=" and ".join(keys_label),
+            )
+        else:
+            key = random.choice(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)
+            query_graph.add_nodes_from(
+                [(key, dict()), ("os:Property", dict(template_node=True))]
+            )
+            query_graph.add_edge("Species", key, label="?has" + key)
+            query_graph.add_edge("key", "os:Property", label="rdf:type/rdfs:subClassOf")
+
             key_label = random.choice(KEY2LABELS[key])
-            keys_label.append(key_label)
 
-        query_sparql = self.graph2sparql.convert(query_graph)
-        verbalization = "For {E}, what is its {K}".format(E=verbalization, K=" and ".join(keys_label))
+            query_sparql = self.graph2sparql.convert(query_graph)
+            verbalization = "For {E}, what are its {K}".format(
+                E=verbalization, K=key_label
+            )
 
         return AskDatum(
             query_graph=query_graph,

@@ -25,10 +25,13 @@ class GraphToSparqlConverter:
     def make_graph_pattern(self, query_graph: nx.DiGraph, s: str, o: str):
         p = query_graph.edges[s, o]["label"]
         if p.startswith("os:has"):
-            key = p[len("os:has") :]
-            if key in PROPERTY_KEYS or key in IDENTIFIER_KEYS:
-                return "{s} {p} {o} .".format(s="?" + s, p=p, o="?" + key)
-            elif key in [USE_KEY, CHEMCLASS_KEY]:
+            if p.endswith("/os:value"):
+                key = p[len("os:has") : -len("/os:value")]
+                return "{s} {p} {o} .".format(
+                    s="?" + s, p=p, o="?{Name}Value".format(Name=key)
+                )
+            elif p.endswith("/rdfs:label"):
+                key = p[len("os:has") : -len("/rdfs:label")]
                 if query_graph.nodes[o].get("template_node"):
                     literal = query_graph.nodes[o]["label"]
                     return "{s} {p} {o} .".format(
@@ -37,13 +40,14 @@ class GraphToSparqlConverter:
                 else:
                     return "{s} {p} {o} .".format(s="?" + s, p=p, o="?" + key)
             else:
-                raise ValueError("Unrecognized predicate: " + p)
+                key = p[len("os:has"):]
+                return "{s} {p} {o} .".format(s="?" + s, p=p, o="?" + key)
         elif p == "func":
             in_edges = query_graph.in_edges(s, data="label")
             assert len(in_edges) == 1
             _, _, predicate = next(iter(in_edges))
             assert predicate.startswith("os:has")
-            key = predicate[len("os:has") :]
+            key = predicate.split("/")[0][len("os:has") :]
 
             operand_left = "?" + key
             operand_right = query_graph.nodes[s]["label"]
@@ -84,18 +88,23 @@ class GraphToSparqlConverter:
             raise ValueError("Unrecognized predicate: " + p)
 
     def make_select_clause(self, query_graph: nx.DiGraph):
-        question_node = next(
+        question_nodes = [
             n
             for n, question_node in query_graph.nodes(data="question_node")
             if question_node
-        )
-        return "SELECT ?" + question_node
+        ]
+        return "SELECT " + " ".join(["?" + n for n in question_nodes])
 
     def make_where_clause(self, query_graph: nx.DiGraph):
         if query_graph.nodes["Species"].get("template_node"):
             graph_patterns = [
-                'VALUES ?Species {{ {bindings} }}'.format(
-                    bindings = " ".join(['"{label}"'.format(label=name) for name in query_graph.nodes["Species"]["label"]])
+                "VALUES ?Species {{ {bindings} }}".format(
+                    bindings=" ".join(
+                        [
+                            '"{label}"'.format(label=name)
+                            for name in query_graph.nodes["Species"]["label"]
+                        ]
+                    )
                 )
             ]
         else:
