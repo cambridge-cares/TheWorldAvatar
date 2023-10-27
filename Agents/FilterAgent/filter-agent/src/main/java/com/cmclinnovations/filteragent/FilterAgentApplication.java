@@ -49,7 +49,6 @@ public class FilterAgentApplication {
 	public String filter(@RequestParam("subs") String substitutionString,
 			@RequestParam("query") Optional<String> queryFile, @RequestParam("namespace") Optional<String> namespace)
 			throws IOException {
-		LOGGER.info("config: {}", substitutionString);
 		Map<String, String> subsMap = OBJECT_MAPPER.readValue(substitutionString,
 				new TypeReference<Map<String, String>>() {
 				});
