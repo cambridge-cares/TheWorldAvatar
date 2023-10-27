@@ -15,6 +15,7 @@ from constants.ontospecies_keys import (
     USE_KEY,
 )
 from locate_then_ask.graph2sparql import GraphToSparqlConverter
+from locate_then_ask.utils import get_attribute_keys
 
 
 @dataclass
@@ -70,11 +71,7 @@ class Asker:
         )[0]
 
         if will_sample_concrete_attribute:
-            sampled_keys = [
-                p.split("/", maxsplit=1)[0][len("os:has") :]
-                for _, _, p in query_graph.edges(data="label")
-                if p.startswith("os:has")
-            ]
+            sampled_keys = get_attribute_keys(query_graph)
             key_sampling_frame = [
                 x for x in SPECIES_ATTRIBUTE_KEYS if x not in sampled_keys
             ]
@@ -98,10 +95,18 @@ class Asker:
                 keys_label.append(key_label)
 
             query_sparql = self.graph2sparql.convert(query_graph)
-            template = "For {E}, what {be} its {K}"
+
+            species_num = (
+                1
+                if not isinstance(query_graph.nodes["Species"]["label"], list)
+                else len(query_graph.nodes["Species"]["label"])
+            )
+
+            template = "For {E}, what {be} {possessive_adj} {K}"
             verbalization = template.format(
                 E=verbalization,
                 be="are" if len(keys_label) > 1 else "is",
+                possessive_adj="their" if species_num > 1 else "its",
                 K=" and ".join(keys_label),
             )
         else:
@@ -109,10 +114,17 @@ class Asker:
             key_node = key + "Name"
             abstract_key_node = "os:" + key
             query_graph.add_nodes_from(
-                [(key_node, dict(question_node=True)), (abstract_key_node, dict(template_node=True))]
+                [
+                    (key_node, dict(question_node=True)),
+                    (abstract_key_node, dict(template_node=True)),
+                ]
             )
-            query_graph.add_edge("Species", key_node, label="?has{key}Name".format(key=key))
-            query_graph.add_edge(key_node, abstract_key_node, label="rdf:type/rdfs:subClassOf")
+            query_graph.add_edge(
+                "Species", key_node, label="?has{key}Name".format(key=key)
+            )
+            query_graph.add_edge(
+                key_node, abstract_key_node, label="rdf:type/rdfs:subClassOf"
+            )
 
             key_label = random.choice(KEY2LABELS[key])
 

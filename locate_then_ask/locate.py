@@ -23,7 +23,7 @@ from constants.ontospecies_keys import (
     CHEMCLASS_KEY,
 )
 from locate_then_ask.kg_client import KgClient
-from locate_then_ask.utils import get_gt, get_lt
+from locate_then_ask.utils import get_attribute_keys, get_gt, get_lt
 
 
 class Locator:
@@ -195,20 +195,16 @@ SELECT DISTINCT * WHERE {{
         else:
             query_graph = copy.deepcopy(query_graph)
 
-        sampled_property_keys = [
-            p[len("os:has") :]
-            for _, _, p in query_graph.edges(data="label")
-            if p.startswith("os:has")
-        ]
-        unsampled_property_keys = [
+        sampled_keys = get_attribute_keys(query_graph)
+        unsampled_keys = [
             x
             for x in self.get_property_keys(entity_iri)
-            if x not in sampled_property_keys
+            if x not in sampled_keys
         ]
-        key_sampling_frame = unsampled_property_keys + (
+        key_sampling_frame = unsampled_keys + (
             [USE_KEY] * (len(self.get_uses(entity_iri)) > 0)
             + [CHEMCLASS_KEY] * (len(self.get_chemclasses(entity_iri)) > 0)
-        ) * (len(unsampled_property_keys) // 4)
+        ) * (len(unsampled_keys) // 4)
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
