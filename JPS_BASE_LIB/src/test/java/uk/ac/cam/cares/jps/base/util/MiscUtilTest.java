@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.jps.base.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import org.json.JSONObject;
-import org.json.JSONArray;
 import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**

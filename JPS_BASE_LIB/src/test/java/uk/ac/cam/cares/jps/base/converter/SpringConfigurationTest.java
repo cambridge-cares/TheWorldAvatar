@@ -1,7 +1,8 @@
 package uk.ac.cam.cares.jps.base.converter;
 
-import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
 
 public class SpringConfigurationTest {
 

@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.base.slurm.job.configuration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class SlurmJobPropertyTest {
 	

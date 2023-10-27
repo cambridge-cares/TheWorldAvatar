@@ -1,6 +1,10 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import org.apache.http.*;
+import java.lang.reflect.Field;
+
+import org.apache.http.Header;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -15,9 +19,9 @@ import org.junit.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
-import java.lang.reflect.Field;
 
 
 public class SparqlOverHttpServiceTest {

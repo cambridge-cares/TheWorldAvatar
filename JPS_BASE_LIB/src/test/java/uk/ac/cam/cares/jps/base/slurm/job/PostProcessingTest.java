@@ -1,12 +1,13 @@
 package uk.ac.cam.cares.jps.base.slurm.job;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+
+import org.junit.jupiter.api.Test;
 
 
 class PostProcessingTest {

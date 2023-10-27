@@ -6,12 +6,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.*;
-
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -34,8 +37,8 @@ public class TimeSeriesSparqlIntegrationTest {
 
 	@BeforeClass
 	public static void initialiseSparqlClient() {
-		
-        // Start the container manually
+
+		// Start the container manually
 		blazegraph.start();
 
 		// Set up a kb client that points to the location of the triple store
@@ -50,13 +53,13 @@ public class TimeSeriesSparqlIntegrationTest {
 		// Initialise TimeSeriesSparql client with kb client
 		sparqlClient = new TimeSeriesSparql(kbClient);
 	}
-	
+
 	@After
 	public void clearKb() {
 		// Clear entire knowledge base
 		sparqlClient.removeAllTimeSeries();
 	}
-	
+
 	@Test
 	public void runIntegrationTest() {
 
@@ -127,4 +130,3 @@ public class TimeSeriesSparqlIntegrationTest {
 
 	}
 }
-

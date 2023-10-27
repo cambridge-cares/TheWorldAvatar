@@ -1,7 +1,8 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.After;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -9,6 +10,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -200,6 +202,8 @@ public class AccessAgentCallerTest {
 		assertTrue(joparams.isNull(JPSConstants.SCENARIO_DATASET));
 		assertTrue(joparams.isNull(JPSConstants.TARGETIRI));
 		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
+		
+		JPSContext.removeScenarioUrl();
 	}
 	
 	@Test

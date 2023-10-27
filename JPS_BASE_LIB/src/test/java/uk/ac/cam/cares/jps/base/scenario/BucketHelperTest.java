@@ -1,10 +1,9 @@
 package uk.ac.cam.cares.jps.base.scenario;
 
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +16,10 @@ import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 
 public class BucketHelperTest {
 

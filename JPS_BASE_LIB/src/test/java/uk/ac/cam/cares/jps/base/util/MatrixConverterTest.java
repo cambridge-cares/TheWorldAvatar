@@ -1,12 +1,14 @@
 package uk.ac.cam.cares.jps.base.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import java.util.List;
-import java.util.Map;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
 
 /**
  * This class contains unit tests for MatrixConverter.

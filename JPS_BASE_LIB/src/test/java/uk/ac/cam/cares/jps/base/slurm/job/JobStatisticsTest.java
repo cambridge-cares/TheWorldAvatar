@@ -1,10 +1,14 @@
 package uk.ac.cam.cares.jps.base.slurm.job;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import java.io.*;
-import java.net.URISyntaxException;
-import static org.junit.jupiter.api.Assertions.*;
 
 class JobStatisticsTest {
 

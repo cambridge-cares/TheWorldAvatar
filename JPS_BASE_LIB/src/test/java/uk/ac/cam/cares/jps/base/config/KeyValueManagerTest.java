@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.jps.base.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
+
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.stubbing.Answer;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mockStatic;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 

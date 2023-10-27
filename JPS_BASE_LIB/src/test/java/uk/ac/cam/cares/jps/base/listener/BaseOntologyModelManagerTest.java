@@ -1,18 +1,7 @@
 package uk.ac.cam.cares.jps.base.listener;
 
-import org.apache.jena.ontology.OntDocumentManager;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.*;
-import org.apache.jena.vocabulary.VCARD;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.mockito.*;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -20,7 +9,23 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Paths;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.mockito.Mockito.*;
+import org.apache.jena.ontology.OntDocumentManager;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.VCARD;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 
 public class BaseOntologyModelManagerTest {
 

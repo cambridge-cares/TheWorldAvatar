@@ -1,17 +1,19 @@
 package uk.ac.cam.cares.jps.base.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.cts.CRSFactory;
+import org.cts.crs.CRSException;
+import org.cts.crs.CoordinateReferenceSystem;
 import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import org.cts.CRSFactory;
-import org.cts.crs.CRSException;
-import org.cts.crs.CoordinateReferenceSystem;
 
 /**
  * This class contains unit tests for CRSTransformer 

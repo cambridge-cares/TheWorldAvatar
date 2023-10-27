@@ -1,5 +1,15 @@
 package uk.ac.cam.cares.jps.base.util;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.Date;
+
+import javax.sql.rowset.serial.SerialException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,14 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import javax.sql.rowset.serial.SerialException;
-import java.sql.Blob;
-import java.sql.SQLException;
-import java.util.Date;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 
 /**

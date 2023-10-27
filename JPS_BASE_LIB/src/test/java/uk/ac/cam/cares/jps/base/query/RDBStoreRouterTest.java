@@ -1,14 +1,18 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
-import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Field;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 public class RDBStoreRouterTest {
 

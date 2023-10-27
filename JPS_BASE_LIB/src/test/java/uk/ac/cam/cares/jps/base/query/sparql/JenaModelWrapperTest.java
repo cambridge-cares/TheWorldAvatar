@@ -2,20 +2,23 @@ package uk.ac.cam.cares.jps.base.query.sparql;
 
 
 
-import org.apache.jena.ontology.*;
-import org.apache.jena.rdf.model.*;
-import org.junit.Assert;
-import org.junit.Test;
-
-
-
-
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.ObjectProperty;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.junit.Assert;
+import org.junit.Test;
 
 
 

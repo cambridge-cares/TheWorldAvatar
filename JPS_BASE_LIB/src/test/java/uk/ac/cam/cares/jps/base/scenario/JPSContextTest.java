@@ -1,9 +1,12 @@
 package uk.ac.cam.cares.jps.base.scenario;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 
 public class JPSContextTest{

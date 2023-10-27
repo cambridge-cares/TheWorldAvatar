@@ -1,17 +1,20 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.config.KeyValueMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 
 public class RDBAccessAgentCallerTest {
 

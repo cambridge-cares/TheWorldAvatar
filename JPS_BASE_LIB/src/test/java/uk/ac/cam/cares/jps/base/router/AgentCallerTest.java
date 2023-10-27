@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.base.router;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.http.HttpHeaders;
 import org.json.JSONObject;

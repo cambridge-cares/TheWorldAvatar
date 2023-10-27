@@ -15,9 +15,9 @@ import com.google.gson.JsonParser;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClientTest;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClientTest;
 
 /**
  * This is the base class for multiple test configurations of integration tests for executing federated queries. 
