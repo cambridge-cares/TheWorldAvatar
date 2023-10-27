@@ -102,10 +102,9 @@ class Asker:
                 else len(query_graph.nodes["Species"]["label"])
             )
 
-            template = "For {E}, what {be} {possessive_adj} {K}"
+            template = "For {E}, what is {possessive_adj} {K}"
             verbalization = template.format(
                 E=verbalization,
-                be="are" if len(keys_label) > 1 else "is",
                 possessive_adj="their" if species_num > 1 else "its",
                 K=" and ".join(keys_label),
             )

@@ -72,7 +72,7 @@ class Locator:
             entity_name = random.choice(
                 self.get_identifiers(entity_iri)[identifier_name]
             )
-            entity_names.append(entity_name)
+            entity_names.append("[{name}]".format(name=entity_name))
 
         query_graph = nx.DiGraph()
         query_graph.add_node(

@@ -89,7 +89,7 @@ PROPERTY_LABELS = {
         "bond chiral undef count",
         "undefined bond stereocenter count",
     ],
-    "CanonicalizedCompound": ["canonicalized compound"],
+    "CanonicalizedCompound": ["is_canonicalized"],
     "Charge": ["charge"],
     "CompoundComplexity": ["compound complexity"],
     "CovalentUnitCount": ["covalent unit count", "number of covalent units"],
