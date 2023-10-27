@@ -5,6 +5,7 @@ import org.apache.jena.arq.querybuilder.AskBuilder;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
@@ -144,7 +145,7 @@ public class GeometryQueryHelper {
         }
         catch (Exception e) {
             e.printStackTrace();
-            return null;
+            throw new JPSRuntimeException("No geometry data retrievable for building " + uriString);
         }
     }
 
