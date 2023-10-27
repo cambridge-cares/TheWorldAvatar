@@ -54,8 +54,7 @@
 
     <owl:Class
         rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#RateCoefficient">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The coefficients used
-            to evaluate the reaction rate expression.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The coefficients used to evaluate the reaction rate expression.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl" />
     </owl:Class>
 
@@ -64,8 +63,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ensemble of
-            chemically identical molecular entities (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ensemble of chemically identical molecular entities (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl" />
     </owl:Class>
 </rdf:RDF>
