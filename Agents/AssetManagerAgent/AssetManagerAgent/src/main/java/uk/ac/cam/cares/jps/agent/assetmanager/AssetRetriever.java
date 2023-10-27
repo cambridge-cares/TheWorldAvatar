@@ -595,10 +595,12 @@ public class AssetRetriever {
          * Yes, I'm being lazy again here. But it works (sometimes), so who cares
          */
         JSONArray result = new JSONArray();
-        String query = "PREFIX ontoassetmanagement: <" + ONTOASSET + ">\n"+
+        String[] namespaceToCheck = {deviceNamespace, labNamespace};
+        for (String ns : namespaceToCheck){
+            String query = "PREFIX ontoassetmanagement: <" + ONTOASSET + ">\n"+
                 "SELECT *\n" + 
                 "WHERE {\n" + 
-                "   SERVICE <"+deviceNamespace+"> {\n" + 
+                "   SERVICE <"+ns+"> {\n" + 
                 "       ?assetIRI ontoassetmanagement:isLocatedAt ?workspaceIRI.\n" + 
                 "       ?workspaceIRI ontoassetmanagement:hasWorkspaceIdentifier ?workspaceID.\n" + 
                 "       SERVICE <"+assetNamespace+"> {\n" + 
@@ -608,7 +610,7 @@ public class AssetRetriever {
                 "}";
 
         result.put(storeClientOffice.executeQuery(query));
-        result.put(storeClientLab.executeQuery(query));
+        }
         return result;
     }
 
