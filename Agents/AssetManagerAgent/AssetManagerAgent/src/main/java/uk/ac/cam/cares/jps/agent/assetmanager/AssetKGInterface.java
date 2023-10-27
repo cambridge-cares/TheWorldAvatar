@@ -49,6 +49,9 @@ public class AssetKGInterface {
     public AssetExistenceChecker existenceChecker;
     public AssetRetriever assetRetriever;
 
+    private String user = null;
+    private String pass = null;
+
 
     /**
      * Logger for reporting info/errors.
@@ -90,6 +93,9 @@ public class AssetKGInterface {
         storeClientPurchDoc.setPassword(password);
         storeClientLab.setUser(username);
         storeClientLab.setPassword(password);
+
+        user = username;
+        pass = password;
             
         existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab);
         assetRetriever =  new AssetRetriever (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab, endpointAsset, endpointOffice, endpointPurchDoc, endpointLab);
@@ -901,7 +907,13 @@ public class AssetKGInterface {
       }
 
       public Boolean itemMeasuresBool(String dbName, String IRI, JSONArray pred, int searchDepth){
-        return assetRetriever.getMeasuresExistence (dbName, IRI, pred, searchDepth);
+        RemoteStoreClient dbStoreClient = new RemoteStoreClient(dbName, dbName);
+
+        if (user != null && pass != null){
+            storeClientAsset.setUser(user);
+            storeClientAsset.setPassword(pass);
+        }
+        return assetRetriever.getMeasuresExistence (dbStoreClient, IRI, pred, searchDepth);
       }
 
 }

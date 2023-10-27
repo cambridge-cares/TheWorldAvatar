@@ -101,12 +101,12 @@ public class AssetRetriever {
         Variable priceLiteralVar = SparqlBuilder.var("price");
         Variable priceCurrencyIRI = SparqlBuilder.var("currencyIRI");
         //Spec sheets and manual
-        Variable manualURL = SparqlBuilder.var("manualURL");
-        Variable SpecSheetIRI = SparqlBuilder.var("SpecSheetIRI"); 
-        Variable SpecSheetFileLiteral = SparqlBuilder.var("SpecSheet"); 
+        Variable manufacturerURL = SparqlBuilder.var("manufacturerURL");
+        Variable SpecSheetIRI = SparqlBuilder.var("SpecSheetIRI");
+        Variable SpecSheetFileLiteral = SparqlBuilder.var("SpecSheet");
         Variable SpecSheetPageLiteral = SparqlBuilder.var("SpecSheetPage");
-        Variable ManualIRI = SparqlBuilder.var("ManualIRI"); 
-        Variable ManualFileLiteral = SparqlBuilder.var("Manual"); 
+        Variable ManualIRI = SparqlBuilder.var("ManualIRI");
+        Variable ManualFileLiteral = SparqlBuilder.var("Manual");
         //Supplier and manuf
         Variable SupplierOrgIRI = SparqlBuilder.var("SupplierOrgIRI");
         Variable SupplierNameIRI = SparqlBuilder.var("SupplierNameIRI");
@@ -150,7 +150,7 @@ public class AssetRetriever {
         //model number
         query.where(GraphPatterns.optional(deviceIRIVar.has(hasModel, modelNumberLiteral)));
         //manual URL
-        query.where(GraphPatterns.optional(deviceIRIVar.has(RDFS.SEEALSO, manualURL)));
+        query.where(GraphPatterns.optional(deviceIRIVar.has(RDFS.SEEALSO, manufacturerURL)));
         //Price
         query.where(GraphPatterns.optional(deviceIRIVar.has(hasPrice, amountOfMoneyVar),
             amountOfMoneyVar.has(hasValue, priceMeasureIRI),
@@ -189,7 +189,7 @@ public class AssetRetriever {
     private void handleAssetData (JSONArray requestResult) {
         String[] keyArray = {
                 "deviceIRI","deviceTypeIRI","itemIRI","label","personIRI","personNameIRI","assignedTo","serialNum",
-                "modelNumber", "amtMoney", "priceMeasureIRI", "price", "currencyIRI", "manualURL", "SpecSheetIRI",
+                "modelNumber", "amtMoney", "priceMeasureIRI", "price", "currencyIRI", "manufacturerURL", "SpecSheetIRI",
                 "SpecSheet", "SpecSheetPage", "ManualIRI", "Manual", "SupplierOrgIRI", "SupplierNameIRI",
                 "SupplierName","ManufacturerIRI", "ManufacturerNameIRI","ManufacturerName","workspaceIRI",
                 "workspaceName", "storage"
@@ -234,10 +234,16 @@ public class AssetRetriever {
                 IFCReprIRI.has(RDFS.LABEL, roomName),
                 roomIRI.has(hasIfcRepresentation, IFCReprIRI),
                 roomIRI.isA(roomTypeIRI),
+
                 facilityIRI.has(hasRoom, roomIRI),
                 facilityIRI.isA(facilityTypeIRI),
+                GraphPatterns.union(
+                    locationIRI.has(hasFacility, facilityIRI),
+                    locationIRI.has(hasStorey, facilityIRI)
+                ),
+                
                 facilityIRI.has(RDFS.LABEL, facilityName),
-                locationIRI.has(hasFacility, facilityIRI),
+                
                 locationIRI.has(hasIfcRepresentation, locationIFCReprIRI),
                 locationIFCReprIRI.has(RDFS.LABEL, buildingName)
                 )
@@ -408,7 +414,7 @@ public class AssetRetriever {
          * "assignedTo":"John Chan","DeliveryOrderIRI":"https://www.theworldavatar.com/kg/ontoassetmanagement/DeliveryOrder_f8b82930-bae3-4ff8-a001-5c5a57030dbb",
          * "InvoiceIRI":"https://www.theworldavatar.com/kg/ontoassetmanagement/Invoice_8e59a755-2110-42f6-874b-2b0df985c832",
          * "ServiceCategoryType":"P2_REPLACEMENTS OF DESKTOP COMPUTERS","workspaceName":"CAMW34",
-         * "manualURL":"","PriceDetailsIRI":"https://www.theworldavatar.com/kg/ontoassetmanagement/PriceDetails_43acbfb9-ef7b-4599-a570-058d974e2f0a",
+         * "manufacturerURL":"","PriceDetailsIRI":"https://www.theworldavatar.com/kg/ontoassetmanagement/PriceDetails_43acbfb9-ef7b-4599-a570-058d974e2f0a",
          * "cabinetTypeIRI":"","amtMoney":"https://www.theworldavatar.com/kg/ontodevice/AmountOfMoney_e0992219-6118-413b-871a-9858019b9546",
          * "deviceTypeIRI":"https://www.theworldavatar.com/kg/ontodevice/Monitor","label":"Dell 23 Monitor - P2319h",
          * "PurchaseOrderLineIRI":"https://www.theworldavatar.com/kg/ontoassetmanagement/PurchaseOrderLineIRI_284ccfcb-cd0b-40bc-98b1-09c0a9fb8317",
@@ -587,7 +593,8 @@ public class AssetRetriever {
 
         result.put(storeClientOffice.executeQuery(query.getQueryString()));
         result.put(storeClientLab.executeQuery(query.getQueryString()));
-        return result;
+        JSONArray concatenatedRes = concatArray(storeClientOffice.executeQuery(query.getQueryString()), storeClientLab.executeQuery(query.getQueryString()));
+        return concatenatedRes;
     }
 
     public JSONArray getAllElementInWorkspace(){
@@ -611,10 +618,23 @@ public class AssetRetriever {
 
         result.put(storeClientOffice.executeQuery(query));
         }
+
+        JSONArray concatenatedRes = concatArray(result.getJSONArray(0), result.getJSONArray(1));
+        return concatenatedRes;
+    }
+
+    private JSONArray concatArray(JSONArray... arrs)
+            throws JSONException {
+        JSONArray result = new JSONArray();
+        for (JSONArray arr : arrs) {
+            for (int i = 0; i < arr.length(); i++) {
+                result.put(arr.get(i));
+            }
+        }
         return result;
     }
 
-    public Boolean getMeasuresExistence (String dbName, String IRI, JSONArray pred, int searchDepth) {
+    public Boolean getMeasuresExistence (RemoteStoreClient storeClientDB, String IRI, JSONArray pred, int searchDepth) {
         //Do (pseudo-)BFS to the specified depth with all the checked predicates
         //We don't know what the asset type is for general use, so need to do this
         //If the asset is known, please input from the request parameter
@@ -622,9 +642,7 @@ public class AssetRetriever {
         //WHy don't I do normal BFS? -> Every single check will require a query which may take time
         //This method allows us to check the breadth in 1 query, albeit the agent may not find the timeseries despite existing
 
-        if(dbName.isBlank() || dbName==null){return false;}
-
-        RemoteStoreClient storeClientDB = new RemoteStoreClient(dbName);
+        //RemoteStoreClient storeClientDB = new RemoteStoreClient(dbName);
         LOGGER.info("Starting TS search...");
         for (int d = 1; d<= searchDepth; d++){
             SelectQuery query = Queries.SELECT();

@@ -479,7 +479,7 @@ public class AssetManagerAgent extends JPSAgent{
         if (checkedPred.isEmpty()){
             checkedPred = getAllCheckedPred();
         }
-        message.accumulate("ID", new JSONArray(new String[] {ID, IRI}));
+        message.accumulate("ID", new String[] {ID, IRI});
         if(!isBMSdevice){
             message.accumulate("Result", instanceHandler.retrieve(ID));
         }

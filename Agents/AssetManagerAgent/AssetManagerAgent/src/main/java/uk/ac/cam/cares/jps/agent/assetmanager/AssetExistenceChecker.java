@@ -176,10 +176,13 @@ public class AssetExistenceChecker {
         query.where(roomIRI.isA(roomTypeIRI));
         query.where(facilityIRI.has(hasRoom, roomIRI));
         query.where(facilityIRI.isA(facilityTypeIRI));
-        if (facilityName != null){
+        if (!(facilityName.isBlank())){
             query.where(facilityIRI.has(RDFS.LABEL, Rdf.literalOf(facilityName)));
         }
-        query.where(locationIRI.has(hasFacility, facilityIRI));
+        query.where(GraphPatterns.union(
+            locationIRI.has(hasFacility, facilityIRI),
+            locationIRI.has(hasStorey, facilityIRI)
+        ));
         query.where(locationIRI.has(hasIfcRepresentation, locationIFCReprIRI));
         query.where(locationIFCReprIRI.has(RDFS.LABEL, Rdf.literalOf(buildingName)));
 

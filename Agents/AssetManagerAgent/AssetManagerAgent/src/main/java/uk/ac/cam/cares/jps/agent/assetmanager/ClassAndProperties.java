@@ -14,6 +14,7 @@ public class ClassAndProperties {
     public static final String ONTOEPE = "https://www.theworldavatar.com/kg/ontoelecpowerequipment/";
     public static final String ONTOASSET = "https://www.theworldavatar.com/kg/ontoassetmanagement/";
     public static final String ONTOBIM = "https://www.theworldavatar.com/kg/ontobim/";
+    public static final String ONTOEMS = "https://www.theworldavatar.com/kg/ontoems/";
 
     public static final String P_DEV = ONTODEV;
     public static final String P_LAB = ONTOLAB;
@@ -22,6 +23,7 @@ public class ClassAndProperties {
     public static final String P_ASSET = ONTOASSET;
     public static final String P_EPE = ONTOEPE;
     public static final String P_BIM = ONTOBIM;
+    public static final String P_EMS = ONTOEMS;
     public static final String P_SAREF = "https://saref.etsi.org/core/";
     public static final String P_OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     public static final String P_FIBO_AAP = "https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/";
@@ -39,6 +41,7 @@ public class ClassAndProperties {
     public static final Prefix Pref_ASSET = SparqlBuilder.prefix("ontoassetmanagement",iri(ONTOASSET));
     public static final Prefix Pref_EPE = SparqlBuilder.prefix("ontoelecpowerequipment",iri(ONTOEPE));
     public static final Prefix Pref_BIM = SparqlBuilder.prefix("ontobim", iri(ONTOBIM));
+    public static final Prefix Pref_EMS = SparqlBuilder.prefix("ontoems", iri(ONTOEMS));
     public static final Prefix Pref_SAREF = SparqlBuilder.prefix("saref", iri(P_SAREF));
     public static final Prefix Pref_OM = SparqlBuilder.prefix("om2", iri(P_OM));
     public static final Prefix Pref_FIBO_AAP = SparqlBuilder.prefix("FIBOaap", iri(P_FIBO_AAP));
@@ -117,6 +120,7 @@ public class ClassAndProperties {
     public static final Iri hasName = iri("https://www.omg.org/spec/Commons/Designators/hasName");
 
     public static final Iri containsElement = Pref_BOT.iri("containsElement");
+    public static final Iri hasStorey = Pref_BOT.iri("hasStorey");
     public static final Iri containsSystem = Pref_SYS.iri("containsSystem");
 
     public static final Iri hasDurationDescription = Pref_TIME.iri("hasDurationDescription");

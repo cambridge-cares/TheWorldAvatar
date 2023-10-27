@@ -54,6 +54,9 @@ public class QueryUtil {
             
             case "ontoelecpowerequipment":
                 return P_EPE;
+
+            case "ontoems":
+                return P_EMS;
             
             default:
                 throw new Exception("Unrecognized ontology: " +  ontology, null);
