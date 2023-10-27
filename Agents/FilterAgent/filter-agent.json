@@ -6,8 +6,8 @@
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/filter-agent:0.0.1-SNAPSHOT",
                 "Env": [
-                    "DEFAULT_NAMESPACE: kb",
-                    "DEFAULT_QUERY: query"
+                    "DEFAULT_NAMESPACE=kb",
+                    "DEFAULT_QUERY=query"
                 ],
                 "Mounts": [
                     {
