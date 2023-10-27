@@ -90,6 +90,7 @@ class Locator:
         return query_graph, "chemical species"
 
     def get_operator_value_qualifier_property(self, entity_iri: str, key: str):
+        # TODO: pre-retrieve all properties of a given entity_iri instead of querying each property individually
         predicate = "os:has{PropertyName}/os:value".format(PropertyName=key)
 
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -106,11 +107,15 @@ SELECT DISTINCT * WHERE {{
 
         response_bindings = self.kg_client.query(query)
         if len(response_bindings) == 0:
-            return None, None, None, None, None
+            raise ValueError(
+                "The supplied key={key} for entity_iri={entity_iri} should yield a non-empty response.".format(
+                    key=key, entity_iri=entity_iri
+                )
+            )
 
         response_binding = random.choice(response_bindings)
         if (
-            response_binding["PropertyNameValue"]["datatype"]
+            response_binding["PropertyNameValue"].get("datatype")
             != "http://www.w3.org/2001/XMLSchema#float"
         ):
             raise ValueError("Unexpected datatype: " + str(response_binding))
@@ -163,7 +168,7 @@ SELECT DISTINCT * WHERE {{
             query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
     SELECT DISTINCT ?UseLabel WHERE {{
-        <{SpeciesIri}> os:hasUse [ rdfs:label ?UseLabel ] .
+        <{SpeciesIri}> os:hasUse/rdfs:label ?UseLabel .
     }}"""
             query = query_template.format(SpeciesIri=entity_iri)
             response_bindings = self.kg_client.query(query)
@@ -187,6 +192,20 @@ SELECT DISTINCT * WHERE {{
             self.entity2chemclasses[entity_iri] = chemclasses
         return self.entity2chemclasses[entity_iri]
 
+    def get_sampled_uses(self, query_graph: nx.DiGraph):
+        return [
+            v
+            for _, v, label in query_graph.edges(data="label")
+            if label == "os:hasUse/rdfs:label"
+        ]
+
+    def get_sampled_chemclasses(self, query_graph: nx.DiGraph):
+        return [
+            v
+            for _, v, label in query_graph.edges(data="label")
+            if label == "os:hasChemicalClass/rdfs:label"
+        ]
+
     def locate_concept_and_literal(
         self, entity_iri: str, query_graph: Optional[nx.DiGraph] = None
     ):
@@ -196,19 +215,40 @@ SELECT DISTINCT * WHERE {{
             query_graph = copy.deepcopy(query_graph)
 
         sampled_keys = get_attribute_keys(query_graph)
-        unsampled_keys = [
-            x
-            for x in self.get_property_keys(entity_iri)
-            if x not in sampled_keys
+        unsampled_property_keys = [
+            x for x in self.get_property_keys(entity_iri) if x not in sampled_keys
         ]
-        key_sampling_frame = unsampled_keys + (
-            [USE_KEY] * (len(self.get_uses(entity_iri)) > 0)
-            + [CHEMCLASS_KEY] * (len(self.get_chemclasses(entity_iri)) > 0)
-        ) * (len(unsampled_keys) // 4)
+        key_sampling_frame = list(unsampled_property_keys)
+
+        sampled_uses = self.get_sampled_uses(query_graph)
+        if set(sampled_uses) < set(self.get_uses(entity_iri)):
+            key_sampling_frame += (
+                [USE_KEY]
+                * (len(self.get_uses(entity_iri)) > 0)
+                * (len(unsampled_property_keys) // 4)
+            )
+
+        sampled_chemclasses = self.get_sampled_chemclasses(query_graph)
+        if set(sampled_chemclasses) < set(self.get_chemclasses(entity_iri)):
+            key_sampling_frame += (
+                [CHEMCLASS_KEY]
+                * (len(self.get_chemclasses(entity_iri)) > 0)
+                * (len(unsampled_property_keys) // 4)
+            )
+
+        if len(key_sampling_frame) == 0:
+            return query_graph, None
+
         key = random.choice(key_sampling_frame)
         key_label = random.choice(KEY2LABELS[key])
 
-        predicate, operator, value, qualifier_key, qualifier_value = None, None, None, None, None
+        predicate, operator, value, qualifier_key, qualifier_value = (
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
 
         if key in PROPERTY_KEYS:
             (
@@ -220,33 +260,24 @@ SELECT DISTINCT * WHERE {{
             ) = self.get_operator_value_qualifier_property(entity_iri, key)
         elif key == USE_KEY:
             predicate = "os:hasUse/rdfs:label"
-            sampled_uses = [
-                v
-                for u, v, label in query_graph.edges(data="label")
-                if label == predicate
-            ]
             sampling_frame = [
                 x for x in self.get_uses(entity_iri) if x not in sampled_uses
             ]
-            if len(sampling_frame) > 0:
-                value = random.choice(sampling_frame)
+            if len(sampling_frame) == 0:
+                raise ValueError()
+            value = random.choice(sampling_frame)
         elif key == CHEMCLASS_KEY:
             predicate = "os:hasChemicalClass/rdfs:label"
-            sampled_chemclasses = [
-                v
-                for u, v, label in query_graph.edges(data="label")
-                if label == predicate
-            ]
             sampling_frame = [
                 x
                 for x in self.get_chemclasses(entity_iri)
                 if x not in sampled_chemclasses
             ]
-            if len(sampling_frame) > 0:
-                value = random.choice(sampling_frame)
-
-        if value is None:
-            return None, None
+            if len(sampling_frame) == 0:
+                raise ValueError()
+            value = random.choice(sampling_frame)
+        else:
+            raise ValueError("Unrecognized key: " + key)
 
         literal_num = len([n for n in query_graph.nodes() if n.startswith("literal")])
         literal_node = "literal_" + str(literal_num)
@@ -257,9 +288,7 @@ SELECT DISTINCT * WHERE {{
         query_graph.add_edge("Species", literal_node, label=predicate)
 
         if operator is None:
-            verbalization = "{K} is {V}".format(
-                K=key_label, V="[{x}]".format(x=value)
-            )
+            verbalization = "{K} is {V}".format(K=key_label, V="[{x}]".format(x=value))
         else:
             operator_label = random.choice(COMPARATIVE_LABELS[operator])
 

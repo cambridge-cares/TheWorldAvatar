@@ -12,6 +12,8 @@ from locate_then_ask.locate import Locator
 
 
 ROOTDIR = Path(os.getcwd())
+SEED_SPECIES_NUM = 1000
+SEED_SPECIES_FILEPATH = "seed_species_{num}.txt".format(num=SEED_SPECIES_NUM)
 
 
 class DatasetGenerator:
@@ -28,10 +30,11 @@ class DatasetGenerator:
             "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql"
         )
 
-        species_attr_values = "\n    ".join(
+        species_attr_values = "\n        " + "\n        ".join(
             ["(os:has{p})".format(p=p) for p in SPECIES_ATTRIBUTE_KEYS]
         )
-        query_template = """"PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query_template = '''PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+
 SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
     ?x a os:Species .
     VALUES (?p) {{{bindings}
@@ -40,14 +43,16 @@ SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
 }}
 GROUP BY ?x
 ORDER BY DESC(?degree)
-LIMIT 100"""
-        query = query_template.format(bindings=species_attr_values)
+LIMIT {num}'''
+        query = query_template.format(
+            bindings=species_attr_values, num=SEED_SPECIES_NUM
+        )
         bindings = kg_client.query(query)
         return [x["x"]["value"] for x in bindings]
 
     @classmethod
     def retrieve_seed_species(self):
-        filepath = os.path.join(ROOTDIR, "seed_species.txt")
+        filepath = os.path.join(ROOTDIR, SEED_SPECIES_FILEPATH)
 
         if not os.path.isfile(os.path.join(filepath)):
             species = self.query_seed_species()
@@ -63,14 +68,14 @@ LIMIT 100"""
         self.locator = Locator()
         self.asker = Asker()
 
-        seed_species = self.retrieve_seed_species()[:20]
+        seed_species = self.retrieve_seed_species()
         random.shuffle(seed_species)
         self.seed_species = seed_species
 
     def locate(self, locate_strategy: str, species_id: int):
         if locate_strategy == "entity_name":
             entity_num = min(
-                random.sample(population=[1, 2, 3], counts=[3, 2, 1], k=1)[0],
+                random.sample(population=[1, 2, 3], counts=[4, 2, 1], k=1)[0],
                 len(self.seed_species) - species_id,
             )
             entity_iris = self.seed_species[species_id : species_id + entity_num]
@@ -80,7 +85,7 @@ LIMIT 100"""
         elif locate_strategy == "concept_and_literal":
             entity_iri = self.seed_species[species_id]
             cond_num = random.sample(
-                population=[1, 2, 3, 4, 5], counts=[2, 4, 5, 2, 1], k=1
+                population=[1, 2, 3, 4, 5, 6], counts=[4, 5, 6, 3, 2, 1], k=1
             )[0]
 
             query_graph, verbalization = self.locator.locate_intersection(
@@ -134,8 +139,12 @@ LIMIT 100"""
                     )
                     continue
 
-                ask_strategy_population, ask_strategy_counts = self.LOCATE2ASK[locate_strategy]
-                ask_strategy = random.sample(population=ask_strategy_population, counts=ask_strategy_counts, k=1)[0]
+                ask_strategy_population, ask_strategy_counts = self.LOCATE2ASK[
+                    locate_strategy
+                ]
+                ask_strategy = random.sample(
+                    population=ask_strategy_population, counts=ask_strategy_counts, k=1
+                )[0]
                 ask_datum = self.ask(
                     ask_strategy=ask_strategy,
                     query_graph=query_graph,

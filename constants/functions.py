@@ -17,11 +17,11 @@ COMPARATIVES = [
 ]
 
 COMPARATIVE_LABELS = {
-    LESS_THAN: ["less than", "lower than", "smaller than"],
-    GREATER_THAN: ["greater than", "higher than", "bigger than"],
-    LESS_THAN_EQUAL: ["less than or equal to", "not greater than"],
-    GREATER_THAN_EQUAL: ["greater than or equal to", "not less than"],
-    EQUAL: ["equal to"],
+    LESS_THAN: ["<", "less than", "lower than", "smaller than"],
+    GREATER_THAN: [">", "greater than", "higher than", "bigger than"],
+    LESS_THAN_EQUAL: ["<=", "less than or equal to", "not greater than"],
+    GREATER_THAN_EQUAL: [">=", "greater than or equal to", "not less than"],
+    EQUAL: ["=", "equal to"],
     AROUND: ["around", "approximately"],
     INSIDE: ["inside the range"],
 }
