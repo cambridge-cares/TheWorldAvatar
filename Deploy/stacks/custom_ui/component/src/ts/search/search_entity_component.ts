@@ -2,12 +2,15 @@
  * This component provides a list of parameters that users can select to search for the related urban entities visualised in the TWA-VF.
 */
 class SeachEntityComponent extends DynamicComponent {
-  private readonly baseStackUrl: string = 'http://localhost:3838';
+  private readonly baseStackUrl: string = "http://10.25.188.130:3838";
+
   /**
     * Create a new HTML element to support the application requirements.
     * @param {string} title - The title displayed.
+    * @param {any} mapboxMapHandler - The map object created for Mapbox.
+    * @param {string} layerId - The ID name of the layer to set filters on.
   */
-  constructor(title: string) {
+  constructor(title: string, mapboxMapHandler: any, layerId: string) {
     // Call the super class constructor
     super(title);
     this.initContainerAttributes();
@@ -16,8 +19,8 @@ class SeachEntityComponent extends DynamicComponent {
     new SelectDropdownComponent("Zone Type").render(parentElement);
 
     const submitButton = createHTMLElement('button');
-    submitButton.textContent = 'Submit';
-    submitButton.addEventListener('click', () => this.handleSubmit());
+    submitButton.textContent = "Submit";
+    submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, layerId));
 
     parentElement.appendChild(submitButton);
   };
@@ -37,13 +40,19 @@ class SeachEntityComponent extends DynamicComponent {
   };
 
   /**
-     * An event handler that retrieves all values selected as inputs for a post request.
-      * @returns {void}
-     */
-  private handleSubmit(): void {
+    * An event handler that triggers when a button is clicked. 
+    * This event retrieves all search parameter inputs from the the users, 
+    * and retrieves the associated plots that meet this criteria. 
+    * The map will filter and only show the plots that fit the criteria.
+    * @param {any} mapboxMapHandler - The map object created for Mapbox.
+    * @param {string} layerId - The ID name of the layer to set filters on.
+    * @returns {void}
+    */
+  private handleSubmit(mapboxMapHandler: any, layerId: string): void {
+    // Reset the filters
+    mapboxMapHandler.setFilter(layerId, null)
     // Retrieve the options for the zone type search parameter
     let zoneTypes: string = this.retrieveSelectedOptions(this.container_content.firstElementChild);
-
     // Define the request parameters
     let params: { subs: string } = {
       subs: `{"area":"'null'", "zonetype":"${zoneTypes}"}`
@@ -52,26 +61,35 @@ class SeachEntityComponent extends DynamicComponent {
     // Send the GET request
     $.ajax({
       url: `${this.baseStackUrl}/filter-agent/filter`,
-      type: 'GET',
+      type: "GET",
       data: params,
       success: function (response) {
-        // Retrieved value should be in the form of ["result1", "result2"]
+        // Retrieved response should be in the form of ["result1", "result2"]
+        // Parse each value as an array item
         let plotResults: string[] = response.slice(1, -1)  // Remove the brackets '[' and ']'
           .split(', ');
+        // If there are plots to filter, set the expression and filter for the specified layer
+        // Note that the condition is to detect whether the first object is not an empty string.
+        // The filter agent returns an empty string if no plot(s) of interest is found, so checking the length is not viable
+        if (plotResults[0].length > 0) {
+          // Filter expression
+          let zoneFilterExpression = ["in", ['get', 'iri'], ['literal', plotResults]];
+          mapboxMapHandler.setFilter(layerId, zoneFilterExpression);
+        }
       },
       error: function (error) {
         // Handle any errors here
-        console.error('Error:', error);
+        console.error("Error:", error);
       }
-
-
     });
   };
 
   /**
-     * Initialises all default container attributes for this component.
-      * @returns {void}
-     */
+    * Retrieve the selected checkbox options from the specified dropdown container.
+    * This method will parse the results into a string format suitable for the Filter agent.
+    * @param {Element} dropDownContainer - The container element with the input elements to extract data from.
+    * @returns {void}
+    */
   private retrieveSelectedOptions(dropDownContainer: Element): string {
     // Initialise the array to store the values of each checkbox-option selected
     let selectedOptions: string[] = [];
@@ -85,7 +103,7 @@ class SeachEntityComponent extends DynamicComponent {
 
     // Initialise string that should be sent to the Filter Agent
     // If there are no selected options, null should be returned and enclosed in single quotes
-    let optionsString: string = "'null'"; 
+    let optionsString: string = "'null'";
     // When there are options selected, parse them by enclosing them in single quotes
     if (selectedOptions.length > 0) {
       let wrappedValues: string[] = selectedOptions.map(value => `'${value}'`);
