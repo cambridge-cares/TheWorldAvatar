@@ -87,7 +87,7 @@ public class GeoObject2D {
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }
 
-            String sql = "SELECT * FROM " + config[5] + " WHERE name is not null or add_street is not null";
+            String sql = "SELECT * FROM " + config[4] + " WHERE name is not null or add_street is not null";
             try (Statement stmt = srcConn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
