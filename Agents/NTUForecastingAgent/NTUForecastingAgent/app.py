@@ -71,33 +71,36 @@ def api():
 
     if not IRI_frequency:
         IRI_frequency = 'http://example.org/Frequency_1'
-        update =+ f'''
+        update += f'''
         <{IRI_frequency}> rdf:type ts:Frequency ;
             time:numericDuration 1.0 ;
             time:unitType time:unitHour ;
             ts:resampleData "false"^^xsd:boolean .
+
         '''
     
     if not IRI_forecasting_model:
         IRI_forecasting_model = 'http://example.org/ForecastingModel_1'
-        update =+ f'''
+        update += f'''
         <{IRI_forecasting_model}> rdf:type ts:ForecastingModel ;
             rdfs:label "Prophet" ;
             ts:scaleData "false"^^xsd:boolean .
+
         '''
     
     if not IRI_duration:
         IRI_duration = 'http://example.org/Duration_1'
-        update =+ f'''
+        update += f'''
         <{IRI_duration}> rdf:type time:Duration ;
             time:numericDuration 336.0 ;
             time:unitType time:unitHour .
+
         '''
     
     # Interval with given time positions
     if not IRI_interval:
         IRI_interval = 'http://example.org/OptimisationInterval_1'
-        update =+ f'''
+        update += f'''
         <{IRI_interval}> rdf:type time:Interval ;
             time:hasBeginning ex:OptimisationStartInstant_1 ;
             time:hasEnd ex:OptimisationEndInstant_1 .
@@ -111,9 +114,10 @@ def api():
         ex:TimePosition_{str(time_pos2)} rdf:type time:TimePosition ;
             time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
             time:numericPosition {time_pos2} .
+
         '''
     
-    prefixes = f'''
+    update = f'''
     PREFIX ex: <http://example.org/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
@@ -122,8 +126,11 @@ def api():
     PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
     PREFIX ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
+
+    INSERT DATA {{
+        {update}
+    }}
     '''
-    update = prefixes + update
     
     #Update triples for forecasting in KG
     kgclient.performUpdate(update)
@@ -140,13 +147,29 @@ def api():
     PREFIX ex: <http://example.org/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
+    PREIX deriv: <https://www.theworldavatar.com/kg/ontoderivation/>
 
     SELECT ?fc_iri
     WHERE {{
-        ?fc_iri rdf:type ts:Forecast
+        <{IRI_to_forecast}> ts:hasForecast ?fc_iri .
+        ?fc_iri ts:hasTimeSeries ?forecasted_ts ;
+            rdf:type ts:Forecast ;
+            deriv:belongsto ?deriv_with_ts .
+        ?forecasted_ts rdf:type ts:TimeSeries .
+        ?deriv_with_ts deriv:isDerivedFrom <{IRI_to_forecast}> ;
+            deriv:isDerivedFrom <{IRI_forecasting_model}> ;
+            deriv:isDerivedFrom <{IRI_frequency}> ;
+            deriv:isDerivedFrom <{IRI_interval}> ;
+            deriv:isDerivedFrom <{IRI_duration}> ;
+            deriv:isDerivedUsing <{ontoagent_service_iri}> .
     }}
     ''' 
     res = kgclient.performQuery(query)
+
+    if len(res) == 0:
+        logging.error("No forecasted time series found.")
+        return "No forecasted time series found."
+
     dataIRI = res[0]['fc_iri']
 
     return dataIRI
