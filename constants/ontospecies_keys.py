@@ -1,3 +1,6 @@
+import itertools
+
+
 PROPERTY_KEYS = [
     "AtomChiralCount",
     "AtomChiralDefCount",
@@ -61,7 +64,11 @@ IDENTIFIER_KEYS = [
 USE_KEY = "Use"
 CHEMCLASS_KEY = "ChemicalClass"
 
+ABSTRACT_PROPERTY_KEY = "Property"
+ABSTRACT_IDENTIFIER_KEY = "Identifier"
+
 SPECIES_ATTRIBUTE_KEYS = PROPERTY_KEYS + IDENTIFIER_KEYS + [USE_KEY, CHEMCLASS_KEY]
+SPECIES_ABSTRACT_ATTRIBUTE_KEYS = [ABSTRACT_PROPERTY_KEY, ABSTRACT_IDENTIFIER_KEY]
 
 PROPERTY_LABELS = {
     "AtomChiralCount": ["atom chiral count", "atom stereocenter count"],
@@ -155,8 +162,23 @@ IDENTIFIER_LABELS = {
 USE_LABELS = ["use", "application", "role"]
 CHEMCLASS_LABELS = ["chemical class", "chemical classification"]
 
+PLURAL_ADJS = ["many", "different", "various"]
+ABSTRACT_PROPERTY_LABELS = [
+    " ".join(x)
+    for x in itertools.product(PLURAL_ADJS, ["properties"])
+]
+ABSTRACT_IDENTIFIER_LABELS = [
+    " ".join(x)
+    for x in itertools.product(PLURAL_ADJS, ["identifiers", "labels", "names"])
+]
+
 KEY2LABELS = {
     **PROPERTY_LABELS,
     **IDENTIFIER_LABELS,
-    **{USE_KEY: USE_LABELS, CHEMCLASS_KEY: CHEMCLASS_LABELS},
+    **{
+        USE_KEY: USE_LABELS,
+        CHEMCLASS_KEY: CHEMCLASS_LABELS,
+        ABSTRACT_PROPERTY_KEY: ABSTRACT_PROPERTY_LABELS,
+        ABSTRACT_IDENTIFIER_KEY: ABSTRACT_IDENTIFIER_LABELS,
+    },
 }

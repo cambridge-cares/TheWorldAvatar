@@ -65,10 +65,7 @@ class Asker:
 
         will_sample_concrete_attribute = random.sample(
             population=[True, False],
-            counts=[len(SPECIES_ATTRIBUTE_KEYS), 
-                    0
-                    # len(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)
-                    ],
+            counts=[0, len(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)],
             k=1,
         )[0]
 
@@ -109,11 +106,13 @@ class Asker:
             )
         else:
             key = random.choice(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)
+            key_node = key + "Name"
+            abstract_key_node = "os:" + key
             query_graph.add_nodes_from(
-                [(key, dict()), ("os:Property", dict(template_node=True))]
+                [(key_node, dict(question_node=True)), (abstract_key_node, dict(template_node=True))]
             )
-            query_graph.add_edge("Species", key, label="?has" + key)
-            query_graph.add_edge("key", "os:Property", label="rdf:type/rdfs:subClassOf")
+            query_graph.add_edge("Species", key_node, label="?has{key}Name".format(key=key))
+            query_graph.add_edge(key_node, abstract_key_node, label="rdf:type/rdfs:subClassOf")
 
             key_label = random.choice(KEY2LABELS[key])
 

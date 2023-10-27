@@ -130,7 +130,7 @@ LIMIT 100"""
                 if query_graph is None:
                     print(
                         "Unable to locate a subgraph with the following entity: "
-                        + self.seed_species[species_id:species_id_new]
+                        + str(self.seed_species[species_id:species_id_new])
                     )
                     continue
 

@@ -1,8 +1,8 @@
 from constants.ontospecies_keys import (
-    CHEMCLASS_KEY,
+    ABSTRACT_IDENTIFIER_KEY,
+    ABSTRACT_PROPERTY_KEY,
     IDENTIFIER_KEYS,
     PROPERTY_KEYS,
-    USE_KEY,
 )
 
 
@@ -24,7 +24,7 @@ class SparqlCompact2VerboseConverter:
         while len(sparql_compact) > 0:
             sparql_compact = sparql_compact.strip()
             if sparql_compact.startswith("VALUES"):
-                """sparql_compact: VALUES ?Species { {literal} {literal} ... }"""
+                """VALUES ?Species { {literal} {literal} ... }"""
                 sparql_compact = sparql_compact[len("VALUES") :].strip()
                 assert sparql_compact.startswith("?Species"), sparql_compact
                 sparql_compact = sparql_compact[len("?Species") :].strip()
@@ -52,12 +52,10 @@ class SparqlCompact2VerboseConverter:
                 graph_patterns.append(template.format(literals=literals))
                 continue
 
-            """sparql_compact: ?Species os:has{key}[|/os:value|/rdfs:label] [?{key}|?{key}Value|{literal}]"""
             assert sparql_compact.startswith("?Species"), sparql_compact
             sparql_compact = sparql_compact[len("?Species") :].strip()
 
             predicate, sparql_compact = sparql_compact.split(maxsplit=1)
-            assert predicate.startswith("os:has"), sparql_compact
 
             sparql_compact = sparql_compact.strip()
             if sparql_compact.startswith('"'):
@@ -77,88 +75,125 @@ class SparqlCompact2VerboseConverter:
                     assert sparql_compact.startswith("."), sparql_compact
                     sparql_compact = sparql_compact[1:]
 
-            if predicate.endswith("/os:value"):
-                key = predicate[len("os:has"):-len("/os:value")]
-                if key in PROPERTY_KEYS:
-                    """?Species os:has{PropertyName}/os:value ?{PropertyName}Value"""
-                    assert predicate == "os:has{PropertyName}/os:value".format(PropertyName=key), sparql_compact
-                    assert obj == "?{PropertyName}Value".format(PropertyName=key), sparql_compact
+            if predicate.startswith("os:has"):
+                """?Species os:has{key}[|/os:value|/rdfs:label] [?{key}|?{key}Value|{literal}] ."""
+                if predicate.endswith("/os:value"):
+                    key = predicate[len("os:has"):-len("/os:value")]
+                    if key in PROPERTY_KEYS:
+                        """?Species os:has{PropertyName}/os:value ?{PropertyName}Value"""
+                        assert predicate == "os:has{PropertyName}/os:value".format(PropertyName=key), sparql_compact
+                        assert obj == "?{PropertyName}Value".format(PropertyName=key), sparql_compact
 
-                    template = """
-    ?Species os:has{PropertyName} ?{PropertyName} .
-    ?{PropertyName} os:value ?{PropertyName}Value ; os:unit/rdfs:label ?{PropertyName}UnitLabel .
-    OPTIONAL {{
-        ?{PropertyName} os:hasReferenceState [ os:value ?{PropertyName}ReferenceStateValue ; os:unit/rdfs:label ?{PropertyName}ReferenceStateUnitLabel ] .
-    }}"""
-                    graph_patterns.append(template.format(PropertyName=key))
+                        template = """
+        ?Species os:has{PropertyName} ?{PropertyName} .
+        ?{PropertyName} os:value ?{PropertyName}Value ; os:unit/rdfs:label ?{PropertyName}UnitLabel .
+        OPTIONAL {{
+            ?{PropertyName} os:hasReferenceState [ os:value ?{PropertyName}ReferenceStateValue ; os:unit/rdfs:label ?{PropertyName}ReferenceStateUnitLabel ] .
+        }}"""
+                        graph_patterns.append(template.format(PropertyName=key))
 
+                        sparql_compact = sparql_compact.strip()
+                        if sparql_compact.startswith("FILTER"):
+                            sparql_compact = sparql_compact[len("FILTER") :].strip()
+                            assert sparql_compact.startswith("("), sparql_compact
+
+                            sparql_compact = sparql_compact[1:].strip()
+                            ptr = 0
+                            quote_open = False
+                            while ptr < len(sparql_compact) and (
+                                sparql_compact[ptr] != ")" or quote_open
+                            ):
+                                if sparql_compact[ptr] == '"':
+                                    quote_open = not quote_open
+                                ptr += 1
+                            assert sparql_compact[ptr] == ")", sparql_compact
+
+                            filter_arg = sparql_compact[:ptr].strip()
+                            sparql_compact = sparql_compact[ptr + 1 :]
+                            filter_arg = filter_arg.replace(key, key + "Value")
+                            graph_patterns.append(
+                                "\n    FILTER ( {arg} )".format(arg=filter_arg)
+                            )
+                    elif key in IDENTIFIER_KEYS:
+                        """?Species os:has{IdentifierName}/os:value ?{IdentifierName}Value"""
+                        assert predicate == "os:has{IdentifierName}/os:value".format(IdentifierName=key), sparql_compact
+                        assert obj == "?{IdentifierName}Value".format(IdentifierName=key), sparql_compact
+
+                        template = """
+        ?Species os:has{IdentifierName}/os:value ?{IdentifierName}Value ."""
+                        graph_patterns.append(template.format(IdentifierName=key))
+                    else:
+                        raise ValueError("Unexpeced predicate: " + predicate)
+                elif predicate.endswith("/rdfs:label"):
+                    if predicate == "os:hasUse/rdfs:label":
+                        """?Species os:hasUse/rdfs:label [{literal}|?UseLabel]"""
+                        template = """
+        ?Species os:hasUse/rdfs:label {label} ."""
+                        graph_patterns.append(template.format(label=obj))
+                    elif predicate == "os:hasChemicalClass/rdfs:label":
+                        """?Species os:hasChemicalClass/rdfs:label [{literal}|?UseLabel]"""
+                        template = """
+        ?Species os:hasChemicalClass*/(rdf:|!rdf:)/rdfs:subClassOf* [ rdf:type os:ChemicalClass ; rdfs:label {label} ] ."""
+                        graph_patterns.append(template.format(label=obj))
+                    else:
+                        raise ValueError("Unexpeced predicate: " + predicate)
+                else:
+                    key = predicate[len("os:has"):]
+                    if key in PROPERTY_KEYS:
+                        """?Species os:has{PropertyName} ?{PropertyName}"""
+                        assert obj == "?" + key, sparql_compact
+
+                        template = """
+        ?Species os:has{PropertyName} ?{PropertyName} .
+        ?{PropertyName} os:value ?{PropertyName}Value ; os:unit/rdfs:label ?{PropertyName}UnitLabel .
+        OPTIONAL {{
+            ?{PropertyName} os:hasReferenceState [ os:value ?{PropertyName}ReferenceStateValue ; os:unit/rdfs:label ?{PropertyName}ReferenceStateUnitLabel ] .
+        }}"""
+                        graph_patterns.append(template.format(PropertyName=key))
+                    elif key in IDENTIFIER_KEYS:
+                        """?Species os:has{IdentifierName} ?{IdentifierName}"""
+                        assert obj == "?" + key, sparql_compact
+
+                        template = """
+        ?Species os:has{IdentifierName}/os:value ?{IdentifierName}Value ."""
+                        graph_patterns.append(template.format(IdentifierName=key))
+                    else:
+                        raise ValueError("Unexpeced predicate: " + predicate)
+            elif predicate.startswith("?has") and predicate.endswith("Name"):
+                """?Species ?has{key}Name ?{key}Name .
+                   ?{key}Name rdf:type/rdfs:subClassOf os:{key} ."""
+                key = predicate[len("?has"):-len("Name")]
+                assert obj == "?{key}Name".format(key=key)
+
+                sparql_compact = sparql_compact.strip()
+                next_s, next_p, next_o, sparql_compact = sparql_compact.split(maxsplit=3)
+                if next_o.endswith("."):
+                    next_o = next_o[:-1]
+                else:
                     sparql_compact = sparql_compact.strip()
-                    if sparql_compact.startswith("FILTER"):
-                        sparql_compact = sparql_compact[len("FILTER") :].strip()
-                        assert sparql_compact.startswith("("), sparql_compact
+                    assert sparql_compact.startswith("."), sparql_compact
+                    sparql_compact = sparql_compact[1:]
 
-                        sparql_compact = sparql_compact[1:].strip()
-                        ptr = 0
-                        quote_open = False
-                        while ptr < len(sparql_compact) and (
-                            sparql_compact[ptr] != ")" or quote_open
-                        ):
-                            if sparql_compact[ptr] == '"':
-                                quote_open = not quote_open
-                            ptr += 1
-                        assert sparql_compact[ptr] == ")", sparql_compact
+                assert next_s == obj
+                assert next_p == "rdf:type/rdfs:subClassOf"
+                assert next_o == "os:" + key
 
-                        filter_arg = sparql_compact[:ptr].strip()
-                        sparql_compact = sparql_compact[ptr + 1 :]
-                        filter_arg = filter_arg.replace(key, key + "Value")
-                        graph_patterns.append(
-                            "\n    FILTER ( {arg} )".format(arg=filter_arg)
-                        )
-                elif key in IDENTIFIER_KEYS:
-                    """?Species os:has{IdentifierName}/os:value ?{IdentifierName}Value"""
-                    assert predicate == "os:has{IdentifierName}/os:value".format(IdentifierName=key), sparql_compact
-                    assert obj == "?{IdentifierName}Value".format(IdentifierName=key), sparql_compact
-
-                    template = """
-    ?Species os:has{IdentifierName}/os:value ?{IdentifierName}Value ."""
-                    graph_patterns.append(template.format(IdentifierName=key))
+                if key == ABSTRACT_PROPERTY_KEY:
+                    graph_patterns.append("""
+    ?Species ?hasPropertyName ?PropertyName .
+    ?PropertyName rdf:type/rdfs:subClassOf os:Property ; os:value ?PropertyNameValue ; os:unit/rdfs:label ?PropertyNameUnitValue .
+    OPTIONAL {
+        ?PropertyName os:hasReferenceState [ os:value ?PropertyNameReferenceStateValue ; os:unit/rdfs:label ?PropertyNameReferenceStateUnitValue ] .
+    }""")
+                elif key == ABSTRACT_IDENTIFIER_KEY:
+                    graph_patterns.append("""
+    ?Species ?hasIdentifierName ?IdentifierName .
+    ?IdentifierName rdf:type/rdfs:subClassOf os:Identifier ; os:value ?IdentifierNameValue .""")
                 else:
-                    raise ValueError("Unexpeced predicate: " + predicate)
-            elif predicate.endswith("/rdfs:label"):
-                if predicate == "os:hasUse/rdfs:label":
-                    """?Species os:hasUse/rdfs:label [{literal}|?UseLabel]"""
-                    template = """
-    ?Species os:hasUse/rdfs:label {label} ."""
-                    graph_patterns.append(template.format(label=obj))
-                elif predicate == "os:hasChemicalClass/rdfs:label":
-                    """?Species os:hasChemicalClass/rdfs:label [{literal}|?UseLabel]"""
-                    template = """
-    ?Species os:hasChemicalClass*/(rdf:|!rdf:)/rdfs:subClassOf* [ rdf:type os:ChemicalClass ; rdfs:label {label} ] ."""
-                    graph_patterns.append(template.format(label=obj))
-                else:
-                    raise ValueError("Unexpeced predicate: " + predicate)
+                    raise ValueError("Unrecoginzed predicate: " + predicate)
             else:
-                key = predicate[len("os:has"):]
-                if key in PROPERTY_KEYS:
-                    """?Species os:has{PropertyName} ?{PropertyName}"""
-                    assert obj == "?" + key, sparql_compact
+                raise ValueError("Unrecognized predicate: " + predicate)
 
-                    template = """
-    ?Species os:has{PropertyName} ?{PropertyName} .
-    ?{PropertyName} os:value ?{PropertyName}Value ; os:unit/rdfs:label ?{PropertyName}UnitLabel .
-    OPTIONAL {{
-        ?{PropertyName} os:hasReferenceState [ os:value ?{PropertyName}ReferenceStateValue ; os:unit/rdfs:label ?{PropertyName}ReferenceStateUnitLabel ] .
-    }}"""
-                    graph_patterns.append(template.format(PropertyName=key))
-                elif key in IDENTIFIER_KEYS:
-                    """?Species os:has{IdentifierName} ?{IdentifierName}"""
-                    assert obj == "?" + key, sparql_compact
-
-                    template = """
-    ?Species os:has{IdentifierName}/os:value ?{IdentifierName}Value ."""
-                    graph_patterns.append(template.format(IdentifierName=key))
-                else:
-                    raise ValueError("Unexpeced predicate: " + predicate)
 
         where_clause = "WHERE {{{group_graph_pattern}\n}}".format(
             group_graph_pattern="".join(graph_patterns)

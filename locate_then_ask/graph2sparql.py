@@ -9,12 +9,6 @@ from constants.functions import (
     LESS_THAN,
     LESS_THAN_EQUAL,
 )
-from constants.ontospecies_keys import (
-    CHEMCLASS_KEY,
-    IDENTIFIER_KEYS,
-    PROPERTY_KEYS,
-    USE_KEY,
-)
 from locate_then_ask.sparql_compact2verbose import SparqlCompact2VerboseConverter
 
 
@@ -42,6 +36,8 @@ class GraphToSparqlConverter:
             else:
                 key = p[len("os:has"):]
                 return "{s} {p} {o} .".format(s="?" + s, p=p, o="?" + key)
+        elif p.startswith("?has"):
+            return "{s} {p} {o} .".format(s="?" + s, p=p, o="?" + o)
         elif p == "func":
             in_edges = query_graph.in_edges(s, data="label")
             assert len(in_edges) == 1
@@ -85,7 +81,9 @@ class GraphToSparqlConverter:
             else:
                 raise ValueError("Unrecognized operator: " + operator)
         else:
-            raise ValueError("Unrecognized predicate: " + p)
+            s = s if query_graph.nodes[s].get("template_node") else ("?" + s)
+            o = o if query_graph.nodes[o].get("template_node") else ("?" + o)
+            return "{s} {p} {o} .".format(s=s, p=p, o=o)
 
     def make_select_clause(self, query_graph: nx.DiGraph):
         question_nodes = [
