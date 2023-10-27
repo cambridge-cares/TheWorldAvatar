@@ -16,8 +16,8 @@ ROOTDIR = Path(os.getcwd())
 
 class DatasetGenerator:
     LOCATE2ASK = {
-        "entity_name": ["attribute"],
-        "concept_and_literal": ["name", "attribute"],
+        "entity_name": (["attribute"], [1]),
+        "concept_and_literal": (["name", "attribute"], [3, 1]),
     }
 
     @classmethod
@@ -96,7 +96,7 @@ LIMIT 100"""
         if ask_strategy == "name":
             return self.asker.ask_name(query_graph, verbalization)
         elif ask_strategy == "attribute":
-            attr_num = random.sample(population=[1, 2, 3], counts=[2, 1, 1], k=1)[0]
+            attr_num = random.sample(population=[1, 2, 3], counts=[3, 1, 1], k=1)[0]
             return self.asker.ask_attribute(
                 query_graph=query_graph, verbalization=verbalization, attr_num=attr_num
             )
@@ -134,7 +134,8 @@ LIMIT 100"""
                     )
                     continue
 
-                ask_strategy = random.choice(self.LOCATE2ASK[locate_strategy])
+                ask_strategy_population, ask_strategy_counts = self.LOCATE2ASK[locate_strategy]
+                ask_strategy = random.sample(population=ask_strategy_population, counts=ask_strategy_counts, k=1)[0]
                 ask_datum = self.ask(
                     ask_strategy=ask_strategy,
                     query_graph=query_graph,

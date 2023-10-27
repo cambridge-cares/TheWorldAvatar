@@ -65,7 +65,7 @@ class Asker:
 
         will_sample_concrete_attribute = random.sample(
             population=[True, False],
-            counts=[0, len(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)],
+            counts=[len(SPECIES_ATTRIBUTE_KEYS), len(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)],
             k=1,
         )[0]
 
@@ -101,7 +101,7 @@ class Asker:
             template = "For {E}, what {be} its {K}"
             verbalization = template.format(
                 E=verbalization,
-                be="are" if len(keys_label) > 0 else "is",
+                be="are" if len(keys_label) > 1 else "is",
                 K=" and ".join(keys_label),
             )
         else:
