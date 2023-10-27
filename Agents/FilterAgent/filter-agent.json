@@ -1,5 +1,5 @@
 {
-    "type": "basic-agent",
+    "type": "externally-accessible-agent",
     "ServiceSpec": {
         "Name": "filter-agent",
         "TaskTemplate": {
