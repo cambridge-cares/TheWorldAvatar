@@ -32,7 +32,9 @@ class Locator:
         kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
     ):
         self.kg_client = KgClient(kg_endpoint)
-        self.entity2identifiers: Dict[str, Dict[str, List[str]]] = dict() # entity_iri -> IdentifierName -> names
+        self.entity2identifiers: Dict[
+            str, Dict[str, List[str]]
+        ] = dict()  # entity_iri -> IdentifierName -> names
         self.entity2propertykeys = dict()
         self.entity2uses: Dict[str, List[str]] = dict()
         self.entity2chemclasses: Dict[str, List[str]] = dict()
@@ -56,14 +58,20 @@ class Locator:
                 accum[binding["hasIdentifierName"]].append(
                     binding["IdentifierNameValue"]
                 )
-            self.entity2identifiers[entity_iri] = {k.split("#has", maxsplit=1)[-1]: v for k, v in accum.items()}
+            self.entity2identifiers[entity_iri] = {
+                k.split("#has", maxsplit=1)[-1]: v for k, v in accum.items()
+            }
         return self.entity2identifiers[entity_iri]
 
     def locate_entity_name(self, entity_iris: Iterable[str]):
         entity_names = []
         for entity_iri in entity_iris:
-            identifier_name = random.choice(list(self.get_identifiers(entity_iri).keys()))
-            entity_name = random.choice(self.get_identifiers(entity_iri)[identifier_name])
+            identifier_name = random.choice(
+                list(self.get_identifiers(entity_iri).keys())
+            )
+            entity_name = random.choice(
+                self.get_identifiers(entity_iri)[identifier_name]
+            )
             entity_names.append(entity_name)
 
         query_graph = nx.DiGraph()
@@ -252,7 +260,9 @@ SELECT DISTINCT * WHERE {{
         query_graph.add_edge("Species", literal_node, label=predicate)
 
         if operator is None:
-            verbalization = "{K} is {V}".format(K=key_label, V=value)
+            verbalization = "{K} is {V}".format(
+                K=key_label, V="[{x}]".format(x=value)
+            )
         else:
             operator_label = random.choice(COMPARATIVE_LABELS[operator])
 
