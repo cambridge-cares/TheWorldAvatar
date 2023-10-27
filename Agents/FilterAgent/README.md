@@ -3,9 +3,7 @@ This agent executes a configurable query and returns a list of iris.
 The purpose of this is to provide an endpoint to be used by filtering within the visualization but might have other applications.
 
 ## Deployment
-This agent requires to be spun up inside a stack. 
-Read the [stack manager documentation](../../Deploy/stacks/dynamic/stack-manager/README.md) for instructions on how to do this, the service config can be found [here](./filter-agent.json). 
-Something similar to the follow stack config will be needed.
+This agent must be spun up as part of a stack deployment workflow. Before spinning up the stack, place the [service config] (./filter-agent.json) into the stack-manager's `./input/config/services` directory. The stack configuration is similar to the following snippet:
 
 ```json
 {
@@ -19,6 +17,8 @@ Something similar to the follow stack config will be needed.
     }
 }
 ```
+
+Once the service config has been placed, spin up the stack as per the [documented workflow](../../Deploy/stacks/dynamic/stack-manager/README.md). The filter agent should be spun up along with the entire stack. There is no need to build or deploy the filter agent and its image separately.
 
 Here, `my-filter-queries` is a directory containing `.sparql` template queries that will be used for the filtering. An example of such is the following.
 
