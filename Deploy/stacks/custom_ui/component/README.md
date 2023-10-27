@@ -11,19 +11,21 @@ In the `src` directory, developers can find the core `DynamicComponent` class in
 By default, the DynamicComponent generates the following HTML elements:
 ```
 <div id="dynamicInterfaceContainer">
-  <button id="dynamicComponentTitle">Custom Title</button>
+  <div id="dynamicComponentTitle">Custom Title</div>
   <div id="dynamicContent"></div>
 </div>
 ```
 When developing their components, developers should take note of the following core methods. 
 1) `constructor`
-Constructs the core structure of the dynamic component with a custom title from input. This should be called in the child component's constructor as the first line.
+Constructs the core structure of the dynamic component with a custom title from input. This should be called in the child component's constructor as the first line. You may alter these elements in the child component through the `container`, `container_title`, or `container_content` fields.
+2) `render`
+A method to attach the custom component and its child nodes to an existing HTML element in the TWA VF. This should be called in the `<script>` section of the `index.html`.
+
+The following helper functions are available in `/ts/dynamic_component.utils`:
+1) `createHTMLElement`
+A helper method to create a new HTML element with your required type, id or classes for changing its display.
 2) `createDiv`
 A helper method to create a new Div element with your required id or classes for changing its display.
-3) `getContent`
-A helper method so that developers can update the content from their child component for their requirements.
-4) `render`
-A method to attach the custom component to an existing HTML element in the TWA VF. This should be called in the `<script>` section of the `index.html`.
 
 Once ready, please place your component into a distinct subdirectory. This should be similar to `./src/ts/datasheet/asset_display_component.ts`. 
 
@@ -31,7 +33,11 @@ Once ready, please place your component into a distinct subdirectory. This shoul
 Developers can edit the core styling for their needs in `src/css/component.css`. For styling custom components, please add the new classes and ids in the css file before compiling.
 
 ## 2. Compilation
-This directory has been designed to compile the Typescript and CSS source code through a Docker container. Other compilation workflows are beyond the scope of this document. To do so, please run the following code:
+This directory has been designed to compile the Typescript and CSS source code through a Docker container. Other compilation workflows are beyond the scope of this document. 
+
+Before compiling, please feel free to delete any of the subdirectory if you do not require the code to reduce the bundle.
+
+Please run the following code to compile on Docker:
 ```
 docker compose up -d
 ```

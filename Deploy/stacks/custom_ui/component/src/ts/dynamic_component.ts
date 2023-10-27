@@ -1,5 +1,5 @@
 /**
- * This abstract class is a versatile adaptive collapsible container element.
+ * This abstract class is a versatile container element with a title and content component.
  * It is designed to facilitate a dynamic role-based rendering of its child components,
  * presenting different content and functionalities based on their user role.
 */
@@ -12,7 +12,7 @@ abstract class DynamicComponent {
   private readonly id_content: string = "dynamicContent";
 
   /**
-    * Create a new HTML element with collapsible content to support the dynamic component.
+    * Create a new HTML element with a title and content to support the dynamic component.
     * @param {string} title - The title displayed.
   */
   constructor(title: string) {
