@@ -262,11 +262,14 @@ public class AssetKGInterface {
         String room = AssetDataRaw.getString("RoomLocation");
         String roomIRI = "";
         String facilityIRI = "";
-        String locationIRI = location;
+        String locationIRI = "";
 
         RemoteStoreClient preferredClient = storeClientOffice;
 
-        if(location.contains("Research Wing")){preferredClient = storeClientLab;}
+        if(location.contains("Research Wing")){
+            preferredClient = storeClientLab;
+            LOGGER.info("Switching to Lab store client...");
+        }
 
         JSONObject locationIRIs = existenceChecker.getLocationTriples (location, facility, room, preferredClient);
         if (locationIRIs != null){
@@ -596,7 +599,7 @@ public class AssetKGInterface {
             query.insert(iri(cabinetIRIString).has(hasFurnitureIdentifier, storageIDLiteral));
         }
         //get location
-        if (LocationString.equals( "Research Wing") || LocationString.equals("CREATE Tower")){
+        if (LocationString.contains( "Research Wing") || LocationString.contains("CREATE Tower")){
             if(roomIRI != null){
                 if (devicePrefix.equals(P_SYS)){
                     query.insert(roomIRI.has(containsSystem, deviceIRI));

@@ -148,7 +148,7 @@ public class AssetExistenceChecker {
     }
 
     public JSONObject getLocationTriples (String buildingName, String facilityName, String roomName, RemoteStoreClient storeClient){
-        if (buildingName.equals("Research Wing") || buildingName.equals("CREATE Tower")){
+        if (buildingName.contains("Research Wing") || buildingName.contains("CREATE Tower")){
             return  queryLocationIRIByName(buildingName, facilityName, roomName, storeClient);
         }
         else{
@@ -184,6 +184,7 @@ public class AssetExistenceChecker {
         query.where(locationIFCReprIRI.has(RDFS.LABEL, Rdf.literalOf(buildingName)));
 
         JSONArray reqResult = storeClient.executeQuery(query.getQueryString());
+        LOGGER.debug("Location check result::" + reqResult);
         switch (reqResult.length()) {
             case 0:
                 //location does not exist.

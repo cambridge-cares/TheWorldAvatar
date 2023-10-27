@@ -142,8 +142,9 @@ public class AssetRetriever {
         query.where(personNameIRI.has(hasPersonName, deviceOwnerLiteral));
         //Optional IRIs
         //Workspace
-        query.where(GraphPatterns.optional(PersonIRI.has(hasAllocatedWorkspace, WorkspaceIRI),
-            WorkspaceIRI.has(hasWorkspaceIdentifier, WorkspaceIDLiteral)));
+        query.where(GraphPatterns.optional(deviceIRIVar.has(isLocatedAt, WorkspaceIRI),
+            WorkspaceIRI.has(hasIdentifier, WorkspaceIDLiteral)
+        ));
         //Serial number
         query.where(GraphPatterns.optional(deviceIRIVar.has(serialNumber, serialNumberLiteral)));
         //model number
@@ -168,7 +169,7 @@ public class AssetRetriever {
         
         //Manual
         query.where(GraphPatterns.optional(
-            deviceIRIVar.has(hasDataSheet, ManualIRI),    
+            deviceIRIVar.has(hasDataSheet, ManualIRI),
             ManualIRI.isA(Manual),
 
             GraphPatterns.optional(ManualIRI.has(availableAt, ManualFileLiteral))
@@ -243,17 +244,9 @@ public class AssetRetriever {
                 //Add union for assets outside of CARES?
                 //deviceIRI.has(hasCurrentLocation, LocationString)
         );
-            
-            //Separete here
         query.where(GraphPatterns.optional(cabinetIRI.isA(cabinetTypeIRI),
             deviceIRI.has(isStoredIn, cabinetIRI),
             cabinetIRI.has(hasFurnitureIdentifier, storageIDLiteral)
-        ));
-
-
-        //Workspace
-        query.where(GraphPatterns.optional(deviceIRI.has(isLocatedAt, WorkspaceIRI),
-            WorkspaceIRI.has(hasIdentifier, WorkspaceIDLiteral)
         ));
 
         JSONArray result = storeClientOffice.executeQuery(query.getQueryString());
@@ -275,8 +268,6 @@ public class AssetRetriever {
             "facilityTypeIRI",
             "locationIRI",
             "locationIFCReprIRI",
-            "WorkspaceIRI",
-            "WorkspaceID",
             "Location",
             "roomName",
             "facilityName",
