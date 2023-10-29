@@ -48,7 +48,7 @@ public class UsageShareCalculator {
                 String assignUsageShare =
                         "UPDATE " + usageTable + " AS p\n" +
                                 "SET UsageShare = c.instances / c.total_instances::float,\n" +
-                                "    propertyusage_iri = 'https://www.theworldavatar.com/kg/' || c.ontobuilt || '_' || uuid_generate_v4()::text\n"
+                                "    propertyusage_iri = c.ontobuilt || '_' || uuid_generate_v4()::text\n"
                                 +
                                 "FROM (\n" +
                                 "    SELECT building_iri,\n" +
@@ -136,5 +136,22 @@ public class UsageShareCalculator {
                         e.printStackTrace();
                         throw new JPSRuntimeException(e);
                 }
+        }
+
+        public void removePrefix(String usageTable){
+                String removePrefix ="UPDATE "+usageTable+"\n" +
+                        "SET building_iri = SUBSTRING(building_iri, LENGTH('https://www.theworldavatar.com/kg/Building/') + 1)\n" +
+                        "WHERE building_iri LIKE 'https://www.theworldavatar.com/kg/Building/%';\n" +
+                        "\n" +
+                        "\n" +
+                        "UPDATE polygons\n" +
+                        "SET building_iri = SUBSTRING(building_iri, LENGTH('https://www.theworldavatar.com/kg/Building/') + 1)\n" +
+                        "WHERE building_iri LIKE 'https://www.theworldavatar.com/kg/Building/%';\n" +
+                        "\n" +
+                        "UPDATE points\n" +
+                        "SET building_iri = SUBSTRING(building_iri, LENGTH('https://www.theworldavatar.com/kg/Building/') + 1)\n" +
+                        "WHERE building_iri LIKE 'https://www.theworldavatar.com/kg/Building/%';";
+
+                rdbStoreClient.executeUpdate(removePrefix);
         }
 }

@@ -92,6 +92,7 @@ public class OSMAgent extends JPSAgent {
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
             // buildings
             shareCalculator.updateUsageShare(usageTable);
+            shareCalculator.removePrefix(usageTable);
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
