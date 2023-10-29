@@ -127,48 +127,39 @@ public class OSMAgent extends JPSAgent {
 
 
     private static final String buildingSQLQuery ="WITH \"uuid_table\" AS (\n" +
-            "    SELECT\n" +
-            "        \"strval\" AS \"uuid\",\n" +
-            "        \"cityobject_id\"\n" +
-            "    FROM\n" +
-            "        \"cityobject_genericattrib\"\n" +
-            "    WHERE\n" +
-            "        \"attrname\" = 'uuid'\n" +
-            "),\n" +
-            "\"iri_table\" AS (\n" +
-            "    SELECT\n" +
-            "        \"urival\" AS \"iri\",\n" +
-            "        \"cityobject_id\"\n" +
-            "    FROM\n" +
-            "        \"cityobject_genericattrib\"\n" +
-            "    WHERE\n" +
-            "        \"attrname\" = 'iri'\n" +
-            "),\n" +
-            "\"usageTable\" AS (\n" +
-            "    SELECT\n" +
-            "        \"building_iri\" AS \"iri\",\n" +
-            "        \"propertyusage_iri\",\n" +
-            "        \"ontobuilt\",\t\n" +
-            "        \"usageshare\"\n" +
-            "    FROM\n" +
-            "        usage.usage\n" +
+            "    SELECT \"strval\" AS \"uuid\", \"cityobject_id\"\n" +
+            "    FROM \"cityobject_genericattrib\"\n" +
+            "    WHERE \"attrname\" = 'uuid'\n" +
+            "), \"iri_table\" AS (\n" +
+            "    SELECT \"urival\" AS \"iri\", \"cityobject_id\"\n" +
+            "    FROM \"cityobject_genericattrib\"\n" +
+            "    WHERE \"attrname\" = 'iri'\n" +
+            "), \"usageTable\" AS (\n" +
+            "    SELECT \"building_iri\" AS \"iri\", \"propertyusage_iri\", \"ontobuilt\", \"usageshare\"\n" +
+            "    FROM usage.usage\n" +
+            "), \"pointsTable\" AS (\n" +
+            "    SELECT \"building_iri\" AS \"iri\", \"name\"\n" +
+            "    FROM public.points\n" +
+            "), \"polygonsTable\" AS (\n" +
+            "    SELECT \"building_iri\" AS \"iri\", \"name\"\n" +
+            "    FROM public.polygons\n" +
             ")\n" +
-            "SELECT\n" +
-            "    \"building\".\"id\" AS \"building_id\",\n" +
+            "SELECT DISTINCT \"building\".\"id\" AS \"building_id\",\n" +
+            "    COALESCE(\"pointsTable\".name, \"polygonsTable\".name) AS name,\n" +
             "    COALESCE(\"measured_height\", 100.0) AS \"building_height\",\n" +
-            "    public.ST_Transform(\"geometry\",4326),\n" +
+            "    public.ST_Transform(\"geometry\", 4326),\n" +
             "    \"uuid\",\n" +
             "    \"iri_table\".\"iri\",\n" +
             "    \"propertyusage_iri\",\n" +
-            "    \"ontobuilt\",\t\n" +
+            "    \"ontobuilt\",\n" +
             "    \"usageshare\"\n" +
-            "FROM\n" +
-            "    \"building\"\n" +
-            "    JOIN \"surface_geometry\" ON \"surface_geometry\".\"root_id\" = \"building\".\"lod0_footprint_id\"\n" +
-            "    JOIN \"uuid_table\" ON \"building\".\"id\" = \"uuid_table\".\"cityobject_id\"\n" +
-            "    JOIN \"iri_table\" ON \"building\".\"id\" = \"iri_table\".\"cityobject_id\"\n" +
-            "    LEFT JOIN \"usageTable\" ON \"iri_table\".\"iri\" = \"usageTable\".\"iri\"\n" +
-            "WHERE\n" +
-            "    \"surface_geometry\".\"geometry\" IS NOT NULL AND\n" +
-            "    COALESCE(\"measured_height\", 100.0) != '0'\n";
+            "FROM \"building\"\n" +
+            "JOIN \"surface_geometry\" ON \"surface_geometry\".\"root_id\" = \"building\".\"lod0_footprint_id\"\n" +
+            "JOIN \"uuid_table\" ON \"building\".\"id\" = \"uuid_table\".\"cityobject_id\"\n" +
+            "JOIN \"iri_table\" ON \"building\".\"id\" = \"iri_table\".\"cityobject_id\"\n" +
+            "LEFT JOIN \"pointsTable\" ON  \"uuid_table\".\"uuid\"  = \"pointsTable\".\"iri\" \n" +
+            "LEFT JOIN \"polygonsTable\" ON  \"uuid_table\".\"uuid\" = \"polygonsTable\".\"iri\"\n" +
+            "LEFT JOIN \"usageTable\" ON \"uuid_table\".\"uuid\" = \"usageTable\".\"iri\"\n" +
+            "WHERE \"surface_geometry\".\"geometry\" IS NOT NULL\n" +
+            "    AND COALESCE(\"measured_height\", 100.0) != '0'";
 }
