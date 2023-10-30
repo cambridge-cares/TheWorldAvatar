@@ -71,8 +71,8 @@ public class OtherInfoNetworkSource {
 //                result.otherInfo.put(PURCHASE_REQUEST_NUMBER, keyConversion(gson.fromJson(resultJson.getJSONArray("PurchaseRequest").toString(), listMapType), PURCHASE_REQUEST_NUMBER));
 
                 // todo: items should be retrieved with a separate call after docs are selected
-                result.workspaces  = processElement(gson.fromJson(resultJson.getJSONArray("Element").get(0).toString(), listMapType));
-                result.rooms  = processWorkspace(gson.fromJson(resultJson.getJSONArray("Workspace").get(0).toString(), listMapType), result.workspaces);
+                result.workspaces  = processElement(gson.fromJson(resultJson.getJSONArray("Element").toString(), listMapType));
+                result.rooms  = processWorkspace(gson.fromJson(resultJson.getJSONArray("Workspace").toString(), listMapType), result.workspaces);
 
                 onSuccessUpper.onResponse(result);
             } catch (JSONException e) {

@@ -50,6 +50,7 @@ public class AssetNetworkSource {
             Type type = new TypeToken<HashMap<String, String>>() {}.getType();
             try {
                 AssetInfoModel assets = new AssetInfoModel(keyConversion(gson.fromJson(rawResponse.getJSONArray("Result").get(0).toString(), type)));
+                assets.getProperties().put(INVENTORY_ID, rawResponse.getJSONArray("ID").get(0).toString());
                 assets.setHasTimeSeries((Boolean) rawResponse.getJSONArray("Result").get(1));
                 onSuccessUpper.onResponse(assets);
             } catch (JSONException e) {
@@ -67,8 +68,6 @@ public class AssetNetworkSource {
         }
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, requestUri, requestBody, onSuccess, onFailureUpper);
-
-//        StringRequest request = new StringRequest(Request.Method.GET, requestUri, onSuccess, onFailureUpper);
         connection.addToRequestQueue(request);
     }
 
@@ -100,7 +99,7 @@ public class AssetNetworkSource {
                     result.put(PURCHASE_ORDER_NUMBER, rawInput.get(key));
                     break;
                 case "price":
-                    result.put(PURCHASE_PRICE, rawInput.get(key));
+                    result.put(PURCHASE_PRICE, rawInput.get(key) + " S$");
                     break;
                 case "itemComment":
                     result.put(ITEM_DESCRIPTION, rawInput.get(key));
@@ -110,6 +109,9 @@ public class AssetNetworkSource {
                     break;
                 case "ManufacturerName":
                     result.put(MANUFACTURER, rawInput.get(key));
+                    break;
+                case "manufacturerURL":
+                    result.put(MANUFACTURE_URL, rawInput.get(key));
                     break;
                 case "roomName":
                     result.put(ROOM, rawInput.get(key));
@@ -129,17 +131,14 @@ public class AssetNetworkSource {
                 case "assignedTo":
                     result.put(ASSIGNED_TO, rawInput.get(key));
                     break;
-                case "manualURL":
-                    result.put(MANUAL_SECTION_TITLE, rawInput.get(key));    // todo: check again
+                case "Manual":
+                    result.put(MANUAL_SECTION_TITLE, rawInput.get(key));
                     break;
                 case "workspaceName":
                     result.put(WORKSPACE, rawInput.get(key));
                     break;
                 case "facilityName":
                     result.put(FACILITY, rawInput.get(key));
-                    break;
-                case "amtMoney":
-//                    result.put(FACILITY, rawInput.get(key));
                     break;
                 case "label":
                     result.put(REFERENCE_LABEL, rawInput.get(key));
@@ -151,7 +150,7 @@ public class AssetNetworkSource {
                     result.put(MODEL_NUMBER, rawInput.get(key));
                     break;
                 case "Location":
-//                    result.put(, rawInput.get(key));
+                    // NOTE: this key is for the asset in people's home or other places that are not in CREATE buildings so without IFC representation
                     break;
                 case "InvoiceNum":
                     result.put(INVOICE_NUMBER, rawInput.get(key));
@@ -160,7 +159,7 @@ public class AssetNetworkSource {
                     result.put(SERVICE_CATEGORY, rawInput.get(key));
                     break;
                 case "SpecSheet":
-                    result.put(SPEC_SHEET_SECTION_TITLE, rawInput.get(key));    // todo: check again
+                    result.put(SPEC_SHEET_SECTION_TITLE, rawInput.get(key));
                     break;
                 case "deviceIRI":
                     result.put(IRI, rawInput.get(key));
