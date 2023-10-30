@@ -540,6 +540,7 @@ public class RunCEATask implements Runnable {
 
                 try {
                     CEAOutputData result = CEAOutputHandler.extractCEAOutputs(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY, this.uris);
+                    System.out.println("CEA ran successfully.");
                     returnOutputs(result);
                 }
                 catch (IOException e) {
