@@ -53,14 +53,16 @@ In the same directory as this README, first build the Docker image by running
 docker compose build
 ```
 
-After the image is built, copy [cea-agent.json] from ```./stack-manager-input/``` and place it in [stack-manager config services] directory. Then, in the [stack-manager] directory, run 
+After the image is built, copy [cea-agent.json] from ```./stack-manager-input/``` and place it in [stack-manager config services] directory. 
+Please ensure that `Source` in `Mounts` of [cea-agent.json] points correctly to the local `CEAAgentConfig.properties`. Then, in the [stack-manager] directory, run 
 ```
 ./stack.sh start <STACK NAME>
 ```
 Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager.
 
 ### 2.11. Debugging
-To debug, put [cea-agent-debug.json] from ```./stack-manager-input/``` instead of [cea-agent.json]  in [stack-manager config services]. Then, in the [stack-manager]  directory, run 
+To debug, put [cea-agent-debug.json] from ```./stack-manager-input/``` instead of [cea-agent.json]  in [stack-manager config services].
+Please ensure that `Source` in `Mounts` of [cea-agent-debug.json] points correctly to the local `CEAAgentConfig.properties`.Then, in the [stack-manager]  directory, run 
 ```
 ./stack.sh start <STACK NAME>
 ```
