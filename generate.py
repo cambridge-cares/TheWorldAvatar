@@ -12,7 +12,7 @@ from locate_then_ask.locate import Locator
 
 
 ROOTDIR = Path(os.getcwd())
-SEED_SPECIES_NUM = 1000
+SEED_SPECIES_NUM = 2000
 SEED_SPECIES_FILEPATH = "seed_species_{num}.txt".format(num=SEED_SPECIES_NUM)
 
 
@@ -75,7 +75,7 @@ LIMIT {num}'''
     def locate(self, locate_strategy: str, species_id: int):
         if locate_strategy == "entity_name":
             entity_num = min(
-                random.sample(population=[1, 2, 3], counts=[4, 2, 1], k=1)[0],
+                random.sample(population=[1, 2, 3], counts=[6, 2, 1], k=1)[0],
                 len(self.seed_species) - species_id,
             )
             entity_iris = self.seed_species[species_id : species_id + entity_num]
@@ -164,5 +164,5 @@ if __name__ == "__main__":
     ds_gen = DatasetGenerator()
     examples = ds_gen.generate()
 
-    with open(os.path.join(ROOTDIR, "examples.json"), "w") as f:
+    with open(os.path.join(ROOTDIR, "examples_{num}.json".format(num=SEED_SPECIES_NUM)), "w") as f:
         json.dump(examples, f, indent=4)

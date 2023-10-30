@@ -102,7 +102,12 @@ class Asker:
                 else len(query_graph.nodes["Species"]["label"])
             )
 
-            template = "For {E}, what is {possessive_adj} {K}"
+            template = random.choice(
+                [
+                    "For {E}, what is {possessive_adj} {K}",
+                    "What is the {K} of {E}",
+                ]
+            )
             verbalization = template.format(
                 E=verbalization,
                 possessive_adj="their" if species_num > 1 else "its",
