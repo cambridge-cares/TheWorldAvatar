@@ -3,6 +3,7 @@
  */
 class SeachEntityComponent extends DynamicComponent {
   private baseStackUrl: string;
+  private numerical_placeholder_message: string = "Type a number";
 
   /**
    * Create a new HTML element to support the application requirements.
@@ -18,10 +19,13 @@ class SeachEntityComponent extends DynamicComponent {
     let parentElement: HTMLElement = this.container_content;
     // Create a dropdown component for zone types
     new SelectDropdownComponent("Zone Type").render(parentElement);
+    // Create a text input component for site area
+    let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Site Area [m2]", this.numerical_placeholder_message, "Invalid input. Please enter a numerical value.");
+    siteAreaTextInput.render(parentElement);
     // Create a submit button
     let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement('button');
     submitButton.textContent = "Submit";
-    submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, layerId));
+    submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, layerId, [siteAreaTextInput]));
     parentElement.appendChild(submitButton);
   };
 
@@ -57,16 +61,19 @@ class SeachEntityComponent extends DynamicComponent {
    * The map will filter and only show the plots that fit the criteria.
    * @param {any} mapboxMapHandler - The map object created for Mapbox.
    * @param {string} layerId - The ID name of the layer to set filters on.
+   * @param {SearchTextInputComponent[]} textComponentArray - An array of text input components.
    * @returns {void}
   */
-  private handleSubmit(mapboxMapHandler: any, layerId: string): void {
+  private handleSubmit(mapboxMapHandler: any, layerId: string, textComponentArray: SearchTextInputComponent[]): void {
     // Reset the filters
     mapboxMapHandler.setFilter(layerId, null);
     // Retrieve the options for the zone type search parameter
     let zoneTypes: string = this.retrieveSelectedOptions(this.container_content.firstElementChild);
+    // Retrieve the option for site area search parameter
+    let siteArea: string = this.retrieveTextInput(textComponentArray[0], true);
     // Define the request parameters
     let params: { subs: string } = {
-      subs: `{"area":"'null'", "zonetype":"${zoneTypes}"}`
+      subs: `{"area":"${siteArea}", "zonetype":"${zoneTypes}"}`
     };
 
     // Send the GET request
@@ -121,5 +128,28 @@ class SeachEntityComponent extends DynamicComponent {
       optionsString = wrappedValues.join(','); // Add ',' between each option
     }
     return optionsString;
+  };
+
+  /**
+   * Retrieve the current text input from the component.
+   * @param {SearchTextInputComponent} component - The component to extract current value.
+   * @param {boolean} isNumerical - A boolean indicating whether only numerical values are accepted.
+   * @returns {string} the current text.
+  */
+  private retrieveTextInput(component: SearchTextInputComponent, isNumerical: boolean): string {
+    let currentText: string = component.getCurrentValue();
+    // Use regex to verify only digits are inside
+    let isANumber: boolean = /^\d+$/.test(currentText);
+    // If the current text is an empty string, do not do anything
+    if (currentText === "") {
+      currentText = "'null'";
+      // When the text input must be a number and the user input is not
+    } else if (isNumerical && !isANumber) {
+      // Set the text to null for meeting the filter agent requirements
+      currentText = "'null'";
+      // Invoke the error message
+      component.invokeError();
+    }
+    return currentText;
   };
 };
