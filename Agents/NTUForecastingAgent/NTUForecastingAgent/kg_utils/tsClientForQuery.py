@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from .jpsSingletons import jpsBaseLibGW
 from .utils import TIME_FORMAT
 from .utils import TIMECLASS
-from PVLibAgent.error_handling.exceptions import TSException
+from NTUForecastingAgent.error_handling.exceptions import TSException
 import logging
 
 class TSClientForQuery:
