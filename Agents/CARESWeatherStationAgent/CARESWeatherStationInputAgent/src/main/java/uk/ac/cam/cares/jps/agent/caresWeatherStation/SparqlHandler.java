@@ -70,36 +70,53 @@ public class SparqlHandler {
     private static final Iri reports = PREFIX_ONTOEMS.iri("reports");
     private static final Iri hasValue = PREFIX_OM.iri("hasValue");
     private static final Iri hasAggregateFunction = PREFIX_OM.iri("hasAggregateFunction");
+    private static final Iri hasUnit = PREFIX_OM.iri("hasUnit");
+    private static final Iri symbol = PREFIX_OM.iri("symbol");
     private static final Iri hasGeoLocation = PREFIX_ONTODEVICE.iri("hasGeoLocation");
     private static final Iri asWKT = PREFIX_GEO.iri("asWKT");
 
     /**
      * Classes
      */
+    private static final Iri point = PREFIX_SF.iri("Point");
     private static final Iri reportingStation = PREFIX_ONTOEMS.iri("ReportingStation");
-    private static final Iri uvIndex = PREFIX_ONTOEMS.iri("UVIndex");
-    private static final Iri windDirection = PREFIX_ONTOEMS.iri("WindDirection");
-    private static final Iri windSpeed = PREFIX_ONTOEMS.iri("WindSpeed");
-    private static final Iri windGust = PREFIX_ONTOEMS.iri("WindGust");
-    private static final Iri dewPoint = PREFIX_ONTOEMS.iri("DewPoint");
-    private static final Iri windChill = PREFIX_ONTOEMS.iri("WindChill");
-    private static final Iri heatIndex = PREFIX_ONTOEMS.iri("HeatIndex");
-    private static final Iri precipitationRate = PREFIX_ONTOEMS.iri("PrecipitationRate");
-    private static final Iri rainfall = PREFIX_ONTOEMS.iri("Rainfall");
-    private static final Iri relativeHumidity = PREFIX_OM.iri("RelativeHumidity");
-    private static final Iri temperature = PREFIX_OM.iri("Temperature");  
-    private static final Iri pressure = PREFIX_OM.iri("Pressure");
-    private static final Iri irradiance = PREFIX_OM.iri("Irradiance");
+    private static final Iri uvIndex = PREFIX_ONTOEMS.iri("UVIndex"); //degree celsius
+    private static final Iri windDirection = PREFIX_ONTOEMS.iri("WindDirection"); //degree
+    private static final Iri windSpeed = PREFIX_ONTOEMS.iri("WindSpeed"); //metre per second
+    private static final Iri windGust = PREFIX_ONTOEMS.iri("WindGust"); //metre per second
+    private static final Iri dewPoint = PREFIX_ONTOEMS.iri("DewPoint"); //degree celsius
+    private static final Iri windChill = PREFIX_ONTOEMS.iri("WindChill"); //degree celsius
+    private static final Iri heatIndex = PREFIX_ONTOEMS.iri("HeatIndex"); //degree celsius
+    private static final Iri precipitationRate = PREFIX_ONTOEMS.iri("PrecipitationRate"); //mm per hour
+    private static final Iri rainfall = PREFIX_ONTOEMS.iri("Rainfall"); // mm
+    private static final Iri relativeHumidity = PREFIX_OM.iri("RelativeHumidity"); //percent
+    private static final Iri temperature = PREFIX_OM.iri("Temperature"); //degree celsius
+    private static final Iri pressure = PREFIX_OM.iri("Pressure"); // hectopascal
+    private static final Iri irradiance = PREFIX_OM.iri("Irradiance"); //wattPerSquareMetre
     private static final Iri maximum = PREFIX_OM.iri("maximum");
     private static final Iri minimum = PREFIX_OM.iri("minimum");
     private static final Iri average = PREFIX_OM.iri("average");
     private static final Iri sum = PREFIX_OM.iri("sum");
     private static final Iri measure = PREFIX_OM.iri("Measure");
     private static final Iri function = PREFIX_OM.iri("Function");
-    private static final Iri point = PREFIX_SF.iri("Point");
+    private static final Iri unit = PREFIX_OM.iri("Unit");
+    private static final Iri singularUnit = PREFIX_OM.iri("SingularUnit");
+    private static final Iri unitDivision = PREFIX_OM.iri("UnitDivision");
+    private static final Iri prefixedUnit = PREFIX_OM.iri("PrefixedUnit");
 
     //data type
     private static final Iri wktLiteral = PREFIX_GEO.iri("wktLiteral");
+
+    //units instances
+    private static final Iri percent  = PREFIX_OM.iri("percent"); //unit and singular unit
+    private static final Iri degreeCelsius = PREFIX_OM.iri("degreeCelsius"); //unit and singular unit
+    private static final Iri degree = PREFIX_OM.iri("degree"); //unit and singular unit
+    private static final Iri metrePerSecond = PREFIX_OM.iri("meterPerSecond-Time"); //unit division
+    private static final Iri millimetrePerHour = PREFIX_OM.iri("millimetrePerHour"); //unit division
+    private static final Iri millimetre = PREFIX_OM.iri("millimetre"); //prefixed unit
+    private static final Iri hectoPascal = PREFIX_OM.iri("hectopascal"); //prefixed unit
+    private static final Iri wattPerSquareMetre = PREFIX_OM.iri("wattPerSquareMetre"); //unit division
+
 
     //client to interact with remote store
     RemoteStoreClient kbClient;
@@ -212,35 +229,145 @@ public class SparqlHandler {
     private void instantiateMeasureIfNotExist(String IRI, String jsonKey) {
         //this is based on the variables retrievable via the API
         String measureLabel = null;
+        Iri unitInstance = null;
+        Iri unitType = null;
+        String unitSymbol = null;
+        String unitLabel = null;
         if (jsonKey.contains("solarRadiation")) {
             measureLabel = "Irradiance";
+            unitInstance = wattPerSquareMetre;
+            unitType = unitDivision;
+            unitSymbol = "W/m2";
+            unitLabel = "watt per square metre";
         } else if (jsonKey.contains("uv")) {
             measureLabel = "UV Index";
         } else if (jsonKey.contains("winddir")) {
             measureLabel = "Wind Direction";
+            unitInstance = degree;
+            unitType = singularUnit;
+            unitSymbol = "°";
+            unitLabel = "degree";
         } else if (jsonKey.contains("humidity")) {
             measureLabel = "Relative Humidity";
+            unitInstance = percent;
+            unitType = singularUnit;
+            unitSymbol = "%";
+            unitLabel = "percent";
         } else if (jsonKey.contains("temp")) {
             measureLabel = "Temperature";
+            unitInstance = degreeCelsius;
+            unitType = singularUnit;
+            unitSymbol = "°C";
+            unitLabel = "degree Celsius";
         } else if (jsonKey.contains("windspeed")) {
             measureLabel = "Wind Speed";
+            unitInstance = metrePerSecond;
+            unitType = unitDivision;
+            unitSymbol = "m/s";
+            unitLabel = "metre per second";
         } else if (jsonKey.contains("windgust")) {
             measureLabel = "Wind Gust";
+            unitInstance = metrePerSecond;
+            unitType = unitDivision;
+            unitSymbol = "m/s";
+            unitLabel = "metre per second";
         } else if (jsonKey.contains("dewpt")) {
             measureLabel = "Dew Point";
+            unitInstance = degreeCelsius;
+            unitType = singularUnit;
+            unitSymbol = "°C";
+            unitLabel = "degree Celsius";
         } else if (jsonKey.contains("windchill")) {
             measureLabel = "Wind Chill";
+            unitInstance = degreeCelsius;
+            unitType = singularUnit;
+            unitSymbol = "°C";
+            unitLabel = "degree Celsius";
         } else if (jsonKey.contains("heatindex")) {
             measureLabel = "Heat Index";
+            unitInstance = degreeCelsius;
+            unitType = singularUnit;
+            unitSymbol = "°C";
+            unitLabel = "degree Celsius";
         } else if (jsonKey.contains("pressure") && !jsonKey.contains("trend")) {
             measureLabel = "Pressure";
+            unitInstance = hectoPascal;
+            unitType = prefixedUnit;
+            unitSymbol = "hPa";
+            unitLabel = "hectopascal";
         } else if (jsonKey.contains("precipRate")) {
             measureLabel = "Precipitation Rate";
+            unitInstance = millimetrePerHour;
+            unitType = unitDivision;
+            unitSymbol = "mm/h";
+            unitLabel = "millimetre per hour";
         } else if (jsonKey.contains("precip") && !jsonKey.contains("Rate")) {
             measureLabel = "Rainfall";
+            unitInstance = millimetre;
+            unitType = prefixedUnit;
+            unitSymbol = "mm";
+            unitLabel = "millimetre";
         }
 
-        if (measureLabel != null) {
+        if (measureLabel != null && unitInstance != null && unitType != singularUnit) {
+            SelectQuery query = Queries.SELECT();
+            Variable var = SparqlBuilder.var("var");
+            //create triple pattern:
+            // <IRI> rdf:type ?var
+            TriplePattern queryPattern = iri(IRI).isA(var);
+            query.prefix(PREFIX_OM).select(var).where(queryPattern);
+            kbClient.setQuery(query.getQueryString());
+            try {
+                JSONArray queryResult = kbClient.executeQuery();
+                // if the query result is not empty and the rdf:type is equivalent to om:Measure
+                if (!queryResult.isEmpty() && queryResult.getJSONObject(0).getString("var") == measure.toString()){
+                LOGGER.info(IRI + " already has a rdf:type om:Measure!");
+                } else {
+                    //create triple pattern:
+                    // <IRI> rdf:type om:Measure .
+                    // <unitInstance> rdf:type <unitType> ;
+                    //                rdfs:label "unitLabel" ;
+                    //                om:symbol "unitSymbol" .
+                    queryPattern = iri(IRI).isA(measure).andHas(label, measureLabel).andHas(hasUnit, unitInstance);
+                    TriplePattern queryPattern2 = unitInstance.isA(unitType).andHas(label, unitLabel).andHas(symbol, unitSymbol);
+                    InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern, queryPattern2).prefix(PREFIX_OM, PREFIX_RDFS);
+                    kbClient.executeUpdate(insertQuery.getQueryString());
+                    LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
+                }
+            } catch (Exception e) {
+                throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString());
+            }
+        } else if  (measureLabel != null && unitInstance != null && unitType == singularUnit) {
+            SelectQuery query = Queries.SELECT();
+            Variable var = SparqlBuilder.var("var");
+            //create triple pattern:
+            // <IRI> rdf:type ?var
+            TriplePattern queryPattern = iri(IRI).isA(var);
+            query.prefix(PREFIX_OM).select(var).where(queryPattern);
+            kbClient.setQuery(query.getQueryString());
+            try {
+                JSONArray queryResult = kbClient.executeQuery();
+                // if the query result is not empty and the rdf:type is equivalent to om:Measure
+                if (!queryResult.isEmpty() && queryResult.getJSONObject(0).getString("var") == measure.toString()){
+                LOGGER.info(IRI + " already has a rdf:type om:Measure!");
+                } else {
+                    //create triple pattern:
+                    // <IRI> rdf:type om:Measure .
+                    // <IRI> om:hasUnit <unitInstance> .
+                    // <unitInstance> rdf:type <unitType> ;
+                    //                rdf:type om:unit ;
+                    //                rdfs:label "unitLabel" ;
+                    //                om:symbol "unitSymbol" .
+                    queryPattern = iri(IRI).isA(measure).andHas(label, measureLabel).andHas(hasUnit, unitInstance);
+                    TriplePattern queryPattern2 = unitInstance.isA(unitType).andIsA(unit).andHas(label, unitLabel).andHas(symbol, unitSymbol);
+                    InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern, queryPattern2).prefix(PREFIX_OM, PREFIX_RDFS);
+                    kbClient.executeUpdate(insertQuery.getQueryString());
+                    LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
+                }
+            } catch (Exception e) {
+                throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString());
+            }
+        } else if  (measureLabel != null && unitInstance == null) {
             SelectQuery query = Queries.SELECT();
             Variable var = SparqlBuilder.var("var");
             //create triple pattern:

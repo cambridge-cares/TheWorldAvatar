@@ -196,6 +196,23 @@ public class SparqlHandlerIntegrationTest {
         queryResult = kbClient.executeQuery();
         Assert.assertEquals(list[i], queryResult.getJSONObject(0).getString("var"));
         }
+
+        //check for correct units
+        String[] unitList = {"http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius",
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius",
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius",
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius",
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/millimetrePerHour",
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/millimetre"};
+
+        for (int i = 0; i < IRIs.size(); i++) {
+        queryPattern = iri(IRIs.get(i)).has(iri("http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"), var);
+        query = Queries.SELECT();
+        query.select(var).where(queryPattern);
+        kbClient.setQuery(query.getQueryString());
+        queryResult = kbClient.executeQuery();
+        Assert.assertEquals(unitList[i], queryResult.getJSONObject(0).getString("var"));
+        }
     }
 
     @Test
