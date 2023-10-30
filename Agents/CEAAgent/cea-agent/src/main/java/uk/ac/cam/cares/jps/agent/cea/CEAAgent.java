@@ -413,8 +413,8 @@ public class CEAAgent extends JPSAgent {
         defaultCeaLabel = config.getString("cea.label");
         defaultWeatherLabel = config.getString("weather.label");
         openmeteoagentUrl = config.getString("url.openmeteoagent");
-        defaultTerrainDb = config.getString("postgis.database");
-        defaultTerrainTable = config.getString("postgis.table");
+        defaultTerrainDb = config.getString("terrain.database");
+        defaultTerrainTable = config.getString("terrain.table");
         tsDb = config.getString("cea.database");
     }
 
