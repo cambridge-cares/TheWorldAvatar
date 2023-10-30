@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
-import com.cmclinnovations.stack.clients.utils.AbstractTempPath;
 import com.cmclinnovations.stack.clients.utils.TempDir;
 import com.github.dockerjava.api.command.CopyArchiveToContainerCmd;
 import com.github.dockerjava.api.command.CreateConfigCmd;
@@ -307,7 +306,11 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         createComplexCommand(containerId, "mkdir", "-p", directoryPath).withUser(user).exec();
     }
 
+<<<<<<< HEAD
+    private final class RemoteTempDir extends TempDir {
+=======
     private final class RemoteTempDir extends AbstractTempPath implements TempDir {
+>>>>>>> main
 
         private final String containerId;
 

@@ -3,15 +3,6 @@ package com.cmclinnovations.stack.clients.core;
 import java.nio.file.Path;
 import java.util.Map;
 
-import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
-import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
-
-import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-
 public final class StackClient {
 
     public static final String STACK_NAME_KEY = "STACK_NAME";
@@ -76,6 +67,8 @@ public final class StackClient {
 
     public static Path getAbsDataPath() {
         return getStackBaseDir().resolve("inputs").resolve("data");
+<<<<<<< HEAD
+=======
     }
 
     /**
@@ -128,6 +121,7 @@ public final class StackClient {
 
         return new TimeSeriesClient<>(remoteStoreClient, timeClass,
                 postgisConfig.getJdbcURL(database), postgisConfig.getUsername(), postgisConfig.getPassword());
+>>>>>>> main
     }
 
 }

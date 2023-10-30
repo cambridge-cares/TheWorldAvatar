@@ -9,6 +9,9 @@
     -->
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
+    <modules>
+        <module>DataIntegration</module>
+    </modules>
 
     <!-- Copy these entries into the <parent> node in your project's pom.xml file -->
     <groupId>uk.ac.cam.cares.jps</groupId>
