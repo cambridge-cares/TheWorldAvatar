@@ -13,7 +13,7 @@ from locate_then_ask.locate import Locator
 
 ROOTDIR = Path(os.getcwd())
 SEED_SPECIES_NUM = 2000
-SEED_SPECIES_FILEPATH = "seed_species_{num}.txt".format(num=SEED_SPECIES_NUM)
+SEED_SPECIES_FILEPATH = "data/seed_species_{num}.txt".format(num=SEED_SPECIES_NUM)
 
 
 class DatasetGenerator:

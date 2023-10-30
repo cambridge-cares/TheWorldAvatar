@@ -72,14 +72,16 @@ class Locator:
             entity_name = random.choice(
                 self.get_identifiers(entity_iri)[identifier_name]
             )
-            entity_names.append("[{name}]".format(name=entity_name))
+            entity_names.append(entity_name)
 
         query_graph = nx.DiGraph()
         query_graph.add_node(
             "Species", iri=entity_iris, label=entity_names, template_node=True
         )
 
-        verbalization = " and ".join(entity_names)
+        verbalization = " and ".join(
+            ["<entity>{entity}</entity>".format(entity=name) for name in entity_names]
+        )
         return query_graph, verbalization
 
     def locate_concept_name(self, entity_iri: str):
