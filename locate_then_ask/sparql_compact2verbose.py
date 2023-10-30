@@ -32,7 +32,7 @@ class SparqlCompact2VerboseConverter:
 
         template = """
     VALUES ?SpeciesIdentifierValue {{ {literals} }}
-    ?Species rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier [ rdf:type/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ] ."""
+    ?Species rdf:type os:Species ; ?hasIdentifier [ rdf:type/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ] ."""
         return sparql_compact, template.format(literals=literals)
     
     def extract_species_predicate_obj(self, sparql_compact: str):
