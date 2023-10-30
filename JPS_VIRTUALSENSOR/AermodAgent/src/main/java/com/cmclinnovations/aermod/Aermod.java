@@ -746,7 +746,9 @@ public class Aermod {
             featureProperties.put("derivation", derivationIri);
             featureProperties.put("pollutant", Pollutant.getPollutantIri(pollutantType));
             featureProperties.put("time", simulationTime);
-            featureProperties.put("iri", QueryClient.PREFIX_DISP + UUID.randomUUID());
+            String uuid = UUID.randomUUID().toString();
+            featureProperties.put("iri", QueryClient.PREFIX_DISP + uuid); // for geoserver
+            featureProperties.put("uuid", uuid); // for ontop to construct IRI
             featureProperties.put("z", zValue);
         }
 
