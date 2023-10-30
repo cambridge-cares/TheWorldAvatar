@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
@@ -8,7 +10,7 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.40.1-987-SNAPSHOT</version>
+    <version>1.40.1</version>
 
     <!-- Project Properties -->
     <properties>
@@ -57,7 +59,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <!-- Adds the copied dependencies to the classpath so the .jar can find them at runtime. -->
+                            <!-- Adds the copied dependencies to the classpath so the .jar can find
+                            them at runtime. -->
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>./lib/</classpathPrefix>
                             <classpathLayoutType>simple</classpathLayoutType>
@@ -376,7 +379,8 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Used for integration testing to spin up temporary Docker containers with required applications (e.g. postgres, Blazegraph) -->
+        <!-- Used for integration testing to spin up temporary Docker containers with required
+        applications (e.g. postgres, Blazegraph) -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
@@ -453,7 +457,8 @@
             <version>2.5.1</version>
         </dependency>
 
-        <!-- Required to provide classes including 'org.glassfish.jersey.internal.RuntimeDelegateImpl' when using JDKs newer that version 8 -->
+        <!-- Required to provide classes including
+        'org.glassfish.jersey.internal.RuntimeDelegateImpl' when using JDKs newer that version 8 -->
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-common</artifactId>
@@ -473,7 +478,7 @@
                 <version>5.8.0</version>
             </dependency>
 
-    </dependencies>
+        </dependencies>
 
     </dependencyManagement>
 </project>
