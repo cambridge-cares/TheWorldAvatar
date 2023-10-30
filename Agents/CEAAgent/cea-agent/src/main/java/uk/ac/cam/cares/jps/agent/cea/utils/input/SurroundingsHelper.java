@@ -82,7 +82,7 @@ public class SurroundingsHelper {
             return surroundings;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("No surroundings retrieved, agent will run CEA with CEA's default surroundings retrieved from OpenStreetMap.");
             return null;
         }
     }

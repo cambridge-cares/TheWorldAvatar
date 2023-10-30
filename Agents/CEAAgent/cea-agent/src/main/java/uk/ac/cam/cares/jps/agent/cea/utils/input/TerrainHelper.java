@@ -114,6 +114,7 @@ public class TerrainHelper {
                 }
         }
         catch (Exception e) {
+            System.out.println("No terrain data retrieved, agent will run CEA with CEA's default terrain.");
             return null;
         }
     }

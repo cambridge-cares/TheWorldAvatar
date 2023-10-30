@@ -178,6 +178,7 @@ public class WeatherHelper extends JPSAgent {
 
             return true;
         } catch (Exception e) {
+            System.out.println("No weather data retrieved, agent will run CEA with CEA's default weather.");
             return false;
         }
     }

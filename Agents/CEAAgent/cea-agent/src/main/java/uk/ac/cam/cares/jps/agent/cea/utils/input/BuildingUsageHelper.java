@@ -45,6 +45,7 @@ public class BuildingUsageHelper
             queryResultArray = remoteStoreClient.executeQuery(query.toString());
         }
         catch (Exception e) {
+            System.out.println("No building usage retrieved, agent will run CEA with CEA's default building usage.");
             queryResultArray = new JSONArray();
         }
 
