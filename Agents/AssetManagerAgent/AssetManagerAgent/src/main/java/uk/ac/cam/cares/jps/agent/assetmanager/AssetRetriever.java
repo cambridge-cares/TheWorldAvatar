@@ -227,7 +227,6 @@ public class AssetRetriever {
         //get device type
         query.where(deviceIRI.isA(deviceTypeIRI));
         //get location
-        //TODO FIX HERE
         query.where(
                 GraphPatterns.optional(roomIRI.has(containsElement, deviceIRI),
                 roomIRI.isA(roomTypeIRI),
@@ -252,7 +251,7 @@ public class AssetRetriever {
         );
         query.where(GraphPatterns.optional(cabinetIRI.isA(cabinetTypeIRI),
             deviceIRI.has(isStoredIn, cabinetIRI),
-            cabinetIRI.has(hasFurnitureIdentifier, storageIDLiteral)
+            GraphPatterns.optional(cabinetIRI.has(hasFurnitureIdentifier, storageIDLiteral))
         ));
 
         JSONArray result = storeClientOffice.executeQuery(query.getQueryString());
