@@ -130,10 +130,13 @@ public class AermodAgent extends DerivationAgent {
         allSources.addAll(staticPointSources);
         allSources.addAll(ships);
 
-        List<Building> buildings; // that are near point sources
+        List<Building> buildings = new ArrayList<>(); // that are near point sources
         if (citiesNamespace != null) {
             try {
-                buildings = bd.getBuildings(allSources);
+                // too many buildings in JI to process
+                if (!citiesNamespace.contentEquals("jriEPSG24500")) {
+                    buildings.addAll(bd.getBuildings(allSources));
+                }
             } catch (ParseException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException("Could not set building properties.");
