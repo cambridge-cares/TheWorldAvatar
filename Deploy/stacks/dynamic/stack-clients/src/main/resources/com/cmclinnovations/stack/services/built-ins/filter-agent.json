@@ -4,7 +4,7 @@
         "Name": "filter-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/filter-agent:1-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/filter-agent:1",
                 "Env": [
                     "DEFAULT_NAMESPACE=kb",
                     "DEFAULT_QUERY=query"
