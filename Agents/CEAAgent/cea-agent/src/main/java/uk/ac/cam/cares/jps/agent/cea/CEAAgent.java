@@ -4,6 +4,7 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAMetaData;
 import uk.ac.cam.cares.jps.agent.cea.utils.AnnualValueHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.FileReader;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.*;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -24,6 +25,9 @@ import org.json.JSONObject;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.*;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -59,7 +63,9 @@ public class CEAAgent extends JPSAgent {
     public static final String CEA_OUTPUTS = "ceaOutputs";
     public final int NUM_CEA_THREADS = 1;
     private final ThreadPoolExecutor CEAExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_CEA_THREADS);
-    
+
+    private static final String PROPERTIES_PATH = "/resources/CEAAgentConfig.properties";
+
     private OntologyURIHelper ontologyUriHelper;
     private GeometryQueryHelper geometryQueryHelper;
 
@@ -408,14 +414,25 @@ public class CEAAgent extends JPSAgent {
      * Gets variables from config
      */
     private void readConfig() {
-        ResourceBundle config = ResourceBundle.getBundle("CEAAgentConfig");
-        stackAccessAgentBase = config.getString("access.url");
-        defaultCeaLabel = config.getString("cea.label");
-        defaultWeatherLabel = config.getString("weather.label");
-        openmeteoagentUrl = config.getString("url.openmeteoagent");
-        defaultTerrainDb = config.getString("terrain.database");
-        defaultTerrainTable = config.getString("terrain.table");
-        tsDb = config.getString("cea.database");
+        try (InputStream input = FileReader.getStream(PROPERTIES_PATH)) {
+            Properties config = new Properties();
+            config.load(input);
+            stackAccessAgentBase = config.getProperty("access.url");
+            defaultCeaLabel = config.getProperty("cea.label");
+            defaultWeatherLabel = config.getProperty("weather.label");
+            openmeteoagentUrl = config.getProperty("url.openmeteoagent");
+            defaultTerrainDb = config.getProperty("terrain.database");
+            defaultTerrainTable = config.getProperty("terrain.table");
+            tsDb = config.getProperty("cea.database");
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException("config.properties file not found");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
     }
 
     /**

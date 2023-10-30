@@ -4,6 +4,13 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "cea-agent:3.0.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/CEAAgent/cea-agent/src/main/resources",
+                        "Target": "/resources"
+                    }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"

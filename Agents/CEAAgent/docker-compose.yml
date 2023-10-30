@@ -9,3 +9,5 @@ services:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     ports:
       - "58085:8084"
+    volumes:
+        - ./cea-agent/src/main/resources:/usr/local/tomcat/data

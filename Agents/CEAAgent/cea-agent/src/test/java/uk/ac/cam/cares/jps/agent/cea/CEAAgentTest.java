@@ -16,8 +16,8 @@ import uk.ac.cam.cares.jps.agent.cea.utils.AnnualValueHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
+import uk.ac.cam.cares.jps.agent.cea.utils.FileReader;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
-import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.tasks.RunCEATask;
 import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
@@ -26,7 +26,8 @@ import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.*;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
-import java.lang.reflect.Method;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -35,22 +36,30 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class CEAAgentTest {
     @Test
     public void testCEAAgent() {
-        try {
-            try (MockedStatic<StackClient> stackClientMock = mockStatic(StackClient.class)) {
-                stackClientMock.when(() -> StackClient.getStackName())
-                        .thenReturn("");
-                try (MockedConstruction<EndpointConfig> endpointMock = mockConstruction(EndpointConfig.class,
-                        (mock, context) -> {
-                            doReturn("").when(mock).getDbUrl(anyString());
-                            doReturn("").when(mock).getDbUser();
-                            doReturn("").when(mock).getDbPassword();
-                        })) {
-                    CEAAgent agent = new CEAAgent();
-                    assertNotNull(agent);
+        String content = "access.url=test\ncea.label=test\nweather.label=test\nurl.openmeteoagent=test\n" +
+                "terrain.database=test\nterrain.table=test\ncea.database=test" ;
+
+        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
+
+        try (MockedStatic<FileReader> fileReaderMock = mockStatic(FileReader.class)) {
+            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
+            try {
+                try (MockedStatic<StackClient> stackClientMock = mockStatic(StackClient.class)) {
+                    stackClientMock.when(() -> StackClient.getStackName())
+                            .thenReturn("");
+                    try (MockedConstruction<EndpointConfig> endpointMock = mockConstruction(EndpointConfig.class,
+                            (mock, context) -> {
+                                doReturn("").when(mock).getDbUrl(anyString());
+                                doReturn("").when(mock).getDbUser();
+                                doReturn("").when(mock).getDbPassword();
+                            })) {
+                        CEAAgent agent = new CEAAgent();
+                        assertNotNull(agent);
+                    }
                 }
+            } catch (Exception e) {
+                fail();
             }
-        } catch (Exception e) {
-            fail();
         }
     }
 
@@ -117,152 +126,164 @@ public class CEAAgentTest {
 
         JSONObject returnParams;
 
-        try (MockedStatic<StackClient> stackClientMock = mockStatic(StackClient.class)) {
-            stackClientMock.when(() -> StackClient.getStackName())
-                    .thenReturn("");
-            try (MockedConstruction<EndpointConfig> endpointMock = mockConstruction(EndpointConfig.class,
-                    (mock, context) -> {
-                        doReturn("").when(mock).getDbUrl(anyString());
-                        doReturn("").when(mock).getDbUser();
-                        doReturn("").when(mock).getDbPassword();
-                        doReturn("").when(mock).getOntopUrl();
-                    })) {
-                try (MockedConstruction<DataManager> dataManagerMock = mockConstruction(DataManager.class,
-                        (mock, context) -> {
-                            doReturn(true).when(mock).checkBuildingInitialised(anyString(), anyString());
-                            doReturn(true).when(mock).checkDataInitialised(anyString(), any(), any(), anyString());
-                        })) {
-                    try (MockedConstruction<TimeSeriesHelper> mockTs = mockConstruction(TimeSeriesHelper.class)) {
-                        try (MockedConstruction<AnnualValueHelper> mockAnnualHelper = mockConstruction(AnnualValueHelper.class)) {
-                            // test update endpoint
-                            CEAAgent agent = new CEAAgent();
-                            returnParams = agent.processRequestParameters(requestParams);
+        String content = "access.url=test\ncea.label=test\nweather.label=test\nurl.openmeteoagent=test\n" +
+                "terrain.database=test\nterrain.table=test\ncea.database=test";
 
-                            verify(mockTs.constructed().get(0), times(1)).addDataToTimeSeries(anyList(), anyList(), any());
-                            verify(mockAnnualHelper.constructed().get(0), times(1)).instantiateAnnual(anyList(), any(), any());
-                            assertEquals(requestParams, returnParams);
+        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
+        InputStream mockInputStream1 = new ByteArrayInputStream(content.getBytes());
+        InputStream mockInputStream2 = new ByteArrayInputStream(content.getBytes());
+
+
+        try (MockedStatic<FileReader> fileReaderMock = mockStatic(FileReader.class)) {
+            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream)
+                    .thenReturn(mockInputStream1).thenReturn(mockInputStream2);
+            try (MockedStatic<StackClient> stackClientMock = mockStatic(StackClient.class)) {
+                stackClientMock.when(() -> StackClient.getStackName())
+                        .thenReturn("");
+                try (MockedConstruction<EndpointConfig> endpointMock = mockConstruction(EndpointConfig.class,
+                        (mock, context) -> {
+                            doReturn("").when(mock).getDbUrl(anyString());
+                            doReturn("").when(mock).getDbUser();
+                            doReturn("").when(mock).getDbPassword();
+                            doReturn("").when(mock).getOntopUrl();
+                        })) {
+                    try (MockedConstruction<DataManager> dataManagerMock = mockConstruction(DataManager.class,
+                            (mock, context) -> {
+                                doReturn(true).when(mock).checkBuildingInitialised(anyString(), anyString());
+                                doReturn(true).when(mock).checkDataInitialised(anyString(), any(), any(), anyString());
+                            })) {
+                        try (MockedConstruction<TimeSeriesHelper> mockTs = mockConstruction(TimeSeriesHelper.class)) {
+                            try (MockedConstruction<AnnualValueHelper> mockAnnualHelper = mockConstruction(AnnualValueHelper.class)) {
+                                // test update endpoint
+                                CEAAgent agent = new CEAAgent();
+                                returnParams = agent.processRequestParameters(requestParams);
+
+                                verify(mockTs.constructed().get(0), times(1)).addDataToTimeSeries(anyList(), anyList(), any());
+                                verify(mockAnnualHelper.constructed().get(0), times(1)).instantiateAnnual(anyList(), any(), any());
+                                assertEquals(requestParams, returnParams);
+                            }
                         }
                     }
-                }
-                List<String> endpoints = new ArrayList<>();
-                endpoints.add("");
-                endpoints.add("");
-                try (MockedStatic<RouteHelper> routeHelperMock = mockStatic(RouteHelper.class)) {
-                    routeHelperMock.when(() -> RouteHelper.checkEndpoint(anyString())).thenReturn(true);
-                    routeHelperMock.when(() -> RouteHelper.getRouteEndpoints(anyString())).thenReturn(endpoints);
-                    CEAGeometryData testGeometry = new CEAGeometryData(new ArrayList<>(), "", "");
-                    try (MockedConstruction<GeometryQueryHelper> geometryQueryHelperMock = mockConstruction(GeometryQueryHelper.class,
-                            (mock, context) -> {
-                                doReturn(testGeometry).when(mock).getBuildingGeometry(anyString(), anyString(), anyBoolean());
-                            })) {
-                        Map<String, Double> usages = new HashMap<>();
-                        try (MockedConstruction<BuildingUsageHelper> usageHelpermock = mockConstruction(BuildingUsageHelper.class,
+                    List<String> endpoints = new ArrayList<>();
+                    endpoints.add("");
+                    endpoints.add("");
+                    try (MockedStatic<RouteHelper> routeHelperMock = mockStatic(RouteHelper.class)) {
+                        routeHelperMock.when(() -> RouteHelper.checkEndpoint(anyString())).thenReturn(true);
+                        routeHelperMock.when(() -> RouteHelper.getRouteEndpoints(anyString())).thenReturn(endpoints);
+                        CEAGeometryData testGeometry = new CEAGeometryData(new ArrayList<>(), "", "");
+                        try (MockedConstruction<GeometryQueryHelper> geometryQueryHelperMock = mockConstruction(GeometryQueryHelper.class,
                                 (mock, context) -> {
-                                    doReturn(usages).when(mock).getBuildingUsages(anyString(), anyString());
+                                    doReturn(testGeometry).when(mock).getBuildingGeometry(anyString(), anyString(), anyBoolean());
                                 })) {
-                            try (MockedConstruction<SurroundingsHelper> surroundingsHelper = mockConstruction(SurroundingsHelper.class,
+                            Map<String, Double> usages = new HashMap<>();
+                            try (MockedConstruction<BuildingUsageHelper> usageHelpermock = mockConstruction(BuildingUsageHelper.class,
                                     (mock, context) -> {
-                                        doReturn(new ArrayList<CEAGeometryData>()).when(mock).getSurroundings(any(), any(), anyString());
+                                        doReturn(usages).when(mock).getBuildingUsages(anyString(), anyString());
                                     })) {
-                                try (MockedConstruction<WeatherHelper> weatherHelperMock = mockConstruction(WeatherHelper.class,
+                                try (MockedConstruction<SurroundingsHelper> surroundingsHelper = mockConstruction(SurroundingsHelper.class,
                                         (mock, context) -> {
-                                            doReturn(false).when(mock).getWeather(any(), anyList(), anyString(), anyString(), anyList());
+                                            doReturn(new ArrayList<CEAGeometryData>()).when(mock).getSurroundings(any(), any(), anyString());
                                         })) {
-                                    byte[] terrain = new byte[1];
-                                    try (MockedConstruction<TerrainHelper> terrainHelperMock = mockConstruction(TerrainHelper.class,
+                                    try (MockedConstruction<WeatherHelper> weatherHelperMock = mockConstruction(WeatherHelper.class,
                                             (mock, context) -> {
-                                                doReturn(terrain).when(mock).getTerrain(anyString(), anyString(), anyList(), anyString(), any());
+                                                doReturn(false).when(mock).getWeather(any(), anyList(), anyString(), anyString(), anyList());
                                             })) {
-                                        try (MockedConstruction<RunCEATask> mockTask = mockConstruction(RunCEATask.class)) {
-                                            // test run endpoint
-                                            requestParams.remove(CEAAgent.KEY_REQ_URL);
-                                            requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/run");
+                                        byte[] terrain = new byte[1];
+                                        try (MockedConstruction<TerrainHelper> terrainHelperMock = mockConstruction(TerrainHelper.class,
+                                                (mock, context) -> {
+                                                    doReturn(terrain).when(mock).getTerrain(anyString(), anyString(), anyList(), anyString(), any());
+                                                })) {
+                                            try (MockedConstruction<RunCEATask> mockTask = mockConstruction(RunCEATask.class)) {
+                                                // test run endpoint
+                                                requestParams.remove(CEAAgent.KEY_REQ_URL);
+                                                requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/run");
 
-                                            CEAAgent agent = new CEAAgent();
+                                                CEAAgent agent = new CEAAgent();
 
-                                            ThreadPoolExecutor executor = mock(ThreadPoolExecutor.class);
-                                            Field CEAExecutor = agent.getClass().getDeclaredField("CEAExecutor");
-                                            CEAExecutor.setAccessible(true);
-                                            CEAExecutor.set(agent, executor);
+                                                ThreadPoolExecutor executor = mock(ThreadPoolExecutor.class);
+                                                Field CEAExecutor = agent.getClass().getDeclaredField("CEAExecutor");
+                                                CEAExecutor.setAccessible(true);
+                                                CEAExecutor.set(agent, executor);
 
-                                            returnParams = agent.processRequestParameters(requestParams);
+                                                returnParams = agent.processRequestParameters(requestParams);
 
-                                            verify(geometryQueryHelperMock.constructed().get(0), times(1)).getBuildingGeometry(anyString(), anyString(), anyBoolean());
-                                            verify(usageHelpermock.constructed().get(0), times(1)).getBuildingUsages(anyString(), anyString());
-                                            verify(surroundingsHelper.constructed().get(0), times(1)).getSurroundings(any(), any(), anyString());
-                                            verify(weatherHelperMock.constructed().get(0), times(1)).getWeather(any(), anyList(), anyString(), anyString(), anyList());
-                                            verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(anyString(), anyString(), anyList(), anyString(), any());
-                                            verify(executor, times(1)).execute(mockTask.constructed().get(0));
-                                            assertEquals(requestParams, returnParams);
+                                                verify(geometryQueryHelperMock.constructed().get(0), times(1)).getBuildingGeometry(anyString(), anyString(), anyBoolean());
+                                                verify(usageHelpermock.constructed().get(0), times(1)).getBuildingUsages(anyString(), anyString());
+                                                verify(surroundingsHelper.constructed().get(0), times(1)).getSurroundings(any(), any(), anyString());
+                                                verify(weatherHelperMock.constructed().get(0), times(1)).getWeather(any(), anyList(), anyString(), anyString(), anyList());
+                                                verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(anyString(), anyString(), anyList(), anyString(), any());
+                                                verify(executor, times(1)).execute(mockTask.constructed().get(0));
+                                                assertEquals(requestParams, returnParams);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    // test query endpoint
-                    requestParams.remove(CEAAgent.KEY_REQ_URL);
-                    requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/query");
+                        // test query endpoint
+                        requestParams.remove(CEAAgent.KEY_REQ_URL);
+                        requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/query");
 
-                    // test time series data
-                    String testUnit = "testUnit";
-                    String testScalar = "testScalar";
-                    ArrayList<String> testList = mock(ArrayList.class);
-                    when(testList.get(0)).thenReturn(testScalar);
-                    when(testList.get(1)).thenReturn(testUnit);
-                    String testReturnValue = "testAnnual";
-                    TimeSeries<OffsetDateTime> timeSeries = mock(TimeSeries.class);
+                        // test time series data
+                        String testUnit = "testUnit";
+                        String testScalar = "testScalar";
+                        ArrayList<String> testList = mock(ArrayList.class);
+                        when(testList.get(0)).thenReturn(testScalar);
+                        when(testList.get(1)).thenReturn(testUnit);
+                        String testReturnValue = "testAnnual";
+                        TimeSeries<OffsetDateTime> timeSeries = mock(TimeSeries.class);
 
-                    try(MockedConstruction<DataManager> dataManagerMock = mockConstruction(DataManager.class,
-                            (mock, context) -> {
-                                doReturn(true).when(mock).checkBuildingInitialised(anyString(), anyString());
-                            })) {
-                        try (MockedConstruction<DataRetriever> dataRetrieverMock = mockConstruction(DataRetriever.class,
+                        try (MockedConstruction<DataManager> dataManagerMock = mockConstruction(DataManager.class,
                                 (mock, context) -> {
-                                    doReturn(testList).when(mock).getDataIRI(anyString(), anyString(), anyString());
-                                    doReturn(testUnit).when(mock).getUnit(anyString());
-                                    doReturn(testScalar).when(mock).getNumericalValue(anyString(), anyString());
+                                    doReturn(true).when(mock).checkBuildingInitialised(anyString(), anyString());
                                 })) {
-                            try (MockedStatic<DataParser> dataParserMock = mockStatic(DataParser.class)) {
-                                dataParserMock.when(() -> DataParser.calculateAnnual(any(), anyString())).thenReturn(testReturnValue);
-                                try (MockedStatic<TimeSeriesHelper> timeSeriesHelperMock = mockStatic(TimeSeriesHelper.class)) {
-                                    timeSeriesHelperMock.when(() -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any())).thenReturn(timeSeries);
+                            try (MockedConstruction<DataRetriever> dataRetrieverMock = mockConstruction(DataRetriever.class,
+                                    (mock, context) -> {
+                                        doReturn(testList).when(mock).getDataIRI(anyString(), anyString(), anyString());
+                                        doReturn(testUnit).when(mock).getUnit(anyString());
+                                        doReturn(testScalar).when(mock).getNumericalValue(anyString(), anyString());
+                                    })) {
+                                try (MockedStatic<DataParser> dataParserMock = mockStatic(DataParser.class)) {
+                                    dataParserMock.when(() -> DataParser.calculateAnnual(any(), anyString())).thenReturn(testReturnValue);
+                                    try (MockedStatic<TimeSeriesHelper> timeSeriesHelperMock = mockStatic(TimeSeriesHelper.class)) {
+                                        timeSeriesHelperMock.when(() -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any())).thenReturn(timeSeries);
 
-                                    CEAAgent agent = new CEAAgent();
+                                        CEAAgent agent = new CEAAgent();
 
-                                    returnParams = agent.processRequestParameters(requestParams);
-                                    String result = returnParams.get(CEAAgent.CEA_OUTPUTS).toString();
+                                        returnParams = agent.processRequestParameters(requestParams);
+                                        String result = returnParams.get(CEAAgent.CEA_OUTPUTS).toString();
 
-                                    for (String scalar : CEAConstants.SCALARS) {
-                                        String expected = "\"" + scalar + "\"" + ":\"testScalar testUnit\"";
-                                        assertTrue(result.contains(expected));
-                                    }
-
-                                    for (String ts : CEAConstants.TIME_SERIES) {
-                                        String expected;
-                                        if (ts.contains("Consumption")) {
-                                            expected = "\"Annual " + ts + "\"" + ":\"testAnnual testUnit\"";
-                                        } else {
-                                            expected = "\"Annual ";
-                                            if (ts.contains("ESupply")) {
-                                                // PVT annual electricity supply
-                                                expected = expected + ts.split("ESupply")[0] + " Electricity Supply";
-                                            } else if (ts.contains("QSupply")) {
-                                                // PVT annual heat supply
-                                                expected = expected + ts.split("QSupply")[0] + " Heat Supply";
-                                            } else {
-                                                if (ts.contains("Thermal")) {
-                                                    // solar collector annual heat supply
-                                                    expected = expected + ts.split("Supply")[0] + " Heat Supply";
-                                                } else if (ts.contains("PV")) {
-                                                    // PV annual electricity supply
-                                                    expected = expected + ts.split("Supply")[0] + " Electricity Supply";
-                                                }
-                                            }
-                                            expected = expected + "\"" + ":\"testAnnual testUnit\"";
+                                        for (String scalar : CEAConstants.SCALARS) {
+                                            String expected = "\"" + scalar + "\"" + ":\"testScalar testUnit\"";
+                                            assertTrue(result.contains(expected));
                                         }
-                                        assertTrue(result.contains(expected));
+
+                                        for (String ts : CEAConstants.TIME_SERIES) {
+                                            String expected;
+                                            if (ts.contains("Consumption")) {
+                                                expected = "\"Annual " + ts + "\"" + ":\"testAnnual testUnit\"";
+                                            } else {
+                                                expected = "\"Annual ";
+                                                if (ts.contains("ESupply")) {
+                                                    // PVT annual electricity supply
+                                                    expected = expected + ts.split("ESupply")[0] + " Electricity Supply";
+                                                } else if (ts.contains("QSupply")) {
+                                                    // PVT annual heat supply
+                                                    expected = expected + ts.split("QSupply")[0] + " Heat Supply";
+                                                } else {
+                                                    if (ts.contains("Thermal")) {
+                                                        // solar collector annual heat supply
+                                                        expected = expected + ts.split("Supply")[0] + " Heat Supply";
+                                                    } else if (ts.contains("PV")) {
+                                                        // PV annual electricity supply
+                                                        expected = expected + ts.split("Supply")[0] + " Electricity Supply";
+                                                    }
+                                                }
+                                                expected = expected + "\"" + ":\"testAnnual testUnit\"";
+                                            }
+                                            assertTrue(result.contains(expected));
+                                        }
                                     }
                                 }
                             }
@@ -275,215 +296,223 @@ public class CEAAgentTest {
 
     @Test
     public void testValidateInput() {
-        try (MockedStatic<StackClient> stackClientMock = mockStatic(StackClient.class)) {
-            stackClientMock.when(() -> StackClient.getStackName())
-                    .thenReturn("");
-            try (MockedConstruction<EndpointConfig> endpointMock = mockConstruction(EndpointConfig.class,
-                    (mock, context) -> {
-                        doReturn("").when(mock).getDbUrl(anyString());
-                        doReturn("").when(mock).getDbUser();
-                        doReturn("").when(mock).getDbPassword();
-                    })) {
-                // check general request
+        String content = "access.url=test\ncea.label=test\nweather.label=test\nurl.openmeteoagent=test\n" +
+                "terrain.database=test\nterrain.table=test\ncea.database=test" ;
 
-                CEAAgent agent = new CEAAgent();
+        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
 
-                JSONObject requestParams = new JSONObject();
+        try (MockedStatic<FileReader> fileReaderMock = mockStatic(FileReader.class)) {
+            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
+            try (MockedStatic<StackClient> stackClientMock = mockStatic(StackClient.class)) {
+                stackClientMock.when(() -> StackClient.getStackName())
+                        .thenReturn("");
+                try (MockedConstruction<EndpointConfig> endpointMock = mockConstruction(EndpointConfig.class,
+                        (mock, context) -> {
+                            doReturn("").when(mock).getDbUrl(anyString());
+                            doReturn("").when(mock).getDbUser();
+                            doReturn("").when(mock).getDbPassword();
+                        })) {
+                    // check general request
 
-                // check failure with empty request params
+                    CEAAgent agent = new CEAAgent();
 
-                assertThrows(BadRequestException.class, () -> {
-                    agent.validateInput(requestParams);
-                });
+                    JSONObject requestParams = new JSONObject();
 
-                requestParams.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
+                    // check failure with empty request params
 
-                // check failure with no IRI and request URL
-                assertThrows(BadRequestException.class, () -> {
-                    agent.validateInput(requestParams);
-                });
+                    assertThrows(BadRequestException.class, () -> {
+                        agent.validateInput(requestParams);
+                    });
 
-                requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/run");
+                    requestParams.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
 
-                // check failure with no IRI
-                assertThrows(BadRequestException.class, () -> {
-                    agent.validateInput(requestParams);
-                });
+                    // check failure with no IRI and request URL
+                    assertThrows(BadRequestException.class, () -> {
+                        agent.validateInput(requestParams);
+                    });
 
-                requestParams.put(CEAAgent.KEY_IRI, "test");
+                    requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/run");
 
-                requestParams.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.GET);
+                    // check failure with no IRI
+                    assertThrows(BadRequestException.class, () -> {
+                        agent.validateInput(requestParams);
+                    });
 
-                // check failure with GET http method
-                assertThrows(BadRequestException.class, () -> {
-                    agent.validateInput(requestParams);
-                });
+                    requestParams.put(CEAAgent.KEY_IRI, "test");
 
-                requestParams.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
+                    requestParams.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.GET);
 
-                // should pass now
-                try {
-                    assertTrue((agent.validateInput(requestParams)));
-                } catch (Exception e) {
-                    fail();
-                }
+                    // check failure with GET http method
+                    assertThrows(BadRequestException.class, () -> {
+                        agent.validateInput(requestParams);
+                    });
 
+                    requestParams.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
 
-                // test run request
-                JSONObject runRequest = new JSONObject();
-                runRequest.put(CEAAgent.KEY_IRI, "");
-                runRequest.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/run");
-                runRequest.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
-
-                // check failure with empty request params
-                assertThrows(BadRequestException.class, () -> {
-                    agent.validateInput(runRequest);
-                });
-
-                runRequest.put(CEAAgent.KEY_IRI, "test");
-
-                // should pass with only IRI
-                try {
-                    assertTrue((agent.validateInput(runRequest)));
-                } catch (Exception e) {
-                    fail();
-                }
+                    // should pass now
+                    try {
+                        assertTrue((agent.validateInput(requestParams)));
+                    } catch (Exception e) {
+                        fail();
+                    }
 
 
-                // check update request
-                JSONObject updateRequest = new JSONObject();
-                updateRequest.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/update");
-                updateRequest.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
+                    // test run request
+                    JSONObject runRequest = new JSONObject();
+                    runRequest.put(CEAAgent.KEY_IRI, "");
+                    runRequest.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/run");
+                    runRequest.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
 
-                updateRequest.put(CEAAgent.KEY_IRI, "");
-                updateRequest.put(CEAAgent.KEY_TARGET_URL, "");
-                updateRequest.put(CEAConstants.KEY_GRID_CONSUMPTION, "");
-                updateRequest.put(CEAConstants.KEY_ELECTRICITY_CONSUMPTION, "");
-                updateRequest.put(CEAConstants.KEY_HEATING_CONSUMPTION, "");
-                updateRequest.put(CEAConstants.KEY_COOLING_CONSUMPTION, "");
-                updateRequest.put(CEAConstants.KEY_PV_ROOF_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PV_WALL_SOUTH_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PV_WALL_NORTH_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PV_WALL_EAST_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PV_WALL_WEST_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_ROOF_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_ROOF_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_EAST_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_WEST_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_ROOF_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_ROOF_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_EAST_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_WEST_E_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_ROOF_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_EAST_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_WEST_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_ROOF_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_EAST_SUPPLY, "");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_WEST_SUPPLY, "");
-                updateRequest.put(CEAAgent.KEY_TIMES, "");
+                    // check failure with empty request params
+                    assertThrows(BadRequestException.class, () -> {
+                        agent.validateInput(runRequest);
+                    });
 
-                // check failure with empty request params
-                assertThrows(BadRequestException.class, () -> {
-                    agent.validateInput(updateRequest);
-                });
+                    runRequest.put(CEAAgent.KEY_IRI, "test");
 
-                updateRequest.put(CEAAgent.KEY_IRI, "test");
-
-                // check failure with only IRI
-                assertThrows(BadRequestException.class, () -> {
-                    agent.validateInput(updateRequest);
-                });
-
-                updateRequest.put(CEAAgent.KEY_TARGET_URL, "http://localhost:8086/agents/cea/update");
-
-                // check failure with only IRI and target url
-                assertThrows(BadRequestException.class, () -> {
-                    agent.validateInput(updateRequest);
-                });
-
-                updateRequest.put(CEAConstants.KEY_GRID_CONSUMPTION, "test");
-                updateRequest.put(CEAConstants.KEY_ELECTRICITY_CONSUMPTION, "test");
-                updateRequest.put(CEAConstants.KEY_HEATING_CONSUMPTION, "test");
-                updateRequest.put(CEAConstants.KEY_COOLING_CONSUMPTION, "test");
-                updateRequest.put(CEAConstants.KEY_PV_ROOF_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PV_WALL_SOUTH_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PV_WALL_NORTH_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PV_WALL_EAST_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PV_WALL_WEST_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_ROOF_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_ROOF_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_EAST_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_WEST_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_ROOF_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_ROOF_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_EAST_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_WEST_E_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_ROOF_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_EAST_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_WEST_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_ROOF_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_EAST_SUPPLY, "test");
-                updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_WEST_SUPPLY, "test");
-                updateRequest.put(CEAAgent.KEY_TIMES, "test");
-
-                // should pass now
-                try {
-                    assertTrue((agent.validateInput(updateRequest)));
-                } catch (Exception e) {
-                    fail();
-                }
+                    // should pass with only IRI
+                    try {
+                        assertTrue((agent.validateInput(runRequest)));
+                    } catch (Exception e) {
+                        fail();
+                    }
 
 
-                // test query endpoint
-                JSONObject queryRequest = new JSONObject();
-                queryRequest.put(CEAAgent.KEY_IRI, "");
-                queryRequest.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/query");
-                queryRequest.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
+                    // check update request
+                    JSONObject updateRequest = new JSONObject();
+                    updateRequest.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/update");
+                    updateRequest.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
 
-                // check failure with empty request params
-                assertThrows(BadRequestException.class, () -> {
-                    agent.validateInput(queryRequest);
-                });
+                    updateRequest.put(CEAAgent.KEY_IRI, "");
+                    updateRequest.put(CEAAgent.KEY_TARGET_URL, "");
+                    updateRequest.put(CEAConstants.KEY_GRID_CONSUMPTION, "");
+                    updateRequest.put(CEAConstants.KEY_ELECTRICITY_CONSUMPTION, "");
+                    updateRequest.put(CEAConstants.KEY_HEATING_CONSUMPTION, "");
+                    updateRequest.put(CEAConstants.KEY_COOLING_CONSUMPTION, "");
+                    updateRequest.put(CEAConstants.KEY_PV_ROOF_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PV_WALL_SOUTH_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PV_WALL_NORTH_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PV_WALL_EAST_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PV_WALL_WEST_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_ROOF_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_ROOF_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_EAST_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_WEST_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_ROOF_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_ROOF_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_EAST_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_WEST_E_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_ROOF_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_EAST_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_WEST_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_ROOF_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_EAST_SUPPLY, "");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_WEST_SUPPLY, "");
+                    updateRequest.put(CEAAgent.KEY_TIMES, "");
 
-                queryRequest.put(CEAAgent.KEY_IRI, "test");
+                    // check failure with empty request params
+                    assertThrows(BadRequestException.class, () -> {
+                        agent.validateInput(updateRequest);
+                    });
 
-                // should pass now
-                try {
-                    assertTrue((agent.validateInput(queryRequest)));
-                } catch (Exception e) {
-                    fail();
+                    updateRequest.put(CEAAgent.KEY_IRI, "test");
+
+                    // check failure with only IRI
+                    assertThrows(BadRequestException.class, () -> {
+                        agent.validateInput(updateRequest);
+                    });
+
+                    updateRequest.put(CEAAgent.KEY_TARGET_URL, "http://localhost:8086/agents/cea/update");
+
+                    // check failure with only IRI and target url
+                    assertThrows(BadRequestException.class, () -> {
+                        agent.validateInput(updateRequest);
+                    });
+
+                    updateRequest.put(CEAConstants.KEY_GRID_CONSUMPTION, "test");
+                    updateRequest.put(CEAConstants.KEY_ELECTRICITY_CONSUMPTION, "test");
+                    updateRequest.put(CEAConstants.KEY_HEATING_CONSUMPTION, "test");
+                    updateRequest.put(CEAConstants.KEY_COOLING_CONSUMPTION, "test");
+                    updateRequest.put(CEAConstants.KEY_PV_ROOF_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PV_WALL_SOUTH_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PV_WALL_NORTH_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PV_WALL_EAST_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PV_WALL_WEST_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_ROOF_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_ROOF_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_EAST_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_WEST_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_ROOF_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_ROOF_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_EAST_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_WEST_E_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_ROOF_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_EAST_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_PLATE_WALL_WEST_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_ROOF_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_EAST_SUPPLY, "test");
+                    updateRequest.put(CEAConstants.KEY_THERMAL_TUBE_WALL_WEST_SUPPLY, "test");
+                    updateRequest.put(CEAAgent.KEY_TIMES, "test");
+
+                    // should pass now
+                    try {
+                        assertTrue((agent.validateInput(updateRequest)));
+                    } catch (Exception e) {
+                        fail();
+                    }
+
+
+                    // test query endpoint
+                    JSONObject queryRequest = new JSONObject();
+                    queryRequest.put(CEAAgent.KEY_IRI, "");
+                    queryRequest.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/query");
+                    queryRequest.put(CEAAgent.KEY_REQ_METHOD, HttpMethod.POST);
+
+                    // check failure with empty request params
+                    assertThrows(BadRequestException.class, () -> {
+                        agent.validateInput(queryRequest);
+                    });
+
+                    queryRequest.put(CEAAgent.KEY_IRI, "test");
+
+                    // should pass now
+                    try {
+                        assertTrue((agent.validateInput(queryRequest)));
+                    } catch (Exception e) {
+                        fail();
+                    }
                 }
             }
         }
