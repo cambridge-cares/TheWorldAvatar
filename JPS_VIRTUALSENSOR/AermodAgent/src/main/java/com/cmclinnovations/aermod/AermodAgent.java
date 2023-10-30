@@ -115,6 +115,13 @@ public class AermodAgent extends DerivationAgent {
         }
 
         staticPointSources.removeIf(s -> s.getLocation() == null);
+        if (citiesNamespace != null && citiesNamespace.contentEquals("jriEPSG24500")) {
+            // the JI data has static point sources at different heights, yielding weird
+            // results with AERMOD
+            LOGGER.info("Cities namespace = {}", citiesNamespace);
+            LOGGER.info("Setting point source heights to 0");
+            staticPointSources.forEach(s -> s.setHeight(0));
+        }
 
         long timeBuffer = 1800; // 30 minutes
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
