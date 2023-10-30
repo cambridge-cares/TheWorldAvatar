@@ -36,7 +36,7 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism"/>
         <rdfs:range rdf:resource="http://xmlns.com/foaf/0.1/Agent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a chemical kinetic reaction mechanism and the agent that created the mechanism.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"/>
     </owl:ObjectProperty>
     
 
