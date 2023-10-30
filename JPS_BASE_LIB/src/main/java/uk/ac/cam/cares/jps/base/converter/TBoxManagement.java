@@ -415,7 +415,6 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * @param classExpression
 	 * @param quantifier
 	 * @param singleDomain
-	 * @param range
 	 * @throws JPSRuntimeException
 	 */
 	private void decideToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, OWLClassExpression classExpression,
@@ -441,7 +440,6 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * @param objectProperty
 	 * @param domainClass
 	 * @param classExpression
-	 * @param range
 	 */
 	private void addUniversalQuantification(OWLObjectProperty objectProperty, OWLClass domainClass,
 			OWLClassExpression classExpression) {
@@ -455,7 +453,6 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * @param objectProperty
 	 * @param domainClass
 	 * @param classExpression
-	 * @param range
 	 */
 	private void addExistentialQuantification(OWLObjectProperty objectProperty, OWLClass domainClass,
 			OWLClassExpression classExpression) {
