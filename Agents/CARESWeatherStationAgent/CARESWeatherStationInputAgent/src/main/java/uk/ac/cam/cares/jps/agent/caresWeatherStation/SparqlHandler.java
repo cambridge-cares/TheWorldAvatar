@@ -245,7 +245,6 @@ public class SparqlHandler {
             measureLabel = "Wind Direction";
             unitInstance = degree;
             unitType = singularUnit;
-            unitSymbol = "°";
             unitLabel = "degree";
         } else if (jsonKey.contains("humidity")) {
             measureLabel = "Relative Humidity";
@@ -257,7 +256,6 @@ public class SparqlHandler {
             measureLabel = "Temperature";
             unitInstance = degreeCelsius;
             unitType = singularUnit;
-            unitSymbol = "°C";
             unitLabel = "degree Celsius";
         } else if (jsonKey.contains("windspeed")) {
             measureLabel = "Wind Speed";
@@ -275,19 +273,16 @@ public class SparqlHandler {
             measureLabel = "Dew Point";
             unitInstance = degreeCelsius;
             unitType = singularUnit;
-            unitSymbol = "°C";
             unitLabel = "degree Celsius";
         } else if (jsonKey.contains("windchill")) {
             measureLabel = "Wind Chill";
             unitInstance = degreeCelsius;
             unitType = singularUnit;
-            unitSymbol = "°C";
             unitLabel = "degree Celsius";
         } else if (jsonKey.contains("heatindex")) {
             measureLabel = "Heat Index";
             unitInstance = degreeCelsius;
             unitType = singularUnit;
-            unitSymbol = "°C";
             unitLabel = "degree Celsius";
         } else if (jsonKey.contains("pressure") && !jsonKey.contains("trend")) {
             measureLabel = "Pressure";
