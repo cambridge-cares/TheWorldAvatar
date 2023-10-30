@@ -7,8 +7,8 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/CEAAgent/cea-agent/src/main/resources",
-                        "Target": "/resources"
+                        "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/CEAAgent/cea-agent/src/main/resources/CEAAgentConfig.properties",
+                        "Target": "/resources/CEAAgentConfig.properties"
                     }
                 ],
                 "Configs": [

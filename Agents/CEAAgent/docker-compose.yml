@@ -10,4 +10,4 @@ services:
     ports:
       - "58085:8084"
     volumes:
-        - ./cea-agent/src/main/resources:/usr/local/tomcat/data
+        - ./cea-agent/src/main/resources/CEAAgentConfig.properties:/resources/CEAAgentConfig.properties
