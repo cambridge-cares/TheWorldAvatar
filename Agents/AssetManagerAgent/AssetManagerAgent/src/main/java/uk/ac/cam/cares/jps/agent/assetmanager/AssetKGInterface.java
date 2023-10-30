@@ -27,6 +27,7 @@ import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.rmi.Remote;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,6 +48,9 @@ public class AssetKGInterface {
     private RemoteStoreClient storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab;
     public AssetExistenceChecker existenceChecker;
     public AssetRetriever assetRetriever;
+
+    private String user = null;
+    private String pass = null;
 
 
     /**
@@ -89,6 +93,9 @@ public class AssetKGInterface {
         storeClientPurchDoc.setPassword(password);
         storeClientLab.setUser(username);
         storeClientLab.setPassword(password);
+
+        user = username;
+        pass = password;
             
         existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab);
         assetRetriever =  new AssetRetriever (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab, endpointAsset, endpointOffice, endpointPurchDoc, endpointLab);
@@ -261,11 +268,14 @@ public class AssetKGInterface {
         String room = AssetDataRaw.getString("RoomLocation");
         String roomIRI = "";
         String facilityIRI = "";
-        String locationIRI = location;
+        String locationIRI = "";
 
         RemoteStoreClient preferredClient = storeClientOffice;
 
-        if(location.contains("Research Wing")){preferredClient = storeClientLab;}
+        if(location.contains("Research Wing")){
+            preferredClient = storeClientLab;
+            LOGGER.info("Switching to Lab store client...");
+        }
 
         JSONObject locationIRIs = existenceChecker.getLocationTriples (location, facility, room, preferredClient);
         if (locationIRIs != null){
@@ -382,7 +392,7 @@ public class AssetKGInterface {
         AssetData.put("amtMoney", amtMoneyIRI);
 
         LOGGER.info(AssetData);
-        createInstance(AssetData);
+        createInstance(AssetData, preferredClient);
                 
         JSONObject idPair = new JSONObject();
         idPair.put("ID", AssetData.getString("ID"));
@@ -420,9 +430,9 @@ public class AssetKGInterface {
     /*
      * Create new instances
      */
-    private void createInstance(JSONObject assetData) {
+    private void createInstance(JSONObject assetData, RemoteStoreClient preferredClient) {
         createAssetNameSpace(assetData);
-        createDeviceNameSpace(assetData);
+        createDeviceNameSpace(assetData, preferredClient);
         createPurchaseDocNamespace(assetData);
     }
 
@@ -430,7 +440,7 @@ public class AssetKGInterface {
         //Asset namespace query
         ModifyQuery  query = Queries.MODIFY();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         //Device
         Iri deviceIRIVar = iri(data.getString("deviceIRI"));
@@ -547,6 +557,7 @@ public class AssetKGInterface {
             query.insert(deviceIRIVar.has(isManufacturedBy, ManufacturerOrgIRI));
             query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
             query.insert(ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral));
+            query.insert(ManufacturerNameIRI.has(RDFS.LABEL, Rdf.literalOf(ManufacturerNameLiteral)));
         }
         if(!SupplierNameLiteral.isBlank()){
             query.insert(SupplierOrgIRI.isA(FormalOrganization));
@@ -554,15 +565,16 @@ public class AssetKGInterface {
             query.insert(deviceIRIVar.has(isSuppliedBy, SupplierOrgIRI));
             query.insert(SupplierOrgIRI.has(hasName, SupplierNameIRI));
             query.insert(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral));
+            query.insert(SupplierNameIRI.has(RDFS.LABEL, Rdf.literalOf(SupplierNameLiteral)));
         }
 
         storeClientAsset.executeUpdate(query.getQueryString());
     }
 
-    private void createDeviceNameSpace (JSONObject data){
+    private void createDeviceNameSpace (JSONObject data, RemoteStoreClient preferredClient){
         ModifyQuery query = Queries.MODIFY();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         String devicePrefix = data.getString("Prefix");
 
@@ -593,7 +605,7 @@ public class AssetKGInterface {
             query.insert(iri(cabinetIRIString).has(hasFurnitureIdentifier, storageIDLiteral));
         }
         //get location
-        if (LocationString.equals( "Research Wing") || LocationString.equals("CREATE Tower")){
+        if (LocationString.contains( "Research Wing") || LocationString.contains("CREATE Tower")){
             if(roomIRI != null){
                 if (devicePrefix.equals(P_SYS)){
                     query.insert(roomIRI.has(containsSystem, deviceIRI));
@@ -617,13 +629,13 @@ public class AssetKGInterface {
         }
         
 
-        storeClientOffice.executeUpdate(query.getQueryString());
+        preferredClient.executeUpdate(query.getQueryString());
     }
 
     private void createPurchaseDocNamespace (JSONObject data){
         ModifyQuery query = Queries.MODIFY();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         Iri itemIRI = iri(data.getString("itemIRI"));
         String itemNameLiteral = data.getString("label");
@@ -721,6 +733,7 @@ public class AssetKGInterface {
             query.insert(itemIRI.has(isManufacturedBy, ManufacturerOrgIRI));
             query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
             query.insert(ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral));
+            query.insert(ManufacturerNameIRI.has(RDFS.LABEL, Rdf.literalOf(ManufacturerNameLiteral)));
         }
         if(!SupplierNameLiteral.isBlank()){
             query.insert(SupplierOrgIRI.isA(FormalOrganization));
@@ -728,6 +741,7 @@ public class AssetKGInterface {
             query.insert(itemIRI.has(isSuppliedBy, SupplierOrgIRI));
             query.insert(SupplierOrgIRI.has(hasName, SupplierNameIRI));
             query.insert(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral));
+            query.insert(SupplierNameIRI.has(RDFS.LABEL, Rdf.literalOf(SupplierNameLiteral)));
         }
 
         //Projects and service codes
@@ -758,6 +772,8 @@ public class AssetKGInterface {
         Iri serviceProviderTypeIRI;
         String maintenanceScheduleIRI = genIRIString("MaintenanceSchedule", Pref_ASSET);
         String maintenanceTaskIRI = genIRIString("MaintenanceTask", Pref_ASSET);
+
+        RemoteStoreClient preferredClient = existenceChecker.getNameSpaceByID(ID);
 
         //Validation
         String deviceIRI = existenceChecker.getIRIStringbyID(ID);
@@ -817,7 +833,7 @@ public class AssetKGInterface {
         //instantiate
         ModifyQuery query = Queries.MODIFY();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
 
         query.insert(iri(deviceIRI).has(hasMaintenanceSchedule, iri(maintenanceScheduleIRI)));
@@ -846,7 +862,7 @@ public class AssetKGInterface {
         }
         
         
-        storeClientOffice.executeUpdate(query.getQueryString());
+        preferredClient.executeUpdate(query.getQueryString());
 
     }
 
@@ -858,7 +874,7 @@ public class AssetKGInterface {
         
         ModifyQuery query = Queries.MODIFY();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.insert(iri(documentIRI).isA(iri(docType)));
         query.insert(iri(deviceIRI).has(hasDataSheet, iri(documentIRI)));
@@ -888,6 +904,16 @@ public class AssetKGInterface {
 
       public JSONArray getItemListByDocIRI (String InvoiceIRI, String POiri, String DOiri) {
         return assetRetriever.getItemListByDocIRI(InvoiceIRI, POiri, DOiri);
+      }
+
+      public Boolean itemMeasuresBool(String dbName, String IRI, JSONArray pred, int searchDepth){
+        RemoteStoreClient dbStoreClient = new RemoteStoreClient(dbName, dbName);
+
+        if (user != null && pass != null){
+            storeClientAsset.setUser(user);
+            storeClientAsset.setPassword(pass);
+        }
+        return assetRetriever.getMeasuresExistence (dbStoreClient, IRI, pred, searchDepth);
       }
 
 }

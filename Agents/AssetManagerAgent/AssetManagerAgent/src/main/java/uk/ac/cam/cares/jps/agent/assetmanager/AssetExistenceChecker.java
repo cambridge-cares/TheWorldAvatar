@@ -148,7 +148,7 @@ public class AssetExistenceChecker {
     }
 
     public JSONObject getLocationTriples (String buildingName, String facilityName, String roomName, RemoteStoreClient storeClient){
-        if (buildingName.equals("Research Wing") || buildingName.equals("CREATE Tower")){
+        if (buildingName.contains("Research Wing") || buildingName.contains("CREATE Tower")){
             return  queryLocationIRIByName(buildingName, facilityName, roomName, storeClient);
         }
         else{
@@ -169,21 +169,25 @@ public class AssetExistenceChecker {
 
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(IFCReprIRI.has(RDFS.LABEL, Rdf.literalOf(roomName)));
         query.where(roomIRI.has(hasIfcRepresentation, IFCReprIRI));
         query.where(roomIRI.isA(roomTypeIRI));
         query.where(facilityIRI.has(hasRoom, roomIRI));
         query.where(facilityIRI.isA(facilityTypeIRI));
-        if (facilityName != null){
+        if (!(facilityName.isBlank())){
             query.where(facilityIRI.has(RDFS.LABEL, Rdf.literalOf(facilityName)));
         }
-        query.where(locationIRI.has(hasFacility, facilityIRI));
+        query.where(GraphPatterns.union(
+            locationIRI.has(hasFacility, facilityIRI),
+            locationIRI.has(hasStorey, facilityIRI)
+        ));
         query.where(locationIRI.has(hasIfcRepresentation, locationIFCReprIRI));
         query.where(locationIFCReprIRI.has(RDFS.LABEL, Rdf.literalOf(buildingName)));
 
         JSONArray reqResult = storeClient.executeQuery(query.getQueryString());
+        LOGGER.debug("Location check result::" + reqResult);
         switch (reqResult.length()) {
             case 0:
                 //location does not exist.
@@ -215,7 +219,7 @@ public class AssetExistenceChecker {
         SelectQuery query = Queries.SELECT();
         Variable storageIRI = SparqlBuilder.var("storageIRI");
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(GraphPatterns.union(storageIRI.has(RDFS.LABEL, Rdf.literalOf(ID)), storageIRI.has(hasItemInventoryIdentifier, Rdf.literalOf(ID))));
         
@@ -254,7 +258,7 @@ public class AssetExistenceChecker {
         JSONObject result = new JSONObject();
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         Variable cabinetIRI = SparqlBuilder.var("cabinetIRI");
 
@@ -285,7 +289,7 @@ public class AssetExistenceChecker {
         Variable currencyIRI = SparqlBuilder.var("currencyIRI");
         Variable priceLiteral = SparqlBuilder.var("price");
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         
         query.where(POLineIRI.has(hasPriceDetails, PriceDetailsIRI));
@@ -331,7 +335,7 @@ public class AssetExistenceChecker {
         JSONObject result = new JSONObject();
         SelectQuery queryInvoice = Queries.SELECT();
         queryInvoice.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         Variable InvoiceIRI = SparqlBuilder.var("InvoiceIRI");
         queryInvoice.where(InvoiceIRI.has(predicateToID, DocNum));
@@ -360,7 +364,7 @@ public class AssetExistenceChecker {
         Variable accountIRI = SparqlBuilder.var("accountIRI");
         Variable budgetIRI = SparqlBuilder.var("budgetIRI");
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(projectIRI.has(hasProjectIdentifier, projectName));
         query.where(projectIRI.has(hasGrant, researchGrantIRI));
@@ -493,6 +497,47 @@ public class AssetExistenceChecker {
                 //TODO Properly handle multiple cases 
                 result.put("DocIRI", reqResult.getJSONObject(0).getString("Subject"));
                 return result;
+        }
+    }
+
+    public RemoteStoreClient getNameSpaceByID (String ID){
+        JSONArray reqRes = getIRIbyLiteral(ID, hasItemInventoryIdentifier, storeClientLab);
+        if (reqRes.length() == 0){
+            reqRes = getIRIbyLiteral(ID, hasItemInventoryIdentifier, storeClientOffice);
+            if (reqRes.length() == 0){
+                throw new JPSRuntimeException("Failed to retrieve the proper remote store client");
+            }
+            return storeClientOffice;
+        }
+        return storeClientLab;
+    }
+
+    public String getLabelbyIRIString(String IRI){
+        JSONArray reqResult = getLiteralbyIRI(iri(IRI), iri(RDFS.LABEL), storeClientLab);
+        LOGGER.info("Query label::"+IRI+" : "+reqResult);
+        switch (reqResult.length()) {
+            case 0:
+                //Asset doesn't exist on bms, office and lab namespace
+                return null;
+                
+            case 1:
+                return reqResult.getJSONObject(0).getString("object");
+            default:
+                throw new JPSRuntimeException("Asset IRI is connected to several ID: " + IRI + ". Check the knowledge graph for duplicates.", null);
+        }
+    }
+
+    public String getIRIbyLabelString(String ID){
+        JSONArray reqResult = getIRIbyLiteral(ID, iri(RDFS.LABEL), storeClientLab);
+        LOGGER.info("Query label::"+ID+" : "+reqResult);
+        switch (reqResult.length()) {
+            case 0:
+                //Asset doesn't exist on bms, office and lab namespace
+                return null;
+            case 1:
+                return reqResult.getJSONObject(0).getString("Subject");
+            default:
+                throw new JPSRuntimeException("Asset ID is connected to several IRI: " + ID + ". Check the knowledge graph for duplicates.", null);
         }
     }
 

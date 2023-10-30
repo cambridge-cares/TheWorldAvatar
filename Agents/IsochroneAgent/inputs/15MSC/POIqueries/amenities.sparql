@@ -1,0 +1,35 @@
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?poi_iri ?poi_type ?geometry
+WHERE {
+    {
+        # OntopQuery to retrieve
+        SERVICE [ONTOP] {
+            SELECT DISTINCT ?building_iri ?type ?geom
+            WHERE {
+                {
+                    VALUES (?type ?label) {
+                        (obe:Hospital "Hospital")
+                        (obe:Clinic "Clinic")
+                        (obe:Pharmacy "Pharmacy")
+                        (obe:PoliceStation "Police Station")
+                        (obe:School "School")
+                        (obe:Bank "Bank")
+                        (obe:EatingEstablishment "Eating Establishment")
+                        (obe:ReligiousFacility "Religious Facility")
+                    }
+                    ?building_iri obe:hasPropertyUsage ?usageiri .
+                    ?building_iri obe:hasFootprint ?geom.
+                    ?usageiri rdf:type ?type .
+                }
+            }
+        }
+    }
+    # Binding variable names as requested
+    BIND(?building_iri AS ?poi_iri)
+    BIND(?type AS ?poi_type)
+    BIND(?geom AS ?geometry)
+}

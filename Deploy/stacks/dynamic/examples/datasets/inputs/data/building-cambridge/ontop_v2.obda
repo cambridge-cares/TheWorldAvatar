@@ -1,0 +1,48 @@
+[PrefixDeclaration]
+building:   http://theworldavatar.io/BuildingWallSurface/
+os:         http://data.ordnancesurvey.co.uk/ontology/spatialrelations/
+owl:        http://www.w3.org/2002/07/owl#
+rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:        http://www.w3.org/XML/1998/namespace
+xsd:        http://www.w3.org/2001/XMLSchema#
+obda:       https://w3id.org/obda/vocabulary#
+rdfs:       http://www.w3.org/2000/01/rdf-schema#
+geo:        http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId       Asset-mapping-GMLID-TOID
+target      building:{gmlid} os:hasGmlid {gmlid}^^xsd:string ;
+                 os:hasTOID {os_topo_toid}^^xsd:string .
+source          -- This mapping links the GMLID of the city object with the TOID attribute of that object
+                -- The TOID is fetched from the cityobject_genericattrib table where the attribute name is 'os_topo_toid'
+                SELECT cityobject.gmlid as gmlid,
+                cityobject_genericattrib.strval AS os_topo_toid
+                FROM citydb.cityobject
+                INNER JOIN citydb.cityobject_genericattrib ON citydb.cityobject.id = citydb.cityobject_genericattrib.cityobject_id
+                WHERE cityobject_genericattrib.attrname = 'os_topo_toid'
+
+mappingId       Asset-mapping-GMLID-UPRN-via-Standard-Table
+target      building:{gmlid} os:hasGmlId {gmlid}^^xsd:string ;
+                 os:hasUPRN {uprn}^^xsd:integer .
+source          -- This mapping links the GMLID of the city object with the UPRN attribute of that object
+                -- The UPRN is fetched from a standard mapping table "public"."TOID_UPRN_MatchingTable"
+                SELECT "citydb"."cityobject"."gmlid" as gmlid, "public"."TOID_UPRN_MatchingTable"."IDENTIFIER_1" as uprn
+                FROM "citydb"."cityobject", "citydb"."cityobject_genericattrib", "public"."TOID_UPRN_MatchingTable"
+                WHERE "citydb"."cityobject_genericattrib"."cityobject_id" = "citydb"."cityobject"."id" 
+                AND "citydb"."cityobject_genericattrib"."attrname" = 'os_topo_toid' 
+                AND "citydb"."cityobject_genericattrib"."strval" = "public"."TOID_UPRN_MatchingTable"."IDENTIFIER_2";
+
+mappingId       Asset-mapping-GMLID-Geometry
+target      building:{gmlid} os:hasGmlId {gmlid}^^xsd:string ;
+                    geo:hasGeometry "{wkt}"^^geo:wktLiteral .
+source          -- This mapping links the GMLID of the city object with the Geometry attribute of that object
+                -- The Geometry is fetched from the surface_geometry table and converted to text (wkt)
+                SELECT "citydb"."cityobject"."gmlid" as gmlid,
+                ST_AsText("citydb"."surface_geometry"."geometry") as wkt
+                FROM "citydb"."surface_geometry"
+                INNER JOIN "citydb"."cityobject" ON "citydb"."surface_geometry"."cityobject_id" = "citydb"."cityobject"."id"
+                INNER JOIN "citydb"."cityobject_genericattrib" ON "citydb"."cityobject_genericattrib"."cityobject_id" = "citydb"."cityobject"."id"
+                WHERE "citydb"."cityobject_genericattrib"."attrname" = 'gmlid'
+                AND "citydb"."surface_geometry"."parent_id" IS NOT NULL;
+
+]]

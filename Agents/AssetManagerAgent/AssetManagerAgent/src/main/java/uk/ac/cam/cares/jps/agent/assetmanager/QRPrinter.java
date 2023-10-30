@@ -171,11 +171,11 @@ public class QRPrinter {
                     document.add(qrCodeImage);
 
                     Paragraph p = new Paragraph(ID);
-                    p.setFixedPosition(x, y, qrCodeSize);
+                    p.setFixedPosition(x+10, y-5, qrCodeSize);
                     document.add(p);
 
                 } catch (Exception e) {
-                    throw new Exception("Failed to create QR code for IRI:" + iriString);
+                    throw new Exception("Failed to create QR code for IRI:" + iriString, e);
                 }
                 
                 c+=1;
