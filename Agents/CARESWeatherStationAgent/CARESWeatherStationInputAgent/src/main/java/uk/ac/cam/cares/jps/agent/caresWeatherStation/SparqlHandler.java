@@ -304,7 +304,7 @@ public class SparqlHandler {
             unitLabel = "millimetre";
         }
 
-        if (measureLabel != null && unitInstance != null && unitType != singularUnit) {
+        if (measureLabel != null && unitInstance != null && unitType != singularUnit && unitSymbol != null) {
             SelectQuery query = Queries.SELECT();
             Variable var = SparqlBuilder.var("var");
             //create triple pattern:
@@ -332,7 +332,7 @@ public class SparqlHandler {
             } catch (Exception e) {
                 throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString());
             }
-        } else if  (measureLabel != null && unitInstance != null && unitType == singularUnit) {
+        } else if  (measureLabel != null && unitInstance != null && unitType == singularUnit  && unitSymbol != null) {
             SelectQuery query = Queries.SELECT();
             Variable var = SparqlBuilder.var("var");
             //create triple pattern:
@@ -355,6 +355,35 @@ public class SparqlHandler {
                     //                om:symbol "unitSymbol" .
                     queryPattern = iri(IRI).isA(measure).andHas(label, measureLabel).andHas(hasUnit, unitInstance);
                     TriplePattern queryPattern2 = unitInstance.isA(unitType).andIsA(unit).andHas(label, unitLabel).andHas(symbol, unitSymbol);
+                    InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern, queryPattern2).prefix(PREFIX_OM, PREFIX_RDFS);
+                    kbClient.executeUpdate(insertQuery.getQueryString());
+                    LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
+                }
+            } catch (Exception e) {
+                throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString());
+            }
+        } else if  (measureLabel != null && unitInstance != null && unitType == singularUnit && unitSymbol == null) {
+            SelectQuery query = Queries.SELECT();
+            Variable var = SparqlBuilder.var("var");
+            //create triple pattern:
+            // <IRI> rdf:type ?var
+            TriplePattern queryPattern = iri(IRI).isA(var);
+            query.prefix(PREFIX_OM).select(var).where(queryPattern);
+            kbClient.setQuery(query.getQueryString());
+            try {
+                JSONArray queryResult = kbClient.executeQuery();
+                // if the query result is not empty and the rdf:type is equivalent to om:Measure
+                if (!queryResult.isEmpty() && queryResult.getJSONObject(0).getString("var") == measure.toString()){
+                LOGGER.info(IRI + " already has a rdf:type om:Measure!");
+                } else {
+                    //create triple pattern:
+                    // <IRI> rdf:type om:Measure .
+                    // <IRI> om:hasUnit <unitInstance> .
+                    // <unitInstance> rdf:type <unitType> ;
+                    //                rdf:type om:unit ;
+                    //                rdfs:label "unitLabel" .
+                    queryPattern = iri(IRI).isA(measure).andHas(label, measureLabel).andHas(hasUnit, unitInstance);
+                    TriplePattern queryPattern2 = unitInstance.isA(unitType).andIsA(unit).andHas(label, unitLabel);
                     InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern, queryPattern2).prefix(PREFIX_OM, PREFIX_RDFS);
                     kbClient.executeUpdate(insertQuery.getQueryString());
                     LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
