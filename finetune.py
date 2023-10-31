@@ -9,9 +9,9 @@ from transformers import (
     Seq2SeqTrainer,
 )
 
-from data_processing import preprocess_nl, preprocess_sparql
-from args_schema import DatasetArguments, ModelArguments
-from model_utils import get_hf_model_and_tokenizer
+from core.data_processing import preprocess_nl, preprocess_sparql
+from core.args_schema import DatasetArguments, ModelArguments
+from core.model_utils import get_hf_model_and_tokenizer
 
 
 def get_trainer(
