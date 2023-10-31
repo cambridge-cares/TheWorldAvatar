@@ -22,7 +22,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "plots",
-                    "sql": "SELECT CONCAT('https://www.theworldavatar.com/kg/ontoplot/postgres/plots/', ogc_fid) AS iri, 'http://pirmasens-blazegraph:8080/blazegraph/namespace/spacefinder/sparql' as endpoint, wkb_geometry AS geom FROM plots",
+                    "sql": "SELECT CONCAT('https://www.theworldavatar.com/kg/ontoplot/postgres/plots/', ogc_fid) AS iri, 'http://pirmasens-blazegraph:8080/blazegraph/namespace/spacefinder/sparql' AS endpoint, CONCAT('FlST-Nr. ', id) AS name, wkb_geometry AS geom FROM plots",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geom",
