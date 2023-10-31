@@ -96,7 +96,7 @@ public class OSMAgent extends JPSAgent {
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            String workspaceName= "building";
+            String workspaceName= "twa";
             String schema = "public";
             geoServerClient.createWorkspace(workspaceName);
             UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
