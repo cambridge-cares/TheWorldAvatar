@@ -1,18 +1,19 @@
 """
-create_shapefile takes in the data retrieved from knowledge graph queries and creates a shapefile in the
-input format required by the CEA
+create_shapefile takes in the building geometry data retrieved from knowledge graph and
+creates a shapefile in the input format required by CEA
 """
 
-import shapely
-import pandas as pd
-import geopandas as gpd
+from shapely.wkt import loads
+from shapely.geometry import mapping
 import argparse
 import json
-from pyproj import CRS
 import os
+import fiona
+from fiona.crs import from_epsg
 
+epsg_4326 = "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]"
 
-def create_shapefile(geometries, heights, crs, shapefile):
+def create_shapefile(data, crs, shapefile):
     """
     :param geometries: Contains string of coordinates representing building envelope
 
@@ -24,74 +25,97 @@ def create_shapefile(geometries, heights, crs, shapefile):
 
     """
 
-    geometry_values = []
-    floors_bg = []
-    height_bg = []
-    floor_height = []
-    names = []
-    i = 0
-    floors_ag = []
     geometry = []
+    attributes = []
 
-    # Convert geometry data to arrays of points
-    for geom in geometries:
-        geometry.append(shapely.wkt.loads(geom))
-        floors_bg.append(0)
-        height_bg.append(0)
-        floor_height.append(3.2)  # approximate floor-to-floor height
-        if "zone.shp" in shapefile:
-            initial = "B"
-        else:
-            initial = "S"
-        if i<10:
-            names.append(initial + "00" + str(i))
-        elif i<100:
-            names.append(initial + "0" + str(i))
-        else:
-            names.append(initial + str(i))
+    ind = 0
 
-        i = i+1
+    surroundings_flag = ("surroundings" in shapefile)
 
-    # Set floors_ag to building height divided by approximate floor-to-floor height
-    for x in range(len(heights)):
-        floors = round(heights[x] / floor_height[x])
-        if floors != 0:
-            floors_ag.append(floors)
-        else:
-            floors_ag.append(1)  # number of floors must be at least 1
-        if heights[x] <= 1.0:
-            heights[x] = 1.00001  # CEA fails if height is less than or equal to 1 so set a minimum height of 1.00001 m
+    floor_height = 3.2  # approximate floor-to-floor height
 
-    zone_data = {'Name': names,
-                 'floors_bg': floors_bg,
-                 'floors_ag': floors_ag,
-                 'height_bg': height_bg,
-                 'height_ag': heights}
+    for building in data:
+        geometries = building["geometry"]
+        height = float(building["height"])
+        if not surroundings_flag:
+            id = building["id"]
 
-    df = pd.DataFrame(data=zone_data)
+        # Convert geometry data to arrays of points
+        for geom in geometries:
+            geometry.append(loads(geom))
 
-    # crs is ESPG coordinate reference system id
-    crs = CRS.from_user_input(int(crs))
+            if not surroundings_flag:
+                initial = "B"
+            else:
+                initial = "S"
 
-    gdf = gpd.GeoDataFrame(df, crs=crs, geometry=geometry)
-    gdf.to_file(shapefile, driver='ESRI Shapefile', encoding='ISO-8859-1')
+            if ind < 100:
+                name = initial + str(ind).zfill(3)
+            else:
+                name = initial + str(ind)
+
+            if not surroundings_flag:
+                name += "_" + str(id) # to identify geometries that belong to the same building
+
+            temp = {'Name': name,
+                    'floors_bg': 0,
+                    'floors_ag': 0,
+                    'height_bg': 0.0,
+                    'height_ag': 0.0}
+
+            ind += 1
+
+            # calculate number of floors above ground
+            floors = round(height / floor_height)
+
+            if floors != 0:
+                temp['floors_ag'] = floors
+            else:
+                temp['floors_ag'] = 1 # number of floors must be at least 1
+
+            # CEA fails if height is less than or equal to 1 so set a minimum height of 1.00001 m
+            if height <= 1.0:
+                height = 1.00001
+
+            temp['height_ag'] = height
+
+            attributes.append(temp)
+
+    schema = {
+        'geometry': 'Polygon',
+        'properties': {'Name': 'str:80',
+          'floors_bg': 'int:12',
+          'floors_ag': 'int:12',
+          'height_bg': 'float:15.12',
+          'height_ag': 'float:15.12'}
+    }
+
+    if (int(crs) == 4326):
+        c = epsg_4326
+    else:
+        c = from_epsg(int(crs))
+
+    # Create a shapefile using Fiona
+    with fiona.open(shapefile, 'w', 'ESRI Shapefile', schema, crs = c) as output:
+        for polygon, attr in zip(geometry, attributes):
+            # Write each polygon and its attributes to the shapefile
+            output.write({
+                'geometry': mapping(polygon),
+                'properties': attr
+            })
 
 
 def main(argv):
     shapefile_file = argv.file_name
     shapefile = argv.zone_file_location + os.sep + shapefile_file
-    with open(argv.data_file_location, "r") as f:
-        dataString = f.readlines()[0]
-    data_dictionary = json.loads(dataString)
-    geometries = []
-    heights = []
 
-    for data in data_dictionary:
-        geometries.append(data['geometry'])
-        heights.append(float(data['height']))
+    with open(argv.data_file_location, "r") as f:
+        dataString = f.read()
+
+    data_list = json.loads(dataString)
 
     try:
-        create_shapefile(geometries, heights, argv.crs, shapefile)
+        create_shapefile(data_list, argv.crs, shapefile)
     except IOError:
         print('Error while processing file: ' + shapefile)
 
