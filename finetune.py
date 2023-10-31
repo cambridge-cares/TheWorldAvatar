@@ -1,3 +1,4 @@
+import json
 import os
 
 from datasets import Dataset
@@ -13,7 +14,7 @@ from args_schema import DatasetArguments, ModelArguments
 from model_utils import get_hf_model_and_tokenizer
 
 
-def get_seq2seq_trainer(
+def get_trainer(
     model_args: ModelArguments,
     data_args: DatasetArguments,
     train_args: Seq2SeqTrainingArguments,
@@ -32,11 +33,14 @@ def get_seq2seq_trainer(
 
     def _preprocess_examples(examples):
         sources = [preprocess_nl(qn) for qn in examples["question"]]
-        targets = [preprocess_sparql(query) for query in examples["query"]["sparql_compact"]]
+        targets = [preprocess_sparql(query) for query in examples["sparql"]]
         return dict(source=sources, target=targets)
 
     def _get_tokenized_dataset(data_path: str):
-        dataset = Dataset.from_json(data_path).shuffle(seed=42)
+        with open(data_path, "r") as f:
+            data = json.load(f)
+        data = [{"question": x["question"], "sparql": x["query"]["sparql_compact"]} for x in data]
+        dataset = Dataset.from_list(data)
         dataset = dataset.map(
             _preprocess_examples,
             batched=True,
@@ -67,7 +71,7 @@ def train():
     )
     model_args, data_args, train_args = hfparser.parse_args_into_dataclasses()
 
-    trainer = get_seq2seq_trainer(
+    trainer = get_trainer(
         model_args=model_args,
         data_args=data_args,
         train_args=train_args,
