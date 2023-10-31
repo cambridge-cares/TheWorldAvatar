@@ -164,5 +164,5 @@ if __name__ == "__main__":
     ds_gen = DatasetGenerator()
     examples = ds_gen.generate()
 
-    with open(os.path.join(ROOTDIR, "examples_{num}.json".format(num=SEED_SPECIES_NUM)), "w") as f:
+    with open(os.path.join(ROOTDIR, "data/examples_{num}.json".format(num=SEED_SPECIES_NUM)), "w") as f:
         json.dump(examples, f, indent=4)

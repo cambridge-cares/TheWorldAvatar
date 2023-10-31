@@ -170,10 +170,10 @@ class SparqlCompact2VerboseConverter:
         return sparql_compact, pattern
 
     def convert_abstract_predicate_clause(self, sparql_compact: str, predicate: str, obj: str):
-        """?Species ?has{key}Name ?{key}Name .
-           ?{key}Name rdf:type/rdfs:subClassOf os:{key} ."""
-        key = predicate[len("?has"):-len("Name")]
-        assert obj == "?{key}Name".format(key=key)
+        """?Species ?has{key} ?{key} .
+           ?{key} rdf:type/rdfs:subClassOf os:{keyClass} ."""
+        key = predicate[len("?has")]
+        assert obj == "?{key}".format(key=key)
 
         sparql_compact = sparql_compact.strip()
         next_s, next_p, next_o, sparql_compact = sparql_compact.split(maxsplit=3)
@@ -186,9 +186,9 @@ class SparqlCompact2VerboseConverter:
 
         assert next_s == obj
         assert next_p == "rdf:type/rdfs:subClassOf"
-        assert next_o == "os:" + key
 
         if key == ABSTRACT_PROPERTY_KEY:
+            assert next_o == "os:Property"
             pattern = """
     ?Species ?hasPropertyName ?PropertyName .
     ?PropertyName rdf:type/rdfs:subClassOf os:Property ; os:value ?PropertyNameValue ; os:unit/rdfs:label ?PropertyNameUnitValue .
@@ -196,6 +196,7 @@ class SparqlCompact2VerboseConverter:
         ?PropertyName os:hasReferenceState [ os:value ?PropertyNameReferenceStateValue ; os:unit/rdfs:label ?PropertyNameReferenceStateUnitValue ] .
     }"""
         elif key == ABSTRACT_IDENTIFIER_KEY:
+            assert next_o == "os:Identifier"
             pattern = """
     ?Species ?hasIdentifierName ?IdentifierName .
     ?IdentifierName rdf:type/rdfs:subClassOf os:Identifier ; os:value ?IdentifierNameValue ."""

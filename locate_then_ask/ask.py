@@ -6,6 +6,8 @@ from typing import Tuple
 import networkx as nx
 
 from constants.ontospecies_keys import (
+    ABSTRACT_IDENTIFIER_KEY,
+    ABSTRACT_PROPERTY_KEY,
     CHEMCLASS_KEY,
     IDENTIFIER_KEYS,
     KEY2LABELS,
@@ -115,19 +117,24 @@ class Asker:
             )
         else:
             key = random.choice(SPECIES_ABSTRACT_ATTRIBUTE_KEYS)
-            key_node = key + "Name"
-            abstract_key_node = "os:" + key
+            if key == ABSTRACT_PROPERTY_KEY:
+                abstract_key = "os:Property"
+            elif key == ABSTRACT_IDENTIFIER_KEY:
+                abstract_key = "os:Identifier"
+            else:
+                raise ValueError("Unexpected abstract key: " + key)
+            
             query_graph.add_nodes_from(
                 [
-                    (key_node, dict(question_node=True)),
-                    (abstract_key_node, dict(template_node=True)),
+                    (key, dict(question_node=True)),
+                    (abstract_key, dict(template_node=True)),
                 ]
             )
             query_graph.add_edge(
-                "Species", key_node, label="?has{key}Name".format(key=key)
+                "Species", key, label="?has{key}".format(key=key)
             )
             query_graph.add_edge(
-                key_node, abstract_key_node, label="rdf:type/rdfs:subClassOf"
+                key, abstract_key, label="rdf:type/rdfs:subClassOf"
             )
 
             key_label = random.choice(KEY2LABELS[key])
