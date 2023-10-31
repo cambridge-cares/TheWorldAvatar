@@ -1,10 +1,9 @@
 /**
- * Sore manager class for DVTF visualisations.
+ * Sore manager class for TWA-VF visualisations.
  * 
  * An instance of this class should have been created and setup for global access
- * under the "manager" variable name.
- * 
- * TODO: Move out the feature finder functionality to a better (or new) class.
+ * under the "manager" variable name, within the <script> element of the visualisation's
+ * main HTML file.
  */
 class Manager {
 
@@ -34,12 +33,12 @@ class Manager {
     private mapHandler: MapHandler;
    
     /**
-     * Handles controls on left.
+     * Handles map controls (on the left).
      */
     private controlHandler: ControlHandler;
 
     /**
-     * Handles the side panel.
+     * Handles the side panel (on the right).
      */
     private panelHandler: PanelHandler;
 
@@ -48,11 +47,6 @@ class Manager {
      */
     private searchHandler: SearchHandler;
 
-    /**
-     * Currently in full screen mode?
-     */
-    private inFullscreen: boolean = false;
-    
     /**
      * Optional callback to trigger once data definitions have been loaded.
      */
@@ -78,12 +72,11 @@ class Manager {
 
             default:
                 throw new Error("Unknown map provider specified!");
-            break;
         }
     }
 
     /**
-     * Reads credentials from files.
+     * Reads Mapbox credentials from files/docker secrets.
      */
     public async readCredentials() {
         // Enter Mapbox account name and API key here!
@@ -112,8 +105,6 @@ class Manager {
         this.mapHandler.initialiseMap(mapOptions);
 
         this.controlHandler.showControls();
-        //this.controlHandler.rebuildTree(Manager.DATA_STORE);
-
         this.panelHandler.toggleMode();
 
         // Show attributions if present
@@ -127,7 +118,6 @@ class Manager {
         document.addEventListener("keydown", function(e){
             if ((e.ctrlKey || e.metaKey) && e.key === "f") {
                 if(self.searchHandler === null || self.searchHandler === undefined) {
-
 
                     // Initialise the seach handler instance
                     switch(Manager.PROVIDER) {
@@ -158,38 +148,6 @@ class Manager {
             }
         });
 
-    }
-
-    private toggleFullscreen() {
-        if(this.inFullscreen) {
-            // Disable full screen
-            document.getElementById("controlsContainer").style.display = "block";
-            document.getElementById("sidePanel").style.display = "block";
-
-            let sidePanel =  document.getElementById("sidePanel");
-
-            if(sidePanel.classList.contains("large")) {
-                document.getElementById("map").style.width = "100%";
-            } else if(sidePanel.classList.contains("collapsed")) {
-                document.getElementById("map").style.width = "calc(100% - 28px)";
-            } else {
-                document.getElementById("map").style.width = "calc(100% - 500px)";
-            }
-
-            this.inFullscreen = false;
-        } else {
-            // Enable full scrren
-            document.getElementById("controlsContainer").style.display = "none";
-            document.getElementById("sidePanel").style.display = "none";
-            document.getElementById("map").style.width = "100%";
-            this.inFullscreen = true;
-        }
-
-        if(Manager.PROVIDER === MapProvider.MAPBOX) {
-            MapHandler.MAP.resize();
-        } else {
-            MapHandler.MAP.scene.requestRender();
-        }
     }
 
     /**

@@ -5,11 +5,6 @@
 class MapHandler_Cesium extends MapHandler {
 
     /**
-     * Mapbox popup element.
-     */
-    public static POPUP;
-
-    /**
      * Map of data source keyed by layer name.
      */
     public static DATA_SOURCES = {};
