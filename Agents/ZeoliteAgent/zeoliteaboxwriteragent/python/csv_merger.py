@@ -9,6 +9,7 @@ TODO
 """
 
 import os
+import sys
 import argparse
 import logging
 logging.basicConfig( level = logging.INFO )
@@ -17,11 +18,16 @@ def read_command_line():
     inDir = ""
     pathOut = ""
 
-    inDir = os.path.join( "ontozeolite", "zeocsv" )
+    if len(sys.argv) == 2:
+        #print( "Got command line argv: ", sys.argv )
+        inDir = sys.argv[1]
+    else:
+        inDir = os.path.join( "ontozeolite", "zeocsv" )
+
     pathOut = "all.csv"
     pathOut = os.path.join( inDir, pathOut )
     logging.info( pathOut )
-
+    
     return inDir, pathOut
     pass # read_command_line()
 
