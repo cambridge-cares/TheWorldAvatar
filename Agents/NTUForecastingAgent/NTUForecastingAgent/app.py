@@ -99,15 +99,16 @@ def api():
     
     # Interval with given time positions
     if not IRI_interval:
-        IRI_interval = 'http://example.org/OptimisationInterval_1'
+        interval_name = str(time_pos1) + '_' + str(time_pos2)
+        IRI_interval = 'http://example.org/OptimisationInterval_' + interval_name
         update += f'''
         <{IRI_interval}> rdf:type time:Interval ;
-            time:hasBeginning ex:OptimisationStartInstant_1 ;
-            time:hasEnd ex:OptimisationEndInstant_1 .
-        ex:OptimisationStartInstant_1 rdf:type time:Instant ;
-            time:inTimePosition ex:TimePosition_1 .
-        ex:OptimisationEndInstant_1 rdf:type time:Instant ;
-            time:inTimePosition ex:TimePosition_2 .
+            time:hasBeginning ex:OptimisationStartInstant_{interval_name} ;
+            time:hasEnd ex:OptimisationEndInstant_{interval_name} .
+        ex:OptimisationStartInstant_{interval_name} rdf:type time:Instant ;
+            time:inTimePosition ex:TimePosition_{str(time_pos1)} .
+        ex:OptimisationEndInstant_{interval_name} rdf:type time:Instant ;
+            time:inTimePosition ex:TimePosition_{str(time_pos2)} .
         ex:TimePosition_{str(time_pos1)} rdf:type time:TimePosition ;
             time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
             time:numericPosition {time_pos1} .
@@ -147,7 +148,7 @@ def api():
     PREFIX ex: <http://example.org/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
-    PREIX deriv: <https://www.theworldavatar.com/kg/ontoderivation/>
+    PREFIX deriv: <https://www.theworldavatar.com/kg/ontoderivation/>
 
     SELECT ?fc_iri
     WHERE {{
