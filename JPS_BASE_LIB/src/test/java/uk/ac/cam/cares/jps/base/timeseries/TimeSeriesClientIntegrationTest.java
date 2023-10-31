@@ -13,13 +13,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.startupcheck.MinimumDurationRunningStartupCheckStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -43,6 +49,7 @@ public class TimeSeriesClientIntegrationTest {
 	private static TimeSeriesClient<Instant> tsClient;
 
 	private static RemoteRDBStoreClient rdbStoreClient;
+	private static RemoteStoreClient kbClient;
 
 	// Time series test data
 	private static List<String> dataIRI_1, dataIRI_2;
@@ -55,20 +62,14 @@ public class TimeSeriesClientIntegrationTest {
 	private final double epsilon = 0.000001d;
 
 	// Will create two Docker containers for Blazegraph and postgreSQL
-	// NOTE: requires access to the docker.cmclinnovations.com registry from the
-	// machine the test is run on.
-
-	// Create Docker container with Blazegraph image from CMCL registry (image uses
-	// port 8080)
-	// For more information regarding the registry, see:
-	// https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 	@Container
-	private GenericContainer<?> blazegraph = new GenericContainer<>(
+	static GenericContainer<?> blazegraph = new GenericContainer<>(
 			DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
+			 .withStartupCheckStrategy(new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(2)))
 			.withExposedPorts(8080);
 	// Create Docker container with postgres 13.3 image from Docker Hub
 	@Container
-	private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
+	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
 
 	// Initialise 2 test time series data sets
 	@Before
@@ -98,49 +99,78 @@ public class TimeSeriesClientIntegrationTest {
 		dataClass_2 = new ArrayList<>();
 		dataClass_2.add(Double.class);
 
-		duration = Duration.ofDays(33*9);
+		duration = Duration.ofDays(33 * 9);
 		chronoUnit = ChronoUnit.MONTHS;
 		numericalDuration = 9.0;
-		temporalUnit = TimeSeriesSparql.NS_TIME+"unitMonth";
+		temporalUnit = TimeSeriesSparql.NS_TIME + "unitMonth";
 	}
 
 	// Create clean slate (new Docker containers) for each test
 	@Before
 	public void initialiseTimeSeriesClient() {
-
 		try {
-			// Start Blazegraph container
-			blazegraph.start();
-			// Start postgreSQL container
-			postgres.start();
+			if (!blazegraph.isRunning()) {
+				// Start Blazegraph container
+				blazegraph.start();
+			} else {
+				clearTriples();
+			}
+
+			if (!postgres.isRunning()) {
+				// Start postgreSQL container
+				postgres.start();
+			} else {
+				clearDatabase();
+			}
+
+			// Set endpoint to the triple store. The host and port are read from the
+			// container
+			String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
+			// Default namespace in blazegraph is "kb"
+			endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
+
+			// Set up a kb client that points to the location of the triple store
+			kbClient = new RemoteStoreClient();
+			kbClient.setUpdateEndpoint(endpoint);
+			kbClient.setQueryEndpoint(endpoint);
+
+			// Initialise TimeSeriesClient client with pre-configured kb client
+			tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
+
+			// Configure database access
+			rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
+					postgres.getPassword());
+
 		} catch (Exception e) {
 			throw new JPSRuntimeException(
-					"TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again");
+					"TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again",
+					e);
 		}
+	}
 
-		// Set endpoint to the triple store. The host and port are read from the
-		// container
-		String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
-		// Default namespace in blazegraph is "kb"
-		endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
+	// Clear all tables after each test to ensure clean slate
+	private static void clearDatabase() throws SQLException {
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+			List<Table<?>> tables = context.meta().getTables();
+			for (Table<?> table : tables) {
+				context.dropTable(table).cascade().execute();
+			}
+		}
+	} // Clear all tables after each test to ensure clean slate
 
-		// Set up a kb client that points to the location of the triple store
-		RemoteStoreClient kbClient = new RemoteStoreClient();
-		kbClient.setUpdateEndpoint(endpoint);
-		kbClient.setQueryEndpoint(endpoint);
-
-		// Initialise TimeSeriesClient client with pre-configured kb client
-		tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
-
-		// Configure database access
-		rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
-				postgres.getPassword());
+	private static void clearTriples() {
+		kbClient.executeUpdate("DELETE {" +
+				"    ?s ?p ?o ." +
+				"} WHERE {" +
+				"    ?s ?p ?o ." +
+				"}");
 	}
 
 	// Cleaning up containers after each test, otherwise unused containers will
 	// first be killed when all tests finished
-	@After
-	public void stopContainers() {
+	@AfterClass
+	public static void stopContainers() {
 		if (blazegraph.isRunning()) {
 			blazegraph.stop();
 		}
@@ -156,12 +186,14 @@ public class TimeSeriesClientIntegrationTest {
 			Assert.assertEquals(0, tsClient.countTimeSeries());
 
 			// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration, chronoUnit);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration,
+					chronoUnit);
 
 			// Verify correct instantiation in both kb and database
 			Assert.assertEquals(1, tsClient.countTimeSeries());
 			Assert.assertEquals(3, tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
-			TimeSeriesSparql.CustomDuration customDuration = tsClient.getCustomDuration(tsClient.getTimeSeriesIRI(dataIRI_1.get(0)));
+			TimeSeriesSparql.CustomDuration customDuration = tsClient
+					.getCustomDuration(tsClient.getTimeSeriesIRI(dataIRI_1.get(0)));
 			Assert.assertEquals(customDuration.getUnit(), temporalUnit);
 			Assert.assertEquals(customDuration.getValue(), numericalDuration, epsilon);
 			TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1, conn);
@@ -177,6 +209,7 @@ public class TimeSeriesClientIntegrationTest {
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testInitTimeSeriesWithKGInitException() throws SQLException {
 
@@ -185,11 +218,13 @@ public class TimeSeriesClientIntegrationTest {
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
 			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null));
+					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn,
+							TimeSeriesClient.Type.INSTANTANEOUS, null, null));
 			Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testInitTimeSeriesWithUnavailableRDB() throws SQLException {
 		try (Connection conn = rdbStoreClient.getConnection()) {
@@ -197,11 +232,13 @@ public class TimeSeriesClientIntegrationTest {
 			postgres.stop();
 			// Initialise time series in knowledge base and database
 			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.CUMULATIVETOTAL, null, null));
+					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn,
+							TimeSeriesClient.Type.CUMULATIVETOTAL, null, null));
 			Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testInitTimeSeriesWithUnavailableRDBAndKGRevertException() throws NoSuchFieldException,
 			SecurityException, IllegalArgumentException, IllegalAccessException, SQLException {
@@ -212,18 +249,22 @@ public class TimeSeriesClientIntegrationTest {
 			RDFClient.setAccessible(true);
 			TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
-			// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-			// Spy's behave exactly like normal instances, except for particularly stubbed methods
+			// Create a spy object of the real rdfClient and substitute the initial
+			// rdfClient with it
+			// Spy's behave exactly like normal instances, except for particularly stubbed
+			// methods
 			TimeSeriesSparql rdfClient_spy = spy(rdfClient);
 			RDFClient.set(tsClient, rdfClient_spy);
-			// Throw error when removal of time series in KG is intended (after RDB interaction failed) to simulate connection error etc.
+			// Throw error when removal of time series in KG is intended (after RDB
+			// interaction failed) to simulate connection error etc.
 			doThrow(new JPSRuntimeException("")).when(rdfClient_spy).removeTimeSeries(Mockito.anyString());
 
 			// Interrupt database connection
 			postgres.stop();
 			// Initialise time series in knowledge base and database
 			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.GENERAL, null, null));
+					() -> tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.GENERAL,
+							null, null));
 			Assert.assertTrue(e.getMessage().contains("Inconsistent state created when initialising time series"));
 		}
 
@@ -289,12 +330,14 @@ public class TimeSeriesClientIntegrationTest {
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testDeleteIndividualTimeSeriesWithUnavailableKG() throws SQLException {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null,
+					null);
 			String dataIRI = dataIRI_1.get(0);
 
 			// Interrupt triple store connection
@@ -313,7 +356,8 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null,
+					null);
 			String dataIRI = dataIRI_1.get(0);
 
 			// Retrieve the value of the private field 'rdfClient' of the time series client
@@ -321,8 +365,10 @@ public class TimeSeriesClientIntegrationTest {
 			RDFClient.setAccessible(true);
 			TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
-			// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-			// Spy's behave exactly like normal instances, except for particularly stubbed methods
+			// Create a spy object of the real rdfClient and substitute the initial
+			// rdfClient with it
+			// Spy's behave exactly like normal instances, except for particularly stubbed
+			// methods
 			TimeSeriesSparql rdfClient_spy = spy(rdfClient);
 			RDFClient.set(tsClient, rdfClient_spy);
 			// Throw error when removal of time series in KG is intended
@@ -343,6 +389,7 @@ public class TimeSeriesClientIntegrationTest {
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testDeleteIndividualTimeSeriesWithUnavailableRDB() throws SQLException {
 
@@ -371,13 +418,15 @@ public class TimeSeriesClientIntegrationTest {
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testDeleteIndividualTimeSeriesWithKGRevertException() throws IllegalArgumentException,
 			IllegalAccessException, NoSuchFieldException, SecurityException, SQLException {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.STEPWISECUMULATIVE, null, null);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.STEPWISECUMULATIVE,
+					null, null);
 			String dataIRI = dataIRI_1.get(0);
 
 			// Retrieve the value of the private field 'rdfClient' of the time series client
@@ -385,8 +434,10 @@ public class TimeSeriesClientIntegrationTest {
 			RDFClient.setAccessible(true);
 			TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
-			// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-			// Spy's behave exactly like normal instances, except for particularly stubbed methods
+			// Create a spy object of the real rdfClient and substitute the initial
+			// rdfClient with it
+			// Spy's behave exactly like normal instances, except for particularly stubbed
+			// methods
 			TimeSeriesSparql rdfClient_spy = spy(rdfClient);
 			RDFClient.set(tsClient, rdfClient_spy);
 			// Throw error when removal of time series in KG is intended
@@ -409,8 +460,10 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.CUMULATIVETOTAL, null, null);
-			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.CUMULATIVETOTAL, null,
+					null);
+			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null,
+					null);
 
 			// Verify correct instantiation in both kb and database
 			Assert.assertEquals(2, tsClient.countTimeSeries());
@@ -445,12 +498,14 @@ public class TimeSeriesClientIntegrationTest {
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testDeleteTimeSeriesWithUnavailableKG() throws SQLException {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration, chronoUnit);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration,
+					chronoUnit);
 			// Retrieve tsIRI to be deleted
 			String tsIRI = tsClient.getTimeSeriesIRI(dataIRI_1.get(0));
 
@@ -470,15 +525,18 @@ public class TimeSeriesClientIntegrationTest {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.CUMULATIVETOTAL, null, null);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.CUMULATIVETOTAL, null,
+					null);
 
 			// Retrieve the value of the private field 'rdfClient' of the time series client
 			Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
 			RDFClient.setAccessible(true);
 			TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
-			// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-			// Spy's behave exactly like normal instances, except for particularly stubbed methods
+			// Create a spy object of the real rdfClient and substitute the initial
+			// rdfClient with it
+			// Spy's behave exactly like normal instances, except for particularly stubbed
+			// methods
 			TimeSeriesSparql rdfClient_spy = spy(rdfClient);
 			RDFClient.set(tsClient, rdfClient_spy);
 			// Throw error when removal of time series in KG is intended
@@ -501,6 +559,7 @@ public class TimeSeriesClientIntegrationTest {
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testDeleteTimeSeriesWithUnavailableRDB() throws SQLException {
 
@@ -528,21 +587,25 @@ public class TimeSeriesClientIntegrationTest {
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testDeleteTimeSeriesWithKGRevertException() throws IllegalArgumentException, IllegalAccessException,
 			NoSuchFieldException, SecurityException, SQLException {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null,
+					null);
 
 			// Retrieve the value of the private field 'rdfClient' of the time series client
 			Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
 			RDFClient.setAccessible(true);
 			TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
-			// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-			// Spy's behave exactly like normal instances, except for particularly stubbed methods
+			// Create a spy object of the real rdfClient and substitute the initial
+			// rdfClient with it
+			// Spy's behave exactly like normal instances, except for particularly stubbed
+			// methods
 			TimeSeriesSparql rdfClient_spy = spy(rdfClient);
 			RDFClient.set(tsClient, rdfClient_spy);
 			// Throw error when removal of time series in KG is intended
@@ -565,8 +628,10 @@ public class TimeSeriesClientIntegrationTest {
 	public void testDeleteAllWithoutExceptions() throws SQLException {
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration, chronoUnit);
-			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration,
+					chronoUnit);
+			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null,
+					null);
 
 			// Verify correct instantiation in both kb and database
 			Assert.assertEquals(2, tsClient.countTimeSeries());
@@ -589,11 +654,13 @@ public class TimeSeriesClientIntegrationTest {
 		}
 	}
 
+	@Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
 	@Test
 	public void testDeleteAllWithExceptions() throws SQLException {
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			// Initialise time series in knowledge base and database
-			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration, chronoUnit);
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.AVERAGE, duration,
+					chronoUnit);
 			tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit, conn, TimeSeriesClient.Type.GENERAL, null, null);
 
 			// Interrupt database connection

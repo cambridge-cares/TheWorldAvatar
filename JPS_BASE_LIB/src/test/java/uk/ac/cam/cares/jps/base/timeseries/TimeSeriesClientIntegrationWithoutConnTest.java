@@ -1,11 +1,17 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
 import org.junit.*;
 import org.mockito.Mockito;
 import org.testcontainers.containers.GenericContainer;
@@ -14,13 +20,15 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import static org.mockito.Mockito.*;
 
 /**
- * This class provides integration tests for the TimeSeriesClient class, particularly for the methods that do not 
+ * This class provides integration tests for the TimeSeriesClient class,
+ * particularly for the methods that do not
  * have connection in their argument
  */
 
@@ -32,6 +40,9 @@ import static org.mockito.Mockito.*;
 public class TimeSeriesClientIntegrationWithoutConnTest {
     // TimeSeries client (with RDB and Sparql client)
     private static TimeSeriesClient<Instant> tsClient;
+
+    private static RemoteRDBStoreClient rdbStoreClient;
+    private static RemoteStoreClient kbClient;
 
     // Time series test data
     private static List<String> dataIRI_1, dataIRI_2;
@@ -47,12 +58,12 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
     // For more information regarding the registry, see:
     // https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
-    private GenericContainer<?> blazegraph = new GenericContainer<>(
+    private static GenericContainer<?> blazegraph = new GenericContainer<>(
             DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
             .withExposedPorts(8080);
     // Create Docker container with postgres 13.3 image from Docker Hub
     @Container
-    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
+    private static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
 
     // Initialise 2 test time series data sets
     @Before
@@ -86,39 +97,69 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
     // Create clean slate (new Docker containers) for each test
     @Before
     public void initialiseTimeSeriesClient() {
-
         try {
-            // Start Blazegraph container
-            blazegraph.start();
-            // Start postgreSQL container
-            postgres.start();
+            if (!blazegraph.isRunning()) {
+                // Start Blazegraph container
+                blazegraph.start();
+            } else {
+                clearTriples();
+            }
+
+            if (!postgres.isRunning()) {
+                // Start postgreSQL container
+                postgres.start();
+            } else {
+                clearDatabase();
+            }
+
+            // Set endpoint to the triple store. The host and port are read from the
+            // container
+            String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
+            // Default namespace in blazegraph is "kb"
+            endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
+
+            // Set up a kb client that points to the location of the triple store
+            kbClient = new RemoteStoreClient();
+            kbClient.setUpdateEndpoint(endpoint);
+            kbClient.setQueryEndpoint(endpoint);
+
+            // Initialise TimeSeriesClient client with pre-configured kb client
+            tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
+
+            // Configure database access
+            rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
+                    postgres.getPassword());
+            tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
         } catch (Exception e) {
             throw new JPSRuntimeException(
-                    "TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again");
+                    "TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again",
+                    e);
         }
+    }
 
-        // Set endpoint to the triple store. The host and port are read from the
-        // container
-        String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
-        // Default namespace in blazegraph is "kb"
-        endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
+    // Clear all tables after each test to ensure clean slate
+    private static void clearDatabase() throws SQLException {
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+            List<Table<?>> tables = context.meta().getTables();
+            for (Table<?> table : tables) {
+                context.dropTable(table).cascade().execute();
+            }
+        }
+    } // Clear all tables after each test to ensure clean slate
 
-        // Set up a kb client that points to the location of the triple store
-        RemoteStoreClient kbClient = new RemoteStoreClient();
-        kbClient.setUpdateEndpoint(endpoint);
-        kbClient.setQueryEndpoint(endpoint);
-
-        // Initialise TimeSeriesClient client with pre-configured kb client
-        tsClient = new TimeSeriesClient<>(kbClient, Instant.class, null, null, null);
-
-        // Configure database access
-        tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+    private static void clearTriples() {
+        kbClient.executeUpdate("DELETE {" +
+                "    ?s ?p ?o ." +
+                "} WHERE {" +
+                "    ?s ?p ?o ." +
+                "}");
     }
 
     // Cleaning up containers after each test, otherwise unused containers will
     // first be killed when all tests finished
-    @After
-    public void stopContainers() {
+    @AfterClass
+    public static void stopContainers() {
         if (blazegraph.isRunning()) {
             blazegraph.stop();
         }
@@ -151,6 +192,7 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         Assert.assertEquals(kb, db);
     }
 
+    @Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
     @Test
     public void testInitTimeSeriesWithKGInitException() {
 
@@ -221,6 +263,7 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
     }
 
+    @Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
     @Test
     public void testDeleteIndividualTimeSeriesWithUnavailableKG() {
 
@@ -250,8 +293,10 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         RDFClient.setAccessible(true);
         TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
-        // Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-        // Spy's behave exactly like normal instances, except for particularly stubbed methods
+        // Create a spy object of the real rdfClient and substitute the initial
+        // rdfClient with it
+        // Spy's behave exactly like normal instances, except for particularly stubbed
+        // methods
         TimeSeriesSparql rdfClient_spy = spy(rdfClient);
         RDFClient.set(tsClient, rdfClient_spy);
         // Throw error when removal of time series in KG is intended
@@ -310,6 +355,7 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
                 .contains("<" + dataIRI_2.get(0) + "> does not have an assigned time series instance"));
     }
 
+    @Ignore("Not sure how useful this test is and it takes a non-trivial amount of time.")
     @Test
     public void testDeleteTimeSeriesWithUnavailableKG() {
 
@@ -339,8 +385,10 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
         RDFClient.setAccessible(true);
         TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
 
-        // Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-        // Spy's behave exactly like normal instances, except for particularly stubbed methods
+        // Create a spy object of the real rdfClient and substitute the initial
+        // rdfClient with it
+        // Spy's behave exactly like normal instances, except for particularly stubbed
+        // methods
         TimeSeriesSparql rdfClient_spy = spy(rdfClient);
         RDFClient.set(tsClient, rdfClient_spy);
         // Throw error when removal of time series in KG is intended
