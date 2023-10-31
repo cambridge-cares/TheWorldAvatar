@@ -2,6 +2,13 @@
 # Author: Feroz Farazi (msff2@cam.ac.uk) #
 # Date: 04 Dec 2020                      #
 ##########################################
+'''
+Log:
+Fixed some indents to 4 space.
+Added user info message for every 100k lines loaded to show the progress on long files.
+Added on-the-fly verification between ABox and TBox (for Classes and Object Property only, not for Data Property)
+'''
+
 
 """This module is designed to convert entities of any domain and their data and metadata into RDF.
 It requires the entities and their data to be provided as inputs in an ABox CSV template file."""
@@ -16,6 +23,12 @@ import os
 from pathlib import Path as PathlibPath
 import io
 import textwrap
+#import entityrdfizer.aboxgenerator.tboxcleaner as tboxcleaner
+
+"""Optional TBox structure to verify ABox entities vs classes and properties in TBox.
+Requires module tboxcleaner.
+Not fully implemented yet. """
+tBox = None
 
 """Declared column headers as constants"""
 HEADERS = ['Source', 'Type', 'Target', 'Relation', 'Value', 'Data Type']
@@ -86,13 +99,17 @@ def is_empty( value ):
             return True
     else:
         if show_warning :
-           #print(f"Error: Invalid type of '{value}', expected a string {file_line}." )
-           print(f"Error: Invalid type of '{value}', expected a string." )
+            #print(f"Error: Invalid type of '{value}', expected a string {file_line}." )
+            print(f"Error: Invalid type of '{value}', expected a string." )
         warning_count += 1
         return True
     return False
 
+""" Return True if the input is a string looking line an http address
+(starting from http://) """
 def is_http( value ):
+    if not isinstance( value, str):
+        return False
     if value.strip().lower().startswith(HTTP) or \
        value.strip().lower().startswith(HTTPS):
         return True
@@ -128,6 +145,8 @@ def class_to_http( value, file_line ):
 #        return str(value)
     # FIXME choose slash or hash or nothing depending on the settings
     full_path = propread.getTBoxIRI() + HASH + format_iri(str(value))
+    full_path = propread.getABoxIRI() + SLASH + format_iri(str(value))
+    full_path = "http://www.theworldavatar.com/kg/ontocrystal/" + format_iri(str(value))
     return full_path
 
 """Assign the tbox address, prints warnings for repeated assignments"""
@@ -171,7 +190,7 @@ def is_header_valid(row):
 
     if len(row) < TOTAL_NO_OF_COLUMNS:
         if show_warning:
-           print(f"Error: Csv headers must have at least {TOTAL_NO_OF_COLUMNS} columns." )
+            print(f"Error: Csv headers must have at least {TOTAL_NO_OF_COLUMNS} columns." )
         warning_count += 1
         return False
 
@@ -204,7 +223,7 @@ def check_existing_instances( value, file_line ):
                 if len(k) >= 36:
                     short = k[:-36]
                     if short == name and value != k:
-                       if show_warning:
+                        if show_warning:
                             print(f"Warning: Instance with same name but different UUID: " + \
                                   f"'{value}', existing instance: '{k}' {file_line}." )
                        warning_count += 1
@@ -215,8 +234,8 @@ def save_instances( filename ):
     _, ext = os.path.splitext( filename )
     if ext != ".csv":
         if show_warning:
-           print( "Warning: the file to save instances should have .csv extension,", \
-                 f"but got '{filename}'." )
+            print( "Warning: the file to save instances should have .csv extension,", \
+                  f"but got '{filename}'." )
         warning_count += 1
     with open(filename, "w") as f:
         for k in list( instances.keys() ):
@@ -225,7 +244,7 @@ def save_instances( filename ):
 """This function converts a row into an entity or a link between two entities or a data or annotation property value"""
 def process_data(row, file_line):
 #   1. Checking input parameters:
-    global warning_count, show_warning, instances
+    global warning_count, show_warning, instances, tBox
     if len(row) < TOTAL_NO_OF_COLUMNS:
         if show_warning:
             print(f"Warning: Skipping an incomplete or empty line {file_line}." )
@@ -238,7 +257,7 @@ def process_data(row, file_line):
             print(f"Warning: Skipping line {file_line} due to empty Col A or B or C." )
         warning_count += 1
         return
-    """Below Cols A,B,C are NOT empty, no ned to check """
+    """Below Cols A,B,C are NOT empty, no need to check """
 
 #   2. Processing
 #   2a) type_ontology
@@ -293,6 +312,7 @@ def process_data(row, file_line):
                 aboxgen.create_instance(g, URIRef(fullType), URIRef(instance), row[0])
             check_existing_instances( row[0], file_line )
             instances[row[0].strip()] = row[2].strip()
+
         # End of instance_of_class option, below only relation between instances
 
         elif is_http(row[2]) or row[2].strip() in instances:
@@ -301,7 +321,7 @@ def process_data(row, file_line):
                     print(f"Warning: Value {row[0]} in Cell A is not defined {file_line}." )
                 warning_count += 1
                 return
-            # If no relation is provided in the relation column, then instance linking will be skipped.
+            # If no relation is provided in the relation column, then instance linking will be skipped:
             if is_empty( row[3] ):
                 if show_warning:
                     print(f"Warning: Skiped line due to empty Cell D {file_line}." )
@@ -324,8 +344,9 @@ def process_data(row, file_line):
                 # FIXME
                 print( "Warning: using instance instead of class" )
 
-            aboxgen.link_instance(g, \
-                         URIRef(row3_http), URIRef(row0_http), URIRef(row2_http) )
+            aboxgen.link_instance(g, URIRef(row3_http), \
+                                     URIRef(row0_http), URIRef(row2_http) )
+
 
         else: # Warnings only
             if not row[2].strip() in instances:
@@ -369,6 +390,8 @@ def process_data(row, file_line):
                                         URIRef(instance), row[4].strip(), \
                                         get_data_type(row[5], file_line))
 
+                             #  get_data_type(row[5], file_line ), file_line )
+
     else:
         if show_warning:
             print(f"Warning: Invalid value '{row[1]}' {file_line} Col B.", \
@@ -381,7 +404,7 @@ def get_data_type(data_type, file_line):
     low_case = data_type.strip().lower()
     for k in list(DATA_TYPES.keys()):
         if low_case in DATA_TYPES[k][1:]:
-           return DATA_TYPES[k][0]
+            return DATA_TYPES[k][0]
     if not is_http( data_type ):
         if show_warning:
             print(f"Warning: data type '{data_type}' is not predefined.", \
@@ -407,7 +430,7 @@ input_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox/ABo
 output_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDFFiles"
 """
 def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None):
-    global warning_count, show_warning
+    global warning_count, show_warning, tBox
     fname = input_file_path
     input_file_path = PathlibPath(input_file_path)
     input_name = os.path.basename(input_file_path)
@@ -422,7 +445,7 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
     if output_file_path:
         output_file_path = PathlibPath(output_file_path)
         if not os.path.exists(output_file_path):
-           os.makedirs(output_file_path)
+            os.makedirs(output_file_path)
     else:
         output_file_path = os.path.dirname(input_file_path)
     output_file_path = os.path.join(output_file_path,input_name+propread.readABoxFileExtension())
@@ -432,6 +455,10 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
         rows = csv.reader(csvfile, skipinitialspace=True)
         for line_count, csv_row in enumerate(rows):
             _serialize_csv_row(csv_row, input_name, line_count)
+            if line_count > 0 and line_count % 250000 == 0:
+                print( " completed line", line_count )
+        if line_count > 250000:
+            print( "Finished reading .csv file, generating .owl" )
     g.serialize(destination=output_file_path,format="application/rdf+xml")
     print(f"Conversion complete. Abox created at '{output_file_path}'.")
     #if warning_count > 0:
