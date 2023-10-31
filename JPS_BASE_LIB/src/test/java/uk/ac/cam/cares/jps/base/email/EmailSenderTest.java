@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Disabled;
 
 /**
  * Tests the functionality of the EmailSender class.
- * See the EmailAgent source code for details on how to test 
+ * See the EmailAgent source code for details on how to test
  *
  * @author Michael Hillman (mdhillman<@>cmclinnovations.com)
  */
@@ -29,7 +29,8 @@ public class EmailSenderTest {
     private static final String EMAIL_AGENT_URL = "http://localhost:8080/email_agent";
 
     /**
-     * Tests that an email can be submitted to the EmailSender and is written to a local log file.
+     * Tests that an email can be submitted to the EmailSender and is written to a
+     * local log file.
      */
     @Test
     public void writeToFile() {
@@ -55,7 +56,7 @@ public class EmailSenderTest {
 
             // Remove the generated log file
             Assertions.assertTrue(Files.deleteIfExists(logFile.get()), "Could not delete the generated log file!");
-            
+
         } catch (Exception exception) {
             Assertions.fail("Could not mock environment variables for unit test!", exception);
         }
@@ -70,16 +71,19 @@ public class EmailSenderTest {
         // Configure a message
         String subject = "Testing the EmailAgent";
         String body = "This is a test of the EmailAgent's functionality to recieve job submissions "
-            + "and forward them to a remote SMTP server for delivery. If you're not the originator of "
-            + "this job, please ignore this message.";
-         
+                + "and forward them to a remote SMTP server for delivery. If you're not the originator of "
+                + "this job, please ignore this message.";
+
         // Use JPS base library code to submit job
         EmailSender sender = new EmailSender(EMAIL_AGENT_URL);
 
         try {
-            sender.sendEmail(subject, body);
+            Optional<Path> logFile = sender.sendEmail(subject, body);
             LOGGER.info("Email sent successfully, please check recipient's mailbox.");
-        } catch(Exception exception) {
+            if (logFile.isPresent()) {
+                Files.deleteIfExists(logFile.get());
+            }
+        } catch (Exception exception) {
             LOGGER.error("Could not contact remote EmailAgent!", exception);
         }
     }
@@ -96,7 +100,7 @@ public class EmailSenderTest {
         try {
             boolean reachable = sender.isReachable();
             LOGGER.info("Pinged the remote EmailAgent, status was {}", reachable);
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             LOGGER.error("Could not contact remote EmailAgent!", exception);
         }
     }
