@@ -215,13 +215,13 @@
                     manager.plotData();
                 });
             });
-            // Retrieve the parent container
-            let parent = document.getElementById("controlContainer");
+            // Retrieve the sibling container where you wish to insert the new component before it
+            let beforeSiblingContainer = document.getElementById("helpContainer");
             // Create a new custom component
             // Edit your parameters here
             let custom_component = new SeachEntityComponent("Search Land Plot", "http://domain:port", MapHandler.MAP, "layerID");
-            // Render the custom component under the parent
-            custom_component.render(parent);
+            // Render the custom component before the sibling container
+            custom_component.render(beforeSiblingContainer);
         }
     </script>
 </body>

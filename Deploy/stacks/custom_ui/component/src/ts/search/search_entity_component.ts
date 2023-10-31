@@ -30,14 +30,14 @@ class SeachEntityComponent extends DynamicComponent {
   };
 
   /**
-   * Override method to ensure the content is rendered as the first child node of the parent element.
-   * @param {HTMLElement} parentElement - The parent element to append this component to.
+   * Override method to ensure the content is rendered before the specified element.
+   * @param {HTMLElement} htmlElement - The specified HTML element.
   */
-  public override render(parentElement: HTMLElement): void {
+  public override render(htmlElement: HTMLElement): void {
     this.container.appendChild(this.container_title);
     this.container.appendChild(this.container_content);
     // Override this part of the method
-    parentElement.insertBefore(this.container, parentElement.firstChild);
+    htmlElement.parentNode.insertBefore(this.container, htmlElement);
   };
 
   /**
