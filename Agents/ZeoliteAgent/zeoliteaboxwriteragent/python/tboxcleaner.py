@@ -30,11 +30,12 @@ import sys     # for command line arguments (sys.argv)
 import os      # To detect file, to check filename, etc.
 
 import logging # For error/waarning messages
-logging.basicConfig( level=logging.WARNING )
+logging.basicConfig( level=logging.INFO )
+#logging.basicConfig( level=logging.WARNING )
 #logging.basicConfig( level=logging.ERROR )
 #logging.disable( logging.CRITICAL )
 
-import tools
+#import tools
 
 COLUMN_LETTERS = "ABCDEFGHIJ"
 COLUMN_HEADERS = [ "Source",      "Type",  "Target",   "Relation", "Domain",
@@ -74,9 +75,11 @@ class TBoxCleaner:
     __slots__ = [ "fileIn",  "dataIn", "classes", "clNames", "objProp", "opNames", 
                   "datProp", "dpNames", "nCol", "onto", "ontoNames", "errCount",
                   "dataOut", "headers",
-                  "objPropDomain", "objPropRange", "datPropDomain", "datPropRange" 
+                  "objPropDomain", "objPropRange", "datPropDomain", "datPropRange",
+                  "triples", "tbox",
+                  "verbose"
                 ]
-    def __init__( self ):
+    def __init__( self, verbose = True ):
         self.cleanAll()
         '''
         self.dataIn = []
@@ -93,6 +96,9 @@ class TBoxCleaner:
         self.nCol    = 10
         self.fileIn  = ""
         '''
+        self.verbose = verbose
+
+        pass # TBoxCleaner.__init__()
 
     def cleanAll( self ):
         self.dataIn    = []
@@ -114,11 +120,55 @@ class TBoxCleaner:
         self.objPropDomain = []
         self.objPropRange  = []
 
-
+        self.tbox          = ""
+        self.triples       = {}  # Structure of this dictionary is 
+                                 # self.triples["hasXXX"]["domain"] = []
+                                 # self.triples["hasXXX"]["range" ] = []
+                                 #
+        self.verbose       = False
 
         pass # TBoxCleaner.cleanAll()
 
+
     def readExcel( self, filename ):
+        fBase, fExt = os.path.splitext( filename )
+        if ".xlsx" == fExt.lower():
+            self.readXlsx( filename )
+        elif ".csv" == fExt.lower():
+            self.readCsv( filename )
+        else:
+            logging.error( " Unknown file extension in '" + filename + "'." )
+
+        pass # TBoxCleaner.readExcel()
+
+    def readCsv( self, filename ):
+
+        if not os.path.isfile( filename ):
+            self.fileIn = ""
+            logging.error( " Input file '" + filename + "' does not exist." )
+            return 
+
+        self.fileIn = filename
+        df = pandas.read_csv( filename, encoding='unicode_escape' )
+        logging.info( "The size of input file '" + filename + "' is " + str(df.shape) + "." )
+ 
+        self.dataIn = []
+        self.dataIn.append( df.columns )
+        for index, row in df.iterrows():
+            #print(row)
+            #print(row.to_dict())
+            r = row.to_dict()
+            line = [ r[k] for k in r.keys() ]
+            #print( line )
+            self.dataIn.append( line )
+        #print( self.dataIn )
+        pass # TBoxCleaner.readXlsx()
+
+
+        pass # TBoxCleaner.readCsv()
+
+    def readXlsx( self, filename ):
+
         if not os.path.isfile( filename ):
             self.fileIn = ""
             logging.error( " Input file '" + filename + "' does not exist." )
@@ -138,6 +188,7 @@ class TBoxCleaner:
             #print( line )
             self.dataIn.append( line )
         #print( self.dataIn )
+        pass # TBoxCleaner.readXlsx()
 
     def isEmptyCell( self, cell ):
         """ Returns True if the input string 'cell' is empty or nan.
@@ -155,6 +206,7 @@ class TBoxCleaner:
         return False
         #return True
 
+        pass # TBoxCleaner.isEmptyCell()
 
     def isCellBValue( self, line, value, file_line ):
         if len(line) < 2:
@@ -175,24 +227,24 @@ class TBoxCleaner:
             return True
         else:
             return False
-        pass # isCellBValue    
+        pass # TBoxCleaner.isCellBValue()
  
     def isLineOntology( self, line, file_line ):
         return self.isCellBValue( line, "TBox", file_line )
-        pass # isLineOntology()
+        pass # TBoxCleaner.isLineOntology()
        
     def isLineClass( self, line, file_line ):
         return self.isCellBValue( line, "Class", file_line )
 
-        pass # isLineClass()
+        pass # TBoxCleaner.isLineClass()
 
     def isLineObjProp( self, line, file_line ):
         return self.isCellBValue( line, "Object Property", file_line )
-        pass # isLineObjProp()
+        pass # TBoxCleaner.isLineObjProp()
 
     def isLineDataProp( self, line, file_line ):
         return self.isCellBValue( line, "Data Property", file_line )
-        pass # isLineDataProp()
+        pass # TBoxCleaner.isLineDataProp()
 
     def isKnownClass( self, value, strict = False ):
         for c in self.clNames:
@@ -204,7 +256,7 @@ class TBoxCleaner:
                     return True
 
         return False
-        pass # isKnownClass
+        pass # TBoxCleaner.isKnownClass()
 
     def isKnownObjProp( self, value, strict = False ):
         for c in self.opNames:
@@ -216,7 +268,7 @@ class TBoxCleaner:
                     return True
 
         return False
-        pass # isKnownObjProp
+        pass # TBoxCleaner.isKnownObjProp()
 
     def isKnownDataProp( self, value, strict = False ):
         for c in self.dpNames:
@@ -228,7 +280,7 @@ class TBoxCleaner:
                     return True
 
         return False
-        pass # isKnownObjProp
+        pass # TBoxCleaner.isKnownObjProp()
 
     def validateHeaders( self, headers, file_line ):
         """ Function returns number of errors + warnings detected. 
@@ -261,7 +313,7 @@ class TBoxCleaner:
                 errCount += 1
 
         return errCount
-        pass # validateHeaders()
+        pass # TBoxCleaner.validateHeaders()
 
     def validateOntoLine( self, line, file_line ):
         """ Return number of warnings + errors.
@@ -292,8 +344,7 @@ class TBoxCleaner:
                 errCount += 1
 
         return errCount
-        pass
-
+        pass # TBoxCleaner.validateOntoLine()
 
     def validateClassLine( self, line, file_line ):
         """ Return number of warnings + errors.
@@ -364,17 +415,30 @@ class TBoxCleaner:
 
         # Check whether 'Defined In' exists (column 8):
         if self.isEmptyCell(line[8]):
-            logging.error( " Missing Defined In for class '" + line[0] + "' " + file_line + \
+            logging.error( " Missing '" + COLUMN_HEADERS[8] + "' for class '" + \
+                           line[0] + "' " + file_line + \
                            " in col " + COLUMN_LETTERS[8] + "." )
             errCount += 1
         elif isinstance( line[8], str ):
             if len( line[8] ) < 20:
-                logging.warning( " Class '" + line[0] + "' may have incompete 'defined in': '" + \
+                logging.warning( " Class '" + line[0] + "' may have incompete '" + COLUMN_HEADERS[8] + "': '" + \
                                  line[8] + "' " + file_line + " col " + COLUMN_LETTERS[8] + "." )
                 errCount += 1
 
+        # Check whether 'Label' exists (column 9):
+        if self.isEmptyCell(line[9]):
+            logging.error( " Missing '" + COLUMN_HEADERS[9] + "' for class '" + \
+                           str(line[0]) + "' " + file_line + \
+                           " in col " + COLUMN_LETTERS[9] + "." )
+            errCount += 1
+        elif isinstance( line[9], str ):
+            if len( line[9] ) < 4:
+                logging.warning( " Class '" + str(line[0]) + "' may have incompete '" + COLUMN_HEADERS[9] + "': '" + \
+                                 line[9] + "' " + file_line + " col " + COLUMN_LETTERS[9] + "." )
+                errCount += 1
+
         # Other columns are empty:
-        for i in [ 4, 5, 6, 9 ]:
+        for i in [ 4, 5, 6 ]:
             if not self.isEmptyCell( line[i] ):
                 logging.warning( " Expecting empty cell " + COLUMN_LETTERS[i] + \
                                  " but got '" + str(line[i]) + "' " + file_line + ". Err1." )
@@ -401,7 +465,7 @@ class TBoxCleaner:
             errCount += 1
 
         return errCount
-        pass # validateClassLine()
+        pass # TBoxCleaner.validateClassLine()
 
     def validateObjLine( self, line, file_line ):
         """ Return number of warnings + errors.
@@ -454,17 +518,29 @@ class TBoxCleaner:
 
         # Check whether 'Defined In' exists (column 8):
         if self.isEmptyCell(line[8]):
-            logging.error( " Missing Defined In for Obj Property '" + line[0] + "' " + file_line + \
+            logging.error( " Missing '" + COLUMN_HEADERS[8] + \
+                           "' for Obj Property '" + line[0] + "' " + file_line + \
                            " in col " + COLUMN_LETTERS[8] + "." )
             errCount += 1
         elif isinstance( line[8], str ):
             if len( line[8] ) < 20:
-                logging.warning( " Obj Property '" + line[0] + "' may have incompete 'defined in': '" + \
+                logging.warning( " Obj Property '" + line[0] + "' may have incompete '" + COLUMN_HEADERS[8] +"': '" + \
                                  line[8] + "' " + file_line + " col " + COLUMN_LETTERS[8] + "." )
                 errCount += 1
 
+        # Check whether 'Label' exists (column 9):
+        if self.isEmptyCell(line[9]):
+            logging.error( " Missing '" + COLUMN_HEADERS[9] + "' for Obj Property '" + line[0] + "' " + file_line + \
+                           " in col " + COLUMN_LETTERS[9] + "." )
+            errCount += 1
+        elif isinstance( line[9], str ):
+            if len( line[9] ) < 4:
+                logging.warning( " Obj Property '" + line[0] + "' may have incompete '" + COLUMN_HEADERS[9] +"': '" + \
+                                 line[9] + "' " + file_line + " col " + COLUMN_LETTERS[9] + "." )
+                errCount += 1
+
         # Other columns are empty:
-        for i in [ 2, 3, 9 ]:
+        for i in [ 2, 3 ]:
             if not self.isEmptyCell( line[i] ):
                 logging.warning( " Expecting empty cell " + COLUMN_LETTERS[i] + \
                                  " but got '" + str(line[i]) + "' " + file_line + ". Err2." )
@@ -493,7 +569,7 @@ class TBoxCleaner:
 
 
         return errCount
-        pass # validateObjLine()
+        pass # TBoxCleaner.validateObjLine()
 
 
     def validateDataLine( self, line, file_line ):
@@ -532,17 +608,30 @@ class TBoxCleaner:
 
         # Check whether 'Defined In' exists (column 8):
         if self.isEmptyCell(line[8]):
-            logging.error( " Missing Defined In for Data Property '" + line[0] + "' " + file_line + \
+            logging.error( " Missing '" + COLUMN_HEADERS[8] + "' for Data Property '" + line[0] + "' " + file_line + \
                            " in col " + COLUMN_LETTERS[8] + "." )
             errCount += 1
         elif isinstance( line[8], str ):
             if len( line[8] ) < 20:
-                logging.warning( " Data Property '" + line[0] + "' may have incompete 'defined in': '" + \
+                logging.warning( " Data Property '" + line[0] + \
+                                 "' may have incompete '" + COLUMN_HEADERS[8] + "': '" + \
                                  line[8] + "' " + file_line + " col " + COLUMN_LETTERS[8] + "." )
                 errCount += 1
 
+        # Check whether 'Label' exists (column 9):
+        if self.isEmptyCell(line[9]):
+            logging.error( " Missing '" + COLUMN_HEADERS[9] + "' for Data Property '" + line[0] + "' " + file_line + \
+                           " in col " + COLUMN_LETTERS[9] + "." )
+            errCount += 1
+        elif isinstance( line[9], str ):
+            if len( line[9] ) < 4:
+                logging.warning( " Data Property '" + line[0] + \
+                                 "' may have incompete '" + COLUMN_HEADERS[9] + "': '" + \
+                                 line[9] + "' " + file_line + " col " + COLUMN_LETTERS[9] + "." )
+                errCount += 1
+
         # Other columns are empty:
-        for i in [ 2, 3, 6, 9 ]:
+        for i in [ 2, 3, 6 ]:
             if not self.isEmptyCell( line[i] ):
                 logging.warning( " Expecting empty cell " + COLUMN_LETTERS[i] + \
                                  " but got '" + str(line[i]) + "' " + file_line + ". Err3." )
@@ -569,7 +658,7 @@ class TBoxCleaner:
 
 
         return errCount
-        pass # validateDataLine()
+        pass # TBoxCleaner.validateDataLine()
 
 
     def parseInputData( self ):
@@ -619,9 +708,11 @@ class TBoxCleaner:
                 pass
             else:
                 #logging.warning( " xxxxxxxxxxxxxxxxxxxx " )
-                logging.warning( "Failed to identify type, skipping line: '" + \
-                      str(line) + "' " + file_line + "." )
-        pass # parseInputData()
+                logging.warning( " Failed to identify type, skipping line: '" + \
+                      str(line) + "' " + file_line + "." 
+                      #" Check '" + str( words[1] + "'." 
+                      )
+        pass # TBoxCleaner.parseInputData()
 
     def isLineComment( self, line, file_line ):
         """ Now the conditions are either: 
@@ -641,7 +732,7 @@ class TBoxCleaner:
             return True
 
         return False
-        pass # isLineComment()
+        pass # TBoxCleaner.isLineComment()
 
     def getShort( self, word, file_line ):
         if isinstance( word, str ):
@@ -659,7 +750,7 @@ class TBoxCleaner:
                            str(type(word)) + " " + file_line )
             short = str(word)
         return short
-
+        pass # TBoxCleaner.getShort()
 
     def emptyLine( self, line, file_line ):
         #isEmpty = True
@@ -673,13 +764,14 @@ class TBoxCleaner:
             else:
                 logging.error( " Unknown type of '" + str(word) + "': " + str(type(word)) + "." )
         return True
+        pass # TBoxCleaner.emptyLine()
                 
     def extractHeaders( self, line, file_line ):
         #print( "sssssssssssssssssssss" )
         #print( "header line =", line )
         self.headers = [line]
         self.errCount += self.validateHeaders( line, file_line )
-        pass # extractHeaders()
+        pass # TBoxCleaner.extractHeaders()
         
     def extractOntology( self, line, file_line ):
 
@@ -687,8 +779,12 @@ class TBoxCleaner:
 
         self.onto.append( line )
         self.ontoNames.append( line[0] )
+
+        if line[3].strip().lower() == "https://www.w3.org/2007/05/powder-s#hasIRI":
+            # "http://www.theworldavatar.com/kg/ontocrystal/":
+            self.tbox = line[3].strip()
    
-        pass # extractOntology() 
+        pass # TBoxCleaner.extractOntology() 
 
     def extractClasses( self, line, file_line ):
 
@@ -699,17 +795,7 @@ class TBoxCleaner:
         self.clNames.append( str(line[0]).strip() )
 
         #print( self.classes )
-        pass # extractClasses()
-
-    def addClass( self, line ):
-        logging.error( "No implemented 333333" )
-        pass # addClass( line )
-    def addObjProp( self, line ):
-        logging.error( "No implemented 333333" )
-        pass # addObjProp( line )
-    def addDataProp( self, line ):
-        logging.error( "No implemented 333333" )
-        pass # addDataProp( line )
+        pass # TBoxCleaner.extractClasses()
 
     def extractObjProp( self, line, file_line ):
 
@@ -718,9 +804,10 @@ class TBoxCleaner:
         #self.addObjProp( line )
         self.objProp.append( line )
         self.opNames.append( line[0].strip() )
+        self.addTriple( line[4], line[0], line[5], file_line )
 
         # Domain:
-        words = line[4].split( "UNION" )
+        words = str(line[4]).split( "UNION" )
         self.objPropDomain = [ w.strip() for w in words ] #line[4].split( "UNION" )
         for w in self.objPropDomain:
             pos = w.lower().find( "union" )
@@ -744,7 +831,7 @@ class TBoxCleaner:
             pos = w.lower().find( "union" )
             if pos >= 0:
                 logging.warning( " Found '" + w[pos:pos+5] + "' in " + file_line + \
-                                 " col " + COLUMN_LETTERS[4] + ", it may " \
+                                 " col " + COLUMN_LETTERS[5] + ", it may " \
                                  "be confused with the UNION keyword." )
                 self.errCount += 1
 
@@ -758,7 +845,7 @@ class TBoxCleaner:
  
 
         #print( self.objProp )
-        pass # extractObjProp()
+        pass # TBoxCleaner.extractObjProp()
 
     def extractDataProp( self, line, file_line ):
         self.errCount += self.validateDataLine( line, file_line )
@@ -766,11 +853,12 @@ class TBoxCleaner:
         #self.addDataProp( line )
         self.datProp.append( line )
         self.dpNames.append( line[0].strip() )
+        self.addTriple( line[4], line[0], line[5], file_line )
 
         # Domain:
         words = line[4].split( "UNION" )
-        self.objPropDomain = [ w.strip() for w in words ] #line[4].split( "UNION" )
-        for w in self.objPropDomain:
+        self.datPropDomain = [ w.strip() for w in words ] #line[4].split( "UNION" )
+        for w in self.datPropDomain:
             pos = w.lower().find( "union" )
             if pos >= 0:
                 logging.warning( " Found '" + w[pos:pos+5] + "' word in " + file_line + \
@@ -784,34 +872,108 @@ class TBoxCleaner:
                                " col " + COLUMN_LETTERS[4] + "." )
                 self.errCount += 1
 
-            #print( ">>>>>>>>>>>>> obj prop Domain(s):", self.objPropDomain )
+            #print( ">>>>>>>>>>>>> obj prop Domain(s):", self.datPropDomain )
             
         # Range:
         words = line[5].split( "UNION" )
-        self.objPropRange = [ w.strip() for w in words ] #line[4].split( "UNION" )
-        for w in self.objPropRange:
+        self.datPropRange = [ w.strip() for w in words ] #line[4].split( "UNION" )
+        for w in self.datPropRange:
             pos = w.lower().find( "union" )
             if pos >= 0:
                 logging.warning( " Found '" + w[pos:pos+5] + "' word in " + \
-                                 file_line + " col " + COLUMN_LETTERS[4] + \
+                                 file_line + " col " + COLUMN_LETTERS[5] + \
                                  ", it may be confused with the UNION keyword." )
                 self.errCount += 1
-            #print( ">>>>>>>>>>>>> obj prop Range(s):", self.objPropRange )
+            #print( ">>>>>>>>>>>>> obj prop Range(s):", self.datPropRange )
 
                 # Here no need to check the range(s) for data properties.
  
         #print( self.datProp )
-        pass # extractDataProp()
+        pass # TBoxCleaner.extractDataProp()
+
+    def addTriple( self, subj, predicate, obj, file_line ):
+        if not isinstance(predicate,str):
+            logging.error( " Predicate '" + str(predicate) + \
+                           "' is not a string " + file_line )
+            return
+
+        pStr = self.tbox + predicate
+        if pStr not in self.triples:
+            self.triples[pStr] = {}
+            self.triples[pStr]["domain"] = []
+            self.triples[pStr]["range" ] = []
+        else:
+            #logging.warning( " Repeated predicate '" + predicate + "' " + \
+            #                 file_line )
+            pass
+
+        self.triples[pStr]["domain"].append( subj )
+        self.triples[pStr]["range" ].append(  obj )
+
+        pass # TBoxCleaner.addTriple()
+
+    def checkTriple( self, subj, predicate, obj, file_line ):
+        errCount = 0
+
+        if not isinstance( subj, str ):
+            logging.error( " Subj is not a string '" + str(subj) + "' " + \
+                           file_line )
+            errCount += 1
+
+        if not isinstance( predicate, str ):
+            logging.error( " Predicate is not a string '" + str(predicate) + \
+                           "' " + file_line )
+            errCount += 1
+
+        if not isinstance( obj, str ):
+            logging.error( " Obj is not a string '" + str(obj) + "' " + \
+                           file_line )
+            errCount += 1
+
+        if predicate not in self.triples:
+            logging.error( " Predicate '" + predicate + "' is not in TBox " + \
+                           file_line )
+            for k in self.triples.keys():
+                print( "   ", k )
+            print( "  tbox = '" + self.tbox + "'." )
+            errCount += 1
+            return errCount
+
+        if subj not in self.triples[predicate]["domain"]:
+            logging.error( " Subject '" + subj + "' is not in TBox " + \
+                           file_line )
+            errCount += 1
+
+        if obj not in self.triples[predicate]["range"]:
+            logging.error( " Object '" + obj + "' is not in TBox " + \
+                           file_line )
+            errCount += 1
+
+        return errCount
+        pass # TBoxCleaner.checkTriple()
+        
+    def addClass( self, line ):
+        logging.error( "No implemented 333333" )
+        pass # TBoxCleaner.addClass()
+
+    def addObjProp( self, line ):
+        logging.error( "No implemented 333333" )
+        pass # TBoxCleaner.addObjProp()
+
+    def addDataProp( self, line ):
+        logging.error( "No implemented 333333" )
+        pass # TBoxCleaner.addDataProp()
+
 
     def mergeObjProp(self):
         logging.error( "Not implemented mergeObjProp()" )
 
-        pass # mergeObjProp()
+        pass # TBoxCleaner.mergeObjProp()
 
     def mergeDataProp(self):
         logging.error( "Not implemented mergeDataProp()" )
 
-        pass # mergeDataProp()
+        pass # TBoxCleaner.mergeDataProp()
 
     def saveCsv( self, filename ):
 
@@ -831,6 +993,7 @@ class TBoxCleaner:
 
         tmp = self.headers + self.onto    + self.classes + \
               self.objProp + self.datProp
+
         #print( tmp )
         #print( "===================" )
 
@@ -864,13 +1027,21 @@ class TBoxCleaner:
             #print( line )
             pass
 
-        tools.writeCsv( filename, self.dataOut )
+        """
+        try:
+            tools.writeCsv( filename, self.dataOut )
+        except:
+            for s in self.dataOut:
+                print( s )
+                tools.writeCsv( filename, [s] )
+        """
+
         #tools.writeCsv( filename, self.classes )
         print( "Saved '" + filename + "' file, number of lines =", 
                str(len(self.dataOut)) + "." )
         print( "Number of errors+warnings =", str(self.errCount) + "." )
 
-        pass # saveCsv()
+        pass # TBoxCleaner.saveCsv()
 
 if __name__ == "__main__":
     
@@ -900,7 +1071,7 @@ if __name__ == "__main__":
     else:
         logging.error( " Input must be Excel file with extension .xlsx, " + \
                        "but got file name '" + fileIn + "'." )
-        sys.exit(0)
+        #sys.exit(0)
 
     fileBase, fileExt = os.path.splitext( fileOut )
     if not fileExt.lower() == ".csv":
@@ -908,11 +1079,15 @@ if __name__ == "__main__":
                        "but got file name '" + fileOut + "'." )
         sys.exit(0)
 
-    #print( fileBase, fileExt )
+    print( fileBase, fileExt )
 
     tb = TBoxCleaner()
     tb.readExcel( fileIn )
     tb.parseInputData()
+    print( "   tbox = '" + tb.tbox + "'." )
+
+    # Example of use:
+    #tb.checkTriple( subj, predicate, obj, "file and line" )
 
 # old version:
 #tb.extractOntology()
