@@ -150,7 +150,7 @@ public class IsochroneAgent extends JPSAgent {
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            String workspaceName= "isochrone";
+            String workspaceName= "twa";
             String schema = "public";
             geoServerClient.createWorkspace(workspaceName);
             geoServerClient.createPostGISDataStore(workspaceName,"isochrone_aggregated" , dbName, schema);
