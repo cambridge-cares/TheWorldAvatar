@@ -231,7 +231,7 @@ class SparqlCompact2VerboseConverter:
             if predicate.startswith("os:has"):
                 sparql_compact, pattern = self.convert_concrete_predicate_clause(sparql_compact, predicate=predicate, obj=obj)
                 graph_patterns.append(pattern)
-            elif predicate.startswith("?has") and predicate.endswith("Name"):
+            elif predicate.startswith("?has"):
                 sparql_compact, pattern = self.convert_abstract_predicate_clause(sparql_compact, predicate=predicate, obj=obj)
                 graph_patterns.append(pattern)
             else:

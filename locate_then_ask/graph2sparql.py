@@ -22,7 +22,7 @@ class GraphToSparqlConverter:
             if p.endswith("/os:value"):
                 key = p[len("os:has") : -len("/os:value")]
                 return "{s} {p} {o} .".format(
-                    s="?" + s, p=p, o="?{Name}Value".format(Name=key)
+                    s="?" + s, p=p, o="?{key}Value".format(key=key)
                 )
             elif p.endswith("/rdfs:label"):
                 key = p[len("os:has") : -len("/rdfs:label")]
@@ -45,7 +45,7 @@ class GraphToSparqlConverter:
             assert predicate.startswith("os:has")
             key = predicate.split("/")[0][len("os:has") :]
 
-            operand_left = "?" + key
+            operand_left = "?{key}Value" + key
             operand_right = query_graph.nodes[s]["label"]
             operator = query_graph.nodes[o]["label"]
             if operator in [
