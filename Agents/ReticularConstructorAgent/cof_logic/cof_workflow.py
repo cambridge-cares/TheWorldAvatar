@@ -9,6 +9,9 @@ import os
 from autografs.autografs import run
 from .cof_stacker import COFStacker
 from ase.io import read, write
+from cof_logic.cof_dftb import cif_to_hd
+from cof_logic.cof_dftb import initiate_hsd_file
+from cof_logic.cof_dftb import skf_files
 
 class COFProcessor:
     def __init__(self, script_location=None):
@@ -30,7 +33,9 @@ class COFProcessor:
         # Define paths to the CSV files containing COF and precursor data
         filtered_cofs_path = os.path.join(self.script_location, 'Data', 'csv', 'Filtered_COFs.csv')
         precursors_inp_path = os.path.join(self.script_location, 'Data', 'csv', 'Precursors_inp.csv')
-
+        linkage_inp_path = os.path.join(self.script_location, 'Data', 'csv', 'Linkages_inp.csv')
+        dftb_cofs_path = os.path.join(self.script_location, 'Data', 'DFTB')
+        
         try:
             # Try to read the CSV files and store them as pandas DataFrames
             self.filtered_cofs = pd.read_csv(filtered_cofs_path)
@@ -82,6 +87,7 @@ class COFProcessor:
         write(cif_path, atoms)  # Write to .cif
 
         logging.info(f"Saved {prefix} as CIF.")
+        return cif_path  # Add this line to return the path of the generated CIF file
 
     def cof_parameter_extractor(self, output_path, output_ext):
         """
@@ -92,51 +98,123 @@ class COFProcessor:
         :param output_ext: File extension for the output files.
         :type output_ext: str
         """
-        # Check if the necessary data is available
         if self.filtered_cofs is None or self.precursors_inp is None:
             logging.warning("Data not available, can't extract parameters")
             return
-        
-        # Iterate through the rows of the filtered COFs data
+
         for _, row in self.filtered_cofs.iterrows():
-            # Initialize precursors and linkage
-            precursor_1 = None
-            precursor_2 = None
-            linkage = row['Linkage']
+            # Extract relevant information from the row
+            precursor_1, precursor_2, linkage, topology_name, cof_nr, assembly_model = self.extract_info_from_row(row)
+            sbu_names, precursor_values = self.get_sbu_names(precursor_1, precursor_2, linkage, assembly_model)            
+            self.process_cof(cof_nr, sbu_names, topology_name, output_path, output_ext, precursor_values)
 
-            # Check if Precursor1 and Precursor2 are non-NaN and not '0', and assign them if true
-            if pd.notna(row['Precursor1']) and row['Precursor1'] != '0':
-                precursor_1 = row['Precursor1']
-            if pd.notna(row['Precursor2']) and row['Precursor2'] != '0':
-                precursor_2 = row['Precursor2']
+            # Call the separate function for further processing
+            # self.process_cof(cof_nr, sbu_names, topology_name, output_path, output_ext)
+    
+    def extract_info_from_row(self, row):
+        """
+        Extract relevant information from a row of the DataFrame.
+        
+        :param row: A row of the DataFrame
+        :type row: pd.Series
+        :return: A tuple of extracted information
+        :rtype: tuple
+        """
+        assembly_model = row['Assembly_Model']
+        precursor_1 = row['Precursor1'] if pd.notna(row['Precursor1']) and row['Precursor1'] != '0' else None
+        precursor_2 = row['Precursor2'] if pd.notna(row['Precursor2']) and row['Precursor2'] != '0' else None
+        linkage = row['Linkage']
+        topology_name = row['Framework']
+        cof_nr = row['COF_Nr']
+        
+        return precursor_1, precursor_2, linkage, topology_name, cof_nr, assembly_model
+    
+    def get_sbu_names(self, precursor_1, precursor_2, linkage, assembly_model):
+        """
+        Get the names of the SBUs and additional information based on the precursors and linkage.
+        
+        :param precursor_1: The first precursor
+        :type precursor_1: str or None
+        :param precursor_2: The second precursor
+        :type precursor_2: str or None
+        :param linkage: The linkage
+        :type linkage: str
+        :return: A tuple of SBU names and additional information
+        :rtype: tuple
+        """
+        sbu_names = [linkage]
+        supplementary_sbu = None
+        #if linkage == 'LFR-8':
+        #    sbu_names = []
+        #else:
+        #    sbu_names = [linkage]
+        precursor_values = {}
+        
+        list_1_assembly_models = ['ctn-[(4-tetrahedral)x3(L:3-planar)x4]n', 'hcb-[(3-planar)x1(L:3-planar)x1]n',
+                                'dia-[(4-tetrahedral)x1(L:2-linear)x2]n', 'sql-[(4-planar)x1(L:2-linear)x2]n'] 
+        if assembly_model in list_1_assembly_models:
+            supplementary_sbu = 'dum_dum'
+            sbu_names.append(supplementary_sbu)
+        
+        if precursor_1 is not None:
+            matched_row = self.precursors_inp[self.precursors_inp['Precursor'] == precursor_1]
+            for _, m_row in matched_row.iterrows():
+                sbu_1 = m_row['inp']
+                sbu_names.append(sbu_1)
+                if linkage == 'LFR-22':
+                    sbu_names[0] = sbu_1
+                values = {key: m_row[key] for key in ['GBU', 'bindingSite', 'bsIndex', 'Dentation']}
+                precursor_values['Precursor_1'] = values
+                            
+        if precursor_2 is not None:
+            matched_row = self.precursors_inp[self.precursors_inp['Precursor'] == precursor_2]
+            for _, m_row in matched_row.iterrows():
+                sbu_names.append(m_row['inp'])
+                values = {key: m_row[key] for key in ['GBU', 'bindingSite', 'bsIndex', 'Dentation']}
+                precursor_values['Precursor_2'] = values
 
-            # Create a list for storing sbu names, initially containing the linkage
-            sbu_names = [linkage]
-            # Check if precursor_1 and precursor_2 exist, and if so, append their corresponding 'inp' values from precursors_inp to sbu_names
-            if precursor_1 is not None:
-                matched_row = self.precursors_inp[self.precursors_inp['Precursor'] == precursor_1]
-                for _, m_row in matched_row.iterrows():
-                    sbu_names.append(m_row['inp'])
-            if precursor_2 is not None:
-                matched_row = self.precursors_inp[self.precursors_inp['Precursor'] == precursor_2]
-                for _, m_row in matched_row.iterrows():
-                    sbu_names.append(m_row['inp'])
+        return sbu_names, precursor_values
+
+    def process_cof(self, cof_nr, sbu_names, topology_name, output_path, output_ext, precursor_values):
+        """
+        Perform further logic on the COF.
+        
+        :param cof_nr: COF number
+        :type cof_nr: int
+        :param sbu_names: List of SBU names
+        :type sbu_names: list
+        :param topology_name: Topology name
+        :type topology_name: str
+        :param output_path: Path where the output files will be stored
+        :type output_path: str
+        :param output_ext: File extension for the output files
+        :type output_ext: str
+        """
+        #print(precursor_values)
+        output_file_path = os.path.join(output_path, f'generated_cof_{cof_nr}')
+        logging.info(f'RUNNING AUTOGRAFS FOR COF number: {cof_nr}')
+        run(sbu_names, topology_name, output_file_path, output_ext)
+        logging.info(f'Geometry of COF {cof_nr} successfully Generated')
+
+        extxyz_file_path = f"{output_file_path}.extxyz"
+        if self.is_2D_COF(extxyz_file_path):
+            logging.info(f'STACKING OF COF {cof_nr} in AA and AB')
+            #cof_stacker = COFStacker(None) 
+            #cof_stacker.stack_cof(cof_nr, input_filename=f"generated_cof_{cof_nr}")
+            cof_stacker = COFStacker(f"generated_cof_{cof_nr}")
+            cof_stacker.stack_cof(cof_nr)
             
-            # Extract topology name and COF number from the current row of filtered COFs data
-            topology_name = row['Framework']
-            cof_nr = row['COF_Nr']
+        else:
+            cif_file = self.write_and_convert_to_cif(f"COF_{cof_nr}", extxyz_file_path)
             
-            # Construct the output file path and call the run function to perform further logic
-            output_file_path = os.path.join(output_path, f'generated_cof_{cof_nr}')
-            logging.info(f'RUNNING AUTOGRAFS FOR COF number: {cof_nr}')
-            run(sbu_names, topology_name, output_file_path, output_ext)
-            # Checking if the COF is 2D based on the .extxyz file
-            logging.info(f'Geometry of COF {cof_nr} succesfuly Generated')
-            extxyz_file_path = f"{output_file_path}.extxyz"  # Assuming the output from run is .extxyz
-            if self.is_2D_COF(extxyz_file_path):
-                # Stacking for 2D COFs
-                logging.info(f'STACKING OF COF {cof_nr} in AA and AB')
-                cof_stacker = COFStacker(f"generated_cof_{cof_nr}")
-                cof_stacker.stack_cof(cof_nr)
-            else:
-                self.write_and_convert_to_cif(f"COF_{cof_nr}", extxyz_file_path)
+            # Create a new directory named after the COF in the DFTB directory
+            dftb_cof_path = os.path.join(self.script_location, 'Data', 'DFTB', f"COF_{cof_nr}")
+            os.makedirs(dftb_cof_path, exist_ok=True)
+
+            # Convert CIF to GEN format and save it in the new directory
+            gen_file = os.path.join(dftb_cof_path, 'geo_end.gen')
+            cif_to_hd(cif_file, gen_file)
+
+            # Initiate the HSD file
+            hsd_file_path = os.path.join(dftb_cof_path, 'dftb_in.hsd')
+            initiate_hsd_file(gen_file, skf_files, output_filename=hsd_file_path)

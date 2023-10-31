@@ -6,6 +6,10 @@ __status__ = "development"
 import os
 import re
 from ase.io import read, write
+from cof_logic.cof_dftb import cif_to_hd
+from cof_logic.cof_dftb import initiate_hsd_file
+from cof_logic.cof_dftb import skf_files
+
 
 class COFStacker:
     """ COFStacker is a Python class designed for the manipulation and management
@@ -99,6 +103,27 @@ class COFStacker:
         atoms = read(extxyz_path)  # Read the .extxyz file
         write(cif_path, atoms)  # Write to .cif
 
+        
+    def generate_dftb_files(self, cof_nr, stacking_type):
+        # Validate stacking type
+        if stacking_type not in ["AA", "AB"]:
+            raise ValueError("Invalid stacking type. Must be 'AA' or 'AB'.")
+
+        # Define the paths
+        cif_file = os.path.join("Data", "Generated_CIFs_Stacked", f"COF_{cof_nr}_{stacking_type}.cif")
+        dftb_cof_path = os.path.join("Data", "DFTB", f"COF_{cof_nr}_{stacking_type}")
+        
+        # Create the directory if it does not exist
+        os.makedirs(dftb_cof_path, exist_ok=True)
+        
+        # Convert CIF to GEN format and save it in the new directory
+        gen_file = os.path.join(dftb_cof_path, 'geo_end.gen')
+        cif_to_hd(cif_file, gen_file)
+        
+        # Initiate the HSD file
+        hsd_file_path = os.path.join(dftb_cof_path, 'dftb_in.hsd')
+        initiate_hsd_file(gen_file, skf_files, output_filename=hsd_file_path)
+
     def stack_cof(self, cof_nr, input_filename=None):
         # If an input filename is provided, use it, otherwise use the instance attribute
         input_filename = input_filename or self.input_filename
@@ -107,10 +132,12 @@ class COFStacker:
         if not input_filename.endswith('.extxyz'):
             input_filename += '.extxyz'
         
-        # Define relative paths
+                # Define relative paths
+        print("Input Filename:", input_filename)
         input_path = os.path.join("Data", "Generated_COFs", input_filename)
 
         if not os.path.exists(input_path):
+            print(input_path)
             raise FileNotFoundError(f"No such file or directory: '{input_path}'")
         
         with open(input_path, "r") as file:
@@ -126,15 +153,17 @@ class COFStacker:
         shifted_atoms = self.shift_atoms_up(atoms, shift_value)
 
         # AA Stacking
-        shift_value_aa = 3.5
+    
+        shift_value_aa = 6.0
         aa_stacked_atoms = self.create_AA_stacking(shifted_atoms, shift_value_aa)
         c_aa = self.calculate_lattice_c(aa_stacked_atoms)
         self.write_and_convert_to_cif(f"COF_{cof_nr}_AA", aa_stacked_atoms, [a, b, c_aa])
-
+        self.generate_dftb_files(cof_nr, "AA")
+        
         # AB Stacking
-        shift_value_ab = 3.35  # This value should be adjusted based on the specific material
-        ab_shift_vector = [a[i]/2 for i in range(3)]  # Using half of the 'a' lattice vector for lateral shift
+        shift_value_ab = 6.0  # Adjust as needed
+        ab_shift_vector = [a[i]/2 for i in range(3)]
         ab_stacked_atoms = self.create_AB_stacking(shifted_atoms, shift_value_ab, ab_shift_vector)
         c_ab = self.calculate_lattice_c(ab_stacked_atoms)
         self.write_and_convert_to_cif(f"COF_{cof_nr}_AB", ab_stacked_atoms, [a, b, c_ab])
-
+        self.generate_dftb_files(cof_nr, "AB")
