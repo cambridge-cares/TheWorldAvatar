@@ -70,8 +70,11 @@ The debugger port will be available at 5005.
 
 ### 2.12. Visualisation
 Visualisation of CEA results in [TWA Visualisation Framework] can be achieved with [FeatureInfoAgent].
-Copy the `.sparql` and `.json` files in [feature-info-agent-input](./feature-info-agent-input), and place them inside [stack-manager]'s `/input/data/fia-queries` directory, according to the path specified in the stack-manager config file [feature-info-agent.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
+Spin up [TWA Visualisation Framework] by following its README, for the base visualisation of the buildings. 
+Copy the `.sparql` and `.json` files in [feature-info-agent-input](./feature-info-agent-input), and place them inside [stack-manager]'s `/input/data/fia-queries` directory, according to the path specified in the stack-manager config file, [feature-info-agent.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
 Then, spin up FeatureInfoAgent inside the stack.
+Once the visualisation is up, after clicking on a building, one should see the following CEA results: solar suitable area, annual building energy demands and annual photovoltaic potentials as scalar values, and building demands and photovoltaic potentials time series of 24 hours duration.
+
 
 ## 3. Agent Endpoints
 The CEA Agent is reachable at http://localhost:3838/cea-agent, where 3838 is the default port number used by stack manager.
