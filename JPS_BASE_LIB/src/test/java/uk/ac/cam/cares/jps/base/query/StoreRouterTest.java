@@ -165,9 +165,10 @@ class StoreRouterTest {
 		assertFalse(StoreRouter.isFileBasedTargetResourceID("ontokin"));
 
 		// Invalid file paths
-		assertFalse(StoreRouter.isFileBasedTargetResourceID("kb/sgp:singapore/SGTemperatureSensor-001.owl"));
-		assertFalse(StoreRouter.isFileBasedTargetResourceID("kb/sgp?singapore/SGTemperatureSensor-001.owl"));
-		assertFalse(StoreRouter.isFileBasedTargetResourceID("kb/sgp*singapore/SGTemperatureSensor-001.owl"));
+		// These are legal file paths in Linux
+		// assertFalse(StoreRouter.isFileBasedTargetResourceID("kb/sgp:singapore/SGTemperatureSensor-001.owl"));
+		// assertFalse(StoreRouter.isFileBasedTargetResourceID("kb/sgp?singapore/SGTemperatureSensor-001.owl"));
+		// assertFalse(StoreRouter.isFileBasedTargetResourceID("kb/sgp*singapore/SGTemperatureSensor-001.owl"));
 	}
 
 	@Test
