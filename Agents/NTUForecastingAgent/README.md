@@ -100,3 +100,9 @@ Note that the URL part is enclosed in quotation marks and the special characters
 ```
 curl -X GET http://localhost:6000/api/v1/forecast?iri_to_forecast=https://www.theworldavatar.com/kg/ontopowsys/BusNode_6_AbsorbedReactivePower&interval=http://example.org/OptimisationInterval_1
 ```
+
+A request for the IRI_to_forecast ```https://www.theworldavatar.com/kg/ontopowsys/BusNode_6_AbsorbedReactivePower```, ```time_pos1 = 588327200.0``` and ```time_pos2 = 1588356000.0``` would be:
+
+```
+curl -X GET "http://localhost:6000/api/v1/forecast?iri_to_forecast=https%3A%2F%2Fwww.theworldavatar.com%2Fkg%2Fontopowsys%2FBusNode_6_AbsorbedReactivePower&time_pos1=1588327200.0&time_pos2=1588356000.0"
+```
