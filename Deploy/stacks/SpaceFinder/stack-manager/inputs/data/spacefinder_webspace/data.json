@@ -3,13 +3,13 @@
     "groups": [
         {
             "name": "Pirmasens",
-            "stack": "http://localhost:1990/",
+            "stack": "http://localhost:3838/",
             "sources": [
                 {
                     "id": "plots",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:1990/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:plots&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:plots&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
