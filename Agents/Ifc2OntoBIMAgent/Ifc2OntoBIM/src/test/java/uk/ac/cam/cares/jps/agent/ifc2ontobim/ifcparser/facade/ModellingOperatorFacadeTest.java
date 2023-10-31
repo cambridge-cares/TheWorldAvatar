@@ -92,7 +92,6 @@ class ModellingOperatorFacadeTest {
         // Clean up results as one string
         operatorMappings.constructAllStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        System.out.println(result);
         // Generate expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO, true), result);
