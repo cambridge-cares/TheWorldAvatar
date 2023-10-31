@@ -3,14 +3,14 @@
  * Opens the user help document associated with this version of the TWA-VF.
  */
 function openHelpURL() {
-    window.open("/lib/help/", "_blank");
+    window.open("./lib/help/", "_blank");
 }
 
 /**
  * Returns the current version of the TWA-V.
  */
 async function getVisVersion() {
-    return await fetch("/lib/VERSION").then(response => {
+    return await fetch("./lib/VERSION").then(response => {
         return response.text();
     });
 }

@@ -1,14 +1,13 @@
 # Developing the TWA-VF
 
 This `/library` directory houses the Typescript, CSS, and HTML files that make up the framework along with some configuration files for compilation. The result of the build process is a Docker image that contains the compiled TWA-VF files along with an Apache web server; this allow users to then attach their content via a Docker volume mounted to `/var/www/html`.
-<br/>
 
 ## Development requirements
 
 To develop the TWA-VF the following software and knowledge is required:
 
 * Software on local machine:
-  * A working WSL installation (if using Window).
+  * A working WSL installation (if using Windows).
   * A working Docker installation.
 * Required knowledge:
   * Docker
@@ -29,8 +28,6 @@ The following requirements are optional and only required if developers wish to 
   
 This allows the compilation to run on the local machine and the final JS and CSS files to be written to the `output` directory, ready for whatever local testing is needed. Local compilation can be triggered by running the `npm install && tsc && grunt package` command from this directory.
 
-<br/>
-
 ## Runtime requirements
 
 To function correctly, visualisations using this framework also needs to include the below JavaScript libraries. Note that at the time of writing, the TWA-VF is a client based library so each of these requirements is imported as a remote, client-side resource via the head section of the visualisation's `index.html` file.
@@ -44,18 +41,14 @@ To function correctly, visualisations using this framework also needs to include
 
 An example of the required import statements should be available in the example [Mapbox](../example-mapbox-vis/webspace/index.html) and [Cesium](../example-cesium-vis/webspace/index.html) visualisations.
 
-<br/>
-
 ## Architecture
 
 > [!NOTE]
-> It is worth noting that the current version of the TWA-VF is still a work-in-progress, and was put together from older code generated under some tight deadlines for demonstration purposes. To that end, the architecture and general quality of the code has room for improvement; plans for a ground-up redesign of the code are in place (as well as adding tests and DevOps features), but have yet to happen in earnest.
+> It is worth noting that the current version of the TWA-VF is still a work-in-progress, and was iteratively built upon older code generated under some tight deadlines for demonstration purposes. To that end, the architecture and general quality of the code has room for improvement; plans for a ground-up redesign of the code are in place (as well as adding tests and DevOps features), but have yet to happen in earnest.
 
 The TWA-VF has been developed to use an architecture agnostic to any specific mapping provider wherever possible. To that end, a central `Manager` class is used as point of access, generic `DataGroup`, `DataSource`, and `DataLayer` classes define the data to be displayed by the visualisation, and a variety of UI handlers generate and control the custom visualisation controls.
 
 Where mapping provider specific behaviour is required, concrete instances of the `MapHandler` class are used to directly interface with the JavaScript libraries provided by those providers. At the time of writing, these are the `MapHandler_Mapbox` and `MapHandler_Cesium` classes. In-code documentation should shed more details on the behaviour of specific functions.
-
-<br/>
 
 ## Process
 
@@ -71,8 +64,6 @@ When launched from a correctly integrated HTML file, the TWA-VF follows a set pa
 * Data source and layer definitions are converted to provider specific sources and layers.
 * New sources and layers are added to the map for display.
 * Event handlers are registered to capture mouse movement/clicks.
-
-<br/>
 
 ## Deployment
 
@@ -100,8 +91,6 @@ The following automated GitHub actions have been setup for the TWA-VF (all defin
     * Send release email via SMTP connection to CMCL email server.
       * This is done using the `CMCL_MAIL_USERNAME` and `CMCL_MAIL_PASSWORD` repository secrets.
 
-<br/>
-
 ## Planned changes
 
 An overview of bug reports, feature requests, and open PRs can be see using the [TWA Visualisation Framework](https://github.com/orgs/cambridge-cares/projects/1) project. Any new reports or requests should be linked to this project to ensure that it contains a complete overview of all related information.
@@ -121,8 +110,6 @@ Feature requests should be added in a similar manner to bug reports, using the p
 A future overhaul of the framework is planned; namely to upgrade to a more platform-like system, comprised of multiple configurable pages and views, built using some of the more widely used JavaScript frameworks (Node.js, React etc.).
 
 Plans for this upgrade are not currently available on this public repository, developers that need access to these documents should check the `Visualisations` channel within the 4Cs section on Microsoft Teams, or contact CMCL directly.
-
-<br/>
 
 ## Support
 

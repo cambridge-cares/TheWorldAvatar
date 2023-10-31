@@ -58,7 +58,9 @@ These URLs take the following form:
 https://[GEOSERVER]/[WORKSPACE]/wms?service=WMS&request=GetMap&layers=[LAYER]&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=[FORMAT]
 ```
 
-Parameters are detailed in the following table, elements in braces are automatically populated by Mapbox at runtime. Note that the projection here is the projection for display, rather than the original data (in this case it's Web Mercator).
+Note that the `bbox` parameter is using a placeholder string, this is important. Using literal values here will tell Mapbox to load the same tile of data, regardless of where the user pans the map to. When we use this placeholder, Mapbox will automatically populate it with the bounding box of the map the user is currently viewing (you can see these literal outgoing values in your browser's network inspector).
+
+Parameters are detailed in the following table, elements in braces are automatically populated by Mapbox at runtime. Note that the projection here is the projection for display, rather than the original data; we almost always want to display in EPSG:3857, as this is the default that Mapbox uses.
 
 | Parameter | Description | Example |
 | --------- | ----------- | ------- |  

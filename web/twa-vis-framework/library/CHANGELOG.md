@@ -1,5 +1,14 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 4.1.2
+### Features
+* _No features present._
+### Bug Fixes:
+* TWA-VF files no longer copied into Docker volume directory.
+* TWA imports now available at "./lib/" route in addition to "./twa-vf".
+* Example visualisations now run in a TWA stack.
+* Documentation updates.
+
 # 4.1.1
 ### Features
 * _No features present._

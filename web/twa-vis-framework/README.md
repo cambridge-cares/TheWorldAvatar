@@ -24,6 +24,8 @@ Documentation for the TWA-VF is spread across a number of files, and is broken d
   * _Enabling and configuring more advanced features._
 * [Tutorials](./docs/tutorials.md)
   * _Tutorials for creating new visualisations._
+* [Example](./example/README.md)
+  * _A quickly-bootable example that can be used as a sandbox._
 * [Troubleshooting](./docs/troubleshooting.md)
   * _Solutions to common issues and questions._ 
 
