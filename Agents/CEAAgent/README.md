@@ -47,20 +47,27 @@ The CEA agent will attempt to send request to [OpenMeteoAgent](https://github.co
 Please ensure that the OpenMeteoAgent is spun up in the same stack as this agent, by following the [OpenMeteoAgent README](../OpenMeteoAgent/README.md). 
 Please ensure that `weather.label` in [CEAAgentConfig.properties] is the same value as `route.label` in OpenMeteoAgent's [config.properties](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/OpenMeteoAgent/openmeteo-agent/src/main/resources/config.properties).
 
-### 2.10. Build and Run
-In the same directory as this README, first build the Docker image by running
+### 2.10. Build
+To build the Docker image, in the same directory as this README, run
 ```
 docker compose build
 ```
 
-After the image is built, copy [cea-agent.json] from ```./stack-manager-input/``` and place it in [stack-manager config services] directory. 
+The latest version of the image should be pushed to the GitHub container registry, which can be done by running
+```
+docker push ghcr.io/cambridge-cares/cea-agent:X.Y.Z
+```
+where X.Y.Z is the new version number.
+
+### 2.11. Run
+Copy [cea-agent.json] from ```./stack-manager-input/``` and place it in [stack-manager config services] directory. 
 Please ensure that `Source` in `Mounts` of [cea-agent.json] points correctly to the local `CEAAgentConfig.properties`. Then, in the [stack-manager] directory, run 
 ```
 ./stack.sh start <STACK NAME>
 ```
 Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager.
 
-### 2.11. Debugging
+### 2.12. Debugging
 To debug, put [cea-agent-debug.json] from ```./stack-manager-input/``` instead of [cea-agent.json]  in [stack-manager config services].
 Please ensure that `Source` in `Mounts` of [cea-agent-debug.json] points correctly to the local `CEAAgentConfig.properties`.Then, in the [stack-manager]  directory, run 
 ```
@@ -68,7 +75,7 @@ Please ensure that `Source` in `Mounts` of [cea-agent-debug.json] points correct
 ```
 The debugger port will be available at 5005.
 
-### 2.12. Visualisation
+### 2.13. Visualisation
 Visualisation of CEA results in [TWA Visualisation Framework] can be achieved with [FeatureInfoAgent].
 Spin up [TWA Visualisation Framework] by following its README, for the base visualisation of the buildings. 
 Copy the `.sparql` and `.json` files in [feature-info-agent-input](./feature-info-agent-input), and place them inside [stack-manager]'s `/input/data/fia-queries` directory, according to the path specified in the stack-manager config file, [feature-info-agent.json](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
