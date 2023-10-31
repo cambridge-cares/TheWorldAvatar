@@ -35,7 +35,7 @@ logging.basicConfig( level=logging.INFO )
 #logging.basicConfig( level=logging.ERROR )
 #logging.disable( logging.CRITICAL )
 
-#import tools
+import tools
 
 COLUMN_LETTERS = "ABCDEFGHIJ"
 COLUMN_HEADERS = [ "Source",      "Type",  "Target",   "Relation", "Domain",
@@ -71,12 +71,22 @@ for i in range( 5 ):
 print( tmp )
 """
 
+def is_http( name ):
+    output = name
+    if not isinstance( name, str ):
+        return False
+    if name.lower().strip().startswith( "http://" ) or \
+       name.lower().strip().startswith( "https://" ):
+        return True
+    return False
+
+
 class TBoxCleaner:
     __slots__ = [ "fileIn",  "dataIn", "classes", "clNames", "objProp", "opNames", 
                   "datProp", "dpNames", "nCol", "onto", "ontoNames", "errCount",
                   "dataOut", "headers",
                   "objPropDomain", "objPropRange", "datPropDomain", "datPropRange",
-                  "triples", "tbox",
+                  "triples", "tbox", "classRel",
                   "verbose"
                 ]
     def __init__( self, verbose = True ):
@@ -120,11 +130,18 @@ class TBoxCleaner:
         self.objPropDomain = []
         self.objPropRange  = []
 
-        self.tbox          = ""
+        self.tbox          = ""  # TBox path
+
         self.triples       = {}  # Structure of this dictionary is 
                                  # self.triples["hasXXX"]["domain"] = []
                                  # self.triples["hasXXX"]["range" ] = []
                                  #
+
+        self.classRel      = {}  # Structure of this  cincionary is
+                                 # self.classRel[shortName]["path"] = full path
+                                 # self.classRel[shortName]["is-a"] = [] all paths
+                                 #
+
         self.verbose       = False
 
         pass # TBoxCleaner.cleanAll()
@@ -780,9 +797,11 @@ class TBoxCleaner:
         self.onto.append( line )
         self.ontoNames.append( line[0] )
 
-        if line[3].strip().lower() == "https://www.w3.org/2007/05/powder-s#hasIRI":
+        #print( "In ontology:", line[3] )
+        #print( "In ontology:", line[3].strip().lower() )
+        if line[3].strip().lower() == "https://www.w3.org/2007/05/powder-s#hasiri":
             # "http://www.theworldavatar.com/kg/ontocrystal/":
-            self.tbox = line[3].strip()
+            self.tbox = line[2].strip()
    
         pass # TBoxCleaner.extractOntology() 
 
@@ -794,6 +813,23 @@ class TBoxCleaner:
         self.classes.append( line )
         self.clNames.append( str(line[0]).strip() )
 
+        # Recorde the classes and their relations:
+        self.classRel[line[0]] = {}
+        if is_http( line[0] ):
+            path = line[0]
+        else:
+            path = line[8] + line[0]
+        self.classRel[line[0]]["path"] = path
+        self.classRel[line[0]]["is-a"] = []
+        if isinstance(line[3],str):
+            if line[3].strip() == "IS-A":
+                self.classRel[line[0]]["is-a"] += [ self.classRel[line[2]]["path"] ]
+                self.classRel[line[0]]["is-a"] +=   self.classRel[line[2]]["is-a"]
+            else:
+                logging.error( " Unknown D column '" + line[3] + "' " + line_line )
+
+        
+
         #print( self.classes )
         pass # TBoxCleaner.extractClasses()
 
@@ -804,7 +840,18 @@ class TBoxCleaner:
         #self.addObjProp( line )
         self.objProp.append( line )
         self.opNames.append( line[0].strip() )
-        self.addTriple( line[4], line[0], line[5], file_line )
+
+        if not isinstance( line[4], str):
+            logging.error( " Not a string '" + str(line[4]) + "' " + file_line )
+        if not isinstance( line[8], str):
+            logging.error( " Not a string '" + str(line[8]) + "' " + file_line )
+
+        if isinstance(line[4], str):
+            for s in line[4].split("UNION"):
+                self.addTriple( s.strip(), line[8]+line[0], line[5], file_line )
+            #self.addTriple( line[8] + s.strip(), line[8]+line[0], line[5], file_line )
+        else:
+            self.addTriple( "", line[8]+line[0], line[5], file_line )
 
         # Domain:
         words = str(line[4]).split( "UNION" )
@@ -853,7 +900,16 @@ class TBoxCleaner:
         #self.addDataProp( line )
         self.datProp.append( line )
         self.dpNames.append( line[0].strip() )
-        self.addTriple( line[4], line[0], line[5], file_line )
+
+        if not isinstance( line[4], str):
+            logging.error( " Not a string '" + str(line[4]) + "' " + file_line )
+        if not isinstance( line[8], str):
+            logging.error( " Not a string '" + str(line[8]) + "' " + file_line )
+
+        for s in line[4].split("UNION"):
+            self.addTriple( s.strip(), line[8]+line[0], line[5], file_line )
+           #self.addTriple( line[8] + s.strip(), line[8]+line[0], line[5], file_line )
+           #self.addTriple( line[8]+line[4], line[8]+line[0], line[5], file_line )
 
         # Domain:
         words = line[4].split( "UNION" )
@@ -897,7 +953,8 @@ class TBoxCleaner:
                            "' is not a string " + file_line )
             return
 
-        pStr = self.tbox + predicate
+        #pStr = self.tbox + predicate
+        pStr = predicate
         if pStr not in self.triples:
             self.triples[pStr] = {}
             self.triples[pStr]["domain"] = []
@@ -907,8 +964,18 @@ class TBoxCleaner:
             #                 file_line )
             pass
 
-        self.triples[pStr]["domain"].append( subj )
-        self.triples[pStr]["range" ].append(  obj )
+        if subj in self.classRel:
+            if self.classRel[subj]["path"] not in self.triples[pStr]["domain"]:
+                self.triples[pStr]["domain"].append( self.classRel[subj]["path"] )
+        else:
+            logging.error( " Wrong subj name '" + str(subj) + "' " )
+
+        #self.triples[pStr]["range" ].append(  obj )
+        if obj in self.classRel:
+            if self.classRel[obj]["path"] not in self.triples[pStr]["range"]:
+                self.triples[pStr]["range"].append( self.classRel[obj]["path"] )
+        else:
+            logging.error( " Wrong obj name '" + str(obj) + "' " )
 
         pass # TBoxCleaner.addTriple()
 
@@ -933,25 +1000,98 @@ class TBoxCleaner:
         if predicate not in self.triples:
             logging.error( " Predicate '" + predicate + "' is not in TBox " + \
                            file_line )
-            for k in self.triples.keys():
-                print( "   ", k )
-            print( "  tbox = '" + self.tbox + "'." )
+            #for k in self.triples.keys():
+            #    print( "   ", k )
+            #print( "  tbox = '" + self.tbox + "'." )
             errCount += 1
             return errCount
 
-        if subj not in self.triples[predicate]["domain"]:
-            logging.error( " Subject '" + subj + "' is not in TBox " + \
-                           file_line )
-            errCount += 1
+        #print( "Inside checkTriple:", subj, "and", obj )
+        if subj in self.classRel:
+            if self.classRel[subj]["path"] in self.triples[predicate]["domain"]:
+                # Do nothing
+                pass
+            elif self.anyInList( self.classRel[subj]["is-a"], \
+                                 self.triples[predicate]["domain"] ):
+                # Do nothing
+                pass
+            else:
+                logging.error( " Subject '" + subj + "' is not in TBox " + \
+                               file_line )
 
-        if obj not in self.triples[predicate]["range"]:
-            logging.error( " Object '" + obj + "' is not in TBox " + \
+                """
+                print( "     predicate:", predicate )
+                print( "       path   :", self.classRel[subj]["path"] )
+                print( "       is-a   :" ) #, self.classRel[subj]["is-a"] )
+                for d in self.classRel[subj]["is-a"]:
+                    print( "               ", d )
+                print( "      domain  :" ) #, self.triples[predicate]["domain"] )
+                for d in self.triples[predicate]["domain"]:
+                    print( "               ", d )
+                #print( "   domains:" )
+                #for k in self.triples.keys():
+                #    print( "    ", self.triples[k]["domain"] )
+                """
+
+                errCount += 1
+
+        else:
+            logging.error( " Subject '" + str(subj) + "' in not in the list of classes " + file_line )
+            errCount += 1
+            pass
+
+        if obj in self.classRel:
+        #if obj in self.triples[predicate]["range"]:
+            #print( " >>>>>> ", obj, type(obj) )
+        #    if obj not in self.classRel:
+        #        logging.error( "Missing '" + obj + "' in classRel " + file_line )
+        #        errCount += 1
+
+            #else:
+                if self.classRel[obj]["path"] in self.triples[predicate]["range"]:
+                    # Do nothing
+                    pass
+                elif self.anyInList( self.classRel[obj]["is-a"], \
+                                 self.triples[predicate]["range"] ):
+                    # Do nothing
+                    pass
+                else:
+                    logging.error( " Object '" + obj + "' is not in TBox " + \
+                                   file_line )
+
+                    print( "     predicate:", predicate )
+                    print( "       path   :", self.classRel[obj]["path"] )
+                    """
+                    print( "       is-a   :" ) #, self.classRel[obj]["is-a"] )
+                    for d in self.classRel[obj]["is-a"]:
+                        print( "               ", d )
+                    print( "       range  :" ) #, self.triples[predicate]["domain"] )
+                    for d in self.triples[predicate]["range"]:
+                        print( "               ", d )
+                    """
+
+                    errCount += 1
+
+        else:
+            logging.error( " Object '" + obj + "' is not in the list of classes " + \
                            file_line )
+            print( "     predicate:", predicate )
+            for o in self.triples[predicate]["range"]:
+                print( "    ", o )
             errCount += 1
 
         return errCount
         pass # TBoxCleaner.checkTriple()
         
+    def anyInList( self, list1, list2 ):
+        """
+        Checks whether any element from list 1 is present in list 2.
+        """
+        for l1 in list1:
+            if l1 in list2:
+                return True
+        return False
+
     def addClass( self, line ):
         logging.error( "No implemented 333333" )
         pass # TBoxCleaner.addClass()
@@ -1027,18 +1167,18 @@ class TBoxCleaner:
             #print( line )
             pass
 
-        """
         try:
             tools.writeCsv( filename, self.dataOut )
         except:
             for s in self.dataOut:
                 print( s )
                 tools.writeCsv( filename, [s] )
-        """
 
         #tools.writeCsv( filename, self.classes )
         print( "Saved '" + filename + "' file, number of lines =", 
                str(len(self.dataOut)) + "." )
+        """
+        """
         print( "Number of errors+warnings =", str(self.errCount) + "." )
 
         pass # TBoxCleaner.saveCsv()
@@ -1082,9 +1222,20 @@ if __name__ == "__main__":
     print( fileBase, fileExt )
 
     tb = TBoxCleaner()
+    #print( tb.anyInList( [1,2.3],[3,2,1] ) )
+    #1/0
     tb.readExcel( fileIn )
     tb.parseInputData()
-    print( "   tbox = '" + tb.tbox + "'." )
+    #print( "   tbox = '" + tb.tbox + "'." )
+    """
+    print( "All triples:" )
+    for predicate in tb.triples:
+        print( " pred:", predicate )
+        for d in tb.triples[predicate]["domain"]:
+            print( "  dom:", d )
+        for d in tb.triples[predicate]["range"]:
+            print( "  ran:", d )
+    """
 
     # Example of use:
     #tb.checkTriple( subj, predicate, obj, "file and line" )
