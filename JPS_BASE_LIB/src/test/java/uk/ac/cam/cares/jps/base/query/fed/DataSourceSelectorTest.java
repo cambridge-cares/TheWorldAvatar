@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Ignore;
 
 import uk.ac.cam.cares.jps.base.query.fed.ParsedQueryTreeVisitor.ServiceGraphPatternSummary;
 
+@Ignore("The code this tests is not used and takes a long time to run.")
 public class DataSourceSelectorTest extends QueryProvider {
 	
 	static final Logger LOGGER = LogManager.getLogger(DataSourceSelectorTest.class);

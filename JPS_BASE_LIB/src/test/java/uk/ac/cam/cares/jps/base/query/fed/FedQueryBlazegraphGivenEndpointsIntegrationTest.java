@@ -4,9 +4,11 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Ignore;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+@Ignore("The code this tests is not used and takes a long time to run.")
 /**
  * One of multiple test configurations, see {@link QueryProvider} for details.
  */

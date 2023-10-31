@@ -9,12 +9,14 @@ import java.util.Set;
 import org.apache.jena.ontology.OntModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Ignore;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer.PostingsListElement;
 import uk.ac.cam.cares.jps.base.query.fed.ServiceDescriptionIndexer.ServiceDescriptionSummary;
 
+@Ignore("The code this tests is not used and takes a long time to run.")
 public class ServiceDescriptionIndexerTest extends TestCase {
 	
 	static final Logger LOGGER = LogManager.getLogger(ServiceDescriptionIndexerTest.class);

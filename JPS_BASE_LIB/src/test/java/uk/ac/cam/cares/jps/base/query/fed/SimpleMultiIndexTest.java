@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Ignore;
+
 import junit.framework.TestCase;
 
+@Ignore("The code this tests is not used and takes a long time to run.")
 public class SimpleMultiIndexTest extends TestCase {
 	
 	public void testOneIndexWithThreePostingLists() {

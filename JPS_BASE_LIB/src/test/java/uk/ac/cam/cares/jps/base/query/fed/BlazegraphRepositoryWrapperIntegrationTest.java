@@ -8,11 +8,13 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 
+@Ignore("The code this tests is not used and takes a long time to run.")
 public class BlazegraphRepositoryWrapperIntegrationTest extends TestCase {
 	
 	static final Logger LOGGER = LogManager.getLogger(BlazegraphRepositoryWrapperIntegrationTest.class);

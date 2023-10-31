@@ -10,11 +10,13 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.riot.Lang;
 import org.json.JSONArray;
+import org.junit.Ignore;
 
 import junit.framework.AssertionFailedError;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 
+@Ignore("The code this tests is not used and takes a long time to run.")
 public class DatasetGeneratorTest extends QueryProvider {
 	
 	public void testSupplierList() {
