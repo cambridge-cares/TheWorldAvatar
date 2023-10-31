@@ -26,12 +26,25 @@ class FilterClause(GraphPattern):
 class TriplePattern(GraphPattern):
     def __init__(self, subj: str, tails: Iterable[Tuple[str, str]]):
         self.subj = subj
-        self.tails = tails # [(p1, o1), (p2, o2), ...]
+        self.tails = list(tails) # [(p1, o1), (p2, o2), ...]
+    
+    @classmethod
+    def from_triple(cls, subj: str, predicate: str, obj: str):
+        return cls(subj=subj, tails=[(predicate, obj)])
+
+class OptionalClause(GraphPattern):
+    def __init__(self, graph_patterns: Iterable[GraphPattern]):
+        self.graph_patterns = list(graph_patterns)
+
+class BindClause(GraphPattern):
+    def __init__(self, exprn: str, var: str):
+        self.exprn = exprn
+        self.var = var
 
 class SparqlQuery(_Repr):
     def __init__(self, select_clause: SelectClause, graph_patterns: Iterable[GraphPattern]):
         self.select_clause = select_clause
-        self.graph_patterns = graph_patterns
+        self.graph_patterns = list(graph_patterns)
 
     @classmethod
     def _extract_select_clause(cls, sparql_compact: str):
@@ -127,7 +140,7 @@ class SparqlQuery(_Repr):
                 assert graph_patterns_str.startswith("."), graph_patterns_str
                 graph_patterns_str = graph_patterns_str[1:]
 
-        triple_pattern = TriplePattern(subj, tails=[(predicate, obj)])
+        triple_pattern = TriplePattern.from_triple(subj, predicate, obj)
 
         return graph_patterns_str, triple_pattern
 
