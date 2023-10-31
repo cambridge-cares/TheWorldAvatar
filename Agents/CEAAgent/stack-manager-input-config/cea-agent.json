@@ -3,7 +3,7 @@
         "Name": "cea-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "cea-agent:3.0.0",
+                "Image": "ghcr.io/cambridge-cares/cea-agent:3.0.0-1628-SNAPSHOT",
                 "Mounts": [
                     {
                         "Type": "bind",
