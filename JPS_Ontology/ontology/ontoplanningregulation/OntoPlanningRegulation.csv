@@ -63,6 +63,3 @@ requiresWidth,Object Property,,,PlanningRegulation,https://www.theworldavatar.co
 isLegislatedBy,Object Property,,,PlanningRegulation,CompetentAuthority,,A relationship that indicates which competent authority has establish the specified planning regulation.,https://www.theworldavatar.com/kg/ontoplanningregulations/,is legislated by
 forCornerPlot,Data Property,,,PlanningRegulation,boolean,,A boolean indicator indicating if the regulation applies only to corner plots.,https://www.theworldavatar.com/kg/ontoplanningregulations/,for corner plot
 forFringePlot,Data Property,,,PlanningRegulation,boolean,,A boolean indicator indicating if the regulation applies only to fringe plots.,https://www.theworldavatar.com/kg/ontoplanningregulations/,for fringe plot
-plotAbuts1-3RoadCategory,Data Property,,,PlanningRegulation,boolean,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,plot abuts 1-3 road category
-plotAbutsGoodClassBungalowArea,Data Property,,,PlanningRegulation,boolean,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,plot abuts good class bungalow area
-plotInGoodClassBungalowArea,Data Property,,,PlanningRegulation,boolean,,,https://www.theworldavatar.com/kg/ontoplanningregulations/,plot in good class bungalow area
