@@ -28,10 +28,15 @@ public class BMSUpdateAgent {
     private final String STR_OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private final Prefix P_OM = SparqlBuilder.prefix("om", iri(STR_OM));
 
-    final String FAIL_TO_GET_TEMP = "Fail to get temperature";
-    final String FAIL_TO_UPDATE_TEMP = "Fail to update temperature in knowledge graph";
-    final String FAIL_TO_TOGGLE = "Fail to trigger ESPHomeAgent to toggle device status";
-    final String FAIL_TO_PULL_DATA = "Fail to trigger ESPHomeUpdateAgent to pull data";
+    private final String STR_ONTOBMS = "https://www.theworldavatar.com/kg/ontobms/";
+    private final Prefix P_ONTOBMS = SparqlBuilder.prefix("ontobms", iri(STR_ONTOBMS));
+
+    final String FAIL_TO_GET_TEMP = "Fail to get temperature!";
+    final String FAIL_TO_UPDATE_TEMP = "Fail to update temperature in knowledge graph!";
+    final String FAIL_TO_TOGGLE = "Fail to trigger ESPHomeAgent to toggle device status!";
+    final String FAIL_TO_PULL_DATA = "Fail to trigger ESPHomeUpdateAgent to pull data!";
+    final String FAIL_TO_GET_BACNETDEVICEID = "Fail to get Bacnet Device ID!";
+    final String FAIL_TO_GET_BACNETOBJECTID = "Fail to get Bacnet Object ID!";
 
     /**
      * Change the temperature of a fan's set point in the knowledge graph.
@@ -143,5 +148,51 @@ public class BMSUpdateAgent {
         }
         LOGGER.warn("Unknown fan state, cannot parse the response");
         return "";
+    }
+
+    /**
+     * Get the Bacnet Device ID of the data IRI
+     *
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @return Bacnet Device ID of data IRI
+     */
+    public String getDeviceId(String dataIRI, RemoteStoreClient rsClient) {
+        SelectQuery selectQuery = Queries.SELECT();
+        Variable deviceIdVar = SparqlBuilder.var("deviceIdVar");
+        TriplePattern getBacnetDeviceId = GraphPatterns.tp(iri(dataIRI), P_ONTOBMS.iri("hasBacnetDeviceID"), deviceIdVar);
+        selectQuery.prefix(P_ONTOBMS).select(deviceIdVar).where(getBacnetDeviceId);
+        try {
+            LOGGER.info("getting Bacnet Device ID of " + dataIRI +" ...");
+            LOGGER.info("execute query: " + selectQuery.getQueryString());
+            JSONArray results = new JSONArray(rsClient.execute(selectQuery.getQueryString()));
+            return results.getJSONObject(0).getString("deviceIdVar");
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_GET_BACNETDEVICEID);
+            throw new JPSRuntimeException(FAIL_TO_GET_BACNETDEVICEID);
+        }
+    }
+
+    /**
+     * Get the Bacnet Object ID of the data IRI
+     *
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @return Bacnet Object ID of data IRI
+     */
+    public String getObjectId(String dataIRI, RemoteStoreClient rsClient) {
+        SelectQuery selectQuery = Queries.SELECT();
+        Variable objectIdVar = SparqlBuilder.var("objectIdVar");
+        TriplePattern getBacnetObjectId = GraphPatterns.tp(iri(dataIRI), P_ONTOBMS.iri("hasBacnetObjectID"), objectIdVar);
+        selectQuery.prefix(P_ONTOBMS).select(objectIdVar).where(getBacnetObjectId);
+        try {
+            LOGGER.info("getting Bacnet Object ID of " + dataIRI +" ...");
+            LOGGER.info("execute query: " + selectQuery.getQueryString());
+            JSONArray results = new JSONArray(rsClient.execute(selectQuery.getQueryString()));
+            return results.getJSONObject(0).getString("objectIdVar");
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_GET_BACNETOBJECTID);
+            throw new JPSRuntimeException(FAIL_TO_GET_BACNETOBJECTID);
+        }
     }
 }
