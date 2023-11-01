@@ -323,6 +323,8 @@ class SparqlCompact2VerboseConverter:
             graph_patterns_verbose.extend(patterns)
 
         return SparqlQuery(
-            select_clause=SelectClause(vars=select_vars_verbose),
+            select_clause=SelectClause(
+                solution_modifier="DISTINCT", vars=select_vars_verbose
+            ),
             graph_patterns=graph_patterns_verbose,
         )

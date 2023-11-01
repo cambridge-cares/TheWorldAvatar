@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 from typing import List
 
-from core.sparql.graph_pattern import FilterClause, GraphPattern, TriplePattern, ValuesClause
+from core.sparql.graph_pattern import (
+    FilterClause,
+    GraphPattern,
+    TriplePattern,
+    ValuesClause,
+)
 from core.sparql.query_form import SelectClause
 from core.sparql.sparql_base import SparqlBase
 
@@ -10,6 +15,12 @@ from core.sparql.sparql_base import SparqlBase
 class SparqlQuery(SparqlBase):
     select_clause: SelectClause
     graph_patterns: List[GraphPattern]
+
+    def __str__(self):
+        return "{select_clause} WHERE {{\n{group_graph_pattern}\n}}".format(
+            select_clause=self.select_clause,
+            group_graph_pattern="\n".join(["  " + line for pattern in self.graph_patterns for line in pattern.tolines()]),
+        )
 
     @classmethod
     def _extract_select_clause(cls, sparql_compact: str):

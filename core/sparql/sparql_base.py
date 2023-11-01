@@ -6,3 +6,6 @@ class SparqlBase:
         return PRINT_TEMPLATE.format(
             classname=type(self).__name__, properties=self.__dict__.__repr__()
         )
+
+    def tolines(self):
+        return [str(self)]
