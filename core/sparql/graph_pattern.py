@@ -16,7 +16,8 @@ class ValuesClause(GraphPattern):
 
     def __str__(self):
         return "VALUES {var} {{ {values} }}".format(
-            var=self.var, values=" ".join(self.values)
+            var=self.var,
+            values=" ".join(['"{val}"'.format(val=val) for val in self.values]),
         )
 
 
