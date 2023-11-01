@@ -280,6 +280,7 @@ class SparqlCompact2VerboseConverter:
 
     def convert(self, sparql_compact: SparqlQuery):
         graph_patterns = list(sparql_compact.graph_patterns)
+        graph_patterns.reverse()
 
         select_vars_verbose = ["?SpeciesLabel"]
         graph_patterns_verbose = [
