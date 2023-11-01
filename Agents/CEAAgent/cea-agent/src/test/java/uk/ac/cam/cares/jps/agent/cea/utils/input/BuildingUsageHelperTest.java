@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
@@ -11,6 +12,8 @@ import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
 import java.util.Map;
 
 public class BuildingUsageHelperTest {
@@ -39,10 +42,11 @@ public class BuildingUsageHelperTest {
 
         JSONArray usageArray = new JSONArray().put(usageJSON).put(usageJSON1);
 
-        try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
-            // test when there is no building information in knowledge graph
-            accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                    .thenReturn(new JSONArray());
+        // test when there is no usage information
+        try (MockedConstruction<RemoteStoreClient> remoteStoreClientMock = mockConstruction(RemoteStoreClient.class,
+                (mock, context) -> {
+                  doReturn(new JSONArray()).when(mock).executeQuery(anyString());
+                })) {
 
             result = usageHelper.getBuildingUsages(uriString, "");
 
@@ -52,11 +56,13 @@ public class BuildingUsageHelperTest {
                 assertTrue(entry.getKey().equals("MULTI_RES"));
                 assertEquals(1.00, entry.getValue());
             }
+        }
 
-            // test when there are building usage information in knowledge graph
-            accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                    .thenReturn(usageArray);
-
+        // test when there is usage information
+        try (MockedConstruction<RemoteStoreClient> remoteStoreClientMock = mockConstruction(RemoteStoreClient.class,
+                (mock, context) -> {
+                    doReturn(usageArray).when(mock).executeQuery(anyString());
+                })) {
             result = usageHelper.getBuildingUsages(uriString, "");
 
             assertEquals(2, result.size());
