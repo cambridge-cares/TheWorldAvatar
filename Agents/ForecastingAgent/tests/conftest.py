@@ -61,7 +61,7 @@ TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
 TBOX_TRIPLES = 7
-ABOX_TRIPLES = 71
+ABOX_TRIPLES = 73
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
@@ -107,7 +107,8 @@ DH_DATA = 'https://www.dropbox.com/s/qqosbkg38fv6s93/dh_timeseries_data_2020.csv
 
 IRI_TO_FORECAST_1 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_1'      #om:Quantity
 ASSOCIATED_DATAIRI_1 = TEST_TRIPLES_BASE_IRI + 'Measure_1'      #associated om:Measure
-ASSOCIATED_DATAIRI_2 = TEST_TRIPLES_BASE_IRI + 'Measure_2'      #associated om:Measure
+# Not associated om:Measure, i.e., associated with same TimeSeries but not Quantity
+NOT_ASSOCIATED_DATAIRI_2 = TEST_TRIPLES_BASE_IRI + 'Measure_2'
 IRI_TO_FORECAST_2 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_2'      #om:Quantity
 IRI_TO_FORECAST_3 = TEST_TRIPLES_BASE_IRI + 'Availability_1'    #owl:Thing
 IRI_TO_FORECAST_4 = TEST_TRIPLES_BASE_IRI + 'Availability_2'    #owl:Thing
@@ -156,8 +157,8 @@ TEST_CASE_14 = 'Prophet_2_Covariates_OM_Quantity_with_scaling_without_Measure_wi
 TEST_CASE_15 = 'Prophet_1_Covariates_OM_Quantity_without_scaling_without_Measure_without_Unit__overwriting'
 TEST_CASE_16 = 'Prophet_1_Covariates_OM_Quantity_with_scaling_without_Measure_without_Unit__overwriting'
 TEST_CASE_17 = 'Prophet_2_Covariates_OM_Quantity_without_scaling_without_Measure_without_Unit__overwriting_comparison'
-# Test case for multiple dataIRIs being linked to the same time series IRI
-TEST_CASE_18 = 'Prophet_OM_Quantity_multiple_dataIRIs_to_same_tsIRI'
+# Test cases for multiple dataIRIs being linked to same time series IRI (i.e., different columns)
+TEST_CASE_18 = 'Prophet_2_OM_Quantity_dataIRIs_attached_with_same_tsIRI'
 TEST_CASE_19 = 'Prophet_2_OWL_Thing_multiple_dataIRIs_to_same_tsIRI'
 DERIVATION_INPUTS_5 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_2,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]

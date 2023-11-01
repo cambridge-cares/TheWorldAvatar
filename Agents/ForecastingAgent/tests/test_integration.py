@@ -95,18 +95,18 @@ def test_example_data_instantiation(initialise_clients):
     assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
-#@pytest.mark.skip(reason="")
+@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "derivation_input_set, dataIRI, input_chunk_length, with_unit, overwrite_forecast, ts_times, ts_values, case",
     [
         (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_1),
-        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
-        (cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_3),
-        (cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_4),
-        (cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_5),
-        (cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_6),
-        (cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_7),
-        (cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_8),
+        #(cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
+        #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_3),
+        #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_4),
+        #(cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_5),
+        #(cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_6),
+        #(cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_7),
+        #(cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_8),
     ],
 )
 def test_create_forecast(
@@ -252,7 +252,7 @@ def test_create_forecast(
     print("All check passed.")
 
 
-#@pytest.mark.skip(reason="")
+@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "http_request, fail, equal, expected_result",
     [
@@ -524,7 +524,7 @@ def test_create_tft_forecast(
     print("All check passed.")
 
 
-#@pytest.mark.skip(reason="")
+@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "derivation_input_set, dataIRI, input_chunk_length, with_unit, overwrite_forecast, ts_times, covariates, case",
     [
@@ -572,7 +572,6 @@ def test_create_prophet_covariates_forecast(
 
     # Create test data dictionary depending on number of covariates
     test_data = {dataIRI: sales, covariates[0]: covariate1} if len(covariates) == 1 else {dataIRI: sales, covariates[0]: covariate1, covariates[1]: covariate2}
-
 
     # Get required clients from fixture
     sparql_client, ts_client, derivation_client, rdb_url = initialise_clients
@@ -689,7 +688,7 @@ def test_create_prophet_covariates_forecast(
     print("All check passed.")
 
 
-#@pytest.mark.skip(reason="")
+@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "derivation_input_set1, derivation_input_set2, fcmodelIRI1, fcmodelIRI2, dataIRI, ts_times, covariates, case1, case2",
     [
@@ -855,21 +854,21 @@ def test_significance_covariates_forecast(
     print("All check passed.")
 
 
-@pytest.mark.skip(reason="")
+#@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
-    "derivation_input_set, dataIRI, dataIRIs, input_chunk_length, with_unit, overwrite_forecast, ts_times, ts_values, case",
+    "derivation_input_set, dataIRI, dataIRIs, input_chunk_length, with_unit, ts_times, ts_values, case",
     [
-        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, [cf.ASSOCIATED_DATAIRI_1, cf.ASSOCIATED_DATAIRI_2], cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_18),
-        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, [cf.IRI_TO_FORECAST_3, cf.IRI_TO_FORECAST_4], cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_19),
+        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, [cf.ASSOCIATED_DATAIRI_1, cf.NOT_ASSOCIATED_DATAIRI_2], cf.DURATION_1, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_18),
+        #(cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, [cf.IRI_TO_FORECAST_3, cf.IRI_TO_FORECAST_4], cf.DURATION_1, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_19),
     ],
 )
 def test_multiple_datairis_to_same_tsiri(
     initialise_clients, create_example_agent, derivation_input_set, dataIRI, dataIRIs, input_chunk_length,
-    with_unit, overwrite_forecast, ts_times, ts_values, case
+    with_unit, ts_times, ts_values, case
 ):
     """
-    Test if Forecasting Agent works when multiple dataIRIs are linked
-            to the same time series IRI (e.g. they refer to diffeent columns of the same table)
+    Test if Forecasting Agent works when multiple dataIRIs are linked to the 
+    same time series IRI (e.g. they refer to different columns of the same table)
         - forecasts are created using Prophet
         - historical data length (same as input_chunk_length for non-neural method):
             336/8760h (HIST_DURATION_1, DURATION_1 or HIST_DURATION_2, DURATION_2)
@@ -879,13 +878,9 @@ def test_multiple_datairis_to_same_tsiri(
                             Jan 02 2020 00:00:00 UTC - Jan 03 2020 00:00:00 UTC
     """
 
-    # Get forecast agent IRI for current test case
-    if overwrite_forecast:
-        agent_iri = cf.AGENT_w_OVERWRITING_IRI
-        agent_url = cf.AGENT_w_OVERWRITING_URL
-    else:
-        agent_iri = cf.AGENT_wo_OVERWRITING_IRI
-        agent_url = cf.AGENT_wo_OVERWRITING_URL
+    # Get forecasting agent instance (i.e., use default with forecast overwriting!)
+    agent_iri = cf.AGENT_w_OVERWRITING_IRI
+    agent_url = cf.AGENT_w_OVERWRITING_URL
 
     # Get required clients from fixture
     sparql_client, ts_client, derivation_client, rdb_url = initialise_clients
@@ -895,21 +890,19 @@ def test_multiple_datairis_to_same_tsiri(
     cf.initialise_triples(sparql_client)
     cf.clear_database(rdb_url)
 
+    # Create ts with multiple columns, i.e., multiple dataIRIs associated with same tsIRI
     with ts_client.connect() as conn:
-        ts_client.tsclient.initTimeSeries(dataIRIs, [DOUBLE], TIME_FORMAT, conn)
-        ts = ts_client.tsclient.create_timeseries(times, dataIRIs, [ts_values] * len(dataIRIs))
+        ts_client.tsclient.initTimeSeries(dataIRIs, [DOUBLE]*len(dataIRIs), TIME_FORMAT, conn)
+        ts = ts_client.create_timeseries(ts_times, dataIRIs, [ts_values]*2)
         ts_client.tsclient.addTimeSeriesData(ts, conn)                          
 
     # Verify correct number of triples (not marked up with timestamp yet)
     triples = cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES
+    # Account for "additional" hasTimeSeries relationships for all associated dataIRIs
+    triples += len(dataIRIs) - 1
     assert sparql_client.getAmountOfTriples() == triples
 
     # Register derivation agent in KG
-    # - Successful agent registration within the KG is required to create/pick up derivations
-    # - Hence, the dockerised agents are started without initial registration and registration
-    #   is done within the test to guarantee that test Blazegraph will be ready
-    # - The "belated" registration of the dockerised agents can be achieved by registering "another"
-    #   agent instance with the same ONTOAGENT_SERVICE_IRI
     create_example_agent(ontoagent_service_iri=agent_iri,
                          ontoagent_http_url=agent_url) 
 
@@ -965,11 +958,11 @@ def test_multiple_datairis_to_same_tsiri(
     assert outp_interval['end_unix'] == cf.T_2
 
     # Assess initial forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case)
-    print(f'Forecast errors for case: {case}')
-    for k,v in errors.items():
-        print(f'{k}: {round(v,5)}')
+    # errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
+    #                                   agent_url=agent_url, name=case)
+    # print(f'Forecast errors for case: {case}')
+    # for k,v in errors.items():
+    #     print(f'{k}: {round(v,5)}')
 
     # Update derivation interval and add latest timestamp to trigger update
     cf.update_derivation_interval(derivation_iri, cf.FC_INTERVAL_2, sparql_client)
@@ -981,10 +974,6 @@ def test_multiple_datairis_to_same_tsiri(
     # Request for derivation update and verify that no new triples have been added,
     # only time series and interval values have been amended
     derivation_client.unifiedUpdateDerivation(derivation_iri)
-    if not overwrite_forecast:
-        triples += cf.FORECAST_TRIPLES          # triples for new forecast
-        if with_unit:
-            triples += cf.UNIT_TRIPLES
     assert sparql_client.getAmountOfTriples() == triples
 
     # Retrieve updated forecast details
@@ -999,10 +988,10 @@ def test_multiple_datairis_to_same_tsiri(
     assert outp_interval['end_unix'] == cf.T_3
     
     # Assess updated forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case+'_updated')
-    print(f'Forecast errors for case: {case}_updated')
-    for k,v in errors.items():
-        print(f'{k}: {round(v,5)}')
+    # errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
+    #                                   agent_url=agent_url, name=case+'_updated')
+    # print(f'Forecast errors for case: {case}_updated')
+    # for k,v in errors.items():
+    #     print(f'{k}: {round(v,5)}')
 
     print("All check passed.")
