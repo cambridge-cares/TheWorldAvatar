@@ -67,7 +67,6 @@ public class IsochroneGenerator {
     private void generateTable(RemoteRDBStoreClient remoteRDBStoreClient){
 
         String tableGeneration = "--CREATE ISOCHRONE TABLE\n" +
-                "DROP TABLE IF EXISTS isochrone_aggregated;\n" +
                 "-- Create isochrone_final table to store all the isochrones table\n" +
                 "CREATE TABLE isochrone_aggregated (\n" +
                 "    minute integer,\n" +
