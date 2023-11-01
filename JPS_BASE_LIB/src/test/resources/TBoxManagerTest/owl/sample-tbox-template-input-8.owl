@@ -63,7 +63,7 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for A has X</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for B has Y</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for C has Z</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has</rdfs:label>
     </owl:ObjectProperty>
     
@@ -158,7 +158,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#A">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for A</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A</rdfs:label>
     </owl:Class>
     
@@ -183,7 +183,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for B</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B</rdfs:label>
     </owl:Class>
     
@@ -201,7 +201,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for C</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C</rdfs:label>
     </owl:Class>
     
@@ -225,7 +225,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for D</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D</rdfs:label>
     </owl:Class>
     
@@ -236,7 +236,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#E">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for E</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">E</rdfs:label>
     </owl:Class>
     
@@ -253,7 +253,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for F</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">F</rdfs:label>
     </owl:Class>
     
@@ -277,7 +277,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for G</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">G</rdfs:label>
     </owl:Class>
     
@@ -288,7 +288,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#H">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for H</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">H</rdfs:label>
     </owl:Class>
     
@@ -299,7 +299,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#I">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for I</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">I</rdfs:label>
     </owl:Class>
     
@@ -310,7 +310,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#J">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for J</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J</rdfs:label>
     </owl:Class>
     
@@ -349,7 +349,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for K</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">K</rdfs:label>
     </owl:Class>
     
@@ -388,7 +388,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for L</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">L</rdfs:label>
     </owl:Class>
     
@@ -399,7 +399,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#M">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for M</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">M</rdfs:label>
     </owl:Class>
     
@@ -410,7 +410,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#N">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for N</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">N</rdfs:label>
     </owl:Class>
     
@@ -421,7 +421,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#O">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for O</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">O</rdfs:label>
     </owl:Class>
     
@@ -460,7 +460,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for P</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">P</rdfs:label>
     </owl:Class>
     
@@ -499,7 +499,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for Q</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Q</rdfs:label>
     </owl:Class>
     
@@ -538,7 +538,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for R</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">R</rdfs:label>
     </owl:Class>
     
@@ -549,7 +549,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#S">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for S</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">S</rdfs:label>
     </owl:Class>
     
@@ -560,7 +560,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#T">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for T</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">T</rdfs:label>
     </owl:Class>
     
@@ -571,7 +571,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#U">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for U</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">U</rdfs:label>
     </owl:Class>
     
@@ -582,7 +582,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#X">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for X</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">X</rdfs:label>
     </owl:Class>
     
@@ -594,7 +594,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#Y">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#X"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for Y</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Y</rdfs:label>
     </owl:Class>
     
@@ -606,7 +606,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#Z">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl#Y"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comment for Z</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Z</rdfs:label>
     </owl:Class>
 </rdf:RDF>
