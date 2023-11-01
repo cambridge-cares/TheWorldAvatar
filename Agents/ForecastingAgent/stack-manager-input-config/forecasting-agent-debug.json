@@ -3,7 +3,7 @@
         "Name": "forecasting-agent-debug",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.1.1",
+                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.2.0",
                 "Mounts": [
                     {
                         "Type": "bind",
