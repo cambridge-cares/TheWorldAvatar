@@ -20,6 +20,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 @WebServlet(urlPatterns = "/update")
@@ -153,9 +154,16 @@ public class IsochroneAgent extends JPSAgent {
             String workspaceName= "twa";
             String schema = "public";
             geoServerClient.createWorkspace(workspaceName);
-            geoServerClient.createPostGISDataStore(workspaceName,"isochrone_aggregated" , dbName, schema);
 
+            
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
             GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(isochroneSQLQuery);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("building_usage");
+            virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName,"isochrone_aggregated" , dbName, schema);
             geoServerClient.createPostGISLayer(workspaceName, dbName,"isochrone_aggregated" ,geoServerVectorSettings);
 
             //Upload Isochrone Ontop mapping
@@ -187,4 +195,6 @@ public class IsochroneAgent extends JPSAgent {
         }
         return true;
     }
+    private static final String isochroneSQLQuery="SELECT minute, transportmode, transportmode_iri, poi_type, CONCAT('https://www.theworldavatar.com/kg/ontoisochrone/',iri) as iri, roadcondition, roadcondition_iri, geometry_iri, population, population_men, population_women, population_women_reproductive, population_childrenu5, population_youth, population_elderly,  ST_Force2D(geom) as geom  FROM isochrone_aggregated";
+
 }
