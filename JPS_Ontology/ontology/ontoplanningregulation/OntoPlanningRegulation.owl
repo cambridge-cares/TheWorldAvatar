@@ -447,7 +447,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/ConservationArea">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Conservation areas as defined in https://data.gov.sg/dataset/master-plan-2019-sdcp-conservation-area-layer</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation that is designated for the preservation and protection of its historical, architectural, cultural, or environmental heritage within specific areas or districts.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Conservation Area</rdfs:label>
     </owl:Class>
@@ -506,7 +506,8 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/GoodClassBungalowArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/LandedHousingArea"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/ConservationArea"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of conservation area regulations intended only for good class bungalow.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Good Class Bungalow Area</rdfs:label>
     </owl:Class>
@@ -542,7 +543,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/HeightControlPlan">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Height Control Plan as defined in https://data.gov.sg/dataset/master-plan-2019-sdcp-building-height-control-layer</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation that is designated to control the building heights of a specific area.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Height Control Plan</rdfs:label>
     </owl:Class>
@@ -554,21 +555,9 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/LandedHousingArea">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Landed housing areas as  defined  by https://data.gov.sg/dataset/master-plan-2019-sdcp-landed-housing-area-layer</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation to help retain the character of landed housing estates. This plan identify the locations of these safeguarded estates and the type and storey height of housing that can be built in the estate.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Landed Housing Area</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/Monument -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/Monument">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monument boudaries as defined in https://data.gov.sg/dataset/master-plan-2019-sdcp-monument-layer</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monument</rdfs:label>
     </owl:Class>
     
 
@@ -581,30 +570,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PartyWall setback refers to Side setback whose buffer distance is required to be 0m.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Party Wall</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningBoundary -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningBoundary">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning Boundaries as defined in https://data.gov.sg/dataset/master-plan-2019-planning-area-boundary-no-sea</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning Boundary</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegion -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegion">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning regions as defined in https://data.gov.sg/dataset/master-plan-2019-region-boundary-no-sea</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Planning Region</rdfs:label>
     </owl:Class>
     
 
@@ -757,7 +722,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/StreetBlockPlan">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Street Block Plans as defined in https://www.ura.gov.sg/Corporate/Planning/Master-Plan/Control-Plans/Street-Block-and-Envelope-Control-Plans/list-of-street-block-envelope-control-plans</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation that guide the detailed setback, storey height and building height.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Street Block Plan</rdfs:label>
     </owl:Class>
@@ -779,12 +744,7 @@
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/UrbanDesignArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/UrbanDesignArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Urban Design Areas as defined in https://data.gov.sg/dataset/master-plan-2019-sdcp-urban-design-guideline-layer</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Urban Design Area</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/UrbanDesignArea"/>
     
 
 
@@ -793,7 +753,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/UrbanDesignGuideline">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Urban Design Guidelines as defined in  https://www.ura.gov.sg/Corporate/Guidelines/Urban-Design.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation that preserve and enhance the urban character of the different planning areas.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Urban Design Guideline</rdfs:label>
     </owl:Class>
