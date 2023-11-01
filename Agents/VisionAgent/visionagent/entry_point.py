@@ -1,14 +1,14 @@
 import cv2
 import logging
 import io
-from flask import Flask, jsonify, Response, send_file
+from flask import Flask, jsonify, Response, request, send_file
 from visionagent.agent.visionagent import VisionAgent
 
 # Configure logging
 logging.getLogger("cv2").setLevel(logging.ERROR)
 logger = logging.getLogger('prod')
 
-# Initialize Flask app
+# Initialise Flask app
 app = Flask(__name__)
 
 # Create an instance of the VisionAgent class
@@ -16,6 +16,14 @@ agent = VisionAgent()
 
 @app.route('/detect', methods = ['GET'])
 def detect_route():
+
+    image_source = request.args.get('image_source', None)
+
+    if image_source == "yes":
+        image_source = "visionagent/resources/test01.jpg"
+
+    agent = VisionAgent(image_source=image_source)
+
     try:
         frame, outputs, height, width = agent.run_one_frame()
         detected_objects, _ = agent.draw_boxes(frame, outputs, height, width)
@@ -38,6 +46,14 @@ def detect_route():
 
 @app.route('/update', methods=['GET'])
 def update_route():
+
+    image_source = request.args.get('image_source', None)
+
+    if image_source == "yes":
+        image_source = "visionagent/resources/test01.jpg"
+
+    agent = VisionAgent(image_source=image_source)
+
     try:
         frame, outputs, height, width = agent.run_one_frame()
         _, detected_objects = agent.draw_boxes(frame, outputs, height, width)

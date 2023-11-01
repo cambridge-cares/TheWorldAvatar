@@ -20,7 +20,6 @@ class VisionAgent:
         return outputs, height, width
 
     def draw_boxes(self, image, outputs, height, width):
-
         detected_objects = []
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -66,6 +65,7 @@ class VisionAgent:
             frame = cv2.imread(self.image_source)
             if frame is None:
                 raise Exception("Failed to read an image file")
+            
         else:  # Else use video source
             cap = cv2.VideoCapture(self.video_source)
             ret, frame = cap.read()
