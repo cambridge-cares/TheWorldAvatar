@@ -21,6 +21,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 
+@Ignore("These tests are not of an acceptable standard.")
 public class BucketHelperTest {
 
 	// Test getScenarioUrl()

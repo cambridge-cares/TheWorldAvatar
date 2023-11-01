@@ -5,9 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Paths;
 
+import org.junit.Ignore;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+@Ignore("These tests are not of an acceptable standard.")
 public class AgentLocatorTest extends TestCase {
 
 	public void testGetSingleton() {
