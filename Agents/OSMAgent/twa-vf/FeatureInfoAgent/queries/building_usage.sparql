@@ -1,27 +1,28 @@
 PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
 PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX tw: <https://www.theworldavatar.com/kg/>
 
-SELECT DISTINCT ?label ?value ?unit
+SELECT DISTINCT ?Property ?Value ?Unit
 WHERE {
 SERVICE [ONTOP] {
-SELECT DISTINCT ?label ?value ?unit
+SELECT DISTINCT ?Property ?Value ?Unit
 WHERE {
             {
 
                 [IRI] obe:hasPropertyUsage ?usage .
-                ?usage rdf:type ?value_ini .
-                OPTIONAL { ?usage obe:hasUsageShare ?unit_ini . }
-                BIND (replace(str(?value_ini), str(obe:), '') as ?usage_type)
-                BIND (concat(str(ROUND(?unit_ini*10000)/100), ' %') as ?value)
-                BIND (concat("Property Usage ",str(?usage_type)) AS ?label )
+                ?usage rdf:type ?Value_ini .
+                OPTIONAL { ?usage obe:hasUsageShare ?Unit_ini . }
+                BIND (replace(str(?Value_ini), str(obe:), '') as ?usage_type)
+                BIND (concat(str(ROUND(?Unit_ini*10000)/100), ' %') as ?Value)
+                BIND (concat("Property Usage ",str(?usage_type)) AS ?Property )
             }
-            UNION { 
-
+            UNION {
                 [IRI] obe:hasPropertyUsage ?usage .
-                ?usage rdf:type ?value_ini .
-                OPTIONAL { ?usage obe:hasUsageLabel ?value . }
-                BIND ("Building Name" AS ?label )
+                ?usage rdf:type ?Value_ini .
+                OPTIONAL { ?usage obe:hasUsageLabel ?Name_ini . }
+                BIND (COALESCE(?Name_ini, " ") AS ?Value)
+                BIND ("Building Name" AS ?Property )
             } 
     }
 }

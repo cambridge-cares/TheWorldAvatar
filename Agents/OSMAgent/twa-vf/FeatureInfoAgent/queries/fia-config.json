@@ -1,9 +1,11 @@
 {
-    "queries": [
+    "entries": [
         {
-            "class": "https://w3id.org/bot#Building",
-            "metaFile": "building_usage.sparql",
-            "timeFile": ""
+            "id": "Building",
+            "class": "http://www.opengis.net/citygml/building/2.0/Building",
+            "meta" : {
+                "queryFile": "building_usage.sparql"
+            }
         }
     ]
 }

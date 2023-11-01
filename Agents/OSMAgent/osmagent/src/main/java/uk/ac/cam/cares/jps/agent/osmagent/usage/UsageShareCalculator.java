@@ -138,20 +138,17 @@ public class UsageShareCalculator {
                 }
         }
 
-        public void removePrefix(String usageTable){
-                String removePrefix ="UPDATE "+usageTable+"\n" +
-                        "SET building_iri = SUBSTRING(building_iri, LENGTH('https://www.theworldavatar.com/kg/Building/') + 1)\n" +
-                        "WHERE building_iri LIKE 'https://www.theworldavatar.com/kg/Building/%';\n" +
+        public void addMaterializedView(String usageTable){
+                String materializedView ="-- Drop the materialized view if it exists\n" +
+                        "DROP MATERIALIZED VIEW IF EXISTS usage.buildingusage_osm;\n" +
                         "\n" +
-                        "\n" +
-                        "UPDATE polygons\n" +
-                        "SET building_iri = SUBSTRING(building_iri, LENGTH('https://www.theworldavatar.com/kg/Building/') + 1)\n" +
-                        "WHERE building_iri LIKE 'https://www.theworldavatar.com/kg/Building/%';\n" +
-                        "\n" +
-                        "UPDATE points\n" +
-                        "SET building_iri = SUBSTRING(building_iri, LENGTH('https://www.theworldavatar.com/kg/Building/') + 1)\n" +
-                        "WHERE building_iri LIKE 'https://www.theworldavatar.com/kg/Building/%';";
+                        "-- Create a new materialized view named \"buildingusage_osm\" in the \"usage\" schema\n" +
+                        "CREATE MATERIALIZED VIEW usage.buildingusage_osm AS\n" +
+                        "SELECT DISTINCT u.*, COALESCE(p.name, o.name) AS name\n" +
+                        "FROM "+usageTable+" AS u\n" +
+                        "LEFT JOIN public.points AS p ON u.building_iri = p.building_iri\n" +
+                        "LEFT JOIN public.polygons AS o ON u.building_iri = o.building_iri;";
 
-                rdbStoreClient.executeUpdate(removePrefix);
+                rdbStoreClient.executeUpdate(materializedView);
         }
 }
