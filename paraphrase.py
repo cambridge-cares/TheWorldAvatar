@@ -5,6 +5,7 @@ from typing import List
 
 import openai
 from tqdm import tqdm
+import pandas as pd
 
 PARAPHRASE_NUM = 3
 HEADER = ["id", "verbalization", "paraphrases"]
@@ -147,14 +148,8 @@ if __name__ == "__main__":
         writer = csv.writer(f)
         writer.writerow(HEADER)
     else:
-        with open(filename_out, "r") as f:
-            reader = csv.DictReader(f)
-            ids = []
-            for i, row in enumerate(reader):
-                if i == 0:
-                    continue
-                ids.append(row["id"])
-        data = [datum for datum in data if str(datum["id"]) not in ids]
+        df = pd.read_csv(filename_out)
+        data = [datum for datum in data if datum["id"] not in df["id"]]
 
         f = open(filename_out, "a")
         writer = csv.writer(f)
