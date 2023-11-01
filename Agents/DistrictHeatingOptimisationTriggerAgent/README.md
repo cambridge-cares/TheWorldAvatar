@@ -70,7 +70,7 @@ Several key environment variables need to be set in the [stack-manager-input-con
 **Please note:** 1) The specified namespace needs to exist/be created in Blazegraph beforehand to avoid agent execution issues. 2) The entire [resources] folder is mounted into the agent container; hence, the absolute path in the `Source` node of the config file likely needs to be adjusted.
 
 If you want to spin up this agent as part of a stack, do the following:
-1) Pull the Docker image `docker pull ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:1.0.0` (alternatively, build with the commands above, but do not spin up the image)
+1) Pull the Docker image `docker pull ghcr.io/cambridge-cares/dh-optimisation-trigger-agent:1.1.0` (alternatively, build with the commands above, but do not spin up the image)
 2) Copy the `dh-optimisation-trigger-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config/services` folder of the stack manager
 3) Add the service to a corresponding stack configuration json in `inputs/config`
 4) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
