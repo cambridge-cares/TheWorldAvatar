@@ -158,8 +158,8 @@ TEST_CASE_15 = 'Prophet_1_Covariates_OM_Quantity_without_scaling_without_Measure
 TEST_CASE_16 = 'Prophet_1_Covariates_OM_Quantity_with_scaling_without_Measure_without_Unit__overwriting'
 TEST_CASE_17 = 'Prophet_2_Covariates_OM_Quantity_without_scaling_without_Measure_without_Unit__overwriting_comparison'
 # Test cases for multiple dataIRIs being linked to same time series IRI (i.e., different columns)
-TEST_CASE_18 = 'Prophet_2_OM_Quantity_dataIRIs_attached_with_same_tsIRI'
-TEST_CASE_19 = 'Prophet_2_OWL_Thing_multiple_dataIRIs_to_same_tsIRI'
+TEST_CASE_18 = 'Prophet_OM_Quantity_with_multiple_dataIRIs_associated_with_same_tsIRI'
+TEST_CASE_19 = 'Prophet_OWL_Thing_with_multiple_dataIRIs_associated_with_same_tsIRI'
 DERIVATION_INPUTS_5 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_2,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
 DERIVATION_INPUTS_6 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_2,

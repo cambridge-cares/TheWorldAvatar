@@ -95,18 +95,18 @@ def test_example_data_instantiation(initialise_clients):
     assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
-@pytest.mark.skip(reason="")
+#@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "derivation_input_set, dataIRI, input_chunk_length, with_unit, overwrite_forecast, ts_times, ts_values, case",
     [
         (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_1),
-        #(cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
-        #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_3),
-        #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_4),
-        #(cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_5),
-        #(cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_6),
-        #(cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_7),
-        #(cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_8),
+        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
+        (cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_3),
+        (cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_4),
+        (cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_5),
+        (cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_6),
+        (cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_7),
+        (cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_8),
     ],
 )
 def test_create_forecast(
@@ -252,7 +252,7 @@ def test_create_forecast(
     print("All check passed.")
 
 
-@pytest.mark.skip(reason="")
+#@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "http_request, fail, equal, expected_result",
     [
@@ -524,7 +524,7 @@ def test_create_tft_forecast(
     print("All check passed.")
 
 
-@pytest.mark.skip(reason="")
+#@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "derivation_input_set, dataIRI, input_chunk_length, with_unit, overwrite_forecast, ts_times, covariates, case",
     [
@@ -688,7 +688,7 @@ def test_create_prophet_covariates_forecast(
     print("All check passed.")
 
 
-@pytest.mark.skip(reason="")
+#@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "derivation_input_set1, derivation_input_set2, fcmodelIRI1, fcmodelIRI2, dataIRI, ts_times, covariates, case1, case2",
     [
@@ -859,7 +859,7 @@ def test_significance_covariates_forecast(
     "derivation_input_set, dataIRI, dataIRIs, input_chunk_length, with_unit, ts_times, ts_values, case",
     [
         (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, [cf.ASSOCIATED_DATAIRI_1, cf.NOT_ASSOCIATED_DATAIRI_2], cf.DURATION_1, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_18),
-        #(cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, [cf.IRI_TO_FORECAST_3, cf.IRI_TO_FORECAST_4], cf.DURATION_1, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_19),
+        (cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, [cf.IRI_TO_FORECAST_3, cf.IRI_TO_FORECAST_4], cf.DURATION_2, False, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_19),        
     ],
 )
 def test_multiple_datairis_to_same_tsiri(
