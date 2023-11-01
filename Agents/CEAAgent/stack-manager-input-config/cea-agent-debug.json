@@ -3,7 +3,7 @@
         "Name": "cea-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/cea-agent:3.0.0",
+                "Image": "ghcr.io/cambridge-cares/cea-agent:3.1.0-dev-change-cea-properties-path-SNAPSHOT",
                 "Env": [
                     "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
                 ],
