@@ -58,9 +58,8 @@ Default value - `osm` is set to the schema specified in [osm.json](inputs/config
 - `landuse.table` - Table name (inclusive of schema) containing land use data. Default value is set to `public.dlmsie02f` as per uploaded via psdt [here](https://github.com/cambridge-cares/pirmasens/blob/main/psdt/stack-data-uploader-inputs/config/dlm.json). Leave empty if there is no land use data available, no land use matching will be run.
 
 ## 4. Deployment
-
-### 4.1 Building Docker Image
-In the same directory as this README, run `docker compose build`. This will build the OSMAgent Docker Image.
+### 4.1 Retrieving OSMAgent's image
+The OSMAgent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/osmagent) using `docker pull ghcr.io/cambridge-cares/osmagent:<LATEST-VERSION>`
 
 ### 4.2 Starting with the stack-manager
 The agent has been implemented to work in the stack. To do so, place [osmagent.json](stack-manager-input-config/osmagent.json) in the [stack-manager config directory]. 
@@ -78,6 +77,10 @@ curl -X POST localhost:3838/osmagent/update
 ```
 
 ## 5. Debugging
+### 5.1 Building Docker Image
+In the same directory as this README, run `docker compose build`. This will build the OSMAgent local Docker Image.
+
+### 5.2 Starting with the stack-manager
 To debug the agent, replace [`osmagent-debug.json`](stack-manager-input-config/osmagent-debug.json) instead of [`osmagent.json`](stack-manager-input-config/osmagent.json) in the [stack-manager config directory]. 
 
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.
