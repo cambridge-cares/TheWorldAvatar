@@ -31,6 +31,8 @@ hasPlotArea,Object Property,hasArea,IS-A,Plot,http://www.ontology-of-units-of-me
 hasBuildableSpace,Object Property,,,Plot,BuildableSpace,,A relationship that links the buildable space for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has buildable space
 hasDepth,Object Property,,,Plot,AverageDepth,,A relationship that indicates the depth for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has depth
 hasNeighbour ,Object Property,,,Plot,Plot,,A relationship that indicates the neighbouring plot for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has neighbour 
+hasOwner,Object Property,,,Plot,https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person,,A relationship that defines the road type of a plot.,https://www.theworldavatar.com/kg/ontoplot/,has owner
+hasPrice,Object Property,,,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,,A relationship that defines the price of a specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has price
 hasWidth,Object Property,,,Plot,AverageWidth,,A relationship that indicates the width for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has width
 atLevel,Data Property,,,Storey,integer,,A relationship that defines the level of the storey instance.,https://www.theworldavatar.com/kg/ontoplot/,at level
 atLevelOfDetail,Data Property,,,BuildableSpace,String,,A relationship that defines the level of detail for the buildable space.,https://www.theworldavatar.com/kg/ontoplot/,at level of detail
