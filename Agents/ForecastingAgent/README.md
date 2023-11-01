@@ -207,8 +207,8 @@ The agent also provides an HTTP endpoint to assess multiple error metrics of cre
 
 ```
 { "query": {
-      "tsIRI_target": <IRI of time series 1>,
-      "tsIRI_fc" : <IRI of time series 2>
+      "dataIRI_target": <dataIRI of time series 1>,
+      "dataIRI_fc" : <dataIRI of time series 2>
     }
 }
 ```

@@ -319,7 +319,7 @@ def test_evaluate_forecast(
         assert expected_result(response['max_error'], 0)
 
 
-#@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
+@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
 def test_load_pretrained_model(initialise_clients):
     """
     Test the function `load_pretrained_model` to load a pretrained model from 
@@ -351,7 +351,7 @@ def test_load_pretrained_model(initialise_clients):
     assert model.model.output_chunk_length == 24
 
 
-#@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
+@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
 @pytest.mark.parametrize(
     "derivation_input_set, heatDemand, input_chunk_length, with_unit, overwrite_forecast, ts_times, covariates, case",
     [
