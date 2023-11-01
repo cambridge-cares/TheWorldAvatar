@@ -55,7 +55,7 @@
         <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">test description for has Age</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"/>
     </owl:DatatypeProperty>
     
 
@@ -106,7 +106,7 @@
 
 
     <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#versionInfo">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2002/07/owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:resource="http://www.w3.org/2002/07/owl"/>
     </rdf:Description>
 </rdf:RDF>
 
