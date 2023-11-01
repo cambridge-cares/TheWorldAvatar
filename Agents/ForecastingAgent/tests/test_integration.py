@@ -209,8 +209,8 @@ def test_create_forecast(
     assert outp_interval['end_unix'] == cf.T_2
 
     # Assess initial forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case)
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, ts_client, agent_url=agent_url,
+                                      name=case)
     print(f'Forecast errors for case: {case}')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
@@ -243,8 +243,8 @@ def test_create_forecast(
     assert outp_interval['end_unix'] == cf.T_3
     
     # Assess updated forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case+'_updated')
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, ts_client, agent_url=agent_url,
+                                      name=case+'_updated')
     print(f'Forecast errors for case: {case}_updated')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
@@ -291,11 +291,11 @@ def test_evaluate_forecast(
         # Retrieve list of instantiated time series IRIs
         tsIRIs = sparql_client.get_all_tsIRIs()
         if equal:
-            http_request['query']['tsIRI_target'] = tsIRIs[0]
-            http_request['query']['tsIRI_fc'] = tsIRIs[0]
+            http_request['query']['dataIRI_target'] = sparql_client.get_dataIRI(tsIRIs[0])
+            http_request['query']['dataIRI_fc'] = sparql_client.get_dataIRI(tsIRIs[0])
         else:
-            http_request['query']['tsIRI_target'] = tsIRIs[0]
-            http_request['query']['tsIRI_fc'] = tsIRIs[1]
+            http_request['query']['dataIRI_target'] = sparql_client.get_dataIRI(tsIRIs[0])
+            http_request['query']['dataIRI_fc'] = sparql_client.get_dataIRI(tsIRIs[1])
 
     # Create HTTP request to evaluate forecast errors
     headers = {'Content-Type': 'application/json'}
@@ -319,7 +319,7 @@ def test_evaluate_forecast(
         assert expected_result(response['max_error'], 0)
 
 
-@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
+#@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
 def test_load_pretrained_model(initialise_clients):
     """
     Test the function `load_pretrained_model` to load a pretrained model from 
@@ -351,7 +351,7 @@ def test_load_pretrained_model(initialise_clients):
     assert model.model.output_chunk_length == 24
 
 
-@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
+#@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
 @pytest.mark.parametrize(
     "derivation_input_set, heatDemand, input_chunk_length, with_unit, overwrite_forecast, ts_times, covariates, case",
     [
@@ -481,8 +481,8 @@ def test_create_tft_forecast(
     assert outp_interval['end_unix'] == cf.T_2
 
     # Assess initial forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(heatDemand, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case)
+    errors = cf.assess_forecast_error(heatDemand, fcIRI, ts_client, agent_url=agent_url,
+                                      name=case)
     print(f'Forecast errors for case: {case}')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
@@ -515,8 +515,8 @@ def test_create_tft_forecast(
     assert outp_interval['end_unix'] == cf.T_3
     
     # Assess updated forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(heatDemand, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case+'_updated')
+    errors = cf.assess_forecast_error(heatDemand, fcIRI, ts_client, agent_url=agent_url,
+                                      name=case+'_updated')
     print(f'Forecast errors for case: {case}_updated')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
@@ -531,7 +531,7 @@ def test_create_tft_forecast(
         (cf.DERIVATION_INPUTS_7, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.COVARIATES_2, cf.TEST_CASE_13),
         (cf.DERIVATION_INPUTS_8, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.COVARIATES_2, cf.TEST_CASE_14),
         (cf.DERIVATION_INPUTS_9, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.COVARIATES_3, cf.TEST_CASE_15),
-         (cf.DERIVATION_INPUTS_10, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.COVARIATES_3, cf.TEST_CASE_16),
+        (cf.DERIVATION_INPUTS_10, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.COVARIATES_3, cf.TEST_CASE_16),
     ],
 )
 def test_create_prophet_covariates_forecast(
@@ -645,8 +645,8 @@ def test_create_prophet_covariates_forecast(
     assert outp_interval['end_unix'] == cf.T_2
 
     # Assess initial forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case)
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, ts_client, agent_url=agent_url,
+                                      name=case)
     print(f'Forecast errors for case: {case}')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
@@ -679,8 +679,8 @@ def test_create_prophet_covariates_forecast(
     assert outp_interval['end_unix'] == cf.T_3
     
     # Assess updated forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case+'_updated')
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, ts_client, agent_url=agent_url,
+                                      name=case+'_updated')
     print(f'Forecast errors for case: {case}_updated')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
@@ -693,7 +693,7 @@ def test_create_prophet_covariates_forecast(
     "derivation_input_set1, derivation_input_set2, fcmodelIRI1, fcmodelIRI2, dataIRI, ts_times, covariates, case1, case2",
     [
         (cf.DERIVATION_INPUTS_3, cf.DERIVATION_INPUTS_7, cf.FORECASTING_MODEL_1, cf.FORECASTING_MODEL_3, cf.IRI_TO_FORECAST_1,  cf.TIMES,
-          cf.COVARIATES_2, cf.TEST_CASE_5+'_covariates_comparison', cf.TEST_CASE_13+'_covariates_comparison'),
+         cf.COVARIATES_2, cf.TEST_CASE_5+'_covariates_comparison', cf.TEST_CASE_13+'_covariates_comparison'),
     ],
 )
 def test_significance_covariates_forecast(
@@ -717,13 +717,10 @@ def test_significance_covariates_forecast(
     """
 
     # Get forecast agent IRI for current test case
-
-    #agent iri
     agent_iri = cf.AGENT_w_OVERWRITING_IRI
     agent_url = cf.AGENT_w_OVERWRITING_URL
 
     # Generate synthetic test time series data (incl. required covariates)
-
     # Promotion on every 6th and 7th time unit in a cycle of 7
     covariate1 = [float(1) if i % 7 == 6 or i % 7 == 5 else float(0) for i in range(len(ts_times))]
     # Special Event on every 9th and 24th time unit in a cycle of 25
@@ -755,7 +752,7 @@ def test_significance_covariates_forecast(
         ts_client.init_timeseries(dataIRI=k, times=ts_times, values=v,
                                   ts_type=DOUBLE, time_format=TIME_FORMAT)
 
-    #1) Get forecast of agent without covariates
+    # 1) Get forecast of agent without covariates
 
     # Register derivation agents in KG
     create_example_agent(ontoagent_service_iri=agent_iri, ontoagent_http_url=agent_url) 
@@ -774,17 +771,15 @@ def test_significance_covariates_forecast(
     fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
 
     # Assess initial forecast error and create plot for visual inspection
-    errors1 = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case1)
-    
+    errors1 = cf.assess_forecast_error(dataIRI, fcIRI, ts_client, agent_url=agent_url,
+                                       name=case1)    
     ts1 = ts_client.retrieve_timeseries(fcIRI)
     
     print(f'Forecast errors for case: {case1}')
     for k,v in errors1.items():
         print(f'{k}: {round(v,5)}')
 
-
-    #2) Get forecast of agent with covariates
+    # 2) Get forecast of agent with covariates
 
     # Initialise all triples in test_triples repository
     cf.initialise_triples(sparql_client)
@@ -795,7 +790,7 @@ def test_significance_covariates_forecast(
         ts_client.init_timeseries(dataIRI=k, times=ts_times, values=v,
                                   ts_type=DOUBLE, time_format=TIME_FORMAT)
 
-    #Register derivation agents in KG
+    # Register derivation agents in KG
     create_example_agent(ontoagent_service_iri=agent_iri, ontoagent_http_url=agent_url) 
 
     # Create derivation instances for new information (incl. timestamps for pure inputs)
@@ -812,9 +807,8 @@ def test_significance_covariates_forecast(
     fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
 
     # Assess initial forecast error and create plot for visual inspection
-    errors2 = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      agent_url=agent_url, name=case2)
-    
+    errors2 = cf.assess_forecast_error(dataIRI, fcIRI, ts_client, agent_url=agent_url,
+                                       name=case2)    
     ts2 = ts_client.retrieve_timeseries(fcIRI)
 
     print(f'Forecast errors for case: {case2}')
@@ -958,11 +952,11 @@ def test_multiple_datairis_to_same_tsiri(
     assert outp_interval['end_unix'] == cf.T_2
 
     # Assess initial forecast error and create plot for visual inspection
-    # errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-    #                                   agent_url=agent_url, name=case)
-    # print(f'Forecast errors for case: {case}')
-    # for k,v in errors.items():
-    #     print(f'{k}: {round(v,5)}')
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, ts_client, agent_url=agent_url, 
+                                      name=case)
+    print(f'Forecast errors for case: {case}')
+    for k,v in errors.items():
+        print(f'{k}: {round(v,5)}')
 
     # Update derivation interval and add latest timestamp to trigger update
     cf.update_derivation_interval(derivation_iri, cf.FC_INTERVAL_2, sparql_client)
@@ -988,10 +982,10 @@ def test_multiple_datairis_to_same_tsiri(
     assert outp_interval['end_unix'] == cf.T_3
     
     # Assess updated forecast error and create plot for visual inspection
-    # errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-    #                                   agent_url=agent_url, name=case+'_updated')
-    # print(f'Forecast errors for case: {case}_updated')
-    # for k,v in errors.items():
-    #     print(f'{k}: {round(v,5)}')
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, ts_client, agent_url=agent_url,
+                                      name=case+'_updated')
+    print(f'Forecast errors for case: {case}_updated')
+    for k,v in errors.items():
+        print(f'{k}: {round(v,5)}')
 
     print("All check passed.")

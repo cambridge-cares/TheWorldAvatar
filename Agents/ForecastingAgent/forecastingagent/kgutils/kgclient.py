@@ -287,27 +287,6 @@ class KGClient(PySparqlClient):
 
         # Return unique query result (otherwise exception is thrown)
         return get_unique_value(res, 'dataIRI')
-    
-
-    def get_tsIRI(self, dataIRI:str):
-        """
-        Returns tsIRI associated with given dataIRI.
-
-        Returns:
-            tsIRI {str} -- tsIRI associated with given dataIRI
-        """
-
-        query = f"""
-            SELECT DISTINCT ?tsIRI
-            WHERE {{   
-            <{dataIRI}> <{TS_HASTIMESERIES}> ?tsIRI .
-            }}
-        """
-        query = remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
-
-        # Return unique query result (otherwise exception is thrown)
-        return get_unique_value(res, 'tsIRI')
 
 
     def get_all_tsIRIs(self):
