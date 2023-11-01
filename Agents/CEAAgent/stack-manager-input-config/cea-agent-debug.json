@@ -4,13 +4,6 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/cea-agent:3.0.0",
-                "Mounts": [
-                    {
-                        "Type": "bind",
-                        "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/CEAAgent/cea-agent/src/main/resources/CEAAgentConfig.properties",
-                        "Target": "/resources/CEAAgentConfig.properties"
-                    }
-                ],
                 "Env": [
                     "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
                 ],

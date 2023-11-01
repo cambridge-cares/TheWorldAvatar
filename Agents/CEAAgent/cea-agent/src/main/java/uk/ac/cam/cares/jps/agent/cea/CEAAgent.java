@@ -36,6 +36,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
+import org.springframework.core.io.ClassPathResource;
+
 @WebServlet(
         urlPatterns = {
                 CEAAgent.URI_ACTION,
@@ -63,8 +65,6 @@ public class CEAAgent extends JPSAgent {
     public static final String CEA_OUTPUTS = "ceaOutputs";
     public final int NUM_CEA_THREADS = 1;
     private final ThreadPoolExecutor CEAExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_CEA_THREADS);
-
-    private static final String PROPERTIES_PATH = "/resources/CEAAgentConfig.properties";
 
     private OntologyURIHelper ontologyUriHelper;
     private GeometryQueryHelper geometryQueryHelper;
@@ -414,7 +414,7 @@ public class CEAAgent extends JPSAgent {
      * Gets variables from config
      */
     private void readConfig() {
-        try (InputStream input = FileReader.getStream(PROPERTIES_PATH)) {
+        try (InputStream input = new ClassPathResource("CEAAgentConfig.properties").getInputStream()) {
             Properties config = new Properties();
             config.load(input);
             stackAccessAgentBase = config.getProperty("access.url");
