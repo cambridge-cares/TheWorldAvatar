@@ -1,50 +1,15 @@
-from typing import Iterable, Tuple
+from dataclasses import dataclass
+from typing import List
 
-PRINT_TEMPLATE = "{classname}[{properties}]"
+from core.sparql.graph_pattern import FilterClause, GraphPattern, TriplePattern, ValuesClause
+from core.sparql.query_form import SelectClause
+from core.sparql.sparql_base import SparqlBase
 
-class _Repr:
-    def __repr__(self):
-        return PRINT_TEMPLATE.format(classname=type(self).__name__, properties=self.__dict__.__repr__())
 
-class SelectClause(_Repr):
-    def __init__(self, vars: Iterable[str]):
-        self.vars = list(vars)
-
-class GraphPattern(_Repr):
-    def __repr__(self):
-        return PRINT_TEMPLATE.format(classname=type(self).__name__, properties=self.__dict__.__repr__())
-
-class ValuesClause(GraphPattern):
-    def __init__(self, var: str, values: Iterable[str]):
-        self.var = var
-        self.values = list(values)
-
-class FilterClause(GraphPattern):
-    def __init__(self, constraint: str):
-        self.constraint = constraint
-
-class TriplePattern(GraphPattern):
-    def __init__(self, subj: str, tails: Iterable[Tuple[str, str]]):
-        self.subj = subj
-        self.tails = list(tails) # [(p1, o1), (p2, o2), ...]
-    
-    @classmethod
-    def from_triple(cls, subj: str, predicate: str, obj: str):
-        return cls(subj=subj, tails=[(predicate, obj)])
-
-class OptionalClause(GraphPattern):
-    def __init__(self, graph_patterns: Iterable[GraphPattern]):
-        self.graph_patterns = list(graph_patterns)
-
-class BindClause(GraphPattern):
-    def __init__(self, exprn: str, var: str):
-        self.exprn = exprn
-        self.var = var
-
-class SparqlQuery(_Repr):
-    def __init__(self, select_clause: SelectClause, graph_patterns: Iterable[GraphPattern]):
-        self.select_clause = select_clause
-        self.graph_patterns = list(graph_patterns)
+@dataclass
+class SparqlQuery(SparqlBase):
+    select_clause: SelectClause
+    graph_patterns: List[GraphPattern]
 
     @classmethod
     def _extract_select_clause(cls, sparql_compact: str):
@@ -54,7 +19,7 @@ class SparqlQuery(_Repr):
         select_clause = select_clause.strip()
 
         assert select_clause.startswith("SELECT")
-        vars = select_clause[len("SELECT"):].strip().split()
+        vars = select_clause[len("SELECT") :].strip().split()
         select_clause = SelectClause(vars)
 
         sparql_compact = sparql_compact.strip()
@@ -75,7 +40,7 @@ class SparqlQuery(_Repr):
 
         ptr = 0
         literals = []
-        while ptr < len(graph_patterns_str) and graph_patterns_str[ptr] != '}':
+        while ptr < len(graph_patterns_str) and graph_patterns_str[ptr] != "}":
             assert graph_patterns_str[ptr] == '"', graph_patterns_str
             _ptr = ptr + 1
             _ptr_literal_start = _ptr
@@ -83,7 +48,7 @@ class SparqlQuery(_Repr):
                 _ptr += 1
             assert graph_patterns_str[_ptr] == '"'
 
-            literal = graph_patterns_str[_ptr_literal_start: _ptr]
+            literal = graph_patterns_str[_ptr_literal_start:_ptr]
             literals.append(literal)
 
             ptr = _ptr + 1
@@ -91,10 +56,10 @@ class SparqlQuery(_Repr):
                 ptr += 1
 
         values_clause = ValuesClause("?Species", literals)
-        graph_patterns_str = graph_patterns_str[ptr + 1:]
-        
+        graph_patterns_str = graph_patterns_str[ptr + 1 :]
+
         return graph_patterns_str, values_clause
-    
+
     @classmethod
     def _extract_filter_clause(cls, graph_patterns_str: str):
         graph_patterns_str = graph_patterns_str[len("FILTER") :].strip()
@@ -152,11 +117,17 @@ class SparqlQuery(_Repr):
         while len(graph_patterns_str) > 0:
             graph_patterns_str = graph_patterns_str.strip()
             if graph_patterns_str.startswith("VALUES"):
-                graph_patterns_str, pattern = cls._extract_values_clause(graph_patterns_str)
+                graph_patterns_str, pattern = cls._extract_values_clause(
+                    graph_patterns_str
+                )
             elif graph_patterns_str.startswith("FILTER"):
-                graph_patterns_str, pattern = cls._extract_filter_clause(graph_patterns_str)
+                graph_patterns_str, pattern = cls._extract_filter_clause(
+                    graph_patterns_str
+                )
             else:
-                graph_patterns_str, pattern = cls._extract_triple_pattern(graph_patterns_str)
+                graph_patterns_str, pattern = cls._extract_triple_pattern(
+                    graph_patterns_str
+                )
             graph_patterns.append(pattern)
 
         return cls(select_clause, graph_patterns)

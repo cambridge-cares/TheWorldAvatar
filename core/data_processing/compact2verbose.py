@@ -8,12 +8,12 @@ from core.data_processing.constants import (
     PROPERTY_KEYS,
     USE_KEY,
 )
-from core.data_processing.sparql import (
+from core.sparql import SparqlQuery
+from core.sparql.query_form import SelectClause
+from core.sparql.graph_pattern import (
     BindClause,
     GraphPattern,
     OptionalClause,
-    SelectClause,
-    SparqlQuery,
     TriplePattern,
     ValuesClause,
 )

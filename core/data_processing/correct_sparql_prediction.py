@@ -1,6 +1,7 @@
 from core.data_processing.correct_predicate import PredicateCorrector
 from core.data_processing.correct_span import SpanCorrector
-from core.data_processing.sparql import SparqlQuery, TriplePattern, ValuesClause
+from core.sparql import SparqlQuery
+from core.sparql.graph_pattern import TriplePattern, ValuesClause
 
 
 class SparqlPredictionCorrector:
