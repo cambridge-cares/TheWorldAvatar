@@ -1,5 +1,6 @@
 torch
 transformers[torch]
+optimum[onnxruntime]
 datasets
 wandb
 tqdm
