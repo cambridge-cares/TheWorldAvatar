@@ -1,27 +1,13 @@
 # BMSUpdateAgent
-BMSUpdateAgent is an agent designed to change the setpoints of lab equipment, so they can be switched on or off. 
-This agent corporates with ESPHomeAgent and ESPHomeUpdateAgent.
-It first takes value from user and writes to the knowledge graph, which is listened by ESPHomeAgent. After changing the setpoint in the knowledge graph, this agent triggers ESPHomeAgent to check for the condition changes and toggle the state of devices accordingly. 
-When the device state is set, this agent will activate ESPHomeUpdateAgent to pull data update from API to database.
+BMSUpdateAgent is an agent designed for multiple functions:
+1) It is able to change the setpoint of devices and interact with relevant agents to trigger reactions and processes via the [Set Route](#21-set-route) . This first function is currently limited to only interact with the [ESPHomeAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeAgent) and [ESPHomeUpdateAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeUpdateAgent).
 
-At the current stage, the BMSUpdateAgent only supports changing the temperature setpoint of a cooling fan. 
+2) It is able to write values to a BMS Bacnet Endpoint via the [Wacnet API](https://hvac.io/docs/wacnet#orgheadline7). Wacnet will need to be set up beforehand and exposed such that it is accessible to the agent. The agent is able to either directly interact via the API if all parameters are provided or it will attempt to query for the missing parameters from the knowledge graph. More information is available at the [Write Route](#22-write-route).
 
 # 1. Setup
 This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
-A successful setup will result in 9 containers:
-- 8 [default containers](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack)
-- BMSUpdateAgent
 
-Other resources that BMSUpdateAgent depends on are running outside the stack, including ESPHomeAgent, ESPHomeUpdateAgent and the blazegraph that ESPHomeAgent read from.  
-These resources need to be set up separately and their hosts should be set in the BMSUpdateAgent's config file as stated below. 
-
-## 1.1 Config BMSUpdateAgent in Stack
-### 1) Edit Agent Config Files
-Replace the hosts for ESPHomeAgent, ESPHomeUpdateAgent and the blazegraph that ESPHomeAgent read from in `config/client.properties`
-
-Replace the `<WORK_DIR>` in the `Mounts` section of `stack-manager-input-config-service/bms-update-agent.json`
-
-### 2) Build Image
+## 1.1. Build Image
 The BMSUpdateAgent is set up to use the Maven repository. You'll need to provide your credentials in single-word text files located like this:
 ```
 ./credentials/
@@ -33,10 +19,12 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Then build image with:
 ```
-docker build . -t bms-update-agent:1.0.0
+docker build . -t bms-update-agent:1.1.0
 ```
 
-### 3) Add Agent Config to Stack Manager
+## 1.2. Edit and Add Agent Config to Stack Manager
+Open `stack-manager-input-config-service/bms-update-agent.json` and under the Mounts section, modify the Source and insert the filepath of where the config folder is located at (For Windows users using WSL on Docker, the file path should start with /mnt/c/, which is equivalent to C://).
+
 Copy `stack-manager-input-config-service/bms-update-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
 
 Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it doesn't exist. If it exists already, append the agent to the file as follows:
@@ -53,7 +41,6 @@ Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK 
   }
 }
 ```
-
 After this step, the `stack-manager/inputs/config` folder will have the following structure:
 ```
 config/
@@ -64,10 +51,22 @@ config/
 ```
 More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
 
-## 1.2 Spin Up Stack
+## 1.3. Spin Up Stack
 Follow these [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack.
 
 # 2. Usage
+## 2.1 Set Route
+### 2.1.1. setClient.properties
+This properties file is required for the first function. It needs to contain the endpoint of the [ESPHomeAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeAgent), endpoint of the [ESPHomeUpdateAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeUpdateAgent), credentials and endpoints to access the SPARQL endpoint of the knowledge graph. It should contain the following keys:
+- `esphome.agent.toggle` the endpoint of the ESPHome Agent
+- `esphome.update.agent.retrieve` the endpoint of the ESPHome Update Agent
+- `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
+- `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
+- `sparql.username` the username to access the SPARQL endpoint
+- `sparql.password` the password to access the SPARQL endpoint
+More information can be found in the example property file `setClient.properties` in the `config` folder.
+
+### 2.1.2. Execution
 The agent accepts a POST request path `/set`. The following command will set the setpoint to `<TEMPERATURE>` and turn on/off a cooling fan based on the measured temperature and the setpoint.
 ```
 curl -X POST 'http://localhost:3838/bms-update-agent/set' \
@@ -75,7 +74,7 @@ curl -X POST 'http://localhost:3838/bms-update-agent/set' \
 --data '{
     "dataIRI":"https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature",
     "temperature":<TEMPERATURE>,
-    "clientProperties":"CLIENT_PROPERTIES"
+    "setClientProperties":"SET_CLIENT_PROPERTIES"
 }'
 ```
 If the component is in the ON state.
@@ -86,4 +85,57 @@ If the component is in the ON state.
 If the component is in the OFF state.
 ```json
 {"fanStatus":"The fan is in the OFF state.","message":"The temperature has been set to <TEMPERATURE>"}
+```
+
+## 2.2. Write Route
+The write route allows writing of values to Bacnet points via the [Wacnet API](https://hvac.io/docs/wacnet#orgheadline7). These parameters are required:
+- `bacnetObjectId` the ID of the Bacnet Object to write to
+- `bacnetDeviceId` the ID of the Bacnet Device that the object is assigned under
+- `value` the value to write to the Bacnet Object
+
+`bacnetObjectId` and `bacnetDeviceId` can either be provided in the request sent to the agent or it can be queried from the knowledge graph. In order for the agent to query for `bacnetObjectId` and `bacnetDeviceId`, the [writeClient.properties](#221-writeclientproperties) needs to be populated and the data IRI has to be provided in the [request](#223-execution). The query run by the agent is structured based on [OntoBMS](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontobms/OntoBMS.owl):
+
+```
+<data IRI> ontobms:hasBacnetObjectID	"bacnetObjectId" ; 
+           ontobms:hasBacnetDeviceID	"bacnetDeviceId" .
+```
+
+### 2.2.1. writeClient.properties
+This properties file is required for the second function and it only needs to be modified if the agent is to query for the `bacnetObjectId` and `bacnetDeviceId` from the knowledge graph. It needs to contain the credentials and endpoints to access the SPARQL endpoint of the knowledge graph. It should contain the following keys:
+- `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
+- `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
+- `sparql.username` the username to access the SPARQL endpoint
+- `sparql.password` the password to access the SPARQL endpoint
+
+More information can be found in the example property file `writeClient.properties` in the `config` folder.
+
+### 2.2.2. api.properties
+This properties file provides the agent with the URL of where the Wacnet Endpoint is located at. It should contain the following key:
+- `api.url` the URL of where the Wacnet Endpoint is located at
+
+More information can be found in the example property file `api.properties` in the `config` folder.
+
+### 2.2.3. Execution
+The agent accepts a POST request path `/wacnet/write`. There are two commands that can be utilised:
+```
+curl -X POST 'http://localhost:3838/bms-update-agent/wacnet/write' \
+--header 'Content-Type: application/json' \
+--data '{
+    "bacnetObjectId":"<object Id>",
+    "bacnetDeviceId":"<device Id>",
+    "value":"<value>"
+}'
+```
+```
+curl -X POST 'http://localhost:3838/bms-update-agent/wacnet/write' \
+--header 'Content-Type: application/json' \
+--data '{
+    "dataIRI":"<data IRI>",
+    "value":"<value>",
+    "writeClientProperties":"WRITE_CLIENT_PROPERTIES"
+}'
+```
+A successful run will return the following:
+```
+{"message":"Successfully written <value> to the object with an ID: <object Id>"}
 ```
