@@ -125,8 +125,8 @@ public class RouteSegmentization {
                 String poiIri = poi.getString("poi_iri");
                 String poiType = poi.getString("poi_type");
                 // Remove the prefix from poiIri, poiType
-                poiIri = poiIri.replace("https://www.theworldavatar.com/kg/", ""); 
-                poiType = poiType.replace("https://www.theworldavatar.com/kg/", "");
+                poiIri = poiIri.replace("https://www.theworldavatar.com/kg/Building/", ""); 
+                poiType = poiType.replace("https://www.theworldavatar.com/kg/ontobuiltenv/", "");
 
                 String geometry = poi.getString("geometry");
                 String nearest_node = findNearestNode(connection, geometry);

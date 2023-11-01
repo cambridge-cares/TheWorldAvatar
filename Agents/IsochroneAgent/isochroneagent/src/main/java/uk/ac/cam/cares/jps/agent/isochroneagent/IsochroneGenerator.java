@@ -236,8 +236,8 @@ public class IsochroneGenerator {
                 "UPDATE isochrone_aggregated AS ia\n" +
                 "SET iri = uv.iri,\n" +
                 "    geometry_iri = uv.geometry_iri,\n" +
-                "       transportmode_iri =  '"+transportMode+"/' || uuid_generate_v4()::text,\n" +
-            "       roadcondition_iri =  '"+roadCondition+"/' || uuid_generate_v4()::text\n" +
+                "       transportmode_iri =  '"+transportMode+"_' || uuid_generate_v4()::text,\n" +
+            "       roadcondition_iri =  '"+roadCondition+"_' || uuid_generate_v4()::text\n" +
                 "FROM unique_values uv\n" +
                 "WHERE ia.iri IS NULL\n" +
                 "    AND ia.poi_type = uv.poi_type\n" +
