@@ -7,35 +7,34 @@ AverageDepth,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Dep
 AverageWidth ,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Width,IS-A,,,,Average width represent average plot width resulting from averaging sample widths along the plot&apos;s side edges.,https://www.theworldavatar.com/kg/ontoplot/,Average Width 
 BuildableSpace,Class,,,,,,"Buildable Space is the maximum allowable space on a plot that can built up according to relevant planning regulations. Buildable spaces may be linked to a Zone, LandUse or a particular Programme if there exist specific regulations. For instance, a plot on which flat and condominium developments are allowed, will have two buildable spaces - one for condominium and one for flat as a product of unique planning regulation combinations.",https://www.theworldavatar.com/kg/ontoplot/,Buildable Space
 Footprint,Class,,,,,,Footprint defines a boundary within which a specific storey exist.,https://www.theworldavatar.com/kg/ontoplot/,Footprint
-FootprintArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,Allowed Footprint Area linked to a specific storey.,https://www.theworldavatar.com/kg/ontoplot/,Footprint Area
 Plot,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,A plot is an area of land that is often delineated with a physical boundary to denote land ownership rights. It is frequently adopted as a basic spatial unit for a cadastre or land registration system. ,https://www.theworldavatar.com/kg/ontoplot/,Plot
 SiteArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,Site area or plot area.,https://www.theworldavatar.com/kg/ontoplot/,Site Area
 Storey,Class,,,,,,Storey refers to the spaces that within Buildable Space that are at the same height and does not require vertical connections.,https://www.theworldavatar.com/kg/ontoplot/,Storey
 StoreyAggregate,Class,,,,,,"Storey aggregate defines Buildable Space volume in storeys. Each buildable space will have one storey aggregate, consisting of multiple storeys.",https://www.theworldavatar.com/kg/ontoplot/,Storey Aggregate
 BuildingEdge,Class,StoreyAggregate,IS-A,,,,Building Edge is an uninterupted set of storeys starting from the groundfloor that share the same setback and form a uniform volume.,https://www.theworldavatar.com/kg/ontoplot/,Building Edge
-atStorey,Object Property,,,https://www.theworldavatar.com/kg/ontoplanningregulations/Setback,Storey,,,https://www.theworldavatar.com/kg/ontoplot/,at storey
-containsStorey,Object Property,,,StoreyAggregate,Storey,,,https://www.theworldavatar.com/kg/ontoplot/,contains storey
-forZoningCase,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontozoning/ZoneUse,,,https://www.theworldavatar.com/kg/ontoplot/,for zoning case
-hasAllowedAbsoluteHeight ,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/AbsoluteHeight,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed absolute height 
-hasAllowedBuildingEdge,Object Property,,,BuildableSpace,StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed building edge
-hasAllowedFloorToFloorHeight,Object Property,,,Storey,https://www.theworldavatar.com/kg/ontoplanningregulations/FloorToFloorHeight,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed floor to floor height
-hasAllowedFootprint,Object Property,,,Storey,Footprint,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed footprint
-hasAllowedGFA,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/GrossFloorArea,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed gross floor area
-hasAllowedGPR,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/GrossPlotRatio,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed gross plot ratio
-hasAllowedSiteCoverage,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/SiteCoverage,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed site coverage
-hasAllowedStoreyAggregate,Object Property,,,BuildableSpace,StoreyAggregate,,,https://www.theworldavatar.com/kg/ontoplot/,has allowed storey aggregate
-hasArea,Object Property,,,,,,,https://www.theworldavatar.com/kg/ontoplot/,has area
-hasFootprintArea,Object Property,hasArea,IS-A,Footprint,FootprintArea,,,https://www.theworldavatar.com/kg/ontoplot/,has footprint area
-hasBuildableSpace,Object Property,,,Plot,BuildableSpace,,,https://www.theworldavatar.com/kg/ontoplot/,has buildable space
-hasDepth,Object Property,,,Plot,AverageDepth,,,https://www.theworldavatar.com/kg/ontoplot/,has depth
-hasNeighbour ,Object Property,,,Plot,Plot,,,https://www.theworldavatar.com/kg/ontoplot/,has neighbour 
-hasRequiredPartyWall,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/PartyWall,,,https://www.theworldavatar.com/kg/ontoplot/,has required party wall
-hasRequiredSetback,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/Setback,,,https://www.theworldavatar.com/kg/ontoplot/,has required setback
-hasSiteArea,Object Property,,,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,,https://www.theworldavatar.com/kg/ontoplot/,has site area
-hasWidth,Object Property,,,Plot,AverageWidth,,,https://www.theworldavatar.com/kg/ontoplot/,has width
-atLevel,Data Property,,,Storey,integer,,,https://www.theworldavatar.com/kg/ontoplot/,at level
-atLevelOfDetail,Data Property,,,BuildableSpace,String,,,https://www.theworldavatar.com/kg/ontoplot/,at level of detail
-atResidentialFringe,Data Property,,,Plot,boolean,,,https://www.theworldavatar.com/kg/ontoplot/,at residential fringe
-hasNumOfStoreys,Data Property,,,StoreyAggregate,integer,,,https://www.theworldavatar.com/kg/ontoplot/,has number of storeys
-hasRoadType,Data Property,,,Plot,String,,,https://www.theworldavatar.com/kg/ontoplot/,has road type
-isCornerPlot,Data Property,,,Plot,boolean,,,https://www.theworldavatar.com/kg/ontoplot/,is corner plot
+atStorey,Object Property,,,https://www.theworldavatar.com/kg/ontoplanningregulations/Setback,Storey,,A relationship to assign the setback to the specified storey.,https://www.theworldavatar.com/kg/ontoplot/,at storey
+containsStorey,Object Property,,,StoreyAggregate,Storey,,A relationship that links the storey to its storey aggregate.,https://www.theworldavatar.com/kg/ontoplot/,contains storey
+forZoningCase,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontozoning/ZoneUse,,A relationship that links the allowed zone use for the specified buildable space.,https://www.theworldavatar.com/kg/ontoplot/,for zoning case
+hasAllowedAbsoluteHeight ,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/AbsoluteHeight,,A relationship that links the allowed absolute height for the specified buildable space.,https://www.theworldavatar.com/kg/ontoplot/,has allowed absolute height 
+hasAllowedBuildingEdge,Object Property,,,BuildableSpace,StoreyAggregate,,A relationship that links the allowed building edge for the specified buildable space.,https://www.theworldavatar.com/kg/ontoplot/,has allowed building edge
+hasAllowedGFA,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/GrossFloorArea,,A relationship that links the allowed  gross floor area for the specified buildable space.,https://www.theworldavatar.com/kg/ontoplot/,has allowed gross floor area
+hasAllowedGPR,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/GrossPlotRatio,,A relationship that links the allowed gross plot ratio for the specified buildable space.,https://www.theworldavatar.com/kg/ontoplot/,has allowed gross plot ratio
+hasAllowedSiteCoverage,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/SiteCoverage,,A relationship that links the allowed site coverage for the specified buildable space.,https://www.theworldavatar.com/kg/ontoplot/,has allowed site coverage
+hasAllowedStoreyAggregate,Object Property,,,BuildableSpace,StoreyAggregate,,A relationship that links the allowed storey aggregate for the specified buildable space.,https://www.theworldavatar.com/kg/ontoplot/,has allowed storey aggregate
+hasRequiredPartyWall,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/PartyWall,,A relationship that links the required party wall for the specified buildable space.,https://www.theworldavatar.com/kg/ontoplot/,has required party wall
+hasRequiredSetback,Object Property,,,BuildableSpace,https://www.theworldavatar.com/kg/ontoplanningregulations/Setback,,A relationship that links the required setback for the specified buildable space.,https://www.theworldavatar.com/kg/ontoplot/,has required setback
+hasAllowedFloorToFloorHeight,Object Property,,,Storey,https://www.theworldavatar.com/kg/ontoplanningregulations/FloorToFloorHeight,,A relationship that links the allowed floor to floor height for the specified storey.,https://www.theworldavatar.com/kg/ontoplot/,has allowed floor to floor height
+hasAllowedFootprint,Object Property,,,Storey,Footprint,,A relationship that links the allowed footprint for the specified storey.,https://www.theworldavatar.com/kg/ontoplot/,has allowed footprint
+hasArea,Object Property,,,http://www.w3.org/2002/07/owl#Thing,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,A relationship that defines the area of anything.,https://www.theworldavatar.com/kg/ontoplot/,has area
+hasFootprintArea,Object Property,hasArea,IS-A,Footprint,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,A relationship that defines the area of a footprint.,https://www.theworldavatar.com/kg/ontoplot/,has footprint area
+hasPlotArea,Object Property,hasArea,IS-A,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,A relationship that defines the area of a plot,https://www.theworldavatar.com/kg/ontoplot/,has site area
+hasBuildableSpace,Object Property,,,Plot,BuildableSpace,,A relationship that links the buildable space for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has buildable space
+hasDepth,Object Property,,,Plot,AverageDepth,,A relationship that indicates the depth for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has depth
+hasNeighbour ,Object Property,,,Plot,Plot,,A relationship that indicates the neighbouring plot for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has neighbour 
+hasWidth,Object Property,,,Plot,AverageWidth,,A relationship that indicates the width for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has width
+atLevel,Data Property,,,Storey,integer,,A relationship that defines the level of the storey instance.,https://www.theworldavatar.com/kg/ontoplot/,at level
+atLevelOfDetail,Data Property,,,BuildableSpace,String,,A relationship that defines the level of detail for the buildable space.,https://www.theworldavatar.com/kg/ontoplot/,at level of detail
+hasNumOfStoreys,Data Property,,,StoreyAggregate,integer,,A relationship that defines the number of storey for a storey aggregate.,https://www.theworldavatar.com/kg/ontoplot/,has number of storeys
+hasRoadType,Data Property,,,Plot,String,,A relationship that defines the road type of a plot.,https://www.theworldavatar.com/kg/ontoplot/,has road type
+isCornerPlot,Data Property,,,Plot,boolean,,A relationship that indicates if the plot is a corner plot or not.,https://www.theworldavatar.com/kg/ontoplot/,is corner plot
+atResidentialFringe,Data Property,,,Plot,boolean,,A relationship that indicates if the plot is found at the residential fringe or not.,https://www.theworldavatar.com/kg/ontoplot/,at residential fringe
