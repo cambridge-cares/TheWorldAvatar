@@ -64,6 +64,7 @@ This properties file is required for the first function. It needs to contain the
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
 - `sparql.username` the username to access the SPARQL endpoint
 - `sparql.password` the password to access the SPARQL endpoint
+
 More information can be found in the example property file `setClient.properties` in the `config` folder.
 
 ### 2.1.2. Execution
@@ -96,8 +97,8 @@ The write route allows writing of values to Bacnet points via the [Wacnet API](h
 `bacnetObjectId` and `bacnetDeviceId` can either be provided in the request sent to the agent or it can be queried from the knowledge graph. In order for the agent to query for `bacnetObjectId` and `bacnetDeviceId`, the [writeClient.properties](#221-writeclientproperties) needs to be populated and the data IRI has to be provided in the [request](#223-execution). The query run by the agent is structured based on [OntoBMS](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontobms/OntoBMS.owl):
 
 ```
-<data IRI> ontobms:hasBacnetObjectID	"bacnetObjectId" ; 
-           ontobms:hasBacnetDeviceID	"bacnetDeviceId" .
+<data IRI> ontobms:hasBacnetObjectID "bacnetObjectId" ; 
+           ontobms:hasBacnetDeviceID "bacnetDeviceId" .
 ```
 
 ### 2.2.1. writeClient.properties
