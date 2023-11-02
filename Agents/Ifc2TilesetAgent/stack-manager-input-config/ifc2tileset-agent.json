@@ -3,7 +3,7 @@
         "Name": "ifc2tileset-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ifc2tileset-agent:1.0.0",
+                "Image": "ifc2tileset-agent:1.1.0",
                 "Mounts": [
                     {
                         "Type": "bind",

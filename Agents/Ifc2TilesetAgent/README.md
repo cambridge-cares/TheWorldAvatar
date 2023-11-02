@@ -8,7 +8,7 @@ A brief description of the workflow can be found below:
 1. Instantiate the semantic and geometry data in IFC models using the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent).
 2. Queries the metadata (IFC uid, asset name, data IRI) of relevant assets from a specified endpoint.
 3. Split the geometries in the IFC model based on these metadata into their individual assets (if necessary).* These are then converted into glb models that are stored locally.
-4. 3D Tilesets are generated for the building, solar panels, and sewerage network (if they exist). The building tileset are supplemented with the queried asset metadata (if any).
+4. 3D Tilesets are generated for the building, solar panels, and sewerage network (if they exist). The building tileset are supplemented with the queried asset and building metadata (if any). Root content metadata can also be added through the use of optional parameters.
 
 **At the moment, this agent is unable to process the geometry data queried from the knowledge graph, and will require the same IFC model file as an input to create the geometry files.*
 
@@ -40,7 +40,7 @@ A brief description of the workflow can be found below:
 
 # Instructions
 ## 1. Building the agent
-The agent is designed for deployment on [Docker](#12-docker-deployment). Although it can be deployed on a local development environment, this is not the recommended setup. 
+The agent is designed for deployment on [Docker](#12-docker-deployment). Although it can be deployed within a local development environment, this is not the recommended setup. 
 
 ### 1.1 Required dependencies:
 These dependencies have been added to the Dockerfile. But in the event there is a need to update their links, please read the steps below on how to find and extract the dependencies.
@@ -80,11 +80,11 @@ docker-compose up -d
 ```
 
 **STACK DEPLOYMENT**
-
 If you want to spin up this agent as part of a stack, do the following:
-- Copy the contents of `config/properties.yaml_stack` into `config/properties.yaml`, inserting the name of your stack and the desired namespaces.
 - Build the image by issuing `docker compose build` in this folder. Do not start the container.
-- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required. Do note that this agent requires the `data` bind mount to have a nested `ifc` and `glb` folder, where the IFC model must be placed in the `ifc` folder. It is not recommended to target the same bind mount as the other IFC agents.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required. 
+    - Do note that this agent requires the `data` bind mount to have a nested `ifc` and `glb` folder, where the IFC model must be placed in the `ifc` folder. It is not recommended to target the same bind mount as the other IFC agents.
+    - The `config` bind mount MUST have a `properties.yaml` containing the contents of `config/properties.yaml_stack`. Please edit the contents with the name of your stack and desired namespaces.
 - Start the stack manager as usual. This should start the container.
 
 ## 2. Running the agent
@@ -92,11 +92,21 @@ If you want to spin up this agent as part of a stack, do the following:
 Place only one IFC file in `<root>\data\ifc\`. This directory is directly linked to the relevant directory in the Docker container. The agent is only able to convert ONE IFC model at a time.
 
 Please modify the following properties in `config/properties.yaml`:
-
 - `query_endpoint`^ : SPARQL endpoint for Query operations
 - `update_endpoint`^ : SPARQL endpoint for UPDATE operations
-
 ^*Endpoints are required to query for metadata in tileset and interactions during visualisation*
+
+In `config/properties.yaml`, there are also optional properties for appending IRI and name for the solar panel or sewage tileset. If required, please ensure both IRI and name are populated for the corresponding tileset. When not in use, please leave an empty string.
+- bim_tileset_iri* : IRI appended to default tileset generated
+- bim_tileset_name* : Name appended to default tileset generated
+- solar_panel_tileset_iri
+- solar_panel_tileset_name
+- sewage_tileset_iri
+- sewage_tileset_name
+
+**Note that this will be ignored if there are no root contents or a `building.glb` is generated. When there is a `building.glb`, the corresponding building instance and name in the Knowledge Graph will take precedence. If the building name is NOT available, NO name will be appended to the tileset. Please check the [Ifc2OntoBim agent's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to add the building name.*
+
+If you are deploying this on the stack, ensure that your `properties.yaml` and IFC file is placed at the corresponding bind mount location. A sample stack-based properties is available in `config/properties.yaml_stack` but requires editing for the name of your stack, desired namespaces, and optional IRIs or names.
 
 ### 2.2 API
 Instructions for the agent and its various API routes can be found at the API root `http://localhost:5105/`. Users can visit this route in any browser to verify if the agent is running.
@@ -106,6 +116,7 @@ A brief overview is as follows:
     1. `assetUrl`  
     - Sets the file path to directory or url holding the glb assets in the tilesets generated.
     - Valid formats include `"."`, `"./file/path"`, `"../../file/path"`, and `"http://www.example.com"`. Please do not add an ending `/`, which will be generated in the code itself.
+
 ```
 /api
 ```
@@ -114,6 +125,9 @@ A brief overview is as follows:
 Run the agent by sending a POST request with the required JSON Object to the necessary endpoint. A sample request in `curl` syntax is as follows:
 ```
 curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{"assetUrl":"./glb"}'  
+
+# For VSCode's powershell, please append \ to the " for parameters
+curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"assetUrl\":\"./glb\"}'  
 ```
 
 If running the agent within a stack:
@@ -139,6 +153,11 @@ The agent have been packaged into the following submodules:
 As Git does not allow empty directories, `.gitignore` files have been added to the subdirectories  of `<root>\data\`. This is important to set up the file structure for the code to run. 
 
 ## 4. Tips for BIM processing
+> Building name
+- In order to include the building name within the tileset, please ensure that a building name has been added in the IFC file before running the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent).
+- In Revit, you may add this information in the `Projection Information` under the `Manage` tab
+    - In the pop-up box, add your desired name to the `Building Name` field.
+
 >Geo-referencing
 - Do not move the Project Base Point or Survey Point when creating a new Revit file
     - Do not attempt to add any georeferenced point in the physical model, except as a parameter of a property set
@@ -170,3 +189,13 @@ As Git does not allow empty directories, `.gitignore` files have been added to t
         - Fridge
     - For new asset types, please include their name into `classify_filename()` at `agent/ifc2gltf/kghelper.py`
     - Do not include their name if they are supposed to be a background element
+
+>Classifying the solar panel
+- In generating a tileset holding solar panel, the relevant assets must include the "Solar Panel" keywords
+- Do note that when the keyword is included in the asset name, the corresponding asset will NOT be attached to other tilesets.
+
+>Classifying the sewage network
+- In generating a tileset for the sewage network, the relevant assets must include the following supported keywords:
+    - Sewage (for pipes)
+    - Manhole
+- Do note that when these keywords are included in the asset name, the corresponding asset will NOT be attached to other tilesets.
