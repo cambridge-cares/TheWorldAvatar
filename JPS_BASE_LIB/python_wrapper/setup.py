@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='py4jps',
-    version='1.0.37',
+    version='1.0.38',
     author='Daniel Nurkowski',
     author_email='danieln@cmclinnovations.com',
     license='MIT',

@@ -12,8 +12,6 @@ from PVLibAgent.kg_utils.utils import DATACLASS, TIME_FORMAT, QUERY_ENDPOINT, UP
 from PVLibAgent.data_retrieval.query_timeseries import query_latest_timeseries
 
 
-@pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in /kg_utils/resources/ts_client.properties file.\
-                      Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
 
 class TestQueryTimeseries:
     def tearDown(self):
@@ -33,17 +31,17 @@ class TestQueryTimeseries:
 
     def test_query_latest_timeseries_fails(self):
         with pytest.raises(TSException) as excinfo:
-            query_latest_timeseries('http://test')
+            query_latest_timeseries('http://test', QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
         assert 'Unable to get latest data from knowledge graph!' in str(excinfo.value)
         self.tearDown()
 
     def test_query_latest_timeseries_successful(self):
-        timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT)
+        timeseries_instantiation.init_timeseries(['http://test'], [DATACLASS], TIME_FORMAT, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
         now = datetime.now(tz=timezone.utc)
         time = self.utcformat(now, 'seconds')
         test_timeseries = TSClientForUpdate.create_timeseries([time], ['http://test'], [[float(10)]])
-        timeseries_instantiation.add_timeseries_data(test_timeseries)
-        timeseries = query_latest_timeseries('http://test')
+        timeseries_instantiation.add_timeseries_data(test_timeseries, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
+        timeseries = query_latest_timeseries('http://test', QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
         timestamp = [d.toString() for d in timeseries.getTimes()]
         assert str(timestamp).__contains__(time)
         data = [v for v in timeseries.getValues('http://test')]

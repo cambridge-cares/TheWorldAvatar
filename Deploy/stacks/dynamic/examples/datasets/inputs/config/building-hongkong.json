@@ -1,12 +1,13 @@
 {
     "database": "postgres",
     "workspace": "the_world_avatar",
-    "datasetDirectory": "building-hongkong",
+    "datasetDirectory": "buildings",
     "dataSubsets": [
         {
             "type": "XtoCityDB",
             "skip": false,
             "table": "raw_gdal",
+            "subdirectory": "hongkong",
             "ogr2ogrOptions": {
                 "otherOptions": {
                     "-select": [

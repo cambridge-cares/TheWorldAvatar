@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  filter-agent:
+    build:
+      context: .
+  
+  major-version:
+    extends: filter-agent
+    image: ghcr.io/cambridge-cares/filter-agent:${MAJOR}${EXTRA}
+  
+  latest-version:
+    extends: filter-agent
+    image: ghcr.io/cambridge-cares/filter-agent:latest${EXTRA}

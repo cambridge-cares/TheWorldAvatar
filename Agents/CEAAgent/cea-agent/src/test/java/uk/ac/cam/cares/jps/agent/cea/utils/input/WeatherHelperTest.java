@@ -4,9 +4,13 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -55,19 +59,38 @@ public class WeatherHelperTest {
         doReturn(testTimesList).when(mockTS).getTimes();
         doReturn(testWeatherData).when(mockTS).getValuesAsDouble(anyString());
 
-        String testCRS = "32633";
+        String testCRS = "4326";
+
+        Coordinate[] coordinates = new Coordinate[] {
+                new Coordinate(0, 0),
+                new Coordinate(0, 5),
+                new Coordinate(5, 5),
+                new Coordinate(5, 0),
+                new Coordinate(0, 0)
+        };
+        Coordinate[] coordinates1 = new Coordinate[] {
+                new Coordinate(0.1, 0.1),
+                new Coordinate(0.1, 5.1),
+                new Coordinate(5.1, 5.1),
+                new Coordinate(5.1, 0.1),
+                new Coordinate(0.1, 0.1)
+        };
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Polygon polygon = geometryFactory.createPolygon(coordinates);
+        Polygon polygon1 = geometryFactory.createPolygon(coordinates1);
+
+        CEAGeometryData testBuilding = new CEAGeometryData(Arrays.asList(polygon), testCRS, "10.0");
+        CEAGeometryData testBuilding1 = new CEAGeometryData(Arrays.asList(polygon1), testCRS, "10.0");
+
+        List<CEAGeometryData> testSurroundings = Arrays.asList(testBuilding, testBuilding1);
 
         try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
-                // test when there are no retrievable weather data and request to OpenMeteoAgent fails
-                JSONArray envelope = new JSONArray();
-                envelope.put(new JSONObject().put("envelope", "555438.08#305587.27999#-0.6#555484.04#305587.27999#-0.6#555484.04#305614.87999#-0.6#555438.08#305614.87999#-0.6#555438.08#305587.27999#-0.6"));
-
-                accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                        .thenReturn(envelope).thenReturn(new JSONArray());
-
+                // test when getWeather fails
                 List<Object> testList = new ArrayList<>();
 
-                assertFalse(weatherHelper.getWeather("", "", "", testCRS, testList));
+                assertFalse(weatherHelper.getWeather(new CEAGeometryData(), new ArrayList<>(), "", testCRS, testList));
                 assertEquals(0, testList.size());
 
 
@@ -81,15 +104,14 @@ public class WeatherHelperTest {
                 JSONArray elevation = new JSONArray();
                 elevation.put(new JSONObject().put("elevation", "1.0"));
 
-
                 accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                        .thenReturn(envelope).thenReturn(station).thenReturn(weatherIRIs).thenReturn(coordinate).thenReturn(elevation);
+                        .thenReturn(station).thenReturn(weatherIRIs).thenReturn(coordinate).thenReturn(elevation);
 
                 try (MockedStatic<TimeSeriesHelper> mockTSHelper = mockStatic(TimeSeriesHelper.class)) {
                     mockTSHelper.when(() -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any()))
                             .thenReturn(mockTS);
 
-                    assertTrue(weatherHelper.getWeather("", "", "", testCRS, testList));
+                    assertTrue(weatherHelper.getWeather(testBuilding, testSurroundings, "", testCRS, testList));
 
                     mockTSHelper.verify(
                             times(1), () -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any())
