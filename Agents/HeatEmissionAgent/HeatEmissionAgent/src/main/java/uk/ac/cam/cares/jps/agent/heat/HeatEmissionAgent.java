@@ -219,6 +219,7 @@ public class HeatEmissionAgent extends JPSAgent {
 		IRIandCO2Query.append("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n");
 		IRIandCO2Query.append("SELECT ?chemical_plant ?plant_item ?IRI ?CO2 ?unit WHERE { \n");
 		IRIandCO2Query.append("?chemical_plant ocp:hasFuelType ?ft. \n");
+		IRIandCO2Query.append("?chemical_plant rdfs:label ?plant_name. \n");
 		IRIandCO2Query.append("?ft rdfs:label ?ftl. \n");
 		IRIandCO2Query.append("?chemical_plant geo:ehContains ?plant_item . \n");
 		IRIandCO2Query.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI . \n");
@@ -227,7 +228,17 @@ public class HeatEmissionAgent extends JPSAgent {
 		IRIandCO2Query.append("?x om:hasUnit ?a . \n");
 		IRIandCO2Query.append("?a om:symbol ?unit . \n");
 		IRIandCO2Query.append("FILTER regex(str(?ftl),\"Natural gas liquid\").");
-		IRIandCO2Query.append("FILTER regex(str(?plant_item), \"plantitem\").} \n");
+		IRIandCO2Query.append("FILTER regex(str(?plant_item), \"plantitem\"). \n");
+		IRIandCO2Query.append(
+				"FILTER (str(?plant_name) not in (\"Chemical_plant_of_Sembcorp Integrated Wastewater Treatment Plant\","
+						+
+						"\"Chemical_plant_of_SembCorp EFW (Energy from Waste)\"," +
+						"\"Chemical_plant_of_SembCorp Industries Ltd\"," +
+						"\"Chemical_plant_of_SembCorp Utilities\"," +
+						"\"Chemical_plant_of_YTL PowerSeraya Pte. Limited\", " +
+						"\"Chemical_plant_of_Tuas Power Utilities\", " +
+						"\"Chemical_plant_of_Sembcorp Cogen Pte Ltd@Sakra\")) \n");
+		IRIandCO2Query.append("}");
 		JSONArray IRIandCO2QueryResult = AccessAgentCaller.queryStore("jibusinessunits",
 				IRIandCO2Query.toString());
 		return IRIandCO2QueryResult;
