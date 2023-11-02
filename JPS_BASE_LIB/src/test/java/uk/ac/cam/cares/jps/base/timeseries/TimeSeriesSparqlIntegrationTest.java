@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -33,22 +32,13 @@ class TimeSeriesSparqlIntegrationTest {
 
 	// Will create a container that is shared between tests.
 	@Container
-	private static final GenericContainer<?> blazegraph = new BlazegraphContainer();
+	private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
 	@BeforeAll
 	static void initialiseSparqlClient() {
 
 		// Set up a kb client that points to the location of the triple store
-		// This can be a RemoteStoreClient or the FileBasedStoreClient
-		RemoteStoreClient kbClient = new RemoteStoreClient();
-		// Set endpoint to the triple store. The host and port are read from the
-		// container
-		String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
-		// Default namespace in blazegraph is "kb", but in production a specific one
-		// should be created
-		endpoint = endpoint + BlazegraphContainer.BLAZEGRAPH_URL_PATH;
-		kbClient.setUpdateEndpoint(endpoint);
-		kbClient.setQueryEndpoint(endpoint);
+		RemoteStoreClient kbClient = blazegraph.getRemoteStoreClient();
 		// Initialise TimeSeriesSparql client with kb client
 		sparqlClient = new TimeSeriesSparql(kbClient);
 	}

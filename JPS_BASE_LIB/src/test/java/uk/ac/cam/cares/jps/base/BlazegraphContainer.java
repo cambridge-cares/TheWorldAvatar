@@ -4,6 +4,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
 public class BlazegraphContainer extends GenericContainer<BlazegraphContainer> {
 
     public static final String BLAZEGRAPH_URL_PATH = "/blazegraph/namespace/kb/sparql";
@@ -14,5 +16,13 @@ public class BlazegraphContainer extends GenericContainer<BlazegraphContainer> {
         withExposedPorts(8080);
         waitingFor(Wait.forHttp(BLAZEGRAPH_URL_PATH));
 
+    }
+
+    private String getURL() {
+        return "http://" + getHost() + ":" + getFirstMappedPort() + BLAZEGRAPH_URL_PATH;
+    }
+    public RemoteStoreClient getRemoteStoreClient(){
+        String endpoint = getURL();
+        return new RemoteStoreClient(endpoint, endpoint);
     }
 }

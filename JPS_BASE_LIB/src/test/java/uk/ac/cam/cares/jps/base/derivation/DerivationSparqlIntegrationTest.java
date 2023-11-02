@@ -14,7 +14,6 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -31,15 +30,12 @@ class DerivationSparqlIntegrationTest {
 	static final String derivationBaseUrl = "http://derivation/";
 
 	@Container
-	private static final GenericContainer<?> blazegraph = new BlazegraphContainer();
+	private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
 	@BeforeAll
 	static void initialise() {
 		// initialise all variables to be used
-		kgUrl = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort()
-				+ BlazegraphContainer.BLAZEGRAPH_URL_PATH;
-		System.out.println(kgUrl);
-		storeClient = new RemoteStoreClient(kgUrl, kgUrl);
+		storeClient = blazegraph.getRemoteStoreClient();
 		devSparql = new DerivationSparql(storeClient, derivationBaseUrl);
 	}
 

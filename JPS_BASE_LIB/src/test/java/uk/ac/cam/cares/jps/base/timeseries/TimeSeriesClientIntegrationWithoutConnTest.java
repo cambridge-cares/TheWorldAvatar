@@ -20,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -62,7 +61,7 @@ class TimeSeriesClientIntegrationWithoutConnTest {
     // For more information regarding the registry, see:
     // https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
-    private static GenericContainer<?> blazegraph = new BlazegraphContainer();
+    private static BlazegraphContainer blazegraph = new BlazegraphContainer();
     // Create Docker container with postgres 13.3 image from Docker Hub
     @Container
     private static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
@@ -109,17 +108,9 @@ class TimeSeriesClientIntegrationWithoutConnTest {
                 // Start postgreSQL container
                 postgres.start();
             }
-
-            // Set endpoint to the triple store. The host and port are read from the
-            // container
-            String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
-            // Default namespace in blazegraph is "kb"
-            endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
-
+            
             // Set up a kb client that points to the location of the triple store
-            kbClient = new RemoteStoreClient();
-            kbClient.setUpdateEndpoint(endpoint);
-            kbClient.setQueryEndpoint(endpoint);
+            kbClient = blazegraph.getRemoteStoreClient();
 
             // Initialise TimeSeriesClient client with pre-configured kb client
             tsClient = new TimeSeriesClient<>(kbClient, Instant.class);

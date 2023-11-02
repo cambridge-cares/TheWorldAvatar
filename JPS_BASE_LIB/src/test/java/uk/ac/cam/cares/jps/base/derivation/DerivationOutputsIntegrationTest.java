@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -27,16 +26,12 @@ public class DerivationOutputsIntegrationTest {
     ModifyQuery modify;
 
     @Container
-    private static final GenericContainer<?> blazegraph = new BlazegraphContainer();
+    private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
     @BeforeAll
-    public static void initialise()
-            throws NoSuchMethodException, SecurityException {
+    public static void initialise() {
         // initialise all variables to be used
-        kgUrl = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort()
-                + BlazegraphContainer.BLAZEGRAPH_URL_PATH;
-        System.out.println(kgUrl);
-        storeClient = new RemoteStoreClient(kgUrl, kgUrl);
+        storeClient = blazegraph.getRemoteStoreClient();
     }
 
     @Test

@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
@@ -22,7 +21,6 @@ import org.json.JSONArray;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -41,15 +39,11 @@ class RemoteStoreIntegrationTest {
 	static RemoteStoreClient storeClient;
 
 	@Container
-	private static final GenericContainer<?> blazegraph = new BlazegraphContainer();
+	private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
 	@BeforeAll
 	static void initialise() throws URISyntaxException {
-		String endpoint = new URIBuilder().setScheme("http").setHost(blazegraph.getHost())
-				.setPort(blazegraph.getFirstMappedPort())
-				.setPath(BlazegraphContainer.BLAZEGRAPH_URL_PATH).build().toString();
-
-		storeClient = new RemoteStoreClient(endpoint, endpoint);
+		storeClient = blazegraph.getRemoteStoreClient();
 	}
 
 	@Test

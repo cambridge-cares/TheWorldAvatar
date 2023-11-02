@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -32,7 +31,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 class DerivationClientIntegrationTest {
     static RemoteStoreClient storeClient;
     static DerivationClient devClient;
-    static String kgUrl;
     static final String agentIRI = "http://agentIRI";
     static final String agentURL = "http://agentURL";
     static final String derivationBaseUrl = "http://derivation/";
@@ -41,16 +39,14 @@ class DerivationClientIntegrationTest {
     static List<Boolean> forUpdateFlagList = new ArrayList<>();
 
     @Container
-    private static final GenericContainer<?> blazegraph = new BlazegraphContainer();
+    private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
     @BeforeAll
     static void initialise() {
 
         // initialise all variables to be used
-        kgUrl = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort()
-                + BlazegraphContainer.BLAZEGRAPH_URL_PATH;
-        System.out.println(kgUrl);
-        storeClient = new RemoteStoreClient(kgUrl, kgUrl);
+
+        storeClient = blazegraph.getRemoteStoreClient();
         devClient = new DerivationClient(storeClient, derivationBaseUrl);
         for (int i = 0; i < numberOfIRIs; i++) {
             agentIriList.add(agentIRI);
