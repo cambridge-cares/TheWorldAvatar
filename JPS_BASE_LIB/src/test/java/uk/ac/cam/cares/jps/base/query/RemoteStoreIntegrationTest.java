@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,16 +19,14 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
-import org.junit.Assert;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.startupcheck.MinimumDurationRunningStartupCheckStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+
+import uk.ac.cam.cares.jps.base.BlazegraphContainer;
 
 /**
  * requires docker to be installed to run, hence the @Ignore until everyone is
@@ -39,33 +36,20 @@ import org.testcontainers.utility.DockerImageName;
  *
  */
 @Testcontainers
-public class RemoteStoreIntegrationTest {
+class RemoteStoreIntegrationTest {
+
 	static RemoteStoreClient storeClient;
 
 	@Container
-	private static GenericContainer<?> blazegraph = new GenericContainer<>(
-			DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
-			.withExposedPorts(8080)
-			.withStartupCheckStrategy(new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(3)));
+	private static final GenericContainer<?> blazegraph = new BlazegraphContainer();
 
 	@BeforeAll
-	public static void initialise() throws URISyntaxException {
-		// start containers
-		blazegraph.start();
-
+	static void initialise() throws URISyntaxException {
 		String endpoint = new URIBuilder().setScheme("http").setHost(blazegraph.getHost())
 				.setPort(blazegraph.getFirstMappedPort())
-				.setPath("/blazegraph/namespace/kb/sparql").build().toString();
+				.setPath(BlazegraphContainer.BLAZEGRAPH_URL_PATH).build().toString();
 
 		storeClient = new RemoteStoreClient(endpoint, endpoint);
-	}
-
-	@AfterAll
-	public static void stopContainers() {
-		// close containers after all tests
-		if (blazegraph.isRunning()) {
-			blazegraph.stop();
-		}
 	}
 
 	@Test
@@ -95,22 +79,22 @@ public class RemoteStoreIntegrationTest {
 		try (CloseableHttpResponse response = storeClient.executeUpdateByPost(update)) {
 			HttpEntity entity = response.getEntity();
 			// the entity should not be null as we are querying blazegraph
-			Assert.assertNotNull(entity);
+			Assertions.assertNotNull(entity);
 			String html = EntityUtils.toString(entity);
 			System.out.println(html);
 			Pattern pattern = Pattern.compile("mutationCount=([0-9]+)");
 			Matcher matcher = pattern.matcher(html);
 			// matcher should find the value
-			Assert.assertTrue(matcher.find());
+			Assertions.assertTrue(matcher.find());
 			// the value should be 1 as one triple was added to KG
-			Assert.assertEquals(1, Integer.parseInt(matcher.group(1)));
+			Assertions.assertEquals(1, Integer.parseInt(matcher.group(1)));
 		} catch (Exception e) {
 			throw e;
 		}
 	}
 
 	@Test
-	public void testExecuteQuery() {
+	void testExecuteQuery() {
 		// first upload a triple to KG
 		String s = "http://" + UUID.randomUUID().toString();
 		String p1 = "http://" + UUID.randomUUID().toString();
@@ -129,8 +113,8 @@ public class RemoteStoreIntegrationTest {
 
 		// length is the number of triples uploaded to blazegraph
 		JSONArray result = storeClient.executeQuery(query.getQueryString());
-		Assert.assertEquals(1, result.length());
-		Assert.assertEquals(o1, result.getJSONObject(0).getString(o1Var.getQueryString().substring(1)));
-		Assert.assertEquals(o2, result.getJSONObject(0).getString(o2Var.getQueryString().substring(1)));
+		Assertions.assertEquals(1, result.length());
+		Assertions.assertEquals(o1, result.getJSONObject(0).getString(o1Var.getQueryString().substring(1)));
+		Assertions.assertEquals(o2, result.getJSONObject(0).getString(o2Var.getQueryString().substring(1)));
 	}
 }

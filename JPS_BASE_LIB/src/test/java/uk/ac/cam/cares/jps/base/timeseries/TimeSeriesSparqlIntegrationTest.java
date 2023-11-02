@@ -6,16 +6,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.startupcheck.MinimumDurationRunningStartupCheckStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
+import uk.ac.cam.cares.jps.base.BlazegraphContainer;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -27,25 +26,17 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 // "Requires Docker to run the tests. When on Windows, WSL2 as backend is
 // required to ensure proper execution")
 @Testcontainers
-public class TimeSeriesSparqlIntegrationTest {
+class TimeSeriesSparqlIntegrationTest {
 
 	private static TimeSeriesSparql sparqlClient;
 	private final double epsilon = 0.000001d;
 
 	// Will create a container that is shared between tests.
-	// For more information regarding the registry, see:
-	// https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 	@Container
-	private static final GenericContainer<?> blazegraph = new GenericContainer<>(
-			DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
-			.withStartupCheckStrategy(new MinimumDurationRunningStartupCheckStrategy(Duration.ofSeconds(3)))
-			.withExposedPorts(8080);
+	private static final GenericContainer<?> blazegraph = new BlazegraphContainer();
 
-	@BeforeClass
-	public static void initialiseSparqlClient() {
-
-		// Start the container manually
-		blazegraph.start();
+	@BeforeAll
+	static void initialiseSparqlClient() {
 
 		// Set up a kb client that points to the location of the triple store
 		// This can be a RemoteStoreClient or the FileBasedStoreClient
@@ -55,21 +46,21 @@ public class TimeSeriesSparqlIntegrationTest {
 		String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
 		// Default namespace in blazegraph is "kb", but in production a specific one
 		// should be created
-		endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
+		endpoint = endpoint + BlazegraphContainer.BLAZEGRAPH_URL_PATH;
 		kbClient.setUpdateEndpoint(endpoint);
 		kbClient.setQueryEndpoint(endpoint);
 		// Initialise TimeSeriesSparql client with kb client
 		sparqlClient = new TimeSeriesSparql(kbClient);
 	}
 
-	@After
-	public void clearKb() {
+	@AfterEach
+	void clearKb() {
 		// Clear entire knowledge base
 		sparqlClient.removeAllTimeSeries();
 	}
 
 	@Test
-	public void runIntegrationTest() {
+	void runIntegrationTest() {
 
 		// IRIs for 3 times series:
 		// 1. First of type Average with 3 associated data series
@@ -95,48 +86,48 @@ public class TimeSeriesSparqlIntegrationTest {
 		sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration,
 				chronoUnit);
 		// Test number of initialised time series in kb
-		Assert.assertEquals(1, sparqlClient.countTS());
+		Assertions.assertEquals(1, sparqlClient.countTS());
 		// Test whether all data IRI have the time series attached
 		for (String iri : dataIRI1) {
-			Assert.assertEquals(tsIRI1, sparqlClient.getTimeSeries(iri));
+			Assertions.assertEquals(tsIRI1, sparqlClient.getTimeSeries(iri));
 		}
 		// Retrieve all data IRIs for the time series
 		List<String> dataIRIs = sparqlClient.getAssociatedData(tsIRI1);
 		for (String iri : dataIRI1) {
-			Assert.assertTrue(dataIRIs.contains(iri));
+			Assertions.assertTrue(dataIRIs.contains(iri));
 		}
 
 		// Retrieve time series properties
-		Assert.assertEquals(dbURL, sparqlClient.getDbUrl(tsIRI1));
-		Assert.assertEquals(timeUnit, sparqlClient.getTimeUnit(tsIRI1));
-		Assert.assertNotNull(sparqlClient.getAveragingPeriod(tsIRI1));
+		Assertions.assertEquals(dbURL, sparqlClient.getDbUrl(tsIRI1));
+		Assertions.assertEquals(timeUnit, sparqlClient.getTimeUnit(tsIRI1));
+		Assertions.assertNotNull(sparqlClient.getAveragingPeriod(tsIRI1));
 		TimeSeriesSparql.CustomDuration customDuration = sparqlClient.getCustomDuration(tsIRI1);
-		Assert.assertEquals(numericalDuration, customDuration.getValue(), epsilon);
-		Assert.assertEquals(temporalUnit, customDuration.getUnit());
+		Assertions.assertEquals(numericalDuration, customDuration.getValue(), epsilon);
+		Assertions.assertEquals(temporalUnit, customDuration.getUnit());
 
 		// Initialise another average time series with same duration and temporal unit
 		sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration,
 				chronoUnit);
-		Assert.assertEquals(sparqlClient.getAveragingPeriod(tsIRI1), sparqlClient.getAveragingPeriod(tsIRI2));
+		Assertions.assertEquals(sparqlClient.getAveragingPeriod(tsIRI1), sparqlClient.getAveragingPeriod(tsIRI2));
 
 		// Initialise another time series without time unit
 		sparqlClient.initTS(tsIRI3, dataIRI3, dbURL, null, TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES, null, null);
-		Assert.assertNull(sparqlClient.getTimeUnit(tsIRI3));
+		Assertions.assertNull(sparqlClient.getTimeUnit(tsIRI3));
 
 		// Remove the attachment of one data IRI to a time series
 		sparqlClient.removeTimeSeriesAssociation(dataIRI1.get(0));
 		// Try to retrieve data IRI association
-		Assert.assertNull(sparqlClient.getTimeSeries(dataIRI1.get(0)));
+		Assertions.assertNull(sparqlClient.getTimeSeries(dataIRI1.get(0)));
 
 		// Remove one average time series
 		sparqlClient.removeTimeSeries(sparqlClient.getTimeSeries(dataIRI1.get(1)));
-		Assert.assertNotNull(sparqlClient.getAveragingPeriod(tsIRI2));
+		Assertions.assertNotNull(sparqlClient.getAveragingPeriod(tsIRI2));
 
 		// Retrieve all time series remaining
 		List<String> timeSeries = sparqlClient.getAllTimeSeries();
-		Assert.assertEquals(2, timeSeries.size());
-		Assert.assertTrue(timeSeries.contains(tsIRI2));
-		Assert.assertTrue(timeSeries.contains(tsIRI3));
+		Assertions.assertEquals(2, timeSeries.size());
+		Assertions.assertTrue(timeSeries.contains(tsIRI2));
+		Assertions.assertTrue(timeSeries.contains(tsIRI3));
 
 	}
 }
