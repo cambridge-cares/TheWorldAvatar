@@ -2,7 +2,7 @@
     "entries": [
         {
             "id": "Feature",
-            "class": "https://w3id.org/bot#Building",
+            "class": "http://www.opengis.net/citygml/building/2.0/Building",
             "meta" : {
                 "queryFile": "cea-meta.sparql"
             },
