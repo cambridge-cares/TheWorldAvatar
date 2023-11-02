@@ -3,6 +3,19 @@ import logging
 import io
 from flask import Flask, jsonify, Response, request, send_file
 from visionagent.agent.visionagent import VisionAgent
+from visionagent.utils.tools import read_properties_file
+
+# Load properties
+properties = read_properties_file("visionagent/resources/visionagent.properties")
+
+# Construct the VisionAgent
+agent = VisionAgent(
+    video_source=0 if properties['input.source'] == 'video' else None,
+    image_source=f"visionagent/resources/{properties['image.name']}" if properties['input.source'] == 'image' else None,
+    weights_path=f"visionagent/resources/{properties['cv.weights']}",
+    cfg_path=f"visionagent/resources/{properties['cv.cfg']}",
+    names_path=f"visionagent/resources/{properties['cv.name']}"
+)
 
 # Configure logging
 logging.getLogger("cv2").setLevel(logging.ERROR)
@@ -11,39 +24,24 @@ logger = logging.getLogger('prod')
 # Initialise Flask app
 app = Flask(__name__)
 
-# Create an instance of the VisionAgent class
-agent = VisionAgent()
-
-def process_request(image_source_keyword):
-
-    if image_source_keyword == "yes":
-        image_source = "visionagent/resources/test01.jpg"
-    else:
-        image_source = None
-    
-    agent = VisionAgent(image_source=image_source)
-    
+def process_request():
+    # Use the pre-configured global 'agent' instance
     try:
         frame, outputs, height, width = agent.run_one_frame()
-        detected_objects, _ = agent.draw_boxes(frame, outputs, height, width)
-        return detected_objects, frame
+        detected_objects, detected_objects_frame = agent.draw_boxes(frame, outputs, height, width)
+        return detected_objects, frame, detected_objects_frame
     except Exception as e:
         logger.error(f"An error occurred during Vision Agent processing: {e}")
-        return None, None
+        return None, None, None
 
-@app.route('/detect', methods = ['GET'])
+@app.route('/detect', methods=['GET'])
 def detect_route():
-
-    image_source = request.args.get('image_source', None)
-    detected_objects, frame = process_request(image_source)
-    
+    detected_objects, frame_with_boxes, _ = process_request()
     if detected_objects is not None:
-        # Encode image
-        _, buffer = cv2.imencode('.jpg', frame)
-        
+        # Encode image with detection boxes
+        _, buffer = cv2.imencode('.jpg', frame_with_boxes)
         # Create a file object
         buffer_file = io.BytesIO(buffer.tobytes())
-        
         return Response(
             buffer_file.read(),
             mimetype='image/jpeg',
@@ -54,10 +52,8 @@ def detect_route():
 
 @app.route('/update', methods=['GET'])
 def update_route():
+    _, _, detected_objects = process_request()
 
-    image_source = request.args.get('image_source', None)
-    detected_objects, _ = process_request(image_source)
-    
     if detected_objects is not None:
         return jsonify({'object_history': detected_objects})
     else:

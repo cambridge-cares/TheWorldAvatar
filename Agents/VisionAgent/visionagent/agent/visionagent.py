@@ -4,11 +4,11 @@ from datetime import datetime
 from visionagent.utils.tools import load_model
 
 class VisionAgent:
-    def __init__(self, video_source=0, image_source=None):
+    def __init__(self, video_source=None, image_source=None, weights_path=None, cfg_path=None, names_path=None):
         self.video_source = video_source
         self.image_source = image_source
-        self.net = load_model("visionagent/resources/yolov3.weights", "visionagent/resources/yolov3.cfg")
-        with open("visionagent/resources/coco.names", "r") as f:
+        self.net = load_model(weights_path, cfg_path)
+        with open(names_path, "r") as f:
             self.classes = [line.strip() for line in f.readlines()]
 
     def perform_detection(self, image):
@@ -62,16 +62,19 @@ class VisionAgent:
 
     def run_one_frame(self):
         if self.image_source:
+            # If image_source is specified, read the image file
             frame = cv2.imread(self.image_source)
             if frame is None:
-                raise Exception("Failed to read an image file")
-            
-        else:  # Else use video source
+                raise Exception("Failed to read image file")
+        elif self.video_source is not None:
+            # If video_source is specified, read from the video source
             cap = cv2.VideoCapture(self.video_source)
             ret, frame = cap.read()
             if not ret:
-                raise Exception("Failed to read a frame from a video source")
+                raise Exception("Failed to grab frame")
             cap.release()
+        else:
+            raise Exception("No valid input source provided")
 
         outputs, height, width = self.perform_detection(frame)
         return frame, outputs, height, width
