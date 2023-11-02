@@ -74,7 +74,7 @@ def outside_maker(x: Tuple[float, float]):
         return lt_maker(x[0]) + " or " + gt_maker(x[1])
 
 
-COMPARATIVE_LABEL_MAKER = {
+COMPARATIVE_COND_MAKER = {
     LESS_THAN: lt_maker,
     GREATER_THAN: gt_maker,
     LESS_THAN_EQUAL: le_maker,

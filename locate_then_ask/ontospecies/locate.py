@@ -3,7 +3,7 @@ import random
 from typing import Iterable, Optional
 
 from constants.functions import (
-    COMPARATIVE_LABEL_MAKER,
+    COMPARATIVE_COND_MAKER,
     COMPARATIVES,
     AROUND,
     EQUAL,
@@ -21,7 +21,7 @@ from locate_then_ask.query_graph import QueryGraph, get_objs, get_preds
 from locate_then_ask.utils import get_gt, get_lt
 
 
-class OSSpeciesLocator(EntityLocator):
+class OSLocator(EntityLocator):
     def __init__(self):
         self.store = OSEntityStore()
 
@@ -82,7 +82,7 @@ class OSSpeciesLocator(EntityLocator):
         new_sample = random.choice(sampling_frame)
         if new_sample in unsampled_property_keys:
             key = new_sample
-            predicate = "os:has" + key
+            predicate = "os:has{PropertyName}/os:value".format(PropertyName=key)
 
             species_property = random.choice(entity.key2property[key])
             property_value = species_property.value
@@ -131,7 +131,7 @@ class OSSpeciesLocator(EntityLocator):
         if operator is None:
             verbalization = "{K} is {V}".format(K=key_label, V="[{x}]".format(x=value))
         else:
-            operator_label = COMPARATIVE_LABEL_MAKER[operator](value)
+            cond = COMPARATIVE_COND_MAKER[operator](value)
 
             func_node = literal_node + "_func"
             query_graph.add_node(
@@ -139,8 +139,8 @@ class OSSpeciesLocator(EntityLocator):
             )
             query_graph.add_edge(literal_node, func_node, label="func")
 
-            verbalization = "{K} is {OP} {V}".format(
-                K=key_label, OP=operator_label, V=value
+            verbalization = "{K} is {COND}".format(
+                K=key_label, COND=cond
             )
 
         # if (

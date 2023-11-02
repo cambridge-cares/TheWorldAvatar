@@ -9,14 +9,16 @@ from constants.functions import (
     LESS_THAN,
     LESS_THAN_EQUAL,
 )
-from locate_then_ask.sparql_compact2verbose import SparqlCompact2VerboseConverter
+from locate_then_ask.query_graph import QueryGraph
+# from locate_then_ask.sparql_compact2verbose import SparqlCompact2VerboseConverter
 
 
 class GraphToSparqlConverter:
     def __init__(self):
-        self.compact2verbose = SparqlCompact2VerboseConverter()
+        pass
+        # self.compact2verbose = SparqlCompact2VerboseConverter()
 
-    def make_graph_pattern(self, query_graph: nx.DiGraph, s: str, o: str):
+    def make_graph_pattern(self, query_graph: QueryGraph, s: str, o: str):
         p = query_graph.edges[s, o]["label"]
         if p.startswith("os:has"):
             if p.endswith("/os:value"):
@@ -45,7 +47,7 @@ class GraphToSparqlConverter:
             assert predicate.startswith("os:has")
             key = predicate.split("/")[0][len("os:has") :]
 
-            operand_left = "?{key}Value" + key
+            operand_left = "?{key}Value".format(key=key)
             operand_right = query_graph.nodes[s]["label"]
             operator = query_graph.nodes[o]["label"]
             if operator in [
@@ -85,7 +87,7 @@ class GraphToSparqlConverter:
             o = o if query_graph.nodes[o].get("template_node") else ("?" + o)
             return "{s} {p} {o} .".format(s=s, p=p, o=o)
 
-    def make_select_clause(self, query_graph: nx.DiGraph):
+    def make_select_clause(self, query_graph: QueryGraph):
         question_nodes = [
             n
             for n, question_node in query_graph.nodes(data="question_node")
@@ -118,13 +120,14 @@ class GraphToSparqlConverter:
             group_graph_pattern="\n  ".join(graph_patterns)
         )
 
-    def convert(self, query_graph: nx.DiGraph):
+    def convert(self, query_graph: QueryGraph):
         select_clause = self.make_select_clause(query_graph)
         where_clause = self.make_where_clause(query_graph)
 
         sparql_compact = "{SELECT} {WHERE}".format(
             SELECT=select_clause, WHERE=where_clause
         )
-        sparql_verbose = self.compact2verbose.convert(sparql_compact)
+        # sparql_verbose = self.compact2verbose.convert(sparql_compact)
 
-        return sparql_compact, sparql_verbose
+        return sparql_compact
+        # return sparql_compact, sparql_verbose

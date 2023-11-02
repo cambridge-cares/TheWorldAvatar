@@ -7,8 +7,9 @@ import networkx as nx
 from tqdm import tqdm
 
 from constants.ontospecies_keys import SPECIES_ATTRIBUTE_KEYS
-from locate_then_ask.ask import AskDatum, Asker
-from locate_then_ask.ontospecies.locate import OSSpeciesLocator
+from locate_then_ask.ontospecies.ask import AskDatum, OSAsker
+from locate_then_ask.ontospecies.locate import OSLocator
+from locate_then_ask.query_graph import QueryGraph
 
 
 ROOTDIR = Path(os.getcwd())
@@ -65,8 +66,8 @@ LIMIT {num}'''
         return [x for x in seed_entities if x]
 
     def __init__(self):
-        self.locator = OSSpeciesLocator()
-        self.asker = Asker()
+        self.locator = OSLocator()
+        self.asker = OSAsker()
 
         seed_species = self.retrieve_seed_species()
         random.shuffle(seed_species)
@@ -97,7 +98,7 @@ LIMIT {num}'''
 
         return query_graph, verbalization, species_id_new
 
-    def ask(self, ask_strategy: str, query_graph: nx.DiGraph, verbalization: str):
+    def ask(self, ask_strategy: str, query_graph: QueryGraph, verbalization: str):
         if ask_strategy == "name":
             return self.asker.ask_name(query_graph, verbalization)
         elif ask_strategy == "attribute":
