@@ -30,6 +30,18 @@ jobs:
       # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
+        
+      # Produce a valid 'settings.xml' file for Maven by
+      # running a script to inject the environment variables
+      # provided by GitHub secrets
+      - name: Set up Maven credentials
+        working-directory: ./.github/scripts
+        env:
+          MAVEN_USERNAME: ${{github.actor}}
+          MAVEN_PASSWORD: ${{github.token}}
+        run: |
+          chmod +x set-maven-credentials.sh
+          ./set-maven-credentials.sh ../../JPS_BASE_LIB
           
       # Set up JDK 11
       - name: Set up JDK 11
