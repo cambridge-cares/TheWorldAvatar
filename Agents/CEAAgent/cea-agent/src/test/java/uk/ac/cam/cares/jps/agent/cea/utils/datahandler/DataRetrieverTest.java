@@ -69,14 +69,14 @@ public class DataRetrieverTest {
             accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
                     .thenReturn(expected);
 
-            String result = dataRetriever.getNumericalValue(test_measure, route, "");
+            String result = dataRetriever.getNumericalValue(test_measure, route);
             assertTrue(result.contains(test_value));
 
             //test with mocked AccessAgentCaller when there is nothing returned
             accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
                     .thenReturn((expectedBlank));
 
-            result = dataRetriever.getNumericalValue(test_measure, route, "");
+            result = dataRetriever.getNumericalValue(test_measure, route);
             assertTrue(result.isEmpty());
         }
     }

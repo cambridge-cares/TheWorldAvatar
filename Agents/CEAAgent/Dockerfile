@@ -28,7 +28,7 @@ FROM mcr.microsoft.com/openjdk/jdk:11-ubuntu as agent
 
 COPY --from=builder /root/cea-agent/target/ ./target/
 
-# For pythonOCC to work (used by py4design)
+# for pythonOCC to work (used by py4design)
 RUN apt-get update && apt-get install -y libgl1
 
 COPY --from=cea /venv /venv
@@ -39,6 +39,8 @@ RUN mkdir -p ~/.config/matplotlib && echo "backend: Agg" > ~/.config/matplotlib/
 
 # install rasterio for working with TIF files
 RUN /venv/bin/python -m pip install rasterio
+# install fiona for shapefile
+RUN /venv/bin/python -m pip install fiona
 
 RUN /bin/bash -c "source /venv/bin/activate"
 
@@ -48,5 +50,5 @@ ENV PATH "/venv/bin:/venv/cea/bin:/venv/Daysim:$PATH"
 SHELL ["/bin/bash", "-c"]
 
 # Start the Tomcat server
-ENTRYPOINT ["java", "-cp", "target/cea-agent-2.1.0-jar-with-dependencies.jar" , "uk.ac.cam.cares.jps.agent.cea.Main"]
+ENTRYPOINT ["java", "-cp", "target/cea-agent-3.0.0-jar-with-dependencies.jar" , "uk.ac.cam.cares.jps.agent.cea.Main"]
 #==================================================================================================
