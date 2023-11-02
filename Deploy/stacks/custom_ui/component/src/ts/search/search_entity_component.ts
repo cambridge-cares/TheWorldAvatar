@@ -20,7 +20,7 @@ class SeachEntityComponent extends DynamicComponent {
     // Create a dropdown component for zone types
     new SelectDropdownComponent("Zone Type").render(parentElement);
     // Create a text input component for site area
-    let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Site Area [m2]", this.numerical_placeholder_message, "Invalid input. Please enter a numerical value.");
+    let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Plot Area [m2]", this.numerical_placeholder_message, "Invalid input. Please enter a numerical value.");
     siteAreaTextInput.render(parentElement);
     // Create a submit button
     let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement('button');

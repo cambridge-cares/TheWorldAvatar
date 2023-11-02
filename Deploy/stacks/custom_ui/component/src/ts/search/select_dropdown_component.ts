@@ -60,8 +60,8 @@ class SelectDropdownComponent {
      */
   private retrieveOptionValues(): SelectOption[] {
     return [
-      { value: "Automeile", label: "Special Automeile Area" },
-      { value: "Industry", label: "Industrial Area" },
+      { value: "Automeile", label: "Special Area (Automeile)" },
+      { value: "Industry", label: "Industry" },
     ];
   };
 
