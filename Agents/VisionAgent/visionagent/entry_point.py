@@ -11,10 +11,10 @@ properties = read_properties_file("visionagent/resources/visionagent.properties"
 # Construct the VisionAgent
 agent = VisionAgent(
     video_source=0 if properties['input.source'] == 'video' else None,
-    image_source=f"visionagent/resources/{properties['image.name']}" if properties['input.source'] == 'image' else None,
-    weights_path=f"visionagent/resources/{properties['cv.weights']}",
-    cfg_path=f"visionagent/resources/{properties['cv.cfg']}",
-    names_path=f"visionagent/resources/{properties['cv.name']}"
+    image_source=f"visionagent/resources/{properties['image.file_name']}" if properties['input.source'] == 'image' else None,
+    weights_path=f"visionagent/resources/{properties['cv.model.weights']}",
+    cfg_path=f"visionagent/resources/{properties['cv.model.config']}",
+    names_path=f"visionagent/resources/{properties['cv.class.names']}"
 )
 
 # Configure logging
