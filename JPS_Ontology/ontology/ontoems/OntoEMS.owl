@@ -726,6 +726,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/AirTemperature">
+        <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Temperature"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature of the outside air that would be indicated by a thermometer exposed to the air at a location sheltered from direct solar radiation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
@@ -738,6 +739,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/AtmosphericPressure">
+        <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AtmosphericPressure"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The pressure exerted by the atmospheric column of air above the point in question (adjusted to mean sea level).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
@@ -786,6 +788,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/DewPoint">
+        <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#DewPointTemperature"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature at which the air can no longer hold all of its water vapor, and water vapor starts to condense into liquid water.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
@@ -986,7 +989,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/PM10Concentration">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/ParticulateMatterConcentration"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter &lt; 10 Âµm in the ambient air.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter &lt; 10 µm in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PM10 concentration</rdfs:label>
     </owl:Class>
@@ -998,7 +1001,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/PM2.5Concentration">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/ParticulateMatterConcentration"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter &lt; 2.5 Âµm in the ambient air.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter &lt; 2.5 µm in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PM2.5 concentration</rdfs:label>
     </owl:Class>
@@ -1071,6 +1074,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/RelativeHumidity">
+        <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Humidity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relative humidity of the outside air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relative humidity</rdfs:label>
