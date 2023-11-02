@@ -23,11 +23,10 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 @Testcontainers
 class DerivationSparqlIntegrationTest {
-	static RemoteStoreClient storeClient;
-	static DerivationSparql devSparql;
-	static String kgUrl;
-	static final String agentIRI = "http://agentIRI";
-	static final String derivationBaseUrl = "http://derivation/";
+	private static RemoteStoreClient storeClient;
+	private static DerivationSparql devSparql;
+	private static final String agentIRI = "http://agentIRI";
+	private static final String derivationBaseUrl = "http://derivation/";
 
 	@Container
 	private static final BlazegraphContainer blazegraph = new BlazegraphContainer();

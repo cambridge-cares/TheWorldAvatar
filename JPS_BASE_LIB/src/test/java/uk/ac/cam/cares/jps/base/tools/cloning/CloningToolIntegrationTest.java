@@ -20,9 +20,9 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 @Testcontainers
 class CloningToolIntegrationTest {
 
-	static final int N_TEST_TRIPLES = 40;
+	private static final int N_TEST_TRIPLES = 40;
 
-	static String testData;
+	private static String testData;
 
 	@Container
 	private static final GenericContainer<?> sourceContainer = new BlazegraphContainer();

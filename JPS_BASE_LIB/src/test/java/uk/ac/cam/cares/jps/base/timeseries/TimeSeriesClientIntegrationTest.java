@@ -56,7 +56,7 @@ class TimeSeriesClientIntegrationTest {
 	private static ChronoUnit chronoUnit;
 	private static Double numericalDuration;
 	private static String temporalUnit;
-	private final double epsilon = 0.000001d;
+	private static final double epsilon = 0.000001d;
 
 	// Will create two Docker containers for Blazegraph and postgreSQL
 	@Container

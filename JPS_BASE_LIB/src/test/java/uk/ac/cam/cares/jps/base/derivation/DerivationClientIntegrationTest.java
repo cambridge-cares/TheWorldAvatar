@@ -29,14 +29,13 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  */
 @Testcontainers
 class DerivationClientIntegrationTest {
-    static RemoteStoreClient storeClient;
-    static DerivationClient devClient;
-    static final String agentIRI = "http://agentIRI";
-    static final String agentURL = "http://agentURL";
-    static final String derivationBaseUrl = "http://derivation/";
-    static final Integer numberOfIRIs = 300;
-    static List<String> agentIriList = new ArrayList<>();
-    static List<Boolean> forUpdateFlagList = new ArrayList<>();
+    private static RemoteStoreClient storeClient;
+    private static DerivationClient devClient;
+    private static final String agentIRI = "http://agentIRI";
+    private static final String derivationBaseUrl = "http://derivation/";
+    private static final Integer numberOfIRIs = 300;
+    private static List<String> agentIriList = new ArrayList<>();
+    private static List<Boolean> forUpdateFlagList = new ArrayList<>();
 
     @Container
     private static final BlazegraphContainer blazegraph = new BlazegraphContainer();

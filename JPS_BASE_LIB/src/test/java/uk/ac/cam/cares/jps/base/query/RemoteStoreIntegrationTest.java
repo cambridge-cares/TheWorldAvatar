@@ -36,7 +36,7 @@ import uk.ac.cam.cares.jps.base.BlazegraphContainer;
 @Testcontainers
 class RemoteStoreIntegrationTest {
 
-	static RemoteStoreClient storeClient;
+	private static RemoteStoreClient storeClient;
 
 	@Container
 	private static final BlazegraphContainer blazegraph = new BlazegraphContainer();

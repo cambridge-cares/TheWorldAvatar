@@ -21,9 +21,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 @Testcontainers
 public class DerivationOutputsIntegrationTest {
-    static RemoteStoreClient storeClient;
-    static String kgUrl;
-    ModifyQuery modify;
+    private static RemoteStoreClient storeClient;
+    private static ModifyQuery modify;
 
     @Container
     private static final BlazegraphContainer blazegraph = new BlazegraphContainer();

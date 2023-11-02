@@ -28,7 +28,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 class TimeSeriesSparqlIntegrationTest {
 
 	private static TimeSeriesSparql sparqlClient;
-	private final double epsilon = 0.000001d;
+	private static final double epsilon = 0.000001d;
 
 	// Will create a container that is shared between tests.
 	@Container
