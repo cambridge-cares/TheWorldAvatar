@@ -60,10 +60,12 @@ public class QRPrintingFragment extends Fragment {
         binding.editTv.setOnClickListener(getEditOnClickListener());
 
         binding.addIdBt.setOnClickListener(v -> {
-            PrintItem item = new PrintItem(binding.idEditText.getText().toString(), null, null);
-            viewModel.addPrintingItem(item);
+            PrintItem item = new PrintItem(binding.idEditText.getText().toString().trim(), null, null);
+            if (!item.getInventoryID().isEmpty()) {
+                viewModel.addPrintingItem(item);
 
-            binding.idEditText.setText("");
+                binding.idEditText.setText("");
+            }
         });
 
         binding.printBt.setOnClickListener(v -> {
