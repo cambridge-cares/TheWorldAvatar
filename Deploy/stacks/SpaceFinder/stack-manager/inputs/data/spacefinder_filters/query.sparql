@@ -9,7 +9,7 @@ SELECT ?iri WHERE {
                      geo:hasDefaultGeometry [geo:hasMetricArea ?area ] .
               ?zone zone:hasPlot ?iri;
                      zone:hasZoneType [rdfs:label ?zonetype] .
-              FILTER( [area]='null' || (?area <= [area] + 200 && ?area >= [area] - 200 ))
-              FILTER( STR(?zonetype) in ([zonetype]))
+              FILTER( 'null' = [area] || (?area <= [area] + 200 && ?area >= [area] - 200 ))
+              FILTER( "'null'" = "[zonetype]" || STR(?zonetype) in ([zonetype]))
        }
 }
