@@ -1,8 +1,6 @@
 import random
 import math
 
-import networkx as nx
-
 
 def get_lt(value: float):
     if value == 0:
@@ -34,11 +32,3 @@ def get_gt(value: float):
             gt = gt_int
 
     return gt
-
-
-def get_attribute_keys(query_graph: nx.DiGraph):
-    return [
-        p.split("/", maxsplit=1)[0][len("os:has") :]
-        for _, _, p in query_graph.edges(data="label")
-        if p.startswith("os:has")
-    ]
