@@ -114,11 +114,17 @@ public class IsochroneAgentTest {
         InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
         MockedStatic<FileReader> fileReaderMock = mockStatic(FileReader.class);
         fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
-        MockedConstruction<RouteSegmentization> routeSegmentizationMock = mockConstruction(RouteSegmentization.class);
+        MockedConstruction<RouteSegmentization> routeSegmentizationMock = mockConstruction(RouteSegmentization.class,
+                (mock, context) -> {
+                    //Table does not exists
+                    doReturn(false).when(mock).doesTableExist(any(RemoteRDBStoreClient.class));
+                });
         MockedConstruction<IsochroneGenerator> isochroneGeneratorMock = mockConstruction(IsochroneGenerator.class);
         MockedConstruction<PopulationMapper> populationMapperMock = mockConstruction(PopulationMapper.class);
         MockedConstruction<GeoServerClient> geoserverClientMock = mockConstruction(GeoServerClient.class);
         MockedConstruction<OntopClient> ontopClientMock = mockConstruction(OntopClient.class);
+
+
 
             try (fileReaderMock;
             endpointConfigMock;

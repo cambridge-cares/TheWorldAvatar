@@ -189,7 +189,7 @@ public class RouteSegmentization {
         }
     }
 
-    public static boolean doesTableExist(RemoteRDBStoreClient remoteRDBStoreClient) {
+    public boolean doesTableExist(RemoteRDBStoreClient remoteRDBStoreClient) {
     try (Connection connection = remoteRDBStoreClient.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 // Use a ResultSet to query for the table's existence
