@@ -7,5 +7,3 @@ services:
       - "9048:9048"
     environment:
       - FLASK_ENV=production
-    devices:
-      - "/dev/video0:/dev/video0"
