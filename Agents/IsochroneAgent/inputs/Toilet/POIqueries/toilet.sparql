@@ -3,17 +3,18 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX iso:    <https://www.theworldavatar.com/kg/ontoisochrone/>
 PREFIX ex: <https://example.org/>
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
 
 
 SELECT DISTINCT ?poi_iri ?poi_type ?geometry
 WHERE {
     {
         # OntopQuery to retrieve
-        SERVICE <http://osm-ontop:8080/sparql/> {
+        SERVICE <http://toilet-ontop:8080/sparql/> {
                 SELECT DISTINCT *
                 WHERE {
 
-                ?toilet a ?type.
+                ?toilet a obe:Toilet.
                 ?toilet geo:asWKT ?wkt .
 
                 }
@@ -21,6 +22,6 @@ WHERE {
         }
     # Binding variable names as requested
     BIND(?toilet AS ?poi_iri)
-    BIND(?type AS ?poi_type)
+    BIND(obe:Toilet AS ?poi_type)
     BIND(?wkt AS ?geometry)
 }
