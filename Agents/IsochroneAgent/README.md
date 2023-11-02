@@ -78,6 +78,12 @@ To run the agent, simply run the following cURL command:
 ```
 curl -X POST localhost:3838/isochroneagent/update?function=15MSC
 ```
+
+#### Toilet Isochrone
+```
+curl -X POST localhost:3838/isochroneagent/update?function=Toilet
+```
+
 #### Urban Resilience Planning (UR)
 ```
 curl -X POST localhost:3838/isochroneagent/update?function=UR

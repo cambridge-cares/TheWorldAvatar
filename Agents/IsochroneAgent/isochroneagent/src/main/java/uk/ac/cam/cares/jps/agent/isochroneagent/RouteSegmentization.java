@@ -23,8 +23,7 @@ public class RouteSegmentization {
      */
     public void segmentize(RemoteRDBStoreClient remoteRDBStoreClient, double segmentization_length){
                 try (Connection connection = remoteRDBStoreClient.getConnection()) {
-                String segmentization_create_table="DROP TABLE IF EXISTS routing_ways_segment;\n" +
-                "\n" +
+                String segmentization_create_table=
                 "-- Create a new table with the same structure as the old table\n" +
                 "CREATE TABLE routing_ways_segment AS\n" +
                 "SELECT *\n" +
@@ -187,6 +186,25 @@ public class RouteSegmentization {
     private void executeSql(Connection connection, String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
+        }
+    }
+
+    public static boolean doesTableExist(RemoteRDBStoreClient remoteRDBStoreClient) {
+    try (Connection connection = remoteRDBStoreClient.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                // Use a ResultSet to query for the table's existence
+                ResultSet resultSet = statement.executeQuery("SELECT 1 FROM routing_ways_segment");
+                // If the query is successful, the table exists
+                return true;
+            }
+            catch (SQLException e) {
+                // If an exception is thrown, the table does not exist
+                return false;
+            }
+        }  
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
         }
     }
 

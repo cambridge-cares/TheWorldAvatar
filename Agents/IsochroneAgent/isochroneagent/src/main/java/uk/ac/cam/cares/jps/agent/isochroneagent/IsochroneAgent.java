@@ -132,7 +132,10 @@ public class IsochroneAgent extends JPSAgent {
 
             // Split road into multiple smaller segment and find the nearest_node
             RouteSegmentization routeSegmentization = new RouteSegmentization();
+            if (!routeSegmentization.doesTableExist(remoteRDBStoreClient)){
+            //If segment table doesnt exist, segment table
             routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
+            }
 
             // Create a table to store nearest_node
             routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
