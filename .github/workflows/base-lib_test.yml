@@ -14,6 +14,7 @@ on:
       - main
     paths:
       - JPS_BASE_LIB/**
+      - .github/workflows/base-lib_test.yml
 
 
 # Job definitions
