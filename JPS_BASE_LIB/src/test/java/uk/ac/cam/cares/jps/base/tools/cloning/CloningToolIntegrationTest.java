@@ -9,7 +9,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -25,9 +24,9 @@ class CloningToolIntegrationTest {
 	private static String testData;
 
 	@Container
-	private static final GenericContainer<?> sourceContainer = new BlazegraphContainer();
+	private static final BlazegraphContainer sourceContainer = new BlazegraphContainer();
 	@Container
-	private static final GenericContainer<?> targetContainer = new BlazegraphContainer();
+	private static final BlazegraphContainer targetContainer = new BlazegraphContainer();
 
 	RemoteStoreClient sourceStoreClient;
 	RemoteStoreClient targetStoreClient;
@@ -39,18 +38,10 @@ class CloningToolIntegrationTest {
 
 	@BeforeEach
 	void setup() {
-		String sourceEndpoint = "http://" + sourceContainer.getHost()
-				+ ":" + sourceContainer.getFirstMappedPort()
-				+ "/blazegraph/namespace/kb/sparql";
-
-		sourceStoreClient = new RemoteStoreClient(sourceEndpoint, sourceEndpoint);
+		sourceStoreClient = sourceContainer.getRemoteStoreClient();
 		sourceStoreClient.executeUpdate(CloningToolTestHelper.createInsertData(testData));
 		assertEquals(N_TEST_TRIPLES, sourceStoreClient.getTotalNumberOfTriples());
-
-		String targetEndpoint = "http://" + targetContainer.getHost()
-				+ ":" + targetContainer.getFirstMappedPort()
-				+ "/blazegraph/namespace/kb/sparql";
-		targetStoreClient = new RemoteStoreClient(targetEndpoint, targetEndpoint);
+		targetStoreClient = targetContainer.getRemoteStoreClient();
 	}
 
 	@AfterEach
