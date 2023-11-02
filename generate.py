@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from constants.ontospecies_keys import SPECIES_ATTRIBUTE_KEYS
 from locate_then_ask.ask import AskDatum, Asker
-from locate_then_ask.locate import Locator
+from locate_then_ask.ontospecies.locate import OSSpeciesLocator
 
 
 ROOTDIR = Path(os.getcwd())
@@ -65,7 +65,7 @@ LIMIT {num}'''
         return [x for x in seed_entities if x]
 
     def __init__(self):
-        self.locator = Locator()
+        self.locator = OSSpeciesLocator()
         self.asker = Asker()
 
         seed_species = self.retrieve_seed_species()
