@@ -726,6 +726,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/AirTemperature">
+        <owl:equivalentClass rdf:resource="http://purl.org/iot/vocab/m3-lite#AirTemperature"/>
         <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Temperature"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature of the outside air that would be indicated by a thermometer exposed to the air at a location sheltered from direct solar radiation.</rdfs:comment>
@@ -739,6 +740,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/AtmosphericPressure">
+        <owl:equivalentClass rdf:resource="http://purl.org/iot/vocab/m3-lite#AtmosphericPressure"/>
         <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AtmosphericPressure"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The pressure exerted by the atmospheric column of air above the point in question (adjusted to mean sea level).</rdfs:comment>
@@ -776,6 +778,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CloudCover">
+        <owl:equivalentClass rdf:resource="http://purl.org/iot/vocab/m3-lite#CloudCover"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Number"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fraction of sky obscured by clouds.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
@@ -788,6 +791,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/DewPoint">
+        <owl:equivalentClass rdf:resource="http://purl.org/iot/vocab/m3-lite#DewPoint"/>
         <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#DewPointTemperature"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature at which the air can no longer hold all of its water vapor, and water vapor starts to condense into liquid water.</rdfs:comment>
@@ -1074,6 +1078,8 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/RelativeHumidity">
+        <owl:equivalentClass rdf:resource="http://purl.org/iot/vocab/m3-lite#RelativeHumidity"/>
+        <owl:equivalentClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/RelativeHumidity"/>
         <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Humidity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relative humidity of the outside air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
@@ -1268,6 +1274,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/WindDirection">
+        <owl:equivalentClass rdf:resource="http://purl.org/iot/vocab/m3-lite#WindDirection"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direction from where the wind is blowing measured relative to true north (not magnetic north).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
@@ -1293,6 +1300,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/WindSpeed">
+        <owl:equivalentClass rdf:resource="http://purl.org/iot/vocab/m3-lite#WindSpeed"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Speed"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Velocity of outside air movement.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoems/"/>
