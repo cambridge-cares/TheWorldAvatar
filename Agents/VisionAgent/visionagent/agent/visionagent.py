@@ -27,6 +27,8 @@ class VisionAgent:
         confidences = []
         class_ids = []
 
+        # The first 5 elements contain the x, y coordinates, width, height, and objectness score.
+        # The elements from the 6th onward are the individual class probabilities.
         for output in outputs:
             for detection in output:
                 scores = detection[5:]
