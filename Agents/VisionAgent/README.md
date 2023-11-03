@@ -21,24 +21,20 @@ pip install -r requirements.txt
 ```
 
 ## Resources
-The resources directory includes:
+The `resources/` directory includes:
 
- - *visionagent.properties*: Configuration file.
- - Images (*.jpg*): Sample images for detection.
- - YOLO Weights (*.weights*): Pre-trained model weights.
- - YOLO Config (*.cfg*): Model configuration files.
- - Class Names (*.names*): Object classification labels.
+ - `visionagent.properties`: Configuration file for model parameters.
+ - YOLO Weights (`*.weights`): Pre-trained model weights.
+ - YOLO Config (`*.cfg`): Model configuration files.
+ - Class Names (`*.names`): Object classification labels.
+ - Images (`*.jpg`): Place your images here to be processed.
+
+Ensure that the images you wish to process are stored in the `resources/` folder.
 
 ### Configuration
 Modify the visionagent.properties file:
 
 ```
-# Input source: 'image' for images, 'video' for video streams.
-input.source=image
-
-# Image file for detection.
-image.file_name=[YOUR_IMAGE_FILE].jpg
-
 # YOLO model parameters.
 cv.model.weights=[YOUR_YOLO_WEIGHTS_FILE].weights
 cv.model.config=[YOUR_YOLO_CONFIG_FILE].cfg
@@ -55,14 +51,14 @@ docker-compose build
 docker-compose up -d
 ```
 
-
-
 ## Usage
 Endpoints when running on http://localhost:9048:
 
-`GET /detect`: Returns an image with detection annotations.
+`GET /detect?source=image&path=[IMAGE_FILE_NAME]`: Returns an image with detection annotations. Replace `[IMAGE_FILE_NAME]` with the name of your image file.
 
-`GET /update`: Provides a JSON history of detected objects.
+`GET /update?source=image&path=[IMAGE_FILE_NAME]`: Provides a JSON history of detected objects for the specified image. Replace `[IMAGE_FILE_NAME]` with the name of your image file.
+
+Note: The system now accepts the image source and file path as query parameters, allowing dynamic selection of the image to be processed without the need to modify the configuration files.
 
 # Author
 Jiawei Lai (jlai@cmcl.io), November 2023
