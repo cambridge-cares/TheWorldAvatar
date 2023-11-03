@@ -4,9 +4,6 @@
 ##########################################
 '''
 Log:
-Fixed some indents to 4 space.
-Added user info message for every 100k lines loaded to show the progress on long files.
-Added on-the-fly verification between ABox and TBox (for Classes and Object Property only, not for Data Property)
 '''
 
 
@@ -23,7 +20,7 @@ import os
 from pathlib import Path as PathlibPath
 import io
 import textwrap
-#import entityrdfizer.aboxgenerator.tboxcleaner as tboxcleaner
+import entityrdfizer.aboxgenerator.tboxcleaner as tboxcleaner
 
 """Optional TBox structure to verify ABox entities vs classes and properties in TBox.
 Requires module tboxcleaner.
@@ -47,43 +44,90 @@ HTTP ='http://'
 HTTPS='https://'
 
 """Known data types. Any other type must have a full http:// IRI address.
+The structure of the dictionary:
+- key: the data type as in the XSD/RDF specification, but without prefix.
+- value is a list:
+  - value[0] - full URI name (using rdflib.namespace to convert),
+  - value[1] - same as key, but in lowcase,
+  - value[2] - short prefix + name in lowcase.
 The short names (like 'integer' or 'rdfs:literal' must be in low case,
-even if originally it has upper case. In csv file it can be in either case."""
+even if originally it has upper case.
+In csv file these types can be in either case."""
 DATA_TYPES = dict()
-DATA_TYPES['string'  ] = [ XSD.string,   'string',   'xsd:string' ]
-DATA_TYPES['integer' ] = [ XSD.integer,  'integer',  'xsd:integer' ]
-DATA_TYPES['float'   ] = [ XSD.float,    'float',    'xsd:float' ]
-DATA_TYPES['double'  ] = [ XSD.double,   'double',   'xsd:double' ]
-DATA_TYPES['datetime'] = [ XSD.datetime, 'datetime', 'xsd:datetime' ]
-DATA_TYPES['decimal' ] = [ XSD.decimal,  'decimal',  'xsd:decimal' ]
-DATA_TYPES['boolean' ] = [ XSD.boolean,  'boolean',  'xsd:boolean' ]
 
-DATA_TYPES['anyURI'  ] = [ XSD.anyURI,   'anyuri',   'xsd:anyuri' ]
-DATA_TYPES['byte'    ] = [ XSD.byte,     'byte',     'xsd:byte' ]
-DATA_TYPES['short'   ] = [ XSD.short,    'short',    'xsd:short' ]
-DATA_TYPES['token'   ] = [ XSD.token,    'token',    'xsd:token' ]
-DATA_TYPES['language'] = [ XSD.language, 'language', 'xsd:language' ]
-DATA_TYPES['long'    ] = [ XSD.long,     'long',     'xsd:long' ]
-DATA_TYPES['name'    ] = [ XSD.Name,     'name',     'xsd:name' ]
+def standard_data_types():
+    output = dict()
+    xsd = [ 'anyURI', 'base64Binary', 'boolean', 'byte', 'dateTime', \
+            'dateTimeStamp', 'decimal', 'double', 'float', 'hexBinary', 'int', \
+            'integer', 'language', 'long', 'Name', 'NCName', 'negativeInteger',\
+            'NMTOKEN', 'nonNegativeInteger', 'nonPositiveInteger', \
+            'normalizedString', 'positiveInteger', 'short', 'string', 'token' \
+            'unsignedByte', 'unsignedInt', 'unsignedLong', 'unsignedShort' ]
+    for key in xsd:
+        output[key] = [ getattr(XSD,key), key.lower(), 'xsd:' + key.lower() ]
+    rdf = [ 'langString', 'PlainLiteral', 'XMLLiteral' ]
+    for key in rdf:
+        output[key] = [ getattr(RDF,key), key.lower(), 'rdf:' + key.lower() ]
+    rdfs = [ 'Literal' ]
+    # Note: this is list of Properties, not Data Types:
+    rdfs += ['label', 'domain', 'range', 'comment', 'seeAlso', 'isDefinedBy', \
+             'member', 'Datatype', 'Resource', 'Class' ]
+    for key in rdfs:
+        output[key] = [ getattr(RDFS,key), key.lower(), 'rdfs:' + key.lower() ]
 
-DATA_TYPES['positiveInteger' ] = [ XSD.positiveInteger, 'positiveinteger', 'xsd:positiveinteger' ]
+    return output
+
+DATA_TYPES = standard_data_types()
+"""
+DATA_TYPES = dict()
+
+DATA_TYPES['anyURI'   ] = [ XSD.anyURI,   'anyuri',   'xsd:anyuri' ]
+DATA_TYPES['base64Binary'] = [ XSD.base64Binary,'base64binary','xsd:base64binary' ]
+DATA_TYPES['boolean'  ] = [ XSD.boolean,  'boolean',  'xsd:boolean' ]
+DATA_TYPES['byte'     ] = [ XSD.byte,     'byte',     'xsd:byte' ]
+DATA_TYPES['dateTime' ] = [ XSD.dateTime, 'datetime', 'xsd:datetime' ]
+DATA_TYPES['dateTimeStamp'] = [ XSD.dateTimeStamp, 'datetimestamp', 'xsd:datetimestamp' ]
+DATA_TYPES['decimal'  ] = [ XSD.decimal,  'decimal',  'xsd:decimal' ]
+DATA_TYPES['double'   ] = [ XSD.double,   'double',   'xsd:double' ]
+DATA_TYPES['float'    ] = [ XSD.float,    'float',    'xsd:float' ]
+DATA_TYPES['hexBinary'] = [ XSD.hexBinary,'hexbinary','xsd:hexbinary' ]
+DATA_TYPES['int'      ] = [ XSD.int,      'int',      'xsd:int' ]
+DATA_TYPES['integer'  ] = [ XSD.integer,  'integer',  'xsd:integer' ]
+DATA_TYPES['language' ] = [ XSD.language, 'language', 'xsd:language' ]
+DATA_TYPES['long'     ] = [ XSD.long,     'long',     'xsd:long' ]
+DATA_TYPES['Name'     ] = [ XSD.Name,     'name',     'xsd:name' ]
+DATA_TYPES['NCName'   ] = [ XSD.NCName,   'ncname',   'xsd:ncname' ]
 DATA_TYPES['negativeInteger' ] = [ XSD.negativeInteger, 'negativeinteger', 'xsd:negativeinteger' ]
-DATA_TYPES['unsignedInt'     ] = [ XSD.unsignedInt,     'unsignedint',     'xsd:unsignedint' ]
+DATA_TYPES['NMTOKEN'  ] = [ XSD.NMTOKEN,  'nmtoken',  'xsd:nmtoken' ]
+DATA_TYPES['nonNegativeInteger' ] = [ XSD.nonNegativeInteger, 'nonnegativeinteger', 'xsd:nonnegativeinteger' ]
+DATA_TYPES['nonPositiveInteger' ] = [ XSD.nonPositiveInteger, 'nonpositiveinteger', 'xsd:nonpositiveinteger' ]
+DATA_TYPES['normalizedString'  ] = [ XSD.normalizedString,   'normalizedstring',   'xsd:normalizedstring' ]
+DATA_TYPES['positiveInteger' ] = [ XSD.positiveInteger, 'positiveinteger', 'xsd:positiveinteger' ]
+DATA_TYPES['short'   ] = [ XSD.short,    'short',    'xsd:short' ]
+DATA_TYPES['string'  ] = [ XSD.string,   'string',   'xsd:string' ]
+DATA_TYPES['token'   ] = [ XSD.token,    'token',    'xsd:token' ]
+DATA_TYPES['unsignedByte'] = [ XSD.unsignedByte, 'unsignedbyte', 'xsd:unsignedbyte' ]
+DATA_TYPES['unsignedInt' ] = [ XSD.unsignedInt,  'unsignedint',  'xsd:unsignedint' ]
+DATA_TYPES['unsignedLong'] = [ XSD.unsignedLong, 'unsignedlong', 'xsd:unsignedlong' ]
+DATA_TYPES['unsignedShort']= [ XSD.unsignedShort,'unsignedshort','xsd:unsignedshort' ]
 
 DATA_TYPES['langString'  ] = [ RDF.langString,   'langstring',   'rdf:langstring' ]
 DATA_TYPES['PlainLiteral'] = [ RDF.PlainLiteral, 'plainliteral', 'rdf:plainliteral' ]
 DATA_TYPES['XMLLiteral'  ] = [ RDF.XMLLiteral,   'xmlliteral',   'rdf:xmlliteral' ]
 DATA_TYPES['Literal'     ] = [ RDFS.Literal,     'literal',      'rdfs:literal' ]
-DATA_TYPES['label'       ] = [ RDFS.label,       'label',        'rdfs:label' ]
-DATA_TYPES['domain'      ] = [ RDFS.domain,      'domain',       'rdfs:domain' ]
-DATA_TYPES['range'       ] = [ RDFS.range,       'range',        'rdfs:range' ]
-DATA_TYPES['comment'     ] = [ RDFS.comment,     'comment',      'rdfs:comment' ]
+
+# Below is a list of Properties, not data types:
+#DATA_TYPES['label'       ] = [ RDFS.label,       'label',        'rdfs:label' ]
+#DATA_TYPES['domain'      ] = [ RDFS.domain,      'domain',       'rdfs:domain' ]
+#DATA_TYPES['range'       ] = [ RDFS.range,       'range',        'rdfs:range' ]
+#DATA_TYPES['comment'     ] = [ RDFS.comment,     'comment',      'rdfs:comment' ]
 #DATA_TYPES['seeAlso'     ] = [ RDFS.seeAlso,      'seealso',       'rdfs:seealso' ]
 #DATA_TYPES['isDefinedBy' ] = [ RDFS.isDefinedBy,  'isdefinedby',   'rdfs:isdefinedby' ]
 #DATA_TYPES['member'      ] = [ RDFS.member,       'member',        'rdfs:member' ]
 #DATA_TYPES['DataType'    ] = [ RDFS.DataType,     'datatype',      'rdfs:datatype' ]
 #DATA_TYPES['Resource'    ] = [ RDFS.Resource,     'resource',      'rdfs:resource' ]
 #DATA_TYPES['Class'       ] = [ RDFS.Class,        'class',         'rdfs:class' ]
+"""
 
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
@@ -217,7 +261,7 @@ def check_existing_instances( value, file_line ):
     if len(value) >= 36:
         name = value[:-36]
         uuid = value[-36:]
-        if uuid[8] == "-" and uuid[13] == "-" and uuid[18] == "-" and uuid[13] == "-":
+        if uuid[8] == "-" and uuid[13] == "-" and uuid[18] == "-" and uuid[23] == "-":
             # This is a UUID4 type of instance name
             for k in instances:
                 if len(k) >= 36:
@@ -226,7 +270,7 @@ def check_existing_instances( value, file_line ):
                         if show_warning:
                             print(f"Warning: Instance with same name but different UUID: " + \
                                   f"'{value}', existing instance: '{k}' {file_line}." )
-                       warning_count += 1
+                        warning_count += 1
 
 """Saves all used instances for manual/visual inspection. Expects csv filename."""
 def save_instances( filename ):
@@ -313,6 +357,9 @@ def process_data(row, file_line):
             check_existing_instances( row[0], file_line )
             instances[row[0].strip()] = row[2].strip()
 
+            if tBox:
+                if not tBox.isKnownClass( row[2] ):
+                    warning_count += 1
         # End of instance_of_class option, below only relation between instances
 
         elif is_http(row[2]) or row[2].strip() in instances:
@@ -347,6 +394,9 @@ def process_data(row, file_line):
             aboxgen.link_instance(g, URIRef(row3_http), \
                                      URIRef(row0_http), URIRef(row2_http) )
 
+            if tBox:
+                warning_count += tBox.checkTriple( instances[row[0]], row[3], \
+                                                   instances[row[2]], file_line)
 
         else: # Warnings only
             if not row[2].strip() in instances:
@@ -390,6 +440,9 @@ def process_data(row, file_line):
                                         URIRef(instance), row[4].strip(), \
                                         get_data_type(row[5], file_line))
 
+        if tBox:
+            warning_count += tBox.checkTriple( instances[row[2]], row[0], \
+                                                         row[5], file_line )
                              #  get_data_type(row[5], file_line ), file_line )
 
     else:
@@ -437,7 +490,7 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
     """Checks if the input file path exists. If the path or file does not exist, it skips further processing."""
     if not os.path.exists(input_file_path):
         if show_warning:
-            print(f"Error! The following input file does not exist: '{input_file_path}'.")
+            print(f"Error! Input ABox file does not exist: '{input_file_path}'.")
         warning_count += 1
         return
 
@@ -449,6 +502,17 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
     else:
         output_file_path = os.path.dirname(input_file_path)
     output_file_path = os.path.join(output_file_path,input_name+propread.readABoxFileExtension())
+
+    #tbox_file_path = "ontocrystal.csv"
+    if tbox_file_path:
+        if os.path.isfile(tbox_file_path):
+            tBox = tboxcleaner.TBoxCleaner()
+            tBox.readExcel(tbox_file_path)
+            tBox.parseInputData()
+        else:
+            print(f"Error! Input TBox file does not exist: '{tbox_file_path}'.")
+    #print( tBox.triples )
+    #print( tBox.classRel )
 
     #print(f"Converting abox {input_file_path} into rdf format.")
     with open(input_file_path, 'rt') as csvfile:
