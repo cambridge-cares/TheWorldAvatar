@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from typing import Dict, List, Union
+from typing import List, Optional
 
 
 @dataclass
 class OKThermoModel:
     # ontokin:NASA
-    iri: str
-    coeff_values: List[float]
+    coeff_values: str
     coeff_num: int
     max_temp: float
     min_temp: float
@@ -16,38 +15,38 @@ class OKThermoModel:
 @dataclass
 class OKTransportModel:
     # ontokin:TransportModel
-    iri: str
     dipole_momemnt: float
     dipole_moment_units: str
     LJ_diameter: float
     LJ_diameter_units: str
     LJ_well_depth: float
     LJ_well_depth_units: str
-    polarizability: int
-    polarizability_unit: str
-    rotational_relaxation_collision_num: int
-    rotational_relaxation_collision_num: str
+    polarizability: float
+    polarizability_units: str
+    rotational_relaxation_collision_num: float
+    rotational_relaxation_collision_num_units: str
     species_geometry: str
     species_geometry_title: str
 
 
 @dataclass
-class Mechanism:
+class OKMechanism:
     iri: str
     label: str
 
 
 @dataclass
 class OKSpecies:
+    # ontokin:Species
     iri: str
     label: str
-    thermo_model: OKThermoModel
-    transport_model: OKTransportModel
-    mechanism: Mechanism # ontokin:belongsToPhase/ontokin:containedIn
+    thermo_models: List[OKThermoModel]
+    transport_model: Optional[OKTransportModel]
+    mechanism: OKMechanism # ontokin:belongsToPhase/ontokin:containedIn
 
 
 @dataclass
-class ArrheniusCoefficient:
+class OKArrheniusCoefficient:
     # ontokin:ArrheniusCoefficient
     activation_energy: float
     activation_energy_units: str
@@ -58,11 +57,12 @@ class ArrheniusCoefficient:
 
 
 @dataclass
-class Reaction:
-    # http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction
+class OKGasePhaseReaction:
+    # In ABox, most reactions are of the type http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction
     iri: str
     equation: str
-    arrhenius_coeff: ArrheniusCoefficient
-    reactants: Union[str, OKSpecies]
-    products: Union[str, OKSpecies]
-    mechanism: Mechanism # ontokin:belongsToPhase/ontokin:containedIn
+    arrhenius_coeffs: List[OKArrheniusCoefficient]
+    # ignore other coeffs for now
+    # reactants: OKSpecies # <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant>
+    # products: OKSpecies # <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct>
+    mechanisms: List[OKMechanism] # ontokin:belongsToPhase/ontokin:containedIn
