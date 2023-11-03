@@ -1512,7 +1512,14 @@ public class QueryClient {
     boolean hasElevationContourData(String derivationIri) {
         String sql = String.format("select count(*) where derivation='%s' from %s", derivationIri,
                 EnvConfig.ELEVATION_CONTOURS_TABLE);
-        JSONArray queryResult = rdbStoreClient.executeQuery(sql);
-        return queryResult.getJSONObject(0).getInt("count") > 0;
+        try (Connection conn = rdbStoreClient.getConnection(); Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            while (result.next()) {
+                return result.getInt("count") > 0;
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return false;
     }
 }
