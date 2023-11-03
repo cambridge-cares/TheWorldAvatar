@@ -17,35 +17,42 @@ class OKEntityStore:
         kg_endpoint: str = "http://theworldavatar.com/blazegraph/namespace/ontokin/sparql",
     ):
         self.kg_client = KgClient(kg_endpoint)
-        self.iri2types: Dict[str, List[str]] = dict()
+        self.iri2cls: Dict[str, Union[OKSpecies, OKGasePhaseReaction, OKMechanism]] = dict()
         self.iri2entity: Dict[
             str, Union[OKSpecies, OKGasePhaseReaction, OKMechanism]
         ] = dict()
 
-    def get_types(self, entity_iri: str):
-        if entity_iri not in self.iri2types:
+    def get_cls(self, entity_iri: str):
+        if entity_iri not in self.iri2cls:
             query_template = """SELECT * WHERE {{ <{IRI}> a/rdfs:subClassOf* ?Type }}"""
             query = query_template.format(IRI=entity_iri)
             response_bindings = self.kg_client.query(query)["results"]["bindings"]
-            self.iri2types[entity_iri] = [
+            types = [
                 binding["Type"]["value"] for binding in response_bindings
             ]
-        return self.iri2types[entity_iri]
+            if OKIN + "ReactionMechanism" in types:
+                self.iri2cls[entity_iri] = OKMechanism
+            elif OKIN + "GasPhaseReaction" in types:
+                self.iri2cls[entity_iri] = OKGasePhaseReaction
+            elif OKIN + "Species" in types:
+                self.iri2cls[entity_iri] = OKSpecies
+            else:
+                raise ValueError(
+                    "The provided entity {iri} does not posess any expected types.\n Actual types: {types}.\nExpected types: okin:ReactionMechanism, okin:GasPhaseReaction, okin:Species".format(
+                        iri=entity_iri, types=types
+                    )
+                )
+        return self.iri2cls[entity_iri]
 
     def get(self, entity_iri: str):
         if entity_iri not in self.iri2entity:
-            if OKIN + "ReactionMechanism" in self.get_types(entity_iri):
+            cls = self.get_cls(entity_iri)
+            if cls == OKMechanism:
                 self.iri2entity[entity_iri] = self.create_mechanism(entity_iri)
-            elif OKIN + "GasPhaseReaction" in self.get_types(entity_iri):
+            elif cls == OKGasePhaseReaction:
                 self.iri2entity[entity_iri] = self.create_rxn(entity_iri)
-            elif OKIN + "Species" in self.get_types(entity_iri):
-                self.iri2entity[entity_iri] = self.create_species(entity_iri)
             else:
-                raise ValueError(
-                    "The provided entity {iri} does not posess any expected types.\n Actual types: {actual_types}.\nExpected types: okin:ReactionMechanism, okin:GasPhaseReaction, okin:Species".format(
-                        iri=entity_iri, actual_types=self.get_types(entity_iri)
-                    )
-                )
+                self.iri2entity[entity_iri] = self.create_species(entity_iri)
         return self.iri2entity[entity_iri]
 
     def create_species(self, entity_iri: str):
