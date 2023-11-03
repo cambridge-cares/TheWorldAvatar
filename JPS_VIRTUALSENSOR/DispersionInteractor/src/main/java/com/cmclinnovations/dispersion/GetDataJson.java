@@ -1,6 +1,8 @@
 package com.cmclinnovations.dispersion;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -84,7 +87,8 @@ public class GetDataJson extends HttpServlet {
      * Index of hasLayers: 0) ships, 1) buildings, 2) static point
      */
     private JSONObject createDataJson(String pollutantLabel, String scopeLabel, JSONObject weatherStation,
-            List<Boolean> hasLayers, Connection conn, String pollutant, String derivationIri, long timestep, int z, boolean pirmasensVis) {
+            List<Boolean> hasLayers, Connection conn, String pollutant, String derivationIri, long timestep, int z,
+            boolean pirmasensVis) {
         JSONObject hideVisility = new JSONObject();
         hideVisility.put("visibility", "none");
 
@@ -98,7 +102,9 @@ public class GetDataJson extends HttpServlet {
                 + String.format("&CQL_FILTER=pollutant='%s' AND derivation='%s' AND time=%d AND z=%d", pollutant,
                         derivationIri, timestep, z);
         JSONObject group = new JSONObject();
-        group.put("name", scopeLabel);
+        JSONArray groups = new JSONArray();
+        groups.put(group);
+        group.put("name", "Dispersion");
         group.put("stack", Config.STACK_URL);
 
         JSONArray sources = new JSONArray();
@@ -137,7 +143,7 @@ public class GetDataJson extends HttpServlet {
         weatherLayer.put("type", "circle");
         weatherLayer.put("name", "Weather station");
         weatherLayer.put("source", "weather-source");
-        weatherLayer.put("layout", visibility);
+        weatherLayer.put("layout", hideVisility);
 
         JSONObject weatherPaint = new JSONObject();
         weatherPaint.put("circle-color", "blue");
@@ -177,7 +183,23 @@ public class GetDataJson extends HttpServlet {
             layers.put(shipLayer);
         }
 
-        if (Boolean.TRUE.equals(hasLayers.get(1))) {
+        if (pirmasensVis) {
+            group.put("expanded", false);
+            // extract buildings group from pirmasensData.json template
+            try (InputStream is = getClass().getClassLoader().getResourceAsStream("pirmasensData.json")) {
+                String templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
+                templateContent = templateContent.replace("http://localhost:3838", Config.STACK_URL);
+
+                JSONObject buildingjson = new JSONObject(templateContent);
+                JSONArray buildingGroups = buildingjson.getJSONArray("groups");
+
+                for (int i = 0; i < buildingGroups.length(); i++) {
+                    groups.put(buildingGroups.getJSONObject(i));
+                }
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
+        } else if (Boolean.TRUE.equals(hasLayers.get(1))) {
             String buildingWms = Config.STACK_URL + "/geoserver/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                     +
@@ -296,35 +318,9 @@ public class GetDataJson extends HttpServlet {
             layers.put(sensorLayer);
         }
 
-        if (Boolean.TRUE.equals(pirmasensVis)) {
-            String plotWms = Config.STACK_URL + "/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:plots&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile";
-            
-            JSONObject plotSource = new JSONObject();
-            plotSource.put("id", "plots");
-            plotSource.put("type", "vector");
-            plotSource.put("tiles", new JSONArray().put(plotWms));
-            sources.put(plotSource);
-
-            JSONObject plotLayer = new JSONObject();
-            plotLayer.put("id", "plots");
-            plotLayer.put("name", "Plots");
-            plotLayer.put("source", "plots");
-            plotLayer.put("source-layer", "plots");
-            plotLayer.put("type", "fill");
-            plotLayer.put("layout", hideVisility);
-
-            JSONObject plotPaint = new JSONObject();
-            plotPaint.put("fill-color", "#31ff61");
-            plotPaint.put("fill-opacity", 0.5);
-
-            plotLayer.put("paint", plotPaint);
-
-            layers.put(plotLayer);
-        }
-
         JSONObject data = new JSONObject();
         data.put("name", "All Data");
-        data.put("groups", new JSONArray().put(group));
+        data.put("groups", groups);
 
         return data;
     }
