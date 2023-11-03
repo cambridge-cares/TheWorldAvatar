@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from constants.ontospecies_keys import SPECIES_ATTRIBUTE_KEYS
 from locate_then_ask.ontospecies.ask import AskDatum, OSAsker
-from locate_then_ask.ontospecies.locate import OSLocator
+from locate_then_ask.ontospecies.locate import OSSpeciesLocator
 from locate_then_ask.query_graph import QueryGraph
 
 
@@ -66,7 +66,7 @@ LIMIT {num}'''
         return [x for x in seed_entities if x]
 
     def __init__(self):
-        self.locator = OSLocator()
+        self.locator = OSSpeciesLocator()
         self.asker = OSAsker()
 
         seed_species = self.retrieve_seed_species()

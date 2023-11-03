@@ -33,6 +33,7 @@ class OKTransportModel:
 class OKMechanism:
     iri: str
     label: str
+    species_iris: List[str]
 
 
 @dataclass
@@ -57,12 +58,22 @@ class OKArrheniusCoefficient:
 
 
 @dataclass
+class OCAPEReactant:
+    iri: str
+    label: str
+
+@dataclass
+class OCAPEProduct:
+    iri: str
+    label: str
+
+@dataclass
 class OKGasePhaseReaction:
     # In ABox, most reactions are of the type http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction
     iri: str
     equation: str
     arrhenius_coeffs: List[OKArrheniusCoefficient]
     # ignore other coeffs for now
-    # reactants: OKSpecies # <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant>
-    # products: OKSpecies # <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct>
+    reactants: List[OCAPEReactant]
+    products: List[OCAPEProduct]
     mechanisms: List[OKMechanism] # ontokin:belongsToPhase/ontokin:containedIn

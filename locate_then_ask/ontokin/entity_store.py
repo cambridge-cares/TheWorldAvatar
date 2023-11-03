@@ -2,6 +2,8 @@ from typing import Dict, List, Union
 from constants.namespaces import OKIN
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontokin.model import (
+    OCAPEProduct,
+    OCAPEReactant,
     OKArrheniusCoefficient,
     OKMechanism,
     OKGasePhaseReaction,
@@ -17,7 +19,9 @@ class OKEntityStore:
         kg_endpoint: str = "http://theworldavatar.com/blazegraph/namespace/ontokin/sparql",
     ):
         self.kg_client = KgClient(kg_endpoint)
-        self.iri2cls: Dict[str, Union[OKSpecies, OKGasePhaseReaction, OKMechanism]] = dict()
+        self.iri2cls: Dict[
+            str, Union[OKSpecies, OKGasePhaseReaction, OKMechanism]
+        ] = dict()
         self.iri2entity: Dict[
             str, Union[OKSpecies, OKGasePhaseReaction, OKMechanism]
         ] = dict()
@@ -27,9 +31,7 @@ class OKEntityStore:
             query_template = """SELECT * WHERE {{ <{IRI}> a/rdfs:subClassOf* ?Type }}"""
             query = query_template.format(IRI=entity_iri)
             response_bindings = self.kg_client.query(query)["results"]["bindings"]
-            types = [
-                binding["Type"]["value"] for binding in response_bindings
-            ]
+            types = [binding["Type"]["value"] for binding in response_bindings]
             if OKIN + "ReactionMechanism" in types:
                 self.iri2cls[entity_iri] = OKMechanism
             elif OKIN + "GasPhaseReaction" in types:
@@ -71,17 +73,22 @@ class OKEntityStore:
     def create_rxn(self, entity_iri: str):
         equation = self.retrieve_rxn_eqn(entity_iri)
         arrhenius_coeffs = self.retrieve_rxn_arrhenius_coeffs(entity_iri)
+        reactants = self.retrieve_rxn_reactants(entity_iri)
+        products = self.retrieve_rxn_products(entity_iri)
         mechanisms = self.retrieve_rxn_mechansim(entity_iri)
         return OKGasePhaseReaction(
             iri=entity_iri,
             equation=equation,
             arrhenius_coeffs=arrhenius_coeffs,
+            reactants=reactants,
+            products=products,
             mechanisms=mechanisms,
         )
 
     def create_mechanism(self, entity_iri: str):
         label = self.retrieve_label(entity_iri)
-        return OKMechanism(iri=entity_iri, label=label)
+        species_iris = self.retrieve_mechanism_species_iris(entity_iri)
+        return OKMechanism(iri=entity_iri, label=label, species_iris=species_iris)
 
     def retrieve_label(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -228,6 +235,38 @@ SELECT * WHERE {{
             for binding in value_bindings
         ]
 
+    def retrieve_rxn_reactants(self, entity_iri: str):
+        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontocape: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+
+SELECT DISTINCT * WHERE {{
+    <{ReactionIRI}> ontocape:hasReactant ?Reactant .
+    ?Reactant rdfs:label ?ReactantLabel .
+}}"""
+        query = query_template.format(ReactionIRI=entity_iri)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
+        value_bindings = [{k: v["value"] for k, v in binding.items()} for binding in response_bindings]
+        return [
+            OCAPEReactant(iri=binding["Reactant"], label=binding["ReactantLabel"]["value"])
+            for binding in response_bindings
+        ]
+
+    def retrieve_rxn_products(self, entity_iri: str):
+        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontocape: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+
+SELECT DISTINCT * WHERE {{
+    <{ReactionIRI}> ontocape:hasProduct ?Product .
+    ?Product rdfs:label ?ProductLabel .
+}}"""
+        query = query_template.format(ReactionIRI=entity_iri)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
+        value_bindings = [{k: v["value"] for k, v in binding.items()} for binding in response_bindings]
+        return [
+            OCAPEProduct(iri=binding["Product"], label=binding["ProductLabel"])
+            for binding in value_bindings
+        ]
+
     def retrieve_rxn_mechansim(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
@@ -241,3 +280,15 @@ SELECT * WHERE {{
             binding["Mechanism"]["value"] for binding in response_bindings
         ]
         return [self.get(iri) for iri in mechanism_iris]
+
+    def retrieve_mechanism_species_iris(self, entity_iri: str):
+        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+
+SELECT DISTINCT ?Species WHERE {{
+    <{MechanismIRI}> ^ontokin:containedIn/^ontokin:belongsToPhase ?Species .
+    ?Species a ontokin:Species .
+}}"""
+        query = query_template.format(MechanismIRI=entity_iri)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
+        return [binding["Species"]["value"] for binding in response_bindings]
