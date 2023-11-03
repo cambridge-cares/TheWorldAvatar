@@ -5,27 +5,27 @@ from flask import Flask, jsonify, Response, request, send_file
 from visionagent.agent.visionagent import VisionAgent
 from visionagent.utils.tools import read_properties_file
 
-# Load properties
-properties = read_properties_file("visionagent/resources/visionagent.properties")
-
-# Construct the VisionAgent
-agent = VisionAgent(
-    video_source=0 if properties['input.source'] == 'video' else None,
-    image_source=f"visionagent/resources/{properties['image.file_name']}" if properties['input.source'] == 'image' else None,
-    weights_path=f"visionagent/resources/{properties['cv.model.weights']}",
-    cfg_path=f"visionagent/resources/{properties['cv.model.config']}",
-    names_path=f"visionagent/resources/{properties['cv.class.names']}"
-)
-
 # Configure logging
 logging.getLogger("cv2").setLevel(logging.ERROR)
-logger = logging.getLogger('prod')
+logger = logging.getLogger('vision-agent')
 
 # Initialise Flask app
 app = Flask(__name__)
 
 def process_request():
     # Use the pre-configured global 'agent' instance
+    # Load properties
+    properties = read_properties_file("visionagent/resources/visionagent.properties")
+
+    # Construct the VisionAgent
+    agent = VisionAgent(
+        video_source=0 if properties['input.source'] == 'video' else None,
+        image_source=f"visionagent/resources/{properties['image.file_name']}" if properties['input.source'] == 'image' else None,
+        weights_path=f"visionagent/resources/{properties['cv.model.weights']}",
+        cfg_path=f"visionagent/resources/{properties['cv.model.config']}",
+        names_path=f"visionagent/resources/{properties['cv.class.names']}"
+    )
+
     try:
         frame, outputs, height, width = agent.run_one_frame()
         detected_objects, detected_objects_frame = agent.draw_boxes(frame, outputs, height, width)
