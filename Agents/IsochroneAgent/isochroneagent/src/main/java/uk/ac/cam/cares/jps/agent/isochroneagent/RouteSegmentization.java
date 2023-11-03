@@ -76,18 +76,33 @@ public class RouteSegmentization {
                 "DROP SEQUENCE temp_sequence;\n" +
                 "\n";
                 executeSql(connection, segmentization_create_table);
-                System.out.println("Duplicated route in a new table. (1/4)");
+                System.out.println("Duplicated route in a new table. (1/6)");
 
                 executeSql(connection, segmentization_split);
-                System.out.println("Split ways successfully.(2/4)");
+                System.out.println("Split ways successfully.(2/6)");
 
                 executeSql(connection, segmentization_rearrange_sql);
-                System.out.println("Reindexed the routes.(3/4)");
+                System.out.println("Reindexed the routes.(3/6)");
 
                 System.out.println("Begin on recalculating topology, this may take awhile.");
                 executeSql(connection,("SELECT pgr_createTopology('routing_ways_segment', 0.000001, 'the_geom', 'gid', 'source', 'target', clean := true);"));
-                System.out.println("Recreated routing topology.(4/4)");
-                
+                System.out.println("Recreated routing topology.");
+                System.out.println("Analzye isolated edge in graph network.");
+                executeSql(connection, "SELECT pgr_analyzeGraph ('routing_ways_segment', 0.001, 'the_geom', 'gid')");
+                System.out.println("Dropping isolated networks  in graph network.");
+                executeSql(connection, "CREATE TEMPORARY TABLE isolated AS\n" +
+                        "SELECT a.gid as ways_id, b.id as source_vertice, c.id as target_vertice\n" +
+                        "    FROM routing_ways_segment a, routing_ways_segment_vertices_pgr b, routing_ways_segment_vertices_pgr c\n" +
+                        "    WHERE a.source=b.id AND b.cnt=1 AND a.target=c.id AND c.cnt=1;\n" +
+                        "\n" +
+                        "DELETE FROM routing_ways_segment\n" +
+                        "WHERE gid IN ( SELECT ways_id FROM isolated);\n" +
+                        "\n" +
+                        "DELETE FROM routing_ways_segment_vertices_pgr\n" +
+                        "WHERE id IN ( SELECT source_vertice FROM isolated);\n" +
+                        "\n" +
+                        "DELETE FROM routing_ways_segment_vertices_pgr\n" +
+                        "WHERE id IN ( SELECT target_vertice FROM isolated);");
                 System.out.println("Segmentization completed. Routing_ways_segment table created.");
                 }
                 catch (Exception e) {
