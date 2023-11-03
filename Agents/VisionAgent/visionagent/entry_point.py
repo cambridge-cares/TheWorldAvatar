@@ -20,7 +20,7 @@ def process_request(source,path):
     # Construct the VisionAgent
     agent = VisionAgent(
         video_source=0 if source == 'video' else None,
-        image_source=f"visionagent/resources/{path}.jpg" if source == 'image' else None,
+        image_source=f"visionagent/resources/{path}" if source == 'image' else None,
         weights_path=f"visionagent/resources/{properties['cv.model.weights']}",
         cfg_path=f"visionagent/resources/{properties['cv.model.config']}",
         names_path=f"visionagent/resources/{properties['cv.class.names']}"

@@ -52,13 +52,30 @@ docker-compose up -d
 ```
 
 ## Usage
-Endpoints when running on http://localhost:9048:
+The Vision Agent can be accessed through the following HTTP endpoints after deployment:
 
-`GET /detect?source=image&path=[IMAGE_FILE_NAME]`: Returns an image with detection annotations. Replace `[IMAGE_FILE_NAME]` with the name of your image file.
+- **Detect Endpoint**:
+  - `GET /detect?source=image&path=[IMAGE_FILE_NAME]`
+  - This endpoint returns an annotated image with detection boxes drawn around identified objects.
+  - Query Parameters:
+    - `source`: The type of source, set to `image` for image files.
+    - `path`: The relative path to the image file within the resources directory.
+  - Example: `http://localhost:9048/detect?source=image&path=test.jpg`
+  - Replace `[IMAGE_FILE_NAME]` with the actual name of your image file, including the extension.
 
-`GET /update?source=image&path=[IMAGE_FILE_NAME]`: Provides a JSON history of detected objects for the specified image. Replace `[IMAGE_FILE_NAME]` with the name of your image file.
+- **Update Endpoint**:
+  - `GET /update?source=image&path=[IMAGE_FILE_NAME]`
+  - This endpoint provides a JSON response containing the history of detected objects for the specified image.
+  - Query Parameters are identical to the Detect Endpoint.
+  - Example: `http://localhost:9048/update?source=image&path=test.jpg`
 
-Note: The system now accepts the image source and file path as query parameters, allowing dynamic selection of the image to be processed without the need to modify the configuration files.
+Replace `[IMAGE_FILE_NAME]` with the name of your image file with extension specified (e.g. test.jpg or test.png).
+
+Note:
+
+- Ensure that the `path` parameter points to an image file stored within the resources directory.
+- The provided image file name should include the appropriate file extension (e.g., `.jpg`, `.png`).
+
 
 # Author
 Jiawei Lai (jlai@cmcl.io), November 2023
