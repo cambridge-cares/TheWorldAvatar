@@ -48,7 +48,7 @@ LIMIT {num}'''
         query = query_template.format(
             bindings=species_attr_values, num=SEED_SPECIES_NUM
         )
-        bindings = kg_client.query(query)
+        bindings = kg_client.query(query)["results"]["bindings"]
         return [x["x"]["value"] for x in bindings]
 
     @classmethod

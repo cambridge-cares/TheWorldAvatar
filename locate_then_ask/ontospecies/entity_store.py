@@ -43,7 +43,7 @@ SELECT DISTINCT ?IdentifierNameValue ?hasIdentifierName WHERE {{
             hasIdentifierNameValues=" ".join(["os:has" + x for x in IDENTIFIER_KEYS]),
         )
 
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
         value_bindings = [
             {k: v["value"] for k, v in x.items()} for x in response_bindings
         ]
@@ -73,7 +73,7 @@ SELECT DISTINCT * WHERE {{
             SpeciesIri=entity_iri,
             hasPropertyNameValues=" ".join(["os:has" + key for key in PROPERTY_KEYS]),
         )
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
         value_bindings = [
             {k: v["value"] for k, v in binding.items()} for binding in response_bindings
         ]
@@ -100,7 +100,7 @@ SELECT DISTINCT ?ChemicalClassLabel WHERE {{
     ] .
 }}"""
         query = query_template.format(SpeciesIri=entity_iri)
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
         return [x["ChemicalClassLabel"]["value"] for x in response_bindings]
 
     def retrieve_uses(self, entity_iri: str):
@@ -110,5 +110,5 @@ SELECT DISTINCT ?UseLabel WHERE {{
     <{SpeciesIri}> os:hasUse/rdfs:label ?UseLabel .
 }}"""
         query = query_template.format(SpeciesIri=entity_iri)
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
         return [x["UseLabel"]["value"] for x in response_bindings]

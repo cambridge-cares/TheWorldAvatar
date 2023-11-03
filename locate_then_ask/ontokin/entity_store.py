@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, List, Union
+from constants.namespaces import OKIN
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontokin.model import (
     OKArrheniusCoefficient,
@@ -16,24 +17,36 @@ class OKEntityStore:
         kg_endpoint: str = "http://theworldavatar.com/blazegraph/namespace/ontokin/sparql",
     ):
         self.kg_client = KgClient(kg_endpoint)
-        self.iri2species: Dict[str, OKSpecies] = dict()
-        self.iri2rxn: Dict[str, OKGasePhaseReaction] = dict()
-        self.iri2mechanism: Dict[str, OKMechanism] = dict()
+        self.iri2types: Dict[str, List[str]] = dict()
+        self.iri2entity: Dict[
+            str, Union[OKSpecies, OKGasePhaseReaction, OKMechanism]
+        ] = dict()
 
-    def get_species(self, entity_iri: str):
-        if entity_iri not in self.iri2species:
-            self.iri2species[entity_iri] = self.create_species(entity_iri)
-        return self.iri2species[entity_iri]
+    def get_types(self, entity_iri: str):
+        if entity_iri not in self.iri2types:
+            query_template = """SELECT * WHERE {{ <{IRI}> a/rdfs:subClassOf* ?Type }}"""
+            query = query_template.format(IRI=entity_iri)
+            response_bindings = self.kg_client.query(query)["results"]["bindings"]
+            self.iri2types[entity_iri] = [
+                binding["Type"]["value"] for binding in response_bindings
+            ]
+        return self.iri2types[entity_iri]
 
-    def get_rxn(self, entity_iri: str):
-        if entity_iri not in self.iri2rxn:
-            self.iri2rxn[entity_iri] = self.create_rxn(entity_iri)
-        return self.iri2rxn[entity_iri]
-
-    def get_mechanism(self, entity_iri: str):
-        if entity_iri not in self.iri2mechanism:
-            self.iri2mechanism[entity_iri] = self.create_mechanism(entity_iri)
-        return self.iri2mechanism[entity_iri]
+    def get(self, entity_iri: str):
+        if entity_iri not in self.iri2entity:
+            if OKIN + "ReactionMechanism" in self.get_types(entity_iri):
+                self.iri2entity[entity_iri] = self.create_mechanism(entity_iri)
+            elif OKIN + "GasPhaseReaction" in self.get_types(entity_iri):
+                self.iri2entity[entity_iri] = self.create_rxn(entity_iri)
+            elif OKIN + "Species" in self.get_types(entity_iri):
+                self.iri2entity[entity_iri] = self.create_species(entity_iri)
+            else:
+                raise ValueError(
+                    "The provided entity {iri} does not posess any expected types.\n Actual types: {actual_types}.\nExpected types: okin:ReactionMechanism, okin:GasPhaseReaction, okin:Species".format(
+                        iri=entity_iri, actual_types=self.get_types(entity_iri)
+                    )
+                )
+        return self.iri2entity[entity_iri]
 
     def create_species(self, entity_iri: str):
         label = self.retrieve_label(entity_iri)
@@ -71,7 +84,7 @@ SELECT * WHERE {{
 }}
 LIMIT 1"""
         query = query_template.format(IRI=entity_iri)
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
         return response_bindings[0]["Label"]["value"]
 
     def retrieve_species_thermo_models(self, entity_iri: str):
@@ -89,7 +102,7 @@ SELECT * WHERE {{
 }}"""
         query = query_template.format(SpeciesIRI=entity_iri)
 
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
         value_bindings = [
             {k: v["value"] for k, v in binding.items()} for binding in response_bindings
         ]
@@ -128,7 +141,7 @@ SELECT * WHERE {{
 LIMIT 1"""
         query = query_template.format(SpeciesIRI=entity_iri)
 
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
 
         if len(response_bindings) == 0:
             return None
@@ -162,9 +175,9 @@ SELECT * WHERE {{
 }}
 LIMIT 1"""
         query = query_template.format(SpeciesIRI=entity_iri)
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
 
-        return self.get_mechanism(entity_iri=response_bindings[0]["Mechanism"]["value"])
+        return self.get(entity_iri=response_bindings[0]["Mechanism"]["value"])
 
     def retrieve_rxn_eqn(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -174,7 +187,7 @@ SELECT * WHERE {{
     <{ReactionIRI}> ontokin:hasEquation ?Equation .
 }}"""
         query = query_template.format(ReactionIRI=entity_iri)
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
         return response_bindings[0]["Equation"]["value"]
 
     def retrieve_rxn_arrhenius_coeffs(self, entity_iri: str):
@@ -192,7 +205,7 @@ SELECT * WHERE {{
     ] .
 }}"""
         query = query_template.format(ReactionIRI=entity_iri)
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
         value_bindings = [
             {k: v["value"] for k, v in binding.items()} for binding in response_bindings
         ]
@@ -216,8 +229,8 @@ SELECT * WHERE {{
     <{ReactionIRI}> ontokin:belongsToPhase/ontokin:containedIn ?Mechanism .
 }}"""
         query = query_template.format(ReactionIRI=entity_iri)
-        response_bindings = self.kg_client.query(query)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
         mechanism_iris = [
             binding["Mechanism"]["value"] for binding in response_bindings
         ]
-        return [self.get_mechanism(iri) for iri in mechanism_iris]
+        return [self.get(iri) for iri in mechanism_iris]

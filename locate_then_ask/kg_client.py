@@ -9,4 +9,4 @@ class KgClient:
 
     def query(self, query: str):
         self.client.setQuery(query)
-        return self.client.queryAndConvert()["results"]["bindings"]
+        return self.client.queryAndConvert()
