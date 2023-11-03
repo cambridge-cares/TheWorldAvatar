@@ -12,12 +12,12 @@ from constants.ontospecies_keys import (
     SPECIES_ATTRIBUTE_KEYS,
     USE_KEY,
 )
-from locate_then_ask.ask import AskDatum, Asker
+from locate_then_ask.data_model import AskDatum
 from locate_then_ask.graph2sparql import GraphToSparqlConverter
 from locate_then_ask.query_graph import QueryGraph, get_preds
 
 
-class OSAsker(Asker):
+class OSAsker:
     def __init__(self):
         self.graph2sparql = GraphToSparqlConverter()
 
@@ -27,23 +27,6 @@ class OSAsker(Asker):
 
         query_sparql = self.graph2sparql.convert(query_graph)
         verbalization = "What are " + verbalization
-
-        return AskDatum(
-            query_graph=query_graph,
-            query_sparql=query_sparql,
-            verbalization=verbalization,
-        )
-
-    def ask_count(self, query_graph: QueryGraph, verbalization: str):
-        query_graph = copy.deepcopy(query_graph)
-        query_graph.nodes["Species"]["question_node"] = True
-        query_graph.add_node(
-            "Species_func", label="count", func=True, template_node=True
-        )
-        query_graph.add_edge("Species", "Species_func")
-
-        query_sparql = self.graph2sparql.convert(query_graph)
-        verbalization = "How many " + verbalization
 
         return AskDatum(
             query_graph=query_graph,
