@@ -31,12 +31,26 @@ class OKLocator:
         return query_graph, verbalization
 
     def locate_concept_name(self, entity_iri: str):
+        entity = self.store.get(entity_iri)
+
+        if isinstance(entity, OKSpecies):
+            class_name = "Species"
+            rdf_type = "okin:Species"
+            verbalization = "chemical species"
+        elif isinstance(entity, OKGasePhaseReaction):
+            class_name = "Reaction"
+            rdf_type = "okin:GasPhaseReaction" # a/rdfs:subClassOf*
+            verbalization = "reaction"
+        elif isinstance(entity, OKMechanism):
+            class_name = "Mechanism"
+            rdf_type = "okin:ReactionMechanism"
+            verbalization = "mechanism"
+
         query_graph = QueryGraph()
         query_graph.add_node(
-            "Species", iri=entity_iri, rdf_type="os:Species", label="os:Species"
+            class_name, iri=entity_iri, rdf_type=rdf_type, label=rdf_type
         )
-        return query_graph, "chemical species"
-        pass
+        return query_graph, verbalization
 
     def locate_concept_and_literal(
         self, entity_iri: str, query_graph: Optional[QueryGraph]
