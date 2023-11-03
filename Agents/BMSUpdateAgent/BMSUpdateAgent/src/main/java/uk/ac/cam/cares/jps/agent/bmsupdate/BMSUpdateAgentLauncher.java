@@ -2,15 +2,14 @@ package uk.ac.cam.cares.jps.agent.bmsupdate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.BadRequestException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,7 +24,7 @@ import java.util.regex.Pattern;
  *
  * @author sandradeng20
  */
-@WebServlet(urlPatterns = {"/set", "/wacnet/write"})
+@WebServlet(urlPatterns = {"/set", "/wacnet/write", "/updateTriples"})
 public class BMSUpdateAgentLauncher extends JPSAgent {
 
     private static final Logger LOGGER = LogManager.getLogger(BMSUpdateAgentLauncher.class);
@@ -35,11 +34,18 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
     private final String KEY_VALUE = "value";
     private final String KEY_BACNETOBJECTID = "bacnetObjectId";
     private final String KEY_BACNETDEVICEID = "bacnetDeviceId";
+    private final String KEY_INSERT = "INSERT";
+    private final String KEY_DELETE = "DELETE";
+    private final String KEY_TRIGGER_VALUE = "triggerValue";
 
     private final String KEY_SET_CLIENT_PROPERTIES = "setClientProperties";
     private final String KEY_WRITE_CLIENT_PROPERTIES = "writeClientProperties";
+    private final String KEY_UPDATETRIPLES_CLIENT_PROPERTIES = "updateTriplesClientProperties";
 
     private final String ENV_WACNET_API_PROPERTIES = "WACNET_API_PROPERTIES";
+
+    RemoteRDBStoreClient RDBClient;
+    RemoteStoreClient rsClient = new RemoteStoreClient();
 
     private String esphomeAgentToggle;
     private String esphomeUpdateAgentRetrieve;
@@ -47,6 +53,10 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
     private String sparqlUpdateEndpoint;
     private String sparqlUsername;
     private String sparqlPassword;
+    private String dbUrl;
+    private String dbUser;
+    private String dbPassword;
+
 
     /**
      * Process request and execute route accordingly
@@ -84,6 +94,12 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
                 //wacnet API route
                 if (originalUrl.contains("/wacnet/write")) {
                     result = executeWriteWacnet(requestParams);
+                } 
+            }
+            case "/updateTriples": {
+                //updateTriples route
+                if (originalUrl.contains("/updateTriples")) {
+                    result = executeUpdateTriples(requestParams);
                 } 
             }
         }
@@ -160,7 +176,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             } catch (IOException e) {
                 throw new JPSRuntimeException("Unable to read the client properties file.", e);
             }
-            RemoteStoreClient rsClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint);
+            rsClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint);
             if (sparqlUsername != null && sparqlPassword != null) {
                 rsClient.setUser(sparqlUsername);
                 rsClient.setPassword(sparqlPassword);
@@ -194,6 +210,50 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
         } else {
             throw new JPSRuntimeException("missing keys and values in request!");
         }
+    }
+
+    /**
+     * execute update triples route
+     * @param requestParams Request parameters parsed from the body of POST request
+     * @return results of executed route
+     */
+    public JSONObject executeUpdateTriples(JSONObject requestParams) {
+        JSONObject result = new JSONObject();
+        LOGGER.info("The size is " + requestParams.length());
+        JSONArray checks = requestParams.getJSONArray("checks");
+        for (int i = 0; i < checks.length(); i++){
+            JSONObject checkAndUpdateParameters = checks.getJSONObject(i);
+            String dataIRI = checkAndUpdateParameters.getString(KEY_DATAIRI);
+            String triggerValue = checkAndUpdateParameters.getString(KEY_TRIGGER_VALUE);
+            String insertString = null;
+            String deleteString = null;
+            String clientPropertiesFile = System.getenv(requestParams.getString(KEY_UPDATETRIPLES_CLIENT_PROPERTIES));
+            BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
+            try {
+                initUpdateTriplesProperties(clientPropertiesFile);
+            } catch (IOException e) {
+                throw new JPSRuntimeException("Unable to read the client properties file.", e);
+            }
+            rsClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint);
+            if (sparqlUsername != null && sparqlPassword != null) {
+                rsClient.setUser(sparqlUsername);
+                rsClient.setPassword(sparqlPassword);
+            }
+            RDBClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
+            if (checkAndUpdateParameters.has(KEY_INSERT) && checkAndUpdateParameters.has(KEY_DELETE)) {
+                insertString = checkAndUpdateParameters.getString(KEY_INSERT);
+                deleteString = checkAndUpdateParameters.getString(KEY_DELETE);
+                // pass data IRI, triggerValue, insertString, deleteString, remote store client and remote rdb client to checkInsertDelete method
+            } else if (checkAndUpdateParameters.has(KEY_INSERT) && !checkAndUpdateParameters.has(KEY_DELETE)) {
+                insertString = checkAndUpdateParameters.getString(KEY_INSERT);
+                result = bmsUpdateAgent.checkInsert(dataIRI, rsClient, RDBClient, triggerValue, insertString);
+                // pass data IRI, triggerValue, insertString and timeseries client to checkInsert method
+            } else if (checkAndUpdateParameters.has(KEY_DELETE) && !checkAndUpdateParameters.has(KEY_INSERT)) {
+                deleteString = checkAndUpdateParameters.getString(KEY_DELETE);
+                // pass data IRI, triggerValue, deleteString and timeseries client to checkDelete method
+            }
+        }
+        return result;
     }
 
     /**
@@ -295,5 +355,64 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
 
     }
 
+    /**
+     * Init variables with the client property file.
+     *
+     * @param filepath Path of the client property file.
+     * @throws IOException Throw exception when fail to read the property file.
+     */
+    private void initUpdateTriplesProperties(String filepath) throws IOException {
+        File file = new File(filepath);
+        if (!file.exists()) {
+            throw new JPSRuntimeException("No properties file found at specified filepath: " + filepath);
+        }
 
+        try (InputStream input = new FileInputStream(file)) {
+
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+
+            if (prop.containsKey("sparql.query.endpoint")) {
+                sparqlQueryEndpoint = prop.getProperty("sparql.query.endpoint");
+            } else {
+                throw new JPSRuntimeException("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\"");
+            }
+            if (prop.containsKey("sparql.update.endpoint")) {
+               sparqlUpdateEndpoint = prop.getProperty("sparql.update.endpoint");
+            } else {
+                throw new JPSRuntimeException("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\"");
+            }
+            if (prop.containsKey("sparql.username")) {
+                sparqlUsername = prop.getProperty("sparql.username");
+            }
+            if (prop.containsKey("sparql.password")) {
+               sparqlPassword = prop.getProperty("sparql.password");
+            }
+            if (prop.containsKey("db.url")) {
+               dbUrl = prop.getProperty("db.url");
+            } else {
+                throw new JPSRuntimeException("Properties file is missing \"db.url=<db_url>\"");
+            }
+            if (prop.containsKey("db.user")) {
+               dbUser = prop.getProperty("db.user");
+            } else {
+                throw new JPSRuntimeException("Properties file is missing \"db.user=<db_user>\"");
+            }
+            if (prop.containsKey("db.password")) {
+               dbPassword = prop.getProperty("db.password");
+            } else {
+                throw new JPSRuntimeException("Properties file is missing \"db.password=<db_password>\"");
+            }
+
+            LOGGER.debug("Properties config: ");
+            LOGGER.debug("sparqlQuery: " + sparqlQueryEndpoint);
+            LOGGER.debug("sparqlUpdate: " + sparqlUpdateEndpoint);
+            LOGGER.debug("sparqlUsername: " + sparqlUsername);
+            LOGGER.debug("sparqlPassword: " + sparqlPassword);
+            LOGGER.debug("dbUrl: " + dbUrl);
+            LOGGER.debug("dbUser: " + dbUser);
+            LOGGER.debug("dbPassword: " + dbPassword);
+        }
+    }
 }

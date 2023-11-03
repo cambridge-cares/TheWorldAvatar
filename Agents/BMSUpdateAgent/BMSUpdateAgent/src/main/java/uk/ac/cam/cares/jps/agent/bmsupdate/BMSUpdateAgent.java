@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.bmsupdate;
 
+import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.Literal;
@@ -17,9 +18,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class BMSUpdateAgent {
 
@@ -37,6 +47,10 @@ public class BMSUpdateAgent {
     final String FAIL_TO_PULL_DATA = "Fail to trigger ESPHomeUpdateAgent to pull data!";
     final String FAIL_TO_GET_BACNETDEVICEID = "Fail to get Bacnet Device ID!";
     final String FAIL_TO_GET_BACNETOBJECTID = "Fail to get Bacnet Object ID!";
+    final String FAIL_TO_GET_LATESTDATA = "Unable to get latest timeseries data for the following IRI: ";
+
+    TimeSeries<OffsetDateTime> timeseries;
+    TimeSeriesClient<OffsetDateTime> tsClient;
 
     /**
      * Change the temperature of a fan's set point in the knowledge graph.
@@ -194,5 +208,45 @@ public class BMSUpdateAgent {
             LOGGER.error(FAIL_TO_GET_BACNETOBJECTID);
             throw new JPSRuntimeException(FAIL_TO_GET_BACNETOBJECTID);
         }
+    }
+
+    /**
+     * Get latest timeseries value for the data IRI and compared it with the trigger value, if they are equal, run a sparql update to insert a set of triples
+     *
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @param RDBClient The remote RDB client
+     * @param triggerValue The value to compare with the latest timeseries value
+     * @param insertString The string to insert via sparql update
+     * @return 
+     */
+    public JSONObject checkInsert(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue, String insertString) {
+        JSONObject result = new JSONObject();
+        tsClient = new TimeSeriesClient<>(rsClient ,OffsetDateTime.class);
+        try (Connection conn = RDBClient.getConnection()) {
+            timeseries = tsClient.getLatestData(dataIRI, conn);
+        } catch (Exception e) {
+            throw new JPSRuntimeException(FAIL_TO_GET_LATESTDATA + dataIRI);
+        }
+        String latestValue = timeseries.getValuesAsString(dataIRI).get(timeseries.getValuesAsString(dataIRI).size() - 1);
+        OffsetDateTime latestTimeStamp = timeseries.getTimes().get(timeseries.getTimes().size() - 1);
+        Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
+        sdf.setTimeZone(TimeZone.getDefault());
+        Object ts = sdf.format(date);
+        LOGGER.info("The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
+        result.put("message", "The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
+        if (latestValue.equals(triggerValue)) {
+            ParameterizedSparqlString queryStr = new ParameterizedSparqlString();
+            queryStr.append("INSERT DATA ");
+            queryStr.append("{ ");
+            queryStr.append(insertString);
+            queryStr.append(" }");
+            LOGGER.info("The triples to insert is " + queryStr.toString());
+            rsClient.executeUpdate(queryStr.asUpdate().toString());
+            LOGGER.info("Inserted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
+            result.accumulate("message", "Inserted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
+        }
+        return result;
     }
 }
