@@ -1510,8 +1510,8 @@ public class QueryClient {
     }
 
     boolean hasElevationContourData(String derivationIri) {
-        String sql = String.format("select count(*) where derivation='%s' from %s", derivationIri,
-                EnvConfig.ELEVATION_CONTOURS_TABLE);
+        String sql = String.format("select count(*) from %s where derivation='%s'", EnvConfig.ELEVATION_CONTOURS_TABLE,
+                derivationIri);
         try (Connection conn = rdbStoreClient.getConnection(); Statement stmt = conn.createStatement()) {
             ResultSet result = stmt.executeQuery(sql);
             while (result.next()) {
