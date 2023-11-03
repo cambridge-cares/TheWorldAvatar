@@ -12,7 +12,7 @@
 					"WEATHER_AGENT_URL=http://ship-stack-weather-agent:8080/WeatherAgent/CreateStation",
 					"SHIP_INPUT_AGENT=http://ship-stack-ship-input-agent:8080/ShipInputAgent/update",
 					"GEOSERVER_WORKSPACE=dispersion",
-					"GEOSERVER_URL=http://localhost:3838/geoserver",
+					"STACK_URL=http://localhost:3838",
 					"SENSORS_TABLE_NAME=sensors",
 					"VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
 					"DISPERSION_CONTOURS_TABLE=dispersion_contours",

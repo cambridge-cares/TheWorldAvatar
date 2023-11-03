@@ -13,7 +13,7 @@
                     "SHIP_INPUT_AGENT=http://ship-stack-ship-input-agent:8080/ShipInputAgent/update",
                     "VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
                     "GEOSERVER_WORKSPACE=dispersion",
-					"GEOSERVER_URL=http://localhost:3838/geoserver",
+					"STACK_URL=http://localhost:3838",
                     "SENSORS_TABLE_NAME=sensors",
 					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
 					"SHIPS_LAYER_NAME=ships",
