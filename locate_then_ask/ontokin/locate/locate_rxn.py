@@ -2,7 +2,7 @@ import copy
 import random
 
 from locate_then_ask.ontokin.entity_store import OKEntityStore
-from locate_then_ask.ontokin.model import OCAPEProduct, OCAPEReactant, OKGasePhaseReaction
+from locate_then_ask.ontokin.model import OCAPEProduct, OCAPEReactant, OKGasePhaseReaction, OKMechanism
 from locate_then_ask.query_graph import QueryGraph, get_objs
 
 
@@ -72,7 +72,17 @@ class OKReactionLocator:
             x for x in entity.products if x.iri not in sampled_product_iris
         ]
 
-        sampling_frame = unsampled_reactants + unsampled_products
+        sampled_mechanism_nodes = get_objs(
+            query_graph, subj="Reaction", predicate="ontokin:belongsToPhase/ontokin:containedIn"
+        )
+        sampled_mechanism_iris = [
+            query_graph.nodes[n]["iri"] for n in sampled_mechanism_nodes
+        ]
+        unsampled_mechanisms = [
+            x for x in entity.mechanisms if x.iri not in sampled_mechanism_iris
+        ]
+
+        sampling_frame = unsampled_reactants + unsampled_products + unsampled_mechanisms
         if len(sampling_frame) == 0:
             return query_graph, ""
         
@@ -99,6 +109,17 @@ class OKReactionLocator:
             )
             query_graph.add_edge("Reaction", product_node, label="ocape:hasProduct")
             verbalization = "has product [{label}]".format(label=sampled.label)
+        elif isinstance(sampled, OKMechanism):
+            mechanism_node = "Mechanism_" + str(len(sampled_mechanism_nodes))
+            query_graph.add_node(
+                mechanism_node,
+                iri=sampled.iri,
+                rdf_type="okin:Mechanism",
+                label=sampled.label,
+                template_node=True
+            )
+            query_graph.add_edge("Reaction", mechanism_node, label="ontokin:belongsToPhase/ontokin:containedIn")
+            verbalization = "has mechanism [{label}]".format(label=sampled.label)
         else:
             raise ValueError("Unexpected type: " + type(sampled))
 
