@@ -26,7 +26,7 @@ class OKReactionLocator:
             topic_entity=True,
         )
 
-        verbalization = "[{entity}]".format(entity=label)
+        verbalization = "the chemical reaction [{entity}]".format(entity=label)
 
         return query_graph, verbalization
 
@@ -39,7 +39,7 @@ class OKReactionLocator:
             label="okin:GasPhaseReaction",
             topic_entity=True,
         )
-        return query_graph, "reaction"
+        return query_graph, "chemical reaction"
 
     def _locate_concept_and_relation(self, query_graph: QueryGraph):
         query_graph = copy.deepcopy(query_graph)

@@ -1,10 +1,11 @@
+from abc import ABC, abstractmethod
 from typing import List
 import networkx as nx
 
 from locate_then_ask.query_graph import QueryGraph
 
 
-class Graph2Sparql:
+class Graph2Sparql(ABC):
     def __init__(self, predicates_to_entities_linked_by_rdfslabel: List[str] = []):
         self.predicates_to_entities_linked_by_rdfslabel = (
             predicates_to_entities_linked_by_rdfslabel
@@ -12,7 +13,9 @@ class Graph2Sparql:
 
     def _resolve_node_to_sparql(self, query_graph: QueryGraph, n: str):
         if query_graph.nodes[n].get("template_node"):
-            if query_graph.nodes[n].get("literal"):
+            if query_graph.nodes[n].get("topic_entity"):
+                return "?" + n
+            elif query_graph.nodes[n].get("literal"):
                 return '"{label}"'.format(label=query_graph.nodes[n]["label"])
             elif not query_graph.nodes[n].get("prefixed"):
                 return "<{iri}>".format(iri=query_graph.nodes[n]["iri"])
@@ -25,9 +28,10 @@ class Graph2Sparql:
         s_sparql = self._resolve_node_to_sparql(query_graph, s)
         p = query_graph.edges[s, o]["label"]
 
-        if p in self.predicates_to_entities_linked_by_rdfslabel and query_graph.nodes[
-            o
-        ].get("template_node"):
+        if (
+            p in self.predicates_to_entities_linked_by_rdfslabel
+            and query_graph.nodes[o].get("template_node")
+        ):
             p_sparql = p + "/rdfs:label"
             o_sparql = '"{label}"'.format(label=query_graph.nodes[o]["label"])
         else:
@@ -36,16 +40,24 @@ class Graph2Sparql:
 
         return "{s} {p} {o} .".format(s=s_sparql, p=p_sparql, o=o_sparql)
 
+    @abstractmethod
+    def make_topic_entity_patterns(self, query_graph: QueryGraph, topic_node: str) -> List[str]:
+        pass
+
     def make_where_clause(self, query_graph: QueryGraph):
         topic_node = next(
             n
             for n, topic_entity in query_graph.nodes(data="topic_entity")
             if topic_entity
         )
-        graph_patterns = [
-            self.make_graph_pattern(query_graph, s, o)
-            for s, o in nx.dfs_edges(query_graph, topic_node)
-        ]
+
+        graph_patterns = []
+        if query_graph.nodes[topic_node].get("template_node"):
+            graph_patterns.extend(self.make_topic_entity_patterns(query_graph, topic_node))
+
+        for s, o in nx.dfs_edges(query_graph, topic_node):
+            graph_patterns.append(self.make_graph_pattern(query_graph, s, o))
+
         return "WHERE {{\n  {group_graph_pattern}\n}}".format(
             group_graph_pattern="\n  ".join(graph_patterns)
         )

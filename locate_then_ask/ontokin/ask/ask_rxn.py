@@ -58,8 +58,8 @@ class OKReactionAsker:
         query_sparql = self.graph2sparql.convert(query_graph)
         template = random.choice(
             [
-                "For {E}, what are its {K}",
-                "What are the {K} of {E}",
+                "For {E}, what is its {K}",
+                "What is the {K} of {E}",
             ]
         )
         verbalization = template.format(
