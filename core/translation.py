@@ -12,9 +12,7 @@ from core.sparql import SparqlQuery
 
 
 class TranslationModel(ABC):
-    def __init__(self, model_family: str, do_correct: bool):
-        self.model_family = model_family
-        self.do_correct = do_correct
+    def __init__(self):
         self.pred_corrector = SparqlPredictionCorrector()
         self.compact2verbose = SparqlCompact2VerboseConverter()
 
