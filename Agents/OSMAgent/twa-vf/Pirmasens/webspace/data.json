@@ -3,7 +3,7 @@
     "groups": [
         {
             "name": "Buildings",
-            "stack": "http://10.25.188.85:3838",
+            "stack": "http://localhost:3838",
             "sources": [
                 {
                     "id": "building",  
@@ -11,7 +11,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/building/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=building%3Abuilding_usage&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
@@ -92,7 +92,7 @@
                     "source": "building",
                     "filter": ["in", "IndustrialFacility", ["get", "ontobuilt"]],
                     "type": "fill-extrusion",
-
+    
                     "minzoom": 8, 
                     "order": 23,
                     "layout": {

@@ -1,11 +1,24 @@
 # OSMAgent
-## 1. Description
+## 1.1 Description
 The OSMAgent is an agent that works with OpenStreetMap (OSM) data to link them to existing building IRI and instantiate the semantic representation of building usage information from OSM data.
 The workflow of the agent can be broadly outlined in the following steps:
 1) Categorize OSM tags according to [OntoBuiltEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) concept. 
 2) Identify and match OSM data with the 3D buildings uploaded as CityGML data and LoD0 footprint. This is performed by assigning building IRI to OSM data through matching the geometry of the OSM data to the 3D buildings' footprint. 
 3) Calculate building usage share for all OSM data with tagged building IRI and non-null usage information.
-4) If land use data is available, for 3D buildings without tagged OSM usage, the agent will tag it with the corresponding land use.  
+4) If land use data is available, for 3D buildings without tagged OSM usage, the agent will tag it with the corresponding land use.
+
+#### 1.2 Results
+After running the OSMAgent, the results can be retrieved through: 
+1) A view of `usage.buildingusage_osm` which stores the same results of `building_iri`, `propertyusage_iri`, `ontobuilt`, `usageshare` and `name`. Storing this cached copy of SQL view allows the flexibility of linking additional OSM meta-data via ontologies whenever required. An OBDA mapping file is applied onto this materialized view to expose the content of the relational database as knowledge graph. [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent) then can perfrom cross-domain query from this information with additional data from the knowledge graph.
+
+- `building_iri` - Refers to the IRI of the building.
+- `propertyusage_iri` - Refers to the IRI of the propertyusage.
+- `ontobuilt` - Refers to the [OntoBuiltEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) usage category of the building.
+- `usageshare` - Refers to the usage proportion of each `ontobuilt` in a building. 
+- `name` - Refers to the name of the building derived from OSM data.
+
+2) A geoserver layer with the workspace name `twa` and layer name `building_usage`, this layer contains all the information to display the buildings with [TWA-VF](https://github.com/cambridge-cares/TheWorldAvatar/tree/1671-dev-update-osmagent-to-new-building-workflow/web/twa-vis-framework) using the [data.json](twa-vf/Pirmasens/webspace/data.json).
+
 
 ## 2. Prerequisites
 ### 2.1. OntoBuiltEnvironment Classification
