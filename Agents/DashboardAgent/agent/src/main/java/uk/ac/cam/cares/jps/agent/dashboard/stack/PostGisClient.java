@@ -100,7 +100,7 @@ public class PostGisClient {
      * }
      *
      * @param timeSeries A time series map containing the item name and measure IRIs required.
-     * @return A map: {assetType: {assets:[asset name list], measure:[[measureDetails],[measureDetails]]}, rooms:{rooms:[room name list], thresholds[thresholdList], measure: [measureDetails}}.
+     * @return A map: {facilities: {facility1: [items list]}, assetType: {assets:[asset name list], measure:[[measureDetails],[measureDetails]]}, rooms:{rooms:[room name list], thresholds[thresholdList], measure: [measureDetails}}.
      */
     protected Map<String, Map<String, List<String[]>>> getMeasureColAndTableName(Map<String, Queue<String[]>> timeSeries) {
         // Initialise a queue to store all results across database
@@ -154,6 +154,8 @@ public class PostGisClient {
     /**
      * Retrieves all the database names from the default 'postgres' database, excluding the defaults.
      * The results will be stored in this client and can be retrieved using getDatabaseNames().
+     *
+     * @param conn A connection object to the required database.
      */
     private void retrieveAllDatabaseNames(Connection conn) {
         try (Statement stmt = conn.createStatement()) {
@@ -289,7 +291,11 @@ public class PostGisClient {
 
     /**
      * Processes the query results into the required nested map structure so that it is easier for the Dashboard client to parse:
-     * { assetType1: {
+     * { facilities:{
+     * facility1: [[RoomName1], [AssetName1], [AssetName2], [AssetName6]],
+     * facility2: [[RoomName2], [AssetName3], [AssetName4], [AssetName5], [AssetName7]],
+     * }
+     * assetType1: {
      * assets: [AssetName1, AssetName2, AssetName3],
      * measure1: [[AssetName1, ColName1, TableName1, Database, unit],[AssetName2, ColName2, TableName1, Database, unit],[AssetName3, ColName3, TableName1, Database, unit]],
      * measure2: [[AssetName1, ColName5, TableName1, Database, unit],[AssetName2, ColName6, TableName1, Database, unit],[AssetName3, ColName7, TableName1, Database, unit]],
@@ -310,7 +316,7 @@ public class PostGisClient {
      * @param postGisResults The postGIS query results that has been stored as a queue containing all row values.
      * @param facilities     A queue containing an array of the facility and their associated rooms or assets.
      * @param thresholds     A queue containing an array of the threshold metadata.
-     * @return The required map structure {assetType: {assets:[asset name list], measure: [[measureDetails],[measureDetails]]}, room : {measure: [[measureDetails],[measureDetails]]}}.
+     * @return The required map structure {facilities: {facility1: [items list]}, assetType: {assets:[asset name list], measure: [[measureDetails],[measureDetails]]}, room : {thresholds[thresholdList], measure: [[measureDetails],[measureDetails]]}}.
      */
     private Map<String, Map<String, List<String[]>>> processQueryResultsAsNestedMap(Queue<String[]> postGisResults, Queue<String[]> facilities, Queue<String[]> thresholds) {
         Map<String, Map<String, List<String[]>>> results = new HashMap<>();
