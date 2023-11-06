@@ -79,10 +79,10 @@ class _HfTranslationModelBase(TranslationModel):
 class HfTranslationModel(_HfTranslationModelBase):
     def __init__(
         self,
-        model_path: str,
+        model_args: ModelArguments,
         max_new_tokens: int = 256,
     ):
-        model, tokenizer = get_hf_model_and_tokenizer(model_path)
+        model, tokenizer = get_hf_model_and_tokenizer(model_args)
         super().__init__(
             model=model,
             tokenizer=tokenizer,

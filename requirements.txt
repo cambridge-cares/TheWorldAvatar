@@ -5,3 +5,4 @@ datasets
 wandb
 tqdm
 sentence-transformers
+levenshtein
