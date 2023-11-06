@@ -20,6 +20,8 @@ public class OntologyURIHelper {
     public static final String epsg = "epsg";
     public static final String bldg = "bldg";
     public static final String grp = "grp";
+    public static final String gml = "gml";
+
     public static final String geoliteral = "geoliteral";
     public static final String geoservice = "geoservice";
     public static Map<String, String> ontologyUriMap = new HashMap<>();
@@ -45,6 +47,7 @@ public class OntologyURIHelper {
         ontologyUriMap.put(epsg, config.getString("uri.opengis.epsg"));
         ontologyUriMap.put(bldg, config.getString("uri.ontology.bldg"));
         ontologyUriMap.put(grp, config.getString("uri.ontology.grp"));
+        ontologyUriMap.put(gml, config.getString("uri.ontology.gml"));
         ontologyUriMap.put(geoliteral, config.getString("uri.ontology.geoliteral"));
         ontologyUriMap.put(geoservice, config.getString("uri.service.geo"));
     }

@@ -24,7 +24,7 @@ public class DataManager {
     }
 
     /**
-     * Checks building linked to ontoCityGML is initialised in KG and is a bot:Building instance
+     * Checks building linked to ontoCityGML is initialised in KG and is a gml:Building instance
      * @param uriString city object id
      * @param route route to pass to access agent
      * @return building
@@ -35,8 +35,8 @@ public class DataManager {
 
         wb.addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
-                .addPrefix("bot", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bot))
-                .addWhere("?building", "rdf:type", "bot:Building");
+                .addPrefix("gml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.gml))
+                .addWhere("?building", "rdf:type", "gml:Building");
 
         ab.addWhere(wb);
 
@@ -48,7 +48,7 @@ public class DataManager {
     }
 
     /**
-     * Initialises building in KG with buildingUri as the bot:Building IRI, and link to ontoCityGMLRepresentation
+     * Initialises building in KG with buildingUri as the gml:Building IRI, and link to ontoCityGMLRepresentation
      * @param buildingUri building IRI from other endpoints if exist
      * @param route route to pass to access agent
      */
@@ -59,8 +59,8 @@ public class DataManager {
                 new WhereBuilder()
                         .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
                         .addPrefix("owl", ontologyUriHelper.getOntologyUri(OntologyURIHelper.owl))
-                        .addPrefix("bot", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bot))
-                        .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "bot:Building")
+                        .addPrefix("gml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.gml))
+                        .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "gml:Building")
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "owl:NamedIndividual");
 
         ub.addInsert(wb);
@@ -116,7 +116,6 @@ public class DataManager {
                         .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
                         .addPrefix("owl", ontologyUriHelper.getOntologyUri(OntologyURIHelper.owl))
                         .addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                        .addPrefix("bot", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bot))
                         .addPrefix("obs", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltstructure));
 
         UpdateBuilder ub = new UpdateBuilder();
