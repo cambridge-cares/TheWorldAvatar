@@ -23,7 +23,9 @@ def process_request(source,path):
         image_source=f"visionagent/resources/{path}" if source == 'image' else None,
         weights_path=f"visionagent/resources/{properties['cv.model.weights']}",
         cfg_path=f"visionagent/resources/{properties['cv.model.config']}",
-        names_path=f"visionagent/resources/{properties['cv.class.names']}"
+        names_path=f"visionagent/resources/{properties['cv.class.names']}",
+        score_threshold=float(properties['cv.threshold.score']),
+        nms_threshold=float(properties['cv.threshold.nms'])
     )
 
     try:

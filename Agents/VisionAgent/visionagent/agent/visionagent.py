@@ -4,10 +4,13 @@ from datetime import datetime
 from visionagent.utils.tools import load_model
 
 class VisionAgent:
-    def __init__(self, video_source=None, image_source=None, weights_path=None, cfg_path=None, names_path=None):
+    def __init__(self, video_source=None, image_source=None, weights_path=None, cfg_path=None, names_path=None,
+                 score_threshold=0.5,nms_threshold=0.4):
         self.video_source = video_source
         self.image_source = image_source
         self.net = load_model(weights_path, cfg_path)
+        self.score_threshold = score_threshold
+        self.nms_threshold = nms_threshold
         with open(names_path, "r") as f:
             self.classes = [line.strip() for line in f.readlines()]
 
@@ -32,14 +35,12 @@ class VisionAgent:
         # "confidences" is a list of confidence scores (probability) associated with each bounding box.
         # "score_threshold": Any bounding box associated with a confidence score less than this threshold is immediately discarded.
         # "nms_threshold" is the threshold value for the overlap of bounding boxes. If the overlap between two bounding boxes is greater than this threshold, the bounding box with the lower confidence score is discarded.
-        score_threshold = 0.5
-        nms_threshold = 0.4
         for output in outputs:
             for detection in output:
                 scores = detection[5:]
                 class_id = np.argmax(scores)
                 confidence = scores[class_id]
-                if confidence > score_threshold:
+                if confidence > self.score_threshold:
                     box = detection[0:4] * np.array([width, height, width, height])
                     (centerX, centerY, w, h) = box.astype("int")
                     x = int(centerX - (w / 2))
@@ -49,7 +50,7 @@ class VisionAgent:
                     class_ids.append(class_id)
 
         # This function performs non-maximum suppression (NMS) on the provided bounding boxes based on their associated confidences.
-        indexes = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold, nms_threshold)
+        indexes = cv2.dnn.NMSBoxes(boxes, confidences, self.score_threshold, self.nms_threshold)
 
         for i in range(len(boxes)):
             if i in indexes:
