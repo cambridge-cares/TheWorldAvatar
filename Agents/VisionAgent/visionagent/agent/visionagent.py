@@ -29,12 +29,17 @@ class VisionAgent:
 
         # The first 5 elements contain the x, y coordinates, width, height, and objectness score.
         # The elements from the 6th onward are the individual class probabilities.
+        # "confidences" is a list of confidence scores (probability) associated with each bounding box.
+        # "score_threshold": Any bounding box associated with a confidence score less than this threshold is immediately discarded.
+        # "nms_threshold" is the threshold value for the overlap of bounding boxes. If the overlap between two bounding boxes is greater than this threshold, the bounding box with the lower confidence score is discarded.
+        score_threshold = 0.5
+        nms_threshold = 0.4
         for output in outputs:
             for detection in output:
                 scores = detection[5:]
                 class_id = np.argmax(scores)
                 confidence = scores[class_id]
-                if confidence > 0.5:
+                if confidence > score_threshold:
                     box = detection[0:4] * np.array([width, height, width, height])
                     (centerX, centerY, w, h) = box.astype("int")
                     x = int(centerX - (w / 2))
@@ -43,7 +48,8 @@ class VisionAgent:
                     confidences.append(float(confidence))
                     class_ids.append(class_id)
 
-        indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+        # This function performs non-maximum suppression (NMS) on the provided bounding boxes based on their associated confidences.
+        indexes = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold, nms_threshold)
 
         for i in range(len(boxes)):
             if i in indexes:
