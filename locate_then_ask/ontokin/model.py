@@ -56,6 +56,11 @@ class OKArrheniusCoefficient:
     temp_exponent: float
     temp_exponent_units: str
 
+@dataclass
+class OKFallOffModelCoefficient:
+    # okin:FallOoffModelCoefficient
+    coeff_values: str
+    coeff_num: int
 
 @dataclass
 class OCAPEReactant:
@@ -73,6 +78,7 @@ class OKGasePhaseReaction:
     iri: str
     equation: str
     arrhenius_coeffs: List[OKArrheniusCoefficient]
+    falloff_coeff: Optional[OKFallOffModelCoefficient]
     # ignore other coeffs for now
     reactants: List[OCAPEReactant]
     products: List[OCAPEProduct]

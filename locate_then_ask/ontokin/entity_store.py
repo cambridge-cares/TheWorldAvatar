@@ -5,6 +5,7 @@ from locate_then_ask.ontokin.model import (
     OCAPEProduct,
     OCAPEReactant,
     OKArrheniusCoefficient,
+    OKFallOffModelCoefficient,
     OKMechanism,
     OKGasePhaseReaction,
     OKSpecies,
@@ -73,6 +74,7 @@ class OKEntityStore:
     def create_rxn(self, entity_iri: str):
         equation = self.retrieve_rxn_eqn(entity_iri)
         arrhenius_coeffs = self.retrieve_rxn_arrhenius_coeffs(entity_iri)
+        falloff_coeff = self.retrieve_rxn_falloff_coeff(entity_iri)
         reactants = self.retrieve_rxn_reactants(entity_iri)
         products = self.retrieve_rxn_products(entity_iri)
         mechanisms = self.retrieve_rxn_mechansim(entity_iri)
@@ -80,6 +82,7 @@ class OKEntityStore:
             iri=entity_iri,
             equation=equation,
             arrhenius_coeffs=arrhenius_coeffs,
+            falloff_coeff=falloff_coeff,
             reactants=reactants,
             products=products,
             mechanisms=mechanisms,
@@ -103,15 +106,15 @@ LIMIT 1"""
 
     def retrieve_species_thermo_models(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT * WHERE {{
-    <{SpeciesIRI}> ontokin:hasThermoModel [
-        ontokin:hasCoefficientValues ?CoefficientValues ;
-        ontokin:hasNumberOfCoefficients ?NumberOfCoefficients ;
-        ontokin:hasMaximumTemperature ?MaximumTemperature ;
-        ontokin:hasMinimumTemperature ?MinimumTemperature ;
-        ontokin:hasPressure ?Pressure
+    <{SpeciesIRI}> okin:hasThermoModel [
+        okin:hasCoefficientValues ?CoefficientValues ;
+        okin:hasNumberOfCoefficients ?NumberOfCoefficients ;
+        okin:hasMaximumTemperature ?MaximumTemperature ;
+        okin:hasMinimumTemperature ?MinimumTemperature ;
+        okin:hasPressure ?Pressure
     ] .
 }}"""
         query = query_template.format(SpeciesIRI=entity_iri)
@@ -134,22 +137,22 @@ SELECT * WHERE {{
 
     def retrieve_species_transport_model(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT * WHERE {{
-    <{SpeciesIRI}> ontokin:hasTransportModel [
-        ontokin:hasDipoleMoment ?DipoleMoment ;
-        ontokin:hasDipoleMomentUnits ?DipoleMomentUnits ;
-        ontokin:hasLennardJonesDiameter ?LennardJonesDiameter ;
-        ontokin:hasLennardJonesDiameterUnits ?LennardJonesDiameterUnits ;
-        ontokin:hasLennardJonesWellDepth ?LennardJonesWellDepth ;
-        ontokin:hasLennardJonesWellDepthUnits ?LennardJonesWellDepthUnits ;
-        ontokin:hasPolarizability ?Polarizability ;
-        ontokin:hasPolarizabilityUnits ?PolarizabilityUnits ;
-        ontokin:hasRotationalRelaxationCollisionNumber ?RotationalRelaxationCollisionNumber ;
-        ontokin:hasRotationalRelaxationCollisionNumberUnits ?RotationalRelaxationCollisionNumberUnits ;
-        ontokin:hasSpeciesGeometry ?SpeciesGeometry ;
-        ontokin:hasSpeciesGeometryTitle ?SpeciesGeometryTitle
+    <{SpeciesIRI}> okin:hasTransportModel [
+        okin:hasDipoleMoment ?DipoleMoment ;
+        okin:hasDipoleMomentUnits ?DipoleMomentUnits ;
+        okin:hasLennardJonesDiameter ?LennardJonesDiameter ;
+        okin:hasLennardJonesDiameterUnits ?LennardJonesDiameterUnits ;
+        okin:hasLennardJonesWellDepth ?LennardJonesWellDepth ;
+        okin:hasLennardJonesWellDepthUnits ?LennardJonesWellDepthUnits ;
+        okin:hasPolarizability ?Polarizability ;
+        okin:hasPolarizabilityUnits ?PolarizabilityUnits ;
+        okin:hasRotationalRelaxationCollisionNumber ?RotationalRelaxationCollisionNumber ;
+        okin:hasRotationalRelaxationCollisionNumberUnits ?RotationalRelaxationCollisionNumberUnits ;
+        okin:hasSpeciesGeometry ?SpeciesGeometry ;
+        okin:hasSpeciesGeometryTitle ?SpeciesGeometryTitle
     ] .
 }}
 LIMIT 1"""
@@ -182,10 +185,10 @@ LIMIT 1"""
 
     def retrieve_species_mechanism(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT * WHERE {{
-    <{SpeciesIRI}> ontokin:belongsToPhase/ontokin:containedIn ?Mechanism .
+    <{SpeciesIRI}> okin:belongsToPhase/okin:containedIn ?Mechanism .
 }}
 LIMIT 1"""
         query = query_template.format(SpeciesIRI=entity_iri)
@@ -195,10 +198,10 @@ LIMIT 1"""
 
     def retrieve_rxn_eqn(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT * WHERE {{
-    <{ReactionIRI}> ontokin:hasEquation ?Equation .
+    <{ReactionIRI}> okin:hasEquation ?Equation .
 }}"""
         query = query_template.format(ReactionIRI=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
@@ -206,16 +209,16 @@ SELECT * WHERE {{
 
     def retrieve_rxn_arrhenius_coeffs(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT * WHERE {{
-    <{ReactionIRI}> ontokin:hasArrheniusCoefficient [
-        ontokin:hasActivationEnergy ?ActivationEnergy ;
-        ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits ;
-        ontokin:hasPreExponentialFactor ?PreExponentialFactor ;
-        ontokin:hasPreExponentialFactorUnits ?PreExponentialFactorUnits ;
-        ontokin:hasTemperatureExponent ?TemperatureExponent ;
-        ontokin:hasTemperatureExponentUnits ?TemperatureExponentUnits
+    <{ReactionIRI}> okin:hasArrheniusCoefficient [
+        okin:hasActivationEnergy ?ActivationEnergy ;
+        okin:hasActivationEnergyUnits ?ActivationEnergyUnits ;
+        okin:hasPreExponentialFactor ?PreExponentialFactor ;
+        okin:hasPreExponentialFactorUnits ?PreExponentialFactorUnits ;
+        okin:hasTemperatureExponent ?TemperatureExponent ;
+        okin:hasTemperatureExponentUnits ?TemperatureExponentUnits
     ] .
 }}"""
         query = query_template.format(ReactionIRI=entity_iri)
@@ -234,6 +237,29 @@ SELECT * WHERE {{
             )
             for binding in value_bindings
         ]
+    
+    def retrieve_rxn_falloff_coeff(self, entity_iri: str):
+        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+
+SELECT * WHERE {{
+    <{ReactionIRI}> okin:hasFallOffModelCoefficient [
+        okin:hasCoefficientValues ?CoefficientValues ;
+        okin:hasNumberOfCoefficients ?NumberOfCoefficients
+    ] .
+}}
+LIMIT 1"""
+        query = query_template.format(ReactionIRI=entity_iri)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
+
+        if len(response_bindings) == 0:
+            return None
+        
+        value_binding = {k: v["value"] for k, v in response_bindings[0].items()}
+        return OKFallOffModelCoefficient(
+            coeff_values=value_binding["CoefficientValues"],
+            coeff_num=value_binding["NumberOfCoefficients"]
+        )
 
     def retrieve_rxn_reactants(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -247,8 +273,8 @@ SELECT DISTINCT * WHERE {{
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
         value_bindings = [{k: v["value"] for k, v in binding.items()} for binding in response_bindings]
         return [
-            OCAPEReactant(iri=binding["Reactant"], label=binding["ReactantLabel"]["value"])
-            for binding in response_bindings
+            OCAPEReactant(iri=binding["Reactant"], label=binding["ReactantLabel"])
+            for binding in value_bindings
         ]
 
     def retrieve_rxn_products(self, entity_iri: str):
@@ -269,10 +295,10 @@ SELECT DISTINCT * WHERE {{
 
     def retrieve_rxn_mechansim(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT * WHERE {{
-    <{ReactionIRI}> ontokin:belongsToPhase/ontokin:containedIn ?Mechanism .
+    <{ReactionIRI}> okin:belongsToPhase/okin:containedIn ?Mechanism .
 }}"""
         query = query_template.format(ReactionIRI=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
@@ -283,11 +309,11 @@ SELECT * WHERE {{
 
     def retrieve_mechanism_species_iris(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT DISTINCT ?Species WHERE {{
-    <{MechanismIRI}> ^ontokin:containedIn/^ontokin:belongsToPhase ?Species .
-    ?Species a ontokin:Species .
+    <{MechanismIRI}> ^okin:containedIn/^okin:belongsToPhase ?Species .
+    ?Species a okin:Species .
 }}"""
         query = query_template.format(MechanismIRI=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
