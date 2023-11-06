@@ -76,13 +76,13 @@ public class RouteSegmentization {
                 "DROP SEQUENCE temp_sequence;\n" +
                 "\n";
                 executeSql(connection, segmentization_create_table);
-                System.out.println("Duplicated route in a new table. (1/6)");
+                System.out.println("Duplicated route in a new table. (1/4)");
 
                 executeSql(connection, segmentization_split);
-                System.out.println("Split ways successfully.(2/6)");
+                System.out.println("Split ways successfully.(2/4)");
 
                 executeSql(connection, segmentization_rearrange_sql);
-                System.out.println("Reindexed the routes.(3/6)");
+                System.out.println("Reindexed the routes.(3/4)");
 
                 System.out.println("Begin on recalculating topology, this may take awhile.");
                 executeSql(connection,("SELECT pgr_createTopology('routing_ways_segment', 0.000001, 'the_geom', 'gid', 'source', 'target', clean := true);"));
@@ -103,7 +103,7 @@ public class RouteSegmentization {
                         "\n" +
                         "DELETE FROM routing_ways_segment_vertices_pgr\n" +
                         "WHERE id IN ( SELECT target_vertice FROM isolated);");
-                System.out.println("Segmentization completed. Routing_ways_segment table created.");
+                System.out.println("Segmentization completed. Routing_ways_segment table created. (4/4)");
                 }
                 catch (Exception e) {
                     e.printStackTrace();

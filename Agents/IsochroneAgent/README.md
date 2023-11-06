@@ -76,12 +76,12 @@ To run the agent, simply run the following cURL command:
 
 #### 15 Minute Smart City (15MSC)
 ```
-curl -X POST localhost:3838/isochroneagent/update?function=15MSC
+curl -X POST "localhost:3838/isochroneagent/update?function=15MSC&timethreshold=15&timeinterval=5"
 ```
 
 #### Toilet Isochrone
 ```
-curl -X POST localhost:3838/isochroneagent/update?function=Toilet
+curl -X POST "localhost:3838/isochroneagent/update?function=Toilet&timethreshold=10&timeinterval=2"
 ```
 
 #### Urban Resilience Planning (UR)
