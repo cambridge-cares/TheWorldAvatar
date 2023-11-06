@@ -94,7 +94,7 @@ class OKMechanismLocator:
             if verbalized_cond is not None:
                 verbalized_conds.append(verbalized_cond)
 
-        verbalization = "the {concept} whose {conds}".format(
+        verbalization = "the {concept} that {conds}".format(
             concept=concept,
             conds=" and ".join(verbalized_conds)
         )
