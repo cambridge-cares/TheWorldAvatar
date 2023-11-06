@@ -1,9 +1,15 @@
+from typing import List
 import networkx as nx
 
 from locate_then_ask.query_graph import QueryGraph
 
 
 class Graph2Sparql:
+    def __init__(self, predicates_to_entities_linked_by_rdfslabel: List[str] = []):
+        self.predicates_to_entities_linked_by_rdfslabel = (
+            predicates_to_entities_linked_by_rdfslabel
+        )
+
     def _resolve_node_to_sparql(self, query_graph: QueryGraph, n: str):
         if query_graph.nodes[n].get("template_node"):
             if query_graph.nodes[n].get("literal"):
@@ -16,10 +22,19 @@ class Graph2Sparql:
             return "?" + n
 
     def make_graph_pattern(self, query_graph: QueryGraph, s: str, o: str):
-        p = query_graph.edges[s, o]["label"]
         s_sparql = self._resolve_node_to_sparql(query_graph, s)
-        o_sparql = self._resolve_node_to_sparql(query_graph, o)
-        return "{s} {p} {o} .".format(s=s_sparql, p=p, o=o_sparql)
+        p = query_graph.edges[s, o]["label"]
+
+        if p in self.predicates_to_entities_linked_by_rdfslabel and query_graph.nodes[
+            o
+        ].get("template_node"):
+            p_sparql = p + "/rdfs:label"
+            o_sparql = '"{label}"'.format(label=query_graph.nodes[o]["label"])
+        else:
+            p_sparql = p
+            o_sparql = self._resolve_node_to_sparql(query_graph, o)
+
+        return "{s} {p} {o} .".format(s=s_sparql, p=p_sparql, o=o_sparql)
 
     def make_where_clause(self, query_graph: QueryGraph):
         topic_node = next(
