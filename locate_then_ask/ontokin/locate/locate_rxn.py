@@ -73,7 +73,7 @@ class OKReactionLocator:
         ]
 
         sampled_mechanism_nodes = get_objs(
-            query_graph, subj="Reaction", predicate="ontokin:belongsToPhase/ontokin:containedIn"
+            query_graph, subj="Reaction", predicate="okin:belongsToPhase/okin:containedIn"
         )
         sampled_mechanism_iris = [
             query_graph.nodes[n]["iri"] for n in sampled_mechanism_nodes
@@ -116,9 +116,9 @@ class OKReactionLocator:
                 iri=sampled.iri,
                 rdf_type="okin:Mechanism",
                 label=sampled.label,
-                template_node=True
+                template_node=True,
             )
-            query_graph.add_edge("Reaction", mechanism_node, label="ontokin:belongsToPhase/ontokin:containedIn")
+            query_graph.add_edge("Reaction", mechanism_node, label="okin:belongsToPhase/okin:containedIn")
             verbalization = "has mechanism [{label}]".format(label=sampled.label)
         else:
             raise ValueError("Unexpected type: " + type(sampled))

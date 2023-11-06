@@ -4,7 +4,7 @@ from typing import List, Optional
 
 @dataclass
 class OKThermoModel:
-    # ontokin:NASA
+    # okin:NASA
     coeff_values: str
     coeff_num: int
     max_temp: float
@@ -14,7 +14,7 @@ class OKThermoModel:
 
 @dataclass
 class OKTransportModel:
-    # ontokin:TransportModel
+    # okin:TransportModel
     dipole_momemnt: float
     dipole_moment_units: str
     LJ_diameter: float
@@ -38,17 +38,17 @@ class OKMechanism:
 
 @dataclass
 class OKSpecies:
-    # ontokin:Species
+    # okin:Species
     iri: str
     label: str
     thermo_models: List[OKThermoModel]
     transport_model: Optional[OKTransportModel]
-    mechanism: OKMechanism # ontokin:belongsToPhase/ontokin:containedIn
+    mechanism: OKMechanism # okin:belongsToPhase/okin:containedIn
 
 
 @dataclass
 class OKArrheniusCoefficient:
-    # ontokin:ArrheniusCoefficient
+    # okin:ArrheniusCoefficient
     activation_energy: float
     activation_energy_units: str
     preexponential_factor: float
@@ -82,4 +82,4 @@ class OKGasePhaseReaction:
     # ignore other coeffs for now
     reactants: List[OCAPEReactant]
     products: List[OCAPEProduct]
-    mechanisms: List[OKMechanism] # ontokin:belongsToPhase/ontokin:containedIn
+    mechanisms: List[OKMechanism] # okin:belongsToPhase/okin:containedIn

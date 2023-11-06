@@ -1,3 +1,5 @@
+import networkx as nx
+
 from constants.functions import (
     AROUND,
     EQUAL,

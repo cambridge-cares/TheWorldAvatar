@@ -6,7 +6,12 @@ from locate_then_ask.query_graph import QueryGraph
 class Graph2Sparql:
     def _resolve_node_to_sparql(self, query_graph: QueryGraph, n: str):
         if query_graph.nodes[n].get("template_node"):
-            return '"{label}"'.format(label=query_graph.nodes[n]["label"])
+            if query_graph.nodes[n].get("literal"):
+                return '"{label}"'.format(label=query_graph.nodes[n]["label"])
+            elif not query_graph.nodes[n].get("prefixed"):
+                return "<{iri}>".format(iri=query_graph.nodes[n]["iri"])
+            else:
+                return query_graph.nodes[n]["iri"]
         else:
             return "?" + n
 

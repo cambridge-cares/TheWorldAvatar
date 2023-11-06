@@ -51,7 +51,7 @@ class OKSpeciesLocator:
             template_node=True,
         )
         query_graph.add_edge(
-            "Species", "Mechanism", label="okin:belongsToPhase/ontokin:containedIn"
+            "Species", "Mechanism", label="okin:belongsToPhase/okin:containedIn"
         )
 
         verbalization + " in the reaction mechanism [{label}]".format(
