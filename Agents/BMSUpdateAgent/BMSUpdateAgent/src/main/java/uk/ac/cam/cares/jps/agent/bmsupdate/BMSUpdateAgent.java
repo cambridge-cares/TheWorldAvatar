@@ -211,6 +211,24 @@ public class BMSUpdateAgent {
     }
 
     /**
+     * Get latest timeseries value for the data IRI and compared it with the trigger value,
+     * if they are equal, run a sparql update to insert a set of triples and delete a set of triples
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @param RDBClient The remote RDB client
+     * @param triggerValue The value to compare with the latest timeseries value
+     * @param insertString The string to insert via sparql update
+     * @param deleteString The string to delete via sparql update
+     * @return 
+     */
+    public JSONObject checkInsertAndDelete(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue, String insertString, String deleteString) {
+        JSONObject result = new JSONObject();
+        result = checkInsert(dataIRI, rsClient, RDBClient, triggerValue, insertString);
+        result.accumulate("message", checkDelete(dataIRI, rsClient, RDBClient, triggerValue, deleteString).getJSONArray("message"));
+        return result;
+    }
+
+    /**
      * Get latest timeseries value for the data IRI and compared it with the trigger value, if they are equal, run a sparql update to insert a set of triples
      *
      * @param dataIRI The data iri
@@ -246,6 +264,46 @@ public class BMSUpdateAgent {
             rsClient.executeUpdate(queryStr.asUpdate().toString());
             LOGGER.info("Inserted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
             result.accumulate("message", "Inserted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
+        }
+        return result;
+    }
+
+    /**
+     * Get latest timeseries value for the data IRI and compared it with the trigger value, if they are equal, run a sparql update to delete a set of triples
+     *
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @param RDBClient The remote RDB client
+     * @param triggerValue The value to compare with the latest timeseries value
+     * @param insertString The string to insert via sparql update
+     * @return 
+     */
+    public JSONObject checkDelete(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue, String insertString) {
+        JSONObject result = new JSONObject();
+        tsClient = new TimeSeriesClient<>(rsClient ,OffsetDateTime.class);
+        try (Connection conn = RDBClient.getConnection()) {
+            timeseries = tsClient.getLatestData(dataIRI, conn);
+        } catch (Exception e) {
+            throw new JPSRuntimeException(FAIL_TO_GET_LATESTDATA + dataIRI);
+        }
+        String latestValue = timeseries.getValuesAsString(dataIRI).get(timeseries.getValuesAsString(dataIRI).size() - 1);
+        OffsetDateTime latestTimeStamp = timeseries.getTimes().get(timeseries.getTimes().size() - 1);
+        Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
+        sdf.setTimeZone(TimeZone.getDefault());
+        Object ts = sdf.format(date);
+        LOGGER.info("The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
+        result.put("message", "The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
+        if (latestValue.equals(triggerValue)) {
+            ParameterizedSparqlString queryStr = new ParameterizedSparqlString();
+            queryStr.append("DELETE DATA ");
+            queryStr.append("{ ");
+            queryStr.append(insertString);
+            queryStr.append(" }");
+            LOGGER.info("The triples to delete is " + queryStr.toString());
+            rsClient.executeUpdate(queryStr.asUpdate().toString());
+            LOGGER.info("Deleted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
+            result.accumulate("message", "Deleted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
         }
         return result;
     }

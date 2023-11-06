@@ -227,7 +227,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             String triggerValue = checkAndUpdateParameters.getString(KEY_TRIGGER_VALUE);
             String insertString = null;
             String deleteString = null;
-            String clientPropertiesFile = System.getenv(requestParams.getString(KEY_UPDATETRIPLES_CLIENT_PROPERTIES));
+            String clientPropertiesFile = System.getenv(checkAndUpdateParameters.getString(KEY_UPDATETRIPLES_CLIENT_PROPERTIES));
             BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
             try {
                 initUpdateTriplesProperties(clientPropertiesFile);
@@ -240,17 +240,23 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
                 rsClient.setPassword(sparqlPassword);
             }
             RDBClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
+            JSONObject subMessage = new JSONObject();
             if (checkAndUpdateParameters.has(KEY_INSERT) && checkAndUpdateParameters.has(KEY_DELETE)) {
                 insertString = checkAndUpdateParameters.getString(KEY_INSERT);
                 deleteString = checkAndUpdateParameters.getString(KEY_DELETE);
-                // pass data IRI, triggerValue, insertString, deleteString, remote store client and remote rdb client to checkInsertDelete method
+                // pass data IRI, remote store client, remote RDB client. triggerValue, insertString, deleteString to checkInsertAndDelete method
+                subMessage = bmsUpdateAgent.checkInsertAndDelete(dataIRI, rsClient, RDBClient, triggerValue, insertString, deleteString);
+                result.put("message" + i, subMessage);
             } else if (checkAndUpdateParameters.has(KEY_INSERT) && !checkAndUpdateParameters.has(KEY_DELETE)) {
                 insertString = checkAndUpdateParameters.getString(KEY_INSERT);
-                result = bmsUpdateAgent.checkInsert(dataIRI, rsClient, RDBClient, triggerValue, insertString);
-                // pass data IRI, triggerValue, insertString and timeseries client to checkInsert method
+                subMessage = bmsUpdateAgent.checkInsert(dataIRI, rsClient, RDBClient, triggerValue, insertString);
+                result.put("message" + i, subMessage);
+                // pass data IRI, remote store client, remote RDB client. triggerValue, insertString to checkInsert method
             } else if (checkAndUpdateParameters.has(KEY_DELETE) && !checkAndUpdateParameters.has(KEY_INSERT)) {
                 deleteString = checkAndUpdateParameters.getString(KEY_DELETE);
-                // pass data IRI, triggerValue, deleteString and timeseries client to checkDelete method
+                // pass data IRI, remote store client, remote RDB client. triggerValue, deleteString to checkDelete method
+                subMessage = bmsUpdateAgent.checkDelete(dataIRI, rsClient, RDBClient, triggerValue, deleteString);
+                result.put("message" + i, subMessage);
             }
         }
         return result;
