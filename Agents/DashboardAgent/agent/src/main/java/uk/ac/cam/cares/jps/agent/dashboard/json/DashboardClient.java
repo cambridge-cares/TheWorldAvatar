@@ -56,10 +56,10 @@ public class DashboardClient {
     public void initDashboard() {
         this.createServiceAccountToken();
         this.createDataSources();
-        // For each spatial zone, a separate dashboard should be generated
-        String[] spatialZoneArray = this.SERVICE_CLIENT.getAllOrganisations();
-        for (String spatialZone : spatialZoneArray) {
-            this.createDashboard(spatialZone);
+        // For each organisation, a separate dashboard should be generated
+        String[] orgArray = this.SERVICE_CLIENT.getAllOrganisations();
+        for (String organisation : orgArray) {
+            this.createDashboard(organisation);
         }
     }
 
@@ -152,17 +152,17 @@ public class DashboardClient {
     }
 
     /**
-     * Create the dashboard required for the specified spatial zone.
+     * Create the dashboard required for the specified organisation and its facilities.
      *
-     * @param spatialZone The name of the spatial zone.
+     * @param organisation The name of the organisation.
      */
-    private void createDashboard(String spatialZone) {
+    private void createDashboard(String organisation) {
         LOGGER.info("Initialising a new dashboard...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + DASHBOARD_CREATION_ROUTE;
         // Generate title
-        String title = "Overview for " + spatialZone;
+        String title = "Overview for " + organisation;
         // Retrieve all time series for the model
-        Map<String, Map<String, List<String[]>>> timeSeries = this.SERVICE_CLIENT.getAllTimeSeries(spatialZone);
+        Map<String, Map<String, List<String[]>>> timeSeries = this.SERVICE_CLIENT.getAllTimeSeries(organisation);
         LOGGER.debug("Generating JSON model syntax...");
         String jsonSyntax;
         try {
