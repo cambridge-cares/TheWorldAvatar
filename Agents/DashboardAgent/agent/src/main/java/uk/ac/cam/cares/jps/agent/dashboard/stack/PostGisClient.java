@@ -77,7 +77,11 @@ public class PostGisClient {
     /**
      * Get the column and table name corresponding with the item type and measure from the PostGIS database.
      * The returned map will have the following structure:
-     * { assetType1: {
+     * { facilities:{
+     * facility1: [[RoomName1], [AssetName1], [AssetName2], [AssetName6]],
+     * facility2: [[RoomName2], [AssetName3], [AssetName4], [AssetName5], [AssetName7]],
+     * },
+     * assetType1: {
      * assets: [AssetName1, AssetName2, AssetName3],
      * measure1: [[AssetName1, ColName1, TableName1, Database, unit],[AssetName2, ColName2, TableName1, Database, unit],[AssetName3, ColName3, TableName1, Database, unit]],
      * measure2: [[AssetName1, ColName5, TableName1, Database, unit],[AssetName2, ColName6, TableName1, Database, unit],[AssetName3, ColName7, TableName1, Database, unit]],
@@ -108,6 +112,9 @@ public class PostGisClient {
             thresholds = timeSeries.get(StringHelper.THRESHOLD_KEY);
             timeSeries.remove(StringHelper.THRESHOLD_KEY);
         }
+        // Retrieve the facility and their associated items and remove it immediately to prevent it from corrupting the workflow
+        Queue<String[]> facilities = timeSeries.get(StringHelper.FACILITY_KEY);
+        timeSeries.remove(StringHelper.FACILITY_KEY);
         // Parse time series here so that it is only executed once rather than every loop
         String[] measureIris = parseTimeSeriesMapForQuery(timeSeries);
         // Connect to all existing database and attempt to retrieve the required metadata
@@ -123,7 +130,7 @@ public class PostGisClient {
                 throw new JPSRuntimeException("Error connecting to database at: " + database + " :" + e);
             }
         }
-        return processQueryResultsAsNestedMap(postGisResults, thresholds);
+        return processQueryResultsAsNestedMap(postGisResults, facilities, thresholds);
     }
 
     /**
@@ -301,10 +308,11 @@ public class PostGisClient {
      * }
      *
      * @param postGisResults The postGIS query results that has been stored as a queue containing all row values.
+     * @param facilities     A queue containing an array of the facility and their associated rooms or assets.
      * @param thresholds     A queue containing an array of the threshold metadata.
      * @return The required map structure {assetType: {assets:[asset name list], measure: [[measureDetails],[measureDetails]]}, room : {measure: [[measureDetails],[measureDetails]]}}.
      */
-    private Map<String, Map<String, List<String[]>>> processQueryResultsAsNestedMap(Queue<String[]> postGisResults, Queue<String[]> thresholds) {
+    private Map<String, Map<String, List<String[]>>> processQueryResultsAsNestedMap(Queue<String[]> postGisResults, Queue<String[]> facilities, Queue<String[]> thresholds) {
         Map<String, Map<String, List<String[]>>> results = new HashMap<>();
         // While there are still results
         while (!postGisResults.isEmpty()) {
@@ -337,8 +345,36 @@ public class PostGisClient {
             // Add the required measure metadata into the list
             measureMap.get(measureKey).add(new String[]{assetOrRoomName, columnName, tableName, database, unit});
         }
+        // Only add the facility mapping if there are items to map
+        if (results.size() > 0) this.addFacilityItemMapping(results, facilities);
         this.addThresholds(results, thresholds);
         return results;
+    }
+
+    /**
+     * Add the mapping between a facility and the asset or room it contains into the input map.
+     *
+     * @param metaMap    A map containing the item and their measure metadata for the dashboard.
+     * @param facilities A queue containing an array of the facility and its associated assets and rooms.
+     */
+    private void addFacilityItemMapping(Map<String, Map<String, List<String[]>>> metaMap, Queue<String[]> facilities) {
+        // Initialise a new map and list to hold information
+        Map<String, List<String[]>> facilityMapping = new HashMap<>();
+        // While there are still mappings to parse
+        while (!facilities.isEmpty()) {
+            List<String[]> currentFacilityItems = new ArrayList<>();
+            // Each array contains a facility and its associated items
+            String[] facility = facilities.poll();
+            // Retrieve the first item, which will always be a name for the facility
+            String facilityName = facility[0];
+            // Stream a new array without the first item, so that it only contains the facility items and not the facility name
+            String[] remainingItems = Arrays.stream(facility, 1, facility.length).toArray(String[]::new);
+            // Append the values into the mapping according to the format
+            currentFacilityItems.add(remainingItems);
+            facilityMapping.put(facilityName, currentFacilityItems);
+        }
+        // Store the mappings
+        metaMap.put(StringHelper.FACILITY_KEY, facilityMapping);
     }
 
     /**

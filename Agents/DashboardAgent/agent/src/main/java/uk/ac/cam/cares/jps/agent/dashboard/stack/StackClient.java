@@ -106,7 +106,10 @@ public class StackClient {
     /**
      * Get all time series associated with the spatial zones managed by an organisation, namely their assets and rooms' measures in the knowledge graph.
      * The measure groups are tied to group of asset types. The final format is as follows:
-     * { assetType1: {
+     * { facilities:{
+     * facility1: [[RoomName1], [AssetName1], [AssetName2], [AssetName6]],
+     * facility2: [[RoomName2], [AssetName3], [AssetName4], [AssetName5], [AssetName7]],
+     * }, assetType1: {
      * assets: [AssetName1, AssetName2, AssetName3],
      * measure1: [[AssetName1, ColName1, TableName1, Database, unit],[AssetName2, ColName2, TableName1, Database, unit],[AssetName3, ColName3, TableName1, Database, unit]],
      * measure2: [[AssetName1, ColName5, TableName1, Database, unit],[AssetName2, ColName6, TableName1, Database, unit],[AssetName3, ColName7, TableName1, Database, unit]],

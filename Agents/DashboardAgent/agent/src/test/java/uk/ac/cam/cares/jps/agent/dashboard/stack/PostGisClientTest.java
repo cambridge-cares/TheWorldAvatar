@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.sql.Connection;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -90,7 +91,11 @@ class PostGisClientTest {
         // Execute method
         Map<String, Map<String, List<String[]>>> results = testClient.getMeasureColAndTableName(measures);
         // Verify outputs
-        assertEquals(1, results.size());
+        assertEquals(2, results.size());
+        // Get list of associated facility item map
+        List<String[]> facilityList = results.get(StringHelper.FACILITY_KEY).get(SparqlClientTest.SAMPLE_LAB_NAME);
+        assertEquals(1, facilityList.size()); // Only one facility and its mappings should be found
+        assertEquals(SparqlClientTest.SAMPLE_LAB_SMART_SENSOR_NAME, facilityList.get(0)[0]); // The only item name
         // Get nested map
         Map<String, List<String[]>> itemMetadata = results.get(SparqlClientTest.SAMPLE_LAB_SMART_SENSOR_TYPE);
         // For the asset key, only one value should be available for the name
@@ -116,7 +121,11 @@ class PostGisClientTest {
         // Execute method
         Map<String, Map<String, List<String[]>>> results = testClient.getMeasureColAndTableName(measures);
         // Verify outputs
-        assertEquals(1, results.size());
+        assertEquals(2, results.size());
+        // Get list of associated facility item map
+        List<String[]> facilityList = results.get(StringHelper.FACILITY_KEY).get(SparqlClientTest.SAMPLE_OFFICE_NAME);
+        assertEquals(1, facilityList.size()); // Only one facility and its mappings should be found
+        assertEquals(SparqlClientTest.SAMPLE_OFFICE_STAFF_ROOM_NAME, facilityList.get(0)[0]); // The only room name
         // Get nested map
         Map<String, List<String[]>> itemMetadata = results.get(StringHelper.ROOM_KEY);
         // For the room key, only one value should be available for the name
@@ -142,7 +151,11 @@ class PostGisClientTest {
         // Execute method
         Map<String, Map<String, List<String[]>>> results = testClient.getMeasureColAndTableName(measures);
         // Verify outputs
-        assertEquals(1, results.size());
+        assertEquals(2, results.size());
+        // Get list of associated facility item map
+        List<String[]> facilityList = results.get(StringHelper.FACILITY_KEY).get(SparqlClientTest.SAMPLE_OFFICE_NAME);
+        assertEquals(1, facilityList.size()); // Only one facility and its mappings should be found
+        assertEquals(SparqlClientTest.SAMPLE_OFFICE_STAFF_ROOM_NAME, facilityList.get(0)[0]); // The only room name
         // Get nested map
         Map<String, List<String[]>> itemMetadata = results.get(StringHelper.ROOM_KEY);
         // For the asset key, only one value should be available for the name
@@ -205,7 +218,16 @@ class PostGisClientTest {
         Queue<String[]> measureMetadata = new ArrayDeque<>();
         measureMetadata.offer(new String[]{SparqlClientTest.TEMPERATURE, SAMPLE_TEMPERATURE_INSTANCE, SAMPLE_TEMPERATURE_TIME_SERIES_INSTANCE, SparqlClientTest.TEMPERATURE_UNIT, SparqlClientTest.SAMPLE_LAB_SMART_SENSOR_TYPE});
         measures.put(SparqlClientTest.SAMPLE_LAB_SMART_SENSOR_NAME, measureMetadata);
+        Queue<String[]> facilities = new ArrayDeque<>();
+        facilities.offer(genFacilityItemsList(SparqlClientTest.SAMPLE_LAB_NAME, SparqlClientTest.SAMPLE_LAB_SMART_SENSOR_NAME));
+        measures.put(StringHelper.FACILITY_KEY, facilities);
         return measures;
+    }
+
+    private static String[] genFacilityItemsList(String facilityName, String... facilityItems) {
+        String[] facility = Stream.concat(Stream.of(facilityName), Arrays.stream(facilityItems))
+                .toArray(String[]::new);
+        return facility;
     }
 
     private static Map<String, Queue<String[]>> genSampleRoomMeasures(boolean requireThresholds) {
@@ -213,6 +235,9 @@ class PostGisClientTest {
         Queue<String[]> measureMetadata = new ArrayDeque<>();
         measureMetadata.offer(new String[]{SparqlClientTest.RELATIVE_HUMIDITY, SAMPLE_ROOM_HUMIDITY_INSTANCE, SAMPLE_ROOM_HUMIDITY_TIME_SERIES_INSTANCE, null, StringHelper.ROOM_KEY});
         measures.put(SparqlClientTest.SAMPLE_OFFICE_STAFF_ROOM_NAME, measureMetadata);
+        Queue<String[]> facilities = new ArrayDeque<>();
+        facilities.offer(genFacilityItemsList(SparqlClientTest.SAMPLE_OFFICE_NAME, SparqlClientTest.SAMPLE_OFFICE_STAFF_ROOM_NAME));
+        measures.put(StringHelper.FACILITY_KEY, facilities);
         if (requireThresholds) {
             measureMetadata = new ArrayDeque<>();
             measureMetadata.offer(new String[]{SparqlClientTest.RELATIVE_HUMIDITY, String.valueOf(SparqlClientTest.RELATIVE_HUMIDITY_MIN_THRESHOLD), String.valueOf(SparqlClientTest.RELATIVE_HUMIDITY_MAX_THRESHOLD)});

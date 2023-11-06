@@ -19,7 +19,7 @@ class SparqlClientTest {
     private static final String SAMPLE_ORGANISATION_NAME = "Org 1";
     private static final String SAMPLE_BUILDING_INSTANCE = TestUtils.genInstance("Building");
     private static final String SAMPLE_OFFICE_INSTANCE = TestUtils.genInstance("Office");
-    private static final String SAMPLE_OFFICE_NAME = "Admin Office";
+    public static final String SAMPLE_OFFICE_NAME = "Admin Office";
     private static final String SAMPLE_OFFICE_DIRECTOR_ROOM_INSTANCE = TestUtils.genInstance("Room");
     private static final String SAMPLE_OFFICE_DIRECTOR_ROOM_NAME = "Director's room";
     private static final String SAMPLE_OFFICE_STAFF_ROOM_INSTANCE = TestUtils.genInstance("Room");
@@ -34,7 +34,7 @@ class SparqlClientTest {
     public static final double RELATIVE_HUMIDITY_MIN_THRESHOLD = 50.1;
     public static final double RELATIVE_HUMIDITY_MAX_THRESHOLD = 75.7;
     private static final String SAMPLE_LAB_INSTANCE = TestUtils.genInstance("Laboratory");
-    private static final String SAMPLE_LAB_NAME = "Generic Laboratory";
+    public static final String SAMPLE_LAB_NAME = "Generic Laboratory";
     private static final String SAMPLE_LAB_BIO_ROOM_INSTANCE = TestUtils.genInstance("Room");
     private static final String SAMPLE_LAB_PILOT_ROOM_INSTANCE = TestUtils.genInstance("Room");
     private static final String SAMPLE_LAB_FRIDGE_NAME = "Chemical Cooling Unit";
