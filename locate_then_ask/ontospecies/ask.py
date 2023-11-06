@@ -13,13 +13,13 @@ from constants.ontospecies_keys import (
     USE_KEY,
 )
 from locate_then_ask.data_model import AskDatum
-from locate_then_ask.graph2sparql import GraphToSparqlConverter
+from locate_then_ask.ontospecies.graph2sparql import OSGraph2Sparql
 from locate_then_ask.query_graph import QueryGraph, get_preds
 
 
 class OSAsker:
     def __init__(self):
-        self.graph2sparql = GraphToSparqlConverter()
+        self.graph2sparql = OSGraph2Sparql()
 
     def ask_name(self, query_graph: QueryGraph, verbalization: str):
         query_graph = copy.deepcopy(query_graph)
