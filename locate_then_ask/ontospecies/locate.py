@@ -57,7 +57,7 @@ class OSSpeciesLocator:
         )
         return query_graph, "chemical species"
 
-    def locate_concept_and_literal(self, query_graph: QueryGraph):
+    def _locate_concept_and_literal(self, query_graph: QueryGraph):
         query_graph = copy.deepcopy(query_graph)
         topic_node = next(
             n
@@ -171,16 +171,17 @@ class OSSpeciesLocator:
 
         return query_graph, verbalization
 
-    def locate_intersection(self, entity_iri: str, cond_num: int = 2):
+    def locate_concept_and_literal_multi(self, entity_iri: str, cond_num: int = 2):
         verbalized_conds = []
-        query_graph, _ = self.locate_concept_name(entity_iri)
+        query_graph, concept = self.locate_concept_name(entity_iri)
 
         for _ in range(cond_num):
-            query_graph, verbalized_cond = self.locate_concept_and_literal(query_graph)
+            query_graph, verbalized_cond = self._locate_concept_and_literal(query_graph)
             if verbalized_cond is not None:
                 verbalized_conds.append(verbalized_cond)
 
-        verbalization = "the chemical species whose {conds}".format(
+        verbalization = "the {concept} that {conds}".format(
+            concept=concept,
             conds=" and ".join(verbalized_conds)
         )
 

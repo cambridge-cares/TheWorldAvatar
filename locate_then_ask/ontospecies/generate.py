@@ -89,7 +89,7 @@ LIMIT {num}'''
                 population=[1, 2, 3, 4, 5, 6], counts=[4, 5, 6, 3, 2, 1], k=1
             )[0]
 
-            query_graph, verbalization = self.locator.locate_intersection(
+            query_graph, verbalization = self.locator.locate_concept_and_literal_multi(
                 entity_iri, cond_num=cond_num
             )
             species_id_new = species_id + 1
