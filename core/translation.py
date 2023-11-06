@@ -65,6 +65,7 @@ class _HfTranslationModelBase(TranslationModel):
         self.model = model
         self.tokenizer = tokenizer
         self.max_new_tokens = max_new_tokens
+        super().__init__()
 
     def _translate(self, question: str):
         encoded_input = self.tokenizer(question, return_tensors="pt").to(
