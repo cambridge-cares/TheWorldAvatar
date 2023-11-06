@@ -1,19 +1,21 @@
 {
-    "name": "pirmasens",
+    "name": "osmagent",
     "database": "postgres",
-    "datasetDirectory": "pirmasens",
+    "workspace": "twa",
+    "datasetDirectory": "osmagent_pirmasens",
+    "namespace": "kb",
     "dataSubsets": [
 		  {
             "type": "vector",
             "skip": false,
-            "schema": "osm",
+            "schema": "public",
             "subdirectory": "polygon",
             "table": "polygons"
         },
         {
             "type": "vector",
             "skip": false,
-            "schema": "osm",
+            "schema": "public",
             "subdirectory": "point",
             "table": "points"
         },
