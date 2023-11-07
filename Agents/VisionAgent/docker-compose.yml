@@ -2,7 +2,7 @@ version: '3'
 
 services:
   vision-agent:
-    build: .
+    image: ghcr.io/cambridge-cares/vision-agent:1.0.0-snapshot
     ports:
       - "9048:9048"
     environment:
