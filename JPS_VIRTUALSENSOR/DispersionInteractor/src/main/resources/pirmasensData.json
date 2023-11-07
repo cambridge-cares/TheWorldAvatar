@@ -16,85 +16,6 @@
             ],
             "layers": [
                 {
-                    "id": "All building",
-                    "name": "All buildings",
-                    "source": "building",
-                    "type": "fill-extrusion",
-                    "minzoom": 8,
-                    "order": 23,
-                    "layout": {
-                        "visibility": "none"
-                    },
-                    "paint": {
-                        "fill-extrusion-color": [
-                            "match",
-                            [
-                                "get",
-                                "ontobuilt"
-                            ],
-                            "ReligiousFacility",
-                            "#FFD700",
-                            "IndustrialFacility",
-                            "#FFA500",
-                            "PoliceStation",
-                            "#1E90FF",
-                            "CulturalFacility",
-                            "#FF69B4",
-                            "DrinkingEstablishment",
-                            "#008000",
-                            "FireStation",
-                            "#FF4500",
-                            "SingleResidential",
-                            "#6495ED",
-                            "Hotel",
-                            "#FF1493",
-                            "Non-domestic",
-                            "#F1EB9C",
-                            "UniversityFacility",
-                            "#9932CC",
-                            "MultiResidential",
-                            "#4169E1",
-                            "Domestic",
-                            "#4682B4",
-                            "EatingEstablishment",
-                            "#FFD700",
-                            "TransportFacility",
-                            "#2CA02C",
-                            "School",
-                            "#008000",
-                            "RetailFacility",
-                            "#DC143C",
-                            "SportsFacility",
-                            "#FF69B4",
-                            "Bank",
-                            "#FF8C00",
-                            "Office",
-                            "#FF8C00",
-                            "Clinic",
-                            "#FF4500",
-                            "Hospital",
-                            "#FF4500",
-                            "Pharmacy",
-                            "#FF4500",
-                            "#A9A9A9"
-                        ],
-                        "fill-extrusion-opacity": 0.9,
-                        "fill-extrusion-base": 0,
-                        "fill-extrusion-height": [
-                            "case",
-                            [
-                                "has",
-                                "measured_height"
-                            ],
-                            [
-                                "get",
-                                "measured_height"
-                            ],
-                            8
-                        ]
-                    }
-                },
-                {
                     "id": "Religious Facility",
                     "name": "Religious Facility",
                     "source": "building",
@@ -110,7 +31,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FFD700",
@@ -146,7 +67,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FFA500",
@@ -182,7 +103,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#1E90FF",
@@ -218,7 +139,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF69B4",
@@ -254,7 +175,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#008000",
@@ -290,7 +211,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF4500",
@@ -326,7 +247,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#6495ED",
@@ -362,7 +283,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF1493",
@@ -398,7 +319,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#F1EB9C",
@@ -434,7 +355,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#9932CC",
@@ -470,7 +391,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#4169E1",
@@ -506,7 +427,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#4682B4",
@@ -542,7 +463,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FFD700",
@@ -578,7 +499,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#2CA02C",
@@ -614,7 +535,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#4682B4",
@@ -650,7 +571,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#DC143C",
@@ -686,7 +607,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF69B4",
@@ -722,7 +643,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF8C00",
@@ -758,7 +679,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF4500",
@@ -794,7 +715,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF4500",
@@ -830,7 +751,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF4500",
@@ -866,7 +787,7 @@
                     "minzoom": 8,
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF8C00",
@@ -2209,6 +2130,117 @@
                     "layout": {
                         "visibility": "none"
                     }
+                }
+            ]
+        },
+        {
+            "name": "Public Infrastructure",
+            "expanded": false,
+            "groups": [
+                {
+                    "name": "Toilets Location",
+                    "stack": "http://localhost:3838",
+                    "sources": [
+                        {
+                            "id": "toilet",
+                            "type": "geojson",
+                            "cluster": false,
+                            "clusterMaxZoom": 14,
+                            "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atoilet&outputFormat=application%2Fjson"
+                        }
+                    ],
+                    "layers": [
+                        {
+                            "id": "toilet_layer",
+                            "name": "Toilet",
+                            "source": "toilet",
+                            "type": "symbol",
+                            "order": 50,
+                            "layout": {
+                                "visibility": "visible",
+                                "icon-image": "toilet_image",
+                                "icon-size": [
+                                    "interpolate",
+                                    [
+                                        "linear"
+                                    ],
+                                    [
+                                        "zoom"
+                                    ],
+                                    12,
+                                    0.1
+                                ],
+                                "icon-anchor": "bottom"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Isochrone - Infrastructure",
+                    "stack": "http://localhost:3838",
+                    "sources": [
+                        {
+                            "id": "walk",
+                            "type": "geojson",
+                            "cluster": false,
+                            "clusterMaxZoom": 14,
+                            "clusterRadius": 100,
+                            "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aisochrone_aggregated&outputFormat=application%2Fjson&CQL_FILTER=transportmode=%27Walk%27"
+                        }
+                    ],
+                    "layers": [
+                        {
+                            "id": "walk_layer",
+                            "name": "Toilet (walk)",
+                            "filter": [
+                                "in",
+                                "Toilet",
+                                [
+                                    "get",
+                                    "poi_type"
+                                ]
+                            ],
+                            "source": "walk",
+                            "type": "fill",
+                            "order": 5,
+                            "layout": {
+                                "visibility": "none"
+                            },
+                            "paint": {
+                                "fill-color": [
+                                    "case",
+                                    [
+                                        "==",
+                                        [
+                                            "get",
+                                            "minute"
+                                        ],
+                                        null
+                                    ],
+                                    "#000000",
+                                    [
+                                        "interpolate",
+                                        [
+                                            "linear"
+                                        ],
+                                        [
+                                            "number",
+                                            [
+                                                "get",
+                                                "minute"
+                                            ]
+                                        ],
+                                        0,
+                                        "#0074E4",
+                                        10,
+                                        "#00C86F"
+                                    ]
+                                ],
+                                "fill-outline-color": "#FF0000",
+                                "fill-opacity": 0.20
+                            }
+                        }
+                    ]
                 }
             ]
         },
