@@ -1,15 +1,17 @@
 package uk.ac.cam.cares.jps.agent.bmsupdate;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.apache.http.entity.ContentType;
 import org.apache.http.client.HttpResponseException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,6 +60,33 @@ public class BMSWacnetAPIConnector {
                     case 200:
                         responseBody.put("message", "Successfully written " + value + " to the object with an ID: " + objectId);
                         return responseBody;
+                    default:
+                        throw new HttpResponseException(status, "Could not retrieve access token.");
+                }
+            }
+        }
+    }
+
+    public Double readPresentValue(String deviceId, String objectId) throws IOException {
+        JSONObject responseBody = new JSONObject();
+        Double value;
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            //http://localhost:47800/api/v1/bacnet/devices/<deviceId>/objects/<objectId>
+            HttpGet getRequest = new HttpGet(api_url + "/devices/" + deviceId + "/objects/" +objectId);
+                    		
+            try (CloseableHttpResponse response = httpclient.execute(getRequest)) {
+                int status = response.getStatusLine().getStatusCode();
+                switch (status) {
+                    case 400:
+                    LOGGER.error(status + "(error in reading present value!)");
+                    throw new HttpResponseException(status, "error in reading present value!");
+                    case 401:
+                    LOGGER.error(status + "(unathorized! Bacnet point is not Readable!)");
+                    throw new HttpResponseException(status, "unathorized! Bacnet point is not Readable!");
+                    case 200:
+                        responseBody = new JSONObject(EntityUtils.toString(response.getEntity()));
+                        value = responseBody.getDouble("present-value");
+                        return value;
                     default:
                         throw new HttpResponseException(status, "Could not retrieve access token.");
                 }

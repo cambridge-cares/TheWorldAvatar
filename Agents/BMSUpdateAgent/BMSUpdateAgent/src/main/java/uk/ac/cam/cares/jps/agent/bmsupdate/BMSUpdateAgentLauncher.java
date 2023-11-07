@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  *
  * @author sandradeng20
  */
-@WebServlet(urlPatterns = {"/set", "/wacnet/write", "/updateTriples"})
+@WebServlet(urlPatterns = {"/set", "/wacnet/write", "/updateTriples", "/updatePresentValue"})
 public class BMSUpdateAgentLauncher extends JPSAgent {
 
     private static final Logger LOGGER = LogManager.getLogger(BMSUpdateAgentLauncher.class);
@@ -38,9 +38,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
     private final String KEY_DELETE = "DELETE";
     private final String KEY_TRIGGER_VALUE = "triggerValue";
 
-    private final String KEY_SET_CLIENT_PROPERTIES = "setClientProperties";
-    private final String KEY_WRITE_CLIENT_PROPERTIES = "writeClientProperties";
-    private final String KEY_UPDATETRIPLES_CLIENT_PROPERTIES = "updateTriplesClientProperties";
+    private final String KEY_CLIENT_PROPERTIES = "clientProperties";
 
     private final String ENV_WACNET_API_PROPERTIES = "WACNET_API_PROPERTIES";
 
@@ -85,26 +83,32 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
     public JSONObject executeRoute(String originalUrl, JSONObject requestParams) {
         JSONObject result = new JSONObject();
         String url = originalUrl.substring(originalUrl.lastIndexOf("/"), originalUrl.length());
-        if (url.contains("?")) url = url.split(Pattern.quote("?"))[0];
+        LOGGER.info("The url is " + url);
         switch (url) {
             case "/set": {
                 result = executeSet(requestParams);
+                break;
             }
             case "/write": {
                 //wacnet API route
                 if (originalUrl.contains("/wacnet/write")) {
                     result = executeWriteWacnet(requestParams);
-                } 
+                }
+                break;
             }
             case "/updateTriples": {
                 //updateTriples route
                 if (originalUrl.contains("/updateTriples")) {
                     result = executeUpdateTriples(requestParams);
-                } 
+                }
+                break;
+            }
+            case "/updatePresentValue": {
+                result = executeUpdatePresentValue(requestParams);
+                break;
             }
         }
         return result;
-
     }
 
     /**
@@ -117,7 +121,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
         JSONObject result = new JSONObject();
         String dataIRI = requestParams.getString(KEY_DATAIRI);
         double temperature = requestParams.getDouble(KEY_TEMPERATURE);
-        String clientPropertiesFile = System.getenv(requestParams.getString(KEY_SET_CLIENT_PROPERTIES));
+        String clientPropertiesFile = System.getenv(requestParams.getString(KEY_CLIENT_PROPERTIES));
         LOGGER.info("receiving parameters: dataIRI: " + dataIRI + "\ntemperature: " + temperature + "\nclientPropertiesFile" + clientPropertiesFile);
         try {
             initSetProperties(clientPropertiesFile);
@@ -169,10 +173,10 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
         if (requestParams.has(KEY_DATAIRI) && requestParams.has(KEY_VALUE)) {
             String dataIRI = requestParams.getString(KEY_DATAIRI);
             int value = requestParams.getInt(KEY_VALUE);
-            String clientPropertiesFile = System.getenv(requestParams.getString(KEY_WRITE_CLIENT_PROPERTIES));
+            String clientPropertiesFile = System.getenv(requestParams.getString(KEY_CLIENT_PROPERTIES));
             BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
             try {
-                initWriteProperties(clientPropertiesFile);
+                initSparqlProperties(clientPropertiesFile);
             } catch (IOException e) {
                 throw new JPSRuntimeException("Unable to read the client properties file.", e);
             }
@@ -227,7 +231,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             String triggerValue = checkAndUpdateParameters.getString(KEY_TRIGGER_VALUE);
             String insertString = null;
             String deleteString = null;
-            String clientPropertiesFile = System.getenv(checkAndUpdateParameters.getString(KEY_UPDATETRIPLES_CLIENT_PROPERTIES));
+            String clientPropertiesFile = System.getenv(checkAndUpdateParameters.getString(KEY_CLIENT_PROPERTIES));
             BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
             try {
                 initUpdateTriplesProperties(clientPropertiesFile);
@@ -261,6 +265,46 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
         }
         return result;
     }
+
+    /**
+     * execute update present value route
+     * @param requestParams Request parameters parsed from the body of POST request
+     * @return results of executed route
+     */
+    public JSONObject executeUpdatePresentValue(JSONObject requestParams) {
+        JSONObject result = new JSONObject();
+        JSONObject subMessage = new JSONObject();
+        for ( int i = 0; i < requestParams.getJSONArray(KEY_DATAIRI).length(); i++) {
+                String dataIRI = requestParams.getJSONArray(KEY_DATAIRI).getString(i);
+                String clientPropertiesFile = System.getenv(requestParams.getString(KEY_CLIENT_PROPERTIES));
+                BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
+                try {
+                    initSparqlProperties(clientPropertiesFile);
+                } catch (IOException e) {
+                    throw new JPSRuntimeException("Unable to read the client properties file.", e);
+                }
+                rsClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint);
+                if (sparqlUsername != null && sparqlPassword != null) {
+                    rsClient.setUser(sparqlUsername);
+                    rsClient.setPassword(sparqlPassword);
+                }
+                //query for Bacnet Device ID linked to data IRI
+                String deviceId = bmsUpdateAgent.getDeviceId(dataIRI, rsClient);
+                //query for Bacnet Object ID linked to data IRI
+                String objectId = bmsUpdateAgent.getObjectId(dataIRI, rsClient);
+                //send request via API
+                try {
+                    BMSWacnetAPIConnector wacnetAPIConnector = new BMSWacnetAPIConnector(System.getenv(ENV_WACNET_API_PROPERTIES));
+                    Double presentValue;
+                    presentValue = wacnetAPIConnector.readPresentValue(deviceId, objectId);
+                    subMessage = bmsUpdateAgent.setNumericalValue(dataIRI, presentValue, rsClient);
+                    result.put("message" + i, subMessage);
+                } catch (IOException e) {
+                    throw new JPSRuntimeException("Unable to write present value to Bacnet Object: " + objectId, e);
+                }
+            }
+        return result;
+        }
 
     /**
      * Init variables with the client property file.
@@ -323,7 +367,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
      * @param filepath Path of the client property file.
      * @throws IOException Throw exception when fail to read the property file.
      */
-    private void initWriteProperties(String filepath) throws IOException {
+    private void initSparqlProperties(String filepath) throws IOException {
         File file = new File(filepath);
         if (!file.exists()) {
             throw new JPSRuntimeException("No properties file found at specified filepath: " + filepath);

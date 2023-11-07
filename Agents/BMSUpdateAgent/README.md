@@ -77,7 +77,7 @@ curl -X POST 'http://localhost:3838/bms-update-agent/set' \
 --data '{
     "dataIRI":"https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature",
     "temperature":<TEMPERATURE>,
-    "setClientProperties":"SET_CLIENT_PROPERTIES"
+    "clientProperties":"SET_CLIENT_PROPERTIES"
 }'
 ```
 If the component is in the ON state.
@@ -141,7 +141,7 @@ curl -X POST 'http://localhost:3838/bms-update-agent/wacnet/write' \
 --data '{
     "dataIRI":"<data IRI>",
     "value":"<value>",
-    "writeClientProperties":"WRITE_CLIENT_PROPERTIES"
+    "clientProperties":"WRITE_CLIENT_PROPERTIES"
 }'
 ```
 A successful run will return the following:
@@ -177,7 +177,7 @@ curl -X POST 'http://localhost:3838/bms-update-agent/updateTriples' \
 --header 'Content-Type: application/json' \
 --data '{
   "checks": [{
-    "updateTriplesClientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
+    "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
     "dataIRI":"<data IRI>",
     "triggerValue":"<value>",
     "DELETE":"<https://www.theworldavatar.com/kg/ontobms/VAV_E7_01> <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> <https://www.theworldavatar.com/kg/ontobms/Setpoint_01> ."
@@ -190,7 +190,7 @@ curl -X POST 'http://localhost:3838/bms-update-agent/updateTriples' \
 --header 'Content-Type: application/json' \
 --data '{
   "checks": [{
-    "updateTriplesClientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
+    "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
     "dataIRI":"<data IRI>",
     "triggerValue":"<value>",
     "INSERT":"<https://www.theworldavatar.com/kg/ontobms/VAV_E7_01> <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> <https://www.theworldavatar.com/kg/ontobms/Setpoint_01> . <https://www.theworldavatar.com/kg/ontobms/VAV_E7_02> <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> <https://www.theworldavatar.com/kg/ontobms/Setpoint_02> . "
@@ -203,7 +203,7 @@ curl -X POST 'http://localhost:3838/bms-update-agent/updateTriples' \
 --header 'Content-Type: application/json' \
 --data '{
   "checks": [{
-    "updateTriplesClientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
+    "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
     "dataIRI":"<data IRI>",
     "triggerValue":"<value>",
     "INSERT":"<https://www.theworldavatar.com/kg/ontobms/VAV_E7_01> <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> <https://www.theworldavatar.com/kg/ontobms/Setpoint_01> . <https://www.theworldavatar.com/kg/ontobms/VAV_E7_02> <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> <https://www.theworldavatar.com/kg/ontobms/Setpoint_02> . ",
@@ -217,14 +217,14 @@ curl -X POST 'http://localhost:3838/bms-update-agent/updateTriples' \
 --header 'Content-Type: application/json' \
 --data '{ 
   "checks": [{
-    "updateTriplesClientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
+    "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
     "dataIRI":"<data IRI>",
     "triggerValue":"<value>",
     "INSERT":"<https://www.theworldavatar.com/kg/ontobms/VAV_E7_01> <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> <https://www.theworldavatar.com/kg/ontobms/Setpoint_01> . <https://www.theworldavatar.com/kg/ontobms/VAV_E7_02> <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> <https://www.theworldavatar.com/kg/ontobms/Setpoint_>02 . ",
     "DELETE":"<https://www.theworldavatar.com/kg/ontobms/VAV_E7_03> <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> \"10\" ."
     },
     {
-    "updateTriplesClientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
+    "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
     "dataIRI":"<data IRI>",
     "triggerValue":"<value>",
     "DELETE":"<https://www.theworldavatar.com/kg/ontobms/VAV_E7_04> <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> <https://www.theworldavatar.com/kg/ontobms/Setpoint_04> .",

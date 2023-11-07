@@ -48,6 +48,7 @@ public class BMSUpdateAgent {
     final String FAIL_TO_GET_BACNETDEVICEID = "Fail to get Bacnet Device ID!";
     final String FAIL_TO_GET_BACNETOBJECTID = "Fail to get Bacnet Object ID!";
     final String FAIL_TO_GET_LATESTDATA = "Unable to get latest timeseries data for the following IRI: ";
+    final String FAIL_TO_UPDATE_NEW_VALUE = "Unable to update new numerical value for the following IRI: ";
 
     TimeSeries<OffsetDateTime> timeseries;
     TimeSeriesClient<OffsetDateTime> tsClient;
@@ -349,6 +350,38 @@ public class BMSUpdateAgent {
             rsClient.executeUpdate(queryStr.asUpdate().toString());
             LOGGER.info("Deleted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
             result.accumulate("message", "Deleted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
+        }
+        return result;
+    }
+
+    /**
+     * Change the numerical value of a om:Measure or om:Point in the knowledge graph.
+     *
+     * @param dataIRI The iri of the om:Measure or om:Point
+     * @param newValue the new value to insert
+     * @param rsClient The knowledge graph client
+     */
+    public JSONObject setNumericalValue(String dataIRI, double newValue, RemoteStoreClient rsClient) {
+        JSONObject result = new JSONObject();
+        ModifyQuery modifyDataQuery = Queries.MODIFY();
+        Variable numValue = SparqlBuilder.var("numValue");
+        TriplePattern deleteExistingNumValue = GraphPatterns.tp(iri(dataIRI), P_OM.iri("hasNumericalValue"), numValue);
+        modifyDataQuery.prefix(P_OM).delete(deleteExistingNumValue);
+        modifyDataQuery.where(deleteExistingNumValue);
+
+        ValueFactory factory = SimpleValueFactory.getInstance();
+        Literal newValueLiteral = factory.createLiteral(newValue);
+        TriplePattern insertNewNumValue = GraphPatterns.tp(iri(dataIRI), P_OM.iri("hasNumericalValue"), newValueLiteral);
+        modifyDataQuery.insert(insertNewNumValue);
+
+        try {
+            LOGGER.info("sending sparql request to: " + rsClient.getUpdateEndpoint());
+            LOGGER.info("execute modify: " + modifyDataQuery.getQueryString());
+            rsClient.executeUpdate(modifyDataQuery.getQueryString());
+            result.put("message", "Sucessfully executed the following query string: " + modifyDataQuery.getQueryString());
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_UPDATE_NEW_VALUE + dataIRI);
+            throw new JPSRuntimeException(FAIL_TO_UPDATE_NEW_VALUE + dataIRI);
         }
         return result;
     }
