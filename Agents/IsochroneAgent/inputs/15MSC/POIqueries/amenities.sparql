@@ -1,17 +1,46 @@
-PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dem:  <http://www.opengis.net/citygml/relief/2.0/>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX gml:  <http://www.opengis.net/gml/>
+PREFIX grp:  <http://www.opengis.net/citygml/cityobjectgroup/2.0/>
+PREFIX tex:  <http://www.opengis.net/citygml/texturedsurface/2.0/>
+PREFIX sf:   <http://www.opengis.net/ont/sf#>
+PREFIX voc:  <http://vocabulary.example.org/>
+PREFIX wtr:  <http://www.opengis.net/citygml/waterbody/2.0/>
+PREFIX app:  <http://www.opengis.net/citygml/appearance/2.0/>
+PREFIX veg:  <http://www.opengis.net/citygml/vegetation/2.0/>
+PREFIX luse: <http://www.opengis.net/citygml/landuse/2.0/>
+PREFIX dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX gen:  <http://www.opengis.net/citygml/generics/2.0/>
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+PREFIX core: <http://www.opengis.net/citygml/2.0/>
+PREFIX xs:   <http://www.w3.org/2001/XMLSchema>
+PREFIX obda: <https://w3id.org/obda/vocabulary#>
+PREFIX terms: <http://purl.org/dc/terms/>
+PREFIX frn:  <http://www.opengis.net/citygml/cityfurniture/2.0/>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX www:  <http://www.w3.org/2001/>
+PREFIX brid: <http://www.opengis.net/citygml/bridge/2.0/>
+PREFIX tran: <http://www.opengis.net/citygml/transportation/2.0/>
+PREFIX geo:  <http://www.opengis.net/ont/geosparql#>
+PREFIX :     <http://cui.unige.ch/citygml/2.0/>
+PREFIX tun:  <http://www.opengis.net/citygml/tunnel/2.0/>
+PREFIX xml:  <http://www.w3.org/XML/1998/namespace>
+PREFIX data: <http://mydata.example.org/>
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+
+
 
 SELECT DISTINCT ?poi_iri ?poi_type ?geometry
 WHERE {
     {
         # OntopQuery to retrieve
         SERVICE [ONTOP] {
-            SELECT DISTINCT ?building_iri ?type ?geom
+            SELECT DISTINCT *
             WHERE {
-                {
-                    VALUES (?type ?label) {
+              
+              VALUES (?type ?label) {
                         (obe:Hospital "Hospital")
                         (obe:Clinic "Clinic")
                         (obe:Pharmacy "Pharmacy")
@@ -21,15 +50,18 @@ WHERE {
                         (obe:EatingEstablishment "Eating Establishment")
                         (obe:ReligiousFacility "Religious Facility")
                     }
-                    ?building_iri obe:hasPropertyUsage ?usageiri .
-                    ?building_iri obe:hasFootprint ?geom.
-                    ?usageiri rdf:type ?type .
+               ?building bldg:lod0FootPrint ?footprintID ;
+                   bldg:measuredHeight ?height .
+               ?surfaceGeom grp:parent ?footprintID ;
+                   geo:asWKT ?wkt .
+              ?building obe:hasPropertyUsage ?usageiri .
+              ?usageiri rdf:type ?type .
+
                 }
             }
         }
-    }
     # Binding variable names as requested
-    BIND(?building_iri AS ?poi_iri)
+    BIND(?building AS ?poi_iri)
     BIND(?type AS ?poi_type)
-    BIND(?geom AS ?geometry)
+    BIND(REPLACE(STR(?wkt), "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> ", "") AS ?geometry)
 }
