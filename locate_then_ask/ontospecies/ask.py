@@ -60,15 +60,14 @@ class OSAsker:
             keys_label = []
 
             for key in keys:
-                if key in PROPERTY_KEYS:
+                if key in PROPERTY_KEYS + IDENTIFIER_KEYS:
                     obj = key
                     predicate = "os:has{Name}".format(Name=key)
-                elif key in  IDENTIFIER_KEYS:
-                    obj = key + "Value"
-                    predicate = "os:has{Name}/os:value".format(Name=key)
                 elif key in [USE_KEY, CHEMCLASS_KEY]:
                     obj = key + "Label"
                     predicate = "os:has{Name}/rdfs:label".format(Name=key)
+                else:
+                    raise ValueError("Unexpected key: " + key)
 
                 query_graph.add_node(obj, question_node=True)
                 query_graph.add_edge("Species", obj, label=predicate)
@@ -107,11 +106,14 @@ class OSAsker:
             query_graph.add_nodes_from(
                 [
                     (key, dict(question_node=True)),
-                    (abstract_key, dict(template_node=True)),
+                    (
+                        abstract_key,
+                        dict(iri=abstract_key, template_node=True, prefixed=True),
+                    ),
                 ]
             )
             query_graph.add_edge("Species", key, label="?has{key}".format(key=key))
-            query_graph.add_edge(key, abstract_key, label="rdf:type/rdfs:subClassOf")
+            query_graph.add_edge(key, abstract_key, label="a/rdfs:subClassOf")
 
             key_label = random.choice(KEY2LABELS[key])
 

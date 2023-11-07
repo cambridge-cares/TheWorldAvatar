@@ -1,3 +1,4 @@
+import argparse
 import csv
 import json
 import os
@@ -79,7 +80,7 @@ def get_paraphrases(datum: dict):
 
     entity_placeholders = ["methanol", "ethanol", "propanol", "butanol", "pentanol"]
     entity_actuals = []
-    
+
     while True:
         idx_entity_start = verbalization.find("<entity>")
         if idx_entity_start < 0:
@@ -90,68 +91,102 @@ def get_paraphrases(datum: dict):
             raise ValueError("Missing closing entity tag: " + datum)
         idx_entity_end += len("</entity>")
 
-        entity = verbalization[idx_entity_start: idx_entity_end]
-        verbalization = verbalization.replace(entity, entity_placeholders[len(entity_actuals)])
+        entity = verbalization[idx_entity_start:idx_entity_end]
+        verbalization = verbalization.replace(
+            entity, entity_placeholders[len(entity_actuals)]
+        )
         entity_actuals.append(entity)
 
-    response = openai.ChatCompletion.create(
-        # model="gpt-3.5-turbo",
-        model="gpt-4",
-        messages=[
-            {
-                "role": "system",
-                "content": "You will be provided with a machine-generated statement. Rephrase it in {num} different ways as if it were human input to a search engine. Make sure that the paraphrases vary in their query structures, terminological expressions, and sentence lengths. Additionally, keep the square brackets and their enclosing text unchanged.".format(
-                    num=PARAPHRASE_NUM
-                ),
-            },
-            {
-                "role": "user",
-                "content": verbalization,
-            },
-        ],
-        temperature=0.5,
-        frequency_penalty=1,
-    )
+    def helper():
+        response = openai.ChatCompletion.create(
+            model="gpt-4-0613",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You will be provided with a machine-generated statement. Rephrase it in {num} different ways as if it were human input to a search engine. Make sure that the paraphrases vary in their query structures, terminological expressions, and sentence lengths. Additionally, keep the square brackets and their enclosing text unchanged.".format(
+                        num=PARAPHRASE_NUM
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": verbalization,
+                },
+            ],
+            temperature=0.5,
+            frequency_penalty=1,
+        )
 
-    response_content = response["choices"][0]["message"]["content"]
-    paraphrases_placeholder = parse_openai_paraphrase_response_content(response_content)
+        response_content = response["choices"][0]["message"]["content"]
+        return parse_openai_paraphrase_response_content(response_content)
 
-    if len(paraphrases_placeholder) != PARAPHRASE_NUM:
+    try_limit = 3
+    try_num = 0
+    paraphrases = None
+
+    while try_num < try_limit:
+        if try_num > 0:
+            print("Try {num} (started from 0)".format(num=try_num))
+
+        paraphrases = helper()
+
+        if len(paraphrases) != PARAPHRASE_NUM:
+            try_num += 1
+            continue
+
+        if len(entity_actuals) == 0:  # no placeholders to replace
+            break
+
+        will_retry = False
+        for i in range(len(paraphrases)):
+            for placeholder, actual in zip(entity_placeholders, entity_actuals):
+                paraphrase = paraphrases[i].replace(placeholder, actual)
+                if paraphrase == paraphrases[i]:
+                    will_retry = True
+                    break
+                paraphrases[i] = paraphrase
+            if will_retry:
+                break
+
+        if will_retry:
+            try_num += 1
+            continue
+        else:
+            break
+
+    if try_num == try_limit:
+        raise Exception("Unacceptable paraphrasing results: " + paraphrases)
+
+    if len(paraphrases) != PARAPHRASE_NUM:
         raise Exception(
             "id: {id};\nverbalization: {verbalization};\nparaphrase_num: {paraphrase_num}\nparaphrases: {paraphrases}".format(
                 id=datum["id"],
                 verbalization=datum["verbalization"],
-                paraphrase_num=len(paraphrases_placeholder),
-                paraphrases="\n".join(paraphrases_placeholder),
+                paraphrase_num=len(paraphrases),
+                paraphrases="\n".join(paraphrases),
             )
         )
 
-    if len(entity_actuals) > 0:
-        paraphrases_actual = []
-        for paraphrase in paraphrases_placeholder:
-            for placeholder, actual in zip(entity_placeholders, entity_actuals):
-                paraphrase = paraphrase.replace(placeholder, actual)
-            paraphrases_actual.append(paraphrase)
-    else:
-        paraphrases_actual = paraphrases_placeholder
-
-    return paraphrases_actual
+    return paraphrases
 
 
 if __name__ == "__main__":
-    with open("data/examples_2000.json", "r") as f:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filepath")
+    args = parser.parse_args()
+
+    with open(args.filepath, "r") as f:
         data = json.load(f)
 
-    filename_out = "data/examples_2000_paraphrases.csv"
-    if not os.path.exists(filename_out):
-        f = open(filename_out, "w")
+    filepath_out = args.filepath.rsplit(".")[0] + "_paraphrases.csv"
+    if not os.path.exists(filepath_out):
+        f = open(filepath_out, "w")
         writer = csv.writer(f)
         writer.writerow(HEADER)
     else:
-        df = pd.read_csv(filename_out)
+        df = pd.read_csv(filepath_out)
         data = [datum for datum in data if datum["id"] not in df["id"]]
 
-        f = open(filename_out, "a")
+        f = open(filepath_out, "a")
         writer = csv.writer(f)
 
     try:

@@ -21,6 +21,13 @@ from locate_then_ask.utils import get_gt, get_lt
 
 
 class OSSpeciesLocator:
+    IDENTIFIER_WHITELIST = [
+        "InChI",
+        "IUPACName",
+        "MolecularFormula",
+        "SMILES",
+    ]
+
     def __init__(self):
         self.store = OSEntityStore()
 
@@ -28,7 +35,10 @@ class OSSpeciesLocator:
         entity_names = []
         for entity_iri in entity_iris:
             entity = self.store.get(entity_iri)
-            identifier_key = random.choice(list(entity.key2identifier.keys()))
+            identifier_keys = [
+                x for x in self.IDENTIFIER_WHITELIST if x in entity.key2identifier
+            ]
+            identifier_key = random.choice(identifier_keys)
             entity_name = random.choice(entity.key2identifier[identifier_key])
             entity_names.append(entity_name)
 
@@ -144,7 +154,9 @@ class OSSpeciesLocator:
         key_label = random.choice(KEY2LABELS[key])
 
         if node is None:
-            literal_num = len([n for n in query_graph.nodes() if n.startswith("literal")])
+            literal_num = len(
+                [n for n in query_graph.nodes() if n.startswith("literal")]
+            )
             node = "literal_" + str(literal_num)
 
         query_graph.add_node(
@@ -153,7 +165,9 @@ class OSSpeciesLocator:
         query_graph.add_edge("Species", node, label=predicate)
 
         if operator is None:
-            verbalization = "{K} is {V}".format(K=key_label, V="[{x}]".format(x=node_label))
+            verbalization = "{K} is {V}".format(
+                K=key_label, V="[{x}]".format(x=node_label)
+            )
         else:
             cond = COMPARATIVE_COND_MAKER[operator](num_value)
 

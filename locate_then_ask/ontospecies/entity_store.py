@@ -95,7 +95,7 @@ SELECT DISTINCT * WHERE {{
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 SELECT DISTINCT ?ChemicalClassLabel WHERE {{
     <{SpeciesIri}> (rdf:|!rdf:)+ [ 
-        rdf:type os:ChemicalClass ; 
+        a os:ChemicalClass ; 
         rdfs:label ?ChemicalClassLabel 
     ] .
 }}"""
