@@ -104,30 +104,38 @@ class OSSpeciesLocator:
             operator = random.choice(COMPARATIVES)
 
             if operator in [LESS_THAN, LESS_THAN_EQUAL]:
-                value = get_gt(property_value)
+                num_value = get_gt(property_value)
             elif operator in [GREATER_THAN, GREATER_THAN_EQUAL]:
-                value = get_lt(property_value)
+                num_value = get_lt(property_value)
             elif operator in [EQUAL, AROUND]:
-                value = property_value
+                num_value = property_value
             elif operator in [INSIDE, OUTSIDE]:
-                value = (get_lt(property_value), get_gt(property_value))
+                num_value = (get_lt(property_value), get_gt(property_value))
             else:
                 raise ValueError("Unrecognised comparative: " + operator)
+
+            node = key + "Value"
+            node_label = node
+            template_node = False
 
             # qualifier_key = "reference state"
             # qualifier_value = species_property.reference_state_value
         elif new_sample in unsampled_chemclasses:
             key = CHEMCLASS_KEY
             predicate = "os:hasChemicalClass/rdfs:label"
-            value = new_sample
+            node_label = new_sample
+            node = None
             operator = None
+            template_node = True
             # qualifier_key = None
             # qualifier_value = None
         elif new_sample in unsampled_uses:
             key = USE_KEY
             predicate = "os:hasUse/rdfs:label"
-            value = new_sample
+            node_label = new_sample
+            node = None
             operator = None
+            template_node = True
             # qualifier_key = None
             # qualifier_value = None
         else:
@@ -135,24 +143,31 @@ class OSSpeciesLocator:
 
         key_label = random.choice(KEY2LABELS[key])
 
-        literal_num = len([n for n in query_graph.nodes() if n.startswith("literal")])
-        literal_node = "literal_" + str(literal_num)
+        if node is None:
+            literal_num = len([n for n in query_graph.nodes() if n.startswith("literal")])
+            node = "literal_" + str(literal_num)
 
         query_graph.add_node(
-            literal_node, label=value, literal=True, template_node=True
+            node, label=node_label, literal=True, template_node=template_node
         )
-        query_graph.add_edge("Species", literal_node, label=predicate)
+        query_graph.add_edge("Species", node, label=predicate)
 
         if operator is None:
-            verbalization = "{K} is {V}".format(K=key_label, V="[{x}]".format(x=value))
+            verbalization = "{K} is {V}".format(K=key_label, V="[{x}]".format(x=node_label))
         else:
-            cond = COMPARATIVE_COND_MAKER[operator](value)
+            cond = COMPARATIVE_COND_MAKER[operator](num_value)
 
-            func_node = literal_node + "_func"
+            func_node = node + "_func"
+            func_label = "{op}\n{val}".format(op=operator, val=num_value)
             query_graph.add_node(
-                func_node, label=operator, func=True, template_node=True
+                func_node,
+                operator=operator,
+                operand=num_value,
+                label=func_label,
+                func=True,
+                template_node=True,
             )
-            query_graph.add_edge(literal_node, func_node, label="func")
+            query_graph.add_edge(node, func_node, label="func")
 
             verbalization = "{K} is {COND}".format(K=key_label, COND=cond)
 
@@ -180,9 +195,8 @@ class OSSpeciesLocator:
             if verbalized_cond is not None:
                 verbalized_conds.append(verbalized_cond)
 
-        verbalization = "the {concept} that {conds}".format(
-            concept=concept,
-            conds=" and ".join(verbalized_conds)
+        verbalization = "the {concept} whose {conds}".format(
+            concept=concept, conds=" and ".join(verbalized_conds)
         )
 
         return query_graph, verbalization

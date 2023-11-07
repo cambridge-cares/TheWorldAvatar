@@ -19,6 +19,7 @@ COMPARATIVES = [
     EQUAL,
     AROUND,
     INSIDE,
+    OUTSIDE
 ]
 
 

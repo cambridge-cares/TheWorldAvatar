@@ -110,17 +110,16 @@ LIMIT 100"""
 
             ask_datum = example_maker.make_example(entity_iri)
 
-            examples.append(
-                dict(
-                    id=id,
-                    topic_entity=topic_entity,
-                    verbalization=ask_datum.verbalization,
-                    query=dict(
-                        sparql=ask_datum.query_sparql,
-                        graph=nx.node_link_data(ask_datum.query_graph),
-                    ),
-                )
+            example = dict(
+                id=id,
+                topic_entity=topic_entity,
+                verbalization=ask_datum.verbalization,
+                query=dict(
+                    sparql=ask_datum.query_sparql,
+                    graph=nx.node_link_data(ask_datum.query_graph),
+                ),
             )
+            examples.append(example)
 
         return examples
 

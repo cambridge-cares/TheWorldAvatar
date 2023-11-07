@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 import random
+import time
 
 import networkx as nx
 from tqdm import tqdm
@@ -14,7 +15,7 @@ from locate_then_ask.query_graph import QueryGraph
 
 ROOTDIR = Path(os.getcwd())
 SEED_SPECIES_NUM = 2000
-SEED_SPECIES_FILEPATH = "data/seed_species_{num}.txt".format(num=SEED_SPECIES_NUM)
+SEED_SPECIES_FILEPATH = "data/seed_entities/ontospecies.txt"
 
 
 class DatasetGenerator:
@@ -34,7 +35,7 @@ class DatasetGenerator:
         species_attr_values = "\n        " + "\n        ".join(
             ["(os:has{p})".format(p=p) for p in SPECIES_ATTRIBUTE_KEYS]
         )
-        query_template = '''PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query_template = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
     ?x a os:Species .
@@ -44,7 +45,7 @@ SELECT DISTINCT ?x (COUNT(DISTINCT ?p) as ?degree) WHERE {{
 }}
 GROUP BY ?x
 ORDER BY DESC(?degree)
-LIMIT {num}'''
+LIMIT {num}"""
         query = query_template.format(
             bindings=species_attr_values, num=SEED_SPECIES_NUM
         )
@@ -56,9 +57,11 @@ LIMIT {num}'''
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_FILEPATH)
 
         if not os.path.isfile(os.path.join(filepath)):
+            print("No seed species found. Retrieving seed species...")
             species = self.query_seed_species()
             with open(filepath, "w") as f:
                 f.write("\n".join(species))
+            print("Retrieval of seed species done.")
 
         with open(filepath, "r") as f:
             seed_entities = [x.strip() for x in f.readlines()]
@@ -71,7 +74,7 @@ LIMIT {num}'''
 
         seed_species = self.retrieve_seed_species()
         random.shuffle(seed_species)
-        self.seed_species = seed_species
+        self.seed_species = seed_species[:50]
 
     def locate(self, locate_strategy: str, species_id: int):
         if locate_strategy == "entity_name":
@@ -109,17 +112,6 @@ LIMIT {num}'''
         else:
             raise ValueError("Unrecognized ask_strategy: " + ask_strategy)
 
-    def make_example(self, example_id: int, ask_datum: AskDatum):
-        return dict(
-            id=example_id,
-            verbalization=ask_datum.verbalization,
-            query=dict(
-                sparql_compact=ask_datum.query_sparql[0],
-                sparql_verbose=ask_datum.query_sparql[1],
-                graph=nx.node_link_data(ask_datum.query_graph),
-            ),
-        )
-
     def generate(self):
         species_id = 0
 
@@ -151,7 +143,15 @@ LIMIT {num}'''
                     query_graph=query_graph,
                     verbalization=verbalization,
                 )
-                example = self.make_example(example_id=example_id, ask_datum=ask_datum)
+
+                example = dict(
+                    id=example_id,
+                    verbalization=ask_datum.verbalization,
+                    query=dict(
+                        sparql=ask_datum.query_sparql,
+                        graph=nx.node_link_data(ask_datum.query_graph),
+                    ),
+                )
                 examples.append(example)
                 example_id += 1
 
@@ -165,5 +165,8 @@ if __name__ == "__main__":
     ds_gen = DatasetGenerator()
     examples = ds_gen.generate()
 
-    with open(os.path.join(ROOTDIR, "data/examples_{num}.json".format(num=SEED_SPECIES_NUM)), "w") as f:
+    time_label = time.strftime("%Y-%m-%d_%H:%M:%S")
+    filename = "data/ontospecies_{timestamp}.json".format(timestamp=time_label)
+
+    with open(os.path.join(ROOTDIR, filename), "w") as f:
         json.dump(examples, f, indent=4)

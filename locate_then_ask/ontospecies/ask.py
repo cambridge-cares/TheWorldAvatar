@@ -60,9 +60,12 @@ class OSAsker:
             keys_label = []
 
             for key in keys:
-                if key in PROPERTY_KEYS + IDENTIFIER_KEYS:
+                if key in PROPERTY_KEYS:
                     obj = key
                     predicate = "os:has{Name}".format(Name=key)
+                elif key in  IDENTIFIER_KEYS:
+                    obj = key + "Value"
+                    predicate = "os:has{Name}/os:value".format(Name=key)
                 elif key in [USE_KEY, CHEMCLASS_KEY]:
                     obj = key + "Label"
                     predicate = "os:has{Name}/rdfs:label".format(Name=key)
