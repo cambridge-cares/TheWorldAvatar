@@ -1,18 +1,19 @@
 import json
 import os
 from pathlib import Path
-import random
+import time
 
 import networkx as nx
 from tqdm import tqdm
-
-from locate_then_ask.ontokin.ask.ask_mechanism import OKMechanismAsker
-from locate_then_ask.ontokin.ask.ask_rxn import OKReactionAsker
-from locate_then_ask.ontokin.ask.ask_species import OKSpeciesAsker
 from locate_then_ask.ontokin.entity_store import OKEntityStore
-from locate_then_ask.ontokin.locate.locate_mechanism import OKMechanismLocator
-from locate_then_ask.ontokin.locate.locate_rxn import OKReactionLocator
-from locate_then_ask.ontokin.locate.locate_species import OKSpeciesLocator
+
+from locate_then_ask.ontokin.make_example.make_example_mechanism import (
+    OKMechanismExampleMaker,
+)
+from locate_then_ask.ontokin.make_example.make_example_rxn import OKReactionExampleMaker
+from locate_then_ask.ontokin.make_example.make_example_species import (
+    OKSpeciesExampleMaker,
+)
 from locate_then_ask.ontokin.model import OKGasePhaseReaction, OKMechanism, OKSpecies
 
 
@@ -36,7 +37,10 @@ SELECT * WHERE {
   ?s a okin:ReactionMechanism
 }
 LIMIT 10"""
-        mechanisms = [x["s"]["value"] for x in kg_client.query(sparql_mechanisms)["results"]["bindings"]]
+        mechanisms = [
+            x["s"]["value"]
+            for x in kg_client.query(sparql_mechanisms)["results"]["bindings"]
+        ]
 
         sparql_rxns = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
@@ -48,7 +52,9 @@ SELECT ?s (COUNT(DISTINCT ?p) as ?degree) WHERE {
 GROUP BY ?s
 ORDER BY DESC(?degree)
 LIMIT 100"""
-        rxns = [x["s"]["value"] for x in kg_client.query(sparql_rxns)["results"]["bindings"]]
+        rxns = [
+            x["s"]["value"] for x in kg_client.query(sparql_rxns)["results"]["bindings"]
+        ]
 
         sparql_species = """PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 SELECT ?s (COUNT(DISTINCT ?p) as ?degree) WHERE {
@@ -58,12 +64,15 @@ SELECT ?s (COUNT(DISTINCT ?p) as ?degree) WHERE {
 GROUP BY ?s
 ORDER BY DESC(?degree)
 LIMIT 100"""
-        species = [x["s"]["value"] for x in kg_client.query(sparql_species)["results"]["bindings"]]
+        species = [
+            x["s"]["value"]
+            for x in kg_client.query(sparql_species)["results"]["bindings"]
+        ]
 
         return mechanisms + rxns + species
 
     @classmethod
-    def retrieve_seed_species(self):
+    def retrieve_seed_entities(self):
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_FILEPATH)
 
         if not os.path.isfile(os.path.join(filepath)):
@@ -78,80 +87,44 @@ LIMIT 100"""
 
     def __init__(self):
         self.store = OKEntityStore()
+        self.example_maker_mechanism = OKMechanismExampleMaker(self.store)
+        self.example_maker_reaction = OKReactionExampleMaker(self.store)
+        self.example_maker_species = OKSpeciesExampleMaker(self.store)
 
-        self.mechanism_locator = OKMechanismLocator(self.store)
-        self.mechanism_asker = OKMechanismAsker()
-
-        self.rxn_locator = OKReactionLocator(self.store)
-        self.rxn_asker = OKReactionAsker()
-
-        self.species_locator = OKSpeciesLocator(self.store)
-        self.species_asker = OKSpeciesAsker()
-
-        seed_species = self.retrieve_seed_species()
-        random.shuffle(seed_species)
-        self.seed_species = seed_species
+        self.seed_entities = self.retrieve_seed_entities()
+        # random.shuffle(self.seed_entities)
 
     def generate(self):
         examples = []
 
-        for id, species in enumerate(tqdm(self.seed_species)):
-            cls = self.store.get_cls(species)
-            
+        for id, entity_iri in enumerate(tqdm(self.seed_entities)):
+            cls = self.store.get_cls(entity_iri)
+
             if cls == OKMechanism:
-                cond_num = random.choice([1, 2, 3])
-                query_graph, verbalization = self.mechanism_locator.locate_concept_and_relation_multi(species, cond_num=cond_num)
-                ask_datum = self.mechanism_asker.ask_name(query_graph, verbalization)
-            
+                example_maker = self.example_maker_mechanism
+                topic_entity = "mechanism"
             elif cls == OKGasePhaseReaction:
-                locate_strategy = random.choice(["entity_name", "concept_and_relation"])
-                if locate_strategy == "entity_name":
-                    query_graph, verbalization = self.rxn_locator.locate_entity_name(species)
-                    ask_strategies = ["relation"]
-                elif locate_strategy == "concept_and_relation":
-                    cond_num = random.sample(population=[1, 2, 3, 4], counts=[4, 3, 2, 1], k=1)[0]
-                    query_graph, verbalization = self.rxn_locator.locate_concept_and_relation_multi(species, cond_num=cond_num)
-                    ask_strategies = ["name", "relation"]
-                else:
-                    raise Exception()
-                
-                ask_strategy = random.choice(ask_strategies)
-                if ask_strategy == "name":
-                    ask_datum = self.rxn_asker.ask_name(query_graph, verbalization)
-                elif ask_strategy == "relation":
-                    ask_datum = self.rxn_asker.ask_relation(query_graph, verbalization)
-                else:
-                    raise Exception()
-            
+                example_maker = self.example_maker_reaction
+                topic_entity = "reaction"
             elif cls == OKSpecies:
-                locate_strategy = random.choice(["entity_name", "concept_and_relation"])
-                if locate_strategy == "entity_name":
-                    query_graph, verbalization = self.species_locator.locate_entity_name(species)
-                    ask_strategies = ["attribute_or_relation"]
-                elif locate_strategy == "concept_and_relation":
-                    query_graph, verbalization = self.species_locator.locate_concept_and_relation(species)
-                    ask_strategies = ["name", "attribute_or_relation"]
-                else:
-                    raise Exception()
-                
-                ask_strategy = random.choice(ask_strategies)
-                if ask_strategy == "name":
-                    ask_datum = self.species_asker.ask_name(query_graph, verbalization)
-                elif ask_strategy == "attribute_or_relation":
-                    ask_datum = self.species_asker.ask_attribute_or_relation(query_graph, verbalization)
-                else:
-                    raise Exception()
+                example_maker = self.example_maker_species
+                topic_entity = "species"
             else:
                 raise Exception()
 
-            examples.append(dict(
-                id=id,
-                verbalization=ask_datum.verbalization,
-                query=dict(
-                    sparql=ask_datum.query_sparql,
-                    graph=nx.node_link_data(ask_datum.query_graph)
+            ask_datum = example_maker.make_example(entity_iri)
+
+            examples.append(
+                dict(
+                    id=id,
+                    topic_entity=topic_entity,
+                    verbalization=ask_datum.verbalization,
+                    query=dict(
+                        sparql=ask_datum.query_sparql,
+                        graph=nx.node_link_data(ask_datum.query_graph),
+                    ),
                 )
-            ))
+            )
 
         return examples
 
@@ -160,5 +133,8 @@ if __name__ == "__main__":
     ds_gen = DatasetGenerator()
     examples = ds_gen.generate()
 
-    with open(os.path.join(ROOTDIR, "data/ontokin.json"), "w") as f:
+    time_label = time.strftime("%Y-%m-%d_%H:%M:%S")
+    filename = "data/ontokin_{timestamp}.json".format(timestamp=time_label)
+
+    with open(os.path.join(ROOTDIR, filename), "w") as f:
         json.dump(examples, f, indent=4)
