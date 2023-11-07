@@ -15,15 +15,15 @@ WHERE {
                 BIND ("Transport Mode" AS ?Property )
                 BIND (replace(str(?TransportMode), str(iso:), '') AS ?Value)
             }
-#          UNION
-#                      {
-#                [IRI] iso:originatesFrom ?poi_iri.
-#                ?poi_iri a ?poi_type.
-#                ?poi_iri obe:hasPropertyUsage ?usage.
-#                ?usage obe:hasUsageLabel ?Value.
-#              
-#                BIND ("Isochrone Origins" AS ?Property )
-#            }
+          UNION
+                      {
+                [IRI] iso:originatesFrom ?poi_iri.
+                ?poi_iri a ?poi_type.
+                ?poi_iri obe:hasPropertyUsage ?usage.
+                ?usage obe:hasUsageLabel ?Value.
+              
+                BIND ("Isochrone Origins" AS ?Property )
+            }
           UNION
                       
           {
