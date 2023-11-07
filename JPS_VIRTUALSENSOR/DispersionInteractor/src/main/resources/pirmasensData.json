@@ -2157,7 +2157,7 @@
                             "type": "symbol",
                             "order": 50,
                             "layout": {
-                                "visibility": "visible",
+                                "visibility": "none",
                                 "icon-image": "toilet_image",
                                 "icon-size": [
                                     "interpolate",
