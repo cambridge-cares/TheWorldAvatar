@@ -74,7 +74,7 @@ LIMIT {num}"""
 
         seed_species = self.retrieve_seed_species()
         random.shuffle(seed_species)
-        self.seed_species = seed_species[:50]
+        self.seed_species = seed_species
 
     def locate(self, locate_strategy: str, species_id: int):
         if locate_strategy == "entity_name":
