@@ -166,7 +166,11 @@ class DHOptimisationAgent(DerivationAgent):
         # 3) Get potentially already instantiated optimisation output instances, i.e.,
         #    ProvidedHeat and ConsumedGas Amounts, which ts would just get updated
         #    (checks for actual forecast instances)
-        outputs = self.sparql_client.get_optimisation_outputs(opti_inputs['q_demand'])
+        outputs = self.sparql_client.get_existing_optimisation_outputs(opti_inputs['q_demand'])
+        
+        
+        setup, index = define_optimisation_setup(self.sparql_client, ts_client)
+        
        
         # Mock optimisation data
         # 1) retrieve 1 input time series

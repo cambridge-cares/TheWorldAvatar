@@ -14,7 +14,7 @@ from rdflib.namespace import XSD
 from pyderivationagent.kg_operations import PySparqlClient
 
 from dhoptimisation.datamodel.iris import *
-from dhoptimisation.utils import logger
+from dhoptimisation.utils import *
 
 
 class KGClient(PySparqlClient):
@@ -72,8 +72,7 @@ class KGClient(PySparqlClient):
                 msg = f'No "dataIRI" associated with given instance: {instance_iri}.'
             else:
                 msg = f'Multiple "dataIRI"s associated with given instance: {instance_iri}.'
-            logger.error(msg)
-            raise ValueError(msg)
+            raise_error(ValueError, msg)
         
 
     def get_input_types_from_forecast_iris(self, forecast_iris:list):
@@ -173,46 +172,8 @@ class KGClient(PySparqlClient):
                 msg = f"No time series associated with data IRI: {forecast_iri}."
             else:
                 msg = f"Multiple time series associated with data IRI: {forecast_iri}."
-            logger.error(msg)
-            raise ValueError(msg)
+            raise_error(ValueError, msg)
         
-
-    def get_optimisation_outputs(self, forecast_iri:str):
-        """
-        Returns a list of all generation optimisation outputs associated with
-        provided forecast IRI as input
-        NOTE: Only considers ts:Forecast types as relevant outputs
-
-        Arguments:
-            forecast_iri (str) -- IRI of heat demand or grid temperature forecast
-                                  (i.e., inputs to the generation optimisation)
-        Returns:
-            output_iris (list) -- list of instantiated optimisation derivation outputs
-                                  (empty list if not exist)
-        """
-
-        #TODO: To be revisited whether that's the final way we want to do it,
-        #      or rather query via OntoHeatNet instead of OntoDerivation
-        query = f"""
-            SELECT DISTINCT ?type ?output_iri
-            WHERE {{
-            VALUES ?type {{ <{OHN_CONSUMED_GAS_AMOUNT}> <{OHN_PROVIDED_HEAT_AMOUNT}> }}
-            <{forecast_iri}> ^<{ONTODERIVATION_ISDERIVEDFROM}> ?deriv_iri . 
-            ?deriv_iri ^<{ONTODERIVATION_BELONGSTO}> ?output_iri . 
-            ?output_iri <{RDF_TYPE}> ?type .
-            }}
-        """
-        query = self.remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
-
-        # Extract relevant information from unique query result
-        keys = [OHN_PROVIDED_HEAT_AMOUNT, OHN_CONSUMED_GAS_AMOUNT]
-        outputs = {k: set([x['output_iri'] for x in res if x['type'] == k]) for k in keys}
-        # Remove empty keys
-        outputs = {key: list(value) for key, value in outputs.items() if value}
-        
-        return outputs
-   
 
     def get_interval_details(self, intervalIRI:str):
         """
@@ -256,10 +217,81 @@ class KGClient(PySparqlClient):
             return interval
         
         else:
-            msg = "No unique interval details could be retrieved from KG."
-            logger.error(msg)
-            raise ValueError(msg)
+            raise_error(ValueError, "No unique interval details could be retrieved from KG.")
+    
+    
+    def get_existing_optimisation_outputs(self, forecast_iri:str):
+        """
+        Returns a list of all generation optimisation outputs associated with
+        provided forecast IRI as input
+        NOTE: Only considers ts:Forecast types as relevant outputs
+
+        Arguments:
+            forecast_iri (str) -- IRI of heat demand or grid temperature forecast
+                                  (i.e., inputs to the generation optimisation)
+        Returns:
+            output_iris (list) -- list of instantiated optimisation derivation outputs
+                                  (empty list if not exist)
+        """
+
+        #TODO: To be revisited whether that's the final way we want to do it,
+        #      or rather query via OntoHeatNet instead of OntoDerivation
+        query = f"""
+            SELECT DISTINCT ?type ?output_iri
+            WHERE {{
+            VALUES ?type {{ <{OHN_CONSUMED_GAS_AMOUNT}> <{OHN_GENERATED_HEAT_AMOUNT}> 
+                            <{OHN_PROVIDED_HEAT_AMOUNT}>  }}
+            <{forecast_iri}> ^<{ONTODERIVATION_ISDERIVEDFROM}> ?deriv_iri . 
+            ?deriv_iri ^<{ONTODERIVATION_BELONGSTO}> ?output_iri . 
+            ?output_iri <{RDF_TYPE}> ?type .
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        keys = [OHN_PROVIDED_HEAT_AMOUNT, OHN_CONSUMED_GAS_AMOUNT]
+        outputs = {k: set([x['output_iri'] for x in res if x['type'] == k]) for k in keys}
+        # Remove empty keys
+        outputs = {key: list(value) for key, value in outputs.items() if value}
         
+        return outputs
+
+
+    def get_gas_properties(self):
+        """
+        Returns dictionary with all static gas properties as required for
+        overall optimisation setup dict
+
+        Returns:
+            props (dict) -- dictionary with gas static properties
+        """
+
+        query = f"""
+            SELECT DISTINCT ?gp1 ?gp2 ?gp3
+            WHERE {{
+            ?gas <{RDF_TYPE}> <{OHN_NATURAL_GAS}> ; 
+                 <{OHN_HAS_HIGHER_CALORIFICVALUE}> ?ho ; 
+                 <{OHN_HAS_LOWER_CALORIFICVALUE}> ?hu ; 
+                 <{OHN_HAS_CO2_FACTOR}> ?co2 . 
+            {self.get_numerical_value('ho', 'gp1', OM_KILOWATTHOUR_PER_M3)} 
+            {self.get_numerical_value('hu', 'gp2', OM_KILOWATTHOUR_PER_M3)} 
+            {self.get_numerical_value('co2', 'gp3', OM_TONNE_PER_MEGAWATTHOUR)} 
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            props = {'gp1': self.get_unique_value(res, 'gp1', float),
+                     'gp2': self.get_unique_value(res, 'gp2', float),
+                     'gp3': self.get_unique_value(res, 'gp3', float),
+            }
+            return props
+        else:
+            raise_error(ValueError, 'No unique gas properties could be retrieved from KG.')
+
 
     def get_heat_providers(self):
         """
@@ -402,6 +434,20 @@ class KGClient(PySparqlClient):
     #
     # HELPER FUNCTIONS
     #
+    def get_numerical_value(self, var_input, var_output, unit_iri):
+        """
+        Returns sub-query to retrieve numerical value for specific unit of
+        a quantity IRI given as 'var_input'
+        """
+        var = str(uuid.uuid4()).replace('-', '')
+        query = f"""
+            ?{var_input} <{OM_HASVALUE}> ?{var} .
+            ?{var} <{OM_HAS_NUMERICAL_VALUE}> ?{var_output} ;
+                   <{OM_HASUNIT}> <{unit_iri}> .
+        """
+        return query
+        
+        
     def remove_unnecessary_whitespace(self, query: str) -> str:
         """
         Remove unnecessary whitespaces
