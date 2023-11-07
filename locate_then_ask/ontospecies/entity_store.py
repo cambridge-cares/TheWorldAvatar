@@ -104,6 +104,8 @@ SELECT DISTINCT ?ChemicalClassLabel WHERE {{
         return [x["ChemicalClassLabel"]["value"] for x in response_bindings]
 
     def retrieve_uses(self, entity_iri: str):
+        use_blacklist = ["Other", "Other (specify)", "Not Known or Reasonably Ascertainable"]
+
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 SELECT DISTINCT ?UseLabel WHERE {{
@@ -111,4 +113,5 @@ SELECT DISTINCT ?UseLabel WHERE {{
 }}"""
         query = query_template.format(SpeciesIri=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
-        return [x["UseLabel"]["value"] for x in response_bindings]
+        uses = [x["UseLabel"]["value"] for x in response_bindings]
+        return [x for x in uses if x not in use_blacklist]
