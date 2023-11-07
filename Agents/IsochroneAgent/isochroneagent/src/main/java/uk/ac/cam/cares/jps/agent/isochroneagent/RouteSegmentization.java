@@ -8,6 +8,7 @@ import java.sql.Statement;
 import org.postgis.PGgeometry;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
@@ -123,6 +124,10 @@ public class RouteSegmentization {
                 JSONObject poi = jsonArray.getJSONObject(i);
                 String poiIri = poi.getString("poi_iri");
                 String poiType = poi.getString("poi_type");
+                // Remove the prefix from poiIri, poiType
+                poiIri = poiIri.replace("https://www.theworldavatar.com/kg/Building/", ""); 
+                poiType = poiType.replace("https://www.theworldavatar.com/kg/ontobuiltenv/", "");
+
                 String geometry = poi.getString("geometry");
                 String nearest_node = findNearestNode(connection, geometry);
 
@@ -150,9 +155,13 @@ public class RouteSegmentization {
      * @throws SQLException
      */
     private String findNearestNode(Connection connection, String geom) throws SQLException {
-        String findNearestNode_sql = "SELECT id, ST_Distance(the_geom, '" + geom + "') AS distance\n" +
+
+        String geomConvert= "ST_GeometryFromText('"+geom+"', 4326)";
+        
+
+        String findNearestNode_sql = "SELECT id, ST_Distance(the_geom, " + geomConvert + ") AS distance\n" +
                 "FROM routing_ways_segment_vertices_pgr\n" +
-                "ORDER BY the_geom <-> '" + geom + "'\n" +
+                "ORDER BY the_geom <-> " + geomConvert + "\n" +
                 "LIMIT 1;\n";
     
         try (Statement statement = connection.createStatement()) {
