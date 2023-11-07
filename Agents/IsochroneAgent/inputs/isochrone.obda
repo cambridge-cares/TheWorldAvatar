@@ -29,7 +29,7 @@ source      SELECT minute, transportmode, transportmode_iri, poi_type, iri, road
 
 mappingId	isochrone_building
 target		iso:{iri} a iso:Isochrone ;
-                iso:originatesFrom tw:{poi_iri}.
-            tw:{poi_iri} a tw:{poi_type}.
+                iso:originatesFrom tw:Building/{poi_iri}.
+            tw:Building/{poi_iri} a tw:{poi_type}.
 source      SELECT iri, poi_iri, poi_type FROM isochrone_building_ref
 ]]
