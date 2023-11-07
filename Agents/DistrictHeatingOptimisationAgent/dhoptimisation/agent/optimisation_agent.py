@@ -142,7 +142,7 @@ class DHOptimisationAgent(DerivationAgent):
               required for the optimisation are queried from the KG (and instantiated
               back into the KG); however, not all are marked as inputs/outputs of the
               derivation and only the required subset to create the target derivation
-              chain for the use case (forecast -> otpimise -> emission estimation -> aermod)
+              chain for the use case (forecast -> optimise -> emission estimation -> aermod)
               are actually considered
         """
 

@@ -11,15 +11,10 @@ from distutils.util import strtobool
 from rdflib import URIRef, Literal, Graph
 from rdflib.namespace import XSD
 
-from py4jps import agentlogging
-
 from pyderivationagent.kg_operations import PySparqlClient
 
 from dhoptimisation.datamodel.iris import *
-
-
-# Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')
+from dhoptimisation.utils.logger import logger
 
 
 class KGClient(PySparqlClient):

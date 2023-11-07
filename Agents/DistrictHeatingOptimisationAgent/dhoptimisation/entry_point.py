@@ -3,6 +3,8 @@
 
 import logging
 logging.getLogger("py4j").setLevel(logging.ERROR)
+# Specify logger level to be used throughout the agent: dev, prod
+logger_level = 'dev'
 
 from py4jps import agentlogging
 from pyderivationagent.conf import config_derivation_agent
@@ -12,9 +14,8 @@ from dhoptimisation.agent import DHOptimisationAgent
 from dhoptimisation.utils.env_configs import SPARQL_QUERY_ENDPOINT, \
                                              SPARQL_UPDATE_ENDPOINT
 
-
-# Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')
+# Initialise logger for this module (to avoid circular imports)
+logger = agentlogging.get_logger(logger_level)
 
 
 def create_app():
@@ -35,7 +36,7 @@ def create_app():
         kg_url=SPARQL_QUERY_ENDPOINT,
         kg_update_url=SPARQL_UPDATE_ENDPOINT,      
         # Miscellaneous settings
-        logger_name='prod'
+        logger_name=logger_level
     )
 
     # Add a root web page to the agent

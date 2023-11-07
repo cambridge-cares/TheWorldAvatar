@@ -9,15 +9,10 @@
 import pandas as pd
 from contextlib import contextmanager
 
-from py4jps import agentlogging
-
 from dhoptimisation.utils import *
+from dhoptimisation.utils.logger import logger
 from dhoptimisation.utils.baselib_gateway import jpsBaseLibGW
 from dhoptimisation.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
-
-
-# Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')
 
 
 class TSException(Exception):

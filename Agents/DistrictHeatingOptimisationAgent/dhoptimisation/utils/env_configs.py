@@ -8,13 +8,8 @@
 
 import os
 
-from py4jps import agentlogging
-
+from .logger import logger
 from .stack_configs import retrieve_stack_settings
-
-
-# Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')
 
 
 def retrieve_default_settings():

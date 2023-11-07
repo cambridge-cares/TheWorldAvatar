@@ -9,10 +9,6 @@
 import pandas as pd
 import CoolProp.CoolProp as CP
 
-from py4jps import agentlogging
-
+from dhoptimisation.utils.logger import logger
 from dhoptimisation.datamodel.iris import *
 
-
-# Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')

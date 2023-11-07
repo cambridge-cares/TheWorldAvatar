@@ -5,12 +5,6 @@
 
 # The purpose of this module is to retrieve relevant settings from Stack clients
 
-from py4jps import agentlogging
-
-
-# Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')
-
 
 def retrieve_stack_settings(database, namespace):
     """

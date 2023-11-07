@@ -16,16 +16,11 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
-from py4jps import agentlogging
-
 from dhoptimisation.utils import *
+from dhoptimisation.utils.logger import logger
 from dhoptimisation.datamodel.iris import *
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
-
-
-# Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('prod')
 
 
 # Specify relative file paths to store/load model files
