@@ -124,6 +124,14 @@ To use the default forecasting model (i.e., [Prophet] without covariates), the f
                            rdfs:label "Prophet" ;
                            ts:scaleData "False"^^xsd:boolean .
 ```
+Covariates can be added to the model (i.e., [Prophet] with 2 covariates) by adding a triple for each covariate:
+```xml
+<IRI_of_forecasting_model> rdf:type ts:ForecastingModel ; 
+                           rdfs:label "Prophet" ;
+                           ts:scaleData "False"^^xsd:boolean ;
+                           ts:hasCovariate <IRI_of_covariate1> ; 
+                           ts:hasCovariate <IRI_of_covariate2> .
+```
 
 Used namespaces:
 ```xml
@@ -190,7 +198,7 @@ The following UML diagram provides an overview of how the agent works:
 
 ## 2.2 Usage of Custom Forecasting Models
 
-To use pre-trained/custom models, both a model loading and covariate loading funtion need to be specified in the [model mapping] file, and referenced in the `FC_MODELS` dictionary. Specify any custom loading functions following the example of the `tft_pirmasens_heat_demand` model configuration.
+To use pre-trained/custom models, both a model loading and covariate loading function need to be specified in the [model mapping] file, and referenced in the `FC_MODELS` dictionary. Specify any custom loading functions following the example of the `tft_pirmasens_heat_demand` model configuration. [Building the agent](#31-building-the-agent) again after adding custom models is not necessary. However, for the agent to recognize and use these added models, the content of fcmodels must be available locally. This ensures it can be mapped correctly according to the bind mount paths, regardless of whether you're deploying the agent locally or using a pulled Docker image.
 
 
 ## 2.3 Forecast Error Evaluation
@@ -210,7 +218,7 @@ The agent also provides an HTTP endpoint to assess multiple error metrics of cre
 
 ## 3.1 Building the Agent
 
-To build and publish the agent Docker image (e.g., after implementing new model/covariate loading functions) please use the following commands. Please note that both commands are bundled in the  `publish_docker_image.sh` convenience script.
+To build and publish the agent Docker image (e.g., after changing the agent) please use the following commands. Please note that both commands are bundled in the  `publish_docker_image.sh` convenience script.
 
 ```bash
 # Building the (production) image
@@ -227,7 +235,7 @@ It is recommended to pull the published Docker image from [Github container regi
 
 ```bash
 # Pull published (production) image
-docker pull ghcr.io/cambridge-cares/forecasting-agent:2.0.0
+docker pull ghcr.io/cambridge-cares/forecasting-agent:2.1.1
 ```
 
 ###  **Standalone Deployment**

@@ -31,15 +31,16 @@ public class TimeSeriesHelper {
     /**
      * Creates and initialises a time series using the time series client
      * @param fixedIris map containing time series iris mapped to measurement type
+     * @param ontologyUriHelper OntologyURIHelper
      */
-    public void createTimeSeries(LinkedHashMap<String,String> fixedIris, String graph, OntologyURIHelper ontologyUriHelper) {
+    public void createTimeSeries(LinkedHashMap<String,String> fixedIris, OntologyURIHelper ontologyUriHelper) {
         tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
 
         // Create a iri for each measurement
         List<String> iris = new ArrayList<>();
         for(String measurement: CEAConstants.TIME_SERIES){
             String iri = measurement+"_"+ UUID.randomUUID()+ "/";
-            iri = !graph.isEmpty() ? graph + iri : ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + iri ;
+            iri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + iri ;
             iris.add(iri);
             fixedIris.put(measurement, iri);
         }

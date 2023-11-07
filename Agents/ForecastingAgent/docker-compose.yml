@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   forecasting-agent:
-    image: ghcr.io/cambridge-cares/forecasting-agent:2.0.0
+    image: ghcr.io/cambridge-cares/forecasting-agent:2.1.1
     environment:
       - ROUNDING=6
       # Required environment variables for "standalone" deployment
@@ -36,6 +36,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - logs:/root/.jps
+      - ./forecastingagent/fcmodels:/app/forecastingagent/fcmodels
 
 volumes:
   logs:

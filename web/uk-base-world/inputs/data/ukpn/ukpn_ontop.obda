@@ -1,0 +1,99 @@
+[PrefixDeclaration]
+ukpn:   http://theworldavatar.com/ontology/ontocredo/ontoukpn.owl#
+credo:  http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+xsd:    http://www.w3.org/2001/XMLSchema#
+geo:    http://www.opengis.net/ont/geosparql#
+pow:    http://theworldavatar.com/ontology/ontopower/OntoPower.owl#
+
+[MappingDeclaration] @collection [[
+mappingId	owners
+target		credo:AssetOwner/{owner} a credo:AssetOwner ;
+                credo:hasID {owner}^^xsd:string ;
+                credo:hasName {owner}^^xsd:string .
+source      SELECT DISTINCT dno AS owner
+            FROM ukpn_overhead_lines_high
+
+mappingId	routes
+target		pow:Route/{route_id} a pow:Route ;
+                credo:hasName {route_name}^^xsd:string ;
+                credo:hasId {route_id}^^xsd:string ;
+                pow:hasVoltage pow:Route/{route_id}/Voltage .
+            pow:Route/{route_id}/Voltage om:hasValue pow:Route/{route_id}/Voltage/Measure .
+            pow:Route/{route_id}/Voltage/Measure om:hasUnit om:kilovolt ;
+                om:hasNumericValue {voltage}^^xsd:float .
+source      SELECT DISTINCT REPLACE(REPLACE(routename,' ','%20'),'/','%2F') AS route_id, routename AS route_name, max_voltage_kv AS voltage
+            FROM ukpn_poles_towers_medium
+            UNION ALL
+            SELECT DISTINCT REPLACE(REPLACE(routename,' ','%20'),'/','%2F') AS route_id, routename AS route_name, (TRIM(trailing 'kV' from "route_volt"))::float AS voltage
+            FROM ukpn_poles_towers_high
+
+mappingId	lines
+target		pow:ukpn_overhead_lines/{ogc_fid} a pow:Line ;
+                a pow:Line ;
+                credo:hasId {ogc_fid}^^xsd:string ;
+                pow:hasVoltage pow:Line/{ogc_fid}/Voltage ;
+                geo:hasDefaultGeometry pow:Line/geometry/0/{ogc_fid} .
+            pow:Line/geometry/0/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral .
+            pow:Line/{ogc_fid}/Voltage om:hasValue pow:Line/{ogc_fid}/PotentialDifference/Measure .
+            pow:Line/{ogc_fid}/Voltage/Measure om:hasUnit om:kilovolt;
+                om:hasNumericValue {voltage}^^xsd:float .
+source      SELECT dno AS owner, ogc_fid, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv AS voltage
+            FROM ukpn_overhead_lines_medium
+            UNION ALL
+            SELECT dno AS owner, ogc_fid, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv AS voltage
+            FROM ukpn_overhead_lines_medium
+            UNION ALL
+            SELECT dno AS owner, ogc_fid, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv AS voltage
+            FROM ukpn_overhead_lines_high
+            UNION ALL
+            SELECT dno AS owner, ogc_fid, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv AS voltage
+            FROM ukpn_overhead_lines_high_distribution
+            UNION ALL
+            SELECT dno AS owner, ogc_fid, ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv AS voltage
+            FROM ukpn_overhead_lines_low_distribution
+
+
+mappingId	lines-to-routes-33kv
+target		pow:Line/{line_id} credo:isPartOf pow:Route/{route_id} .
+source      SELECT DISTINCT CONCAT(SUBSTRING(line_fl,0,5), TRIM(leading '0' from SUBSTRING(line_fl,6,13))) AS line_id, 
+            REPLACE(REPLACE(routename,' ','%20'),'/','%2F') AS route_id
+            FROM ukpn_poles_towers_medium
+
+mappingId	lines-to-routes-132kv
+target		pow:Line/{line_id} credo:isPartOf pow:Route/{route_id} .
+source      SELECT DISTINCT CONCAT(SUBSTRING(sap_functi,0,5), TRIM(leading '0' from SUBSTRING(sap_functi,6,13))) AS line_id, 
+            REPLACE(REPLACE(routename,' ','%20'),'/','%2F') AS route_id
+            FROM ukpn_poles_towers_high
+
+mappingId	towers-33kv
+target		pow:ukpn_poles_towers/{tower_id} a pow:Tower ;
+                geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral ;
+                credo:isPartOf pow:Line/{line_id} ;
+                pow:hasVoltage pow:Tower/{tower_id}/Voltage .
+            pow:Tower/{tower_id}/voltage a om:PotentialDifference;
+                om:hasValue pow:Tower/{tower_id}/PotentialDifference/Measure .
+            pow:Tower/{tower_id}/Voltage/Measure om:hasUnit om:kilovolt;
+                om:hasNumericValue {voltage}^^xsd:float .
+source      SELECT CONCAT(SUBSTRING(system_fl,0,5), TRIM(leading '0' from SUBSTRING(system_fl, 6, 13)), 
+            TRIM(leading '0' from SUBSTRING(system_fl, 23))) AS tower_id, 
+            CONCAT(SUBSTRING(line_fl,0,5), TRIM(leading '0' from SUBSTRING(line_fl,6,13))) AS line_id,
+            SUBSTRING(line_fl,0,4) AS tower_owner,
+            ST_ASTEXT(wkb_geometry) wkt, 33 AS voltage
+            FROM ukpn_poles_towers_medium
+
+mappingId	towers-132kv
+target		pow:ukpn_poles_towers/{tower_id} a pow:Tower ;
+                geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral ;
+                credo:isPartOf pow:Line/{line_id} ;
+                pow:hasVoltage pow:Tower/{tower_id}/Voltage .
+            pow:Tower/{tower_id}/Voltage a om:PotentialDifference;
+                om:hasValue pow:Tower/{tower_id}/PotentialDifference/Measure .
+            pow:Tower/{tower_id}/Voltage/Measure om:hasUnit om:kilovolt;
+                om:hasNumericValue {voltage}^^xsd:float .
+source      SELECT CONCAT(SUBSTRING(sap_functi,0,5),REPLACE(poleno,' ','-')) AS tower_id, 
+            CONCAT(SUBSTRING(sap_functi,0,5), TRIM(leading '0' from SUBSTRING(sap_functi,6,13))) AS line_id,
+            SUBSTRING(sap_functi,0,4) AS tower_owner,
+            ST_ASTEXT(wkb_geometry) wkt, 132 AS voltage
+            FROM ukpn_poles_towers_high
+]]

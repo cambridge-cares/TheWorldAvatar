@@ -1,7 +1,14 @@
-SET search_path TO public,
+SET
+    search_path TO public,
     citydb;
-CREATE TABLE "public"."raw_building" AS (
-    SELECT "{IDval}",
+
+DROP TABLE IF EXISTS "public"."raw_building_XtoCityDB";
+
+DROP TABLE IF EXISTS "public"."raw_surface_XtoCityDB";
+
+CREATE TABLE "public"."raw_building_XtoCityDB" AS (
+    SELECT
+        "{IDval}",
         'building_' || gen_random_uuid() AS "gmlid",
         ST_Translate(
             ST_Extrude("{footprint}", 0, 0, "{height}"),
@@ -10,17 +17,23 @@ CREATE TABLE "public"."raw_building" AS (
             "{elevation}"
         ) AS "geom",
         "{height}" AS "mh"
-    FROM "public"."{table}"
-    WHERE ST_Area("{footprint}") > '{minArea}'
+    FROM
+        "public"."{table}"
+    WHERE
+        ST_Area("{footprint}") > '{minArea}'
         AND "{height}" IS NOT NULL
 );
-CREATE TABLE "public"."raw_surface" AS (
-    SELECT "building_gmlid",
+
+CREATE TABLE "public"."raw_surface_XtoCityDB" AS (
+    SELECT
+        "building_gmlid",
         'surface_' || gen_random_uuid() AS "gmlid",
         "class",
         "geom"
-    FROM (
-            SELECT "building_gmlid",
+    FROM
+        (
+            SELECT
+                "building_gmlid",
                 "geom",
                 CASE
                     WHEN ST_Zmin("geom") = ST_Zmax("geom") THEN CASE
@@ -29,11 +42,14 @@ CREATE TABLE "public"."raw_surface" AS (
                     END
                     ELSE 34
                 END AS "class"
-            FROM (
-                    SELECT "gmlid" AS "building_gmlid",
+            FROM
+                (
+                    SELECT
+                        "gmlid" AS "building_gmlid",
                         ST_Zmin("geom") AS "bzl",
                         (ST_Dump(ST_CollectionExtract("geom"))).geom AS "geom"
-                    FROM "public"."raw_building"
+                    FROM
+                        "public"."raw_building_XtoCityDB"
                 ) AS "table1"
         ) AS "table2"
 );
