@@ -18,10 +18,10 @@ setup(
         'flask~=2.1.0',
         'py4jps~=1.0.38', 
         'pyderivationagent~=1.6.0',
-        # TODO: check whether also works for more recent versions
-        'pandas~=1.2.3',
-        'numpy ~= 1.20.1',
-        'tabulate ~= 0.8.9',
-        'scikit-learn ~= 0.24.1'
+        'pandas~=2.1.0',
+        'numpy~= 1.26.0',
+        'tabulate~=0.9.0',
+        'scikit-learn~=1.3.0',
+        'matplotlib~=3.8.0'
     ]
 )
