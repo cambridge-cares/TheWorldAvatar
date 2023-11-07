@@ -1,9 +1,9 @@
 import random
 
-from locate_then_ask.ontokin.ask.ask_rxn import OKReactionAsker
 from locate_then_ask.ontokin.entity_store import OKEntityStore
-from locate_then_ask.ontokin.locate.locate_rxn import OKReactionLocator
-from locate_then_ask.ontokin.make_example.make_example_base import ExampleMakerBase
+from locate_then_ask.ontokin.make_example_base import ExampleMakerBase
+from .locate import OKReactionLocator
+from .ask import OKReactionAsker
 
 
 class OKReactionExampleMaker(ExampleMakerBase):

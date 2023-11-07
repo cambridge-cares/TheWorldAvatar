@@ -1,9 +1,9 @@
 import random
 
-from locate_then_ask.ontokin.ask.ask_species import OKSpeciesAsker
 from locate_then_ask.ontokin.entity_store import OKEntityStore
-from locate_then_ask.ontokin.locate.locate_species import OKSpeciesLocator
-from locate_then_ask.ontokin.make_example.make_example_base import ExampleMakerBase
+from locate_then_ask.ontokin.make_example_base import ExampleMakerBase
+from .locate import OKSpeciesLocator
+from .ask import OKSpeciesAsker
 
 
 class OKSpeciesExampleMaker(ExampleMakerBase):

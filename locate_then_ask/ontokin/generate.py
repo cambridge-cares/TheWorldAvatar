@@ -7,13 +7,9 @@ import networkx as nx
 from tqdm import tqdm
 from locate_then_ask.ontokin.entity_store import OKEntityStore
 
-from locate_then_ask.ontokin.make_example.make_example_mechanism import (
-    OKMechanismExampleMaker,
-)
-from locate_then_ask.ontokin.make_example.make_example_rxn import OKReactionExampleMaker
-from locate_then_ask.ontokin.make_example.make_example_species import (
-    OKSpeciesExampleMaker,
-)
+from locate_then_ask.ontokin.mechanism import OKMechanismExampleMaker
+from locate_then_ask.ontokin.rxn import OKReactionExampleMaker
+from locate_then_ask.ontokin.species import OKSpeciesExampleMaker
 from locate_then_ask.ontokin.model import OKGasePhaseReaction, OKMechanism, OKSpecies
 
 
