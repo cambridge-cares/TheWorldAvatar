@@ -14,7 +14,7 @@ from rdflib.namespace import XSD
 from pyderivationagent.kg_operations import PySparqlClient
 
 from dhoptimisation.datamodel.iris import *
-from dhoptimisation.utils.logger import logger
+from dhoptimisation.utils import logger
 
 
 class KGClient(PySparqlClient):

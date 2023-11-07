@@ -9,6 +9,6 @@
 import pandas as pd
 import CoolProp.CoolProp as CP
 
-from dhoptimisation.utils.logger import logger
+from dhoptimisation.utils import logger
 from dhoptimisation.datamodel.iris import *
 

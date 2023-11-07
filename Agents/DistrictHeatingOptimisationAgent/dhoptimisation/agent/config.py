@@ -6,7 +6,7 @@
 # The purpose of this module is to provide some overarching configurations and
 # settings for the agent
 
-from dhoptimisation.utils.logger import logger
+from dhoptimisation.utils import logger
 from dhoptimisation.utils.env_configs import DB_URL
 from dhoptimisation.utils.baselib_gateway import jpsBaseLibGW
 

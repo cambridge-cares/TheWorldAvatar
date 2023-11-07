@@ -8,7 +8,7 @@
 
 import os
 
-from .logger import logger
+from .utils import logger
 from .stack_configs import retrieve_stack_settings
 
 

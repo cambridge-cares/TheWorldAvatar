@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
 from dhoptimisation.utils import *
-from dhoptimisation.utils.logger import logger
 from dhoptimisation.datamodel.iris import *
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
