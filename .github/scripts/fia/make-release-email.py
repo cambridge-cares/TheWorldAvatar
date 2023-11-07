@@ -19,7 +19,7 @@ print("Input version tag is " + version)
 
 # Read the top most section of the patch notes
 notes = ""
-with open('./Agent/FeatureInfoAgent/CHANGELOG.md', 'r') as f:
+with open('./Agents/FeatureInfoAgent/CHANGELOG.md', 'r') as f:
     lines = f.readlines()
     section = 0
 
@@ -39,7 +39,7 @@ notes = markdown.markdown(notes.replace("|", "\n"))
 print("Have converted change log to HTML.")
 
 # Read template email file
-with open('./Agent/FeatureInfoAgent/docs/release.html', 'r') as f:
+with open('./Agents/FeatureInfoAgent/docs/release.html', 'r') as f:
     template = f.read()
 print("Have read template email file.")
 

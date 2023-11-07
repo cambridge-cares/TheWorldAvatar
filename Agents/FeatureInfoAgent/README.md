@@ -185,7 +185,7 @@ The FIA is currently set up with two automated GitHub actions:
   - Only runs when files within the agent have changed AND on commits that are part of a non-draft PR to the main branch.
   - Tests the FIA by running its unit tests and compiling a Docker image (which is NOT pushed at this stage).
   
-- **Push the FeatureInfoAgent:**
+- **Release the FeatureInfoAgent:**
   - Only runs when files within the agent are changed AND on commits to the main branch (i.e. after a PR is approved and merged).
   - Builds the FIA's Docker image (inc. running the unit tests again) AND pushes it to the TWA GitHub image registry.
 

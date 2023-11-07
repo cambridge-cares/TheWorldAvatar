@@ -23,8 +23,8 @@ on:
       - main
     paths:
       - Agents/FeatureInfoAgent/**
-    paths-ignore:
-      - **/README.md
+      - '!**.md'
+      - '!**/release.html'
 
 
 # Job definitions
