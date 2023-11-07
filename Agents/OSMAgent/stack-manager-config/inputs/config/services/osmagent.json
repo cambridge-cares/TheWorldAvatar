@@ -3,12 +3,12 @@
         "Name": "osmagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "osmagent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/osmagent:1.1.0",
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/OSMAgent/osmagent/src/main/resources",
-                        "Target": "/usr/local/tomcat/data"
+                        "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/OSMAgent/osmagent/src/main/resources",
+                        "Target": "/resources"
                     }
                 ],
                 "Configs": [
@@ -17,11 +17,17 @@
                     },
                     {
                         "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
                     }
                 ],
                 "Secrets": [
                     {
                         "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
                     }
                 ]
             }

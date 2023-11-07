@@ -5,8 +5,15 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.agent.osmagent.geometry.GeometryMatcher;
 import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageMatcher;
 import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageShareCalculator;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import javax.servlet.annotation.WebServlet;
+import java.nio.file.Path;
+
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,7 +25,10 @@ import org.json.JSONObject;
 @WebServlet(urlPatterns = "/update")
 
 public class OSMAgent extends JPSAgent {
-    private static final String PROPERTIES_PATH = "/usr/local/tomcat/resources/config.properties";
+    private static final String PROPERTIES_PATH = "/resources/config.properties";
+    private static final Path obdaFile = Path.of("/resources/building_usage.obda");
+
+                                                    
     private EndpointConfig endpointConfig = new EndpointConfig();
 
     private String dbName;
@@ -82,6 +92,31 @@ public class OSMAgent extends JPSAgent {
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
             // buildings
             shareCalculator.updateUsageShare(usageTable);
+            shareCalculator.addMaterializedView(usageTable);
+
+            //Create geoserver layer
+            GeoServerClient geoServerClient = GeoServerClient.getInstance();
+            String workspaceName= "twa";
+            String schema = "public";
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(buildingSQLQuery);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("building_usage");
+            virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName,"building_usage" , dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName,"building_usage" ,geoServerVectorSettings);
+
+            //Upload Isochrone Ontop mapping
+            try {
+                OntopClient ontopClient = OntopClient.getInstance();
+                ontopClient.updateOBDA(obdaFile);
+            } catch (Exception e) {
+                System.out.println("Could not retrieve building_usage.obda file.");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
@@ -89,4 +124,42 @@ public class OSMAgent extends JPSAgent {
 
         return requestParams;
     }
+
+
+    private static final String buildingSQLQuery ="WITH \"uuid_table\" AS (\n" +
+            "    SELECT \"strval\" AS \"uuid\", \"cityobject_id\"\n" +
+            "    FROM \"cityobject_genericattrib\"\n" +
+            "    WHERE \"attrname\" = 'uuid'\n" +
+            "), \"iri_table\" AS (\n" +
+            "    SELECT \"urival\" AS \"iri\", \"cityobject_id\"\n" +
+            "    FROM \"cityobject_genericattrib\"\n" +
+            "    WHERE \"attrname\" = 'iri'\n" +
+            "), \"usageTable\" AS (\n" +
+            "    SELECT \"building_iri\" AS \"iri\", \"propertyusage_iri\", \"ontobuilt\", \"usageshare\"\n" +
+            "    FROM usage.usage\n" +
+            "), \"pointsTable\" AS (\n" +
+            "    SELECT \"building_iri\" AS \"iri\", \"name\"\n" +
+            "    FROM public.points\n" +
+            "), \"polygonsTable\" AS (\n" +
+            "    SELECT \"building_iri\" AS \"iri\", \"name\"\n" +
+            "    FROM public.polygons\n" +
+            ")\n" +
+            "SELECT DISTINCT \"building\".\"id\" AS \"building_id\",\n" +
+            "    COALESCE(\"pointsTable\".name, \"polygonsTable\".name) AS name,\n" +
+            "    COALESCE(\"measured_height\", 100.0) AS \"building_height\",\n" +
+            "    public.ST_Transform(\"geometry\", 4326),\n" +
+            "    \"uuid\",\n" +
+            "    \"iri_table\".\"iri\",\n" +
+            "    \"propertyusage_iri\",\n" +
+            "    \"ontobuilt\",\n" +
+            "    \"usageshare\"\n" +
+            "FROM \"building\"\n" +
+            "JOIN \"surface_geometry\" ON \"surface_geometry\".\"root_id\" = \"building\".\"lod0_footprint_id\"\n" +
+            "JOIN \"uuid_table\" ON \"building\".\"id\" = \"uuid_table\".\"cityobject_id\"\n" +
+            "JOIN \"iri_table\" ON \"building\".\"id\" = \"iri_table\".\"cityobject_id\"\n" +
+            "LEFT JOIN \"pointsTable\" ON  \"uuid_table\".\"uuid\"  = \"pointsTable\".\"iri\" \n" +
+            "LEFT JOIN \"polygonsTable\" ON  \"uuid_table\".\"uuid\" = \"polygonsTable\".\"iri\"\n" +
+            "LEFT JOIN \"usageTable\" ON \"uuid_table\".\"uuid\" = \"usageTable\".\"iri\"\n" +
+            "WHERE \"surface_geometry\".\"geometry\" IS NOT NULL\n" +
+            "    AND COALESCE(\"measured_height\", 100.0) != '0'";
 }
