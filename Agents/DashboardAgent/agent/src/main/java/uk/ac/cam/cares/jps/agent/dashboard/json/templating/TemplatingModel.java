@@ -23,17 +23,13 @@ public class TemplatingModel {
     public TemplatingModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
         // Initialise a queue to store these template variables
         Queue<TemplateVariable> variableQueue = new ArrayDeque<>();
+        // If there are values, retrieve the first connection ID, as the postgres variables in Grafana requires a connection ID to function
+        // But for processing facility items, any ID will do and does not matter
+        if (!timeSeries.isEmpty()) genFacilityItemFilters(timeSeries, databaseConnectionMap.values().iterator().next());
         // For each asset type or rooms available
         for (String item : timeSeries.keySet()) {
             // Retrieve the map of measures to their time series metadata
             Map<String, List<String[]>> measures = timeSeries.get(item);
-            // Within the map, there is a list containing only the asset or room names
-            String nestedKey = item.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : StringHelper.ASSET_KEY; // The key name will vary depending on if it is a room or asset
-            // Retrieve this list and convert it into one array to be processed for
-            // creating the custom variable for filtering individual assets in one asset type group or rooms, and add into the queue
-            String[] arrayItems = measures.get(nestedKey).stream().flatMap(Stream::of).distinct().toArray(String[]::new);
-            CustomVariable variable = new CustomVariable(item, arrayItems, 0);
-            variableQueue.offer(variable);
             // For each of the measures, create a postgres variable that is tied to their asset type or room custom variable
             for (String measure : measures.keySet()) {
                 // Take note to exclude the assets, rooms, and threshold keys as they are not required
@@ -48,12 +44,8 @@ public class TemplatingModel {
         }
         // While there are still items in the queue,
         while (!variableQueue.isEmpty()) {
-            // Append a comma before that variable if it is not the first variable
-            if (this.VARIABLES_SYNTAX.length() != 0) this.VARIABLES_SYNTAX.append(",");
-            // Retrieve the variable and remove it from the queue
-            TemplateVariable currentVar = variableQueue.poll();
-            // Construct its syntax and append it
-            this.VARIABLES_SYNTAX.append(currentVar.construct());
+            // Retrieve the variable to be added, as well as remove it from the queue
+            addVariable(variableQueue.poll());
         }
     }
 
@@ -70,5 +62,81 @@ public class TemplatingModel {
                 .append("\"list\": [").append(this.VARIABLES_SYNTAX).append("]")
                 .append("}");
         return builder.toString();
+    }
+
+    /**
+     * Generate the facility and item type filters for the dashboard.
+     *
+     * @param timeSeries   A map of all assets and rooms mapped to their time series.
+     * @param connectionId A Grafana connection ID.
+     */
+    private void genFacilityItemFilters(Map<String, Map<String, List<String[]>>> timeSeries, String connectionId) {
+        Map<String, List<String[]>> facilityMapping = timeSeries.get(StringHelper.FACILITY_KEY);
+        // Remove the facility key as it is no longer required
+        timeSeries.remove(StringHelper.FACILITY_KEY);
+        // Create a new custom variable for all facilities
+        // Retrieve all keys for the mappings and transformed it into an array for the input
+        CustomVariable facilityFilterOptions = new CustomVariable("Facilities", facilityMapping.keySet().toArray(String[]::new), 0);
+        addVariable(facilityFilterOptions);
+
+        // The next goal is to create a map for item type - either an asset type or room, that is mapped to their facility and individual elements
+        // Format {assetType: {facility1:[asset1, asset2], facility2:[asset3,asset4]}}
+        // This map is necessary to make it easier to generate a postgres variable from the mappings
+        Map<String, Map<String, List<String>>> typeFacilityItemMapping = new HashMap<>();
+        // Inverse the facility mapping so that it is much faster to access
+        Map<String, String> itemToFacilityMapping = inverseMap(facilityMapping);
+        // Iterate through the assets and rooms by type for the mapping
+        for (String itemType : timeSeries.keySet()) {
+            typeFacilityItemMapping.put(itemType, new HashMap<>()); // Initialise an empty map for this item
+            Map<String, List<String>> facilityItemMapping = typeFacilityItemMapping.get(itemType);
+            // Seek to retrieve either the list of individual rooms or assets associated with this type
+            String nestedKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : StringHelper.ASSET_KEY; // The key name will vary depending on if it is a room or asset
+            // Process the list into an array of items
+            String[] itemsArray = timeSeries.get(itemType).get(nestedKey).stream().flatMap(Stream::of).distinct().toArray(String[]::new);
+            // Iterate through each item and add into the mapping
+            for (String itemName : itemsArray) {
+                String facilityName = itemToFacilityMapping.get(itemName); // The facility that this item belongs to
+                // Initialise a new array list if there is no pre-existing key
+                if (!facilityItemMapping.containsKey(facilityName))
+                    facilityItemMapping.put(facilityName, new ArrayList<>());
+                // Add the item accordingly to the list
+                facilityItemMapping.get(facilityName).add(itemName);
+            }
+        }
+
+        // Create a postgres variable for each item type that maps each of its items to its associated facility
+        typeFacilityItemMapping.forEach((itemType, associatedItems) -> {
+            PostgresVariable itemFilterOptions = new PostgresVariable(itemType, associatedItems, connectionId);
+            addVariable(itemFilterOptions);
+        });
+    }
+
+    /**
+     * Add a variable syntax to the field storing this information.
+     *
+     * @param variable The template variable to append.
+     */
+    private void addVariable(TemplateVariable variable) {
+        // Append a comma before that variable if it is not the first variable
+        if (this.VARIABLES_SYNTAX.length() != 0) this.VARIABLES_SYNTAX.append(",");
+        // Construct its syntax and append it to the key syntax
+        this.VARIABLES_SYNTAX.append(variable.construct());
+    }
+
+    /**
+     * Inverse the input map to get the mappings for each item to its key.
+     *
+     * @param keyToItemsMap A key to items map. Assumes that there is only one array in the list
+     * @return the inverse map mapping each item to its key
+     */
+    private Map<String, String> inverseMap(Map<String, List<String[]>> keyToItemsMap) {
+        Map<String, String> itemToKeyMap = new HashMap<>();
+        for (String key : keyToItemsMap.keySet()) {
+            String[] values = keyToItemsMap.get(key).get(0);
+            for (String item : values) {
+                itemToKeyMap.put(item, key);
+            }
+        }
+        return itemToKeyMap;
     }
 }

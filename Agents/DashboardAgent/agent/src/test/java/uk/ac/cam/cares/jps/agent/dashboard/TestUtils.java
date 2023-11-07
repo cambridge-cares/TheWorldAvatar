@@ -6,11 +6,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TestUtils {
     private static final String DASHBOARD_USER = "dashboard.user";
     private static final String DASHBOARD_PASSWORD = "dashboard.pass";
     public static final String BASE_URI = "http://www.test.org/example/";
+    public static final String FACILITY_ONE = "Home";
+    public static final String FACILITY_TWO = "Bakery";
     public static final String ASSET_TYPE_ONE = "Lamp";
     public static final String ASSET_LAMP_ONE = "L1";
     public static final String ASSET_LAMP_TWO = "L2";
@@ -77,9 +81,21 @@ public class TestUtils {
      * @return The sample complex measure map.
      */
     public static Map<String, Map<String, List<String[]>>> genSampleComplexMeasureMap(boolean reqThresholds) {
+        return genSampleComplexMeasureMap(reqThresholds, false);
+    }
+
+    /**
+     * Generates a sample measure map containing both rooms and assets for testing. See the genSampleAssetMeasureMap() and genSampleRoomMeasureMap() format.
+     *
+     * @param reqThresholds   A boolean indicating if thresholds are required.
+     * @param requireFacility A boolean indicating if facility data are required.
+     * @return The sample complex measure map.
+     */
+    public static Map<String, Map<String, List<String[]>>> genSampleComplexMeasureMap(boolean reqThresholds, boolean requireFacility) {
         Map<String, Map<String, List<String[]>>> sampleMap = new HashMap<>();
         sampleMap.putAll(genSampleAssetMeasureMap());
         sampleMap.putAll(genSampleRoomMeasureMap(reqThresholds));
+        if (requireFacility) addSampleFacilityData(sampleMap, true, true);
         return sampleMap;
     }
 
@@ -176,6 +192,54 @@ public class TestUtils {
         measures.put(MEASURE_HEAT, values);
         // Put the measures map into the bigger map
         sampleMap.put(StringHelper.ROOM_KEY, measures);
+        return sampleMap;
+    }
+
+
+    /**
+     * Adds sample facility data to the map depending on requirement
+     *
+     * @param sampleMap A map to append this facility info.
+     * @param reqAssets A boolean indicating if asset info is required.
+     * @param reqRooms  A boolean indicating if room info is required.
+     * @return The sample asset measure map.
+     */
+    public static Map<String, Map<String, List<String[]>>> addSampleFacilityData(Map<String, Map<String, List<String[]>>> sampleMap, boolean reqAssets, boolean reqRooms) {
+        List<String> facilityOne = new ArrayList<>();
+        List<String> facilityTwo = new ArrayList<>();
+        // For assets
+        if (reqAssets) {
+            // Home facility contains lamps
+            facilityOne = List.of(ASSET_LAMP_ONE, ASSET_LAMP_TWO);
+            // Bakery facility contains oven
+            facilityTwo = List.of(ASSET_OVEN);
+        }
+        // For rooms
+        if (reqRooms) {
+            // Home facility contains a bedroom
+            List<String> home = List.of(ROOM_TWO);
+            // Bakery facility contains a kitchen
+            List<String> bakery = List.of(ROOM_ONE);
+            if (facilityOne.size() == 0) {
+                facilityOne = home;
+                facilityTwo = bakery;
+            } else {
+                facilityOne = Stream.concat(facilityOne.stream(), home.stream())
+                        .collect(Collectors.toList());
+                facilityTwo = Stream.concat(facilityTwo.stream(), bakery.stream())
+                        .collect(Collectors.toList());
+            }
+        }
+        Map<String, List<String[]>> measures = new HashMap<>();
+        // For the home facility
+        List<String[]> values = new ArrayList<>();
+        values.add(facilityOne.toArray(String[]::new));
+        measures.put(FACILITY_ONE, values);
+        // For the bakery facility
+        values = new ArrayList<>(); // clear old data first
+        values.add(facilityTwo.toArray(String[]::new));
+        measures.put(FACILITY_TWO, values);
+        sampleMap.put(StringHelper.FACILITY_KEY, measures);
         return sampleMap;
     }
 
