@@ -1,58 +1,51 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
 import org.junit.jupiter.api.Test;
-import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CustomVariableTest {
-    private static final String[] ASSET_NAMES = new String[]{"T1", "T2", "T3"};
-    private static final String EXPECTED_ASSET_TYPE = "Table";
+    private static final String[] FACILITIES = new String[]{"F1", "F2", "F3"};
+    private static final String EXPECTED_TYPE_NAME = "Facilities";
     private static final Integer DASHBOARD_DISPLAY_OPTION = 0;
 
     @Test
     void testConstruct() {
         // Construct the object through the standard constructor
-        CustomVariable variable = new CustomVariable(EXPECTED_ASSET_TYPE, ASSET_NAMES, DASHBOARD_DISPLAY_OPTION);
+        CustomVariable variable = new CustomVariable(EXPECTED_TYPE_NAME, FACILITIES, DASHBOARD_DISPLAY_OPTION);
         // Execute the method
         String result = variable.construct();
         // Test outputs
-        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_ASSET_TYPE, ASSET_NAMES, DASHBOARD_DISPLAY_OPTION).toString(), result);
+        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, FACILITIES, DASHBOARD_DISPLAY_OPTION).toString(), result);
     }
 
     public static StringBuilder genExpectedCustomVariableSyntax(String varName, String[] assets, Integer dashboardDisplayOption) {
         StringBuilder results = new StringBuilder();
-        String itemLabel = "";
-        // Only append the varName in label if it is not the generic asset class
-        if (!varName.equals("Assets")) itemLabel = varName;
-        // Only append the assets if it is not a room
-        if (!varName.equals(StringHelper.ROOM_KEY)) itemLabel += " Assets";
-        // Generate syntax
         results.append(TemplateVariableTest.genExpectedCommonJsonBase(varName.toLowerCase(), dashboardDisplayOption))
-                .append("\"label\": \"").append(itemLabel).append("\",")
-                .append("\"description\": \"Default filters for the ").append(itemLabel).append("\",")
+                .append("\"label\": \"").append(varName).append("\",")
+                .append("\"description\": \"Default filters to view the specified facilities and their associated measures.\",")
                 .append("\"options\": [{\"selected\": true,\"text\": \"All\",\"value\": \"$__all\"},").append(genFilterOptionsForArrays(assets))
                 .append("],\"query\": \"").append(genSimpleQueryForArrays(assets))
                 .append("\",\"queryValue\": \"\",\"type\": \"custom\"}");
         return results;
     }
 
-    private static StringBuilder genFilterOptionsForArrays(String[] assets) {
+    private static StringBuilder genFilterOptionsForArrays(String[] facilities) {
         StringBuilder results = new StringBuilder();
-        for (String asset : assets) {
+        for (String facility : facilities) {
             // Append comma before if it is not the only value
             if (results.length() != 0) results.append(",");
-            results.append("{\"selected\": false,\"text\": \"").append(asset).append("\",\"value\": \"").append(asset).append("\"}");
+            results.append("{\"selected\": false,\"text\": \"").append(facility).append("\",\"value\": \"").append(facility).append("\"}");
         }
         return results;
     }
 
-    private static StringBuilder genSimpleQueryForArrays(String[] assets) {
+    private static StringBuilder genSimpleQueryForArrays(String[] facilities) {
         StringBuilder results = new StringBuilder();
-        for (String asset : assets) {
+        for (String facility : facilities) {
             // Append comma before if it is not the only value
             if (results.length() != 0) results.append(",");
-            results.append(asset);
+            results.append(facility);
         }
         return results;
     }

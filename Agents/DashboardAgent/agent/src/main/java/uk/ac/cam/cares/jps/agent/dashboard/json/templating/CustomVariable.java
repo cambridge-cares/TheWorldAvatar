@@ -15,8 +15,6 @@ class CustomVariable extends TemplateVariable {
     private final String DESCRIPTION;
     private final StringBuilder VARIABLE_SELECTION_OPTIONS = new StringBuilder();
     private final StringBuilder QUERY_SYNTAX = new StringBuilder();
-    // An indicator to support the generation of a custom variable for filtering asset types
-    private static final String IS_ASSET_TYPE = "Assets";
 
     /**
      * Basic Constructor that provides customised settings.
@@ -28,9 +26,8 @@ class CustomVariable extends TemplateVariable {
     protected CustomVariable(String name, String[] values, Integer dashboardDisplayOption) {
         // Construct the super class
         super(name, dashboardDisplayOption);
-        this.LABEL = name.equals(StringHelper.ROOM_KEY) ? "Rooms" : StringHelper.addSpaceBetweenCapitalWords(name) + " Assets";
-        // Description should follow label
-        this.DESCRIPTION = "Default filters for the " + this.LABEL;
+        this.LABEL = StringHelper.addSpaceBetweenCapitalWords(name);
+        this.DESCRIPTION = "Default filters to view the specified facilities and their associated measures.";
         // Create a default option for all values
         TextValueOption option = new TextValueOption(true, "All", "$__all");
         this.VARIABLE_SELECTION_OPTIONS.append(option.construct());
