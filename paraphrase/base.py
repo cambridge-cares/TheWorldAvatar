@@ -102,8 +102,8 @@ class OpenAiClientForBulletPointResponse:
 
 
 class Paraphraser:
-    def __init__(self):
-        self.openai_client = OpenAiClientForBulletPointResponse()
+    def __init__(self, openai_kwargs: dict):
+        self.openai_client = OpenAiClientForBulletPointResponse(**openai_kwargs)
 
     def paraphrase_from_file(self, filepath: str):
         with open(filepath, "r") as f:
@@ -122,7 +122,7 @@ class Paraphraser:
             writer = csv.writer(f)
 
         try:
-            for i, datum in enumerate(tqdm(data)):
+            for datum in tqdm(data):
                 paraphrases = self.paraphrase(datum["verbalization"])
                 writer.writerow([datum["id"], datum["verbalization"], paraphrases])
         except Exception as e:
@@ -131,12 +131,3 @@ class Paraphraser:
 
     def paraphrase(self, text: str):
         return self.openai_client.call(text)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("filepath")
-    args = parser.parse_args()
-
-    paraphraser = Paraphraser()
-    paraphraser.paraphrase_from_file(args.filepath)
