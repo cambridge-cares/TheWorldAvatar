@@ -54,7 +54,7 @@ class OKSpeciesLocator:
             "Species", "Mechanism", label="okin:belongsToPhase/okin:containedIn"
         )
 
-        verbalization + " in the reaction mechanism [{label}]".format(
+        verbalization += " that appears in the reaction mechanism [{label}]".format(
             label=entity.mechanism.label
         )
 

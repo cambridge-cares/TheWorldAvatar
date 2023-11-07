@@ -48,43 +48,34 @@ class OKSpeciesAsker:
 
         query_sparql = self.graph2sparql.convert(query_graph)
 
-        attr_template = random.choice(
-            [
-                "For {E}, what is its {K}",
-                "What is the {K} of {E}",
-            ]
-        )
+        if "ThermoModel" in keys or "TransportModel" in keys:
+            attr_template = random.choice(
+                [
+                    "For {E}, what is its {K}",
+                    "What is the {K} of {E}",
+                ]
+            )
 
-        key2label = {
-            "ThermoModel": "thermodynamic model",
-            "TransportModel": "transport model",
-        }
-        verbalization = attr_template.format(
-            E=verbalization,
-            K=" and ".join([key2label[x] for x in keys if x in key2label]),
-        )
+            key2label = {
+                "ThermoModel": "thermodynamic model",
+                "TransportModel": "transport model",
+            }
+            verbalization = attr_template.format(
+                E=verbalization,
+                K=" and ".join([key2label[x] for x in keys if x in key2label]),
+            )
 
-        if ask_mechanism:
-            verbalization += " and the reaction mechanism in which it appears"
+            if ask_mechanism:
+                verbalization += " and the reaction mechanism in which it appears"
+        else:
+            attr_template = random.choice([
+                "For {E}, what is the reaction mechanism in which it appears",
+                "What is the reaction mechanism that {E} appears in"
+            ])
+            verbalization = attr_template.format(E=verbalization)
 
         return AskDatum(
             query_graph=query_graph,
             query_sparql=query_sparql,
             verbalization=verbalization,
-        )
-    
-    def ask_relation(self, query_graph: QueryGraph, verbalization: str):
-        query_graph = copy.deepcopy(query_graph)
-
-        qnode = "Mechanism"
-        query_graph.add_node(qnode, question_node=True)
-        query_graph.add_edge("Species", qnode, label="okin:belongsToPhase/okin:containedIn")
-
-        query_sparql = self.graph2sparql.convert(query_graph)
-
-        template = random.choice(
-            [
-                "For {E}, what is its reaction mechanism",
-                "What is the reaction mechanism of {E}",
-            ]
         )

@@ -10,6 +10,7 @@ class OKGraph2Sparql(Graph2Sparql):
                 "ocape:hasReactant",
                 "ocape:hasProduct",
                 "okin:belongsToPhase/okin:containedIn",
+                "^okin:containedIn/^okin:belongsToPhase"
             ]
         )
 

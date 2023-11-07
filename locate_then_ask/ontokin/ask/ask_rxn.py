@@ -51,7 +51,7 @@ class OKReactionAsker:
             query_graph.add_edges_from(
                 [
                     ("Reaction", qnode, dict(label="?hasRateCoefficient")),
-                    (qnode, bclass_node, dict(label="rdfs:subClassOf*")),
+                    (qnode, bclass_node, dict(label="a/rdfs:subClassOf*")),
                 ]
             )
 
