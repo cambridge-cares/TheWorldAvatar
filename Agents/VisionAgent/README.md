@@ -32,14 +32,21 @@ The `resources/` directory includes:
 Ensure that the images you wish to process are stored in the `resources/` folder.
 
 ### Configuration
-Modify the visionagent.properties file:
+Modify the visionagent.properties file to set model parameters and thresholds:
 
 ```
 # YOLO model parameters.
 cv.model.weights=[YOUR_YOLO_WEIGHTS_FILE].weights
 cv.model.config=[YOUR_YOLO_CONFIG_FILE].cfg
 cv.class.names=[YOUR_CLASS_NAMES_FILE].names
+
+# Threshold parameters for detection confidence and non-maximum suppression.
+cv.threshold.score=[DETECTION_CONFIDENCE_THRESHOLD]
+cv.threshold.nms=[NMS_THRESHOLD]
+
 ```
+
+Replace [YOUR_YOLO_WEIGHTS_FILE], [YOUR_YOLO_CONFIG_FILE], and [YOUR_CLASS_NAMES_FILE] with the appropriate filenames for your YOLO model's weights, configuration, and class names files. Replace [DETECTION_CONFIDENCE_THRESHOLD] and [NMS_THRESHOLD] with the values you wish to set for the score and non-maximum suppression thresholds, respectively.
 
 ## Docker Deployment
 
