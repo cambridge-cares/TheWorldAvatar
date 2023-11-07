@@ -10,7 +10,7 @@ SELECT DISTINCT ?poi_iri ?poi_type ?geometry
 WHERE {
     {
         # OntopQuery to retrieve
-        SERVICE <http://toilet-ontop:8080/sparql/> {
+        SERVICE [ONTOP] {
                 SELECT DISTINCT *
                 WHERE {
 
