@@ -81,7 +81,7 @@ class OKMechanismLocator:
             label="^okin:containedIn/^okin:belongsToPhase",
         )
 
-        verbalization = "contains [{label}]".format(label=species.label)
+        verbalization = "invovles [{label}]".format(label=species.label)
 
         return query_graph, verbalization
 

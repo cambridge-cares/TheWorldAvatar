@@ -13,7 +13,7 @@ class OKMechanismAsker:
         query_graph.nodes["Mechanism"]["question_node"] = True
 
         query_sparql = self.graph2sparql.convert(query_graph)
-        verbalization = "What are " + verbalization
+        verbalization = "What is " + verbalization
 
         return AskDatum(
             query_graph=query_graph,
