@@ -5,7 +5,7 @@ import transformers
 from tqdm import tqdm
 
 from core.args_schema import DatasetArguments, InferenceArguments, ModelArguments
-from core.translation import HfTranslationModel, OrtHfTranslationModel
+from core.translate import HfTranslator, OrtHfTranslator
 
 
 def infer():
@@ -15,12 +15,12 @@ def infer():
     model_args, data_args, infer_args = hfparser.parse_args_into_dataclasses()
 
     if model_args.model_format == "hf":
-        trans_model = HfTranslationModel(
+        trans_model = HfTranslator(
             model_args,
             max_new_tokens=infer_args.max_new_tokens,
         )
     elif model_args.model_format == "ort":
-        trans_model = OrtHfTranslationModel(
+        trans_model = OrtHfTranslator(
             model_args,
             max_new_tokens=infer_args.max_new_tokens,
         )

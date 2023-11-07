@@ -1,4 +1,6 @@
-T5_INPUT_PREFIX = "translate to SPARQL: "
+T5_PREFIX_NL2SPARQL = "translate to SPARQL: "
+T5_PREFIX_CLSDOMAIN = "classify the domain of the query: "
+
 T5_NL_ENCODINGS = {"<": "&lt;", "<=": "&le;", ">": "&gt;", ">=": "&ge;"}
 T5_INPUT_DECODINGS = {v: k for k, v in T5_NL_ENCODINGS.items()}
 
@@ -9,7 +11,6 @@ def t5_encode_nl_special_chars(text: str):
 
 def preprocess_nl(text: str):
     text = t5_encode_nl_special_chars(text)
-    text = T5_INPUT_PREFIX + text
     return text
 
 
