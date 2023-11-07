@@ -13,6 +13,7 @@ import java.util.Map;
  * @author qhouyee
  */
 class PostgresVariable extends TemplateVariable {
+    private final String LABEL;
     private final String DESCRIPTION;
     private final String DATABASE_CONNECTION_ID;
     private final StringBuilder QUERY_SYNTAX = new StringBuilder();
@@ -27,6 +28,8 @@ class PostgresVariable extends TemplateVariable {
     public PostgresVariable(String itemType, Map<String, List<String>> facilityItemMapping, String databaseId) {
         // Ensure that this variable can be viewed on the dashboard
         super(itemType, 0);
+        // Add label for the type
+        this.LABEL = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" : StringHelper.addSpaceBetweenCapitalWords(itemType);
         // Description should follow the item type
         this.DESCRIPTION = "A template variable that filters the items of " + itemType.toLowerCase() + " type.";
         // Append each value in the list in the required format
@@ -56,6 +59,8 @@ class PostgresVariable extends TemplateVariable {
     public PostgresVariable(String measure, String item, String databaseId, List<String[]> assetMeasures) {
         // Variable name will be a combination of measure name and item type to make it unique
         super(measure + item, 2);
+        // Empty label as the label will not be displayed
+        this.LABEL = "";
         // Description should follow the measure name and item type
         this.DESCRIPTION = "A hidden template variable that displays the corresponding time series of " + measure.toLowerCase() + " for " + item.toLowerCase();
         // Append each value in the list in the required format
@@ -82,6 +87,8 @@ class PostgresVariable extends TemplateVariable {
     protected String construct() {
         // Construct the common elements
         StringBuilder builder = super.genCommonJson()
+                // Variable display label
+                .append("\"label\": \"").append(this.LABEL).append("\",")
                 // Postgres datasource
                 .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(this.DATABASE_CONNECTION_ID).append("\"},")
                 // Description for this variable

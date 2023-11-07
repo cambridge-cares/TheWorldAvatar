@@ -54,6 +54,7 @@ class PostgresVariableTest {
 
     public static String genExpectedPostgresVarSyntaxForItemFilter(String itemType, String databaseID, Map<String, List<String>> facilityItemMapping) {
         String formattedItemType = itemType.toLowerCase().replaceAll("\\s", "");
+        String label = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" : StringHelper.addSpaceBetweenCapitalWords(itemType);
         String description = "A template variable that filters the items of " + itemType.toLowerCase() + " type.";
         List<String[]> parsedMappings = new ArrayList<>();
         // Parse the input map to give a list containing arrays in the form of [Facility, Item]
@@ -68,7 +69,7 @@ class PostgresVariableTest {
         }
         String query = "SELECT v AS \\\"__value\\\" FROM (values " +
                 genValueQueryForListOfArrays(parsedMappings) + ") AS v(k,v)  WHERE k IN (${" + StringHelper.FACILITY_KEY + "});";
-        return genExpectedPostgresVarSyntax(formattedItemType, description, databaseID, query, 0);
+        return genExpectedPostgresVarSyntax(formattedItemType, label, description, databaseID, query, 0);
     }
 
     public static String genExpectedPostgresVarSyntaxForMeasureFilter(String measure, String assetType, String databaseID, List<String[]> assetMeasureMap) {
@@ -77,12 +78,13 @@ class PostgresVariableTest {
         String description = "A hidden template variable that displays the corresponding time series of " + measure.toLowerCase() + " for " + assetType.toLowerCase();
         String query = "SELECT k AS \\\"__text\\\", v AS \\\"__value\\\" FROM (values " +
                 genValueQueryForListOfArrays(assetMeasureMap) + ") AS v(k,v)  WHERE k IN (${" + formattedAssetType + "});";
-        return genExpectedPostgresVarSyntax(formattedMeasure + formattedAssetType, description, databaseID, query, 2);
+        return genExpectedPostgresVarSyntax(formattedMeasure + formattedAssetType, "", description, databaseID, query, 2);
     }
 
-    private static String genExpectedPostgresVarSyntax(String title, String description, String databaseID, String query, int displayOption) {
+    private static String genExpectedPostgresVarSyntax(String title, String label, String description, String databaseID, String query, int displayOption) {
         StringBuilder results = new StringBuilder();
         results.append(TemplateVariableTest.genExpectedCommonJsonBase(title, displayOption))
+                .append("\"label\": \"").append(label).append("\",")
                 .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(databaseID).append("\"},")
                 .append("\"description\": \"").append(description).append("\",")
                 .append("\"definition\": \"").append(query).append("\",")
