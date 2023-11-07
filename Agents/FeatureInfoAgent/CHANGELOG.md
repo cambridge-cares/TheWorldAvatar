@@ -1,5 +1,12 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.0.1
+### Features
+* _No features present._
+### Bug Fixes:
+* Improved logging when reading configuration files.
+* Updated documentation.
+
 # 3.0.0
 ### Features
 * Added ability to set the reference time for time series queries.

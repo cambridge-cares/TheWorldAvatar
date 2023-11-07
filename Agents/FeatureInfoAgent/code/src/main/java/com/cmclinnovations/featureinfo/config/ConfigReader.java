@@ -22,7 +22,7 @@ public class ConfigReader {
     /**
      * Logger for reporting info/errors.
      */
-    private static final Logger LOGGER = LogManager.getLogger(ConfigEntryBuilder.class);
+    private static final Logger LOGGER = LogManager.getLogger(ConfigReader.class);
     
     /**
      * Pool of parsed configuration entries.
@@ -47,8 +47,23 @@ public class ConfigReader {
      * @throws IllegalArgumentExeption if configuration file has invalid syntax.
      */
     public void parseConfig(Path configFile) throws IOException, IllegalArgumentException {
-        String configContent = Files.readString(configFile);
+        // File checks
+        if(!Files.exists(configFile)) {
+            LOGGER.error("OS reports that file does not exist: {}", configFile);
+            throw new IOException("OS reports that config file does not exist.");
+        }
+        if(!Files.isRegularFile(configFile)) {
+            LOGGER.error("OS reports that config file is not a regular file: {}", configFile);
+            throw new IOException("OS reports that config file is not a regular file.");
+        }
+        if(!Files.isReadable(configFile)) {
+            LOGGER.error("OS reports that config file exists but is not readable: {}", configFile);
+            throw new IOException("OS reports that config file exists but is not readable.");
+        }
 
+        String configContent = Files.readString(configFile);
+        LOGGER.info("Have read contents of config file at: {}", configFile);
+        
         // Parse as JSON
         JSONObject configJSON = new JSONObject(configContent);
 
