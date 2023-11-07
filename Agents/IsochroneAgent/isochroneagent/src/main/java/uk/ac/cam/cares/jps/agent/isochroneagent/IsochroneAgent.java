@@ -195,6 +195,6 @@ public class IsochroneAgent extends JPSAgent {
         }
         return true;
     }
-    private static final String isochroneSQLQuery="SELECT minute, transportmode, transportmode_iri, poi_type, CONCAT('https://www.theworldavatar.com/kg/ontoisochrone/',iri) as iri, roadcondition, roadcondition_iri, geometry_iri, population, population_men, population_women, population_women_reproductive, population_childrenu5, population_youth, population_elderly,  ST_Force2D(geom) as geom  FROM isochrone_aggregated";
+    private static final String isochroneSQLQuery="SELECT minute, transportmode, transportmode_iri, poi_type, CONCAT('https://www.theworldavatar.com/kg/ontoisochrone/',iri) as iri, CONCAT(transportmode,' (', poi_type,')') as name, roadcondition, roadcondition_iri, geometry_iri, population, population_men, population_women, population_women_reproductive, population_childrenu5, population_youth, population_elderly, ST_Force2D(geom) as geom FROM isochrone_aggregated";
 
 }
