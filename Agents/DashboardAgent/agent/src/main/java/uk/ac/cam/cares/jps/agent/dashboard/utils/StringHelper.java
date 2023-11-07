@@ -39,4 +39,20 @@ public class StringHelper {
         result = result.replaceAll("([A-Z])([A-Z][a-z])", "$1 $2");
         return result;
     }
+
+    /**
+     * Add another single quote to escape single quote in the input for SQL queries.
+     */
+    public static String addCharacterEscapingForSingleQuotes(String input) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '\'') {
+                // Add a backslash behind the single quote
+                result.append('\'');
+            }
+            result.append(c);
+        }
+        return result.toString();
+    }
 }

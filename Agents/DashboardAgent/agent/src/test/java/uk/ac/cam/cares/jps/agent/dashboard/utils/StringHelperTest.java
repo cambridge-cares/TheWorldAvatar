@@ -18,6 +18,7 @@ class StringHelperTest {
     private static final String CAPITAL_TEST_CASE4 = "ThisIsATest";
     private static final String CAPITAL_TEST_CASE5 = "EndOfLINENoSPLIT";
     private static final String CAPITAL_TEST_CASE6 = "TESTMustSplit";
+    private static final String SINGLE_QUOTE_CASE = "Hughes' room";
 
     @Test
     void testFormatSparqlVarName() {
@@ -42,5 +43,13 @@ class StringHelperTest {
         assertEquals("This Is A Test", StringHelper.addSpaceBetweenCapitalWords(CAPITAL_TEST_CASE4));
         assertEquals("End Of LINE No SPLIT", StringHelper.addSpaceBetweenCapitalWords(CAPITAL_TEST_CASE5));
         assertEquals("TEST Must Split", StringHelper.addSpaceBetweenCapitalWords(CAPITAL_TEST_CASE6));
+    }
+
+    @Test
+    void testAddCharacterEscapingForSingleQuotes() {
+        assertEquals(SPARQL_VAR_FORMAT_TEST_CASE1, StringHelper.addCharacterEscapingForSingleQuotes(SPARQL_VAR_FORMAT_TEST_CASE1));
+        assertEquals(VAR_FORMAT_TEST_CASE4, StringHelper.addCharacterEscapingForSingleQuotes(VAR_FORMAT_TEST_CASE4));
+        assertEquals(CAPITAL_TEST_CASE3, StringHelper.addCharacterEscapingForSingleQuotes(CAPITAL_TEST_CASE3));
+        assertEquals("Hughes'' room", StringHelper.addCharacterEscapingForSingleQuotes(SINGLE_QUOTE_CASE));
     }
 }
