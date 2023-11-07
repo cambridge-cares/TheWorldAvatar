@@ -3,15 +3,15 @@
         "Name": "osmagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "osmagent:1.0.0",
+                "Image": "osmagent:1.1.0",
                 "Env": [
                     "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
                 ],
                 "Mounts": [
                   {
                     "Type": "bind",
-                    "Source": "/home/common/Codes/TheWorldAvatar/Agents/OSMAgent/osmagent/src/main/resources",
-                    "Target": "/usr/local/tomcat/data"
+                    "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/OSMAgent/osmagent/src/main/resources",
+                    "Target": "/resources"
                   }
                 ],
                 "Configs": [
@@ -20,12 +20,18 @@
                     },
                     {
                         "ConfigName": "postgis"
-                    }
-                ],
-                "Secrets": [
+                    },
                     {
-                        "SecretName": "postgis_password"
+                      "ConfigName": "geoserver"
                     }
+                  ],
+                "Secrets": [
+                  {
+                    "SecretName": "postgis_password"
+                  },
+                  {
+                    "SecretName": "geoserver_password"
+                  }
                 ]
             }
         },
