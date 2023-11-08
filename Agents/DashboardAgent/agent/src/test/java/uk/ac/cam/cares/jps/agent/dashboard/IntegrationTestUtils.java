@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard;
 
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
+import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.google.gson.*;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -16,6 +18,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -24,16 +29,20 @@ import java.util.*;
 
 public class IntegrationTestUtils {
     // Local host for docker containers is at 172.17.0.1, ports correspond to the expose ports in docker-compose.test.yml
-    public static final String SPARQL_ENDPOINT = "http://172.17.0.1:9998/blazegraph/";
+    public static final String DOCKER_HOST_NAME = "172.17.0.1";
+    public static final String SPARQL_ENDPOINT = "http://" + DOCKER_HOST_NAME + ":9998/blazegraph/";
+    public static final BlazegraphEndpointConfig SPARQL_ENDPOINT_CONFIG = new BlazegraphEndpointConfig("blazegraph", DOCKER_HOST_NAME, "9998", "", null);
     public static final String SPATIAL_ZONE_NAMESPACE = "zone";
     public static final String SPATIAL_ZONE_SPARQL_ENDPOINT = SPARQL_ENDPOINT + "namespace/" + SPATIAL_ZONE_NAMESPACE + "/sparql";
     public static final String GENERAL_NAMESPACE = "asset";
     public static final String GENERAL_SPARQL_ENDPOINT = SPARQL_ENDPOINT + "namespace/" + GENERAL_NAMESPACE + "/sparql";
-    public static final String TEST_POSTGIS_JDBC = "jdbc:postgresql://172.27.0.1:5431/";
+    public static final String TEST_POSTGIS_JDBC = "jdbc:postgresql://" + DOCKER_HOST_NAME + ":5431/";
     public static final String TEST_POSTGIS_USER = "postgres";
     public static final String TEST_POSTGIS_PASSWORD = "pg123";
+    public static final String TEST_POSTGIS_PASSWORD_PATH = "postgis_password.txt";
+    public static final PostGISEndpointConfig POSTGIS_ENDPOINT_CONFIG = new PostGISEndpointConfig("postgis", DOCKER_HOST_NAME, "5431", TEST_POSTGIS_USER, TEST_POSTGIS_PASSWORD_PATH);
     public static final String NAME_KEY = "name";
-    public static final String TEST_DASHBOARD_URL = "http://172.27.0.1:3068";
+    public static final String TEST_DASHBOARD_URL = "http://" + DOCKER_HOST_NAME + ":3068";
     public static final String SERVICE_ACCOUNT_NAME = "grafana";
     public static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
     public static final String SERVICE_ACCOUNT_SEARCH_SUB_ROUTE = "/search";
@@ -150,6 +159,26 @@ public class IntegrationTestUtils {
             statement.executeUpdate(query);
         } catch (Exception e) {
             throw new JPSRuntimeException("Unable to execute updates: " + e.getMessage());
+        }
+    }
+
+    public static void createPostGisPasswordFile() {
+        try {
+            Files.write(Paths.get(TEST_POSTGIS_PASSWORD_PATH), TEST_POSTGIS_PASSWORD.getBytes());
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Failed to write the password file.", ex);
+        }
+    }
+
+    public static void deletePostGisPasswordFile() {
+        Path path = Paths.get(TEST_POSTGIS_PASSWORD_PATH);
+        // Only delete if there is a file
+        if (Files.exists(path)) {
+            try {
+                Files.delete(path);
+            } catch (IOException ex) {
+                throw new RuntimeException("Error deleting password file " + ex.getMessage());
+            }
         }
     }
 

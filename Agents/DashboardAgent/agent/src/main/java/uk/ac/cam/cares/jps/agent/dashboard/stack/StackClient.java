@@ -18,9 +18,9 @@ import java.util.Queue;
  * @author qhouyee
  */
 public class StackClient {
+    private String DASHBOARD_URL;
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private final String STACK_RDB_DOMAIN;
-    private final String DASHBOARD_URL;
     private final PostGisClient POSTGIS_CLIENT;
     private final SparqlClient SPARQL_CLIENT;
 
@@ -56,6 +56,8 @@ public class StackClient {
      * @param hostName The container's host name.
      */
     private static String getStackNameFromHost(String hostName) {
+        // WIP: Added this for integration test to function but will be removed in favor of endpoint config classes
+        if (hostName.equals("172.17.0.1")) return "172.17.0.1";
         // Host names for stack's SPARQL endpoint are usually in the format: stackName-blazegraph
         // Code here retrieves stackName
         int stackIndex = hostName.lastIndexOf("-blazegraph");
@@ -101,6 +103,13 @@ public class StackClient {
      */
     public String getDashboardUrl() {
         return this.DASHBOARD_URL;
+    }
+
+    /**
+     * Set the dashboard service url within this stack.
+     */
+    public void setDashboardUrl(String url) {
+        this.DASHBOARD_URL = url;
     }
 
     /**

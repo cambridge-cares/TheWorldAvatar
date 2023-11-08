@@ -27,27 +27,12 @@ class PostGisClientTest {
 
     @BeforeAll
     static void setup() {
-        try (Connection conn = IntegrationTestUtils.connectDatabase(IntegrationTestUtils.TEST_POSTGIS_JDBC)) {
-            String dbCreationQuery = "CREATE DATABASE " + TEMPERATURE_SQL_DATABASE;
-            IntegrationTestUtils.updateDatabase(conn, dbCreationQuery);
-            dbCreationQuery = "CREATE DATABASE " + ROOM_SQL_DATABASE;
-            IntegrationTestUtils.updateDatabase(conn, dbCreationQuery);
-            genSampleDbTable();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to set up test databases: " + e.getMessage());
-        }
+        genSampleDatabases();
     }
 
     @AfterAll
     static void cleanUp() {
-        try (Connection conn = IntegrationTestUtils.connectDatabase(IntegrationTestUtils.TEST_POSTGIS_JDBC)) {
-            String dbDeletionQuery = "DROP DATABASE IF EXISTS " + TEMPERATURE_SQL_DATABASE;
-            IntegrationTestUtils.updateDatabase(conn, dbDeletionQuery);
-            dbDeletionQuery = "DROP DATABASE IF EXISTS " + ROOM_SQL_DATABASE;
-            IntegrationTestUtils.updateDatabase(conn, dbDeletionQuery);
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to clean up databases: " + e.getMessage());
-        }
+        removeSampleDatabases();
     }
 
     @Test
@@ -177,6 +162,29 @@ class PostGisClientTest {
         assertEquals(SAMPLE_ROOM_HUMIDITY_TABLE, metadata[2]);
         assertEquals(ROOM_SQL_DATABASE, metadata[3]);
         assertEquals("null", metadata[4]);
+    }
+
+    public static void genSampleDatabases() {
+        try (Connection conn = IntegrationTestUtils.connectDatabase(IntegrationTestUtils.TEST_POSTGIS_JDBC)) {
+            String dbCreationQuery = "CREATE DATABASE " + TEMPERATURE_SQL_DATABASE;
+            IntegrationTestUtils.updateDatabase(conn, dbCreationQuery);
+            dbCreationQuery = "CREATE DATABASE " + ROOM_SQL_DATABASE;
+            IntegrationTestUtils.updateDatabase(conn, dbCreationQuery);
+            genSampleDbTable();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to set up test databases: " + e.getMessage());
+        }
+    }
+
+    public static void removeSampleDatabases() {
+        try (Connection conn = IntegrationTestUtils.connectDatabase(IntegrationTestUtils.TEST_POSTGIS_JDBC)) {
+            String dbDeletionQuery = "DROP DATABASE IF EXISTS " + TEMPERATURE_SQL_DATABASE;
+            IntegrationTestUtils.updateDatabase(conn, dbDeletionQuery);
+            dbDeletionQuery = "DROP DATABASE IF EXISTS " + ROOM_SQL_DATABASE;
+            IntegrationTestUtils.updateDatabase(conn, dbDeletionQuery);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to clean up databases: " + e.getMessage());
+        }
     }
 
     public static void genSampleDbTable() {
