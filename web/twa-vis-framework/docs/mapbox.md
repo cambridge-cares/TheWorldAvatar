@@ -145,7 +145,7 @@ You can find the visualisation, along with documentation of how it was put toget
 
 <br/>
 <p align="center">
- <img src="../example-mapbox-vis/readme-example.JPG" alt="Part of the example Mapbox visualisation." width="75%"/>
+ <img src="../docs/img/readme-mapbox.JPG" alt="Part of the example Mapbox visualisation." width="75%"/>
 </p>
 <p align="center">
  <em>Part of the example Mapbox visualisation.</em><br/><br/><br/>
