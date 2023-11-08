@@ -35,7 +35,7 @@ class OKReactionLocator:
 
         return query_graph, verbalization
 
-    def locate_concept_name(self, entity_iri: str):
+    def _locate_concept_name(self, entity_iri: str):
         query_graph = QueryGraph()
         query_graph.add_node(
             "Reaction",
@@ -77,19 +77,17 @@ class OKReactionLocator:
             x for x in entity.products if x.iri not in sampled_product_iris
         ]
 
+        sampling_frame = unsampled_reactants + unsampled_products
+
         sampled_mechanism_nodes = get_objs(
             query_graph,
             subj="Reaction",
             predicate="okin:belongsToPhase/okin:containedIn",
         )
-        sampled_mechanism_iris = [
-            query_graph.nodes[n]["iri"] for n in sampled_mechanism_nodes
-        ]
-        unsampled_mechanisms = (
-            [entity.mechanism] if entity.mechanism.iri not in sampled_mechanism_iris else []
-        )
+        assert len(sampled_mechanism_nodes) <= 1
+        if len(sampled_mechanism_nodes) == 0:
+            sampling_frame += [entity.mechanism]
 
-        sampling_frame = unsampled_reactants + unsampled_products + unsampled_mechanisms
         if len(sampling_frame) == 0:
             return query_graph, ""
 
@@ -117,7 +115,7 @@ class OKReactionLocator:
             query_graph.add_edge("Reaction", product_node, label="ocape:hasProduct")
             verbalization = "has product [{label}]".format(label=sampled.label)
         elif isinstance(sampled, OKMechanism):
-            mechanism_node = "Mechanism_" + str(len(sampled_mechanism_nodes))
+            mechanism_node = "Mechanism"
             query_graph.add_node(
                 mechanism_node,
                 iri=sampled.iri,
@@ -128,7 +126,9 @@ class OKReactionLocator:
             query_graph.add_edge(
                 "Reaction", mechanism_node, label="okin:belongsToPhase/okin:containedIn"
             )
-            verbalization = "is involved the mechanism [{label}]".format(label=sampled.label)
+            verbalization = "is involved the mechanism [{label}]".format(
+                label=sampled.label
+            )
         else:
             raise ValueError("Unexpected type: " + type(sampled))
 
@@ -136,7 +136,7 @@ class OKReactionLocator:
 
     def locate_concept_and_relation_multi(self, entity_iri: str, cond_num: int):
         verbalized_conds = []
-        query_graph, concept = self.locate_concept_name(entity_iri)
+        query_graph, concept = self._locate_concept_name(entity_iri)
 
         for _ in range(cond_num):
             query_graph, verbalized_cond = self._locate_concept_and_relation(

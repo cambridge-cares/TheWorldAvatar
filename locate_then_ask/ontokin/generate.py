@@ -79,7 +79,7 @@ LIMIT 100"""
         with open(filepath, "r") as f:
             seed_entities = [x.strip() for x in f.readlines()]
 
-        return [x for x in seed_entities if x]
+        return [x for x in seed_entities if x][10:110]
 
     def __init__(self):
         self.store = OKEntityStore()

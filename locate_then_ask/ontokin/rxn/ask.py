@@ -9,12 +9,30 @@ class OKReactionAsker:
     def __init__(self):
         self.graph2sparql = OKGraph2Sparql()
 
+    def _ask_mechanism(self, query_graph: QueryGraph, verbalization: str):
+        if "Mechanism" in query_graph.nodes:
+            return query_graph, verbalization
+
+        query_graph = copy.deepcopy(query_graph)
+
+        qnode = "Mechanism"
+        query_graph.add_node(qnode, question_node=True)
+        query_graph.add_edge(
+            "Reaction", qnode, label="okin:belongsToPhase/okin:containedIn"
+        )
+
+        verbalization += " across all the mechanisms that it appears in"
+
+        return query_graph, verbalization
+
     def ask_name(self, query_graph: QueryGraph, verbalization: str):
         query_graph = copy.deepcopy(query_graph)
-        query_graph.nodes["Reaction"]["question_node"] = True
 
-        query_sparql = self.graph2sparql.convert(query_graph)
+        query_graph.nodes["Reaction"]["question_node"] = True
         verbalization = "What is " + verbalization
+
+        query_graph, verbalization = self._ask_mechanism(query_graph, verbalization)
+        query_sparql = self.graph2sparql.convert(query_graph)
 
         return AskDatum(
             query_graph=query_graph,
@@ -37,7 +55,9 @@ class OKReactionAsker:
             K = "falloff model coefficients"
             qnode = "FallOffModelCoefficient"
             query_graph.add_node(qnode, question_node=True)
-            query_graph.add_edge("Reaction", qnode, label="okin:hasFallOffModelCoefficient")
+            query_graph.add_edge(
+                "Reaction", qnode, label="okin:hasFallOffModelCoefficient"
+            )
         else:
             K = "rate coefficients"
             qnode = "RateCoefficient"
@@ -45,7 +65,15 @@ class OKReactionAsker:
             query_graph.add_nodes_from(
                 [
                     (qnode, dict(question_node=True)),
-                    (bclass_node, dict(iri=bclass_node, prefixed=True, template_node=True, label=bclass_node)),
+                    (
+                        bclass_node,
+                        dict(
+                            iri=bclass_node,
+                            prefixed=True,
+                            template_node=True,
+                            label=bclass_node,
+                        ),
+                    ),
                 ]
             )
             query_graph.add_edges_from(
@@ -55,7 +83,6 @@ class OKReactionAsker:
                 ]
             )
 
-        query_sparql = self.graph2sparql.convert(query_graph)
         template = random.choice(
             [
                 "For {E}, what are its {K}",
@@ -66,6 +93,9 @@ class OKReactionAsker:
             E=verbalization,
             K=K,
         )
+
+        query_graph, verbalization = self._ask_mechanism(query_graph, verbalization)
+        query_sparql = self.graph2sparql.convert(query_graph)
 
         return AskDatum(
             query_graph=query_graph,

@@ -14,8 +14,7 @@ class OKReactionExampleMaker(ExampleMakerBase):
     def make_example(self, entity_iri: str):
         locate_strategy = random.sample(
             population=["entity_name", "concept_and_relation"],
-            # counts=[1, 3],
-            counts=[0, 3],
+            counts=[1, 3],
             k=1,
         )[0]
         if locate_strategy == "entity_name":
