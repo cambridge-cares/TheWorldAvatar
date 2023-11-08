@@ -8,23 +8,21 @@ The IsochroneAgent is an agent that
 
 ## 2. Prerequisites
 ### 2.1. Stack Set Up
-The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack.
-
+The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack. Several pre-configured examples for the different use cases for King's Lynn and Pirmasens can be found in [stack-data-uploader-inputs](stack-data-uploader-inputs/).
+ 
 ### 2.2. Uploading OSM Data via stack-data-uploader
 1) Download desired bounding box from [BBBike.org](https://extract.bbbike.org/) (check junk email) or [GeoFabrik](https://download.geofabrik.de/) in `.pbf` format.
 2) `.pbf` uploaded via [stack-data-uploader] in [osm2pgrouting](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#osm-data) data type.
 
 ### 2.3. Uploading population data via stack-data-uploader
 1) Download High Resolution Population Density Maps from [HDX - Meta Data For Good](https://data.humdata.org/dataset/germany-high-resolution-population-density-maps-demographic-estimates?).
-2) Configuration to upload population data using [stack-data-uploader] in King's Lynn and Pirmasens can be found in [stack-data-uploader-inputs](stack-data-uploader-inputs/).
+2) Upload population data using [stack-data-uploader].
 
 ## 3. Agent Configuration 
 ### 3.1 Config Properties
 Items to configure in [config.properties](inputs/config.properties): 
-1) `timeThreshold` - The time cutoff of an isochrone in minutes. Default value is set at 15 minutes. 
-2) `timeInterval` - The time increment value of each isochrone in minutes. Default value is set at 5 mintues time interval. 
-3) `populationTables` - The exact table names of the population tables should follow the names of population table as per [uploaded via stack-data-uploader](#23-uploading-population-data-via-stack-data-uploader). 
-4) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. 
+1) `populationTables` - The exact table names of the population tables should follow the names of population table as per [uploaded via stack-data-uploader](#23-uploading-population-data-via-stack-data-uploader). 
+2) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. Blazegraph endpoint can be on the same stack or different stack.
 
 ### 3.2 SPARQL Queries
 SPARQL queries are used to retrieve the locations of POI. 
@@ -70,16 +68,22 @@ The agent has been implemented to work in the stack, which requires the Isochron
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
 ### 5.3 Running the Agent
-The agent is reachable at the `/update` endpoint. `function` is used to indicate the type. 
+The agent is reachable at the `/update` endpoint.
+#### Input specification
+1) `function` - The use case scenario to run the isochrones. 
+1) `timeThreshold` - The time cutoff of an isochrone in minutes. Default value is set at 15 minutes. 
+2) `timeInterval` - The time increment value of each isochrone in minutes. Default value is set at 5 mintues time interval. 
 
 To run the agent, simply run the following cURL command:
 
 #### 15 Minute Smart City (15MSC)
+Below curl command specify a 15 minutes time threshold and with a 5 minute interval in between isochrones for 15 Minute Smart City scenario. 
 ```
 curl -X POST "localhost:3838/isochroneagent/update?function=15MSC&timethreshold=15&timeinterval=5"
 ```
 
 #### Toilet Isochrone
+Below curl command specify a 10 minutes time threshold and with a 2 minute interval in between isochrones generated from toilets.
 ```
 curl -X POST "localhost:3838/isochroneagent/update?function=Toilet&timethreshold=10&timeinterval=2"
 ```
@@ -104,8 +108,8 @@ The debugger port will be available at 5005.
 ### 7.1 Feature Info Agent
 The isochrones is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent.
 
-1) In the directory [twa-vf/15MSCPirmasens/webspace](twa-vf/15MSCPirmasens/webspace/), contains `data.json` prepared for TWA-VF that is meant to be placed inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
-2) In the directory [twa-vf/FeatureInfoAgent](twa-vf/FeatureInfoAgent/queries/), contains `SPARQL queries` and `fia-config.json` to be used with the agent [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#configuration).  Place the `fia-config.json` and `isochrone.sparql` inside `stack-manager/inputs/data/queries` as according the volume path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
+1) In the directory [stack-manager-config/data/webspace/](stack-manager-config/data/webspace/), contains the TWA-VF `data.json` prepared for the different scnearios that is meant to be placed inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
+2) In the directory [stack-manager-config/data/fia-queries/](stack-manager-config/data/fia-queries/), contains `SPARQL queries` and `fia-config.json` to be used with the agent [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#configuration).  Place the `fia-config.json` and `isochrone.sparql` inside `stack-manager/inputs/data/queries` as according the bind mount path specified in the stack-manager config's [`feature-info-agent.json`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/sample/feature-info-agent.json).
 
 
 
