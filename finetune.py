@@ -41,14 +41,14 @@ def get_trainer(
             data = json.load(f)
 
         nlqs = [preprocess_nl(x["question"]) for x in data]
-        source = [preprocess_sparql(x["query"]["sparql"]) for x in data]
-        target = [T5_PREFIX_NL2SPARQL + x for x in nlqs]
+        source = [T5_PREFIX_NL2SPARQL + x for x in nlqs]
+        target = [preprocess_sparql(x["query"]["sparql"]) for x in data]
 
         if data_args.multi_domain:
+            src_for_cls = [T5_PREFIX_DOMAINCLS + x for x in nlqs]
             domains = [x["domain"] for x in data]
-            nlqs_for_cls = [T5_PREFIX_DOMAINCLS + x for x in nlqs]
 
-            source += nlqs_for_cls
+            source += src_for_cls
             target += domains
 
         dataset = Dataset.from_dict(dict(source=source, target=target))
