@@ -169,7 +169,8 @@ class DHOptimisationAgent(DerivationAgent):
         outputs = self.sparql_client.get_existing_optimisation_outputs(opti_inputs['q_demand'])
         
         
-        setup, index = define_optimisation_setup(self.sparql_client, ts_client)
+        setup, index = define_optimisation_setup(self.sparql_client, ts_client,
+                                                 consumption_models, cogen_models)
         
        
         # Mock optimisation data

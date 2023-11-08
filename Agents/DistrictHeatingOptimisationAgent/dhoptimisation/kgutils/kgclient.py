@@ -379,6 +379,59 @@ class KGClient(PySparqlClient):
             raise_error(ValueError, 'No unique sourcing contract data could be retrieved from KG.')
             
             
+    def get_heat_boiler_properties(self, boiler_iri:str):
+        """
+        Returns dictionary with all static heat boiler properties
+        as required for overall optimisation setup dict
+        NOTE: For time series data, instance IRIs are included as 
+              "placeholers" for which to retrieve ts data subsequently
+        NOTE: Required units specified directly in query as optimisation
+              algorithm requires values in corresponding units
+
+        Arguments:
+            boiler_iri (str) -- IRI of conventional gas boiler
+        Returns:
+            props (dict) -- dictionary with boiler properties
+        """
+
+        query = f"""
+            SELECT DISTINCT ?hb1 ?hb2 ?hb7 ?hb8 ?hb9 ?hb10
+            WHERE {{
+            <{boiler_iri}> <{RDFS_LABEL}> ?hb1 ;
+                      <{OHN_HAS_RATED_THERMAL_POWER}> ?power_q ;
+                      <{OHN_HAS_OPERATING_AVAILABILITY}> ?hb8 ;
+                      <{OHN_HAS_GENERATED_HEAT_AMOUNT}> ?hb10 ;
+                      <{OHN_APPLICABLE_OPEX_COMPONENT}> ?comp .
+            {self.get_numerical_value('power_q', 'hb2', OM_MEGAWATT)}
+            {{
+                ?comp <{RDF_TYPE}> <{OHN_DEMAND_DRIVEN_WEAR_COST}>
+                BIND(?comp AS ?hb7)
+            }}
+            UNION
+            {{
+                ?comp <{RDF_TYPE}> <{OHN_HOURLY_LABOUR_COST}>
+                BIND(?comp AS ?hb9)
+            }}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract distinct information from query result (2 entries due to union)
+        if len(res) == 2:
+            props = {'hb1': self.get_unique_value(res, 'hb1', str),
+                     'hb2': self.get_unique_value(res, 'hb2', float),
+                     # Add IRIs associated with actual dynamic ts data
+                     'hb7': self.get_unique_value(res, 'hb7', str),
+                     'hb8': self.get_unique_value(res, 'hb8', str),
+                     'hb9': self.get_unique_value(res, 'hb9', str),
+                     'hb10': self.get_unique_value(res, 'hb10', str)
+            }
+            return props
+        else:
+            raise_error(ValueError, 'No unique heat boiler data could be retrieved from KG.')
+            
+            
     def get_tiered_unit_prices(self, tiered_unit_price_iri:str):
         """
         Returns dictionary with tiered unit price details, i.e.,

@@ -15,14 +15,19 @@ from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
 
 
-def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient):
+def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
+                              consumption_models: dict, cogen_models: dict):
     """
     ...
     
     Arguments:
         kg_client {KGClient} -- pre-initialised SPARQL client
         ts_client {TSClient} -- pre-initialised TimeSeries client
-    
+        consumption_models {dict} -- dict with pre-trained gas consumption models;
+                                     generator IRIs as keys and model objects as values
+        cogen_models {dict} -- dict with pre-trained electricity co-gen models;
+                               generator IRIs as keys and model objects as values
+
     Returns:
         setup {dict} -- dictionary describing the full optimisation setup with
                         structure shown below
@@ -116,6 +121,22 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient):
         new_keys = {key: [] for key in sc if key not in setup}
         setup.update(new_keys)
         for key, value in sc.items():
+            setup[key].append(value)
+            
+    # Add gas boilers
+    for boiler in heat_providers.get('boilers', []):
+        # Get static boiler details 
+        # (include instance IRIs for which to retrieve ts data subsequently)
+        hb = kg_client.get_heat_boiler_properties(boiler)
+        # Set gas consumption model
+        hb.update({'hb4': consumption_models[boiler]})
+        # Set start-up and shut-down cost to zero
+        # NOTE: Negligible/NA for conventional gas boilers
+        hb.update({'hb5': 0.0, 'hb6': 0.0})
+        # Add to overall optimisation detup
+        new_keys = {key: [] for key in hb if key not in setup}
+        setup.update(new_keys)
+        for key, value in hb.items():
             setup[key].append(value)
         
     print('')
