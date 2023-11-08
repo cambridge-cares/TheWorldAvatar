@@ -32,13 +32,13 @@ Documentation for the TWA-VF is spread across a number of files, and is broken d
 ## Examples
 
 <p align="center">
- <img src="./example-mapbox-vis/readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="75%"/>
+ <img src="./docs/img/readme-mapbox.JPG" alt="Example of 2D data on a Mapbox visualisation" width="75%"/>
 </p>
 <p align="center">
  <em>Example of 2D data on a Mapbox visualisation.</em><br/><br/><br/>
 </p>
 <p align="center">
- <img src="./example-cesium-vis/readme-styling.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="75%"/>
+ <img src="./docs/img/readme-cesium.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="75%"/>
 </p>
 <p align="center">
  <em>Example of 3D data on a CesiumJS visualisation.</em>
