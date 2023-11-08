@@ -107,6 +107,10 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
     gp = kg_client.get_gas_properties()
     setup.update(gp)
     
+    # Add market prices
+    mp = kg_client.get_market_prices()
+    setup.update(mp)
+    
     # Get all heat providers
     heat_providers = kg_client.get_heat_providers()
     

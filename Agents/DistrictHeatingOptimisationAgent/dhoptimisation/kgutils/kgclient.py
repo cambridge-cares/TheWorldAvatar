@@ -293,7 +293,47 @@ class KGClient(PySparqlClient):
             }
             return props
         else:
-            raise_error(ValueError, 'No unique gas properties could be retrieved from KG.')
+            raise_error(ValueError, 'Gas properties could not be retrieved unambiguously from KG.')
+            
+            
+    def get_market_prices(self):
+        """
+        Returns dictionary with all market price instances as required for
+        overall optimisation setup dict
+        NOTE: For time series data, instance IRIs are included as 
+              "placeholers" for which to retrieve ts data subsequently
+        Returns:
+            props (dict) -- dictionary with market prices
+        """
+
+        query = f"""
+            SELECT DISTINCT ?mp1 ?mp2 ?mp3 ?mp4 ?mp5 ?mp6
+            WHERE {{            
+            ?mp1 <{RDF_TYPE}> <{OHN_GAS_UNIT_COST}> ;
+                 ^<{OHN_HAS_UNIT_PRICE}>/^<{ONTOCHEMPLANT_HASFUELTYPE}>/<{RDF_TYPE}> <{OHN_HEATBOILER}> .
+            ?mp2 <{RDF_TYPE}> <{OHN_GAS_UNIT_COST}> ;
+                 ^<{OHN_HAS_UNIT_PRICE}>/^<{ONTOCHEMPLANT_HASFUELTYPE}>/<{RDF_TYPE}> <{OHN_GASTURBINE}> .            
+            ?mp3 <{RDF_TYPE}> <{OHN_ELECTRICITY_SPOT_PRICE}> .
+            ?mp4 <{RDF_TYPE}> <{OHN_CO2_CERTIFICATE_PRICE}> .
+            ?mp5 <{RDF_TYPE}> <{OHN_CHP_BONUS}> .
+            ?mp6 <{RDF_TYPE}> <{OHN_GRID_CHARGES}> .
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            props = {'mp1': self.get_unique_value(res, 'mp1', str),
+                     'mp2': self.get_unique_value(res, 'mp2', str),
+                     'mp3': self.get_unique_value(res, 'mp3', str),
+                     'mp4': self.get_unique_value(res, 'mp4', str),
+                     'mp5': self.get_unique_value(res, 'mp5', str),
+                     'mp6': self.get_unique_value(res, 'mp6', str),
+            }
+            return props
+        else:
+            raise_error(ValueError, 'Market prices could not be retrieved unambiguously from KG.')
 
 
     def get_heat_providers(self):
@@ -377,6 +417,45 @@ class KGClient(PySparqlClient):
             return props
         else:
             raise_error(ValueError, 'Sourcing contract data could not be retrieved unambiguously from KG.')
+            
+            
+    def get_tiered_unit_prices(self, tiered_unit_price_iri:str):
+        """
+        Returns dictionary with tiered unit price details, i.e.,
+        lists of annual energy caps and associated price bands
+        NOTE: Required units specified directly in query as optimisation
+              algorithm requires values in corresponding units
+
+        Arguments:
+            tiered_unit_price_iri (str) -- IRI of tiered unit price
+                                    instance with associated tiers
+        Returns:
+            (dict) -- dictionary with tiered unit price thresholds
+        """
+
+        query = f"""
+            SELECT DISTINCT ?p ?q
+            WHERE {{
+            <{tiered_unit_price_iri}> <{OHN_HAS_TIER}> ?tier .
+            ?tier <{OHN_HAS_CUMULATIVE_ENERGYCAP}> ?tier_q ;
+                  <{OHN_HAS_UNIT_PRICE}> ?tier_p .
+            {self.get_numerical_value('tier_q', 'q', OM_MEGAWATTHOUR)} 
+            {self.get_numerical_value('tier_p', 'p', OM_EURO_PER_MEGAWATTHOUR)} 
+            }}
+            ORDER BY ASC(?q)
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Create combined list from query results
+        comb = list(zip(self.get_list_of_values(res, 'q', float),
+                        self.get_list_of_values(res, 'p', float)))
+        # Sort collectively by ascending heat cap (q) - should not be necessary
+        # due to sorting in SPARQL query, but just to be sure
+        comb.sort()
+        q, p = zip(*comb)
+        
+        return {'sc2': list(q), 'sc3': list(p)}
             
             
     def get_heat_boiler_properties(self, boiler_iri:str):
@@ -492,45 +571,6 @@ class KGClient(PySparqlClient):
             return props
         else:
             raise_error(ValueError, 'Gas turbine data could not be retrieved unambiguously from KG.')
-            
-            
-    def get_tiered_unit_prices(self, tiered_unit_price_iri:str):
-        """
-        Returns dictionary with tiered unit price details, i.e.,
-        lists of annual energy caps and associated price bands
-        NOTE: Required units specified directly in query as optimisation
-              algorithm requires values in corresponding units
-
-        Arguments:
-            tiered_unit_price_iri (str) -- IRI of tiered unit price
-                                    instance with associated tiers
-        Returns:
-            (dict) -- dictionary with tiered unit price thresholds
-        """
-
-        query = f"""
-            SELECT DISTINCT ?p ?q
-            WHERE {{
-            <{tiered_unit_price_iri}> <{OHN_HAS_TIER}> ?tier .
-            ?tier <{OHN_HAS_CUMULATIVE_ENERGYCAP}> ?tier_q ;
-                  <{OHN_HAS_UNIT_PRICE}> ?tier_p .
-            {self.get_numerical_value('tier_q', 'q', OM_MEGAWATTHOUR)} 
-            {self.get_numerical_value('tier_p', 'p', OM_EURO_PER_MEGAWATTHOUR)} 
-            }}
-            ORDER BY ASC(?q)
-        """
-        query = self.remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
-
-        # Create combined list from query results
-        comb = list(zip(self.get_list_of_values(res, 'q', float),
-                        self.get_list_of_values(res, 'p', float)))
-        # Sort collectively by ascending heat cap (q) - should not be necessary
-        # due to sorting in SPARQL query, but just to be sure
-        comb.sort()
-        q, p = zip(*comb)
-        
-        return {'sc2': list(q), 'sc3': list(p)}
     
 
     def get_efw_output_iris(self, efw_plant:str):
