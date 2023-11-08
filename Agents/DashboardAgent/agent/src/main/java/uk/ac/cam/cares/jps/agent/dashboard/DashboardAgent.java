@@ -24,6 +24,7 @@ public class DashboardAgent extends JPSAgent {
     // Agent starts off in valid state, and will be invalid when running into exceptions
     private static boolean VALID = true;
     private static StackClient SERVICES;
+    private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
 
     /**
@@ -96,6 +97,9 @@ public class DashboardAgent extends JPSAgent {
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
+            default:
+                LOGGER.fatal(UNDEFINED_ROUTE_ERROR_MSG + route);
+                jsonMessage.put("Result", UNDEFINED_ROUTE_ERROR_MSG + route);
         }
         // Total agent run time in nanoseconds
         long duration = System.nanoTime() - startTime;
