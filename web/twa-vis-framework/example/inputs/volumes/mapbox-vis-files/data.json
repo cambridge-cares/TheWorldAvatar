@@ -1,0 +1,170 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "Cambridge",
+            "sources": [
+                {
+                    "id": "building-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Abuildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "college-source",
+                    "type": "geojson",
+                    "data": "http://localhost:38383/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Acolleges&outputFormat=application%2Fjson",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 20
+                },
+                {
+                    "id": "raster-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Araster&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&transparent=true&format=image/png"
+                    ]
+                },
+                {
+                    "id": "heatmap-source",
+                    "type": "geojson",
+                    "data": "http://localhost:38383/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Aheatmap&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "lines-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Alines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG%3A3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "building-layer",
+                    "name": "Sample Polygons (Vector)",
+                    "source": "building-source",
+                    "source-layer": "buildings",
+                    "type": "fill-extrusion",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": ["get", "color"],
+                        "fill-extrusion-opacity": 0.85,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": ["get", "height"],
+                        "fill-extrusion-vertical-gradient": true
+                    }
+                },
+                {
+                    "id": "colleges-layer",
+                    "name": "Sample Points (GeoJSON)",
+                    "source": "college-source",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "order": 2,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": ["get", "icon-image"],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.2, 20, 0.4],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                },
+                {
+                    "id": "colleges-layer_cluster",
+                    "name":  "Sample Points (GeoJSON)",
+                    "source": "college-source",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "order": 2,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "empty",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.25, 20, 0.5],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Bold"],
+                        "text-size": 12,
+                        "text-anchor": "center",
+                        "text-offset": [0, -0.15]
+                    }
+                },
+                {
+                    "id": "lines-layer",
+                    "name": "Sample Lines (Vector)",
+                    "source": "lines-source",
+                    "source-layer": "lines",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "line-color": "#d35230",
+                        "line-width": 3
+                    }
+                },
+                {
+                    "id": "raster-layer",
+                    "name": "Sample Raster",
+                    "source": "raster-source",
+                    "type": "raster",
+                    "order": 0,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                },
+                {
+                    "id": "heatmap-layer",
+                    "name": "Sample Heatmap",
+                    "source": "heatmap-source",
+                    "type": "heatmap",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "heatmap-opacity": 0.5,
+                        "heatmap-radius": [
+                            "interpolate",
+                            ["linear"],
+                            ["zoom"],
+                            8,
+                            10,
+                            16,
+                            100
+                        ],
+                        "heatmap-weight": [
+                            "interpolate",
+                            ["linear"],
+                            ["get", "mag"],
+                            0,
+                            0,
+                            100,
+                            1
+                        ],
+                        "heatmap-color": [
+                            "interpolate",
+                            ["linear"],
+                            ["heatmap-density"],
+                            0.0,
+                            "rgba(33,102,172,0)",
+                            0.2,
+                            "rgb(103,169,207)",
+                            0.4,
+                            "rgb(209,229,240)",
+                            0.6,
+                            "rgb(253,219,199)",
+                            0.8,
+                            "rgb(239,138,98)",
+                            1.0,
+                            "rgb(178,24,43)"
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
