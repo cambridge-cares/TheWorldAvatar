@@ -34,7 +34,7 @@ import java.util.List;
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 
 @Testcontainers
-public class CARESWeatherStationInputAgentIntegrationTest {
+public class CARESWeatherStationTimeSeriesIntegrationTest {
 
     // Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
     // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
@@ -73,7 +73,7 @@ public class CARESWeatherStationInputAgentIntegrationTest {
     JSONObject weatherDataReadings;
 
     @Before
-    public void initializeAgent() throws IOException {
+    public void initialize() throws IOException {
         // Start the containers
         try {
             // Start Blazegraph container
@@ -81,7 +81,7 @@ public class CARESWeatherStationInputAgentIntegrationTest {
             // Start postgreSQL container
             postgres.start();
         } catch (Exception e) {
-            throw new AssertionError("TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again");
+            throw new AssertionError("IntegrationTest: Docker container startup failed. Please try running tests again");
         }
 
         // Create a properties file that points to a dummy mapping folder //
