@@ -90,13 +90,14 @@ class OKMechanismLocator:
         query_graph, concept = self.locate_concept_name(entity_iri)
 
         for _ in range(cond_num):
-            query_graph, verbalized_cond = self._locate_concept_and_relation(query_graph)
+            query_graph, verbalized_cond = self._locate_concept_and_relation(
+                query_graph
+            )
             if verbalized_cond is not None:
                 verbalized_conds.append(verbalized_cond)
 
         verbalization = "the {concept} that {conds}".format(
-            concept=concept,
-            conds=" and ".join(verbalized_conds)
+            concept=concept, conds=" and ".join(verbalized_conds)
         )
 
         return query_graph, verbalization
