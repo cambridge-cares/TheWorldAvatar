@@ -20,8 +20,8 @@ class ModelArguments:
 
 @dataclass
 class DatasetArguments:
-    train_data_path: str
-    eval_data_path: str
+    train_data_path: Optional[str] = field(default=None)
+    eval_data_path: Optional[str] = field(default=None)
     source_max_len: int = field(
         default=512,
         metadata={

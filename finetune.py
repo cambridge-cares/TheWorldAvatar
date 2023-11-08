@@ -24,7 +24,7 @@ def get_trainer(
     data_args: DatasetArguments,
     train_args: Seq2SeqTrainingArguments,
 ):
-    model, tokenizer = get_hf_model_and_tokenizer(model_args.model_path)
+    model, tokenizer = get_hf_model_and_tokenizer(model_args)
 
     def _tokenize(examples):
         model_inputs = tokenizer(
@@ -41,7 +41,7 @@ def get_trainer(
             data = json.load(f)
 
         nlqs = [preprocess_nl(x["question"]) for x in data]
-        source = [preprocess_sparql(x["query"]["sparql_compact"]) for x in data]
+        source = [preprocess_sparql(x["query"]["sparql"]) for x in data]
         target = [T5_PREFIX_NL2SPARQL + x for x in nlqs]
 
         if data_args.multi_domain:
