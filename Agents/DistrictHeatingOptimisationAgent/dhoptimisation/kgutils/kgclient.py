@@ -376,7 +376,7 @@ class KGClient(PySparqlClient):
             }
             return props
         else:
-            raise_error(ValueError, 'No unique sourcing contract data could be retrieved from KG.')
+            raise_error(ValueError, 'Sourcing contract data could not be retrieved unambiguously from KG.')
             
             
     def get_heat_boiler_properties(self, boiler_iri:str):
@@ -429,7 +429,69 @@ class KGClient(PySparqlClient):
             }
             return props
         else:
-            raise_error(ValueError, 'No unique heat boiler data could be retrieved from KG.')
+            raise_error(ValueError, 'Heat boiler data could not be retrieved unambiguously from KG.')
+            
+            
+    def get_gas_turbine_properties(self, gt_iri:str):
+        """
+        Returns dictionary with all static gas turbine properties
+        as required for overall optimisation setup dict
+        NOTE: For time series data, instance IRIs are included as 
+              "placeholers" for which to retrieve ts data subsequently
+        NOTE: Required units specified directly in query as optimisation
+              algorithm requires values in corresponding units
+
+        Arguments:
+            gt_iri (str) -- IRI of gas turbine
+        Returns:
+            props (dict) -- dictionary with gas turbine properties
+        """
+
+        query = f"""
+            SELECT DISTINCT ?gt1 ?gt2 ?gt3 ?gt4 ?gt8 ?gt9 ?gt10 ?gt11 ?gt14
+            WHERE {{
+            <{gt_iri}> <{RDFS_LABEL}> ?gt1 ;
+                      <{OHN_HAS_RATED_ELECTRICAL_POWER}> ?power_el ;
+                      <{OHN_HAS_RATED_THERMAL_POWER}> ?power_q ;
+                      <{OHN_HAS_MIN_THERMAL_LOAD}> ?q_min ;
+                      <{OHN_HAS_MIN_IDLE_TIME}> ?t_min ;
+                      <{OHN_HAS_OPERATING_AVAILABILITY}> ?gt10 ;
+                      <{OHN_HAS_GENERATED_HEAT_AMOUNT}> ?gt14 ;
+                      <{OHN_APPLICABLE_OPEX_COMPONENT}> ?comp .
+            {self.get_numerical_value('power_el', 'gt2', OM_MEGAWATT)}
+            {self.get_numerical_value('power_q', 'gt3', OM_MEGAWATT)}
+            {self.get_numerical_value('q_min', 'gt4', OM_MEGAWATT)}
+            {self.get_numerical_value('t_min', 'gt8', OM_HOUR)}
+            {{
+                ?comp <{RDF_TYPE}> <{OHN_HOURLY_WEAR_COST}>
+                BIND(?comp AS ?gt9)
+            }}
+            UNION
+            {{
+                ?comp <{RDF_TYPE}> <{OHN_HOURLY_LABOUR_COST}>
+                BIND(?comp AS ?gt11)
+            }}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract distinct information from query result (2 entries due to union)
+        if len(res) == 2:
+            props = {'gt1': self.get_unique_value(res, 'gt1', str),
+                     'gt2': self.get_unique_value(res, 'gt2', float),
+                     'gt3': self.get_unique_value(res, 'gt3', float),
+                     'gt4': self.get_unique_value(res, 'gt4', float),
+                     'gt8': self.get_unique_value(res, 'gt8', int),
+                     # Add IRIs associated with actual dynamic ts data
+                     'gt9': self.get_unique_value(res, 'gt9', str),
+                     'gt10': self.get_unique_value(res, 'gt10', str),
+                     'gt11': self.get_unique_value(res, 'gt11', str),
+                     'gt14': self.get_unique_value(res, 'gt14', str)
+            }
+            return props
+        else:
+            raise_error(ValueError, 'Gas turbine data could not be retrieved unambiguously from KG.')
             
             
     def get_tiered_unit_prices(self, tiered_unit_price_iri:str):
@@ -648,8 +710,10 @@ class KGClient(PySparqlClient):
             # Try to cast retrieved value to target type (throws error if not possible)
             if cast_to and issubclass(cast_to, bool):
                 res_list[0] = bool(strtobool(res_list[0]))
-            elif cast_to and issubclass(cast_to, (int, float)):
+            elif cast_to and issubclass(cast_to, float):
                 res_list[0] = cast_to(res_list[0])
+            elif cast_to and issubclass(cast_to, int):
+                res_list[0] = cast_to(float(res_list[0]))
             return res_list[0]
         else:
             if len(res_list) == 0:

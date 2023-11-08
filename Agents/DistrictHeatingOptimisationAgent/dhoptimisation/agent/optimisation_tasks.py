@@ -138,6 +138,23 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         setup.update(new_keys)
         for key, value in hb.items():
             setup[key].append(value)
+            
+    # Add gas turbine
+    for turbine in heat_providers.get('gt', []):
+        # Get static gas turbine details
+        # (include instance IRIs for which to retrieve ts data subsequently)
+        gt = kg_client.get_gas_turbine_properties(turbine)
+        # Set gas consumption and co-gen model
+        gt.update({'gt6': consumption_models[turbine]})
+        gt.update({'gt7': cogen_models[turbine]})
+        #NOTE: As start-up and shut-down cost are f(labour, fuel, wear cost),
+        #      they will be set when initialising GT object and keys 'gt12' 
+        #      and 'gt13' here are neglected
+        # Add to overall optimisation detup
+        new_keys = {key: [] for key in gt if key not in setup}
+        setup.update(new_keys)
+        for key, value in gt.items():
+            setup[key].append(value)
         
     print('')
     
