@@ -267,7 +267,7 @@ class KGClient(PySparqlClient):
               algorithm requires values in corresponding units
 
         Returns:
-            props (dict) -- dictionary with gas static properties
+            props (dict) -- dictionary with static gas properties
         """
 
         query = f"""
@@ -334,6 +334,105 @@ class KGClient(PySparqlClient):
             return props
         else:
             raise_error(ValueError, 'Market prices could not be retrieved unambiguously from KG.')
+            
+            
+    def get_dh_grid_details(self):
+        """
+        Returns dictionary with static district heating grid properties
+        required for overall optimisation setup dict
+
+        Returns:
+            props (dict) -- dictionary with heating grid details
+        """
+
+        query = f"""
+            SELECT DISTINCT ?dh1
+            WHERE {{
+                ?grid <{RDF_TYPE}> <{OHN_HEATINGNETWORK}> ;
+                      <{RDFS_LABEL}> ?dh1 .
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            props = {'dh1': self.get_unique_value(res, 'dh1', str)
+            }
+            return props
+        else:
+            raise_error(ValueError, 'Heating grid details could not be retrieved unambiguously from KG.')
+            
+            
+    def get_dh_grid_supplier_details(self, grid_name: str, supplier_type: str):
+        """
+        Returns dictionary with static properties for given supplier type
+        as required for overall optimisation setup dict
+        NOTE: For time series data, instance IRIs are included as 
+              "placeholers" for which to retrieve ts data subsequently
+              
+        Arguments:
+            grid_name (str) -- label of target heating grid
+            supplier_type (str) -- rdf type of heat supplier, i.e.,
+                                   MunicipalUtility or IncinerationPlant
+        Returns:
+            props (dict) -- dictionary with heat supplier details
+        """
+
+        query = f"""
+            SELECT DISTINCT  ?dh3 ?dh4 ?dh5
+            WHERE {{
+                ?supplier <{RDF_TYPE}> <{supplier_type}> ;
+                          <{OHN_PROVIDES_HEAT_TO}>/<{RDFS_LABEL}> \"{grid_name}\" ;
+                          <{RDFS_LABEL}> ?dh3 ;
+                          <{OHN_HAS_UPSTREAM_GRIDCONNECTION}>/<{OHN_HAS_OBSERVABLE_PROPERTY}> ?dh5 .
+                ?dh5 <{RDF_TYPE}> <{OM_PRESSURE}> .
+                OPTIONAL {{
+                    ?supplier <{OHN_OPERATES}>/<{OHN_HAS_MIN_FLOWRATE}> ?flow_min .
+                    {self.get_numerical_value('flow_min', 'dh4', OM_M3_PER_HOUR)} 
+                }}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            props = {'dh3': self.get_unique_value(res, 'dh3', str),
+                     'dh4': self.get_unique_value(res, 'dh4', float),
+                     'dh5': self.get_unique_value(res, 'dh5', str)
+            }
+            return props
+        else:
+            raise_error(ValueError, 'Grid supplier details could not be retrieved unambiguously from KG.')
+            
+            
+    def get_municipal_utility_details(self):
+        """
+        Returns dictionary with static municipal utility details required
+        for overall optimisation setup dict
+
+        Returns:
+            props (dict) -- dictionary with municipal utility details
+        """
+
+        query = f"""
+            SELECT DISTINCT ?mu1
+            WHERE {{
+                ?mu <{RDF_TYPE}> <{OHN_MUNICIPAL_UTILITY}> ;
+                      <{RDFS_LABEL}> ?mu1 .
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            props = {'mu1': self.get_unique_value(res, 'mu1', str)
+            }
+            return props
+        else:
+            raise_error(ValueError, 'Municipal utility details could not be retrieved unambiguously from KG.')
 
 
     def get_heat_providers(self):

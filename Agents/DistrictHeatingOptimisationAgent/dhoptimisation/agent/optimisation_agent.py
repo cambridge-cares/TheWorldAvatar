@@ -170,7 +170,8 @@ class DHOptimisationAgent(DerivationAgent):
         
         
         setup, index = define_optimisation_setup(self.sparql_client, ts_client,
-                                                 consumption_models, cogen_models)
+                                                 consumption_models, cogen_models,
+                                                 opti_inputs)
         
        
         # Mock optimisation data

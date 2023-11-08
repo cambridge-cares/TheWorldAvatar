@@ -9,14 +9,15 @@
 import pandas as pd
 import CoolProp.CoolProp as CP
 
-from dhoptimisation.utils import logger
+from dhoptimisation.utils import *
 from dhoptimisation.datamodel.iris import *
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
 
 
 def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
-                              consumption_models: dict, cogen_models: dict):
+                              consumption_models: dict, cogen_models: dict,
+                              optimisation_input_iris: dict):
     """
     ...
     
@@ -27,6 +28,8 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
                                      generator IRIs as keys and model objects as values
         cogen_models {dict} -- dict with pre-trained electricity co-gen models;
                                generator IRIs as keys and model objects as values
+        optimisation_input_iris {dict} -- optimisation derivation inputs as returned
+                                          by `validate_input_values`
 
     Returns:
         setup {dict} -- dictionary describing the full optimisation setup with
@@ -100,16 +103,44 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         }
     """
     
+    #
+    ### 1) Construct overall optimisation setup dictionary by querying KG
+    #
+    
     # Initialise setup dictionary
     setup = {}
+    
+    # Add market prices
+    mp = kg_client.get_market_prices()
+    setup.update(mp)
     
     # Add gas properties
     gp = kg_client.get_gas_properties()
     setup.update(gp)
     
-    # Add market prices
-    mp = kg_client.get_market_prices()
-    setup.update(mp)
+    # Add municipal utility details
+    mu = kg_client.get_municipal_utility_details()
+    # Initialise further "placeholder" entries required later, i.e., contracts, 
+    # boilers, and gas turbines not yet assigned
+    mu.update({'mu2': [], 'mu3': [], 'mu4': [], 'mu5': None, 'mu6': None,
+               'mu7': optimisation_input_iris['q_demand']})    
+    setup.update(mu)
+    
+    # Add district heating grid details
+    dh = kg_client.get_dh_grid_details()
+    # Initialise further "placeholder" entries required later
+    dh.update({'dh2': {}})
+    # 1) Municipal utility
+    sup = kg_client.get_dh_grid_supplier_details(dh['dh1'], OHN_MUNICIPAL_UTILITY)
+    sup.update({'dh6': optimisation_input_iris['t_flow_mu'],
+                'dh7': optimisation_input_iris['t_return_mu']})
+    setup = extend_setup_dictionary(setup, sup)
+    # 2) EfW plant
+    sup = kg_client.get_dh_grid_supplier_details(dh['dh1'], OHN_INCINERATIONPLANT)
+    sup.update({'dh6': optimisation_input_iris['t_flow_efw'],
+                'dh7': optimisation_input_iris['t_return_efw']})
+    setup = extend_setup_dictionary(setup, sup)    
+    setup.update(dh)
     
     # Get all heat providers
     heat_providers = kg_client.get_heat_providers()
@@ -122,10 +153,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         # Get tiered unit price structure
         sc.update(kg_client.get_tiered_unit_prices(sc.pop('tiered_price')))        
         # Add to overall optimisation detup
-        new_keys = {key: [] for key in sc if key not in setup}
-        setup.update(new_keys)
-        for key, value in sc.items():
-            setup[key].append(value)
+        setup = extend_setup_dictionary(setup, sc)  
             
     # Add gas boilers
     for boiler in heat_providers.get('boilers', []):
@@ -138,10 +166,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         # NOTE: Negligible/NA for conventional gas boilers
         hb.update({'hb5': 0.0, 'hb6': 0.0})
         # Add to overall optimisation detup
-        new_keys = {key: [] for key in hb if key not in setup}
-        setup.update(new_keys)
-        for key, value in hb.items():
-            setup[key].append(value)
+        setup = extend_setup_dictionary(setup, hb)  
             
     # Add gas turbine
     for turbine in heat_providers.get('gt', []):
@@ -155,12 +180,15 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         #      they will be set when initialising GT object and keys 'gt12' 
         #      and 'gt13' here are neglected
         # Add to overall optimisation detup
-        new_keys = {key: [] for key in gt if key not in setup}
-        setup.update(new_keys)
-        for key, value in gt.items():
-            setup[key].append(value)
-        
-    print('')
+        setup = extend_setup_dictionary(setup, gt) 
+    
+    #        
+    ### 2) Construct overall DataFrame for all time series data
+    #
+    
+    #
+    ### 3) Replace placeholder instance IRIs with validated time series data
+    #
     
     return setup, 2
     
