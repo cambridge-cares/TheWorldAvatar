@@ -5,12 +5,12 @@ from typing import Optional
 @dataclass
 class ModelArguments:
     model_path: str = field(default="google/flan-t5-base")
-    device_map: Optional[str] = field(default=None, metadata={"help": "cpu, cuda, None, {rank}"})
+    device_map: Optional[str] = field(
+        default=None, metadata={"help": "cpu, cuda, None, {rank}"}
+    )
     model_format: str = field(
         default="hf",
-        metadata={
-            "help": "`hf` (Hugging Face), `ort` (ONNX Runtime)."
-        },
+        metadata={"help": "`hf` (Hugging Face), `ort` (ONNX Runtime)."},
     )
     # quantization hyperparams
     bits: Optional[int] = field(
@@ -20,8 +20,8 @@ class ModelArguments:
 
 @dataclass
 class DatasetArguments:
-    train_data_path: Optional[str] = field(default=None)
-    eval_data_path: Optional[str] = field(default=None)
+    train_data_path: str
+    eval_data_path: str
     source_max_len: int = field(
         default=512,
         metadata={
@@ -34,6 +34,10 @@ class DatasetArguments:
             "help": "Maximum target sequence length. Sequences will be right padded (and possibly truncated)."
         },
     )
+    multi_domain: bool = field(
+        default=False,
+        metadata={"help": "Whether the dataset contains multiple knowledge domains."},
+    )
 
 
 @dataclass
@@ -42,4 +46,6 @@ class InferenceArguments:
     max_new_tokens: int = field(
         default=512, metadata={"help": "Maximum number of tokens to be generated."}
     )
-    do_profile: bool = field(default=False, metadata={"help": "Whether to monitor memory usage."})
+    do_profile: bool = field(
+        default=False, metadata={"help": "Whether to monitor memory usage."}
+    )

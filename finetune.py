@@ -9,7 +9,12 @@ from transformers import (
     Seq2SeqTrainer,
 )
 
-from core.data_processing import preprocess_nl, preprocess_sparql
+from core.data_processing import (
+    T5_PREFIX_DOMAINCLS,
+    T5_PREFIX_NL2SPARQL,
+    preprocess_nl,
+    preprocess_sparql,
+)
 from core.args_schema import DatasetArguments, ModelArguments
 from core.model_utils import get_hf_model_and_tokenizer
 
@@ -31,23 +36,23 @@ def get_trainer(
         model_inputs["labels"] = labels["input_ids"]
         return model_inputs
 
-    def _preprocess_examples(examples):
-        sources = [preprocess_nl(qn) for qn in examples["question"]]
-        targets = [preprocess_sparql(query) for query in examples["sparql"]]
-        return dict(source=sources, target=targets)
-
     def _get_tokenized_dataset(data_path: str):
         with open(data_path, "r") as f:
             data = json.load(f)
-        data = [{"question": x["question"], "sparql": x["query"]["sparql_compact"]} for x in data]
-        dataset = Dataset.from_list(data)
-        dataset = dataset.map(
-            _preprocess_examples,
-            batched=True,
-            remove_columns=[
-                x for x in dataset.column_names if x not in ["source", "target"]
-            ],
-        )
+
+        nlqs = [preprocess_nl(x["question"]) for x in data]
+        source = [preprocess_sparql(x["query"]["sparql_compact"]) for x in data]
+        target = [T5_PREFIX_NL2SPARQL + x for x in nlqs]
+
+        if data_args.multi_domain:
+            domains = [x["domain"] for x in data]
+            nlqs_for_cls = [T5_PREFIX_DOMAINCLS + x for x in nlqs]
+
+            source += nlqs_for_cls
+            target += domains
+
+        dataset = Dataset.from_dict(dict(source=source, target=target))
+        dataset = dataset.shuffle()
         return dataset.map(_tokenize, batched=True, remove_columns=["source", "target"])
 
     train_dataset = _get_tokenized_dataset(data_args.train_data_path)
