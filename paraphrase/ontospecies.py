@@ -14,7 +14,8 @@ class OSParaphraser(Paraphraser):
         super().__init__(openai_kwargs=dict(temperature=0.5, frequency_penalty=1))
 
     def paraphrase(self, text: str):
-        entity_placeholders = ["methanol", "ethanol", "propanol", "butanol", "pentanol"]
+        entity_placeholders = ["methanol", "ethanol", "propanol", "butanol", "pentanol", "hexanol", "heptanol", "octanol", "nonanol"]
+        entity_placeholders = [x for x in entity_placeholders if x not in text]
         entity_actuals = []
 
         while True:
