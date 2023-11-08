@@ -63,7 +63,7 @@ You will need to provide your credentials (GitHub username/personal access token
 The IsochroneAgent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/isochroneagent) using `docker pull ghcr.io/cambridge-cares/isochroneagent:<LATEST-VERSION>`
 
 ### 5.2 Starting with the stack-manager
-The agent has been implemented to work in the stack, which requires the IsochroneAgent Docker container to be deployed in the stack. To do so, place [isochroneagent.json](stack-manager-input-config/isochroneagent.json) in the [stack-manager config directory]. Replace `<REPLACE_WITH_YOUR_DIRECTORY>` of the bind mount with absolute path to the isochroneagent's inputs directory.   
+The agent has been implemented to work in the stack, which requires the IsochroneAgent Docker container to be deployed in the stack. To do so, place [isochroneagent.json](stack-manager-config/inputs/config/services/isochroneagent.json) in the [stack-manager config directory]. Replace `<REPLACE_WITH_YOUR_DIRECTORY>` of the bind mount with absolute path to the isochroneagent's inputs directory.   
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
@@ -99,7 +99,7 @@ curl -X POST localhost:3838/isochroneagent/update?function=UR
 In the same directory as this README, run `docker compose build`. This will build the IsochroneAgent local Docker Image. 
 
 ### 6.2 Spinning up with stack-manager
-To debug the agent, replace [`isochroneagent-debug.json`](stack-manager-input-config/isochroneagent-debug.json) instead of [`isochroneagent.json`](stack-manager-input-config/isochroneagent.json) in the [stack-manager config directory]. 
+To debug the agent, replace [`isochroneagent-debug.json`](stack-manager-config/inputs/config/services/isochroneagent-debug.json) instead of [`isochroneagent.json`](stack-manager-config/inputs/config/services/isochroneagent.json) in the [stack-manager config directory]. 
 
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.
 The debugger port will be available at 5005.
