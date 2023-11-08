@@ -99,8 +99,26 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient):
     setup = {}
     
     # Add gas properties
-    gp = kg_client.get_gas_properties()    
-    setup.update(gp)    
+    gp = kg_client.get_gas_properties()
+    setup.update(gp)
+    
+    # Get all heat providers
+    heat_providers = kg_client.get_heat_providers()
+    
+    # Add heat sourcing contracts
+    for provider in heat_providers.get('efw_plant', []):
+        # Get static contract details 
+        # (include instance IRIs for which to retrieve ts data subsequently)
+        sc = kg_client.get_sourcing_contract_properties(provider)
+        # Get tiered unit price structure
+        sc.update(kg_client.get_tiered_unit_prices(sc.pop('tiered_price')))        
+        # Add to overall optimisation detup
+        new_keys = {key: [] for key in sc if key not in setup}
+        setup.update(new_keys)
+        for key, value in sc.items():
+            setup[key].append(value)
+        
+    print('')
     
     return setup, 2
     

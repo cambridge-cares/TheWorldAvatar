@@ -7,6 +7,7 @@
 # KG queries and updates using the PySparqlClient from the DerivationAgent
 
 import uuid
+import numpy as np
 from distutils.util import strtobool
 from rdflib import URIRef, Literal, Graph
 from rdflib.namespace import XSD
@@ -262,6 +263,8 @@ class KGClient(PySparqlClient):
         """
         Returns dictionary with all static gas properties as required for
         overall optimisation setup dict
+        NOTE: Required units specified directly in query as optimisation
+              algorithm requires values in corresponding units
 
         Returns:
             props (dict) -- dictionary with gas static properties
@@ -320,6 +323,99 @@ class KGClient(PySparqlClient):
                      'gt': self.get_list_of_unique_values(res, 'gt'),
         }
         return providers
+    
+    
+    def get_sourcing_contract_properties(self, provider_iri:str):
+        """
+        Returns dictionary with all static heat sourcing contract properties
+        as required for overall optimisation setup dict
+        NOTE: For time series data, instance IRIs are included as 
+              "placeholers" for which to retrieve ts data subsequently
+        NOTE: Assumes that annual sourcing limits (min/max) align
+              with tiered unit price thresholds (which is the case for SWPS)
+        NOTE: Required units specified directly in query as optimisation
+              algorithm requires values in corresponding units
+
+        Arguments:
+            provider_iri (str) -- IRI of heat provider, i.e., party fulfilling
+                                  the heat provision contract
+        Returns:
+            props (dict) -- dictionary with heat sourcing contract properties
+        """
+
+        query = f"""
+            SELECT DISTINCT ?sc1 ?sc4 ?sc5 ?sc6 ?sc7 ?sc8 ?sc9
+                            ?tiered_price
+            WHERE {{
+            <{provider_iri}> ^<{OHN_IS_FULFILLED_BY}> ?contract ;
+                      <{RDFS_LABEL}> ?sc5 ;
+                      <{OHN_HAS_OPERATING_AVAILABILITY}> ?sc6 ;
+                      <{OHN_HAS_MIN_HOURLY_SUPPLY}> ?sc7 ;
+                      <{OHN_HAS_MAX_HOURLY_SUPPLY}> ?sc8 ;                   
+                      <{OHN_HAS_PROVIDED_HEAT_AMOUNT}> ?sc9 .            
+            ?contract <{RDFS_LABEL}> ?sc1 ;
+                      <{OHN_HAS_CURRENT_UNIT_PRICE}> ?p ;
+                      <{OHN_HAS_TIERED_UNIT_PRICE}> ?tiered_price .
+            {self.get_numerical_value('p', 'sc4', OM_EURO_PER_MEGAWATTHOUR)}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            props = {'sc1': self.get_unique_value(res, 'sc1', str),
+                     'sc4': self.get_unique_value(res, 'sc4', float),
+                     'sc5': self.get_unique_value(res, 'sc5', str),
+                     'tiered_price': self.get_unique_value(res, 'tiered_price', str),
+                     # Add IRIs associated with actual dynamic ts data
+                     'sc6': self.get_unique_value(res, 'sc6', str),
+                     'sc7': self.get_unique_value(res, 'sc7', str),
+                     'sc8': self.get_unique_value(res, 'sc8', str),
+                     'sc9': self.get_unique_value(res, 'sc9', str)
+            }
+            return props
+        else:
+            raise_error(ValueError, 'No unique sourcing contract data could be retrieved from KG.')
+            
+            
+    def get_tiered_unit_prices(self, tiered_unit_price_iri:str):
+        """
+        Returns dictionary with tiered unit price details, i.e.,
+        lists of annual energy caps and associated price bands
+        NOTE: Required units specified directly in query as optimisation
+              algorithm requires values in corresponding units
+
+        Arguments:
+            tiered_unit_price_iri (str) -- IRI of tiered unit price
+                                    instance with associated tiers
+        Returns:
+            (dict) -- dictionary with tiered unit price thresholds
+        """
+
+        query = f"""
+            SELECT DISTINCT ?p ?q
+            WHERE {{
+            <{tiered_unit_price_iri}> <{OHN_HAS_TIER}> ?tier .
+            ?tier <{OHN_HAS_CUMULATIVE_ENERGYCAP}> ?tier_q ;
+                  <{OHN_HAS_UNIT_PRICE}> ?tier_p .
+            {self.get_numerical_value('tier_q', 'q', OM_MEGAWATTHOUR)} 
+            {self.get_numerical_value('tier_p', 'p', OM_EURO_PER_MEGAWATTHOUR)} 
+            }}
+            ORDER BY ASC(?q)
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Create combined list from query results
+        comb = list(zip(self.get_list_of_values(res, 'q', float),
+                        self.get_list_of_values(res, 'p', float)))
+        # Sort collectively by ascending heat cap (q) - should not be necessary
+        # due to sorting in SPARQL query, but just to be sure
+        comb.sort()
+        q, p = zip(*comb)
+        
+        return {'sc2': list(q), 'sc3': list(p)}
     
 
     def get_efw_output_iris(self, efw_plant:str):
@@ -425,8 +521,10 @@ class KGClient(PySparqlClient):
                 g.add((URIRef(outputs[output]), URIRef(RDF_TYPE), URIRef(output)))
                 g.add((URIRef(outputs[output]), URIRef(TS_HASFORECAST), URIRef(fc_iri)))
                 g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))
-                g.add((URIRef(fc_iri), URIRef(OM_HASUNIT), URIRef(OM_MEGAWATTHOUR)))
                 outputs[output] = fc_iri
+                # Instantiate output units, except for Availability (true/false)
+                if output != OHN_AVAILABILITY:
+                    g.add((URIRef(fc_iri), URIRef(OM_HASUNIT), URIRef(OM_MEGAWATTHOUR)))
 
         return g, outputs
     
@@ -456,13 +554,31 @@ class KGClient(PySparqlClient):
         return query
 
 
-    def get_list_of_unique_values(self, res: list, key: str) -> list:
+    def get_list_of_unique_values(self, res: list, key: str, cast_to=None) -> list:
         """
         Unpacks a query result list (i.e., list of dicts) into a list of 
         unique values for the given dict key.
+        
+        Tries to cast results to int/float in case 'cast_to' datatype is provided
         """    
         res_list =  list(set([r.get(key) for r in res]))
         res_list = [v for v in res_list if v is not None]
+        if cast_to:
+            res_list = [cast_to(r) for r in res_list]
+        return res_list
+    
+    
+    def get_list_of_values(self, res: list, key: str, cast_to=None) -> list:
+        """
+        Unpacks a query result list (i.e., list of dicts) into a list of 
+        (potentially duplicate) values for the given dict key.
+        
+        Tries to cast results to int/float in case 'cast_to' datatype is provided
+        """    
+        res_list =  list([r.get(key) for r in res])
+        res_list = [v for v in res_list if v is not None]
+        if cast_to:
+            res_list = [cast_to(r) for r in res_list]
         return res_list
 
 
