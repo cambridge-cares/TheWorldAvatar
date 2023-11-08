@@ -7,3 +7,5 @@ services:
       - "9048:9048"
     environment:
       - FLASK_ENV=production
+    volumes:
+      - ./visionagent/resources:/app/visionagent/resources
