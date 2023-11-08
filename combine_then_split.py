@@ -72,7 +72,7 @@ def main():
 
     os.makedirs(args.dirpath_out, exist_ok=True)
     
-    time_label = time.strftime("%Y-%m-%d_%H:%M:%S")
+    time_label = time.strftime("%Y-%m-%d_%H.%M.%S")
     for split, _ids in ids.items():
         split_data = [x for x in data_out if x["id"] in _ids]
 

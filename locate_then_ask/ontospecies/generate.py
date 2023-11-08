@@ -165,7 +165,7 @@ if __name__ == "__main__":
     ds_gen = DatasetGenerator()
     examples = ds_gen.generate()
 
-    time_label = time.strftime("%Y-%m-%d_%H:%M:%S")
+    time_label = time.strftime("%Y-%m-%d_%H.%M.%S")
     filename = "data/ontospecies_{timestamp}.json".format(timestamp=time_label)
 
     with open(os.path.join(ROOTDIR, filename), "w") as f:
