@@ -15,7 +15,7 @@ import java.util.Queue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SparqlClientTest {
+public class SparqlClientTest {
     private static final String SAMPLE_ORGANISATION_NAME = "Org 1";
     private static final String SAMPLE_BUILDING_INSTANCE = TestUtils.genInstance("Building");
     private static final String SAMPLE_OFFICE_INSTANCE = TestUtils.genInstance("Office");

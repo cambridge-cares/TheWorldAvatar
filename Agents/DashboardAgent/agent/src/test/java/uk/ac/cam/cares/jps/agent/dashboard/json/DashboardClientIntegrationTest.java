@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json;
 
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
+import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.google.gson.JsonArray;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -8,11 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.agent.dashboard.IntegrationTestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.stack.PostGisClientTest;
+import uk.ac.cam.cares.jps.agent.dashboard.stack.SparqlClientTest;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.sql.Connection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,22 +26,31 @@ class DashboardClientIntegrationTest {
 
     @BeforeAll
     static void setup() {
+        // For testing dashboard administrative setup
         try (Connection conn = IntegrationTestUtils.connectDatabase(IntegrationTestUtils.TEST_POSTGIS_JDBC)) {
             String dbCreationQuery = "CREATE DATABASE " + SAMPLE_SQL_DATABASE;
             IntegrationTestUtils.updateDatabase(conn, dbCreationQuery);
         } catch (Exception e) {
             throw new RuntimeException("Unable to set up test databases: " + e.getMessage());
         }
+        // For testing dashboard creation
+        IntegrationTestUtils.createNamespace(IntegrationTestUtils.SPATIAL_ZONE_NAMESPACE);
+        IntegrationTestUtils.createNamespace(IntegrationTestUtils.GENERAL_NAMESPACE);
+        PostGisClientTest.genSampleDatabases();
     }
 
     @AfterEach
     void resetDashboard() {
         IntegrationTestUtils.deleteDataSources();
         IntegrationTestUtils.deleteServiceAccounts();
+        IntegrationTestUtils.updateEndpoint(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, IntegrationTestUtils.SPARQL_DELETE);
+        IntegrationTestUtils.updateEndpoint(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT, IntegrationTestUtils.SPARQL_DELETE);
+        IntegrationTestUtils.deletePostGisPasswordFile();
     }
 
     @AfterAll
     static void cleanUp() {
+        PostGisClientTest.removeSampleDatabases();
         try (Connection conn = IntegrationTestUtils.connectDatabase(IntegrationTestUtils.TEST_POSTGIS_JDBC)) {
             String dbCreationQuery = "DROP DATABASE IF EXISTS " + SAMPLE_SQL_DATABASE;
             IntegrationTestUtils.updateDatabase(conn, dbCreationQuery);
@@ -155,5 +169,54 @@ class DashboardClientIntegrationTest {
             JsonArray dataSources = IntegrationTestUtils.retrieveDataSources(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             assertEquals(1, dataSources.size());
         }
+    }
+
+    @Test
+    void testInitDashboard() {
+        // Insert these triples into the blazegraph
+        SparqlClientTest.insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
+        SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
+        // Create a postgis password file
+        IntegrationTestUtils.createPostGisPasswordFile();
+        try (MockedConstruction<ContainerClient> mockClient = Mockito.mockConstruction(ContainerClient.class, (mock, context) -> {
+            // Ensure all mocks return the test config class for the method to continue
+            Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+        })) {
+            StackClient stackClient = new StackClient();
+            stackClient.setDashboardUrl(IntegrationTestUtils.TEST_DASHBOARD_URL);
+            DashboardClient client = new DashboardClient(stackClient, IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
+            Queue<String> dashboardUids = client.initDashboard();
+            while (!dashboardUids.isEmpty()) {
+                String uid = dashboardUids.poll();
+                try {
+                    Map<String, Object> jsonModel = (Map<String, Object>) IntegrationTestUtils.retrieveDashboard(uid, IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
+                    verifyDashboardContents(jsonModel);
+                } finally {
+                    IntegrationTestUtils.deleteDashboard(uid);
+                }
+            }
+        }
+    }
+
+    private static void verifyDashboardContents(Map<String, Object> jsonModel) {
+        // Verify the number of panels generated
+        List<Map<String, Object>> rows = (List<Map<String, Object>>) jsonModel.get("panels");
+        assertEquals(2, rows.size()); // there should only be two rows generated
+        rows.forEach((row) -> {
+            String title = row.get("title").toString();
+            List<Object> panels = (List<Object>) row.get("panels");
+            if (title.contains(SparqlClientTest.RELATIVE_HUMIDITY)) {
+                assertEquals(3, panels.size()); // If the row is for relative humidity, three panels should be generated
+
+            } else if (title.equals(StringHelper.addSpaceBetweenCapitalWords(SparqlClientTest.SAMPLE_LAB_SMART_SENSOR_TYPE))) {
+                assertEquals(2, panels.size()); // If the row is for smart sensor, two panels should be generated
+
+            }
+        });
+        // Verify the number of templating variables generated
+        Map<String, Object> templatingMap = (Map<String, Object>) jsonModel.get("templating");
+        List<Object> templateVarList = (List<Object>) templatingMap.get("list");
+        assertEquals(5, templateVarList.size()); // Five variables should be generated
     }
 }

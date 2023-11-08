@@ -12,10 +12,7 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.net.http.HttpResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A client that interacts with the dashboard container to set it up.
@@ -53,14 +50,17 @@ public class DashboardClient {
     /**
      * Initialise a new dashboard through HTTP API.
      */
-    public void initDashboard() {
+    public Queue<String> initDashboard() {
         this.createServiceAccountToken();
         this.createDataSources();
         // For each organisation, a separate dashboard should be generated
         String[] orgArray = this.SERVICE_CLIENT.getAllOrganisations();
+        Queue<String> dashboardUids = new ArrayDeque<>();
         for (String organisation : orgArray) {
-            this.createDashboard(organisation);
+            String uid = this.createDashboard(organisation);
+            dashboardUids.offer(uid);
         }
+        return dashboardUids;
     }
 
     /**
@@ -156,7 +156,7 @@ public class DashboardClient {
      *
      * @param organisation The name of the organisation.
      */
-    private void createDashboard(String organisation) {
+    private String createDashboard(String organisation) {
         LOGGER.info("Initialising a new dashboard...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + DASHBOARD_CREATION_ROUTE;
         // Generate title
@@ -173,6 +173,10 @@ public class DashboardClient {
         }
         LOGGER.debug("Sending request to create dashboard...");
         // Create a new dashboard based on the JSON model using a POST request with security token
-        AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
+        HttpResponse response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
+        AgentCommunicationClient.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + response.body());
+        // Retrieve the connection ID generated for the database connection and link it to the database
+        JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
+        return responseBody.get("uid").getAsString();
     }
 }

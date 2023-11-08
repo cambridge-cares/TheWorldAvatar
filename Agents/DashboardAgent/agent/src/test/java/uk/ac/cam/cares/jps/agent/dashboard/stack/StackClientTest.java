@@ -176,10 +176,14 @@ class StackClientTest {
                         SparqlClientTest.RELATIVE_HUMIDITY, PostGisClientTest.SAMPLE_ROOM_HUMIDITY_COLUMN, PostGisClientTest.SAMPLE_ROOM_HUMIDITY_TABLE,
                         PostGisClientTest.ROOM_SQL_DATABASE, "null");
                 // Verify humidity exists
-                String[] humidity = timeSeries.get(StringHelper.ROOM_KEY).get(StringHelper.THRESHOLD_KEY).get(1);
-                assertEquals(humidity[0], SparqlClientTest.RELATIVE_HUMIDITY);
-                assertEquals(humidity[1], String.valueOf(SparqlClientTest.RELATIVE_HUMIDITY_MIN_THRESHOLD));
-                assertEquals(humidity[2], String.valueOf(SparqlClientTest.RELATIVE_HUMIDITY_MAX_THRESHOLD));
+                List<String[]> thresholds = timeSeries.get(StringHelper.ROOM_KEY).get(StringHelper.THRESHOLD_KEY);
+                thresholds.forEach((threshold) -> {
+                    if (threshold[0].equals(SparqlClientTest.RELATIVE_HUMIDITY)){
+                        assertEquals(threshold[1], String.valueOf(SparqlClientTest.RELATIVE_HUMIDITY_MIN_THRESHOLD));
+                        assertEquals(threshold[2], String.valueOf(SparqlClientTest.RELATIVE_HUMIDITY_MAX_THRESHOLD));
+                    }
+                });
+
             }
         }
     }

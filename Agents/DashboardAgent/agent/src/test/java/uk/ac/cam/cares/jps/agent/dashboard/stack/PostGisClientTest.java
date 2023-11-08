@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PostGisClientTest {
+public class PostGisClientTest {
     public static final String TEMPERATURE_SQL_DATABASE = "temperature";
     public static final String ROOM_SQL_DATABASE = "room";
     public static final String SAMPLE_TEMPERATURE_INSTANCE = TestUtils.genInstance(SparqlClientTest.TEMPERATURE);

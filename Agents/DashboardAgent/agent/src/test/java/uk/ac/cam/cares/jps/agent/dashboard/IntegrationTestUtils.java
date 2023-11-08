@@ -46,6 +46,7 @@ public class IntegrationTestUtils {
     public static final String SERVICE_ACCOUNT_NAME = "grafana";
     public static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
     public static final String SERVICE_ACCOUNT_SEARCH_SUB_ROUTE = "/search";
+    public static final String DASHBOARD_ROUTE = "/api/dashboards/uid/";
     public static final String DASHBOARD_ACCOUNT_USER = "admin";
     public static final String DASHBOARD_ACCOUNT_PASS = "admin";
     public static final String SPARQL_DELETE = "DELETE WHERE {?s ?p ?o}";
@@ -112,6 +113,16 @@ public class IntegrationTestUtils {
         return responseMap;
     }
 
+    public static Object retrieveDashboard(String uid, String user, String password) {
+        String route = TEST_DASHBOARD_URL + DASHBOARD_ROUTE + uid;
+        // Send a get request to target API for a response
+        HttpResponse response = sendGetRequest(route, user, password);
+        // Will always be a hash map
+        Map<String, Object> responseMap = (Map<String, Object>) retrieveResponseBody(response);
+        // Response will always contain service accounts key, even if there is no account
+        return responseMap.get("dashboard");
+    }
+
     public static void deleteServiceAccounts() {
         String route = TEST_DASHBOARD_URL + SERVICE_ACCOUNT_ROUTE;
         List<Map<String, Object>> accountInfo = (List<Map<String, Object>>) retrieveServiceAccounts(DASHBOARD_ACCOUNT_USER, DASHBOARD_ACCOUNT_PASS);
@@ -144,6 +155,11 @@ public class IntegrationTestUtils {
                 }
             }
         }
+    }
+
+    public static void deleteDashboard(String uid) {
+        String route = TEST_DASHBOARD_URL + DASHBOARD_ROUTE + uid;
+        sendDeleteRequest(route, DASHBOARD_ACCOUNT_USER, DASHBOARD_ACCOUNT_PASS);
     }
 
     public static Connection connectDatabase(String jdbc) {
