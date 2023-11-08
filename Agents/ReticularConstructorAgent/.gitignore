@@ -45,6 +45,9 @@ Data/*
 Generated_COFs/*
 Outdated_Algorithms/*
 myenv/*
+cof_logic/subunit_builder/output*
+cof_logic/subunit_builder/old_files*
+cof_logic/subunit_builder/subunit_codes*
 # Ignore Excel files
 *.xlsx
 *.xlsb
