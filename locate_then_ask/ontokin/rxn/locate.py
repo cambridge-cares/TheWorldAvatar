@@ -2,7 +2,12 @@ import copy
 import random
 
 from locate_then_ask.ontokin.entity_store import OKEntityStore
-from locate_then_ask.ontokin.model import OCAPEProduct, OCAPEReactant, OKGasePhaseReaction, OKMechanism
+from locate_then_ask.ontokin.model import (
+    OCAPEProduct,
+    OCAPEReactant,
+    OKGasePhaseReaction,
+    OKMechanism,
+)
 from locate_then_ask.query_graph import QueryGraph, get_objs
 
 
@@ -73,19 +78,21 @@ class OKReactionLocator:
         ]
 
         sampled_mechanism_nodes = get_objs(
-            query_graph, subj="Reaction", predicate="okin:belongsToPhase/okin:containedIn"
+            query_graph,
+            subj="Reaction",
+            predicate="okin:belongsToPhase/okin:containedIn",
         )
         sampled_mechanism_iris = [
             query_graph.nodes[n]["iri"] for n in sampled_mechanism_nodes
         ]
-        unsampled_mechanisms = [
-            x for x in entity.mechanisms if x.iri not in sampled_mechanism_iris
-        ]
+        unsampled_mechanisms = (
+            [entity.mechanism] if entity.mechanism.iri not in sampled_mechanism_iris else []
+        )
 
         sampling_frame = unsampled_reactants + unsampled_products + unsampled_mechanisms
         if len(sampling_frame) == 0:
             return query_graph, ""
-        
+
         sampled = random.choice(sampling_frame)
         if isinstance(sampled, OCAPEReactant):
             reactant_node = "Reactant_" + str(len(sampled_reactant_nodes))
@@ -118,8 +125,10 @@ class OKReactionLocator:
                 label=sampled.label,
                 template_node=True,
             )
-            query_graph.add_edge("Reaction", mechanism_node, label="okin:belongsToPhase/okin:containedIn")
-            verbalization = "has mechanism [{label}]".format(label=sampled.label)
+            query_graph.add_edge(
+                "Reaction", mechanism_node, label="okin:belongsToPhase/okin:containedIn"
+            )
+            verbalization = "is involved the mechanism [{label}]".format(label=sampled.label)
         else:
             raise ValueError("Unexpected type: " + type(sampled))
 
@@ -130,13 +139,14 @@ class OKReactionLocator:
         query_graph, concept = self.locate_concept_name(entity_iri)
 
         for _ in range(cond_num):
-            query_graph, verbalized_cond = self._locate_concept_and_relation(query_graph)
+            query_graph, verbalized_cond = self._locate_concept_and_relation(
+                query_graph
+            )
             if verbalized_cond is not None:
                 verbalized_conds.append(verbalized_cond)
 
         verbalization = "the {concept} that {conds}".format(
-            concept=concept,
-            conds=" and ".join(verbalized_conds)
+            concept=concept, conds=" and ".join(verbalized_conds)
         )
 
         return query_graph, verbalization

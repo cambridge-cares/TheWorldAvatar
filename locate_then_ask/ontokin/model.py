@@ -82,4 +82,4 @@ class OKGasePhaseReaction:
     # ignore other coeffs for now
     reactants: List[OCAPEReactant]
     products: List[OCAPEProduct]
-    mechanisms: List[OKMechanism] # okin:belongsToPhase/okin:containedIn
+    mechanism: OKMechanism # okin:belongsToPhase/okin:containedIn

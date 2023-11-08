@@ -77,7 +77,7 @@ class OKEntityStore:
         falloff_coeff = self.retrieve_rxn_falloff_coeff(entity_iri)
         reactants = self.retrieve_rxn_reactants(entity_iri)
         products = self.retrieve_rxn_products(entity_iri)
-        mechanisms = self.retrieve_rxn_mechansim(entity_iri)
+        mechanism = self.retrieve_rxn_mechansim(entity_iri)
         return OKGasePhaseReaction(
             iri=entity_iri,
             equation=equation,
@@ -85,7 +85,7 @@ class OKEntityStore:
             falloff_coeff=falloff_coeff,
             reactants=reactants,
             products=products,
-            mechanisms=mechanisms,
+            mechanism=mechanism,
         )
 
     def create_mechanism(self, entity_iri: str):
@@ -297,15 +297,13 @@ SELECT DISTINCT * WHERE {{
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
-SELECT * WHERE {{
+SELECT DISTINCT * WHERE {{
     <{ReactionIRI}> okin:belongsToPhase/okin:containedIn ?Mechanism .
-}}"""
+}}
+LIMIT 1"""
         query = query_template.format(ReactionIRI=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
-        mechanism_iris = [
-            binding["Mechanism"]["value"] for binding in response_bindings
-        ]
-        return [self.get(iri) for iri in mechanism_iris]
+        return self.get(response_bindings[0]["Mechanism"]["value"])
 
     def retrieve_mechanism_species_iris(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
