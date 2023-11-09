@@ -545,9 +545,9 @@ public class RenamingToolTest {
 				"    BIND(( contains(str(?p), \""+strMatch+"\") && contains(str(?p), \""+strTarget+"\") ) AS ?matchP)\n"+
 				"    BIND(( contains(str(?o), \""+strMatch+"\") && contains(str(?o), \""+strTarget+"\") ) AS ?matchO)\n"+
 				"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
-				"    BIND(if(isBlank(?s), ?s, if(?matchS, iri(replace(str(?s), \""+strTarget+"\", \""+strReplacement+"\")), ?s)) AS ?newS)\n"+ 
-			    "    BIND(if(isBlank(?p), ?p, if(?matchP, iri(replace(str(?p), \""+strTarget+"\", \""+strReplacement+"\")), ?p)) AS ?newP)\n"+ 
-			    "    BIND(if(isBlank(?o), ?o, if(?matchO, iri(replace(str(?o), \""+strTarget+"\", \""+strReplacement+"\")), ?o)) AS ?newO)\n"+ 
+				"    BIND(if(isBlank(?s), ?s, if(?matchS, IRI(replace(str(?s), \""+strTarget+"\", \""+strReplacement+"\")), ?s)) AS ?newS)\n"+ 
+			    "    BIND(if(isBlank(?p), ?p, if(?matchP, IRI(replace(str(?p), \""+strTarget+"\", \""+strReplacement+"\")), ?p)) AS ?newP)\n"+ 
+			    "    BIND(if(isBlank(?o), ?o, if(?matchO, IRI(replace(str(?o), \""+strTarget+"\", \""+strReplacement+"\")), ?o)) AS ?newO)\n"+ 
 				"  }\n";
 		assertNotNull(renamingTool.getClass().getDeclaredMethod("whereUpdateString"));
 		Method method2 = renamingTool.getClass().getDeclaredMethod("whereUpdateString");
