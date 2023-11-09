@@ -1,12 +1,8 @@
-from typing import List, Tuple
+from typing import List
 
 from core.data_processing.constants import (
-    ABSTRACT_IDENTIFIER_KEY,
-    ABSTRACT_PROPERTY_KEY,
-    CHEMCLASS_KEY,
     IDENTIFIER_KEYS,
     PROPERTY_KEYS,
-    USE_KEY,
 )
 from core.sparql import SparqlQuery
 from core.sparql.query_form import SelectClause
@@ -20,26 +16,30 @@ from core.sparql.graph_pattern import (
 
 
 class SparqlCompact2VerboseConverter:
-    def _convert_values_clause(self, values_clause: ValuesClause) -> List[GraphPattern]:
-        """VALUES ?Species {{ {literals} }}"""
-        assert values_clause.var == "?Species", values_clause
+    def _try_convert_entity_linking_pattern(self, pattern: GraphPattern):
+        try:
+            """VALUES ?Species {{ {literals} }}"""
+            assert isinstance(pattern, ValuesClause)
+            assert pattern.var == "?Species"
 
-        """
-        VALUES ?SpeciesIdentifierValue {{ {literals} }}
-        ?Species ?hasIdentifier [ rdf:type/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ] .
-        """
-        patterns = [
-            ValuesClause(var="?SpeciesIdentifierValue", values=values_clause.values),
-            TriplePattern.from_triple(
-                "?Species",
-                "?hasIdentifier",
-                "[ rdf:type/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ]",
-            ),
-        ]
-        select_vars = []
-        return patterns, select_vars
+            """
+            VALUES ?SpeciesIdentifierValue {{ {literals} }}
+            ?Species ?hasIdentifier [ rdf:type/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ] .
+            """
+            patterns: List[GraphPattern] = [
+                ValuesClause(var="?SpeciesIdentifierValue", values=pattern.values),
+                TriplePattern.from_triple(
+                    "?Species",
+                    "?hasIdentifier",
+                    "[ rdf:type/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ]",
+                ),
+            ]
+            select_vars: List[str] = []
+            return patterns, select_vars
+        except AssertionError:
+            return None
 
-    def _convert_triple_pattern_property_concrete(self, key: str):
+    def _make_species_hasproperty_patterns(self, key: str):
         """
         ?Species os:has{PropertyName} ?{PropertyName} .
         ?{PropertyName} os:value ?{PropertyName}Value ; os:unit/rdfs:label ?{PropertyName}UnitLabel .
@@ -57,7 +57,7 @@ class SparqlCompact2VerboseConverter:
         var_PropertyNameReferenceStateUnitLabel = (
             "?{PropertyName}ReferenceStateUnitLabel".format(PropertyName=key)
         )
-        patterns = [
+        patterns: List[GraphPattern] = [
             TriplePattern.from_triple("?Species", "os:has" + key, var_PropertyName),
             TriplePattern(
                 var_PropertyName,
@@ -91,138 +91,68 @@ class SparqlCompact2VerboseConverter:
             var_PropertyNameReferenceStateUnitLabel,
         ]
         return patterns, select_vars
+    
+    def _try_convert_species_haspropertyvalue_triple(self, pattern: GraphPattern):
+        try:
+            """?Species os:has{PropertyName}/os:value ?{PropertyName}Value ."""
+            assert isinstance(pattern, TriplePattern)
+            assert pattern.subj == "?Species"
+            assert len(pattern.tails) == 1
 
-    def _convert_triple_pattern_identifier_concrete(self, key: str):
-        """
-        ?Species os:has{IdentifierName}/os:value ?{IdentifierName}Value .
-        """
-        var_IdentifierNameValue = "?{IdentifierName}Value".format(IdentifierName=key)
-        patterns = [
-            TriplePattern.from_triple(
-                "?Species",
-                "os:has{IdentifierName}/os:value".format(IdentifierName=key),
-                var_IdentifierNameValue,
-            )
-        ]
-        select_vars = [var_IdentifierNameValue]
-        return patterns, select_vars
+            predicate, obj = pattern.tails[0]
+            assert predicate.startswith("os:")
+            assert predicate.endswith("/os:value")
 
-    def _convert_triple_pattern_use(self, use: str):
-        """
-        ?Species os:hasUse/rdfs:label {label} .
-        """
-        if use.startswith('"') and use.endswith('"'):
-            select_vars = []
-        elif use == "?" + USE_KEY:
-            select_vars = ["?UseLabel"]
-        patterns = [TriplePattern.from_triple("?Species", "os:hasUse/rdfs:label", use)]
-        return patterns, select_vars
-
-    def _convert_triple_pattern_chemclass(self, chemclass: str):
-        """
-        ?Species os:hasChemicalClass*/(rdf:|!rdf:)/rdfs:subClassOf* [ rdf:type os:ChemicalClass ; rdfs:label {label} ] .
-        """
-        if chemclass.startswith('"') and chemclass.endswith('"'):
-            select_vars = []
-        elif chemclass == "?" + CHEMCLASS_KEY:
-            select_vars = ["?ChemicalClassLabel"]
-        patterns = [
-            TriplePattern.from_triple(
-                "?Species",
-                "os:hasChemicalClass*/(rdf:|!rdf:)/rdfs:subClassOf*",
-                "[ rdf:type os:ChemicalClass ; rdfs:label {label} ]".format(
-                    label=chemclass
-                ),
-            )
-        ]
-        return patterns, select_vars
-
-    def _convert_triple_pattern_concrete_predicate(
-        self, subj: str, predicate: str, obj: str
-    ):
-        assert subj == "?Species"
-        assert predicate.startswith("os:")
-
-        if predicate.endswith("/os:value"):
             key = predicate[len("os:has") : -len("/os:value")]
-            if key in PROPERTY_KEYS:
-                """?Species os:has{PropertyName}/os:value ?{PropertyName}Value"""
-                assert predicate == "os:has{PropertyName}/os:value".format(
-                    PropertyName=key
-                ), predicate
-                assert obj == "?{PropertyName}Value".format(PropertyName=key), obj
-                patterns, select_vars = self._convert_triple_pattern_property_concrete(
-                    key
-                )
-            else:
-                raise ValueError("Unexpected predicate: " + predicate)
-        elif predicate.endswith("/rdfs:label"):
-            key = predicate[len("os:has") : -len("/rdfs:label")]
-            if key == USE_KEY:
-                patterns, select_vars = self._convert_triple_pattern_use(use=obj)
-            elif key == CHEMCLASS_KEY:
-                patterns, select_vars = self._convert_triple_pattern_chemclass(
-                    chemclass=obj
-                )
-            else:
-                raise ValueError("Unexpected predicate: " + predicate)
-        else:
+            assert key in PROPERTY_KEYS
+            assert obj == "?{PropertyName}Value".format(PropertyName=key)
+
+            return self._make_species_hasproperty_patterns(key)
+        except AssertionError:
+            return None
+        
+    def _try_convert_species_hasproperty_triple(self, pattern: GraphPattern):
+        try:
+            """?Species os:has{PropertyName} ?{PropertyName} ."""
+            assert isinstance(pattern, TriplePattern)
+            assert pattern.subj == "?Species"
+            assert len(pattern.tails) == 1
+
+            predicate, obj = pattern.tails[0]
+            assert predicate.startswith("os:")
+
             key = predicate[len("os:has") :]
-            assert obj == "?" + key, (predicate, obj)
-            if key in PROPERTY_KEYS:
-                patterns, select_vars = self._convert_triple_pattern_property_concrete(
-                    key
-                )
-            elif key in IDENTIFIER_KEYS:
-                (
-                    patterns,
-                    select_vars,
-                ) = self._convert_triple_pattern_identifier_concrete(key)
-            elif key == USE_KEY:
-                patterns, select_vars = self._convert_triple_pattern_use(use=obj)
-            elif key == CHEMCLASS_KEY:
-                patterns, select_vars = self._convert_triple_pattern_chemclass(
-                    chemclass=obj
-                )
-            else:
-                raise ValueError("Unexpected predicate: " + predicate)
+            assert key in PROPERTY_KEYS
+            assert obj == "?" + key
 
-        return patterns, select_vars
+            return self._make_species_hasproperty_patterns(key)
+        except AssertionError:
+            return None
 
-    def _convert_triple_pattern_abstract_predicate(
-        self, triple_link: Tuple[str, str, str], triple_subclassof: Tuple[str, str, str]
-    ):
-        """?Species ?has{key} ?{key} .
-        ?{key} rdf:type/rdfs:subClassOf os:{keyClass} ."""
-        subj_link, predicate_link, obj_link = triple_link
-        assert subj_link == "?Species", subj_link
-        assert predicate_link.startswith("?has"), predicate_link
+    def _try_convert_species_haspropertyabstract_triple(self, pattern: GraphPattern):
+        try:
+            """?Species ?hasPropertyName ?PropertyName ."""
+            assert isinstance(pattern, TriplePattern)
+            assert pattern.subj == "?Species"
+            assert len(pattern.tails) == 1
+            
+            predicate, obj = pattern.tails[0]
+            assert predicate == "?hasPropertyName"
+            assert obj == "?PropertyName"
 
-        key = predicate_link[len("?has")]
-        assert obj_link == "?{key}".format(key=key)
-
-        subj_subclassof, predicate_subclassof, obj_subclassof = triple_subclassof
-        assert subj_subclassof == obj_link
-        assert predicate_subclassof == "rdf:type/rdfs:subClassOf"
-
-        if key == ABSTRACT_PROPERTY_KEY:
-            assert obj_subclassof == "os:Property"
             """
             ?Species ?hasPropertyName ?PropertyName .
-            ?PropertyName rdf:type/rdfs:subClassOf os:Property ; os:value ?PropertyNameValue ; os:unit/rdfs:label ?PropertyNameUnitValue .
+            ?PropertyName os:value ?PropertyNameValue ; os:unit/rdfs:label ?PropertyNameUnitValue .
             OPTIONAL {
                 ?PropertyName os:hasReferenceState [ os:value ?PropertyNameReferenceStateValue ; os:unit/rdfs:label ?PropertyNameReferenceStateUnitValue ] .
             }
             BIND(STRAFTER(STR(?hasPropertyName),'#has') AS ?PropertyLabel)
             """
-            patterns = [
-                TriplePattern.from_triple(
-                    "?Species", "?hasPropertyName", "?PropertyName"
-                ),
+            patterns: List[GraphPattern] = [
+                pattern, 
                 TriplePattern(
                     "?PropertyName",
                     tails=[
-                        ("rdf:type/rdfs:subClassOf", "os:Property"),
                         ("os:value", "?PropertyNameValue"),
                         ("os:unit/rdfs:label", "?PropertyNameUnitValue"),
                     ],
@@ -241,42 +171,104 @@ class SparqlCompact2VerboseConverter:
                 ),
             ]
             select_vars = [
-                "?PropertyLabel",
                 "?PropertyNameValue",
                 "?PropertyNameUnitValue",
                 "?PropertyNameReferenceStateValue",
                 "?PropertyNameReferenceStateUnitValue",
             ]
-        elif key == ABSTRACT_IDENTIFIER_KEY:
-            assert obj_subclassof == "os:Identifier"
+            return patterns, select_vars
+        except AssertionError:
+            return None
+
+    def _try_convert_species_hasidentifier_triple(self, pattern: GraphPattern):
+        try:
+            """?Species os:has{IdentifierName} ?{IdentifierName} ."""
+            assert isinstance(pattern, TriplePattern)
+            assert pattern.subj == "?Species"
+            assert len(pattern.tails) == 1
+
+            predicate, obj = pattern.tails[0]
+            assert predicate.startswith("os:")
+
+            key = predicate[len("os:has") :]
+            assert key in IDENTIFIER_KEYS
+            assert obj == "?" + key
+
+            """
+            ?Species os:has{IdentifierName} ?{IdentifierName} .
+            ?{IdentifierName} os:value ?{IdentifierName}Value .
+            """
+            var_IdentifierNameValue = "?{IdentifierName}Value".format(IdentifierName=key)
+            patterns = [
+                pattern, 
+                TriplePattern.from_triple(
+                    "?" + key,
+                    "os:value",
+                    var_IdentifierNameValue,
+                )
+            ]
+            select_vars = [var_IdentifierNameValue]
+            return patterns, select_vars
+        except AssertionError:
+            return None
+
+    def _try_convert_species_hasidentifierabstract_triple(self, pattern:GraphPattern):
+        try:
+            """?Species ?hasIdentifierName ?IdentifierName ."""
+            assert isinstance(pattern, TriplePattern)
+            assert pattern.subj == "?Species"
+            assert len(pattern.tails) == 1
+            
+            predicate, obj = pattern.tails[0]
+            assert predicate == "?hasIdentifierName"
+            assert obj == "?IdentifierName"
+
             """
             ?Species ?hasIdentifierName ?IdentifierName .
-            ?IdentifierName rdf:type/rdfs:subClassOf os:Identifier ; os:value ?IdentifierNameValue .
+            ?IdentifierName os:value ?IdentifierNameValue .
             BIND(STRAFTER(STR(?IdentifierName),'#') AS ?IdentifierLabel)
             """
+            var_IdentifierNameValue = "?IdentifierNameValue"
             patterns = [
+                pattern, 
                 TriplePattern.from_triple(
-                    "?Species", "?hasIdentifierName", "?IdentifierName"
-                ),
-                TriplePattern(
                     "?IdentifierName",
-                    tails=[
-                        "rdf:type/rdfs:subClassOf",
-                        "os:Identifier",
-                        "os:value",
-                        "?IdentifierNameValue",
-                    ],
+                    "os:value",
+                    var_IdentifierNameValue,
                 ),
                 BindClause(
                     exprn="STRAFTER(STR(?hasIdentifierName),'#has')",
                     var="?IdentifierLabel",
-                ),
+                )
             ]
-            select_vars = ["?IdentifierLabel", "IdentifierNameValue"]
-        else:
-            raise ValueError("Unrecoginzed predicate: " + predicate_link)
+            select_vars = [var_IdentifierNameValue]
+            return patterns, select_vars
+        except AssertionError:
+            return None
 
-        return patterns, select_vars
+    def _try_convert_species_haschemclasslabel_triple(self, pattern: GraphPattern):
+        try:
+            """?Species os:hasChemicalClass/rdfs:label ["chemclass"|?ChemicalClassLabel] ."""
+            assert isinstance(pattern, TriplePattern)
+            assert len(pattern.tails) == 1
+            assert pattern.subj == "?Species"
+
+            predicate, obj = pattern.tails[0]
+            assert predicate == "os:hasChemicalClass/rdfs:label"
+            assert (obj.startswith('"') and obj.endswith('"')) or obj == "?ChemicalClassLabel"
+            
+            """
+            ?Species (rdf:|!rdf:)+ [ rdf:type os:ChemicalClass ; rdfs:label {label} ] .
+            """
+            return TriplePattern.from_triple(
+                "?Species",
+                "os:hasChemicalClass*/(rdf:|!rdf:)/rdfs:subClassOf*",
+                "[ rdf:type os:ChemicalClass ; rdfs:label {label} ]".format(
+                    label=obj
+                ),
+            )
+        except AssertionError:
+            return None
 
     def convert(self, sparql_compact: SparqlQuery):
         graph_patterns = list(sparql_compact.graph_patterns)
@@ -292,36 +284,55 @@ class SparqlCompact2VerboseConverter:
 
         while len(graph_patterns) > 0:
             pattern = graph_patterns.pop()
-            if isinstance(pattern, ValuesClause):
-                patterns, select_vars = self._convert_values_clause(pattern)
-            elif isinstance(pattern, TriplePattern):
-                assert len(pattern.tails) == 1, pattern
 
-                subj = pattern.subj
-                predicate, obj = pattern.tails[0]
-                if not predicate.startswith("?"):
-                    (
-                        patterns,
-                        select_vars,
-                    ) = self._convert_triple_pattern_concrete_predicate(
-                        subj, predicate, obj
-                    )
-                else:
-                    pattern_subclassof = graph_patterns.pop()
-                    assert isinstance(pattern_subclassof, TriplePattern)
-                    assert len(pattern_subclassof.tails) == 1, pattern
-                    (
-                        patterns,
-                        select_vars,
-                    ) = self._convert_triple_pattern_abstract_predicate(
-                        pattern, pattern_subclassof
-                    )
-            else:
-                patterns = [pattern]
-                select_vars = []
+            optional = self._try_convert_entity_linking_pattern(pattern)
+            if optional is not None:
+                patterns, select_vars = optional
+                select_vars_verbose.extend(select_vars)
+                graph_patterns_verbose.extend(patterns)
+                continue
+            
+            optional = self._try_convert_species_haspropertyvalue_triple(pattern)
+            if optional is not None:
+                patterns, select_vars = optional
+                select_vars_verbose.extend(select_vars)
+                graph_patterns_verbose.extend(patterns)
+                continue
 
-            select_vars_verbose.extend(select_vars)
-            graph_patterns_verbose.extend(patterns)
+            optional = self._try_convert_species_hasproperty_triple(pattern)
+            if optional is not None:
+                patterns, select_vars = optional
+                select_vars_verbose.extend(select_vars)
+                graph_patterns_verbose.extend(patterns)
+                continue
+
+            optional = self._try_convert_species_haspropertyabstract_triple(pattern)
+            if optional is not None:
+                patterns, select_vars = optional
+                select_vars_verbose.extend(select_vars)
+                graph_patterns_verbose.extend(patterns)
+                continue
+
+            optional = self._try_convert_species_hasidentifier_triple(pattern)
+            if optional is not None:
+                patterns, select_vars = optional
+                select_vars_verbose.extend(select_vars)
+                graph_patterns_verbose.extend(patterns)
+                continue
+
+            optional = self._try_convert_species_hasidentifierabstract_triple(pattern)
+            if optional is not None:
+                patterns, select_vars = optional
+                select_vars_verbose.extend(select_vars)
+                graph_patterns_verbose.extend(patterns)
+                continue
+            
+            optional = self._try_convert_species_haschemclasslabel_triple(pattern)
+            if optional is not None:
+                graph_patterns_verbose.append(optional)
+                continue
+
+            graph_patterns_verbose.append(pattern)
 
         return SparqlQuery(
             select_clause=SelectClause(
