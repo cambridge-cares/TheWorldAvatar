@@ -118,7 +118,7 @@ Copy `stack-manager-input-config-service/fh-sash-and-occupancy-agent.json` to th
 
 The agent is reachable at "fh-sash-and-occupancy-agent/" on localhost port 3838 by default.
 
-To run the agent, a request must be sent to http://localhost:3838/fh-sash-and-occupancy-agent/. There's currently two types of request:
+To run the agent, a request must be sent to http://localhost:3838/fh-sash-and-occupancy-agent/. There's currently three types of request:
 1) This request gets the status of the agent. The request has the following format:
 ```
 curl -X GET http://localhost:3838/fh-sash-and-occupancy-agent/status
@@ -136,6 +136,14 @@ Change the sashThreshold and delayMinutes values accordingly. The agent will tak
 If the agent runs successfully, it should return:
 ```
 {"result":"Agent has successfully query and check through all fumehoods and walkin-fumehoods."}
+```
+3) This request retrieves the latest sash opening percentage for the provided fumehood or walkin-fumehood IRI. The request has the following format:
+```
+curl -X GET --header "Content-Type: application/json" -d "{\"deviceIri\":\"<fumehood_iri>\"}" http://localhost:3838/fh-sash-and-occupancy-agent/latestsash
+```
+and it should return:
+```
+{"sash":"65.7","time":"2023-09-12 04:26:39 AM UTC"}
 ```
 
 ### Email Content

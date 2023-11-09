@@ -432,7 +432,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
      * @param deviceIri the IRI of FH/WFH
      * @return the latest sash value and the time stamp
      */
-    public JSONObject getLatestSash(String deviceIri) {
+    private JSONObject getLatestSash(String deviceIri) {
         QueryStore queryStore = setupQueryStore();
 
         Map<String, List<String>> map = new HashMap<>();
