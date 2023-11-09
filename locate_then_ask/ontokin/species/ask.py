@@ -22,6 +22,23 @@ class OKSpeciesAsker:
             verbalization=verbalization,
         )
 
+    def ask_count(self, query_graph: QueryGraph, verbalization: str):
+        query_graph = copy.deepcopy(query_graph)
+        query_graph.nodes["Species"]["question_node"] = True
+        query_graph.nodes["Species"]["ask_count"] = True
+
+        if verbalization.startswith("the"):
+            verbalization = verbalization[len("the"): ].strip()
+            
+        query_sparql = self.graph2sparql.convert(query_graph)
+        verbalization = "How many " + verbalization
+
+        return AskDatum(
+            query_graph=query_graph,
+            query_sparql=query_sparql,
+            verbalization=verbalization,
+        )
+
     def ask_attribute_or_relation(self, query_graph: QueryGraph, verbalization: str, attr_num: int = 1):
         query_graph = copy.deepcopy(query_graph)
 

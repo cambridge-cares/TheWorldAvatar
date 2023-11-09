@@ -36,7 +36,7 @@ class OKSpeciesLocator:
             label="okin:Species",
             topic_entity=True,
         )
-        return query_graph, "chemical species"
+        return query_graph, "the chemical species"
 
     def locate_concept_and_relation(self, entity_iri: str):
         query_graph, verbalization = self.locate_concept_name(entity_iri)

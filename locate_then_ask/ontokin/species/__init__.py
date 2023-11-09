@@ -24,13 +24,15 @@ class OKSpeciesExampleMaker(ExampleMakerBase):
                 query_graph,
                 verbalization,
             ) = self.locator.locate_concept_and_relation(entity_iri)
-            ask_strategies = ["name", "attribute_or_relation"]
+            ask_strategies = ["name", "count", "attribute_or_relation"]
         else:
             raise Exception()
 
         ask_strategy = random.choice(ask_strategies)
         if ask_strategy == "name":
             ask_datum = self.asker.ask_name(query_graph, verbalization)
+        elif ask_strategy == "count":
+            ask_datum = self.asker.ask_count(query_graph, verbalization)
         elif ask_strategy == "attribute_or_relation":
             ask_datum = self.asker.ask_attribute_or_relation(
                 query_graph, verbalization
