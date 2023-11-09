@@ -17,12 +17,12 @@ def sanitize(texts: List[str]):
                 ptr_end = text.find("</entity>", ptr)
                 entity = text[ptr + len("<entity>") : ptr_end]
                 text = text[:ptr] + entity + text[ptr_end + len("</entity>") :]
-                ptr = ptr_end
+                ptr += len(entity)
             elif text[ptr] == "[":
                 ptr_end = text.find("]", ptr)
                 literal = text[ptr + 1 : ptr_end]
                 text = text[:ptr] + literal + text[ptr_end + 1 :]
-                ptr = ptr_end
+                ptr += len(literal)
             else:
                 ptr += 1
         return text
