@@ -175,7 +175,6 @@ public class HttpTest extends TestCase {
 			Http.getRequestBody(request);
 		} catch (Exception e) {
 			assertTrue(e instanceof NullPointerException);
-			assertEquals(e.getMessage(), null);
 		}
 
 		request.setContent(content);

@@ -95,10 +95,11 @@ public class FileUtilTest {
 
 		String expectedString = "This is a test string.\r\nConvert to inputstream.";
 
-		InputStream inputStream = new ByteArrayInputStream(expectedString.getBytes(Charset.forName("UTF-8")));
-		String result = FileUtil.inputStreamToString(inputStream);
+		try (InputStream inputStream = new ByteArrayInputStream(expectedString.getBytes(Charset.forName("UTF-8")))) {
+			String result = FileUtil.inputStreamToString(inputStream);
+			assertEquals(expectedString, result);
+		}
 
-		assertEquals(expectedString, result);
 	}
 
 	/**

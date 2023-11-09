@@ -48,19 +48,10 @@ public class FileUtil {
 		File file = new File(path);
 		file.getParentFile().mkdirs();
 		
-	    FileWriter fileWriter = null;
-	    
-	    try {
-			fileWriter = new FileWriter(file);
+	    try(FileWriter fileWriter= new FileWriter(file)) {
 			fileWriter.write(content);
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
-		} finally {
-			try {
-				fileWriter.close();
-			} catch (IOException e) {
-				throw new JPSRuntimeException(e.getMessage(), e);
-			}
 		}
 	}
 	
@@ -84,17 +75,9 @@ public class FileUtil {
 //		}
 //		return sb.toString();
 		
-		
-    	try {
-    		ByteArrayOutputStream outputStream = null;
-			try {
-				outputStream = new ByteArrayOutputStream();
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
 				IOUtils.copy(inputStream, outputStream);
 				return new String(outputStream.toByteArray());
-			} finally {
-				inputStream.close();
-				outputStream.close();
-			}
     	} catch (IOException e) {
     		throw new JPSRuntimeException(e.getMessage(), e);
     	}
