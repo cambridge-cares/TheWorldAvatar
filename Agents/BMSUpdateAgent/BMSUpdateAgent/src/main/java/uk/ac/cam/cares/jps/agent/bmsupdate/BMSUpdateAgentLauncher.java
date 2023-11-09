@@ -172,7 +172,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
         JSONObject result = new JSONObject();
         if (requestParams.has(KEY_DATAIRI) && requestParams.has(KEY_VALUE)) {
             String dataIRI = requestParams.getString(KEY_DATAIRI);
-            int value = requestParams.getInt(KEY_VALUE);
+            Double value = requestParams.getDouble(KEY_VALUE);
             String clientPropertiesFile = System.getenv(requestParams.getString(KEY_CLIENT_PROPERTIES));
             BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
             try {
@@ -194,7 +194,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
                 BMSWacnetAPIConnector wacnetAPIConnector = new BMSWacnetAPIConnector(System.getenv(ENV_WACNET_API_PROPERTIES));
                 result = wacnetAPIConnector.writePresentValue(deviceId, objectId, value);
                 return result;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to write present value to Bacnet Object: " + objectId, e);
             }
         } else if (requestParams.has(KEY_BACNETDEVICEID) && requestParams.has(KEY_BACNETOBJECTID) && requestParams.has(KEY_VALUE)) {
@@ -202,7 +202,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             String deviceId = requestParams.getString(KEY_BACNETDEVICEID);
             //retrieve Bacnet Object ID from request parameters
             String objectId = requestParams.getString(KEY_BACNETOBJECTID);
-            int value = requestParams.getInt(KEY_VALUE);
+            Double value = requestParams.getDouble(KEY_VALUE);
             //send request via API
             try {
                 BMSWacnetAPIConnector wacnetAPIConnector = new BMSWacnetAPIConnector(System.getenv(ENV_WACNET_API_PROPERTIES));

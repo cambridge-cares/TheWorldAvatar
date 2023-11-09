@@ -36,7 +36,7 @@ public class BMSWacnetAPIConnector {
         loadAPIConfigs(filepath);
     }
 
-    public JSONObject writePresentValue(String deviceId, String objectId, int value) throws IOException {
+    public JSONObject writePresentValue(String deviceId, String objectId, Double value) throws IOException {
         JSONObject responseBody = new JSONObject();
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             //http://localhost:47800/api/v1/bacnet/devices/<deviceId>/objects/<objectId>
@@ -61,7 +61,7 @@ public class BMSWacnetAPIConnector {
                         responseBody.put("message", "Successfully written " + value + " to the object with an ID: " + objectId);
                         return responseBody;
                     default:
-                        throw new HttpResponseException(status, "Could not retrieve access token.");
+                        throw new HttpResponseException(status, "Error!.");
                 }
             }
         }
@@ -88,7 +88,7 @@ public class BMSWacnetAPIConnector {
                         value = responseBody.getDouble("present-value");
                         return value;
                     default:
-                        throw new HttpResponseException(status, "Could not retrieve access token.");
+                        throw new HttpResponseException(status, "Error");
                 }
             }
         }
