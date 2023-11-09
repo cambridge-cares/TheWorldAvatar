@@ -48,7 +48,27 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <release>8</release>
+                    <excludes>
+                        <!-- Ignore the fed code as it is only a proof of concept -->
+                        <exclude>**/fed/*.java</exclude>
+                    </excludes>
                 </configuration>
+
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <testExcludes>
+                                <!-- Ignore the fed tests as it is only a proof of concept -->
+                                <exclude>**/fed/*.java</exclude>
+                            </testExcludes>
+                        </configuration>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Edit the manifest file that goes inside the .jar file -->
@@ -303,14 +323,6 @@
             <groupId>net.sf.py4j</groupId>
             <artifactId>py4j</artifactId>
             <version>0.10.9.1</version>
-        </dependency>
-
-        <!-- For BlazegraphRepositoryWrapper -->
-        <!-- https://mvnrepository.com/artifact/com.blazegraph/bigdata-core -->
-        <dependency>
-            <groupId>com.blazegraph</groupId>
-            <artifactId>bigdata-core</artifactId>
-            <version>2.1.4</version>
         </dependency>
 
         <!-- Following RDF4J dependencies are added for enabling the federated query
