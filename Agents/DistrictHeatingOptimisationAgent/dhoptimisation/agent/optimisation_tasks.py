@@ -7,6 +7,7 @@
 # methods for the DHOptimisationAgent
 
 import pandas as pd
+import numpy as np
 import CoolProp.CoolProp as CP
 
 from dhoptimisation.utils import *
@@ -21,7 +22,11 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
                               optimisation_input_iris: dict, 
                               opti_start_dt: str, opti_end_dt: str):
     """
-    ...
+    Returns a dictionary describing the full SWPS optimization setup, with first
+    level keys referring to object instances, i.e., ['market_prices', 'gas_properties',
+    'sourcing_contracts', 'heat_boilers', 'gas_turbines', 'district_heating_grid',
+    'municipal_utility'] and values describing all parameters to create the respective
+    objects
     
     Arguments:
         kg_client {KGClient} -- pre-initialised SPARQL client
@@ -107,21 +112,21 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         }
     """
     
-    #
-    ### 1) Construct overall optimisation setup dictionary by querying KG
-    #
-    logger.info('Constructing overall optimisation setup dictionary...')
+    ###########################################################################
+    # 1) Construct overall optimisation setup parameter dict by querying KG
+    
+    logger.info('Retrieving optimisation setup input from KG...')
     
     # Initialise setup dictionary
-    setup = {}
+    params = {}
     
     # Add market prices
     mp = kg_client.get_market_prices()
-    setup.update(mp)
+    params.update(mp)
     
     # Add gas properties
     gp = kg_client.get_gas_properties()
-    setup.update(gp)
+    params.update(gp)
     
     # Add municipal utility details
     mu = kg_client.get_municipal_utility_details()
@@ -129,7 +134,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
     # boilers, and gas turbines not yet assigned
     mu.update({'mu2': [], 'mu3': [], 'mu4': [], 'mu5': None, 'mu6': None,
                'mu7': optimisation_input_iris['q_demand']})    
-    setup.update(mu)
+    params.update(mu)
     
     # Add district heating grid details
     dh = kg_client.get_dh_grid_details()
@@ -139,13 +144,13 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
     sup = kg_client.get_dh_grid_supplier_details(dh['dh1'], OHN_MUNICIPAL_UTILITY)
     sup.update({'dh6': optimisation_input_iris['t_flow_mu'],
                 'dh7': optimisation_input_iris['t_return_mu']})
-    setup = extend_setup_dictionary(setup, sup)
+    params = extend_setup_dictionary(params, sup)
     # 2) EfW plant
     sup = kg_client.get_dh_grid_supplier_details(dh['dh1'], OHN_INCINERATIONPLANT)
     sup.update({'dh6': optimisation_input_iris['t_flow_efw'],
                 'dh7': optimisation_input_iris['t_return_efw']})
-    setup = extend_setup_dictionary(setup, sup)    
-    setup.update(dh)
+    params = extend_setup_dictionary(params, sup)    
+    params.update(dh)
     
     # Get all heat providers
     heat_providers = kg_client.get_heat_providers()
@@ -158,7 +163,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         # Get tiered unit price structure
         sc.update(kg_client.get_tiered_unit_prices(sc.pop('tiered_price')))        
         # Add to overall optimisation detup
-        setup = extend_setup_dictionary(setup, sc)  
+        params = extend_setup_dictionary(params, sc)  
             
     # Add gas boilers
     for boiler in heat_providers.get('boilers', []):
@@ -171,7 +176,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         # NOTE: Negligible/NA for conventional gas boilers
         hb.update({'hb5': 0.0, 'hb6': 0.0})
         # Add to overall optimisation detup
-        setup = extend_setup_dictionary(setup, hb)  
+        params = extend_setup_dictionary(params, hb)  
             
     # Add gas turbine
     for turbine in heat_providers.get('gt', []):
@@ -185,37 +190,137 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         #      they will be set when initialising GT object and keys 'gt12' 
         #      and 'gt13' here are neglected
         # Add to overall optimisation detup
-        setup = extend_setup_dictionary(setup, gt)
+        params = extend_setup_dictionary(params, gt)
     
-    logger.info('Overall optimisation setup dictionary constructed with placeholder IRIs.')
+    logger.info('Optimisation setup queried from KG with placeholder IRIs for ts data.')
     
-    #        
-    ### 2) Construct overall DataFrame for all time series data
-    #
+    ###########################################################################
+    # 2) Construct overall DataFrame for all time series data
+    
     logger.info('Querying and validating time series data...')
     
-    ts_data_iris = extract_iris_from_setup_dict(setup)
+    # Initialise list of heat generation/sourcing history IRIs
+    histories = []
+    # Initialise overarching ts DataFrame with 'time' column to merge data on
     all_ts = pd.DataFrame()
     all_ts.index.name = 'time'
+    # Query ts data for all placeholder IRIs
+    ts_data_iris = extract_iris_from_setup_dict(params)
     for iri in ts_data_iris:
+        # NOTE: Optimisation assumes data in certain units; hence, query ts 
+        #       data for expected units!
         rdf_type = kg_client.get_rdftype(iri)
         unit = UNITS[rdf_type]
         df = retrieve_consolidated_timeseries_as_dataframe(kg_client, ts_client,
                         instance_iri=iri, unit=unit, lowerbound=opti_start_dt, 
                         upperbound=opti_end_dt, column_name=iri)
         all_ts = all_ts.merge(df, on='time', how='outer')
+        # Add heat generation/sourcing history IRIs to list
+        if rdf_type in [OHN_GENERATED_HEAT_AMOUNT, OHN_PROVIDED_HEAT_AMOUNT]:
+            histories.append(iri)
+        
+    # Condition time series collectively
+    check_interval_spacing(all_ts)
+    # Check for missing data
+    if all_ts.isna().sum().sum() != 0:
+        logger.warn('Some time series data is missing and will be forward filled.')
+        logger.info(all_ts.isna().sum())
+        all_ts.fillna(method='ffill', inplace=True)
+    # Verify data availability for entire optimisation interval
+    if not pd.Timestamp(opti_start_dt).tz_localize(None) == all_ts.index.min() or \
+       not pd.Timestamp(opti_end_dt).tz_localize(None) == all_ts.index.max():
+           raise_error(ValueError, 'Not all time series data available for optimisation interval.')
+    # Convert boolean availabilities to one-hot encoded data
+    bool_columns = all_ts.select_dtypes(include=['bool']).columns
+    all_ts[bool_columns] = all_ts[bool_columns].astype(int) 
+    # Reset historical heat generation/sourcing data
+    all_ts[histories] = np.nan
+        
+    # Extract DataTime index (for later use); then drop to ensure internal consistency
+    index = pd.to_datetime(all_ts.index)
+    all_ts.reset_index(drop=True, inplace=True)
     
     logger.info('Queried and validated time series data.')
     
-    #
-    ### 3) Replace placeholder instance IRIs with validated time series data
+    ###########################################################################
+    # 3) Replace placeholder instance IRIs with validated time series data
     #
     logger.info('Replacing placeholder IRIs with time series data...')
     
+    replacements = all_ts.to_dict(orient='list')
+    # Iterate through the original dictionary and apply replacements
+    for key, value in params.items():
+        params[key] = replace_values(replacements, value) 
     
-    logger.info('Overall optimisation setup dictionary successfully completed.')
+    logger.info('Optimisation input parameters complete.')
     
-    return setup, 2
+    ###########################################################################
+    # 4) Construct overall optimisation setup dict
+    #       - constant parameters as 'normal' values 
+    #       - dynamic parameters as pd.Series (to allow for indexing)
+    logger.info('Constructing overall optimisation setup dictionary...')
+    setup = {
+        'market_prices': {'gas_q': pd.Series(params['mp1'], name='gas_q'),
+                          'gas_gt': pd.Series(params['mp2'], name='gas_gt'),
+                          'el_spot': pd.Series(params['mp3'], name='el_spot'),
+                          'co2': pd.Series(params['mp4'], name='co2'),
+                          'chp_bonus': pd.Series(params['mp5'], name='chp_bonus'),
+                          'grid_save': pd.Series(params['mp6'], name='grid_save')},
+        'gas_properties': {'ho': params['gp1'],
+                           'hu': params['gp2'],
+                           'co2_factor': params['gp3']},
+        'district_heating_grid': {'name': params['dh1'],
+                                  'entry_points': params['dh2']},
+        'municipal_utility': {'name': params['mu1'],
+                              'conv_boilers': params['mu2'],
+                              'gas_turbines': params['mu3'],
+                              'contracts': params['mu4'],
+                              'fuel': params['mu5'],
+                              'network': params['mu6'],
+                              'q_demand': pd.Series(params['mu7'], name='q_demand')},
+        'sourcing_contracts': [],
+        'heat_boilers': [],
+        'gas_turbines': [],
+        'grid_entry_points': []
+    }
+
+    # Add heat sourcing contract(s) to setup
+    for i in range(len(params['sc1'])):
+        setup['sourcing_contracts'].append({'name': params['sc1'][i], 'qlimits_pa': params['sc2'][i],
+                                            'prices': params['sc3'][i], 'current_price': params['sc4'][i],
+                                            'entry_point': params['sc5'][i],
+                                            'availability': pd.Series(params['sc6'][i], name='availability'),
+                                            'qmin': pd.Series(params['sc7'][i], name='qmin'),
+                                            'qmax': pd.Series(params['sc8'][i], name='qmax'),
+                                            'q_hist': pd.Series(params['sc9'][i], name='q_hist')})
+    # Add boiler(s) to setup
+    for i in range(len(params['hb1'])):
+        setup['heat_boilers'].append({'name': params['hb1'][i], 'capacity': params['hb2'][i],
+                                      'gas_demand': params['hb4'][i], 'start_up_cost': params['hb5'][i], 
+                                      'shut_down_cost': params['hb6'][i], 
+                                      'wear_cost': pd.Series(params['hb7'][i], name='wear_cost'),
+                                      'availability': pd.Series(params['hb8'][i], name='availability'),
+                                      'labour_cost': pd.Series(params['hb9'][i], name='labour_cost'),
+                                      'q_hist': pd.Series(params['hb10'][i], name='q_hist')})
+    # Add gas turbine(s) to setup
+    for i in range(len(params['gt1'])):
+        setup['gas_turbines'].append({'name': params['gt1'][i], 'power_el': params['gt2'][i],
+                                      'power_q': params['gt3'][i], 'min_load': params['gt4'][i],
+                                      'gas_demand': params['gt6'][i], 'el_output': params['gt7'][i],
+                                      'idle_period': params['gt8'][i],
+                                      'wear_cost': pd.Series(params['gt9'][i], name='wear_cost'),
+                                      'availability': pd.Series(params['gt10'][i], name='availability'),
+                                      'labour_cost': pd.Series(params['gt11'][i], name='labour_cost'),
+                                      'q_hist': pd.Series(params['gt14'][i], name='q_hist')})
+    # Add grid entry point(s) to setup
+    for i in range(len(params['dh3'])):
+        setup['grid_entry_points'].append({'name': params['dh3'][i], 'min_circulation': params['dh4'][i],
+                                           'pressure': pd.Series(params['dh5'][i], name='pressure'),
+                                           'temp_flow': pd.Series(params['dh6'][i], name='temp_flow'),
+                                           'temp_return': pd.Series(params['dh7'][i], name='temp_return')})
+    logger.info('Overall optimisation setup dictionary successfully constructed.')
+    
+    return setup, index
     
 
 def retrieve_consolidated_timeseries_as_dataframe(kg_client:KGClient, ts_client:TSClient,

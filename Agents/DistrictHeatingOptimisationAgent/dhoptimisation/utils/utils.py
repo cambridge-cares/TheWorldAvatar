@@ -38,3 +38,37 @@ def extract_iris_from_setup_dict(setup_dict: dict):
             if isinstance(v, str) and url_pattern.match(v):
                 iris.append(v)
     return iris
+
+
+def replace_values(replacements: dict, obj):
+    # Helper function to replace values in optimisation setup dict 
+    if isinstance(obj, list):
+        return [replace_values(replacements, item) for item in obj]
+    elif isinstance(obj, dict):
+        return {key: replace_values(replacements, value) for key, value in obj.items()}
+    else:
+        # Returns replacements dictionary entry for obj if exist, otherwise obj
+        return replacements.get(obj, obj)
+
+
+def check_interval_spacing(data):
+    """
+    Checks whether all DatetimeIndex entries are equally spaced
+
+    Arguments:
+        data {pd.DataFrame} -- DataFrame with DatetimeIndex
+    """
+
+    # Create column from DatetimeIndex by taking difference between two subsequent entries
+    diff = data.index.to_series().diff()
+    # Drop NaN in first row
+    diff.dropna(inplace=True)
+    # Convert differences to seconds
+    diff = diff.dt.seconds
+    # Extract unique values
+    diffs = diff.unique()
+
+    if len(diffs) == 1 and diffs[0] == 3600:
+        logger.info('All DataFrame time steps are equally spaced with 1h intervals.')
+    else:
+        raise_error(ValueError, 'Not all DataFrame time steps are equally spaced with 1h intervals.')
