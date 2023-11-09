@@ -17,6 +17,8 @@ public class OrganisationTest {
     private static final String ASSET_FRIDGE_TYPE = "Fridge";
     private static final String ROOM_ONE_NAME = "Bedroom";
     private static final String ROOM_TWO_NAME = "Kitchen";
+    private static final String SYSTEM_ONE_NAME = "HVAC";
+    private static final String SYSTEM_TWO_NAME = "Emergency (AREA)";
     private static final String MEASURE_ELEC_NAME = "Electricity Consumption";
     private static final String MEASURE_ELEC_CONCEPT = "ElectricityConsumption";
     private static final String MEASURE_ELEC_UNIT = "kW";
@@ -98,6 +100,29 @@ public class OrganisationTest {
             // Verifies its contents
             String[] metadata = assetMetadataResult.poll();
             RoomTest.verifyRoomMeasureArrayContents(MEASURE_ELEC_NAME, electricityMeasureIri, electricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+        }
+    }
+
+    @Test
+    void testGetAllMeasures_FirstSystemOnly() {
+        // Set up IRIs
+        String electricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String electricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        // Initialise object
+        Organisation sample = new Organisation();
+        sample.addSystem(FACILITY_NAME, SYSTEM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
+        // Execute method
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
+        // Test results
+        assertEquals(2, results.size()); // Only one system and its facility expected
+        verifyFacilityQueueResults(results, new String[]{FACILITY_NAME}, new String[]{FACILITY_NAME, SYSTEM_ONE_NAME});
+        for (String system : results.keySet()) {
+            assertEquals(SYSTEM_ONE_NAME, system); // Room key should be room name
+            Queue<String[]> systemMetadataResult = results.get(system);
+            assertEquals(1, systemMetadataResult.size()); // Only one measure expected
+            // Verifies its contents
+            String[] metadata = systemMetadataResult.poll();
+            TechnicalSystemTest.verifySystemMeasureArrayContents(MEASURE_ELEC_NAME, electricityMeasureIri, electricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
         }
     }
 
@@ -256,6 +281,33 @@ public class OrganisationTest {
         RoomTest.verifyRoomMeasureArrayContents(MEASURE_STATE_NAME, roomStateMeasureIri, roomStateTimeSeriesIri, MEASURE_STATE_UNIT, metadata);
         metadata = roomMetadataResult.poll();
         RoomTest.verifyRoomMeasureArrayContents(MEASURE_ELEC_NAME, roomElectricityMeasureIri, roomElectricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+    }
+
+    @Test
+    void testAddSystem_SecondSystem() {
+        // Set up IRIs
+        String systemOneElecMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String systemOneElecTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        String systemTwoElecMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String systemTwoElecTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        // Initialise object
+        Organisation sample = new Organisation();
+        // Execute method
+        sample.addSystem(FACILITY_NAME, SYSTEM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, systemOneElecMeasureIri, systemOneElecTimeSeriesIri);
+        sample.addSystem(FACILITY_NAME, SYSTEM_TWO_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, systemTwoElecMeasureIri, systemTwoElecTimeSeriesIri);
+        // Test results
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
+        assertEquals(3, results.size()); // Two systems and their facility expected
+        // Retrieve and verify contents of first room
+        Queue<String[]> systemMetadataResult = results.get(SYSTEM_ONE_NAME);
+        assertEquals(1, systemMetadataResult.size()); // Only one measure expected
+        String[] metadata = systemMetadataResult.poll();
+        TechnicalSystemTest.verifySystemMeasureArrayContents(MEASURE_ELEC_NAME, systemOneElecMeasureIri, systemOneElecTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+        // Retrieve and verify contents of second room
+        systemMetadataResult = results.get(SYSTEM_TWO_NAME);
+        assertEquals(1, systemMetadataResult.size()); // Only one measure expected
+        metadata = systemMetadataResult.poll();
+        TechnicalSystemTest.verifySystemMeasureArrayContents(MEASURE_ELEC_NAME, systemTwoElecMeasureIri, systemTwoElecTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
     }
 
     @Test

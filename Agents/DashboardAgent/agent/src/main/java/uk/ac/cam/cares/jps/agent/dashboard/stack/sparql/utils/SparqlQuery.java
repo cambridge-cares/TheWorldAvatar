@@ -11,6 +11,7 @@ public class SparqlQuery {
     public static final String ORGANISATION_NAME = "orgname";
     public static final String FACILITY_NAME = "facilityname";
     public static final String ROOM_NAME = "roomname";
+    public static final String SYSTEM_NAME = "systemname";
     public static final String ELEMENT_NAME = "elementname";
     public static final String ELEMENT_TYPE = "elementtype";
     public static final String MEASURE = "measure";
@@ -71,6 +72,42 @@ public class SparqlQuery {
                 .append("?facility ontodevice:hasMinThreshold/ontodevice:hasQuantity ?minquantity;ontodevice:hasMaxThreshold/ontodevice:hasQuantity ?maxquantity.")
                 .append("?minquantity rdf:type om:RelativeHumidity;om:hasValue/om:hasNumericalValue").append(StringHelper.formatSparqlVarName(MIN_THRESHOLD)).append(".")
                 .append("?maxquantity rdf:type om:RelativeHumidity;om:hasValue/om:hasNumericalValue").append(StringHelper.formatSparqlVarName(MAX_THRESHOLD)).append(".")
+                .append("}")
+                .append(genCommonMeasureSyntax())
+                .append("}");
+        return query.toString();
+    }
+
+    /**
+     * Generates a query for all measures associated with systems
+     * that can be retrieved from the current namespace holding the time series triples.
+     *
+     * @return The query for execution.
+     */
+    public static String genFacilitySystemMeasureQuery() {
+        StringBuilder query = new StringBuilder();
+        query.append(genPrefixes())
+                .append("SELECT DISTINCT")
+                .append(StringHelper.formatSparqlVarName(ORGANISATION_NAME))
+                .append(StringHelper.formatSparqlVarName(FACILITY_NAME))
+                .append(StringHelper.formatSparqlVarName(SYSTEM_NAME))
+                .append(StringHelper.formatSparqlVarName(MEASURE))
+                .append(StringHelper.formatSparqlVarName(MEASURE_NAME))
+                .append(StringHelper.formatSparqlVarName(UNIT))
+                .append(StringHelper.formatSparqlVarName(TIME_SERIES))
+                .append(" WHERE {")
+                // Query to get systems within a facility
+                .append(genFacilitySyntax())
+                .append("?facility ontotechsystem:containsSystem ?system.")
+                // Sub query to retrieve the system's energy consumption measures
+                .append("{")
+                .append("?system rdfs:label").append(StringHelper.formatSparqlVarName(SYSTEM_NAME)).append(";")
+                .append("ontoubemmp:consumesEnergy/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append(".")
+                .append("} UNION {")
+                // Second sub query to retrieve the subsystem's energy consumption measures
+                .append("?system ontotechsystem:composedOf ?subsystem.")
+                .append("?subsystem rdfs:label").append(StringHelper.formatSparqlVarName(SYSTEM_NAME)).append(";")
+                .append("ontoubemmp:consumesEnergy/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append(".")
                 .append("}")
                 .append(genCommonMeasureSyntax())
                 .append("}");
@@ -142,6 +179,8 @@ public class SparqlQuery {
                 .append("PREFIX ontobim:<https://www.theworldavatar.com/kg/ontobim/>")
                 .append("PREFIX ontodevice:<https://www.theworldavatar.com/kg/ontodevice/>")
                 .append("PREFIX ontotimeseries:<https://www.theworldavatar.com/kg/ontotimeseries/>")
+                .append("PREFIX ontotechsystem:<https://www.theworldavatar.com/kg/ontotechnicalsystem/>")
+                .append("PREFIX ontoubemmp:<https://www.theworldavatar.com/kg/ontoubemmp/>")
                 .append("PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>")
                 .append("PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>")
                 .append("PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>")

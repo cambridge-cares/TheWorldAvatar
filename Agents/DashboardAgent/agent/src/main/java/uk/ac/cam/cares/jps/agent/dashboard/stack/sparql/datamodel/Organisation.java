@@ -14,6 +14,7 @@ public class Organisation {
     // Key value pair is asset name and its stored information respectively
     private final Map<String, Asset> ASSETS = new HashMap<>();
     private final Map<String, Room> ROOMS = new HashMap<>();
+    private final Map<String, TechnicalSystem> SYSTEMS = new HashMap<>();
     private final Queue<String[]> FACILITY_THRESHOLDS = new ArrayDeque<>();
     private final Set<String> UNIQUE_THRESHOLDS = new HashSet<>();
     private final Map<String, Facility> FACILITIES = new HashMap<>();
@@ -27,9 +28,10 @@ public class Organisation {
     /**
      * A getter method to retrieve all available rooms, assets and their corresponding time series and information in the facilities managed by an organisation.
      * Format: {asset1: [measure1, dataIRI, timeseriesIRI, unit, assetType], [measure2, dataIRI, timeseriesIRI, null(if no unit), assetType]],
-     * room1: [[measureName, dataIRI, timeseriesIRI, unit], [measureName, dataIRI, timeseriesIRI, unit]], ...],
-     * facilities: [[facility1, asset1InFacility1,...],[facility2, room1InFacility2,...]]
-     * thresholds: [[measureName, min, max],...]}
+     *          room1: [[measureName, dataIRI, timeseriesIRI, unit, rooms], [measureName, dataIRI, timeseriesIRI, unit, rooms]], ...],
+     *          system1: [[measureName, dataIRI, timeseriesIRI, unit, systems], [measureName, dataIRI, timeseriesIRI, unit, systems]], ...],
+     *          facilities: [[facility1, asset1InFacility1,system1InFacility1,...],[facility2, room1InFacility2,...]]
+     *          thresholds: [[measureName, min, max],...]}
      *
      * @return A map linking all assets and rooms to their measures.
      */
@@ -43,6 +45,10 @@ public class Organisation {
         for (Room room : this.ROOMS.values()) {
             String roomName = room.getRoomName();
             measures.put(roomName, room.getRoomData());
+        }
+        for (TechnicalSystem system : this.SYSTEMS.values()) {
+            String systemName = system.getName();
+            measures.put(systemName, system.getData());
         }
         // Retrieve all facility data through the use of streams and collect them as a queue
         Queue<String[]> facilityDataQueue = this.FACILITIES.values()
@@ -100,6 +106,29 @@ public class Organisation {
             // If it does not exist, create a new asset and add it into the map
             Asset element = new Asset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
             this.ASSETS.put(assetName, element);
+        }
+    }
+
+    /**
+     * Add a system into this class.
+     *
+     * @param facilityName  Name of the facility that the system is found in.
+     * @param systemName    Name of the system to be included.
+     * @param unit          Measure unit symbol
+     * @param measureIri    Corresponding dataIRI of the measure associated with the system.
+     * @param timeSeriesIri Corresponding time series IRI of the measure.
+     */
+    public void addSystem(String facilityName, String systemName, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        this.addFacilityItem(facilityName, systemName);
+        // Check if the system already exists in the map using its name as a key
+        if (this.SYSTEMS.containsKey(systemName)) {
+            // If there is a preceding room object, add only the measure to the right system
+            TechnicalSystem system = this.SYSTEMS.get(systemName);
+            system.addMeasure(measureName, unit, measureIri, timeSeriesIri);
+        } else {
+            // If it does not exist, create a new technical system and add it into the map
+            TechnicalSystem system = new TechnicalSystem(systemName, measureName, unit, measureIri, timeSeriesIri);
+            this.SYSTEMS.put(systemName, system);
         }
     }
 

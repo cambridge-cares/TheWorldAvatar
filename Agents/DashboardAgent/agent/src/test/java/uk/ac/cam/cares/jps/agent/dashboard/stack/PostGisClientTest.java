@@ -24,6 +24,8 @@ public class PostGisClientTest {
     public static final String SAMPLE_ROOM_HUMIDITY_TIME_SERIES_INSTANCE = TestUtils.genTimeSeriesInstance();
     public static final String SAMPLE_ROOM_HUMIDITY_TABLE = "sia2018a";
     public static final String SAMPLE_ROOM_HUMIDITY_COLUMN = "column2";
+    public static final String SAMPLE_SYSTEM_ELEC_CONSUMPTION_INSTANCE = TestUtils.genInstance(SparqlClientTest.ELECTRICITY_CONSUMPTION);
+    public static final String SAMPLE_SYSTEM_ELEC_CONSUMPTION_TIME_SERIES_INSTANCE = TestUtils.genTimeSeriesInstance();
 
     @BeforeAll
     static void setup() {

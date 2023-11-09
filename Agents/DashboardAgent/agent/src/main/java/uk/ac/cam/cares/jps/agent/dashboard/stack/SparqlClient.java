@@ -59,6 +59,7 @@ public class SparqlClient {
         // For each of the spatial zone endpoint, retrieve the metadata associated with them
         for (String endpoint : this.SPATIAL_ZONE_SPARQL_ENDPOINTS) {
             executeSparqlAction(endpoint, this::retrieveRoomMetaData);
+            executeSparqlAction(endpoint, this::retrieveSystemMetaData);
             executeSparqlAction(endpoint, this::retrieveAssetMetaData);
         }
     }
@@ -77,7 +78,12 @@ public class SparqlClient {
      * Get all assets and rooms alongside their time series information associated with the spatial zones managed by the specified organisation in the knowledge graph.
      *
      * @param organisation The organisation with time series measures available in their facilities.
-     * @return A map linking all rooms and assets to their measures within the specified organisation's facilities.
+     * @return A map linking all rooms, systems, and assets to their measures within the specified organisation's facilities.
+     *         Format: {asset1: [measure1, dataIRI, timeseriesIRI, unit, assetType], [measure2, dataIRI, timeseriesIRI, null(if no unit), assetType]],
+     *         room1: [[measureName, dataIRI, timeseriesIRI, unit, rooms], [measureName, dataIRI, timeseriesIRI, unit, rooms]], ...],
+     *         system1: [[measureName, dataIRI, timeseriesIRI, unit, systems], [measureName, dataIRI, timeseriesIRI, unit, systems]], ...],
+     *         facilities: [[facility1, asset1InFacility1,system1InFacility1,...],[facility2, room1InFacility2,...]]
+     *         thresholds: [[measureName, min, max],...]}
      */
     protected Map<String, Queue<String[]>> getAllSpatialZoneMetaData(String organisation) {
         return this.ORGANISATIONS.get(organisation).getAllMeasures();
@@ -205,6 +211,19 @@ public class SparqlClient {
             if (!minThreshold.isEmpty() && !maxThreshold.isEmpty()) {
                 organisation.addThresholds(dataArray[3], minThreshold, maxThreshold); // Add thresholds
             }
+        });
+    }
+
+    /**
+     * Retrieves system-related metadata required for generating the dashboard syntax.
+     *
+     * @param conn     Connection object to the SPARQL endpoint.
+     * @param endpoint The current SPARQL endpoint.
+     */
+    private void retrieveSystemMetaData(RDFConnection conn, String endpoint) {
+        retrieveMetaData(conn, SparqlQuery.SYSTEM_NAME, SparqlQuery::genFacilitySystemMeasureQuery, (qs, dataArray) -> {
+            Organisation organisation = this.ORGANISATIONS.get(dataArray[0]);
+            organisation.addSystem(dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
         });
     }
 

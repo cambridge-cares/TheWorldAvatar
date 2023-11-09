@@ -9,6 +9,7 @@ public class StringHelper {
     public static String FACILITY_KEY = "facilities";
     public static String ASSET_KEY = "assets";
     public static String ROOM_KEY = "Rooms";
+    public static String SYSTEM_KEY = "systems";
     public static String THRESHOLD_KEY = "threshold";
     public static String SERVICE_ACCOUNT_NAME = "grafana";
 

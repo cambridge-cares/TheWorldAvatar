@@ -37,6 +37,23 @@ public class SparqlQueryTest {
     }
 
     @Test
+    void testGenFacilitySystemMeasureQuery() {
+        // Generate expected query
+        StringBuilder expectedQuery = new StringBuilder();
+        expectedQuery.append(genExpectedPrefixesString())
+                .append("SELECT DISTINCT ?orgname ?facilityname ?systemname ?measure ?measurename ?unit ?timeseries ")
+                .append("WHERE {")
+                .append(genExpectedFacilityString())
+                .append("?facility ontotechsystem:containsSystem ?system.")
+                .append("{?system rdfs:label ?systemname;ontoubemmp:consumesEnergy/om:hasValue ?measure.}")
+                .append(" UNION {?system ontotechsystem:composedOf ?subsystem.?subsystem rdfs:label ?systemname;ontoubemmp:consumesEnergy/om:hasValue ?measure.}")
+                .append(genExpectedCommonMeasureString())
+                .append("}");
+        // Execute and test result
+        assertEquals(expectedQuery.toString(), SparqlQuery.genFacilitySystemMeasureQuery());
+    }
+
+    @Test
     void testGenFacilityMeasureQuery() {
         // Generate expected query
         String endpoint = "http://www.test.org/blazegraph/namespace/kb/sparql";
@@ -73,6 +90,8 @@ public class SparqlQueryTest {
                 .append("PREFIX ontobim:<https://www.theworldavatar.com/kg/ontobim/>")
                 .append("PREFIX ontodevice:<https://www.theworldavatar.com/kg/ontodevice/>")
                 .append("PREFIX ontotimeseries:<https://www.theworldavatar.com/kg/ontotimeseries/>")
+                .append("PREFIX ontotechsystem:<https://www.theworldavatar.com/kg/ontotechnicalsystem/>")
+                .append("PREFIX ontoubemmp:<https://www.theworldavatar.com/kg/ontoubemmp/>")
                 .append("PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>")
                 .append("PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>")
                 .append("PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>")
