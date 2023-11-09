@@ -24,3 +24,6 @@ db.user=[DB_USER]
 
 #DB Password
 db.password=[DB_PASSWORD]
+
+#api url
+api.url=[WACNET_API_PATH]
