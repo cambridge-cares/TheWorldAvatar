@@ -258,11 +258,11 @@ class SparqlCompact2VerboseConverter:
             assert (obj.startswith('"') and obj.endswith('"')) or obj == "?ChemicalClassLabel"
             
             """
-            ?Species (rdf:|!rdf:)+ [ rdf:type os:ChemicalClass ; rdfs:label {label} ] .
+            ?Species (a|!a)+ [ rdf:type os:ChemicalClass ; rdfs:label {label} ] .
             """
             return TriplePattern.from_triple(
                 "?Species",
-                "os:hasChemicalClass*/(rdf:|!rdf:)/rdfs:subClassOf*",
+                "(a|!a)+",
                 "[ rdf:type os:ChemicalClass ; rdfs:label {label} ]".format(
                     label=obj
                 ),
@@ -274,7 +274,8 @@ class SparqlCompact2VerboseConverter:
         graph_patterns = list(sparql_compact.graph_patterns)
         graph_patterns.reverse()
 
-        select_vars_verbose = ["?SpeciesLabel"]
+        select_vars_verbose = list(sparql_compact.select_clause.vars)
+        select_vars_verbose.append("?SpeciesLabel")
         graph_patterns_verbose = [
             TriplePattern(
                 "?Species",

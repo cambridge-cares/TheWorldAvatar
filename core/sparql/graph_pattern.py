@@ -77,4 +77,4 @@ class BindClause(GraphPattern):
     var: str
 
     def __str__(self):
-        return "BIND {expr} AS {var}".format(expr=self.expr, var=self.var)
+        return "BIND {expr} AS {var}".format(expr=self.exprn, var=self.var)
