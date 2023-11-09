@@ -9,8 +9,8 @@ class OSPostProcessor(PostProcessor):
         self.pred_corrector = OSSparqlPredictionCorrector()
         self.compact2verbose = OSSparqlCompact2VerboseConverter()
 
-    def postprocess(self, query: SparqlQuery, nlq: str):
+    def postprocess(self, query: SparqlQuery, **kwargs):
         pred_corrected = self.pred_corrector.correct(
-            sparql=query, nlq=nlq
+            sparql=query, nlq=kwargs["nlq"]
         )
         return self.compact2verbose.convert(sparql_compact=pred_corrected)
