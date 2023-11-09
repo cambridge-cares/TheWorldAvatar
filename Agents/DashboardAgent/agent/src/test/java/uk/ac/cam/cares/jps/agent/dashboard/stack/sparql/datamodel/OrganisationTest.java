@@ -28,14 +28,15 @@ public class OrganisationTest {
     private static final String THRESHOLD_MAX = "5";
 
     @Test
-    void testGetAllMeasure() {
+    void testGetAllMeasure_AssetAndRoom() {
         // Set up IRIs
         String assetElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String assetElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, assetElectricityMeasureIri, assetElectricityTimeSeriesIri);
+        Organisation sample = new Organisation();
+        sample.addAsset(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, assetElectricityMeasureIri, assetElectricityTimeSeriesIri);
         sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         // Execute method
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
@@ -55,12 +56,13 @@ public class OrganisationTest {
     }
 
     @Test
-    void testGetAllMeasuresForFirstAsset() {
+    void testGetAllMeasures_FirstAssetOnly() {
         // Set up IRIs
         String electricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String electricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
+        Organisation sample = new Organisation();
+        sample.addAsset(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
         // Execute method
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
         // Test results
@@ -77,12 +79,13 @@ public class OrganisationTest {
     }
 
     @Test
-    void testGetAllMeasuresForFirstRoom() {
+    void testGetAllMeasures_FirstRoomOnly() {
         // Set up IRIs
         String electricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String electricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
+        Organisation sample = new Organisation();
+        sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
         // Execute method
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
         // Test results
@@ -99,12 +102,13 @@ public class OrganisationTest {
     }
 
     @Test
-    void testGetAllMeasuresNoThreshold() {
+    void testGetAllMeasures_NoThresholdForRoom() {
         // Set up IRIs
         String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        Organisation sample = new Organisation();
+        sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         // Execute method
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
         // Retrieve and test results
@@ -113,15 +117,16 @@ public class OrganisationTest {
     }
 
     @Test
-    void testAddAssetForSecondAsset() {
+    void testAddAsset_AddSecondAsset() {
         // Set up IRIs
         String lampOneElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String lampOneElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         String lampTwoElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String lampTwoElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampOneElectricityMeasureIri, lampOneElectricityTimeSeriesIri);
+        Organisation sample = new Organisation();
         // Execute method
+        sample.addAsset(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampOneElectricityMeasureIri, lampOneElectricityTimeSeriesIri);
         sample.addAsset(FACILITY_NAME, ASSET_LAMP_TWO_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampTwoElectricityMeasureIri, lampTwoElectricityTimeSeriesIri);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
@@ -139,15 +144,16 @@ public class OrganisationTest {
     }
 
     @Test
-    void testAddAssetForSecondMeasureOfSameAsset() {
+    void testAddAsset_SecondMeasureOfSameAsset() {
         // Set up IRIs
         String lampElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String lampElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         String lampStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
         String lampStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampElectricityMeasureIri, lampElectricityTimeSeriesIri);
+        Organisation sample = new Organisation();
         // Execute method
+        sample.addAsset(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampElectricityMeasureIri, lampElectricityTimeSeriesIri);
         sample.addAsset(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, lampStateMeasureIri, lampStateTimeSeriesIri);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
@@ -162,7 +168,7 @@ public class OrganisationTest {
     }
 
     @Test
-    void testAddAssetForComplexMixOfMeasureAndAsset() {
+    void testAddAsset_ComplexMixOfMeasureAndAsset() {
         // Set up IRIs
         String lampOneElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String lampOneElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
@@ -173,8 +179,9 @@ public class OrganisationTest {
         String fridgeStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
         String fridgeStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampOneElectricityMeasureIri, lampOneElectricityTimeSeriesIri);
+        Organisation sample = new Organisation();
         // Execute method
+        sample.addAsset(FACILITY_NAME, ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampOneElectricityMeasureIri, lampOneElectricityTimeSeriesIri);
         sample.addAsset(FACILITY_NAME, ASSET_LAMP_TWO_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampTwoElectricityMeasureIri, lampTwoElectricityTimeSeriesIri);
         sample.addAsset(FACILITY_NAME, ASSET_FRIDGE_ONE_NAME, ASSET_FRIDGE_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, fridgeElectricityMeasureIri, fridgeElectricityTimeSeriesIri);
         sample.addAsset(FACILITY_NAME, ASSET_FRIDGE_ONE_NAME, ASSET_FRIDGE_TYPE, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, fridgeStateMeasureIri, fridgeStateTimeSeriesIri);
@@ -201,15 +208,16 @@ public class OrganisationTest {
     }
 
     @Test
-    void testAddRoomForSecondRoom() {
+    void testAddRoom_SecondRoom() {
         // Set up IRIs
         String electricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String electricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         String roomStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
         String roomStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
+        Organisation sample = new Organisation();
         // Execute method
+        sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
         sample.addRoom(FACILITY_NAME, ROOM_TWO_NAME, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, roomStateMeasureIri, roomStateTimeSeriesIri);
         // Test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
@@ -227,15 +235,16 @@ public class OrganisationTest {
     }
 
     @Test
-    void testAddRoomForSecondMeasureOfSameRoom() {
+    void testAddRoom_SecondMeasureOfSameRoom() {
         // Set up IRIs
         String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         String roomStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
         String roomStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        Organisation sample = new Organisation();
         // Execute method
+        sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, roomStateMeasureIri, roomStateTimeSeriesIri);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
@@ -255,8 +264,9 @@ public class OrganisationTest {
         String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        Organisation sample = new Organisation();
         // Execute method
+        sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         sample.addThresholds(THRESHOLD_NAME, THRESHOLD_MIN, THRESHOLD_MAX);
         // Retrieve and test results
         Map<String, Queue<String[]>> results = sample.getAllMeasures();
@@ -276,8 +286,9 @@ public class OrganisationTest {
         String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
         // Initialise object
-        Organisation sample = new Organisation(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        Organisation sample = new Organisation();
         // Execute method twice
+        sample.addRoom(FACILITY_NAME, ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
         sample.addThresholds(THRESHOLD_NAME, THRESHOLD_MIN, THRESHOLD_MAX);
         sample.addThresholds(THRESHOLD_NAME, THRESHOLD_MIN, THRESHOLD_MAX);
         // Retrieve and test results

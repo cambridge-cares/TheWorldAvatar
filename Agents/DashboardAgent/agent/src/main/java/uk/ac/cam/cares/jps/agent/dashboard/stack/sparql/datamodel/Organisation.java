@@ -19,32 +19,9 @@ public class Organisation {
     private final Map<String, Facility> FACILITIES = new HashMap<>();
 
     /**
-     * Constructor to initialise an organisation object with one room and measure.
-     *
-     * @param facilityName  Name of the facility that the room is found in.
-     * @param roomName      Name of the room to be included.
-     * @param measureName   Name of the measure associated with the room.
-     * @param unit          Measure unit symbol
-     * @param measureIri    Corresponding dataIRI of the measure associated with the room.
-     * @param timeSeriesIri Corresponding time series IRI of the measure.
+     * Constructor to initialise an organisation object.
      */
-    public Organisation(String facilityName, String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        addRoom(facilityName, roomName, measureName, unit, measureIri, timeSeriesIri);
-    }
-
-    /**
-     * Constructor to initialise an organisation object with one asset and measure.
-     *
-     * @param facilityName  Name of the facility that the asset is found in.
-     * @param assetName     Name of the asset to be included.
-     * @param assetType     Type of the asset to be included.
-     * @param measureName   Name of the measure associated with the asset.
-     * @param unit          Measure unit symbol
-     * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
-     * @param timeSeriesIri Corresponding time series IRI of the measure.
-     */
-    public Organisation(String facilityName, String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        addAsset(facilityName, assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
+    public Organisation() {
     }
 
     /**

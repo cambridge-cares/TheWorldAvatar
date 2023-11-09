@@ -211,20 +211,14 @@ public class SparqlClient {
                 minThreshold = String.valueOf(minLiteral.getValue());
                 maxThreshold = String.valueOf(maxLiteral.getValue());
             }
-            // Check if the organisation already exists in the map
-            if (this.ORGANISATIONS.containsKey(orgName)) {
-                // If it does exist, add the room to the existing organisation object
-                Organisation organisation = this.ORGANISATIONS.get(orgName);
-                organisation.addRoom(facilityName, roomName, measureName, unit, measureIri, timeSeriesIri);
-                if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
-                    organisation.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
-            } else {
-                // If it does not exist, initialise a new organisation object and add it in
-                Organisation organisation = new Organisation(facilityName, roomName, measureName, unit, measureIri, timeSeriesIri);
-                if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
-                    organisation.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
-                this.ORGANISATIONS.put(orgName, organisation);
-            }
+            // If there is no such organisation, create a new organisation
+            if (!this.ORGANISATIONS.containsKey(orgName)) this.ORGANISATIONS.put(orgName, new Organisation());
+            // Retrieve the created organisation
+            Organisation organisation = this.ORGANISATIONS.get(orgName);
+            // Add the item
+            organisation.addRoom(facilityName, roomName, measureName, unit, measureIri, timeSeriesIri);
+            if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
+                organisation.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
         });
     }
 
@@ -257,16 +251,12 @@ public class SparqlClient {
                     unit = null;
                 }
                 String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
-                // Check if the organisation already exists in the map
-                if (this.ORGANISATIONS.containsKey(orgName)) {
-                    // If it does exist, add the asset to the existing organisation object
-                    Organisation organisation = this.ORGANISATIONS.get(orgName);
-                    organisation.addAsset(facilityName, assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
-                } else {
-                    // If it does not exist, initialise a new organisation object and add it in
-                    Organisation organisation = new Organisation(facilityName, assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
-                    this.ORGANISATIONS.put(facilityName, organisation);
-                }
+                // If there is no such organisation, create a new organisation
+                if (!this.ORGANISATIONS.containsKey(orgName)) this.ORGANISATIONS.put(orgName, new Organisation());
+                // Retrieve the created organisation
+                Organisation organisation = this.ORGANISATIONS.get(orgName);
+                // Add the item
+                organisation.addAsset(facilityName, assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
             });
         }
     }
