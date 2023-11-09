@@ -9,7 +9,9 @@ Vision Agent is designed to leverage computer vision models for object detection
   - [Installation](#installation)
   - [Resources](#resources)
     - [Configuration](#configuration)
-  - [Docker Deployment](#docker-deployment)
+  - [Running the Agent](#running-the-agent)
+    - [Locally Without Docker](#locally-without-docker)
+  - [Deploy with Docker:](#deploy-with-docker)
   - [Usage](#usage)
 - [Author](#author)
 
@@ -48,9 +50,22 @@ cv.threshold.nms=[NMS_THRESHOLD]
 
 Replace [YOUR_YOLO_WEIGHTS_FILE], [YOUR_YOLO_CONFIG_FILE], and [YOUR_CLASS_NAMES_FILE] with the appropriate filenames for your YOLO model's weights, configuration, and class names files. Replace [DETECTION_CONFIDENCE_THRESHOLD] and [NMS_THRESHOLD] with the values you wish to set for the score and non-maximum suppression thresholds, respectively.
 
-## Docker Deployment
+## Running the Agent
 
-Deploy with Docker:
+### Locally Without Docker
+To run the Vision Agent directly on your local machine:
+
+1. Ensure you have Python 3.x installed.
+2. Install the necessary dependencies: `pip install -r requirements.txt`
+3. Run the application: `python -m visionagent`
+
+## Deploy with Docker:
+
+Build the image locally: `docker-compose -f docker-compose-build.yml build`
+
+or 
+
+Pull the image from TWA and Spin up the container: `docker-compose up -d`
 
 ```
 docker-compose build

@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  vision-agent:
+    build: .
+    image: vision-agent:local
