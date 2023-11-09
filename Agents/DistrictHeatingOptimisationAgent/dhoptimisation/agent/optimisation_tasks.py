@@ -11,13 +11,15 @@ import CoolProp.CoolProp as CP
 
 from dhoptimisation.utils import *
 from dhoptimisation.datamodel.iris import *
+from dhoptimisation.datamodel.unit_mapping import UNITS
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
 
 
 def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
                               consumption_models: dict, cogen_models: dict,
-                              optimisation_input_iris: dict):
+                              optimisation_input_iris: dict, 
+                              opti_start_dt: str, opti_end_dt: str):
     """
     ...
     
@@ -30,7 +32,9 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
                                generator IRIs as keys and model objects as values
         optimisation_input_iris {dict} -- optimisation derivation inputs as returned
                                           by `validate_input_values`
-
+        opti_start_dt {str} -- optimisation start datetime as string
+        opti_end_dt {str} -- optimisation end datetime as string
+            
     Returns:
         setup {dict} -- dictionary describing the full optimisation setup with
                         structure shown below
@@ -106,6 +110,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
     #
     ### 1) Construct overall optimisation setup dictionary by querying KG
     #
+    logger.info('Constructing overall optimisation setup dictionary...')
     
     # Initialise setup dictionary
     setup = {}
@@ -180,22 +185,42 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         #      they will be set when initialising GT object and keys 'gt12' 
         #      and 'gt13' here are neglected
         # Add to overall optimisation detup
-        setup = extend_setup_dictionary(setup, gt) 
+        setup = extend_setup_dictionary(setup, gt)
+    
+    logger.info('Overall optimisation setup dictionary constructed with placeholder IRIs.')
     
     #        
     ### 2) Construct overall DataFrame for all time series data
     #
+    logger.info('Querying and validating time series data...')
+    
+    ts_data_iris = extract_iris_from_setup_dict(setup)
+    all_ts = pd.DataFrame()
+    all_ts.index.name = 'time'
+    for iri in ts_data_iris:
+        rdf_type = kg_client.get_rdftype(iri)
+        unit = UNITS[rdf_type]
+        df = retrieve_consolidated_timeseries_as_dataframe(kg_client, ts_client,
+                        instance_iri=iri, unit=unit, lowerbound=opti_start_dt, 
+                        upperbound=opti_end_dt, column_name=iri)
+        all_ts = all_ts.merge(df, on='time', how='outer')
+    
+    logger.info('Queried and validated time series data.')
     
     #
     ### 3) Replace placeholder instance IRIs with validated time series data
     #
+    logger.info('Replacing placeholder IRIs with time series data...')
+    
+    
+    logger.info('Overall optimisation setup dictionary successfully completed.')
     
     return setup, 2
     
 
 def retrieve_consolidated_timeseries_as_dataframe(kg_client:KGClient, ts_client:TSClient,
                                                   instance_iri:str, unit=None, lowerbound=None, 
-                                                  upperbound=None):
+                                                  upperbound=None, column_name='value'):
     """
     Retrieves and combines both forecast and historical time series data for
     given instance, with forecast values taking precedence
@@ -218,19 +243,31 @@ def retrieve_consolidated_timeseries_as_dataframe(kg_client:KGClient, ts_client:
     
     # Retrieve time series data
     # 1) Historical data
-    hist_iri, _ = kg_client.get_associated_dataIRI(instance_iri=instance_iri, 
-                            unit=unit, forecast=False)
-    ts_hist = pd.DataFrame(columns=['historical']) if not hist_iri else \
-              ts_client.retrieve_timeseries_as_dataframe(dataIRI=hist_iri, 
+    try:
+        hist_iri, u = kg_client.get_associated_dataIRI(instance_iri=instance_iri, 
+                                unit=unit, forecast=False)
+        ts_hist = ts_client.retrieve_timeseries_as_dataframe(dataIRI=hist_iri, 
                             column_name='historical',lowerbound=lowerbound,
                             upperbound=upperbound)
+        logger.info(f'Retrieved historical ts data for {hist_iri} with unit {u}')
+    except:
+        logger.info(f'No historical ts data available for {instance_iri}.')
+        # Create empty DataFrame with 'time' index to avoid merging error
+        ts_hist = pd.DataFrame(columns=['historical'])
+        ts_hist.index.name = 'time'
+        
     # 2) Forecast data
-    fc_iri, _ = kg_client.get_associated_dataIRI(instance_iri=instance_iri, 
-                            unit=unit, forecast=True)
-    ts_fc = pd.DataFrame(columns=['forecast']) if not fc_iri else \
-            ts_client.retrieve_timeseries_as_dataframe(dataIRI=fc_iri, 
+    try:        
+        fc_iri, u = kg_client.get_associated_dataIRI(instance_iri=instance_iri, 
+                                unit=unit, forecast=True)
+        ts_fc = ts_client.retrieve_timeseries_as_dataframe(dataIRI=fc_iri, 
                             column_name='forecast',lowerbound=lowerbound,
                             upperbound=upperbound)
+        logger.info(f'Retrieved forecast ts data for {fc_iri} with unit {u}')
+    except:
+        logger.info(f'No forecast ts data available for {instance_iri}.')
+        ts_fc = pd.DataFrame(columns=['forecast'])
+        ts_fc.index.name = 'time'
     
     # Combine time series DataFrames, with forecast values taking priority, i.e.,
     # superseding historical values
@@ -239,7 +276,7 @@ def retrieve_consolidated_timeseries_as_dataframe(kg_client:KGClient, ts_client:
     
     # Merge dfs including all time steps, with forecast taking precedence 
     merged = ts_fc.merge(ts_hist, on='time', how='outer')
-    merged['value'] = merged['forecast'].combine_first(merged['historical'])
+    merged[column_name] = merged['forecast'].combine_first(merged['historical'])
     # Drop the auxiliary columns
     merged.drop(columns=['historical', 'forecast'], inplace=True)
     

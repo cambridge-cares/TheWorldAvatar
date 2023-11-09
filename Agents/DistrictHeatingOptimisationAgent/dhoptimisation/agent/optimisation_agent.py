@@ -67,6 +67,7 @@ class DHOptimisationAgent(DerivationAgent):
                                   'q_demand', 't_flow_efw', 't_return_efw', 't_flow_mu',
                                   't_return_mu' and corresponding IRI values as string
             t1 {str} -- optimisation start datetime as string
+            t2 {str} -- optimisation end datetime as string
             ts_client {TSClient} -- configures time series client object
             time_format {str} -- Python compliant time format
         """
@@ -119,7 +120,7 @@ class DHOptimisationAgent(DerivationAgent):
         # Otherwise append mapped IRIs to return dict
         opti_inputs.update(fc_mapping)
 
-        return opti_inputs, t1, ts_client, time_format
+        return opti_inputs, t1, t2, ts_client, time_format
 
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
@@ -154,7 +155,7 @@ class DHOptimisationAgent(DerivationAgent):
         derivIRI = derivation_inputs.getDerivationIRI()
 
         # Get validated optimisation model inputs
-        opti_inputs, opti_start_dt, ts_client, time_format = \
+        opti_inputs, opti_start_dt, opti_end_dt, ts_client, time_format = \
             self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
 
         # Get gas consumption and electricity co-generation models
@@ -171,7 +172,7 @@ class DHOptimisationAgent(DerivationAgent):
         
         setup, index = define_optimisation_setup(self.sparql_client, ts_client,
                                                  consumption_models, cogen_models,
-                                                 opti_inputs)
+                                                 opti_inputs, opti_start_dt, opti_end_dt)
         
        
         # Mock optimisation data

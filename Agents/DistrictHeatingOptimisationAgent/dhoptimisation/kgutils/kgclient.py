@@ -43,7 +43,12 @@ class KGClient(PySparqlClient):
         # Constrain unit value if given
         unit_constrain = ''
         if unit:
-            unit_constrain = f'VALUES ?unit {{ <{unit}> }} '
+            unit_constrain = f"""
+                VALUES ?unit {{ <{unit}> }}
+                ?dataIRI <{OM_HASUNIT}> ?unit . """            
+        else:
+            unit_constrain = f"""
+                OPTIONAL {{ ?dataIRI <{OM_HASUNIT}> ?unit }} """
 
         # Specify relationship between instance and dataIRI
         if forecast:
@@ -54,13 +59,18 @@ class KGClient(PySparqlClient):
         query = f"""
             SELECT ?dataIRI ?unit
             WHERE {{
-            {unit_constrain}
             <{instance_iri}> <{relationship}> ?dataIRI .
-            ?dataIRI <{OM_HASUNIT}> ?unit .
+            {unit_constrain}
             }}
         """
         query = self.remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
+        
+        if len(res) == 0  and not forecast:
+            # Allow for direct attachment of time series IRI, in case no
+            # Measure is attached, i.e., for operating availability
+            query = query.replace(f'<{OM_HASVALUE}>', f'<{OM_HASVALUE}>*')
+            res = self.performQuery(query)
 
         # Extract and return results
         if len(res) == 1:
@@ -70,9 +80,45 @@ class KGClient(PySparqlClient):
         else:
             # Throw exception if no or multiple dataIRIs (with units) are found
             if len(res) == 0:
-                msg = f'No "dataIRI" associated with given instance: {instance_iri}.'
+                msg = f'No "dataIRI" associated with given instance: {instance_iri} via {relationship}.'
             else:
-                msg = f'Multiple "dataIRI"s associated with given instance: {instance_iri}.'
+                msg = f'Multiple "dataIRI"s associated with given instance: {instance_iri} via {relationship}.'
+            raise_error(ValueError, msg)
+            
+            
+    def get_rdftype(self, instance_iri:str) -> tuple:
+        """
+        Retrieves the rdf type of the given instance; if the instance is a 
+        ts:Forecast, the type of the associated instance is retrieved
+
+        Arguments:
+            instance_iri {str} -- IRI of instance for which to retrieve type
+        Returns:
+            type {str} -- IRI of associated rdf type
+        """
+
+        query = f"""
+            SELECT ?type
+            WHERE {{
+                {{ <{instance_iri}> <{RDF_TYPE}> ?type }}
+                UNION
+                {{ <{instance_iri}> ^<{TS_HASFORECAST}>/<{RDF_TYPE}> ?type }}
+                FILTER (?type != <{TS_FORECAST}>)            
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract and return results unique result
+        if len(res) == 1:
+            return self.get_unique_value(res, 'type')
+
+        else:
+            # Throw exception if no or multiple types are found
+            if len(res) == 0:
+                msg = f'No rdf type associated with given instance: {instance_iri}.'
+            else:
+                msg = f'Multiple rdf:types associated with given instance: {instance_iri}.'
             raise_error(ValueError, msg)
         
 
