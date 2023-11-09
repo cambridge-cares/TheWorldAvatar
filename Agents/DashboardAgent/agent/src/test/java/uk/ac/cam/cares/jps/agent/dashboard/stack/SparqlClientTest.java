@@ -26,6 +26,10 @@ public class SparqlClientTest {
     public static final String SAMPLE_OFFICE_STAFF_ROOM_NAME = "Staff room";
     private static final String SAMPLE_OFFICE_STORAGE_ROOM_INSTANCE = TestUtils.genInstance("Room");
     private static final String SAMPLE_OFFICE_STORAGE_ROOM_NAME = "Staff room";
+    private static final String SAMPLE_OFFICE_SYSTEM_INSTANCE = TestUtils.genInstance("HVAC");
+    public static final String SAMPLE_OFFICE_SYSTEM_NAME = "HVAC system";
+    private static final String SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE = TestUtils.genInstance("BTU");
+    private static final String SAMPLE_OFFICE_SUB_SYSTEM_NAME = "BTU unit";
     public static final String TEMPERATURE = "Temperature";
     public static final String TEMPERATURE_UNIT = "degree";
     public static final String RELATIVE_HUMIDITY = "Relative Humidity";
@@ -37,10 +41,6 @@ public class SparqlClientTest {
     public static final String SAMPLE_LAB_NAME = "Generic Laboratory";
     private static final String SAMPLE_LAB_BIO_ROOM_INSTANCE = TestUtils.genInstance("Room");
     private static final String SAMPLE_LAB_PILOT_ROOM_INSTANCE = TestUtils.genInstance("Room");
-    private static final String SAMPLE_LAB_SYSTEM_INSTANCE = TestUtils.genInstance("HVAC");
-    private static final String SAMPLE_LAB_SYSTEM_NAME = "HVAC system";
-    private static final String SAMPLE_LAB_SUB_SYSTEM_INSTANCE = TestUtils.genInstance("BTU");
-    private static final String SAMPLE_LAB_SUB_SYSTEM_NAME = "BTU unit";
     private static final String SAMPLE_LAB_FRIDGE_NAME = "Chemical Cooling Unit";
     private static final String SAMPLE_LAB_FRIDGE_TYPE = "Fridge";
     private static final String SAMPLE_LAB_FRIDGE_INSTANCE = TestUtils.genInstance(SAMPLE_LAB_FRIDGE_TYPE);
@@ -60,8 +60,8 @@ public class SparqlClientTest {
     private static final String SAMPLE_LAB_MAKE_UP_AIR_UNIT_TEMPERATURE_SENSOR_INSTANCE = TestUtils.genInstance("TemperatureSensor");
     private static final String STATE = "State";
     private static final String HUMIDITY_STATE = "Humidity State";
-    protected static final String ELECTRICITY_CONSUMPTION = "ElectricityConsumption";
-    private static final String ELECTRICITY_CONSUMPTION_UNIT = "kwh";
+    public static final String ELECTRICITY_CONSUMPTION = "ElectricityConsumption";
+    public static final String ELECTRICITY_CONSUMPTION_UNIT = "kwh";
 
     @BeforeAll
     static void setupNamespaces() {
@@ -175,14 +175,14 @@ public class SparqlClientTest {
         Map<String, Queue<String[]>> results = client.getAllSpatialZoneMetaData(SAMPLE_ORGANISATION_NAME);
         // Verify if result is as expected
         assertEquals(6, results.size()); // Two system, two rooms, one threshold and one facility should be returned
-        OrganisationTest.verifyFacilityQueueResults(results, new String[]{SAMPLE_OFFICE_NAME}, new String[]{SAMPLE_OFFICE_NAME, SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, SAMPLE_OFFICE_STAFF_ROOM_NAME, SAMPLE_LAB_SYSTEM_NAME, SAMPLE_LAB_SUB_SYSTEM_NAME});
+        OrganisationTest.verifyFacilityQueueResults(results, new String[]{SAMPLE_OFFICE_NAME}, new String[]{SAMPLE_OFFICE_NAME, SAMPLE_OFFICE_DIRECTOR_ROOM_NAME, SAMPLE_OFFICE_STAFF_ROOM_NAME, SAMPLE_OFFICE_SYSTEM_NAME, SAMPLE_OFFICE_SUB_SYSTEM_NAME});
         // For hvac system
-        Queue<String[]> resultQueue = results.get(SAMPLE_LAB_SYSTEM_NAME);
+        Queue<String[]> resultQueue = results.get(SAMPLE_OFFICE_SYSTEM_NAME);
         assertEquals(1, resultQueue.size()); // only one measure should be available
         String[] metadata = resultQueue.poll();
         verifyMetadataContents(metadata, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, StringHelper.SYSTEM_KEY);
         // For hvac subsystem
-        resultQueue = results.get(SAMPLE_LAB_SUB_SYSTEM_NAME);
+        resultQueue = results.get(SAMPLE_OFFICE_SUB_SYSTEM_NAME);
         assertEquals(1, resultQueue.size()); // only one measure should be available
         metadata = resultQueue.poll();
         verifyMetadataContents(metadata, ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT, StringHelper.SYSTEM_KEY);
@@ -292,15 +292,15 @@ public class SparqlClientTest {
         StringBuilder builder = SparqlQueryTest.genExpectedPrefixesString();
         builder.append("INSERT DATA {<")
                 // Insert a HVAC system
-                .append(SAMPLE_OFFICE_INSTANCE).append("> ontotechsystem:containsSystem <").append(SAMPLE_LAB_SYSTEM_INSTANCE).append(">.")
-                .append("<").append(SAMPLE_LAB_SYSTEM_INSTANCE).append("> rdfs:label \"").append(SAMPLE_LAB_SYSTEM_NAME).append("\";")
-                .append("ontotechsystem:composedOf <").append(SAMPLE_LAB_SUB_SYSTEM_INSTANCE).append(">.") // Include its subsystem
+                .append(SAMPLE_OFFICE_INSTANCE).append("> ontotechsystem:containsSystem <").append(SAMPLE_OFFICE_SYSTEM_INSTANCE).append(">.")
+                .append("<").append(SAMPLE_OFFICE_SYSTEM_INSTANCE).append("> rdfs:label \"").append(SAMPLE_OFFICE_SYSTEM_NAME).append("\";")
+                .append("ontotechsystem:composedOf <").append(SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE).append(">.") // Include its subsystem
                 // Generate the measure for the system's energy consumption with actual GIS data
-                .append(genMeasureTriples(SAMPLE_LAB_SYSTEM_INSTANCE, "ontoubemmp:consumesEnergy", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT,
+                .append(genMeasureTriples(SAMPLE_OFFICE_SYSTEM_INSTANCE, "ontoubemmp:consumesEnergy", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT,
                         PostGisClientTest.SAMPLE_SYSTEM_ELEC_CONSUMPTION_INSTANCE, PostGisClientTest.SAMPLE_SYSTEM_ELEC_CONSUMPTION_TIME_SERIES_INSTANCE))
                 // Generate the measure for the sub-system's energy consumption, this will not be instantiated in the postgis system
-                .append("<").append(SAMPLE_LAB_SUB_SYSTEM_INSTANCE).append("> rdfs:label \"").append(SAMPLE_LAB_SUB_SYSTEM_NAME).append("\".")
-                .append(genMeasureTriples(SAMPLE_LAB_SUB_SYSTEM_INSTANCE, "ontoubemmp:consumesEnergy", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT))
+                .append("<").append(SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE).append("> rdfs:label \"").append(SAMPLE_OFFICE_SUB_SYSTEM_NAME).append("\".")
+                .append(genMeasureTriples(SAMPLE_OFFICE_SUB_SYSTEM_INSTANCE, "ontoubemmp:consumesEnergy", ELECTRICITY_CONSUMPTION, ELECTRICITY_CONSUMPTION_UNIT))
                 .append("}");
         IntegrationTestUtils.updateEndpoint(endpoint, builder.toString());
     }

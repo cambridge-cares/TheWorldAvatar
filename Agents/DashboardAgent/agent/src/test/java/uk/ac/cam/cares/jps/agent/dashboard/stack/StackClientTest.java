@@ -152,6 +152,7 @@ class StackClientTest {
     void testGetAllTimeSeries() {
         // Insert these triples into the blazegraph
         SparqlClientTest.insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
+        SparqlClientTest.insertSystemTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
         SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
         // Create a postgis password file
         IntegrationTestUtils.createPostGisPasswordFile();
@@ -175,14 +176,10 @@ class StackClientTest {
                 verifyItemData(timeSeries, SparqlClientTest.SAMPLE_OFFICE_NAME, StringHelper.ROOM_KEY, SparqlClientTest.SAMPLE_OFFICE_STAFF_ROOM_NAME,
                         SparqlClientTest.RELATIVE_HUMIDITY, PostGisClientTest.SAMPLE_ROOM_HUMIDITY_COLUMN, PostGisClientTest.SAMPLE_ROOM_HUMIDITY_TABLE,
                         PostGisClientTest.ROOM_SQL_DATABASE, "null");
-                // Verify humidity exists
-                List<String[]> thresholds = timeSeries.get(StringHelper.ROOM_KEY).get(StringHelper.THRESHOLD_KEY);
-                thresholds.forEach((threshold) -> {
-                    if (threshold[0].equals(SparqlClientTest.RELATIVE_HUMIDITY)){
-                        assertEquals(threshold[1], String.valueOf(SparqlClientTest.RELATIVE_HUMIDITY_MIN_THRESHOLD));
-                        assertEquals(threshold[2], String.valueOf(SparqlClientTest.RELATIVE_HUMIDITY_MAX_THRESHOLD));
-                    }
-                });
+                // Verify systems
+                verifyItemData(timeSeries, SparqlClientTest.SAMPLE_OFFICE_NAME, StringHelper.SYSTEM_KEY, SparqlClientTest.SAMPLE_OFFICE_SYSTEM_NAME,
+                        SparqlClientTest.ELECTRICITY_CONSUMPTION, PostGisClientTest.SAMPLE_SYSTEM_ELEC_CONSUMPTION_COLUMN, PostGisClientTest.SAMPLE_SYSTEM_ELEC_CONSUMPTION_TABLE,
+                        PostGisClientTest.ROOM_SQL_DATABASE, SparqlClientTest.ELECTRICITY_CONSUMPTION_UNIT);
 
             }
         }
@@ -194,7 +191,8 @@ class StackClientTest {
         String[] items = facilities.get(facility).get(0);
         assertTrue(Arrays.asList(items).contains(itemName));
         // The key name will vary depending on if it is a room or asset
-        String nestedKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : StringHelper.ASSET_KEY;
+        String nestedKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY :
+                itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : StringHelper.ASSET_KEY;
         assertEquals(timeSeries.get(itemType).get(nestedKey).size(), 1);
         assertEquals(timeSeries.get(itemType).get(nestedKey).get(0)[0], itemName);
         // Extract the measure metadata

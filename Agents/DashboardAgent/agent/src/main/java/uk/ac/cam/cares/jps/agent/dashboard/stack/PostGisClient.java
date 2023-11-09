@@ -311,6 +311,11 @@ public class PostGisClient {
      * Rooms: [RoomName1, RoomName2],
      * measure1: [[RoomName1, ColName1, TableName2, Database, unit],[RoomName2, ColName3, TableName2, Database, unit]],
      * measure2: [[RoomName1, ColName2, TableName2, Database, unit],[RoomName2, ColName4, TableName2, Database, unit]]
+     * },
+     * systems:{
+     * systems: [System1, Subsystem2],
+     * measure1: [[System1, ColName1, TableName2, Database, unit],[Subsystem2, ColName3, TableName2, Database, unit]],
+     * measure2: [[System1, ColName2, TableName2, Database, unit],[Subsystem2, ColName4, TableName2, Database, unit]]
      * }
      * }
      *
@@ -325,32 +330,34 @@ public class PostGisClient {
         while (!postGisResults.isEmpty()) {
             String[] metadata = postGisResults.poll();
             String measureKey = metadata[0];
-            String assetOrRoomName = metadata[1];
-            String assetType = metadata[2];
+            String assetOrRoomOrSystemName = metadata[1];
+            String itemType = metadata[2];
             String unit = metadata[3];
             String columnName = metadata[4];
             String tableName = metadata[5];
             String database = metadata[6];
             Map<String, List<String[]>> measureMap;
-            // Depending on whether it is a room or not, set the keys accordingly
-            String assetTypeKey = assetType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : assetType;
-            String nestedItemKey = assetType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : StringHelper.ASSET_KEY;
-            // If the asset type or room key does not exist in the map,
-            if (!results.containsKey(assetTypeKey)) {
+            // Depending on whether it is a room, system, or not, set the keys accordingly
+            String itemTypeKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY :
+                    itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : itemType;
+            String nestedItemKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY :
+                    itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : StringHelper.ASSET_KEY;
+            // If the asset type, system, or room key does not exist in the map,
+            if (!results.containsKey(itemTypeKey)) {
                 // Initialise a new hashmap containing only one key-value pair to consolidate the rooms or link the asset names to their type
                 measureMap = new HashMap<>();
-                // Corresponding Asset and Room key will be consistently available to make it easier to link asset names to their type and find all rooms
+                // Corresponding key will be consistently available to make it easier to link asset names to their type and find all rooms and systems
                 measureMap.put(nestedItemKey, new ArrayList<>());
-                results.put(assetTypeKey, measureMap);
+                results.put(itemTypeKey, measureMap);
             }
-            // Retrieve either an existing or newly created map with the corresponding asset type or room key
-            measureMap = results.get(assetTypeKey);
-            // Add the room or asset name directly to the room or asset list
-            measureMap.get(nestedItemKey).add(new String[]{assetOrRoomName});
+            // Retrieve either an existing or newly created map with the corresponding asset type, system, or room key
+            measureMap = results.get(itemTypeKey);
+            // Add the room, system, or asset name directly to the corresponding list
+            measureMap.get(nestedItemKey).add(new String[]{assetOrRoomOrSystemName});
             // If the measure specified does not exist in the map, initialise a new empty list
             if (!measureMap.containsKey(measureKey)) measureMap.put(measureKey, new ArrayList<>());
             // Add the required measure metadata into the list
-            measureMap.get(measureKey).add(new String[]{assetOrRoomName, columnName, tableName, database, unit});
+            measureMap.get(measureKey).add(new String[]{assetOrRoomOrSystemName, columnName, tableName, database, unit});
         }
         // Only add the facility mapping if there are items to map
         if (results.size() > 0) this.addFacilityItemMapping(results, facilities);

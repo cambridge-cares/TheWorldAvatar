@@ -133,6 +133,11 @@ public class StackClient {
      * Rooms: [RoomName1, RoomName2],
      * measure1: [[RoomName1, ColName1, TableName2, Database, unit],[RoomName2, ColName3, TableName2, Database, unit]],
      * measure2: [[RoomName1, ColName2, TableName2, Database, unit],[RoomName2, ColName4, TableName2, Database, unit]]
+     * },
+     * systems:{
+     * systems: [System1, Subsystem2],
+     * measure1: [[System1, ColName1, TableName2, Database, unit],[Subsystem2, ColName3, TableName2, Database, unit]],
+     * measure2: [[System1, ColName2, TableName2, Database, unit],[Subsystem2, ColName4, TableName2, Database, unit]]
      * }
      * }
      *
