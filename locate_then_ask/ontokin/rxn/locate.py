@@ -30,8 +30,19 @@ class OKReactionLocator:
             template_node=True,
             topic_entity=True,
         )
-
+        
         verbalization = "the chemical reaction [{entity}]".format(entity=label)
+
+        if "Mechanism" not in query_graph.nodes() and random.getrandbits(1):
+            query_graph.add_node(
+                "Mechanism",
+                iri=entity.mechanism.iri,
+                rdf_type="okin:ReactionMechanism",
+                label=entity.mechanism.label,
+                template_node=True,
+            )
+            query_graph.add_edge("Reaction", "Mechanism", label="okin:belongsToPhase/okin:containedIn")
+            verbalization += " involved in the mechanism [{label}]".format(label=entity.mechanism.label)
 
         return query_graph, verbalization
 
@@ -126,7 +137,7 @@ class OKReactionLocator:
             query_graph.add_edge(
                 "Reaction", mechanism_node, label="okin:belongsToPhase/okin:containedIn"
             )
-            verbalization = "is involved the mechanism [{label}]".format(
+            verbalization = "is involved in the mechanism [{label}]".format(
                 label=sampled.label
             )
         else:
