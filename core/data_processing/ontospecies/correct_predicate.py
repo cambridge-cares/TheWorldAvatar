@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer, util
 
-from core.data_processing.constants import (
+from core.data_processing.ontospecies.constants import (
     ABSTRACT_IDENTIFIER_KEY,
     ABSTRACT_PROPERTY_KEY,
     CHEMCLASS_KEY,
@@ -38,7 +38,7 @@ def tokenize(text: str):
     return tokens
 
 
-class PredicateCorrector:
+class OSPredicateCorrector:
     ABSTRACT_KEYS = [ABSTRACT_PROPERTY_KEY, ABSTRACT_IDENTIFIER_KEY]
     PROPERTY_IDENTIFIER_KEYS = PROPERTY_KEYS + IDENTIFIER_KEYS
     USE_CHEMCLASS_KEYS = [USE_KEY, CHEMCLASS_KEY]
@@ -59,9 +59,13 @@ class PredicateCorrector:
         )
 
     def correct(self, predicate: str):
-        if predicate in self.VALID_PREDICATES:
+        if (
+            not predicate.startswith("?has")
+            or not predicate.startswith("os:has")
+            or predicate in self.VALID_PREDICATES
+        ):
             return predicate
-        
+
         key = predicate.split("/", maxsplit=1)[0].rsplit("has", maxsplit=1)[-1]
 
         embed_key = self.model.encode([" ".join(tokenize(key))], convert_to_tensor=True)
@@ -76,10 +80,8 @@ class PredicateCorrector:
                 return "os:has{key}/os:value".format(key=closest_key)
             else:
                 return "os:has" + closest_key
-        elif closest_key in self.USE_CHEMCLASS_KEYS:
+        else: # self.USE_CHEMCLASS_KEYS:
             if "/" in predicate:
                 return "os:has{key}/rdfs:label".format(key=closest_key)
             else:
                 return "os:has" + closest_key
-        else:
-            raise ValueError("An unexpected key is encountered: " + closest_key)

@@ -1,6 +1,6 @@
 from typing import List
 
-from core.data_processing.constants import (
+from core.data_processing.ontospecies.constants import (
     IDENTIFIER_KEYS,
     PROPERTY_KEYS,
 )
@@ -15,7 +15,7 @@ from core.sparql.graph_pattern import (
 )
 
 
-class SparqlCompact2VerboseConverter:
+class OSSparqlCompact2VerboseConverter:
     def _try_convert_entity_linking_pattern(self, pattern: GraphPattern):
         try:
             """VALUES ?Species {{ {literals} }}"""

@@ -10,7 +10,7 @@ def remove_punctuation_or_contraction(text: str):
     return text
 
 
-class SpanCorrector:
+class OSSpanCorrector:
     def correct(self, nlq: Optional[str], span: str):
         if nlq is None or span in nlq:
             return span

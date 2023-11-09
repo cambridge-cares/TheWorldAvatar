@@ -1,13 +1,13 @@
-from core.data_processing.correct_predicate import PredicateCorrector
-from core.data_processing.correct_span import SpanCorrector
+from core.data_processing.ontospecies.correct_predicate import OSPredicateCorrector
+from core.data_processing.ontospecies.correct_span import OSSpanCorrector
 from core.sparql import SparqlQuery
 from core.sparql.graph_pattern import TriplePattern, ValuesClause
 
 
-class SparqlPredictionCorrector:
+class OSSparqlPredictionCorrector:
     def __init__(self):
-        self.predicate_corrector = PredicateCorrector()
-        self.span_corrector = SpanCorrector()
+        self.predicate_corrector = OSPredicateCorrector()
+        self.span_corrector = OSSpanCorrector()
 
     def correct_values_clause(self, values_clause: ValuesClause, nlq: str):
         values = []

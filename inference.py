@@ -5,7 +5,8 @@ import transformers
 from tqdm import tqdm
 
 from core.args_schema import DatasetArguments, InferenceArguments, ModelArguments
-from core.translate.multi_domain import HfMultiDomainTranslator, OrtHfMultiDomainTranslator
+from core.translate.multi_domain import  MultiDomainTranslator
+from core.translate.single_domain import SingleDomainTranslator
 
 
 def infer():
@@ -14,18 +15,10 @@ def infer():
     )
     model_args, data_args, infer_args = hfparser.parse_args_into_dataclasses()
 
-    if model_args.model_format == "hf":
-        trans_model = HfMultiDomainTranslator(
-            model_args,
-            max_new_tokens=infer_args.max_new_tokens,
-        )
-    elif model_args.model_format == "ort":
-        trans_model = OrtHfMultiDomainTranslator(
-            model_args,
-            max_new_tokens=infer_args.max_new_tokens,
-        )
+    if data_args.multi_domain:
+        trans_model = MultiDomainTranslator(model_args, max_new_tokens=infer_args.max_new_tokens)
     else:
-        raise ValueError("Unsupported model format: " + model_args.model_format)
+        trans_model = SingleDomainTranslator(model_args, max_new_tokens=infer_args.max_new_tokens)
 
     with open(data_args.eval_data_path, "r") as task:
         data = json.load(task)
@@ -35,11 +28,7 @@ def infer():
     def task():
         for datum in tqdm(data):
             t_start = time.time()
-
             pred = trans_model.nl2sparql(datum["question"])
-            if data_args.multi_domain:
-                pred["domain"] = trans_model.classify_domain(datum["question"])
-
             t_end = time.time()
 
             datum_out = dict(
