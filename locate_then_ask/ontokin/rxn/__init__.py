@@ -30,13 +30,18 @@ class OKReactionExampleMaker(ExampleMakerBase):
             ) = self.locator.locate_concept_and_relation_multi(
                 entity_iri, cond_num=cond_num
             )
-            ask_strategies = ["name", "relation"]
+            if "Mechanism" in query_graph.nodes():
+                ask_strategies = ["name", "count", "relation"]
+            else:
+                ask_strategies = ["name", "relation"]
         else:
             raise Exception()
 
         ask_strategy = random.choice(ask_strategies)
         if ask_strategy == "name":
             ask_datum = self.asker.ask_name(query_graph, verbalization)
+        elif ask_strategy == "count":
+            ask_datum = self.asker.ask_count(query_graph, verbalization)
         elif ask_strategy == "relation":
             ask_datum = self.asker.ask_relation(query_graph, verbalization)
         else:

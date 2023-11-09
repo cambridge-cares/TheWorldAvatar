@@ -14,7 +14,7 @@ class OKGraph2Sparql(Graph2Sparql):
             ]
         )
 
-    def make_topic_entity_patterns(self, query_graph: QueryGraph, topic_node: str):
+    def make_patterns_for_topic_entity_linking(self, query_graph: QueryGraph, topic_node: str):
         label = query_graph.nodes[topic_node]["label"]
         if topic_node == "Reaction":
             template = '?{topic_entity} okin:hasEquation "{label}" .'
