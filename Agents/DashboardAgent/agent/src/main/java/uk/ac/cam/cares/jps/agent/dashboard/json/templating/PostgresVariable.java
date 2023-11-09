@@ -31,7 +31,7 @@ class PostgresVariable extends TemplateVariable {
         // Add label for the type
         this.LABEL = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" : StringHelper.addSpaceBetweenCapitalWords(itemType);
         // Description should follow the item type
-        this.DESCRIPTION = "A template variable that filters the items of " + itemType.toLowerCase() + " type.";
+        this.DESCRIPTION = "A filter for the items of " + this.LABEL.toLowerCase() + " type.";
         // Append each value in the list in the required format
         this.QUERY_SYNTAX.append("SELECT v AS \\\"__value\\\" FROM (values ");
         StringBuilder temp = new StringBuilder();
@@ -62,7 +62,8 @@ class PostgresVariable extends TemplateVariable {
         // Empty label as the label will not be displayed
         this.LABEL = "";
         // Description should follow the measure name and item type
-        this.DESCRIPTION = "A hidden template variable that displays the corresponding time series of " + measure.toLowerCase() + " for " + item.toLowerCase();
+        this.DESCRIPTION = "A hidden filter that displays the corresponding time series of " + StringHelper.addSpaceBetweenCapitalWords(measure).toLowerCase()
+                + " for " + StringHelper.addSpaceBetweenCapitalWords(item).toLowerCase();
         // Append each value in the list in the required format
         this.QUERY_SYNTAX.append("SELECT k AS \\\"__text\\\", v AS \\\"__value\\\" FROM (values ");
         StringBuilder temp = new StringBuilder();

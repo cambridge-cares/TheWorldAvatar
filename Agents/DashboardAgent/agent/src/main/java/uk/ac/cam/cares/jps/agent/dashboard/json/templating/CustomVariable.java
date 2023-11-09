@@ -27,7 +27,7 @@ class CustomVariable extends TemplateVariable {
         // Construct the super class
         super(name, dashboardDisplayOption);
         this.LABEL = StringHelper.addSpaceBetweenCapitalWords(name);
-        this.DESCRIPTION = "Default filters to view the specified facilities and their associated measures.";
+        this.DESCRIPTION = "A filter at the facility level to view the specified facilities and their associated measures.";
         // Create a default option for all values
         TextValueOption option = new TextValueOption(true, "All", "$__all");
         this.VARIABLE_SELECTION_OPTIONS.append(option.construct());

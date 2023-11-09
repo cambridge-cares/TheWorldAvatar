@@ -23,7 +23,7 @@ class CustomVariableTest {
         StringBuilder results = new StringBuilder();
         results.append(TemplateVariableTest.genExpectedCommonJsonBase(varName.toLowerCase(), dashboardDisplayOption))
                 .append("\"label\": \"").append(varName).append("\",")
-                .append("\"description\": \"Default filters to view the specified facilities and their associated measures.\",")
+                .append("\"description\": \"A filter at the facility level to view the specified facilities and their associated measures.\",")
                 .append("\"options\": [{\"selected\": true,\"text\": \"All\",\"value\": \"$__all\"},").append(genFilterOptionsForArrays(assets))
                 .append("],\"query\": \"").append(genSimpleQueryForArrays(assets))
                 .append("\",\"queryValue\": \"\",\"type\": \"custom\"}");
