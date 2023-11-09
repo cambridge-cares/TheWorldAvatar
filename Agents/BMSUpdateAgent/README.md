@@ -6,7 +6,7 @@ BMSUpdateAgent is an agent designed for multiple functions:
 
 3) It is able to retrieve the latest timeseries value of a data IRI, compare it with an user provided value, if they are equivalent, the agent is able to update the knowledge graph by inserting or/and deleting a set of triples provided to it. More information is available at the [Update Triples Route](#23-update-triples-route).
 
-4) It is able to retrieve the present value for a Bacnet object and update the knowledge graph accordingly. More information is available at the [Update Present Value Route]().
+4) It is able to retrieve the present value for a Bacnet object and update the knowledge graph accordingly. More information is available at the [Update Present Value Route](#24-update-present-value-route).
 
 # 1. Setup
 This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
@@ -60,7 +60,7 @@ Follow these [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main
 
 # 2. Usage
 ## 2.1 Set Route
-### 2.1.1. setClient.properties
+### 2.1.1. Client Properties File
 This properties file is required for the first function. It needs to contain the endpoint of the [ESPHomeAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeAgent), endpoint of the [ESPHomeUpdateAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeUpdateAgent), credentials and endpoints to access the SPARQL endpoint of the knowledge graph. It should contain the following keys:
 - `esphome.agent.toggle` the endpoint of the ESPHome Agent
 - `esphome.update.agent.retrieve` the endpoint of the ESPHome Update Agent
@@ -97,6 +97,7 @@ The write route allows writing of values to Bacnet points via the [Wacnet API](h
 - `bacnetObjectId` the ID of the Bacnet Object to write to
 - `bacnetDeviceId` the ID of the Bacnet Device that the object is assigned under
 - `value` the value to write to the Bacnet Object
+
 `bacnetObjectId` and `bacnetDeviceId` can either be provided in the request sent to the agent or it can be queried from the knowledge graph. 
 
 In order for the agent to query for `bacnetObjectId` and `bacnetDeviceId`, the [writeClient.properties](#221-writeclientproperties) needs to be populated and the following parameters are required:
@@ -111,7 +112,7 @@ In order for the agent to query for `bacnetObjectId` and `bacnetDeviceId`, the [
            ontobms:hasBacnetDeviceID "bacnetDeviceId" .
 ```
 
-### 2.2.1. writeClient.properties
+### 2.2.1. Client Properties File
 This properties file is required for the second function and it only needs to be modified if the agent is to query for the `bacnetObjectId` and `bacnetDeviceId` from the knowledge graph. It needs to contain the credentials and endpoints to access the SPARQL endpoint of the knowledge graph. It should contain the following keys:
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
@@ -159,7 +160,7 @@ The Update Triples Route allows updating of the knowledge graph based on whether
 - `DELETE` the set of triples to delete from the knowledge graph, this is optional. Refer to [Execution](#232-execution) for more information.
 - `INSERT` the set of triples to insert into the knowledge graph, this is optional. Refer to [Execution](#232-execution) for more information.
 
-### 2.3.1. updateTriplesClient.properties
+### 2.3.1. Client Properties File
 This properties file is required for the third function. It needs to contain the credentials and endpoints to access the PostGIS database and SPARQL endpoints of the knowledge graph. It should contain the following keys:
 - `db.url` the [JDBC URL](https://www.postgresql.org/docs/7.4/jdbc-use.html) for the PostGIS database
 - `db.user` the username to access the PostGIS database
