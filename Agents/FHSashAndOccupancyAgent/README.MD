@@ -108,7 +108,7 @@ If the agent runs successfully, it should return:
 ```
 3) This request retrieves the latest sash opening percentage for the provided fumehood or walkin-fumehood IRI. The request has the following format:
 ```
-curl -X GET --header "Content-Type: application/json" -d "{\"deviceIri\":\"<fumehood_iri>\"}" http://localhost:1025/fh-sash-and-occupancy-agent/latestsash
+curl -X GET http://localhost:1025/fh-sash-and-occupancy-agent/latestsash?deviceIri=<fumehood_iri>
 ```
 and it should return:
 ```
@@ -147,7 +147,7 @@ If the agent runs successfully, it should return:
 ```
 3) This request retrieves the latest sash opening percentage for the provided fumehood or walkin-fumehood IRI. The request has the following format:
 ```
-curl -X GET --header "Content-Type: application/json" -d "{\"deviceIri\":\"<fumehood_iri>\"}" http://localhost:3838/fh-sash-and-occupancy-agent/latestsash
+curl -X GET http://localhost:3838/fh-sash-and-occupancy-agent/latestsash?deviceIri=<fumehood_iri>
 ```
 and it should return:
 ```
