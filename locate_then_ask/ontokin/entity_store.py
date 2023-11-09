@@ -91,7 +91,8 @@ class OKEntityStore:
     def create_mechanism(self, entity_iri: str):
         label = self.retrieve_label(entity_iri)
         species_iris = self.retrieve_mechanism_species_iris(entity_iri)
-        return OKMechanism(iri=entity_iri, label=label, species_iris=species_iris)
+        reaction_iris = self.retrieve_mechanism_rxn_iris(entity_iri)
+        return OKMechanism(iri=entity_iri, label=label, species_iris=species_iris, reaction_iris=reaction_iris)
 
     def retrieve_label(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -316,3 +317,15 @@ SELECT DISTINCT ?Species WHERE {{
         query = query_template.format(MechanismIRI=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
         return [binding["Species"]["value"] for binding in response_bindings]
+
+    def retrieve_mechanism_rxn_iris(self, entity_iri: str):
+        query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+
+SELECT DISTINCT ?Reaction WHERE {{
+    <{MechanismIRI}> ^okin:containedIn/^okin:belongsToPhase ?Reaction .
+    ?Reaction a/rdfs:subClassOf* okin:GasPhaseReaction .
+}}"""
+        query = query_template.format(MechanismIRI=entity_iri)
+        response_bindings = self.kg_client.query(query)["results"]["bindings"]
+        return [binding["Reaction"]["value"] for binding in response_bindings]

@@ -34,6 +34,7 @@ class OKMechanism:
     iri: str
     label: str
     species_iris: List[str]
+    reaction_iris: List[str]
 
 
 @dataclass

@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+import random
 import time
 
 import networkx as nx
@@ -88,7 +89,7 @@ LIMIT 100"""
         self.example_maker_species = OKSpeciesExampleMaker(self.store)
 
         self.seed_entities = self.retrieve_seed_entities()
-        # random.shuffle(self.seed_entities)
+        random.shuffle(self.seed_entities)
 
     def generate(self):
         examples = []
