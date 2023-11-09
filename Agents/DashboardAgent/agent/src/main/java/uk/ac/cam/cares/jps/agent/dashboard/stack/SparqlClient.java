@@ -5,6 +5,7 @@ import java.io.StringReader;
 import java.net.http.HttpResponse;
 
 import org.apache.jena.query.QueryParseException;
+import org.apache.jena.query.QuerySolution;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +27,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * A client that provides methods to interact and store information from the SPARQL endpoint within a stack.
@@ -183,23 +186,7 @@ public class SparqlClient {
      * @param endpoint The current SPARQL endpoint.
      */
     private void retrieveRoomMetaData(RDFConnection conn, String endpoint) {
-        // Execute SELECT query and upon execution, run the following lines for each result row
-        conn.querySelect(SparqlQuery.genFacilityRoomMeasureQuery(), (qs) -> {
-            // Retrieve relevant information
-            String orgName = qs.getLiteral(SparqlQuery.ORGANISATION_NAME).toString();
-            String facilityName = qs.getLiteral(SparqlQuery.FACILITY_NAME).toString();
-            String roomName = qs.getLiteral(SparqlQuery.ROOM_NAME).toString();
-            String measureIri = qs.getResource(SparqlQuery.MEASURE).toString();
-            String measureName = qs.getLiteral(SparqlQuery.MEASURE_NAME).toString();
-            // If there is no unit to retrieve, this will throw a null pointer exception
-            String unit;
-            try {
-                unit = qs.getLiteral(SparqlQuery.UNIT).toString();
-            } catch (NullPointerException ne) {
-                // But as this is an optional variable, we can ignore the error and explicitly treat it as null
-                unit = null;
-            }
-            String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
+        retrieveMetaData(conn, SparqlQuery.ROOM_NAME, SparqlQuery::genFacilityRoomMeasureQuery, (qs, dataArray) -> {
             // Default values for thresholds if unavailable
             String minThreshold = "";
             String maxThreshold = "";
@@ -211,14 +198,13 @@ public class SparqlClient {
                 minThreshold = String.valueOf(minLiteral.getValue());
                 maxThreshold = String.valueOf(maxLiteral.getValue());
             }
-            // If there is no such organisation, create a new organisation
-            if (!this.ORGANISATIONS.containsKey(orgName)) this.ORGANISATIONS.put(orgName, new Organisation());
-            // Retrieve the created organisation
-            Organisation organisation = this.ORGANISATIONS.get(orgName);
+            // Retrieve the organisation
+            Organisation organisation = this.ORGANISATIONS.get(dataArray[0]);
             // Add the item
-            organisation.addRoom(facilityName, roomName, measureName, unit, measureIri, timeSeriesIri);
-            if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
-                organisation.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
+            organisation.addRoom(dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
+            if (!minThreshold.isEmpty() && !maxThreshold.isEmpty()) {
+                organisation.addThresholds(dataArray[3], minThreshold, maxThreshold); // Add thresholds
+            }
         });
     }
 
@@ -233,31 +219,53 @@ public class SparqlClient {
         // As the time series triples are stored on the remaining endpoints, these have to be executed one by one using the SERVICE keyword
         // Effectively, we repeatedly perform the following steps for all remaining endpoints
         for (String serviceEndpoint : this.REMAINING_SPARQL_ENDPOINTS) {
-            // Execute SELECT query and upon execution, run the following lines for each result row
-            conn.querySelect(SparqlQuery.genFacilityAssetMeasureQuery(serviceEndpoint), (qs) -> {
-                // Retrieve relevant information
-                String orgName = qs.getLiteral(SparqlQuery.ORGANISATION_NAME).toString();
-                String facilityName = qs.getLiteral(SparqlQuery.FACILITY_NAME).toString();
-                String assetName = qs.getLiteral(SparqlQuery.ELEMENT_NAME).toString();
+            retrieveMetaData(conn, SparqlQuery.ELEMENT_NAME, () -> SparqlQuery.genFacilityAssetMeasureQuery(serviceEndpoint), (qs, dataArray) -> {
+                // Retrieve asset type
                 String assetType = qs.getResource(SparqlQuery.ELEMENT_TYPE).getLocalName();
-                String measureIri = qs.getResource(SparqlQuery.MEASURE).toString();
-                String measureName = qs.getLiteral(SparqlQuery.MEASURE_NAME).toString();
-                // If there is no unit to retrieve, this will throw a null pointer exception
-                String unit;
-                try {
-                    unit = qs.getLiteral(SparqlQuery.UNIT).toString();
-                } catch (NullPointerException ne) {
-                    // But as this is an optional variable, we can ignore the error and explicitly treat it as null
-                    unit = null;
-                }
-                String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
-                // If there is no such organisation, create a new organisation
-                if (!this.ORGANISATIONS.containsKey(orgName)) this.ORGANISATIONS.put(orgName, new Organisation());
-                // Retrieve the created organisation
-                Organisation organisation = this.ORGANISATIONS.get(orgName);
-                // Add the item
-                organisation.addAsset(facilityName, assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
+                // Retrieve organisation
+                Organisation organisation = this.ORGANISATIONS.get(dataArray[0]);
+                // Add asset
+                organisation.addAsset(dataArray[1], dataArray[2], assetType, dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
             });
         }
+    }
+
+    /**
+     * Retrieves metadata related to a specific item type required for generating the dashboard syntax.
+     * <p>
+     * This method executes a SELECT query on the provided SPARQL endpoint and processes the results
+     * for metadata related to a specific item type. The retrieved metadata includes information such
+     * as organisation name, facility name, object name, measure details, unit, and time series.
+     *
+     * @param conn          Connection object to the SPARQL endpoint.
+     * @param objectNameVar The variable representing the specific item name in the SPARQL query.
+     * @param querySupplier A supplier providing the SPARQL query for metadata retrieval.
+     * @param dataConsumer  A bi-consumer to process the metadata for each result row.
+     *                      The first parameter is the QuerySolution object, and the second parameter
+     *                      is a String array containing metadata values in the order:
+     *                      [orgName, facilityName, objectName, measureName, unit, measureIri, timeSeriesIri].
+     */
+    private void retrieveMetaData(RDFConnection conn, String objectNameVar, Supplier<String> querySupplier, BiConsumer<QuerySolution, String[]> dataConsumer) {
+        // Execute the query in the supplier as a SELECT query
+        conn.querySelect(querySupplier.get(), (qs) -> {
+            // Retrieve the common variables
+            String orgName = qs.getLiteral(SparqlQuery.ORGANISATION_NAME).toString();
+            String facilityName = qs.getLiteral(SparqlQuery.FACILITY_NAME).toString();
+            String objectName = qs.getLiteral(objectNameVar).toString();
+            String measureIri = qs.getResource(SparqlQuery.MEASURE).toString();
+            String measureName = qs.getLiteral(SparqlQuery.MEASURE_NAME).toString();
+            // If there is no unit to retrieve, this will throw a null pointer exception
+            String unit;
+            try {
+                unit = qs.getLiteral(SparqlQuery.UNIT).toString();
+            } catch (NullPointerException ne) {
+                unit = null; // But as this is an optional variable, we can ignore the error and explicitly treat it as null
+            }
+            String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
+            // Initialise the organisation if it hasn't yet
+            if (!this.ORGANISATIONS.containsKey(orgName)) this.ORGANISATIONS.put(orgName, new Organisation());
+            // Stores the values into a bi-consumer that can be retrieved in other functions
+            dataConsumer.accept(qs, new String[]{orgName, facilityName, objectName, measureName, unit, measureIri, timeSeriesIri});
+        });
     }
 }
