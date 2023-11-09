@@ -184,7 +184,6 @@ public class GetDataJson extends HttpServlet {
         }
 
         if (pirmasensVis) {
-            group.put("expanded", false);
             // extract buildings group from pirmasensData.json template
             try (InputStream is = getClass().getClassLoader().getResourceAsStream("pirmasensData.json")) {
                 String templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
