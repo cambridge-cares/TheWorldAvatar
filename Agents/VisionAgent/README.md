@@ -61,15 +61,17 @@ To run the Vision Agent directly on your local machine:
 
 ## Deploy with Docker:
 
-Build the image locally: `docker-compose -f docker-compose-build.yml build`
+There are two methods to deploy with docker. 
 
-or 
-
-Pull the image from TWA and Spin up the container: `docker-compose up -d`
+1. Build the image locally and deploy: 
 
 ```
-docker-compose build
+docker-compose -f docker-compose-build.yml up -d
+```
 
+2. Pull the image from TWA and spin up the container: 
+
+```
 docker-compose up -d
 ```
 
