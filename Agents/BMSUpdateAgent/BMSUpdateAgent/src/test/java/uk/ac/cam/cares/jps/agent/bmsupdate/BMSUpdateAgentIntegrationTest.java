@@ -75,6 +75,9 @@ public class BMSUpdateAgentIntegrationTest {
     // list of IRIs
     private static ArrayList<String> testIRIs;
 
+    //list of classes to initialize timeseries
+    private static List<Class<?>> classes;
+
     /**
      * Namespaces for ontologies
      */
@@ -100,9 +103,6 @@ public class BMSUpdateAgentIntegrationTest {
 
     //test IRI
     private final static String test_IRI = examplePrefix + "test";
-
-    //list of classes to initialize timeseries
-    private static List<Class<?>> classes;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
