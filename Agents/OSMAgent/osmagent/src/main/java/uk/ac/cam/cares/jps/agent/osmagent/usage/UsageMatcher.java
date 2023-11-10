@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class UsageMatcher {
-    private static final String OSM_CSV_PATH = "/usr/local/tomcat/resources/osm_tags.csv";
+    private static final String OSM_CSV_PATH = "/resources/osm_tags.csv";
 
     RemoteRDBStoreClient rdbStoreClient;
 

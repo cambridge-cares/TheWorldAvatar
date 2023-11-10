@@ -1,9 +1,6 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
 
 import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -12,6 +9,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,21 +28,24 @@ public class BuildingUsageHelper
     /**
      * Retrieves the usages of a building and each usage's corresponding weight, and returns the usages and their weight as a map
      * @param uriString city object id
-     * @param route route to pass to access agent
+     * @param endpoint SPARQL endpoint
      * @return the usages and their corresponding weighting
      */
-    public Map<String, Double> getBuildingUsages(String uriString, String route) {
+    public Map<String, Double> getBuildingUsages(String uriString, String endpoint) {
         Map<String, Double> result = new HashMap<>();
         Map<String, Double> temp = new HashMap<>();
         String usage;
-        Query q = getBuildingUsagesQuery(uriString);
+        Query query = getBuildingUsagesQuery(uriString);
 
         JSONArray queryResultArray;
 
-        if (RouteHelper.checkEndpoint(route)) {
-            queryResultArray = AccessAgentCaller.queryStore(route, q.toString());
+        RemoteStoreClient remoteStoreClient = new RemoteStoreClient(endpoint);
+
+        try {
+            queryResultArray = remoteStoreClient.executeQuery(query.toString());
         }
-        else {
+        catch (Exception e) {
+            System.out.println("No building usage retrieved, agent will run CEA with CEA's default building usage.");
             queryResultArray = new JSONArray();
         }
 
@@ -105,7 +106,6 @@ public class BuildingUsageHelper
 
         wb.addPrefix("ontoBuiltEnv", ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                 .addPrefix("rdf", ontologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addWhere("?building", "ontoBuiltEnv:hasOntoCityGMLRepresentation", "?s")
                 .addWhere("?building", "ontoBuiltEnv:hasPropertyUsage", "?usage")
                 .addWhere("?usage", "rdf:type", "?BuildingUsage")
                 .addOptional("?usage", "ontoBuiltEnv:hasUsageShare", "?UsageShare");
@@ -114,7 +114,7 @@ public class BuildingUsageHelper
                 .addWhere(wb)
                 .addOrderBy("UsageShare", Order.DESCENDING);
 
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+        sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
 
         return sb.build();
     }
