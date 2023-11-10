@@ -218,6 +218,13 @@ public class Aermod {
             properties.put("iri", pointSource.getIri());
             properties.put("time", simulationTime);
             properties.put("derivation", derivationIri);
+
+            if (pointSource.getLabel() != null) {
+                properties.put("name", pointSource.getLabel());
+            } else {
+                properties.put("name", "Static point source");
+            }
+
             feature.put("properties", properties);
 
             features.put(feature);

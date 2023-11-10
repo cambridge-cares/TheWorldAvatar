@@ -3,6 +3,7 @@ package com.cmclinnovations.aermod.objects;
 public class StaticPointSource extends PointSource {
 
     private String ocgmlIri;
+    private String label = null;
 
     private CityObjectType pointSourceOCGMLType;
 
@@ -33,5 +34,13 @@ public class StaticPointSource extends PointSource {
 
     public CityObjectType getCityObjectType() {
         return pointSourceOCGMLType;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

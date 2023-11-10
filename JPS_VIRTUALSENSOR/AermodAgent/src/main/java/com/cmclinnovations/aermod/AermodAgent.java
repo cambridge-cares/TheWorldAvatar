@@ -123,6 +123,8 @@ public class AermodAgent extends DerivationAgent {
             staticPointSources.forEach(s -> s.setHeight(0));
         }
 
+        queryClient.setStaticPointSourceLabel(staticPointSources);
+
         long timeBuffer = 1800; // 30 minutes
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
 

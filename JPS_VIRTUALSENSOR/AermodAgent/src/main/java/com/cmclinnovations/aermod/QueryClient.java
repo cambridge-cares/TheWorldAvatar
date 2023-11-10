@@ -1,6 +1,7 @@
 package com.cmclinnovations.aermod;
 
 import org.eclipse.rdf4j.model.vocabulary.GEOF;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.model.vocabulary.TIME;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -1521,5 +1522,30 @@ public class QueryClient {
             LOGGER.error(e.getMessage());
         }
         return false;
+    }
+
+    void setStaticPointSourceLabel(List<StaticPointSource> staticPointSources) {
+        SelectQuery query = Queries.SELECT();
+        Variable psVar = query.var();
+        Variable labelVar = query.var();
+
+        ValuesPattern<Iri> valuesPattern = new ValuesPattern<>(psVar,
+                staticPointSources.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
+
+        GraphPattern queryPattern = psVar.has(RDFS.LABEL, labelVar);
+
+        query.where(valuesPattern, queryPattern);
+
+        Map<String, StaticPointSource> iriToSpsMap = new HashMap<>();
+        staticPointSources.forEach(sps -> iriToSpsMap.put(sps.getIri(), sps));
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String spsIri = queryResult.getJSONObject(i).getString(psVar.getQueryString().substring(1));
+            String labelString = queryResult.getJSONObject(i).getString(labelVar.getQueryString().substring(1));
+
+            iriToSpsMap.get(spsIri).setLabel(labelString);
+        }
     }
 }
