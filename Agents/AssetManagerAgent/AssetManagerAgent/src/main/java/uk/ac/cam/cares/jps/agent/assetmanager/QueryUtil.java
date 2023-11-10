@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.assetmanager;
 import static uk.ac.cam.cares.jps.agent.assetmanager.ClassAndProperties.*;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -224,4 +226,19 @@ public class QueryUtil {
     public QueryUtil () {
 
     }
+
+    public static boolean isIRI(String input) {
+        try {
+            // Attempt to create a URI from the input string
+            new URI(input);
+
+            // If the URI is created without throwing an exception,
+            // it is a valid IRI.
+            return true;
+        } catch (URISyntaxException e) {
+            // If a URISyntaxException is thrown, the input is not a valid IRI.
+            return false;
+        }
+    }
+
 }

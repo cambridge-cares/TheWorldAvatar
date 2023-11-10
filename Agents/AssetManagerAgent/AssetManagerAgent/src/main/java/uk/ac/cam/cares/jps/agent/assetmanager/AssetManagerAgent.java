@@ -34,7 +34,8 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
     "/addmaintenance",
     "/print", 
     "/printbulk",
-    "/addmanual"
+    "/addmanual",
+    "/delete"
 })
 public class AssetManagerAgent extends JPSAgent{
     /**
@@ -184,6 +185,9 @@ public class AssetManagerAgent extends JPSAgent{
             }
             else if(urlPath.contains("addmaintenance")){
                 jsonMessage = addMantainanceData(args, assetData);
+            }
+            else if(urlPath.contains("delete")){
+                jsonMessage = deleteAsset(args, assetData.getString("ID"));
             }
 
             jsonMessage.accumulate("Result", "Command Success");
@@ -566,6 +570,30 @@ public class AssetManagerAgent extends JPSAgent{
         String fileURL = arg[7] + fileName;
         instanceHandler.addDataSheet(fileURL, documentType, comments, targetID);
     
+        return message;
+    }
+
+    public JSONObject deleteAsset (String[] args, String ID){
+        JSONObject message = new JSONObject();
+        
+        String IRI;
+        
+        try {
+            if(validateID(ID)){
+                IRI = instanceHandler.existenceChecker.getIRIStringbyID(ID);
+            }else{
+                IRI = ID;
+                ID = instanceHandler.existenceChecker.getIDbyIRIString(IRI);
+            }
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Failed to get ID/IRI. ID has to be a valid ID or an IRI.", e);
+        }
+        try {
+            instanceHandler.delete(ID);
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Failed to delete asset:" + ID,e);
+        }
+        
         return message;
     }
 

@@ -48,6 +48,7 @@ public class AssetKGInterface {
     private RemoteStoreClient storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab;
     public AssetExistenceChecker existenceChecker;
     public AssetRetriever assetRetriever;
+    public AssetDelete assetDeleter;
 
     private String user = null;
     private String pass = null;
@@ -72,6 +73,7 @@ public class AssetKGInterface {
             
         existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab);
         assetRetriever =  new AssetRetriever (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab, endpointAsset, endpointOffice, endpointPurchDoc, endpointLab);
+        assetDeleter = new AssetDelete(storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab, "./deleteLog.log");
     }
 
     public AssetKGInterface(String kgEndpointAsset, String kgEndpointOffice, String kgEndpointPurchDoc, String kgEndpointLab, String username, String password) {
@@ -99,6 +101,7 @@ public class AssetKGInterface {
             
         existenceChecker =  new AssetExistenceChecker (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab);
         assetRetriever =  new AssetRetriever (storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab, endpointAsset, endpointOffice, endpointPurchDoc, endpointLab);
+        assetDeleter = new AssetDelete(storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab, "./deleteLog.log");
     }
 
     /**
@@ -914,6 +917,21 @@ public class AssetKGInterface {
             storeClientAsset.setPassword(pass);
         }
         return assetRetriever.getMeasuresExistence (dbStoreClient, IRI, pred, searchDepth);
+      }
+
+    /*
+     * =============================================================================================================================================================
+     */
+
+     /*
+      * Delete asset info based on ID
+      */
+
+      public void delete(String ID){
+        JSONObject retrievedData = assetRetriever.retrieve(ID);
+        retrievedData.put("ID", ID);
+        LOGGER.info("DELTEING::"+ID +"::" + retrievedData);
+        assetDeleter.deleteByAssetData(retrievedData);
       }
 
 }

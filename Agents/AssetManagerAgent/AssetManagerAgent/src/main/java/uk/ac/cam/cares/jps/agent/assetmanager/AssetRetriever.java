@@ -249,6 +249,10 @@ public class AssetRetriever {
                 //Add union for assets outside of CARES?
                 //deviceIRI.has(hasCurrentLocation, LocationString)
         );
+        query.where(
+                GraphPatterns.optional(
+                deviceIRI.has(hasCurrentLocation, LocationString)
+        ));
         query.where(GraphPatterns.optional(cabinetIRI.isA(cabinetTypeIRI),
             deviceIRI.has(isStoredIn, cabinetIRI),
             GraphPatterns.optional(cabinetIRI.has(hasFurnitureIdentifier, storageIDLiteral))
@@ -328,32 +332,32 @@ public class AssetRetriever {
         query.where(GraphPatterns.optional(invoiceLineIRI.has(hasItem, itemIRI), 
             InvoiceIRI.has(hasInvoiceLine, invoiceLineIRI),
             InvoiceIRI.has(invoiceNumber, InvoiceNumLiteral),
-            GraphPatterns.optional(invoiceLineIRI.has(hasPriceDetails, priceDetailsIRI)),
+            GraphPatterns.optional(invoiceLineIRI.has(hasPriceDetails, priceDetailsIRI),
             priceDetailsIRI.has(hasPrice, priceIRI),
             priceIRI.has(hasValue, priceMeasureIRI),
             priceMeasureIRI.has(hasNumericalValue, priceLiteral),
-            priceMeasureIRI.has(hasUnit, priceCurrencyIRI)
+            priceMeasureIRI.has(hasUnit, priceCurrencyIRI))
         ));
         //DO
         query.where(GraphPatterns.optional(DeliveryOrderLineIRI.has(hasItem, itemIRI),
             DeliveryOrderIRI.has(hasDeliveryOrderLine, DeliveryOrderLineIRI),
             DeliveryOrderIRI.has(deliveryOrderNumber, DeliveryOrderNumLiteral),
-            GraphPatterns.optional(DeliveryOrderLineIRI.has(hasPriceDetails, priceDetailsIRI)),
+            GraphPatterns.optional(DeliveryOrderLineIRI.has(hasPriceDetails, priceDetailsIRI),
             priceDetailsIRI.has(hasPrice, priceIRI),
             priceIRI.has(hasValue, priceMeasureIRI),
             priceMeasureIRI.has(hasNumericalValue, priceLiteral),
-            priceMeasureIRI.has(hasUnit, priceCurrencyIRI)
+            priceMeasureIRI.has(hasUnit, priceCurrencyIRI))
         ));
 
         //PO
         query.where(GraphPatterns.optional(PurchaseOrderLineIRI.has(hasItem, itemIRI),
             PurchaseOrderIRI.has(hasPurchaseOrderLine, PurchaseOrderLineIRI),
             PurchaseOrderIRI.has(purchaseOrderNumber, PurchaseOrderNumLiteral),
-            GraphPatterns.optional(PurchaseOrderLineIRI.has(hasPriceDetails, priceDetailsIRI)),
+            GraphPatterns.optional(PurchaseOrderLineIRI.has(hasPriceDetails, priceDetailsIRI),
             priceDetailsIRI.has(hasPrice, priceIRI),
             priceIRI.has(hasValue, priceMeasureIRI),
             priceMeasureIRI.has(hasNumericalValue, priceLiteral),
-            priceMeasureIRI.has(hasUnit, priceCurrencyIRI)
+            priceMeasureIRI.has(hasUnit, priceCurrencyIRI))
         ));
         
         
