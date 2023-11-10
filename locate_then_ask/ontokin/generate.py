@@ -11,7 +11,7 @@ from locate_then_ask.ontokin.entity_store import OKEntityStore
 from locate_then_ask.ontokin.mechanism import OKMechanismExampleMaker
 from locate_then_ask.ontokin.rxn import OKReactionExampleMaker
 from locate_then_ask.ontokin.species import OKSpeciesExampleMaker
-from locate_then_ask.ontokin.model import OKGasePhaseReaction, OKMechanism, OKSpecies
+from locate_then_ask.ontokin.model import OKGasPhaseReaction, OKMechanism, OKSpecies
 
 
 ROOTDIR = Path(os.getcwd())
@@ -100,7 +100,7 @@ LIMIT 100"""
             if cls == OKMechanism:
                 example_maker = self.example_maker_mechanism
                 topic_entity = "mechanism"
-            elif cls == OKGasePhaseReaction:
+            elif cls == OKGasPhaseReaction:
                 example_maker = self.example_maker_reaction
                 topic_entity = "reaction"
             elif cls == OKSpecies:
