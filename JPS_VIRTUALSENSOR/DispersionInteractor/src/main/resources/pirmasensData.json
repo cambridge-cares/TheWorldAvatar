@@ -1310,7 +1310,7 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-extrusion-color": "#FFD700",
+                        "fill-extrusion-color": "#808080",
                         "fill-extrusion-opacity": 0.9,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
