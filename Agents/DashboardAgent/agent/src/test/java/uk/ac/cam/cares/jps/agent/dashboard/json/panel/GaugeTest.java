@@ -46,7 +46,7 @@ class GaugeTest {
         Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, SAMPLE_THRESHOLDS, true);
         // Verify results
         String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, SAMPLE_THRESHOLDS, genAverageQuery(SAMPLE_METADATA)), result);
+        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, SAMPLE_THRESHOLDS, genAggregateQuery(SAMPLE_METADATA, true)), result);
     }
 
     @Test
@@ -58,7 +58,7 @@ class GaugeTest {
         Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{}, true);
         // Verify results
         String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
-        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, genAverageQuery(SAMPLE_METADATA)), result);
+        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, genAggregateQuery(SAMPLE_METADATA, true)), result);
     }
 
     @Test
@@ -123,9 +123,13 @@ class GaugeTest {
 
     public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds, String query) {
         String titleContent = "Latest " + StringHelper.addSpaceBetweenCapitalWords(metadata[0]);
-        titleContent = query.isEmpty() ? metadata[4].equals("null") ? titleContent : titleContent + " [" + metadata[4] + "]" : "Latest Average";
-        String description = query.isEmpty() ? "A gauge chart displaying the latest value of all individuals' " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase()
-                : "A gauge chart displaying the latest average value of " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase();
+        titleContent = query.isEmpty() ?
+                metadata[4].equals("null") ? titleContent : titleContent + " [" + metadata[4] + "]"  // If query is empty, this is for generic gauges with no aggregate computation
+                : query.contains(")/") ? "Latest Average" : "Latest Cumulative Total"; // If there is signs of an average computation, employ average title instead
+        // Similar to above
+        String description = query.isEmpty() ? "A gauge chart displaying the latest value of all individuals' "
+                : query.contains(")/") ? "A gauge chart displaying the latest average value of " : "A gauge chart displaying the latest cumulative total value of ";
+        description += metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase();
         boolean showThresholdMarkers = false;
         String colorMode = "palette-classic";
         String colorSteps = "{\"color\":\"red\",\"value\":80}";
@@ -159,7 +163,7 @@ class GaugeTest {
         return sb.toString();
     }
 
-    public static String genAverageQuery(List<String[]> itemsMetadata) {
+    public static String genAggregateQuery(List<String[]> itemsMetadata, boolean isAverage) {
         int totalItems = 0;
         StringBuilder averageQuery = new StringBuilder();
         StringBuilder summation = new StringBuilder();
@@ -168,7 +172,8 @@ class GaugeTest {
             summation.append("\\\"").append(metadata[1]).append("\\\"");
             totalItems++;
         }
-        averageQuery.append("SELECT time AS \\\"time\\\",(").append(summation).append(")/").append(totalItems).append(" FROM \\\"")
+        String aggregateVar = isAverage ? "(" + summation + ")/" + totalItems : summation.toString();
+        averageQuery.append("SELECT time AS \\\"time\\\",").append(aggregateVar).append(" FROM \\\"")
                 .append(itemsMetadata.get(0)[2])
                 .append("\\\" WHERE $__timeFilter(time)");
         return averageQuery.toString();

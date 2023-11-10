@@ -158,8 +158,9 @@ public class PanelModelTest {
                 if (itemType.equals(StringHelper.ROOM_KEY) || itemType.equals(StringHelper.SYSTEM_KEY)) {
                     // For the overall average Gauge chart
                     expectedGeometryPosition[1] = 4; // New width
+                    String query = itemType.equals(StringHelper.ROOM_KEY) ? GaugeTest.genAggregateQuery(itemMetadata.get(measure), true) : GaugeTest.genAggregateQuery(itemMetadata.get(measure), false);
                     builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, itemMetadata.get(measure),
-                                    thresholds, GaugeTest.genAverageQuery(itemMetadata.get(measure))))
+                                    thresholds, query))
                             .append(",");
                     // For the generic Gauge chart
                     expectedGeometryPosition[1] = 8;  // New width
