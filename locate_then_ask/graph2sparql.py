@@ -78,8 +78,8 @@ class Graph2Sparql(ABC):
             return self._make_numerical_filter_pattern(query_graph, s, o)
         
         if (
+            query_graph.nodes[o].get("template_node") and
             p in self.predicates_to_entities_linked_by_rdfslabel
-            and query_graph.nodes[o].get("template_node")
         ):
             p_sparql = p + "/rdfs:label"
             o_sparql = '"{label}"'.format(label=query_graph.nodes[o]["label"])

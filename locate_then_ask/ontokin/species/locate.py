@@ -46,7 +46,7 @@ class OKSpeciesLocator:
         query_graph.add_node(
             "Mechanism",
             iri=entity.mechanism.iri,
-            rdf_type="okin:Mechanism",
+            rdf_type="okin:ReactionMechanism",
             label=entity.mechanism.label,
             template_node=True,
         )

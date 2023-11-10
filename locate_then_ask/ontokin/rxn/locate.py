@@ -130,7 +130,7 @@ class OKReactionLocator:
             query_graph.add_node(
                 mechanism_node,
                 iri=sampled.iri,
-                rdf_type="okin:Mechanism",
+                rdf_type="okin:ReactionMechanism",
                 label=sampled.label,
                 template_node=True,
             )
