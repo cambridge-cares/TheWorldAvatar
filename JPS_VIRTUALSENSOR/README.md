@@ -1,5 +1,5 @@
 ## Prerequisites
-1) Create 4 secrets file in ./stack-manager/inputs/secrets
+1) Create 4 secrets file in `./stack-manager/inputs/secrets` with appropriate values in the files
     - geoserver_password
     - postgis_password
     - mapbox_api_key
@@ -11,6 +11,11 @@
 AERMOD agent will try to query elevation data from a table named `elevation` in the default database. AERMOD agent can query the data stored in any SRID, but the table needs to contain data in one SRID only, hence it's recommended to convert any elevation data to a uniform SRID, e.g. 4326. An example is provided in `stack-data-uploader/inputs/config/elevation.json`. Note that this config file is written for data in SRID=32632 and it needs to be changed according to your source data. The raw data files should be stored in `stack-data-uploader/inputs/data/elevation`, any format supported by gdal should work, see https://gdal.org/drivers/raster/index.html for more info.
 6) Buildings data (optional for ships, compulsory for static point source use cases):
 An example config file is given in `stack-data-uploader/inputs/config/building-pirmasens.json`, corresponding raw data should be populated in `stack-data-uploader/inputs/data/pirmasens_final_citygml`
+
+## Important for visualisation if not deployed locally
+Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/dispersion-interactor.json` to the URL where the stack is deployed, this is used to construct the WMS endpoints and the URL for feature info agent queries.
+
+## Start up the stack
 
 To start up the stack, execute
 ```
@@ -44,4 +49,6 @@ record this derivation IRI.
 3) Execute `HTTP requests/trigger update/GenerateDataWithoutShips.http`, be sure to enter derivation IRI in the request.
 
 ## Visualisation
-Visualisation can be viewed at http://localhost:3838/dispersion-vis. Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
+Visualisation can be viewed at http://localhost:3838/visualisation (replace localhost if deployed elsewhere). Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
+
+
