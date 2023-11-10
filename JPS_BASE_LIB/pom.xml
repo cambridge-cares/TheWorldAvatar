@@ -423,7 +423,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>4.0</version>
+            <version>5.8</version>
         </dependency>
         <dependency>
             <groupId>jfree</groupId>

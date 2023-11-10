@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import com.opencsv.exceptions.CsvValidationException;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.Dialogs;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
@@ -127,6 +129,9 @@ public class TBoxGeneration implements ITBoxGeneration {
 		} catch (OWLOntologyStorageException e) {
 			logger.error("OWLOntologyStorageException occured.");
 			throw new JPSRuntimeException(e);
+		} catch (CsvValidationException e) {
+			logger.error("CsvValidationException occured.");
+			throw new JPSRuntimeException(e);
 		}
 	}
 
@@ -154,6 +159,9 @@ public class TBoxGeneration implements ITBoxGeneration {
 		} catch (OWLOntologyStorageException e) {
 			logger.error("OWLOntologyStorageException occured.");
 			throw new JPSRuntimeException(e);
+		} catch (CsvValidationException e) {
+			logger.error("CsvValidationException occured.");
+			throw new JPSRuntimeException(e);
 		}
 	}
 
@@ -163,9 +171,10 @@ public class TBoxGeneration implements ITBoxGeneration {
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
 	 * @throws OWLOntologyCreationException
+	 * @throws CsvValidationException
 	 */
 	private void readCSVTemplate(String csvFileNamePlusPath)
-			throws IOException, JPSRuntimeException, OWLOntologyCreationException {
+			throws IOException, JPSRuntimeException, OWLOntologyCreationException, CsvValidationException {
 		storeRelationships(csvFileNamePlusPath);
 		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
 		int countLine = 0;
@@ -186,9 +195,10 @@ public class TBoxGeneration implements ITBoxGeneration {
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
 	 * @throws OWLOntologyCreationException
+	 * @throws CsvValidationException
 	 */
 	private void storeRelationships(String csvFileNamePlusPath)
-			throws IOException, JPSRuntimeException, OWLOntologyCreationException {
+			throws IOException, JPSRuntimeException, OWLOntologyCreationException, CsvValidationException {
 		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
 		int rowCount = 0;
 		for (List<String> singleLine : brSourceCtml) {
