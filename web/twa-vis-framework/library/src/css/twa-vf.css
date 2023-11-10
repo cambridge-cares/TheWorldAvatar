@@ -1433,7 +1433,7 @@ label[for="select-feature"] {
     background-color: #B8B8B8;
 }
 
-#helpandsearch {
+#helpandsearchandlogout {
     display: flex;
 }
 
@@ -1469,4 +1469,12 @@ label[for="select-feature"] {
     max-width: 360px;
     padding: 20px;
     object-fit: cover
+}
+
+#logout-button {
+    display: block;
+    width: 60px;
+    text-align: center;
+    cursor: pointer;
+    margin-right: 10px;
 }

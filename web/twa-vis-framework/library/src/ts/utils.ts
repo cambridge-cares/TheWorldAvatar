@@ -214,7 +214,7 @@ function buildDashboardButton() {
         var doc = parser.parseFromString(html, 'text/html');
 
         let container = document.getElementById("controlContainer");
-        let searchButton = document.getElementById("helpandsearch");
+        let searchButton = document.getElementById("helpandsearchandlogout");
         container.insertBefore(doc.body.firstChild, searchButton);
     }
 }
