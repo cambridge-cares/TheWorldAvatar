@@ -14,37 +14,47 @@ class OKReactionLocator:
     def __init__(self, store: OKEntityStore):
         self.store = store
 
-    def locate_entity_name(self, entity_iri: str):
+    def locate_concept_and_attribute(self, entity_iri: str):
         entity = self.store.get(entity_iri)
         assert isinstance(entity, OKGasPhaseReaction)
 
-        label = random.choice(entity.equations)
+        eqn = random.choice(entity.equations)
 
         query_graph = QueryGraph()
-        query_graph.add_node(
-            "Reaction",
-            iri=entity_iri,
-            rdf_type="okin:GasPhaseReaction",
-            label=label,
-            template_node=True,
-            topic_entity=True,
+        literal_node = "Literal_0" 
+        query_graph.add_nodes_from(
+            [
+                (
+                    "Reaction",
+                    dict(
+                        iri=entity_iri,
+                        rdf_type="okin:GasPhaseReaction",
+                        topic_entity=True,
+                    ),
+                ),
+                (literal_node, dict(label=eqn, literal=True, template_node=True)),
+            ]
         )
+        query_graph.add_edge("Reaction", literal_node, label="okin:hasEquation")
 
-        verbalization = "the chemical reaction [{entity}]".format(entity=label)
+        verbalization = "the chemical reaction [{entity}]".format(entity=eqn)
 
         if "Mechanism" not in query_graph.nodes() and random.getrandbits(1):
             mechanism = self.store.get(entity.mechanism_iri)
             assert isinstance(mechanism, OKMechanism)
 
             mechanism_node = "Mechanism"
-            literal_node = "Literal"
+            literal_node = "Literal_1"
             query_graph.add_nodes_from(
                 [
                     (
                         mechanism_node,
                         dict(iri=mechanism.iri, rdf_type="okin:ReactionMechanism"),
                     ),
-                    (literal_node, dict(label=mechanism.doi, literal=True, template_node=True)),
+                    (
+                        literal_node,
+                        dict(label=mechanism.doi, literal=True, template_node=True),
+                    ),
                 ]
             )
             query_graph.add_edges_from(
@@ -114,7 +124,7 @@ class OKReactionLocator:
         )
         assert len(sampled_mechanism_nodes) <= 1
         if len(sampled_mechanism_nodes) == 0:
-            sampling_frame += entity.mechanism_iri
+            sampling_frame += [entity.mechanism_iri]
 
         if len(sampling_frame) == 0:
             return query_graph, ""
@@ -148,14 +158,19 @@ class OKReactionLocator:
         else:
             assert isinstance(sampled_entity, OKMechanism)
             mechanism_node = "Mechanism"
-            literal_node = "Literal"
+            literal_node = "Literal_" + str(sum(n.startswith("Literal_") for n in query_graph.nodes()))
             query_graph.add_nodes_from(
                 [
                     (
                         mechanism_node,
                         dict(iri=sampled_entity.iri, rdf_type="okin:ReactionMechanism"),
                     ),
-                    (literal_node, dict(label=sampled_entity.doi, literal=True, template_node=True)),
+                    (
+                        literal_node,
+                        dict(
+                            label=sampled_entity.doi, literal=True, template_node=True
+                        ),
+                    ),
                 ]
             )
             query_graph.add_edges_from(
@@ -182,7 +197,7 @@ class OKReactionLocator:
             query_graph, verbalized_cond = self._locate_concept_and_relation(
                 query_graph
             )
-            if verbalized_cond is not None:
+            if verbalized_cond:
                 verbalized_conds.append(verbalized_cond)
 
         verbalization = "the {concept} that {conds}".format(

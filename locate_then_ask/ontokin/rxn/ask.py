@@ -18,7 +18,7 @@ class OKReactionAsker:
         qnode = "Mechanism"
         query_graph.add_node(qnode, question_node=True)
         query_graph.add_edge(
-            "Reaction", qnode, label="okin:belongsToPhase/okin:containedIn"
+            "Reaction", qnode, label="^okin:hasEquation"
         )
 
         verbalization += " across all the mechanisms that it appears in"
@@ -61,56 +61,17 @@ class OKReactionAsker:
     def ask_relation(self, query_graph: QueryGraph, verbalization: str):
         query_graph = copy.deepcopy(query_graph)
 
-        q = random.choice(["arrhenius_coeff", "falloff_coeff", "coeff"])
-        if q == "arrhenius_coeff":
-            K = "Arrhenius coefficients"
-            qnode = "ArrheniusCoefficient"
-            query_graph.add_node(qnode, question_node=True)
-            query_graph.add_edge(
-                "Reaction", qnode, label="okin:hasArrheniusCoefficient"
-            )
-        elif q == "falloff_coeff":
-            K = "falloff model coefficients"
-            qnode = "FallOffModelCoefficient"
-            query_graph.add_node(qnode, question_node=True)
-            query_graph.add_edge(
-                "Reaction", qnode, label="okin:hasFallOffModelCoefficient"
-            )
-        else:
-            K = "rate coefficients"
-            qnode = "RateCoefficient"
-            bclass_node = "okin:RateCoefficient"
-            query_graph.add_nodes_from(
-                [
-                    (qnode, dict(question_node=True)),
-                    (
-                        bclass_node,
-                        dict(
-                            iri=bclass_node,
-                            prefixed=True,
-                            template_node=True,
-                            label=bclass_node,
-                        ),
-                    ),
-                ]
-            )
-            query_graph.add_edges_from(
-                [
-                    ("Reaction", qnode, dict(label="?hasRateCoefficient")),
-                    (qnode, bclass_node, dict(label="a/rdfs:subClassOf*")),
-                ]
-            )
+        qnode = "KineticModel"
+        query_graph.add_node(qnode, question_node=True)
+        query_graph.add_edge("Reaction", qnode, label="okin:hasKineticModel")
 
         template = random.choice(
             [
-                "For {E}, what are its {K}",
-                "What are the {K} of {E}",
+                "For {E}, what is its kinetic model",
+                "What is the kinetic model of {E}",
             ]
         )
-        verbalization = template.format(
-            E=verbalization,
-            K=K,
-        )
+        verbalization = template.format(E=verbalization)
 
         query_graph, verbalization = self._ask_mechanism(query_graph, verbalization)
         query_sparql = self.graph2sparql.convert(query_graph)
