@@ -23,7 +23,7 @@ public class MoDSBackendFactory {
 
         Path simDir = Files.createTempDirectory(TEMP_DIR, SIM_DIR_PREFIX);
         String jobID = simDir.getFileName().toString();
-        return new MoDSBackend(jobID, simDir, TimeUnit.SECONDS.convert(5L, TimeUnit.MINUTES));
+        return new MoDSBackend(jobID, simDir, TimeUnit.SECONDS.convert(30L, TimeUnit.MINUTES));
     }
 
     public static MoDSBackend retrieveMoDSBackend(String jobID) throws IOException {
