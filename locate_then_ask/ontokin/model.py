@@ -12,13 +12,13 @@ class OKMechanism:
 
 
 @dataclass
-class OKGasePhaseReaction:
+class OKGasPhaseReaction:
     # okin:GasPhaseReaction
     iri: str
     equations: List[str]
     reactant_iris: List[str]
     product_iris: List[str]
-    mechanism_iris: List[str]  # okin:belongsToPhase/okin:containedIn
+    mechanism_iri: str  # ^okin:hasEquation
     # okin:hasKineticModel
 
 

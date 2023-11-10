@@ -1,9 +1,9 @@
-from typing import Dict, Optional, Union
+from typing import Dict, Union
 from constants.namespaces import OKIN, OS
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontokin.model import (
     OKMechanism,
-    OKGasePhaseReaction,
+    OKGasPhaseReaction,
     OKSpecies,
 )
 
@@ -16,10 +16,10 @@ class OKEntityStore:
     ):
         self.kg_client = KgClient(kg_endpoint, **kwargs)
         self.iri2cls: Dict[
-            str, Union[OKSpecies, OKGasePhaseReaction, OKMechanism]
+            str, Union[OKSpecies, OKGasPhaseReaction, OKMechanism]
         ] = dict()
         self.iri2entity: Dict[
-            str, Union[OKSpecies, OKGasePhaseReaction, OKMechanism]
+            str, Union[OKSpecies, OKGasPhaseReaction, OKMechanism]
         ] = dict()
 
     def get_cls(self, entity_iri: str):
@@ -31,7 +31,7 @@ class OKEntityStore:
             if OKIN + "ReactionMechanism" in types:
                 self.iri2cls[entity_iri] = OKMechanism
             elif OKIN + "GasPhaseReaction" in types:
-                self.iri2cls[entity_iri] = OKGasePhaseReaction
+                self.iri2cls[entity_iri] = OKGasPhaseReaction
             elif OS + "Species" in types:
                 self.iri2cls[entity_iri] = OKSpecies
             else:
@@ -47,7 +47,7 @@ class OKEntityStore:
             cls = self.get_cls(entity_iri)
             if cls == OKMechanism:
                 self.iri2entity[entity_iri] = self.create_mechanism(entity_iri)
-            elif cls == OKGasePhaseReaction:
+            elif cls == OKGasPhaseReaction:
                 self.iri2entity[entity_iri] = self.create_rxn(entity_iri)
             else:
                 self.iri2entity[entity_iri] = self.create_species(entity_iri)
@@ -69,13 +69,13 @@ class OKEntityStore:
         equations = self.retrieve_rxn_eqns(entity_iri)
         reactants = self.retrieve_rxn_reactants(entity_iri)
         products = self.retrieve_rxn_products(entity_iri)
-        mechanisms = self.retrieve_rxn_mechansim_iris(entity_iri)
-        return OKGasePhaseReaction(
+        mechanism = self.retrieve_rxn_mechansim(entity_iri)
+        return OKGasPhaseReaction(
             iri=entity_iri,
             equations=equations,
             reactant_iris=reactants,
             product_iris=products,
-            mechanism_iris=mechanisms,
+            mechanism_iri=mechanism,
         )
 
     def create_species(self, entity_iri: str):
@@ -156,16 +156,17 @@ SELECT DISTINCT * WHERE {{
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
         return [binding["Product"]["value"] for binding in response_bindings]
 
-    def retrieve_rxn_mechansim_iris(self, entity_iri: str):
+    def retrieve_rxn_mechansim(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT DISTINCT * WHERE {{
     <{ReactionIRI}> ^okin:hasEquation ?Mechanism .
-}}"""
+}}
+LIMIT 1"""
         query = query_template.format(ReactionIRI=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
-        return [binding["Mechanism"]["value"] for binding in response_bindings]
+        return response_bindings[0]["Mechanism"]["value"]
 
     def retrieve_species_label(self, entity_iri: str):
         query_template = """PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
