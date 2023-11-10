@@ -6,6 +6,7 @@
     "dataSubsets": [
         {
             "type": "CityDB",
+            "subdirectory": "subdir",
             "skip": false,
             "importOptions": {
                 "sridIn": "32633"

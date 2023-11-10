@@ -1,1 +1,1 @@
-an empty gml file is required for the data uploader, the make sure the "pirmasens_final_citygml_previous" folder is present with data inside it.
+Place gml data in subdir, the srid in the config file is hardcoded to 32633, make sure to edit if source file is in different srid
