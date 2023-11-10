@@ -2,7 +2,7 @@ import copy
 import random
 
 from locate_then_ask.ontokin.entity_store import OKEntityStore
-from locate_then_ask.ontokin.model import OKGasePhaseReaction, OKMechanism, OKSpecies
+from locate_then_ask.ontokin.model import OKGasPhaseReaction, OKMechanism, OKSpecies
 from locate_then_ask.query_graph import QueryGraph, get_objs
 
 
@@ -52,7 +52,7 @@ class OKMechanismLocator:
         sampled_species_nodes = get_objs(
             query_graph,
             subj="Mechanism",
-            predicate="^okin:containedIn/^okin:belongsToPhase",
+            predicate="okin:hasGasPhase/^okin:belongsToPhase",
         )
         sampled_species_iris = [
             query_graph.nodes[n]["iri"] for n in sampled_species_nodes
@@ -79,7 +79,7 @@ class OKMechanismLocator:
         query_graph.add_edge(
             "Mechanism",
             species_node,
-            label="^okin:containedIn/^okin:belongsToPhase",
+            label="okin:hasGasPhase/^okin:belongsToPhase",
         )
 
         verbalization = "invovles [{label}]".format(label=species.label)
@@ -100,7 +100,7 @@ class OKMechanismLocator:
         sampled_rxn_nodes = get_objs(
             query_graph,
             subj="Mechanism",
-            predicate="^okin:containedIn/^okin:belongsToPhase",
+            predicate="okin:hasReaction",
         )
         sampled_rxn_iris = [
             query_graph.nodes[n]["iri"] for n in sampled_rxn_nodes
@@ -114,20 +114,20 @@ class OKMechanismLocator:
 
         rxn_iri = random.choice(unsampled_rxn_iris)
         rxn = self.store.get(rxn_iri)
-        assert isinstance(rxn, OKGasePhaseReaction)
+        assert isinstance(rxn, OKGasPhaseReaction)
 
         rxn_node = "Reaction_" + str(len(sampled_rxn_nodes))
         query_graph.add_node(
             rxn_node,
             iri=rxn_iri,
             rdf_type="okin:GasPhaseReaction",
-            label=rxn.equations,
+            label=random.choice(rxn.equations),
             template_node=True,
         )
         query_graph.add_edge(
             "Mechanism",
             rxn_node,
-            label="^okin:containedIn/^okin:belongsToPhase",
+            label="okin:hasReaction",
         )
 
         verbalization = "invovles the reaction [{label}]".format(label=rxn.equations)
