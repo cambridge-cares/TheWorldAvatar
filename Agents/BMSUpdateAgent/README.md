@@ -105,7 +105,7 @@ More information can be found in the example property file `updateTriplesClient.
 # 3. Usage
 ## 3.1. Set Route
 The set route is currently limited to interactions with the [ESPHomeAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeAgent) and [ESPHomeUpdateAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ESPHomeUpdateAgent). It is able to update the setpoint in the knowledge graph and turn on/off a cooling fan based on the latest measured temperature and the setpoint. These parameters are required:
-- `dataIRI` the data IRI of the
+- `dataIRI` the data IRI of the setpoint
 - `temperature` the setpoint temperature to update to the knowledge graph
 - `clientProperties` the environment variable in the docker container that points to where the client.properties file is located at, refer to [Client Properties File](#2-client-properties-file) for more information.
 
@@ -280,7 +280,7 @@ Prepare a client.properties file with the necessary keys and values. Refer to [U
 The agent accepts a POST request path `/updatePresentValue`. These are the commands that can be utilised:
 To execute the function for more than one data IRI:
 ```
-curl -X POST 'http://localhost:3838/bms-update-agent/updateTriples' \
+curl -X POST 'http://localhost:3838/bms-update-agent/updatePresentValue' \
 --header 'Content-Type: application/json' \
 --data '{
     "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
@@ -291,7 +291,7 @@ curl -X POST 'http://localhost:3838/bms-update-agent/updateTriples' \
 ```
 To execute the function for one data IRI:
 ```
-curl -X POST 'http://localhost:3838/bms-update-agent/updateTriples' \
+curl -X POST 'http://localhost:3838/bms-update-agent/updatePresentValue' \
 --header 'Content-Type: application/json' \
 --data '{
     "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
