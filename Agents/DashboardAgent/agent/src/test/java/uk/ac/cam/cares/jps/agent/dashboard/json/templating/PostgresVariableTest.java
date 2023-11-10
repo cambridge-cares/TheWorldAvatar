@@ -33,13 +33,33 @@ class PostgresVariableTest {
     }
 
     @Test
-    void testConstruct_ItemFilter() {
+    void testConstruct_ItemFilterForAsset() {
         // Construct the object through the alternate constructor
         PostgresVariable variable = new PostgresVariable(EXPECTED_ASSET_TYPE, FACILITY_ITEM_MAPPING, DATABASE_ID);
         // Execute the method
         String result = variable.construct();
         // Test outputs
         assertEquals(genExpectedPostgresVarSyntaxForItemFilter(EXPECTED_ASSET_TYPE, DATABASE_ID, FACILITY_ITEM_MAPPING), result);
+    }
+
+    @Test
+    void testConstruct_ItemFilterForRoom() {
+        // Construct the object through the alternate constructor
+        PostgresVariable variable = new PostgresVariable(StringHelper.ROOM_KEY, FACILITY_ITEM_MAPPING, DATABASE_ID);
+        // Execute the method
+        String result = variable.construct();
+        // Test outputs
+        assertEquals(genExpectedPostgresVarSyntaxForItemFilter(StringHelper.ROOM_KEY, DATABASE_ID, FACILITY_ITEM_MAPPING), result);
+    }
+
+    @Test
+    void testConstruct_ItemFilterForSystem() {
+        // Construct the object through the alternate constructor
+        PostgresVariable variable = new PostgresVariable(StringHelper.SYSTEM_KEY, FACILITY_ITEM_MAPPING, DATABASE_ID);
+        // Execute the method
+        String result = variable.construct();
+        // Test outputs
+        assertEquals(genExpectedPostgresVarSyntaxForItemFilter(StringHelper.SYSTEM_KEY, DATABASE_ID, FACILITY_ITEM_MAPPING), result);
     }
 
     @Test
@@ -54,7 +74,8 @@ class PostgresVariableTest {
 
     public static String genExpectedPostgresVarSyntaxForItemFilter(String itemType, String databaseID, Map<String, List<String>> facilityItemMapping) {
         String formattedItemType = itemType.toLowerCase().replaceAll("\\s", "");
-        String label = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" : StringHelper.addSpaceBetweenCapitalWords(itemType);
+        String label = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" :
+                itemType.equals(StringHelper.SYSTEM_KEY) ? "Smart Meter" : StringHelper.addSpaceBetweenCapitalWords(itemType);
         String description = "A filter for the items of " + label.toLowerCase() + " type.";
         List<String[]> parsedMappings = new ArrayList<>();
         // Parse the input map to give a list containing arrays in the form of [Facility, Item]

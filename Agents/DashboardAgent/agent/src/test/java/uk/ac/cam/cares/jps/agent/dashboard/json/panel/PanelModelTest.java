@@ -55,6 +55,15 @@ public class PanelModelTest {
     }
 
     @Test
+    void testConstruct_SystemsOnly() {
+        // This test only include thresholds for one of the room measures as thresholds are not mandatory
+        // Construct and execute the method
+        String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleSystemMeasureMap()).construct();
+        // Test outputs
+        assertEquals(genExpectedRowSyntax(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleSystemMeasureMap()), result);
+    }
+
+    @Test
     void testConstruct_AssetsAndRoomsNoThresholds() {
         // Construct and execute the method
         String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false)).construct();
@@ -140,12 +149,12 @@ public class PanelModelTest {
     private static String genExpectedPanelsSyntax(int rowNumber, String itemType, Map<String, String> databaseConnectionMap, Map<String, List<String[]>> itemMetadata, String[] thresholds) {
         StringBuilder builder = new StringBuilder();
         for (String measure : itemMetadata.keySet()) {
-            if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY)) {
+            if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.SYSTEM_KEY)) {
                 if (builder.length() != 0) builder.append(",");
                 String[] metadata = itemMetadata.get(measure).get(0);
                 String[] expectedConfigItems = new String[]{measure, itemType, metadata[2], databaseConnectionMap.get(metadata[3]), metadata[4]};
                 int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber + 1};
-                if (itemType.equals(StringHelper.ROOM_KEY)) {
+                if (itemType.equals(StringHelper.ROOM_KEY) || itemType.equals(StringHelper.SYSTEM_KEY)) {
                     // For the overall average Gauge chart
                     expectedGeometryPosition[1] = 4; // New width
                     builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, itemMetadata.get(measure),

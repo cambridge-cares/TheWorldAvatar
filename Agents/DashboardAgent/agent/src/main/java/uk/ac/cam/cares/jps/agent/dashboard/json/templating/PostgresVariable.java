@@ -29,7 +29,8 @@ class PostgresVariable extends TemplateVariable {
         // Ensure that this variable can be viewed on the dashboard
         super(itemType, 0);
         // Add label for the type
-        this.LABEL = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" : StringHelper.addSpaceBetweenCapitalWords(itemType);
+        this.LABEL = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" :
+                itemType.equals(StringHelper.SYSTEM_KEY) ? "Smart Meter" : StringHelper.addSpaceBetweenCapitalWords(itemType);
         // Description should follow the item type
         this.DESCRIPTION = "A filter for the items of " + this.LABEL.toLowerCase() + " type.";
         // Append each value in the list in the required format

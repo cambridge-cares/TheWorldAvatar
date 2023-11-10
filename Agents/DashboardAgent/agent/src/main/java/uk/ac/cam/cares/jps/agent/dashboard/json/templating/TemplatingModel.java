@@ -32,8 +32,8 @@ public class TemplatingModel {
             Map<String, List<String[]>> measures = timeSeries.get(item);
             // For each of the measures, create a postgres variable that is tied to their asset type or room custom variable
             for (String measure : measures.keySet()) {
-                // Take note to exclude the assets, rooms, and threshold keys as they are not required
-                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.THRESHOLD_KEY)) {
+                // Take note to exclude the assets, rooms, systems, and threshold keys as they are not required
+                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.SYSTEM_KEY) && !measure.equals(StringHelper.THRESHOLD_KEY)) {
                     // Retrieve the relevant database and database ID from the first item
                     // Assumes that each measure of a specific asset type belongs to only one database
                     String database = measures.get(measure).get(0)[3];
@@ -89,8 +89,9 @@ public class TemplatingModel {
         for (String itemType : timeSeries.keySet()) {
             typeFacilityItemMapping.put(itemType, new HashMap<>()); // Initialise an empty map for this item
             Map<String, List<String>> facilityItemMapping = typeFacilityItemMapping.get(itemType);
-            // Seek to retrieve either the list of individual rooms or assets associated with this type
-            String nestedKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : StringHelper.ASSET_KEY; // The key name will vary depending on if it is a room or asset
+            // Seek to retrieve either the list of individual rooms, assets, or systems associated with this type
+            String nestedKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY :
+                    itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : StringHelper.ASSET_KEY; // The key name will vary depending on if it is a room or asset
             // Process the list into an array of items
             String[] itemsArray = timeSeries.get(itemType).get(nestedKey).stream().flatMap(Stream::of).distinct().toArray(String[]::new);
             // Iterate through each item and add into the mapping

@@ -22,6 +22,7 @@ public class TestUtils {
     public static final String ASSET_OVEN = "O-1";
     public static final String MEASURE_COMMON = "Electricity Consumption";
     public static final String MEASURE_HEAT = "Heat Consumption";
+    public static final String MEASURE_THERMAL = "Thermal Consumption";
     public static final String DATABASE_ELEC = "electricity";
     public static final String DATABASE_ELEC_ID = "aisud781je";
     public static final String TABLE_ELEC = "vas91rujfe8";
@@ -41,7 +42,10 @@ public class TestUtils {
     public static final String COLUMN_HEAT_ROOM_TWO = "column15";
     public static final String MIN_HEAT_THRESHOLD = "1.0";
     public static final String MAX_HEAT_THRESHOLD = "2.0";
-
+    public static final String SYSTEM_ONE = "HVAC";
+    public static final String SUBSYSTEM_ONE = "MAU";
+    public static final String TABLE_THERMAL = "21497ash1-a71n7";
+    public static final String COLUMN_THERMAL_SYSTEM_ONE = "column1";
     public static final int CHART_HEIGHT = 8;
     public static final int CHART_WIDTH = 12;
     public static final String[] LAMP_ONE_COMMON_MEASURE_METADATA = new String[]{ASSET_LAMP_ONE, COLUMN_ELEC_LAMP_ONE, TABLE_ELEC, DATABASE_ELEC, "null"};
@@ -95,7 +99,7 @@ public class TestUtils {
         Map<String, Map<String, List<String[]>>> sampleMap = new HashMap<>();
         sampleMap.putAll(genSampleAssetMeasureMap());
         sampleMap.putAll(genSampleRoomMeasureMap(reqThresholds));
-        if (requireFacility) addSampleFacilityData(sampleMap, true, true);
+        if (requireFacility) addSampleFacilityData(sampleMap, true, true, false);
         return sampleMap;
     }
 
@@ -195,16 +199,52 @@ public class TestUtils {
         return sampleMap;
     }
 
+    /**
+     * Generates a sample asset measure map in the following format for testing:
+     * { systems: {
+     * systems: [[HVAC], [MAU]],
+     * "Electricity Consumption": [[HVAC, column12, elecTableName, electricity, kwh],[MAU, column14, elecTableName, electricity, kwh]],
+     * "Thermal Consumption": [[HVAC, column1, thermalTableName, heat, kwh]],
+     * }
+     * }
+     *
+     * @return The sample system measure map.
+     */
+    public static Map<String, Map<String, List<String[]>>> genSampleSystemMeasureMap() {
+        // Initialise empty collections for what we need to do
+        Map<String, Map<String, List<String[]>>> sampleMap = new HashMap<>();
+        Map<String, List<String[]>> measures = new HashMap<>();
+        List<String[]> values = new ArrayList<>();
+        // For the rooms,
+        // First generate a list of their rooms and append it to the "Rooms" key
+        values.add(new String[]{SYSTEM_ONE});
+        values.add(new String[]{SUBSYSTEM_ONE});
+        measures.put(StringHelper.SYSTEM_KEY, values);
+        // Generate the related electricity consumption metadata and append it to its measure key
+        values = new ArrayList<>(); // Clear old data
+        values.add(new String[]{SYSTEM_ONE, COLUMN_ELEC_ROOM_ONE, TABLE_ELEC, DATABASE_ELEC, ELEC_UNIT});
+        values.add(new String[]{SUBSYSTEM_ONE, COLUMN_ELEC_ROOM_TWO, TABLE_ELEC, DATABASE_ELEC, ELEC_UNIT});
+        measures.put(MEASURE_COMMON, values);
+        // Rerun the same steps for the second measure for rooms
+        values = new ArrayList<>();
+        // Generate the related heat consumption metadata and append it to its measure key
+        values.add(new String[]{SYSTEM_ONE, COLUMN_THERMAL_SYSTEM_ONE, TABLE_THERMAL, DATABASE_HEAT, ELEC_UNIT});
+        measures.put(MEASURE_THERMAL, values);
+        // Put the measures map into the bigger map
+        sampleMap.put(StringHelper.SYSTEM_KEY, measures);
+        return sampleMap;
+    }
 
     /**
      * Adds sample facility data to the map depending on requirement
      *
-     * @param sampleMap A map to append this facility info.
-     * @param reqAssets A boolean indicating if asset info is required.
-     * @param reqRooms  A boolean indicating if room info is required.
-     * @return The sample asset measure map.
+     * @param sampleMap  A map to append this facility info.
+     * @param reqAssets  A boolean indicating if asset info is required.
+     * @param reqRooms   A boolean indicating if room info is required.
+     * @param reqSystems A boolean indicating if system info is required.
+     * @return The sample facilities map.
      */
-    public static Map<String, Map<String, List<String[]>>> addSampleFacilityData(Map<String, Map<String, List<String[]>>> sampleMap, boolean reqAssets, boolean reqRooms) {
+    public static Map<String, Map<String, List<String[]>>> addSampleFacilityData(Map<String, Map<String, List<String[]>>> sampleMap, boolean reqAssets, boolean reqRooms, boolean reqSystems) {
         List<String> facilityOne = new ArrayList<>();
         List<String> facilityTwo = new ArrayList<>();
         // For assets
@@ -230,6 +270,17 @@ public class TestUtils {
                         .collect(Collectors.toList());
             }
         }
+        // For systems
+        if (reqSystems) {
+            // Home facility contains a HVAC and MAU system
+            List<String> home = List.of(SYSTEM_ONE, SUBSYSTEM_ONE);
+            if (facilityOne.size() == 0) {
+                facilityOne = home;
+            } else {
+                facilityOne = Stream.concat(facilityOne.stream(), home.stream())
+                        .collect(Collectors.toList());
+            }
+        }
         Map<String, List<String[]>> measures = new HashMap<>();
         // For the home facility
         List<String[]> values = new ArrayList<>();
@@ -238,7 +289,7 @@ public class TestUtils {
         // For the bakery facility
         values = new ArrayList<>(); // clear old data first
         values.add(facilityTwo.toArray(String[]::new));
-        measures.put(FACILITY_TWO, values);
+        if (!values.isEmpty()) measures.put(FACILITY_TWO, values);
         sampleMap.put(StringHelper.FACILITY_KEY, measures);
         return sampleMap;
     }

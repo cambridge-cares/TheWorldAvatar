@@ -17,15 +17,17 @@ public class TemplatingModelTest {
     private static Map<String, String> SAMPLE_DB_CONNECTION_ID_MAP;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ASSETS;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ROOMS;
-
+    private static Map<String, Map<String, List<String[]>>> SAMPLE_SYSTEMS;
 
     @BeforeAll
     static void genSampleData() {
         SAMPLE_ASSETS = TestUtils.genSampleAssetMeasureMap();
-        SAMPLE_ASSETS = TestUtils.addSampleFacilityData(SAMPLE_ASSETS, true, false);
+        SAMPLE_ASSETS = TestUtils.addSampleFacilityData(SAMPLE_ASSETS, true, false, false);
         SAMPLE_DB_CONNECTION_ID_MAP = TestUtils.genSampleDatabaseConnectionMap();
         SAMPLE_ROOMS = TestUtils.genSampleRoomMeasureMap(true);
-        SAMPLE_ROOMS = TestUtils.addSampleFacilityData(SAMPLE_ROOMS, false, true);
+        SAMPLE_ROOMS = TestUtils.addSampleFacilityData(SAMPLE_ROOMS, false, true, false);
+        SAMPLE_SYSTEMS = TestUtils.genSampleSystemMeasureMap();
+        SAMPLE_SYSTEMS = TestUtils.addSampleFacilityData(SAMPLE_SYSTEMS, false, false, true);
     }
 
     @Test
@@ -34,7 +36,7 @@ public class TemplatingModelTest {
         String result = new TemplatingModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ASSETS).construct();
         // Test outputs
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleAssetMeasureMap();
-        sampleMap = TestUtils.addSampleFacilityData(sampleMap, true, false);
+        sampleMap = TestUtils.addSampleFacilityData(sampleMap, true, false, false);
         assertEquals(genExpectedJsonSyntax(SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), result);
     }
 
@@ -44,7 +46,17 @@ public class TemplatingModelTest {
         String result = new TemplatingModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ROOMS).construct();
         // Test outputs
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleRoomMeasureMap(true);
-        sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, true);
+        sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, true, false);
+        assertEquals(genExpectedJsonSyntax(SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), result);
+    }
+
+    @Test
+    void testConstruct_SystemsOnly() {
+        // Construct and execute the method
+        String result = new TemplatingModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_SYSTEMS).construct();
+        // Test outputs
+        Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleSystemMeasureMap();
+        sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, false, true);
         assertEquals(genExpectedJsonSyntax(SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), result);
     }
 
@@ -53,11 +65,12 @@ public class TemplatingModelTest {
         StringBuilder tempBuilder = new StringBuilder();
         builder.append("{\"enable\": true,\"list\": [");
         // Only generate these variables if there are values
-        if (!organisationMapping.isEmpty()) genFacilityItemTypeVariables(tempBuilder, organisationMapping, databaseConnectionMap.values().iterator().next());
+        if (!organisationMapping.isEmpty())
+            genFacilityItemTypeVariables(tempBuilder, organisationMapping, databaseConnectionMap.values().iterator().next());
         for (String itemType : organisationMapping.keySet()) {
             Map<String, List<String[]>> itemMeasures = organisationMapping.get(itemType);
             for (String measure : itemMeasures.keySet()) {
-                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.THRESHOLD_KEY)) {
+                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.SYSTEM_KEY) && !measure.equals(StringHelper.THRESHOLD_KEY)) {
                     List<String[]> itemMeasureList = itemMeasures.get(measure);
                     String dbName = itemMeasureList.get(0)[3];
                     tempBuilder.append(",")
@@ -92,8 +105,9 @@ public class TemplatingModelTest {
         for (String itemType : organisationMapping.keySet()) {
             typeFacilityItemMapping.put(itemType, new HashMap<>()); // Initialise an empty map for this item
             Map<String, List<String>> facilityItemMapping = typeFacilityItemMapping.get(itemType);
-            // Seek to retrieve either the list of individual rooms or assets associated with this type
-            String nestedKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : StringHelper.ASSET_KEY; // The key name will vary depending on if it is a room or asset
+            // Seek to retrieve either the list of individual items associated with this type
+            String nestedKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY :
+                    itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : StringHelper.ASSET_KEY; // The key name will vary depending on their type
             // Process the list into an array of items
             String[] itemsArray = organisationMapping.get(itemType).get(nestedKey).stream().flatMap(Stream::of).distinct().toArray(String[]::new);
             // Iterate through each item and add into the mapping

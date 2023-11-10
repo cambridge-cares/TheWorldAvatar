@@ -35,7 +35,16 @@ public class PanelModel {
             // Remove the room values once it has been processed
             timeSeries.remove(StringHelper.ROOM_KEY);
         }
-        // For each item group that is not a room
+        // Generate the syntax for all system-related panels if available
+        if (timeSeries.containsKey(StringHelper.SYSTEM_KEY)) {
+            // Room-related panels are designed to be at the top based on their topological hierarchy
+            // Generate all the panels and store them into a queue
+            Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(StringHelper.SYSTEM_KEY, timeSeries.get(StringHelper.SYSTEM_KEY), databaseConnectionMap);
+            groupPanelsAsRow(StringHelper.SYSTEM_KEY, panelQueue);
+            // Remove the room values once it has been processed
+            timeSeries.remove(StringHelper.SYSTEM_KEY);
+        }
+        // For each item group that is not a room or system
         for (String currentItemGroup : timeSeries.keySet()) {
             Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(currentItemGroup, timeSeries.get(currentItemGroup), databaseConnectionMap);
             groupPanelsAsRow(currentItemGroup, panelQueue);
@@ -75,8 +84,8 @@ public class PanelModel {
         }
         // For each of the measures, create a chart
         for (String measure : itemMeasures.keySet()) {
-            // Take note to exclude the assets and rooms key as that is not required
-            if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY)) {
+            // Take note to exclude the assets, rooms, and system key as that is not required
+            if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.SYSTEM_KEY)) {
                 // Retrieve the relevant database name and ID from the first item
                 // Assumes that each measure of a specific asset type belongs to only one database
                 String database = itemMeasures.get(measure).get(0)[3];
@@ -89,8 +98,8 @@ public class PanelModel {
                 // Create the panel objects and add it to the queue
                 Gauge gaugePanel = new Gauge(measure, itemGroup, unit, databaseID, itemMeasures.get(measure), thresholds);
                 TimeSeriesChart tsChart = new TimeSeriesChart(measure, itemGroup, unit, databaseID, itemMeasures.get(measure), thresholds);
-                // If this row is created for the rooms
-                if (itemGroup.equals(StringHelper.ROOM_KEY)) {
+                // If this row is created for the rooms or systems
+                if (itemGroup.equals(StringHelper.ROOM_KEY) || itemGroup.equals(StringHelper.SYSTEM_KEY)) {
                     // It should have an additional gauge panel displaying the average of all time series
                     Gauge averageGaugePanel = new Gauge(measure, itemGroup, unit, databaseID, itemMeasures.get(measure), thresholds, true);
                     panelArr = new TemplatePanel[3]; // Three panels should be included

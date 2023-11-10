@@ -18,15 +18,17 @@ class GrafanaModelTest {
     private static Map<String, String> SAMPLE_DB_CONNECTION_ID_MAP;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ASSETS;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ROOMS;
-
+    private static Map<String, Map<String, List<String[]>>> SAMPLE_SYSTEMS;
 
     @BeforeAll
     static void genSampleData() {
         SAMPLE_ASSETS = TestUtils.genSampleAssetMeasureMap();
-        SAMPLE_ASSETS = TestUtils.addSampleFacilityData(SAMPLE_ASSETS, true, false);
+        SAMPLE_ASSETS = TestUtils.addSampleFacilityData(SAMPLE_ASSETS, true, false, false);
         SAMPLE_DB_CONNECTION_ID_MAP = TestUtils.genSampleDatabaseConnectionMap();
         SAMPLE_ROOMS = TestUtils.genSampleRoomMeasureMap(true);
-        SAMPLE_ROOMS = TestUtils.addSampleFacilityData(SAMPLE_ROOMS, false, true);
+        SAMPLE_ROOMS = TestUtils.addSampleFacilityData(SAMPLE_ROOMS, false, true, false);
+        SAMPLE_SYSTEMS = TestUtils.genSampleSystemMeasureMap();
+        SAMPLE_SYSTEMS = TestUtils.addSampleFacilityData(SAMPLE_SYSTEMS, false, false, true);
     }
 
     @Test
@@ -39,7 +41,7 @@ class GrafanaModelTest {
     void testConstruct_OnlyAssets() {
         GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ASSETS);
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleAssetMeasureMap();
-        sampleMap = TestUtils.addSampleFacilityData(sampleMap, true, false);
+        sampleMap = TestUtils.addSampleFacilityData(sampleMap, true, false, false);
         assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), sampleModel.construct());
     }
 
@@ -47,7 +49,15 @@ class GrafanaModelTest {
     void testConstruct_OnlyRooms() {
         GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ROOMS);
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleRoomMeasureMap(true);
-        sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, true);
+        sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, true, false);
+        assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), sampleModel.construct());
+    }
+
+    @Test
+    void testConstruct_OnlySystems() {
+        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_SYSTEMS);
+        Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleSystemMeasureMap();
+        sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, false, true);
         assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), sampleModel.construct());
     }
 
