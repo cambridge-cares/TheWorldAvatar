@@ -19,7 +19,7 @@ class OKReactionLocator:
         entity = self.store.get(entity_iri)
         assert isinstance(entity, OKGasePhaseReaction)
 
-        label = entity.equation
+        label = entity.equations
 
         query_graph = QueryGraph()
         query_graph.add_node(

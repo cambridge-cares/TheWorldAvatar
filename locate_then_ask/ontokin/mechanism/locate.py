@@ -121,7 +121,7 @@ class OKMechanismLocator:
             rxn_node,
             iri=rxn_iri,
             rdf_type="okin:GasPhaseReaction",
-            label=rxn.equation,
+            label=rxn.equations,
             template_node=True,
         )
         query_graph.add_edge(
@@ -130,7 +130,7 @@ class OKMechanismLocator:
             label="^okin:containedIn/^okin:belongsToPhase",
         )
 
-        verbalization = "invovles the reaction [{label}]".format(label=rxn.equation)
+        verbalization = "invovles the reaction [{label}]".format(label=rxn.equations)
 
         return query_graph, verbalization
     
