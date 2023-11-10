@@ -1,7 +1,5 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
-import java.io.IOException;
-
 import com.cmclinnovations.mods.modssimpleagent.BackendInputFile;
 import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
@@ -15,9 +13,7 @@ public class SimulationFactory {
     }
 
     public static Simulation createSimulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
-            InputMetaData inputMetaData, SimulationSaver simulationSaver, SimulationLoader simulationLoader)
-            throws IOException {
-
+            InputMetaData inputMetaData, SimulationSaver simulationSaver, SimulationLoader simulationLoader) {
         String simulationType = request.simulationType();
         switch (simulationType) {
             case "MOO":
