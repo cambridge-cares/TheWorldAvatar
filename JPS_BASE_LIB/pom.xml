@@ -48,6 +48,9 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <release>8</release>
+                    <compilerArgs>
+                        <arg>-Xpkginfo:always</arg>
+                    </compilerArgs>
                     <excludes>
                         <!-- Ignore the fed code as it is only a proof of concept -->
                         <exclude>**/fed/*.java</exclude>
@@ -351,7 +354,7 @@
             <version>5.10.0</version>
         </dependency>
 
-<dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
