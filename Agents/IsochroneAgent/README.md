@@ -90,7 +90,7 @@ curl -X POST "localhost:3838/isochroneagent/update?function=Toilet&timethreshold
 
 #### Urban Resilience Planning (UR)
 ```
-curl -X POST localhost:3838/isochroneagent/update?function=UR
+curl -X POST "localhost:3838/isochroneagent/update?function=UR&timethreshold=10&timeinterval=2"
 ```
 
 
