@@ -236,7 +236,7 @@ public class TestUtils {
     }
 
     /**
-     * Adds sample facility data to the map depending on requirement
+     * An overloaded method to add sample facility data to the map depending on requirement.
      *
      * @param sampleMap  A map to append this facility info.
      * @param reqAssets  A boolean indicating if asset info is required.
@@ -245,6 +245,20 @@ public class TestUtils {
      * @return The sample facilities map.
      */
     public static Map<String, Map<String, List<String[]>>> addSampleFacilityData(Map<String, Map<String, List<String[]>>> sampleMap, boolean reqAssets, boolean reqRooms, boolean reqSystems) {
+        return addSampleFacilityData(sampleMap, reqAssets, reqRooms, reqSystems, false);
+    }
+
+    /**
+     * Adds sample facility data to the map depending on requirement
+     *
+     * @param sampleMap  A map to append this facility info.
+     * @param reqAssets  A boolean indicating if asset info is required.
+     * @param reqRooms   A boolean indicating if room info is required.
+     * @param reqSystems A boolean indicating if system info is required.
+     * @param reqComplexSystem A boolean indicating if a more complex form of system is required.
+     * @return The sample facilities map.
+     */
+    public static Map<String, Map<String, List<String[]>>> addSampleFacilityData(Map<String, Map<String, List<String[]>>> sampleMap, boolean reqAssets, boolean reqRooms, boolean reqSystems, boolean reqComplexSystem) {
         List<String> facilityOne = new ArrayList<>();
         List<String> facilityTwo = new ArrayList<>();
         // For assets
@@ -276,8 +290,11 @@ public class TestUtils {
             List<String> home = List.of(SYSTEM_ONE, SUBSYSTEM_ONE);
             if (facilityOne.size() == 0) {
                 facilityOne = home;
+             if (reqComplexSystem)  facilityTwo = home;
             } else {
                 facilityOne = Stream.concat(facilityOne.stream(), home.stream())
+                        .collect(Collectors.toList());
+                if (reqComplexSystem) facilityTwo = Stream.concat(facilityTwo.stream(), home.stream())
                         .collect(Collectors.toList());
             }
         }

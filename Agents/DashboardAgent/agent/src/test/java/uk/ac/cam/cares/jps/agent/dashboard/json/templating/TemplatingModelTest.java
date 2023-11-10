@@ -27,7 +27,7 @@ public class TemplatingModelTest {
         SAMPLE_ROOMS = TestUtils.genSampleRoomMeasureMap(true);
         SAMPLE_ROOMS = TestUtils.addSampleFacilityData(SAMPLE_ROOMS, false, true, false);
         SAMPLE_SYSTEMS = TestUtils.genSampleSystemMeasureMap();
-        SAMPLE_SYSTEMS = TestUtils.addSampleFacilityData(SAMPLE_SYSTEMS, false, false, true);
+        SAMPLE_SYSTEMS = TestUtils.addSampleFacilityData(SAMPLE_SYSTEMS, false, false, true, true);
     }
 
     @Test
@@ -56,7 +56,8 @@ public class TemplatingModelTest {
         String result = new TemplatingModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_SYSTEMS).construct();
         // Test outputs
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleSystemMeasureMap();
-        sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, false, true);
+        sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, false, true, true);
+        System.out.println("sajsu: " + result);
         assertEquals(genExpectedJsonSyntax(SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), result);
     }
 
@@ -93,11 +94,14 @@ public class TemplatingModelTest {
         // Generates a mapping in Format {assetType: {facility1:[asset1, asset2], facility2:[asset3,asset4]}}
         Map<String, Map<String, List<String>>> typeFacilityItemMapping = new HashMap<>();
         // Inverse the facility mapping so that it is much faster to access which item belongs to a facility
-        Map<String, String> itemToFacilityMapping = new HashMap<>();
+        Map<String, List<String>> itemToFacilityMapping = new HashMap<>();
         for (String key : facilityMapping.keySet()) {
             String[] values = facilityMapping.get(key).get(0);
             for (String item : values) {
-                itemToFacilityMapping.put(item, key);
+                // Initialise a new list if the key does not exist
+                if (!itemToFacilityMapping.containsKey(item)) itemToFacilityMapping.put(item, new ArrayList<>());
+                // Append directly to the list
+                itemToFacilityMapping.get(item).add(key);
             }
         }
 
@@ -112,12 +116,13 @@ public class TemplatingModelTest {
             String[] itemsArray = organisationMapping.get(itemType).get(nestedKey).stream().flatMap(Stream::of).distinct().toArray(String[]::new);
             // Iterate through each item and add into the mapping
             for (String itemName : itemsArray) {
-                String facilityName = itemToFacilityMapping.get(itemName); // The facility that this item belongs to
-                // Initialise a new array list if there is no pre-existing key
-                if (!facilityItemMapping.containsKey(facilityName))
-                    facilityItemMapping.put(facilityName, new ArrayList<>());
-                // Add the item accordingly to the list
-                facilityItemMapping.get(facilityName).add(itemName);
+                List<String> facilityNames = itemToFacilityMapping.get(itemName); // The facility that this item belongs to
+                for (String facilityName : facilityNames) {// Initialise a new array list if there is no pre-existing key
+                    if (!facilityItemMapping.containsKey(facilityName))
+                        facilityItemMapping.put(facilityName, new ArrayList<>());
+                    // Add the item accordingly to the list
+                    facilityItemMapping.get(facilityName).add(itemName);
+                }
             }
         }
 

@@ -84,7 +84,7 @@ public class TemplatingModel {
         // This map is necessary to make it easier to generate a postgres variable from the mappings
         Map<String, Map<String, List<String>>> typeFacilityItemMapping = new HashMap<>();
         // Inverse the facility mapping so that it is much faster to access
-        Map<String, String> itemToFacilityMapping = inverseMap(facilityMapping);
+        Map<String, List<String>> itemToFacilityMapping = inverseMap(facilityMapping);
         // Iterate through the assets and rooms by type for the mapping
         for (String itemType : timeSeries.keySet()) {
             typeFacilityItemMapping.put(itemType, new HashMap<>()); // Initialise an empty map for this item
@@ -96,12 +96,15 @@ public class TemplatingModel {
             String[] itemsArray = timeSeries.get(itemType).get(nestedKey).stream().flatMap(Stream::of).distinct().toArray(String[]::new);
             // Iterate through each item and add into the mapping
             for (String itemName : itemsArray) {
-                String facilityName = itemToFacilityMapping.get(itemName); // The facility that this item belongs to
-                // Initialise a new array list if there is no pre-existing key
-                if (!facilityItemMapping.containsKey(facilityName))
-                    facilityItemMapping.put(facilityName, new ArrayList<>());
-                // Add the item accordingly to the list
-                facilityItemMapping.get(facilityName).add(itemName);
+                List<String> facilityNames = itemToFacilityMapping.get(itemName); // The facilities that this item belongs to
+                // For each facility
+                for (String facilityName : facilityNames) {
+                    // Initialise a new array list if there is no pre-existing key
+                    if (!facilityItemMapping.containsKey(facilityName))
+                        facilityItemMapping.put(facilityName, new ArrayList<>());
+                    // Add the item accordingly to the list
+                    facilityItemMapping.get(facilityName).add(itemName);
+                }
             }
         }
 
@@ -125,17 +128,21 @@ public class TemplatingModel {
     }
 
     /**
-     * Inverse the input map to get the mappings for each item to its key.
+     * Inverse the input map to get the mappings for each item to its key. Note that as one item may belong to multiple keys;
+     * the keys are stored as a list instead.
      *
-     * @param keyToItemsMap A key to items map. Assumes that there is only one array in the list
-     * @return the inverse map mapping each item to its key
+     * @param keyToItemsMap A key to items map. Assumes that there is only one array in the list.
+     * @return the inverse map mapping each item to its list of key(s).
      */
-    private Map<String, String> inverseMap(Map<String, List<String[]>> keyToItemsMap) {
-        Map<String, String> itemToKeyMap = new HashMap<>();
+    private Map<String, List<String>> inverseMap(Map<String, List<String[]>> keyToItemsMap) {
+        Map<String, List<String>> itemToKeyMap = new HashMap<>();
         for (String key : keyToItemsMap.keySet()) {
             String[] values = keyToItemsMap.get(key).get(0);
             for (String item : values) {
-                itemToKeyMap.put(item, key);
+                // Initialise a new list if the key does not exist
+                if (!itemToKeyMap.containsKey(item)) itemToKeyMap.put(item, new ArrayList<>());
+                // Append directly to the list
+                itemToKeyMap.get(item).add(key);
             }
         }
         return itemToKeyMap;
