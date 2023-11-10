@@ -18,9 +18,10 @@ You will need to substitute in appropriate values before running any commands.
 7. [OBDA Mapping file](#obda-mapping-file)
 8. [Using Specific Data Sets](#using-specific-data-sets)
 9. [Value by File Name](#value-by-file-name)
-10. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
-11. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
-12. [Troubleshooting](#troubleshooting)
+10. [Processing Data Without Upload](#processing-without-upload)
+11. [Debugging the Stack Data Uploader in VSCode](#debugging-the-stack-data-uploader-in-vscode)
+12. [Developing the Stack Data Uploader in VSCode](#developing-the-stack-data-uploader-in-vscode)
+13. [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -41,7 +42,7 @@ Descriptions of each example can be found in the [Example datasets](#example-dat
 #### 3. Copy in data files
 
 The source files need to be copied into the [`inputs/data/`](./inputs/data/) directory.
-The structure of this directory is described in the [Datasets and subsets](#datasets-and-subsets) section.
+The structure of this directory is described in the [Datasets and subsets](#datasets-and-subsets) section. All data must be in a subdirectory two levels below `data` folder
 
 #### 4. Create a configuration file
 Create a JSON file in the [`inputs/config/`](./inputs/config/) directory to define how the data is to be uploaded.
@@ -62,7 +63,7 @@ By default all dataset configuration files in the [`inputs/configs/`](./inputs/c
 When a dataset's name matches with that of the stack then only that configuration file and its *external datasets* will be loaded.
 
 Below is an example where there are two datasets.
-One of which (*dataset1*) contains one data subset and another (*dataset2*) that contains two data subsets, each with their own subdirectory.
+One of which (*dataset1*) contains one data subset and another (*dataset2*) that contains two data subsets, each with their own subdirectory. Note that every data file exists in a subdirectory, even if there are no sibling data on the same level. Data will not be uploaded unless it is two levels below `data` in a subdirectory.
 ```sh
 inputs/
   config/               # Directory in which the dataset configuration files should be stored
@@ -70,10 +71,11 @@ inputs/
     dataset2.json       # Configuration file for dataset2
   data/                 # Directory in which the data files should be stored
     dataset1/           # Data directory for dataset1
-      data.csv          # Only one data subset so no need for a subdirectory
+      datasubset1/     # Data subdirectory for data subset1
+        data.csv        # Data file for dataset1
     dataset2/           # Data directory for dataset2
-      datasubset1/      # Data directory for data subset1
-        polygon.geojson # Data file 
+      datasubset2/      # Data subdirectory for data subset2
+        polygon.geojson # Data file for dataset2
       datasubset2/      # Data directory for data subset2
         table.csv
 ```
@@ -86,7 +88,7 @@ The following table provides a description of each example:
 
 | Example                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ----------------------------------------------------------------------------     | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [building-bavaria](../examples/datasets/inputs/config/building-bavaria.json)     | Uploads a [set of CityGML files](../examples/datasets/inputs/data/building-bavaria/README.md) into the Postgres database of the stack. [b3dm files] are generated automatically with default settings for visualisation. There is also a OBDA mapping file ([citydbOntop.obda](../examples/datasets/inputs/data/building-bavaria/citydbOntop.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint.                                                                                                                                                                                                                                                                                            |
+| [building-bavaria](../examples/datasets/inputs/config/building-bavaria.json)     | Uploads a [set of CityGML files](../examples/datasets/inputs/data/building-bavaria/README.md) into the Postgres database of the stack. [b3dm files] and [a geoserver layer] are generated automatically with default settings for visualisation. There is also a OBDA mapping file ([citydbOntop.obda](../examples/datasets/inputs/data/building-bavaria/citydbOntop.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint.                                                                                                                                                                                                                                                                                            |
 | [building-cambridge](../examples/datasets/inputs/config/building-cambridge.json) | Uploads a [set of GDB folders](../examples/datasets/inputs/data/building-cambridge/vector/README.md) and a [CSV file](../examples/datasets/inputs/data/building-cambridge/tabular/README.md) into the Postgres database of the stack. [b3dm files] and [a geoserver layer] are generated automatically with default settings for visualisation. There is also a OBDA mapping file ([ontop_v2.obda](../examples/datasets/inputs/data/building-cambridge/ontop_v2.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint.                                                                                                                                                                         |
 | [building-hongkong](../examples/datasets/inputs/config/building-hongkong.json)   | Uploads a [GeoJSON file](../examples/datasets/inputs/data/building-hongkong/README.md) into the Postgres database of the stack. [b3dm files] and [a geoserver layer] are generated automatically with default settings for visualisation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | [cropmap-reduced](../examples/datasets/inputs/config/cropmap-reduced.json)       | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. This is a reduced styling ([cropmap-reduced.sld](../examples/datasets/inputs/config/cropmap-reduced.sld)) of the cropmap to make it clearer to view with pylon data.                                                                                                                                                                                                                                                                                                                                                                                              |
@@ -251,8 +253,8 @@ The OBDA file for the cropmap example ([ontop_with_comments.obda](../examples/da
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
 #### `"staticGeoServerData"`
-A description of static data to be loaded into and served by GeoServer. 
-These are served with the base directory `GEOSERVER_URL/www/icons`. 
+A description of static data to be loaded into and served by GeoServer.
+These are served with the base directory `GEOSERVER_URL/www/icons`.
 The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being any regular files or folders) can be found at `GEOSERVER_URL/www/static_data`.
 
 | Key            | Description                                                                                                                                                                                                                   |
@@ -282,13 +284,13 @@ Relative file-system paths containing `..` are not supported.
 
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
+The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data), [`tboxcsv`](#tbox-csv-data), and [`osmrouting`](#osm-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
 
 The `"vector"` data type should be used to load 2D point, line or polygon geospatial data.
-The data loader does two things when uploading vector data: 
+The data loader does two things when uploading vector data:
 1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
 The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
 2. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries.
@@ -361,7 +363,7 @@ Within that the following nodes can be added.
     - `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
     - `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`.
       Note that this is different from the GDAL Options.
-  - `"parameter"` specify individual [parameters][geoserver-sql-params] with the following `key:value` pairs.
+  - `"parameters"` specify individual [parameters][geoserver-sql-params] as a list of nodes with the following `key:value` pairs.
     - `"name"` parameter name.
     - `"defaultValue"` default value of parameter.
     - `"regexpValidator"` validation regular expression.
@@ -372,10 +374,13 @@ These are the most commonly used options, for more see the examples [here][geose
 ### CityDB Data
 
 The `"CityDB"` data type should be used to load CityGML and CityJSON data.
-The data loader does two things when uploading vector data: 
+The data loader does the following things by default when uploading data:
 1. It uses the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool to read in data from CityGML and CityJSON files and output it to the PostgreSQL database in the stack using the 3DCityDB schema.
 The full list of file formats that `impexp import` supports is given [here][3dcitydb-importer-formats].
-1. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries.
+2. Building footprints and heights are added to the uploaded data if they do not exist.
+3. It writes the processed data that has been uploaded to PostgreSQL out to a compressed CityGML file using the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool.
+4. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries (in Mapbox).
+5. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries (in Cesium).
 
 These tilesets are written to folders in a Docker volume and served on the `/3dtiles` path of the stack.
 The full URL for a `tileset.json` file, which should be specified in the data.json visualisation file, is `<server base address>/3dtiles/<database name>/<database schema>/<spec>/tileset.json`.
@@ -386,9 +391,9 @@ The components of this are as follows:
 | `<server base address>` | e.g. `http://localhost:3838`                                                                                                                                                         |
 | `<database name>`       | The name of the database, as specified at the top-level of the dataset config file                                                                                                             |
 | `<database schema>`     | The database schema, this is fixed as `citydb` for now.                                                                                                                              |
-| `<spec>`                | There are currently three hardcoded specs: `lod2-features`, `lod2-buildings` and `lod1_lod2-buildings`. Each one is generated using different options passed to the `p3dtiler` tool. |
+| `<spec>`                | There are currently three hardcoded specs: `lod2-features`, `lod2-buildings` and `lod1_lod2-buildings`. Each one is generated using different options passed to the [`py3dtiler`][py3dtiler] tool. |
 
-The options for these two processes are set using the following json objects within the respective data subset object in the dataset configuration file:
+The options for these processes are set using the following json objects within the respective data subset object in the dataset configuration file:
 
 #### Import Options
 
@@ -410,18 +415,28 @@ The format is the same as the one used for [ogr2ogr otheroptions](#otheroptions)
 The list of avaliable options can be found [here][3dcitydb-importer-cli].
 The "Database connection options" are set automatically by the `stack-data-uploader` so can be ignored.
 
+#### `"augmentData"`
+
+This boolean flag controls whether footprint and height will be calculated and added to the existing data, if not already present. It is assumed to be `true` if omitted.
+
+#### `"discoverThematicSurface"`
+
+If this boolean flag is set to `true`, the uploader will attempt to identify untagged surfaces as roof, wall or ground surfaces. It is assumed to be `false`.
+
 ### X building data
 
 The `"XtoCityDB"` data type should be used to load LoD1 (footprint with height) building data that are not CityGML or CityJSON.
-The data loader does the following when uploading data: 
+The data loader does the following when uploading data:
 1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
 The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
 2. It uses the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool to initialise the 3DCityDB schema in the PostgreSQL database in the stack.
-3. It uses two SQL scripts to convert the building data uploaded by GDAL and populate the 3DCityDB tables sequentially.
-4. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries (in Cesium).
-5. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries (in Mapbox).
+3. It uses two SQL scripts to convert the building data uploaded by GDAL and populate the 3DCityDB tables sequentially. The building data will be instantiated as LoD2 buildings with thematic surfaces.
+4. Building footprints and heights are added to the uploaded data.
+5. It writes the processed data that has been uploaded to PostgreSQL out to a compressed CityGML file using the 3DCityDB Importer [`impexp import`][3dcitydb-importer] tool.
+6. It uses the GeoServer REST API to create a new layer in GeoServer that can be used to visualise the newly uploaded geometries (in Mapbox).
+7. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries (in Cesium).
 
-Check [`here`](#gdal-options) for details about configuring the GDAL, [`here`](#citydb-data) for details about the 3DTile set and [`here`](#geoserver-options) for details about the Geoserver layer. For the 3DCityDB Importer, the only option that is read is the `"sridIn"`.
+Check [`here`](#gdal-options) for details about configuring the GDAL, [`here`](#citydb-data) for details about the 3DTile set and [`here`](#geoserver-options) for details about the Geoserver layer. `"sridIn"` and `"augmentData"` for the 3DCityDB Importer are read.
 
 `"table"` will be the name of the resulting table of the GDAL [`ogr2ogr`][ogr2ogr] tool, whereas `"name"` will be the name of the GeoServer layer.
 
@@ -436,28 +451,28 @@ Two SQL scripts are executed to convert the building data to conform with the 3D
 
 A `"columnMap"` can be specified in the input configuration to inform the stack which columns to look for these information. `"IDval"` is the name of the column that contains the building ID, whereas `"IDname"` is the name of the ID that will be stored in the 3DCityDB tables.
 
-The first SQL script creates two tables from the original table: `"raw_building"` and `"raw_surface"`. It assumes that the original data is uploaded to the public schema. The `"raw_building"` table has the following columns:
+The first SQL script creates two tables from the original table: `"raw_building_XtoCityDB"` and `"raw_surface_XtoCityDB"`. It assumes that the original data is uploaded to the public schema. The `"raw_building_XtoCityDB"` table has the following columns:
 
 1. `"IDval"`: the ID of each building from the original data
 2. `"gmlid"`: a randomly generated GML ID of each building
 3. `"geom"`: the 3D solid geometry of each building, generated by extruding the `"footprint"` with `"height"` and shifting it with `"elevation"`
 5. `"mh"`: the height of each building
 
-The `"raw_surface"` table has the following columns:
+The `"raw_surface_XtoCityDB"` table has the following columns:
 
 1. `"building_gmlid"`: the GML ID of the parent building of a surface
 2. `"gmlid"`: a randomly generated GML ID of each surface of each building
 3. `"class"`: an integer indicating whether a surface is a roof, wall or ground
 4. `"geom"`: the 3D polygon geometry of each surface
 
-In some cases, the original data require more sophisticated processing. User can supply a custom SQL script with `"preprocessSql"` keyword using [File by Value Name](#value-by-file-name). It should create the `"raw_building"` and `"raw_surface"` tables in the public schema from the uploaded original data. In this case, only `"IDname"` and `"IDval"` will take effect and needed to be specified in `"columnMap`.
+In some cases, the original data require more sophisticated processing. Users can supply a custom SQL script with the `"preprocessSql"` keyword using [File by Value Name](#value-by-file-name). The query must create the `"raw_building_XtoCityDB"` and `"raw_surface_XtoCityDB"` tables in the public schema from the uploaded original data with the column names stated above. In this case, only `"IDname"` and `"IDval"` will take effect and needed to be specified in `"columnMap"`.
 
-The second SQL script populates the 3DcityDB schema with preprocessed building data. This can be further post-processed with another custom SQL script speficied by the `"sql"` keyword.
+The second SQL script populates the 3DcityDB schema with preprocessed building data.
 
 ### Raster Data
 
 The `"raster"` data type should be used to load raster/coverage geospatial data.
-The data loader does three things when uploading raster data: 
+The data loader does three things when uploading raster data:
 1. It uses the GDAL [`gdal_translate`][gdal-translate] tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF (COG)][raster-cog] files stored in the stack.
   This is an extension of the GeoTIFF format and both are very efficient to read.
   The full list of file formats that `gdal_translate` supports is given [here][raster-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
@@ -517,7 +532,7 @@ Within that the following nodes can be added.
 ### Tabular Data
 
 The `"tabular"` data type should be used to load non-geospatial data.
-The data loader just does one thing when uploading tabular data: 
+The data loader just does one thing when uploading tabular data:
 1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
 As the data is intended to be non-geospatial, this is most useful for reading in data from [comma separated value (.csv)][vector-csv], and Microsoft Excel's [XLS][vector-xls] and [XLSX][vector-xlsx] formatted files.
 The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
@@ -536,7 +551,7 @@ These are the same as listed in the vector [GDAL Options](#gdal-options) althoug
 
 The `"rdf"` data type should be used to load RDF data (triples or quads) from common file formats.
 The full list of file formats that are supported is given [here][RSC-uploader].
-The data loader does the following when uploading RDF data: 
+The data loader does the following when uploading RDF data:
 1. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to read in RDF triple and quad data to the Blazegraph database in the stack.
 
 There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
@@ -550,6 +565,24 @@ The data loader does the following when uploading RDF data:
 2. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to uploads the contents of the OWL file to the Blazegraph database in the stack.
 
 There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
+
+### OSM Data
+
+The `"osmrouting"` data type should be used to load Open Street Map (OSM) files in a form that is compatible with [pgRouting][pgrouting].
+These can be `.osm` or `.pbf` files.
+By default, three tables and three GeoServer layers are created; `DATA_SUBSET_NAME_ways`, `DATA_SUBSET_NAME_ways_vertices_pgr`, and `DATA_SUBSET_NAME_pointsofinterest`.
+
+#### osm2pgrouting Options
+
+For OSM data you can add a `osm2PGRoutingOptions` node within the relevant data subset in the configuration json.
+This can be used to configure the osm2pgrouting tool as specified [here][osm2pgrouting-how-to-use].
+- `"flags"`: a list of flags without arguments e.g. `[--attributes, --addnodes]`
+- `"options"`: a node containing the key value pairs of options with arguments e.g. `{"--chunk": "40000"}`
+
+#### OSM GeoServer Options
+
+For OSM data you can add the nodes `waysGeoServerSettings`, `verticesGeoServerSettings`, and `poiGeoServerSettings` nodes within the relevant data subset in the configuration json.
+The nodes that can be added within each are the same as the GeoServer options for [vector data](#vector-data).
 
 ## OBDA Mapping File
 
@@ -647,6 +680,10 @@ For example one can avoid long SQL queries in their configs by putting them in a
     }
   ```
 Note that this file path is the path inside the container.
+
+## Processing Without Upload
+
+If a subdirectory is not specified in a `dataSubset` node, no data will be uploaded, however for some types of data this is useful to run only the post processing. For example it is possible to run arbitrary sql by specifying sql queries or pointing to `.sql` files and specifying a table. It is also useful to create layers in GeoServer on already uploaded data.
 
 ## Debugging the Stack Data Uploader in VSCode
 
@@ -767,6 +804,9 @@ This way you can look at look at the user interfaces of the various services (se
 [raster-geotiff]: https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format
 
 [postgis-raster-loader]: https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
+
+[pgrouting]: http://pgrouting.org/
+[osm2pgrouting-how-to-use]: https://github.com/pgRouting/osm2pgrouting#how-to-use
 
 [3dcitydb-importer]:         https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/cli/import.html
 [3dcitydb-importer-formats]: https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/import.html#import-supported-file-formats

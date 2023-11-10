@@ -33,7 +33,7 @@ public class TimeSeriesHelperTest {
                     doReturn(false).when(mock).checkDataHasTimeSeries(anyString(), any());
                 })) {
 
-            timeSeriesHelper.createTimeSeries(new LinkedHashMap<>(), "", new OntologyURIHelper("CEAAgentConfig"));
+            timeSeriesHelper.createTimeSeries(new LinkedHashMap<>(), new OntologyURIHelper("CEAAgentConfig"));
 
             verify(timeseriesClientMock.constructed().get(0), times(1)).checkDataHasTimeSeries(anyString(), any());
             verify(timeseriesClientMock.constructed().get(0), times(1)).initTimeSeries(anyList(), anyList(), anyString(), any(), any(), any(), any());

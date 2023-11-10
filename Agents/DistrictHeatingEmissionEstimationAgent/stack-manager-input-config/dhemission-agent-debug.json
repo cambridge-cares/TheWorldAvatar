@@ -1,9 +1,9 @@
 {
     "ServiceSpec": {
-        "Name": "dhemission-agent-debug",
+        "Name": "dh-emission-agent-debug",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dhemission-agent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/dh-emission-agent:1.1.0",
                 "Command": [
                     "tail", "-f",  "/dev/null"
                 ],
