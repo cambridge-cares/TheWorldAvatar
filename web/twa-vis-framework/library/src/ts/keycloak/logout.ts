@@ -1,19 +1,36 @@
-let domainName: string = 'idm-credo.hartree.app'; //auth-server-url
-let realmName: string = 'MFATest';
-let logoutUrl: string = `http://${domainName}/realms/${realmName}/protocol/openid-connect/logout`; // template string
+class keycloakLogoutButton {
+
+  private domainName: string;
+  private realmName: string;
+  private logoutURL: string; // There is a URL interface but i'm not sure what that means
+
+  constructor(domainName: string, realmName: string) {
+    this.domainName = domainName; //auth-server-url in the keycloac documentation
+    this.realmName =realmName;
+    this.logoutURL = `http://${domainName}/realms/${realmName}/protocol/openid-connect/logout`; // template string
+  
+  this.createButton();
+  }
+
+  private createButton() {
+    let logoutLink = document.createElement('a');
+    logoutLink.href=this.logoutURL;
+    
+    let logoutButton = document.createElement('button');
+    logoutButton.textContent = "Log Out";
+
+    logoutLink.appendChild(logoutButton);
+
+    logoutButton.classList.add('logout-button') // for styling
+  }
+}
+  
+
+const logoutButtonInstance = new keycloakLogoutButton('idm-credo.hartree.app', 'MFATest');
 
 
-let logoutLink = document.createElement('a');
-logoutLink.href=logoutUrl;
-let logoutButton = document.createElement('button');
-logoutButton.textContent = "Log Out";
-logoutLink.appendChild(logoutButton);
-
-// Clicking the above button 
-
-
-// needs to be in the keycloak main.js. This keeps refreshing the token
-
+// Below should to be in the keycloak main.js. This keeps refreshing the token. 
+  
 // Token if exposed will give us username etc
 
 
@@ -37,4 +54,4 @@ logoutLink.appendChild(logoutButton);
 //             store.commit("logout");
 //           }
 //         }
-//       } 
+//       }
