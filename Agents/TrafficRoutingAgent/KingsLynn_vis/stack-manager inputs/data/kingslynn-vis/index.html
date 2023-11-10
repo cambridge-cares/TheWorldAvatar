@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <!-- ===== CUSTOMISABLE ===== -->
@@ -16,7 +17,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-    <!-- <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.js" charset="UTF-8"></script> -->
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 
 
@@ -28,7 +28,6 @@
     <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css"
         rel="stylesheet">
     <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-    <!-- <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.css" rel="stylesheet" /> -->
     <script src="./dtvf.min.js" charset="UTF-8"></script>
     <link href="./dtvf.min.css" rel="stylesheet" />
 
@@ -93,7 +92,6 @@
 
     <!-- ===== CUSTOMISABLE ===== -->
     <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
-    <!-- <script src="./app.js"></script> -->
 
     <!-- Element for depth of field overlay -->
     <div id="tiltShift"></div>
@@ -235,19 +233,21 @@
         <div id="sidePanelInner">
             <ul>
                 <li><a href="#sidePanelGeneral">General</a></li>
-                <!-- <li><a href="#sidePanelLegend">Legend</a></li> -->
+
                 <li><a href="#sidePanelLinks">Links</a></li>
             </ul>
             <div id="sidePanelGeneral">
                 <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
                 <div id="contentContainer"></div>
-                <!-- <div id="legendContainer"></div> -->
                 <div id="footerContainer">
                     <div id="footerContent"></div>
                 </div>
             </div>
-            <!-- <div id="sidePanelLegend"></div> -->
-            <div id="sidePanelLinks"></div>
+            <div id="sidePanelLinks">
+                <p>Contains OS data &copy; Crown copyright and database rights 2022 (100025252)<br><br>
+                    Contains public sector information licensed under the Open Government Licence v3.0.<br><br>
+                    This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"</p>
+            </div>
         </div>
         <div id="returnContainer" style="display: none;">
             <div id="innerReturnContainer">
@@ -434,156 +434,6 @@
                 }
             }
 
-
-            // // function to get the shortest path from the give source and target nodes
-            /*
-              function getRoute_10() {
-   
-                   var url = `https://theworldavatar.io/demos/flood-routing/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=routing_workspace:shortest_paths_with_flood_10&outputformat=application/json&viewparams=source:${source};target:${target};`
-   
-                   // Retrieve the GeoJSON data from the URL
-                   fetch(url)
-                       .then(response => response.json())
-                       .then(data => {
-                           // Add the GeoJSON data as a source
-                           MapHandler.MAP.addSource('my-data-10', {
-                               type: 'geojson',
-                               data: data
-                           });
-   
-                           // Add a layer using the GeoJSON source
-                           myLayer_10 = MapHandler.MAP.addLayer({
-                               id: 'my-layer-10',
-                               type: 'line',
-                               source: 'my-data-10',
-                               paint: {
-                                   'line-color': '#e79b3d',
-                                   'line-opacity': 1,
-                                   'line-width': 3
-                               }
-                           });
-                           var dataSource = MapHandler.MAP.getSource('my-data-10');
-                           const value = document.createElement('pre');
-   
-                           // Check if the data source exists and contains features
-                           if (dataSource && dataSource._data && dataSource._data.features) {
-                               var features = dataSource._data.features;
-   
-                               if (features.length === 0) {
-                                   // The data source is empty; there is no possible route
-                                   console.log("No possible route.");
-                                   // Populate the distanceContainer with no route available
-                                   value.textContent = `Area inaccessible`;
-                               } else {
-                                   // The data source contains features; a route is available
-                                   console.log("Length", features.length);
-   
-                                   // Calculate the total length of the MultiLineString (myLayer_10)
-                                   const lineStrings = features.map((feature) => feature.geometry);
-                                   const totalLength = lineStrings.reduce((acc, lineString) => {
-                                       return acc + turf.length(lineString, { units: 'kilometres' });
-                                   }, 0);
-   
-                                   // Populate the distanceContainer with total distance
-                                   value.textContent = `Best available path: ${totalLength.toLocaleString()} km`;
-                               }
-                           } else {
-                               // The data source doesn't exist or has no features
-                               console.log("The data source doesn't exist or has no features.");
-                                   
-                               }
-                           distanceContainer.innerHTML = '';
-                           distanceContainer.appendChild(value);
-   
-                           // Get the checkbox element
-                           var checkbox = document.getElementById('toggleRoutesCheckbox1');
-   
-                           // Set layer visibility based on checkbox state
-                           if (checkbox.checked) {
-                               MapHandler.MAP.setLayoutProperty('my-layer-10', 'visibility', 'visible');
-                           } else {
-                               MapHandler.MAP.setLayoutProperty('my-layer-10', 'visibility', 'none');
-                           }
-                       });
-               }
-   
-               function getRoute_30() {
-   
-                   var url = `https://theworldavatar.io/demos/flood-routing/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=routing_workspace:shortest_paths_with_flood_30&outputformat=application/json&viewparams=source:${source};target:${target};`
-                   // Retrieve the GeoJSON data from the URL
-                   fetch(url)
-                       .then(response => response.json())
-                       .then(data => {
-                           // Add the GeoJSON data as a source
-                           MapHandler.MAP.addSource('my-data-30', {
-                               type: 'geojson',
-                               data: data
-                           });
-   
-                           // Add a layer using the GeoJSON source
-                           myLayer_30 = MapHandler.MAP.addLayer({
-                               id: 'my-layer-30',
-                               type: 'line',
-                               source: 'my-data-30',
-                               paint: {
-                                   'line-color': '#157B3E',
-                                   'line-opacity': 1,
-                                   'line-width': 3
-                               }
-                           });
-   
-                           // Get the checkbox element
-                           var checkbox = document.getElementById('toggleRoutesCheckbox2');
-   
-                           // Set layer visibility based on checkbox state
-                           if (checkbox.checked) {
-                               MapHandler.MAP.setLayoutProperty('my-layer-30', 'visibility', 'visible');
-                           } else {
-                               MapHandler.MAP.setLayoutProperty('my-layer-30', 'visibility', 'none');
-                           }
-   
-                       });
-               }
-   
-               function getRoute_90() {
-   
-                   var url = `https://theworldavatar.io/demos/flood-routing/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=routing_workspace:shortest_paths_with_flood_90&outputformat=application/json&viewparams=source:${source};target:${target};`
-                   // Retrieve the GeoJSON data from the URL
-                   fetch(url)
-                       .then(response => response.json())
-                       .then(data => {
-                           // Add the GeoJSON data as a source
-                           MapHandler.MAP.addSource('my-data-90', {
-                               type: 'geojson',
-                               data: data
-                           });
-   
-                           // Add a layer using the GeoJSON source
-                           myLayer_90 = MapHandler.MAP.addLayer({
-                               id: 'my-layer-90',
-                               type: 'line',
-                               source: 'my-data-90',
-                               paint: {
-                                   'line-color': '#0B4452',
-                                   'line-opacity': 1,
-                                   'line-width': 3
-                               }
-                           });
-   
-                           // Get the checkbox element
-                           var checkbox = document.getElementById('toggleRoutesCheckbox3');
-   
-                           // Set layer visibility based on checkbox state
-                           if (checkbox.checked) {
-                               MapHandler.MAP.setLayoutProperty('my-layer-90', 'visibility', 'visible');
-                           } else {
-                               MapHandler.MAP.setLayoutProperty('my-layer-90', 'visibility', 'none');
-                           }
-                       });
-               }
-   */
-
-
             // Global object to store data and layers
             const routeData = {
                 'my-data-10': null,
@@ -619,6 +469,9 @@
                                 'line-width': 3
                             }
                         });
+//TODO figure out how to stop routecontainer being a layer behind
+ 
+
                         // console.log(MapHandler.MAP.getSource(sourceName), 'is', sourceName, 'inside getroute');
                     });
 
@@ -677,73 +530,6 @@
                 distanceContainer.appendChild(value);
             }
 
-            /*
-            function populateDistanceContainer(sourceName) {
-                // Populate Distance Container
-                const distanceContainer = document.getElementById('distance');
-                const value = document.createElement('pre');
-                var dataSource = MapHandler.MAP.getSource(sourceName);
-                var features = dataSource._data.features;
-
-                if (dataSource._data && dataSource._data.features && dataSource._data.features.length !== 0) {
-                    // Calculate the total length of the MultiLineString (lineLayer)
-                    const lineStrings = features.map((feature) => feature.geometry);
-                    const totalLength = lineStrings.reduce((acc, lineString) => {
-                        return acc + turf.length(lineString, { units: 'kilometres' });
-                    }, 0);
-                    if (sourcename = 'my-data-10' && features.length !== 0) {
-                        console.log("10cm route available");
-                        // Populate the distanceContainer with total distance
-                        value.textContent = `Best available route: ${totalLength.toLocaleString()} km, by any vehicle`;
-                    }
-
-
-                    else if (sourcename = 'my-data-30' && features.length !== 0) {
-
-
-                        console.log("30cm route available");
-                        value.textContent = `Best available route: ${totalLength.toLocaleString()} km, by vehicle with medium wading depth`;
-
-                    }
-
-                    else if (sourcename = 'my-data-90' && features.length !== 0) {
-
-                        console.log("90cm route available");
-
-                        value.textContent = `Best available route: ${totalLength.toLocaleString()} km, by vehicle with deep wading depth`;
-
-                    }
-
-                    // 
-                    else if (sourcename = 'my-data-90' && dataSource.length === 0) {
-                        // The data source is empty; there is no possible route
-                        console.log("No possible route.");
-                        // Populate the distanceContainer with no route available
-                        value.textContent = `Area inaccessible`;
-                    }
-                }
-
-                else {
-                    // The data source doesn't exist or has no features
-                    console.log("The data source doesn't exist or has no features.");
-
-                }
-
-                distanceContainer.innerHTML = '';
-                distanceContainer.appendChild(value);
-
-
-                // Get the checkbox element
-                var checkbox = document.getElementById(checkboxId);
-
-                // Set layer visibility based on checkbox state
-                if (checkbox.checked) {
-                    MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'visible');
-                } else {
-                    MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'none');
-                }
-            }
-*/
             // function to remove the layer
             function removeLayer() {
                 // Remove layers and sources and set variables to null
@@ -796,7 +582,5 @@
 
 
 </body>
-
-</html>
 
 </html>
