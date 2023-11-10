@@ -145,7 +145,7 @@ public class PanelModel {
             String measureName = roomPanels[0].getMeasure();
             // Generate a row title, which may include unit if available
             String title = StringHelper.addSpaceBetweenCapitalWords(measureName);
-            title = roomPanels[2].getUnit().equals("null") ? title : title + "[" + roomPanels[2].getUnit() +"]";
+            title = roomPanels[2].getUnit().equals("null") ? title : title + "[" + roomPanels[2].getUnit() + "]";
             // Populate a new empty queue with only one array for this measure
             Queue<TemplatePanel[]> intermediateQueue = new ArrayDeque<>();
             intermediateQueue.offer(roomPanels);
@@ -174,10 +174,11 @@ public class PanelModel {
     private void groupPanelsAsRow(String itemGroup, Queue<TemplatePanel[]> panelQueue) {
         // Append a comma before if it is not the first row
         if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
+        String title = itemGroup.equals(StringHelper.SYSTEM_KEY) ? "Smart Meter" : StringHelper.addSpaceBetweenCapitalWords(itemGroup);
         // Generate the row panel syntax
         this.PANEL_SYNTAX.append("{")
                 .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
-                .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(itemGroup)).append("\",")
+                .append("\"title\": \"").append(title).append("\",")
                 .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
                 .append(",\"x\": 0,\"y\": ").append(this.ROW_NUMBER).append("},")
                 .append("\"panels\": [").append(genPanelSyntax(this.ROW_NUMBER, panelQueue))

@@ -129,13 +129,14 @@ public class PanelModelTest {
             }
             items.remove(StringHelper.ROOM_KEY);
         }
-        // A new row for each asset item should be generated
+        // A new row for each asset and system should be generated
         for (String assetType : items.keySet()) {
             if (builder.length() != 0) builder.append(",");
             Map<String, List<String[]>> assetMetadata = items.get(assetType);
-            // General row syntax for assets
+            String title = assetType.equals(StringHelper.SYSTEM_KEY) ? "Smart Meter" : StringHelper.addSpaceBetweenCapitalWords(assetType);
+            // General row syntax for assets and system
             builder.append("{\"id\":null, \"type\":\"row\", \"collapsed\":true,")
-                    .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(assetType)).append("\",")
+                    .append("\"title\": \"").append(title).append("\",")
                     .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.CHART_WIDTH * 2)
                     .append(",\"x\": 0,\"y\": ").append(ROW_NUMBER).append("},")
                     // To generate the panels for assets
