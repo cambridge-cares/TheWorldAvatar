@@ -3,10 +3,9 @@ import random
 
 from locate_then_ask.ontokin.entity_store import OKEntityStore
 from locate_then_ask.ontokin.model import (
-    OCAPEProduct,
-    OCAPEReactant,
-    OKGasePhaseReaction,
+    OKGasPhaseReaction,
     OKMechanism,
+    OKSpecies,
 )
 from locate_then_ask.query_graph import QueryGraph, get_objs
 
@@ -17,9 +16,9 @@ class OKReactionLocator:
 
     def locate_entity_name(self, entity_iri: str):
         entity = self.store.get(entity_iri)
-        assert isinstance(entity, OKGasePhaseReaction)
+        assert isinstance(entity, OKGasPhaseReaction)
 
-        label = entity.equations
+        label = random.choice(entity.equations)
 
         query_graph = QueryGraph()
         query_graph.add_node(
@@ -30,19 +29,37 @@ class OKReactionLocator:
             template_node=True,
             topic_entity=True,
         )
-        
+
         verbalization = "the chemical reaction [{entity}]".format(entity=label)
 
         if "Mechanism" not in query_graph.nodes() and random.getrandbits(1):
-            query_graph.add_node(
-                "Mechanism",
-                iri=entity.mechanism.iri,
-                rdf_type="okin:ReactionMechanism",
-                label=entity.mechanism.label,
-                template_node=True,
+            mechanism = self.store.get(entity.mechanism_iri)
+            assert isinstance(mechanism, OKMechanism)
+
+            mechanism_node = "Mechanism"
+            literal_node = "Literal"
+            query_graph.add_nodes_from(
+                [
+                    (
+                        mechanism_node,
+                        dict(iri=mechanism.iri, rdf_type="okin:ReactionMechanism"),
+                    ),
+                    (literal_node, dict(label=mechanism.doi, literal=True, template_node=True)),
+                ]
             )
-            query_graph.add_edge("Reaction", "Mechanism", label="okin:belongsToPhase/okin:containedIn")
-            verbalization += " involved in the mechanism [{label}]".format(label=entity.mechanism.label)
+            query_graph.add_edges_from(
+                [
+                    ("Reaction", mechanism_node, dict(label="^okin:hasReaction")),
+                    (
+                        mechanism_node,
+                        literal_node,
+                        dict(label="okin:hasProvenance/oprvn:hasDOI"),
+                    ),
+                ]
+            )
+            verbalization += " involved in the mechanism found in [{label}]".format(
+                label=mechanism.doi
+            )
 
         return query_graph, verbalization
 
@@ -66,7 +83,7 @@ class OKReactionLocator:
         )
         entity_iri = query_graph.nodes[topic_node]["iri"]
         entity = self.store.get(entity_iri)
-        assert isinstance(entity, OKGasePhaseReaction)
+        assert isinstance(entity, OKGasPhaseReaction)
 
         sampled_reactant_nodes = get_objs(
             query_graph, subj="Reaction", predicate="ocape:hasReactant"
@@ -74,8 +91,8 @@ class OKReactionLocator:
         sampled_reactant_iris = [
             query_graph.nodes[n]["iri"] for n in sampled_reactant_nodes
         ]
-        unsampled_reactants = [
-            x for x in entity.reactants if x.iri not in sampled_reactant_iris
+        unsampled_reactant_iris = [
+            x for x in entity.reactant_iris if x not in sampled_reactant_iris
         ]
 
         sampled_product_nodes = get_objs(
@@ -84,64 +101,76 @@ class OKReactionLocator:
         sampled_product_iris = [
             query_graph.nodes[n]["iri"] for n in sampled_product_nodes
         ]
-        unsampled_products = [
-            x for x in entity.products if x.iri not in sampled_product_iris
+        unsampled_product_iris = [
+            x for x in entity.product_iris if x not in sampled_product_iris
         ]
 
-        sampling_frame = unsampled_reactants + unsampled_products
+        sampling_frame = unsampled_reactant_iris + unsampled_product_iris
 
         sampled_mechanism_nodes = get_objs(
             query_graph,
             subj="Reaction",
-            predicate="okin:belongsToPhase/okin:containedIn",
+            predicate="^okin:hasReaction",
         )
         assert len(sampled_mechanism_nodes) <= 1
         if len(sampled_mechanism_nodes) == 0:
-            sampling_frame += [entity.mechanism]
+            sampling_frame += entity.mechanism_iri
 
         if len(sampling_frame) == 0:
             return query_graph, ""
 
-        sampled = random.choice(sampling_frame)
-        if isinstance(sampled, OCAPEReactant):
+        sampled_iri = random.choice(sampling_frame)
+        sampled_entity = self.store.get(sampled_iri)
+        if sampled_iri in unsampled_reactant_iris:
+            assert isinstance(sampled_entity, OKSpecies)
             reactant_node = "Reactant_" + str(len(sampled_reactant_nodes))
             query_graph.add_node(
                 reactant_node,
-                iri=sampled.iri,
-                rdf_type="ocape:Reactant",
-                label=sampled.label,
+                iri=sampled_entity.iri,
+                rdf_type="os:Species",
+                label=sampled_entity.label,
                 template_node=True,
             )
             query_graph.add_edge("Reaction", reactant_node, label="ocape:hasReactant")
-            verbalization = "has reactant [{label}]".format(label=sampled.label)
-        elif isinstance(sampled, OCAPEProduct):
+            verbalization = "has reactant [{label}]".format(label=sampled_entity.label)
+        elif sampled_iri in unsampled_product_iris:
+            assert isinstance(sampled_entity, OKSpecies)
             product_node = "Product_" + str(len(sampled_product_nodes))
             query_graph.add_node(
                 product_node,
-                iri=sampled.iri,
-                rdf_type="ocape:Product",
-                label=sampled.label,
+                iri=sampled_entity.iri,
+                rdf_type="os:Species",
+                label=sampled_entity.label,
                 template_node=True,
             )
             query_graph.add_edge("Reaction", product_node, label="ocape:hasProduct")
-            verbalization = "has product [{label}]".format(label=sampled.label)
-        elif isinstance(sampled, OKMechanism):
-            mechanism_node = "Mechanism"
-            query_graph.add_node(
-                mechanism_node,
-                iri=sampled.iri,
-                rdf_type="okin:ReactionMechanism",
-                label=sampled.label,
-                template_node=True,
-            )
-            query_graph.add_edge(
-                "Reaction", mechanism_node, label="okin:belongsToPhase/okin:containedIn"
-            )
-            verbalization = "is involved in the mechanism [{label}]".format(
-                label=sampled.label
-            )
+            verbalization = "has product [{label}]".format(label=sampled_entity.label)
         else:
-            raise ValueError("Unexpected type: " + type(sampled))
+            assert isinstance(sampled_entity, OKMechanism)
+            mechanism_node = "Mechanism"
+            literal_node = "Literal"
+            query_graph.add_nodes_from(
+                [
+                    (
+                        mechanism_node,
+                        dict(iri=sampled_entity.iri, rdf_type="okin:ReactionMechanism"),
+                    ),
+                    (literal_node, dict(label=sampled_entity.doi, literal=True, template_node=True)),
+                ]
+            )
+            query_graph.add_edges_from(
+                [
+                    ("Reaction", mechanism_node, dict(label="^okin:hasReaction")),
+                    (
+                        mechanism_node,
+                        literal_node,
+                        dict(label="okin:hasProvenance/oprvn:hasDOI"),
+                    ),
+                ]
+            )
+            verbalization = "is involved in the mechanism found in [{label}]".format(
+                label=sampled_entity.doi
+            )
 
         return query_graph, verbalization
 

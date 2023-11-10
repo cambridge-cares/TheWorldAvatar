@@ -161,7 +161,7 @@ SELECT DISTINCT * WHERE {{
 PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT DISTINCT * WHERE {{
-    <{ReactionIRI}> ^okin:hasEquation ?Mechanism .
+    <{ReactionIRI}> ^okin:hasReaction ?Mechanism .
 }}
 LIMIT 1"""
         query = query_template.format(ReactionIRI=entity_iri)
