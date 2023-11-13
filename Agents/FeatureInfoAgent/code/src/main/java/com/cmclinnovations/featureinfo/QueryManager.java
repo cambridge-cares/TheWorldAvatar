@@ -3,7 +3,6 @@ package com.cmclinnovations.featureinfo;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.InternalServerErrorException;
@@ -107,8 +106,8 @@ public class QueryManager {
      */
     public JSONObject processRequest(Request request, HttpServletResponse response) throws IOException {
 
-        LOGGER.info("Incoming IRI is: {}", request.iri());
-        request.endpoint().ifPresentOrElse(
+        LOGGER.info("Incoming IRI is: {}", request.getIri());
+        request.getEndpoint().ifPresentOrElse(
                 endpoint -> LOGGER.info("Incoming enforced endpoint is: {}", endpoint),
                 () -> LOGGER.info("No incoming enforced endpoint, will attempt federation."));
 
@@ -177,7 +176,7 @@ public class QueryManager {
      * @return formatted meta data.
      */
     private JSONObject getMeta(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
-        MetaHandler metaHandler = new MetaHandler(request.iri(), request.endpoint(), this.configStore);
+        MetaHandler metaHandler = new MetaHandler(request.getIri(), request.getEndpoint(), this.configStore);
         metaHandler.setClient(this.kgClient);
         return metaHandler.getData(classMatches, response);
     }
@@ -193,7 +192,7 @@ public class QueryManager {
      * @return formatted time series data.
      */
     private JSONArray getTime(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
-        TimeHandler timeHandler = new TimeHandler(request.iri(), request.endpoint(), this.configStore);
+        TimeHandler timeHandler = new TimeHandler(request.getIri(), request.getEndpoint(), this.configStore);
         timeHandler.setClients(this.kgClient, this.tsClient, null);
         return timeHandler.getData(classMatches, response);
     }

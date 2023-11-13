@@ -120,14 +120,13 @@ public class ClassHandler {
 
         // Get final query string (post injection)
         String queryString = Utils.queryInject(
-            this.queryTemplate,
-            request.iri(),
-            configStore.getStackEndpoints(StackEndpointType.ONTOP),
-            Utils.getBlazegraphEndpoints(configStore, request.endpoint())
-        );
+                this.queryTemplate,
+                request.getIri(),
+                configStore.getStackEndpoints(StackEndpointType.ONTOP),
+                Utils.getBlazegraphEndpoints(configStore, request.getEndpoint()));
 
         // Run query
-        List<String> endpoints = Utils.getBlazegraphURLs(configStore, request.endpoint());
+        List<String> endpoints = Utils.getBlazegraphURLs(configStore, request.getEndpoint());
         JSONArray jsonResult = null;
 
         if(endpoints.size() == 1) {
