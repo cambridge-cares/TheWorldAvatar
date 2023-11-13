@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE !DOCTYPE html>
 <html lang="en" xml:lang="en">
 
 <head>
@@ -225,6 +225,8 @@
             <ul>
                 <li><a href="#sidePanelGeneral">General</a></li>
                 <li><a href="#sidePanelLinks">Attributions</a></li>
+
+                <li><a href="#sidePanelLinks">Links</a></li>
             </ul>
             <div id="sidePanelGeneral">
                 <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
@@ -238,6 +240,11 @@
                     Contains public sector information licensed under the Open Government Licence v3.0.<br><br>
                     This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"
                 </p>
+            </div>
+            <div id="sidePanelLinks">
+                <p>Contains OS data &copy; Crown copyright and database rights 2022 (100025252)<br><br>
+                    Contains public sector information licensed under the Open Government Licence v3.0.<br><br>
+                    This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"</p>
             </div>
         </div>
         <div id="returnContainer" style="display: none;">
@@ -451,17 +458,14 @@
                 if (MapHandler.MAP.getLayer('my-layer-90') != null) {
                     MapHandler.MAP.removeLayer('my-layer-90');
                     MapHandler.MAP.removeSource('my-data-90');
-                    //myLayer_90 = null;
                 }
                 if (MapHandler.MAP.getLayer('my-layer-30') != null) {
                     MapHandler.MAP.removeLayer('my-layer-30');
                     MapHandler.MAP.removeSource('my-data-30');
-                    //myLayer_30 = null;
                 }
                 if (MapHandler.MAP.getLayer('my-layer-10') != null) {
                     MapHandler.MAP.removeLayer('my-layer-10');
                     MapHandler.MAP.removeSource('my-data-10');
-                    //myLayer_10 = null;
                 };
 
             }
