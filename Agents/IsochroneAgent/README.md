@@ -24,6 +24,7 @@ Items to configure in [config.properties](inputs/config.properties):
 1) `timeThreshold` - The time cutoff of an isochrone in minutes. Default value is set at 15 minutes. 
 2) `timeInterval` - The time increment value of each isochrone in minutes. Default value is set at 5 mintues time interval. 
 3) `populationTables` - The exact table names of the population tables should follow the names of population table as per [uploaded via stack-data-uploader](#23-uploading-population-data-via-stack-data-uploader). 
+4) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. 
 
 ### 3.2 SPARQL Queries
 SPARQL queries are used to retrieve the locations of POI. 
@@ -31,7 +32,7 @@ SPARQL queries are used to retrieve the locations of POI.
 The SPARQL queries follow the format which requires the returned variable to be in this format: 
 1) `poi_iri` refers to the POI's iri. 
 2) `poi_type` refers to the POI's iri type. 
-3) `geometry` refers to the WKT literals of the POI location. 
+3) `geometry` refers to the WKT literals of the POI location in EPSG 4326. 
 
 SPARQL queries are created for [15MSC in Pirmasens](inputs/15MSC/POIqueries/) and [UR in King's Lynn](inputs/UR/POIqueries/) use cases.
 
@@ -60,13 +61,11 @@ You will need to provide your credentials (GitHub username/personal access token
 ```
 
 ## 5. Deployment
-
-### 5.1 Building Docker Image
-In the same directory as this README, run `docker compose build`. This will build the IsochroneAgent Docker Image. 
+### 5.1 Retrieving IsochroneAgent's image
+The IsochroneAgent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/isochroneagent) using `docker pull ghcr.io/cambridge-cares/isochroneagent:<LATEST-VERSION>`
 
 ### 5.2 Starting with the stack-manager
-
-The agent has been implemented to work in the stack, which requires the IsochroneAgent Docker container to be deployed in the stack. To do so, place [isochroneagent.json](stack-manager-input-config/isochroneagent.json) in the [stack-manager config directory]. Replace `<REPLACE_WITH_YOUR_DIRECTORY>` of the bind mount with absolute path to the isochroneagent's inputs directory. 
+The agent has been implemented to work in the stack, which requires the IsochroneAgent Docker container to be deployed in the stack. To do so, place [isochroneagent.json](stack-manager-input-config/isochroneagent.json) in the [stack-manager config directory]. Replace `<REPLACE_WITH_YOUR_DIRECTORY>` of the bind mount with absolute path to the isochroneagent's inputs directory.   
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
@@ -86,6 +85,10 @@ curl -X POST localhost:3838/isochroneagent/update?function=UR
 
 
 ## 6. Debugging
+### 6.1 Building Docker Image
+In the same directory as this README, run `docker compose build`. This will build the IsochroneAgent local Docker Image. 
+
+### 6.2 Spinning up with stack-manager
 To debug the agent, replace [`isochroneagent-debug.json`](stack-manager-input-config/isochroneagent-debug.json) instead of [`isochroneagent.json`](stack-manager-input-config/isochroneagent.json) in the [stack-manager config directory]. 
 
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.

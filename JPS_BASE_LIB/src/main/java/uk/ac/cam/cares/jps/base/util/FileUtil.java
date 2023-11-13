@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -48,19 +49,10 @@ public class FileUtil {
 		File file = new File(path);
 		file.getParentFile().mkdirs();
 		
-	    FileWriter fileWriter = null;
-	    
-	    try {
-			fileWriter = new FileWriter(file);
+	    try(FileWriter fileWriter= new FileWriter(file)) {
 			fileWriter.write(content);
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
-		} finally {
-			try {
-				fileWriter.close();
-			} catch (IOException e) {
-				throw new JPSRuntimeException(e.getMessage(), e);
-			}
 		}
 	}
 	
@@ -83,18 +75,10 @@ public class FileUtil {
 //			throw new JPSRuntimeException(e.getMessage(), e);
 //		}
 //		return sb.toString();
-		
-		
-    	try {
-    		ByteArrayOutputStream outputStream = null;
-			try {
-				outputStream = new ByteArrayOutputStream();
-				IOUtils.copy(inputStream, outputStream);
-				return new String(outputStream.toByteArray());
-			} finally {
-				inputStream.close();
-				outputStream.close();
-			}
+
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+			IOUtils.copy(inputStream, outputStream);
+			return new String(outputStream.toByteArray());
     	} catch (IOException e) {
     		throw new JPSRuntimeException(e.getMessage(), e);
     	}
@@ -125,8 +109,9 @@ public class FileUtil {
 	 * @param fileName
 	 * @return
 	 * @throws IOException
+	 * @throws CsvValidationException
 	 */
-	public static List<List<String>> openCSVSourceFile(String fileName) throws IOException {
+	public static List<List<String>> openCSVSourceFile(String fileName) throws IOException, CsvValidationException {
 		List<List<String>> records = new ArrayList<List<String>>();
 		try (CSVReader csvReader = new CSVReader(new FileReader(fileName));) {
 			String[] values = null;
