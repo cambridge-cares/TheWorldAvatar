@@ -2,7 +2,6 @@ package com.cmclinnovations.featureinfo.core.time;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +12,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -86,7 +86,7 @@ public class TimeHandlerTest {
         // Initialise a TimeHandler instance
         TimeHandler timeHandler = new TimeHandler(
             "https://test-stack/features/feature-one",
-            null,
+            Optional.empty(),
             configStore
         );
 
@@ -153,7 +153,7 @@ public class TimeHandlerTest {
         // Initialise a TimeHandler instance
         TimeHandler timeHandler = new TimeHandler(
             "https://test-stack/features/feature-one",
-            null,
+            Optional.empty(),
             configStore
         );
 
@@ -220,7 +220,7 @@ public class TimeHandlerTest {
         // Initialise a TimeHandler instance
         TimeHandler timeHandler = new TimeHandler(
             "https://test-stack/features/feature-one",
-            null,
+            Optional.empty(),
             configStore
         );
 
