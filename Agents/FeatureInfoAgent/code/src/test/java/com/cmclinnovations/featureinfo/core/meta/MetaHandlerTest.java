@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.cmclinnovations.featureinfo.TestUtils;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
@@ -96,8 +97,7 @@ public class MetaHandlerTest {
             }
             """
         );
-
-        Assertions.assertTrue(expected.similar(result), "Returned JSONObject did not match expected one!");
+        JSONAssert.assertEquals(expected, result, false);
     }
 
     /**
@@ -139,8 +139,7 @@ public class MetaHandlerTest {
             }
             """
         );
-
-        Assertions.assertTrue(expected.similar(result), "Returned JSONObject did not match expected one!");
+        JSONAssert.assertEquals(expected, result, false);
     }
 
     /**
