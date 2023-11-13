@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -74,7 +75,7 @@ public class MetaHandlerTest {
         // Initialise a metahandler
         MetaHandler metaHandler = new MetaHandler(
             "https://test-stack/features/feature-one",
-            null,
+            Optional.empty(),
             configStore
         );       
 
@@ -115,7 +116,7 @@ public class MetaHandlerTest {
         // Initialise a metahandler
         MetaHandler metaHandler = new MetaHandler(
             "https://test-stack/features/feature-one",
-            null,
+            Optional.empty(),
             configStore
         );       
 
