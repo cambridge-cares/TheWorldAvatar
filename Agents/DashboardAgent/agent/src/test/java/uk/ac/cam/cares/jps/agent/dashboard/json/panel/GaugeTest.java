@@ -129,7 +129,8 @@ class GaugeTest {
         // Similar to above
         String description = query.isEmpty() ? "A gauge chart displaying the latest value of all individuals' "
                 : query.contains(")/") ? "A gauge chart displaying the latest average value of " : "A gauge chart displaying the latest cumulative total value of ";
-        description += metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase();
+        description += query.isEmpty() ? metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase() :
+                metadata[0].toLowerCase() + " for all " + metadata[1].toLowerCase() + "; Do note that this value is constant at the dashboard level and unaffected by any filters for individual elements";
         boolean showThresholdMarkers = false;
         String colorMode = "palette-classic";
         String colorSteps = "{\"color\":\"red\",\"value\":80}";

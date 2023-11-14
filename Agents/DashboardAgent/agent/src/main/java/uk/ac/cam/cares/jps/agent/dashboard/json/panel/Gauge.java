@@ -51,8 +51,9 @@ class Gauge extends TemplatePanel {
             String titleContent = itemGroup.equals("systems") ? "Latest Cumulative Total" : "Latest Average";
             super.setTitle(titleContent);
             // Set Description for panel
-            String description = itemGroup.equals("systems") ? "A gauge chart displaying the latest cumulative total value of " + measure.toLowerCase() + " for " + itemGroup.toLowerCase()
-                    : "A gauge chart displaying the latest average value of " + measure.toLowerCase() + " for " + itemGroup.toLowerCase();
+            String description = itemGroup.equals("systems") ? "A gauge chart displaying the latest cumulative total value of " + measure.toLowerCase() + " for all " + itemGroup.toLowerCase()
+                    : "A gauge chart displaying the latest average value of " + measure.toLowerCase() + " for all " + itemGroup.toLowerCase();
+            description += "; Do note that this value is constant at the dashboard level and unaffected by any filters for individual elements";
             super.setDescription(description);
             // Generate and set the related query if required
             int totalItems = 0;
