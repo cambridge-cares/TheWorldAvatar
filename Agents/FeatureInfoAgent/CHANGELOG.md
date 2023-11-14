@@ -4,8 +4,8 @@
 ### Features:
 * _No features present._
 ### Bug Fixes:
-* No longer cache enforced endpoint so .
-* Minor code improvements to make more easily maintainable.
+* No longer cache enforced endpoint so is changeable from query to query.
+* Minor code improvements to help in maintenance.
 
 # 3.0.0
 ### Features:
