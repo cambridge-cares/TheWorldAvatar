@@ -283,10 +283,14 @@ To execute the function for more than one data IRI:
 curl -X POST 'http://localhost:3838/bms-update-agent/updatePresentValue' \
 --header 'Content-Type: application/json' \
 --data '{
+  "checks": [{
     "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
-    "dataIRI": ["https://www.theworldavatar.com/kg/ontobms/V_CAV_E-7-7_FlowSP_CARES",
-    "https://www.theworldavatar.com/kg/ontobms/V_VAV-E7-2_FlowSP_CARES"
-    ]
+    "dataIRI":"<data IRI>"
+    },
+    {
+    "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
+    "dataIRI":"<data IRI>"
+    }]
 }'
 ```
 To execute the function for one data IRI:
@@ -294,8 +298,9 @@ To execute the function for one data IRI:
 curl -X POST 'http://localhost:3838/bms-update-agent/updatePresentValue' \
 --header 'Content-Type: application/json' \
 --data '{
+  "checks": [{
     "clientProperties": "UPDATETRIPLES_CLIENT_PROPERTIES",
-    "dataIRI": ["https://www.theworldavatar.com/kg/ontobms/V_CAV_E-7-7_FlowSP_CARES"
-    ]
+    "dataIRI":"<data IRI>"
+    }]
 }'
 ```
