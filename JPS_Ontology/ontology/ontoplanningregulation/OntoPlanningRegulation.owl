@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">01 November 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">14 November 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlanningRegulations is an ontology developed to describe the regulations imposed for urban planning purposes.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -38,20 +38,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the allowable absolute height that a given planning regulation has provided.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows absolute height</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/allowsBuildingEdge -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsBuildingEdge">
-        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsStoreyAggregate"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the allowed building edge that a given planning regulation has provided.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows building edge</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -121,19 +107,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/allowsStoreyAggregate -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsStoreyAggregate">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the allowed storey aggregate that a given planning regulation has provided.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows storey aggregate</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/appliesTo -->
 
 
@@ -147,18 +120,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that connects the planning regulation to their urban entity. Generally, all plots have general planning regulations, while area regulations applies to specific zones and type regulations applies to specific zone types.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">applies to</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/forNeighbourZoneType -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/forNeighbourZoneType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoningType"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">for neighbour zone type</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -214,19 +175,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/requiresDepth -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresDepth">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AverageDepth"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the required depth of an urban entity which is enforced by a planning regulation.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires depth</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/requiresFloorToFloorHeight -->
 
 
@@ -275,32 +223,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the required setback of an urban entity which is enforced by a planning regulation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires setback</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/requiresSiteArea -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresSiteArea">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/SiteArea"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the required site area of an urban entity which is enforced by a planning regulation.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires site area</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/requiresWidth -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/requiresWidth">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/AverageWidth"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the required width of an urban entity which is enforced by a planning regulation.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">requires width</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -760,38 +682,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplot/AverageDepth -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/AverageDepth"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/AverageWidth -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/AverageWidth"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplot/Plot -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/SiteArea -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/SiteArea"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/StoreyAggregate"/>
     
 
 
@@ -806,13 +700,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ZoningType -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoningType"/>
 </rdf:RDF>
 
 

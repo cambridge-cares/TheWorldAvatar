@@ -28,8 +28,10 @@ Prefix | Namespace
 >Plot
 
 - Plot are parcels of land delineated with a physical boundary to denote land ownership rights.
+- The introduction of the plot and buildable space concepts facilitates the reasoning of overlapping conflicting regulatory stipulations to determine the appropriate stipulation for the specified entity. For example, a commercial plot situated in a special conservation zone will be subjected to both the zone type and area regulation, which dictate different setbacks. In this situation, the plot can only conform to one setback, which should be directly associated to ensure the SPARQL query is properly executed. The prioritisation of regulations can be achieved through reasoning to attach the relevant requirements.
 
 >BuildableSpace
 
-- Buildable Space is the maximum allowable space on a plot that can be built up according to applicable planning regulations. 
+- Buildable Space is an abstract concept that represents the maximum legally allowable space on a plot that can built up according to applicable planning regulations. The buildable space is the portion of the land that complies with these regulations and is designated for construction.
+- This concept is intended to delineate building-specific regulatory stipulations like absolute height, floor to floor height, gross floor area, and setback, from plot-specific stipulations such as site coverage and gross plot ratio.
 - Currently this concept only covers regulations governing built form at LOD1, as regulations governing configurational building design require computational design generation to evaluate and is out of the scope.
