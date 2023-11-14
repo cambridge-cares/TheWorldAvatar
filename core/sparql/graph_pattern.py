@@ -17,7 +17,7 @@ class ValuesClause(GraphPattern):
     def __str__(self):
         return "VALUES {var} {{ {values} }}".format(
             var=self.var,
-            values=" ".join(['"{val}"'.format(val=val) for val in self.values]),
+            values=" ".join(['"{val}"'.format(val=val) if ":" not in val else val for val in self.values]),
         )
 
 
@@ -65,7 +65,7 @@ class OptionalClause(GraphPattern):
             itertools.chain.from_iterable(
                 [
                     ["OPTIONAL {"],
-                    ["  " + str(pattern) for pattern in self.graph_patterns],
+                    ["  " + str(line) for pattern in self.graph_patterns for line in pattern.tolines()],
                     ["}"],
                 ]
             )
