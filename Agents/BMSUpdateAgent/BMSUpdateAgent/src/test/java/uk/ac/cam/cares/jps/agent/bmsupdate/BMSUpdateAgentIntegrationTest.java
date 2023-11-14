@@ -48,7 +48,7 @@ import static org.mockserver.model.HttpResponse.response;
 @Testcontainers
 public class BMSUpdateAgentIntegrationTest {
     @Container
-    private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+    private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
             .withExposedPorts(9999);
 
     @Container
@@ -250,12 +250,11 @@ public class BMSUpdateAgentIntegrationTest {
     public void testCheckInsert() {
         //test triggerValue != latestValue
         JSONObject result = agent.checkInsert(test_IRI, kbClient, rdbClient, "0.0", "<example:prefix/api_test> <example:testing> \"example\". ");
-        Assert.assertTrue(result.getString("message").contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
+        Assert.assertTrue(result.getString("message").contains("The latest timeseries value of example:prefix/api_test is not equivalent to the trigger value 0.0"));
 
         //test triggerValue = latestValue
         result = agent.checkInsert(test_IRI, kbClient, rdbClient, "1.0", "<example:prefix/api_test> <example:testing> \"example\". ");
-        Assert.assertTrue(result.getJSONArray("message").getString(0).contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
-        Assert.assertTrue(result.getJSONArray("message").getString(1).contains("Inserted the follow triples to the knowledge graph:"));
+        Assert.assertTrue(result.getString("message").contains("Executed the following to the knowledge graph: INSERT DATA"));
 
         Variable var = SparqlBuilder.var("var");
         SelectQuery query = Queries.SELECT();
@@ -271,12 +270,11 @@ public class BMSUpdateAgentIntegrationTest {
     public void testCheckDelete() {
         //test triggerValue != latestValue
         JSONObject result = agent.checkDelete(test_IRI, kbClient, rdbClient, "0.0", "<example:prefix/api_test> <https://www.theworldavatar.com/kg/ontobms/hasBacnetDeviceID> \"123456\". ");
-        Assert.assertTrue(result.getString("message").contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
+        Assert.assertTrue(result.getString("message").contains("The latest timeseries value of example:prefix/api_test is not equivalent to the trigger value 0.0"));
 
         //test triggerValue = latestValue
         result = agent.checkDelete(test_IRI, kbClient, rdbClient, "1.0", "<example:prefix/api_test> <https://www.theworldavatar.com/kg/ontobms/hasBacnetDeviceID> \"123456\". ");
-        Assert.assertTrue(result.getJSONArray("message").getString(0).contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
-        Assert.assertTrue(result.getJSONArray("message").getString(1).contains("Deleted the follow triples to the knowledge graph:"));
+        Assert.assertTrue(result.getString("message").contains("Executed the following to the knowledge graph: DELETE DATA"));
 
         Variable var = SparqlBuilder.var("var");
         SelectQuery query = Queries.SELECT();
@@ -295,13 +293,12 @@ public class BMSUpdateAgentIntegrationTest {
     public void testCheckInsertAndDelete() {
         //test triggerValue != latestValue
         JSONObject result = agent.checkInsertAndDelete(test_IRI, kbClient, rdbClient, "0.0", "<example:prefix/api_test> <example:testing> \"example\". ", "<example:prefix/api_test> <https://www.theworldavatar.com/kg/ontobms/hasBacnetDeviceID> \"123456\". ");
-        Assert.assertTrue(result.getString("message").contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
+        Assert.assertTrue(result.getString("message").contains("The latest timeseries value of example:prefix/api_test is not equivalent to the trigger value 0.0"));
 
         //test triggerValue = latestValue
         result = agent.checkInsertAndDelete(test_IRI, kbClient, rdbClient, "1.0", "<example:prefix/api_test> <example:testing> \"example\". ", "<example:prefix/api_test> <https://www.theworldavatar.com/kg/ontobms/hasBacnetDeviceID> \"123456\". ");
-        Assert.assertTrue(result.getJSONArray("message").getString(0).contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
-        Assert.assertTrue(result.getJSONArray("message").getString(1).contains("Inserted the follow triples to the knowledge graph:"));
-        Assert.assertTrue(result.getJSONArray("message").getString(2).contains("Deleted the follow triples to the knowledge graph:"));
+        Assert.assertTrue(result.getJSONArray("message").getString(0).contains("Executed the following to the knowledge graph: INSERT DATA"));
+        Assert.assertTrue(result.getJSONArray("message").getString(1).contains("Executed the following to the knowledge graph: DELETE DATA"));
 
         Variable var = SparqlBuilder.var("var");
         SelectQuery query = Queries.SELECT();

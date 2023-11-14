@@ -67,7 +67,7 @@ public class BMSUpdateAgentLauncherIntegrationTest {
             .parse("mockserver/mockserver")
             .withTag("mockserver-" + MockServerClient.class.getPackage().getImplementationVersion());
     @Container
-    private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+    private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
             .withExposedPorts(9999);
 
     @Container
@@ -319,11 +319,10 @@ public class BMSUpdateAgentLauncherIntegrationTest {
                 .execute(() -> {
                         //test INSERT only where latest timeseries value != triggerValue
                         JSONObject result = launcher.processRequestParameters(getUpdateTriplesRouteInput("<example:prefix/api_test> <example:testing> \"example\". ", null, "0.0"), createHttpServletRequest("updateTriples"));
-                        Assert.assertTrue(result.getJSONObject("message0").getString("message").contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
+                        Assert.assertTrue(result.getJSONObject("message0").getString("message").contains("The latest timeseries value of example:prefix/api_test is not equivalent to the trigger value 0.0"));
                         //test INSERT only where latest timeseries value == triggerValue
                         result = launcher.processRequestParameters(getUpdateTriplesRouteInput("<example:prefix/api_test> <example:testing> \"example\". ", null, "1.0"), createHttpServletRequest("updateTriples"));
-                        Assert.assertTrue(result.getJSONObject("message0").getJSONArray("message").getString(0).contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
-                        Assert.assertTrue(result.getJSONObject("message0").getJSONArray("message").getString(1).contains("Inserted the follow triples to the knowledge graph:"));
+                        Assert.assertTrue(result.getJSONObject("message0").getString("message").contains("Executed the following to the knowledge graph: INSERT DATA"));
                         Variable var = SparqlBuilder.var("var");
                         SelectQuery query = Queries.SELECT();
                         //create triple pattern
@@ -335,11 +334,10 @@ public class BMSUpdateAgentLauncherIntegrationTest {
 
                         //test DELETE only where latest timeseries value != triggerValue
                         result = launcher.processRequestParameters(getUpdateTriplesRouteInput(null, "<example:prefix/api_test> <example:testing> \"example\". ", "0.0"), createHttpServletRequest("updateTriples"));
-                        Assert.assertTrue(result.getJSONObject("message0").getString("message").contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
+                        Assert.assertTrue(result.getJSONObject("message0").getString("message").contains("The latest timeseries value of example:prefix/api_test is not equivalent to the trigger value 0.0"));
                         //test DELETE only where latest timeseries value == triggerValue
                         result = launcher.processRequestParameters(getUpdateTriplesRouteInput(null, "<example:prefix/api_test> <example:testing> \"example\". ", "1.0"), createHttpServletRequest("updateTriples"));
-                        Assert.assertTrue(result.getJSONObject("message0").getJSONArray("message").getString(0).contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
-                        Assert.assertTrue(result.getJSONObject("message0").getJSONArray("message").getString(1).contains("Deleted the follow triples to the knowledge graph:"));
+                        Assert.assertTrue(result.getJSONObject("message0").getString("message").contains("Executed the following to the knowledge graph: DELETE DATA"));
                         //query should return an error as the triples is deleted
                         try {
                             queryResult = kbClient.executeQuery();
@@ -349,12 +347,11 @@ public class BMSUpdateAgentLauncherIntegrationTest {
 
                         //test INSERT and DELETE where latest timeseries value != triggerValue
                         result = launcher.processRequestParameters(getUpdateTriplesRouteInput("<example:prefix/api_test> <example:testing> \"example\". ", "<example:prefix/api_test> <https://www.theworldavatar.com/kg/ontobms/hasBacnetDeviceID> \"123456\". ", "0.0"), createHttpServletRequest("updateTriples"));
-                        Assert.assertTrue(result.getJSONObject("message0").getString("message").contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
+                        Assert.assertTrue(result.getJSONObject("message0").getString("message").contains("The latest timeseries value of example:prefix/api_test is not equivalent to the trigger value 0.0"));
                         //test INSERT and DELETE where latest timeseries value == triggerValue
                         result = launcher.processRequestParameters(getUpdateTriplesRouteInput("<example:prefix/api_test> <example:testing> \"example\". ", "<example:prefix/api_test> <https://www.theworldavatar.com/kg/ontobms/hasBacnetDeviceID> \"123456\". ", "1.0"), createHttpServletRequest("updateTriples"));
-                        Assert.assertTrue(result.getJSONObject("message0").getJSONArray("message").getString(0).contains("The latest value for example:prefix/api_test is 1.0 and the corresponding timestamp is"));
-                        Assert.assertTrue(result.getJSONObject("message0").getJSONArray("message").getString(1).contains("Inserted the follow triples to the knowledge graph:"));
-                        Assert.assertTrue(result.getJSONObject("message0").getJSONArray("message").getString(2).contains("Deleted the follow triples to the knowledge graph:"));
+                        Assert.assertTrue(result.getJSONObject("message0").getJSONArray("message").getString(0).contains("Executed the following to the knowledge graph: INSERT DATA"));
+                        Assert.assertTrue(result.getJSONObject("message0").getJSONArray("message").getString(1).contains("Executed the following to the knowledge graph: DELETE DATA"));
                         queryResult = kbClient.executeQuery();
                         Assert.assertEquals("example:prefix/api_test", queryResult.getJSONObject(0).getString("var"));
 
@@ -453,10 +450,12 @@ public class BMSUpdateAgentLauncherIntegrationTest {
 
     private JSONObject getUpdatePresentValueInput() {
         JSONObject jsonObject = new JSONObject();
-        JSONArray dataIRIs = new JSONArray();
-        dataIRIs.put(test_IRI);
-        jsonObject.put("dataIRI", dataIRIs);
-        jsonObject.put("clientProperties", "CLIENT_PROPERTIES");
+        JSONArray checks = new JSONArray();
+        JSONObject properties = new JSONObject();
+        properties.put("dataIRI", test_IRI);
+        properties.put("clientProperties", "CLIENT_PROPERTIES");
+        checks.put(properties);
+        jsonObject.put("checks", checks);
         return jsonObject;
     }
 
