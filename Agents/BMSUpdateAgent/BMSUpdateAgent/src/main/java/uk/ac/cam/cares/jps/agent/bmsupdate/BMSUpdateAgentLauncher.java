@@ -223,7 +223,6 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
      */
     public JSONObject executeUpdateTriples(JSONObject requestParams) {
         JSONObject result = new JSONObject();
-        LOGGER.info("The size is " + requestParams.length());
         JSONArray checks = requestParams.getJSONArray("checks");
         for (int i = 0; i < checks.length(); i++){
             JSONObject checkAndUpdateParameters = checks.getJSONObject(i);
@@ -274,20 +273,22 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
     public JSONObject executeUpdatePresentValue(JSONObject requestParams) {
         JSONObject result = new JSONObject();
         JSONObject subMessage = new JSONObject();
-        for ( int i = 0; i < requestParams.getJSONArray(KEY_DATAIRI).length(); i++) {
-                String dataIRI = requestParams.getJSONArray(KEY_DATAIRI).getString(i);
-                String clientPropertiesFile = System.getenv(requestParams.getString(KEY_CLIENT_PROPERTIES));
-                BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
-                try {
-                    initSparqlProperties(clientPropertiesFile);
-                } catch (IOException e) {
-                    throw new JPSRuntimeException("Unable to read the client properties file.", e);
-                }
-                rsClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint);
-                if (sparqlUsername != null && sparqlPassword != null) {
-                    rsClient.setUser(sparqlUsername);
-                    rsClient.setPassword(sparqlPassword);
-                }
+        JSONArray checks = requestParams.getJSONArray("checks");
+        for (int i = 0; i < checks.length(); i++){
+            JSONObject checkAndUpdateParameters = checks.getJSONObject(i);
+            String dataIRI = checkAndUpdateParameters.getString(KEY_DATAIRI);
+            String clientPropertiesFile = System.getenv(checkAndUpdateParameters.getString(KEY_CLIENT_PROPERTIES));
+            BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
+            try {
+                initSparqlProperties(clientPropertiesFile);
+            } catch (IOException e) {
+                throw new JPSRuntimeException("Unable to read the client properties file.", e);
+            }
+            rsClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint);
+            if (sparqlUsername != null && sparqlPassword != null) {
+                rsClient.setUser(sparqlUsername);
+                rsClient.setPassword(sparqlPassword);
+            }
                 //query for Bacnet Device ID linked to data IRI
                 String deviceId = bmsUpdateAgent.getDeviceId(dataIRI, rsClient);
                 //query for Bacnet Object ID linked to data IRI
@@ -300,7 +301,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
                     subMessage = bmsUpdateAgent.setNumericalValue(dataIRI, presentValue, rsClient);
                     result.put("message" + i, subMessage);
                 } catch (IOException e) {
-                    throw new JPSRuntimeException("Unable to write present value to Bacnet Object: " + objectId, e);
+                    throw new JPSRuntimeException("Unable to update the present value of " + dataIRI + " that has a Bacnet Object ID of " + objectId, e);
                 }
             }
         return result;
