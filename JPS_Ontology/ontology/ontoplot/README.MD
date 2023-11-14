@@ -1,10 +1,11 @@
 # Ontology for Plots
 ## 1. Introduction
-OntoPlot is an ontology developed to describe the attributes of land plots and their buildable spaces.  A simple overview of the key attributes of the plot data model is illustrated in Figure 1. 
+OntoPlot is an ontology developed to describe the attributes of land plots and their buildable spaces.  A simple overview of the key attributes of the plot data model are illustrated in Figure 1 and two. 
 
 *Figure 1. Data model of plot attributes in OntoPlot*
 ```mermaid
     erDiagram 
+    "Plot" ||--o{ "Plot" : hasNeighbour
     "Plot" ||--o{ "om:Area" : hasPlotArea
     "Plot" ||--o{ "om:AmountOfMoney" : hasPrice
     "Plot" ||--o{ "fibo:Person" : hasOwner
@@ -14,12 +15,23 @@ OntoPlot is an ontology developed to describe the attributes of land plots and t
         hasSurname string
     }
 ```
+*Figure 2. Data model of regulatory stipulations for plot and buildable space in OntoPlot*
+```mermaid
+    erDiagram 
+    "Plot" ||--o{ "BuildableSpace" : hasBuildableSpace
+    "Plot" ||--o{ "OPR:GrossPlotRatio" : hasAllowedGPR
+    "Plot" ||--o{ "OPR:SiteCoverage" : hasAllowedSiteCoverage
+    "BuildableSpace" ||--o{ "OPR:AbsoluteHeight" : hasAllowedAbsoluteHeight
+    "BuildableSpace" ||--o{ "OPR:FloorToFloorHeight" : hasAllowedFloorToFloorHeight
+    "BuildableSpace" ||--o{ "OPR:GrossFloorArea" : hasAllowedGFA
+    "BuildableSpace" ||--o{ "OPR:Setback" : hasRequiredSetback
+```
 
 ## 2. Legend
 Prefix | Namespace
 --- | ---
 [OntoPlot](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoplot) | `https://www.theworldavatar.com/kg/ontoplot/`
-[OntoPlanningRegulation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoplanningregulation) | `https://www.theworldavatar.com/kg/ontoplanningregulation/`
+[OPR](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoplanningregulation) | `https://www.theworldavatar.com/kg/ontoplanningregulation/`
 [OntoZoning](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontozoning) | `https://www.theworldavatar.com/kg/ontozoning/`
 [om](https://github.com/HajoRijgersberg/OM) | `http://www.ontology-of-units-of-measure.org/resource/om-2/`
 [fibo](https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person) | `https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/`
