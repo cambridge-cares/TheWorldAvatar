@@ -1,8 +1,10 @@
+import argparse
 import json
 import os
 from pathlib import Path
 import random
 import time
+from typing import Optional
 
 import networkx as nx
 from tqdm import tqdm
@@ -21,12 +23,12 @@ SEED_SPECIES_FILEPATH = "data/seed_entities/ontokin.txt"
 
 class DatasetGenerator:
     @classmethod
-    def query_seed_entities(self):
+    def query_seed_entities(
+        self, endpoint: str, user: Optional[str] = None, pw: Optional[str] = None
+    ):
         from locate_then_ask.kg_client import KgClient
 
-        kg_client = KgClient(
-            "http://theworldavatar.com/blazegraph/namespace/ontokin/sparql"
-        )
+        kg_client = KgClient(endpoint, user=user, pw=pw)
 
         sparql_mechanisms = """PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
@@ -52,10 +54,10 @@ LIMIT 100"""
         rxns = [
             x["s"]["value"] for x in kg_client.query(sparql_rxns)["results"]["bindings"]
         ]
+        sparql_species = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
-        sparql_species = """PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 SELECT ?s (COUNT(DISTINCT ?p) as ?degree) WHERE {
-  ?s a okin:Species .
+  ?s a/rdfs:subClassOf* os:Species .
   ?s ?p ?o .
 }
 GROUP BY ?s
@@ -65,15 +67,22 @@ LIMIT 100"""
             x["s"]["value"]
             for x in kg_client.query(sparql_species)["results"]["bindings"]
         ]
-
         return mechanisms + rxns + species
 
     @classmethod
-    def retrieve_seed_entities(self):
+    def retrieve_seed_entities(
+        self,
+        endpoint: Optional[str],
+        user: Optional[str] = None,
+        pw: Optional[str] = None,
+    ):
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_FILEPATH)
 
         if not os.path.isfile(os.path.join(filepath)):
-            entities = self.query_seed_entities()
+            assert (
+                endpoint is not None
+            ), "No cache of seed entities found, please input endpoint url to query for seed entities."
+            entities = self.query_seed_entities(endpoint, user, pw)
             with open(filepath, "w") as f:
                 f.write("\n".join(entities))
 
@@ -82,13 +91,15 @@ LIMIT 100"""
 
         return [x for x in seed_entities if x]
 
-    def __init__(self):
-        self.store = OKEntityStore()
+    def __init__(
+        self, endpoint: str, user: Optional[str] = None, pw: Optional[str] = None
+    ):
+        self.store = OKEntityStore(endpoint, user=user, pw=pw)
         self.example_maker_mechanism = OKMechanismExampleMaker(self.store)
         self.example_maker_reaction = OKReactionExampleMaker(self.store)
         self.example_maker_species = OKSpeciesExampleMaker(self.store)
 
-        self.seed_entities = self.retrieve_seed_entities()
+        self.seed_entities = self.retrieve_seed_entities(endpoint, user, pw)
         random.shuffle(self.seed_entities)
 
     def generate(self):
@@ -126,7 +137,13 @@ LIMIT 100"""
 
 
 if __name__ == "__main__":
-    ds_gen = DatasetGenerator()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--endpoint", required=True)
+    parser.add_argument("--user", default=None)
+    parser.add_argument("--pw", default=None)
+    args = parser.parse_args()
+
+    ds_gen = DatasetGenerator(endpoint=args.endpoint, user=args.user, pw=args.pw)
     examples = ds_gen.generate()
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")
