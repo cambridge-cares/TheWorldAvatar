@@ -28,9 +28,13 @@ import com.cmclinnovations.stack.clients.ontop.OntopClient;
 public class IsochroneAgent extends JPSAgent {
     
     private static String isochroneFunction = null; 
+    private static int timeThreshold; 
+    private static int timeInterval; 
     private static final String PROPETIES_PATH = "/inputs/config.properties";
     private static final Path obdaFile = Path.of("/inputs/isochrone.obda");
     private final String FUNCTION_KEY = "function";
+    private final String TIMETHRESHOLD_KEY = "timethreshold";
+    private final String TIMEINTERVAL_KEY = "timeinterval";
 
     private static final Logger LOGGER = LogManager.getLogger(IsochroneAgent.class);
 
@@ -39,8 +43,6 @@ public class IsochroneAgent extends JPSAgent {
     private String kgEndpoint;
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
-    public int timeThreshold;
-    public int timeInterval;
     public double segmentization_length;
     public ArrayList<String> populationTableList;
 
@@ -73,8 +75,6 @@ public class IsochroneAgent extends JPSAgent {
             Properties prop = new Properties();
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
-            this.timeThreshold = Integer.parseInt(prop.getProperty("timeThreshold"));
-            this.timeInterval = Integer.parseInt(prop.getProperty("timeInterval"));
             this.segmentization_length = Double.parseDouble(prop.getProperty("segmentization_length"));
             this.kgEndpoint = prop.getProperty("kgEndpoint");
 
@@ -112,10 +112,15 @@ public class IsochroneAgent extends JPSAgent {
         }
 
         this.isochroneFunction = requestParams.getString(FUNCTION_KEY);
+        this.timeThreshold = requestParams.getInt(TIMETHRESHOLD_KEY);
+        this.timeInterval = requestParams.getInt(TIMEINTERVAL_KEY);
+        LOGGER.info("Successfully set timeThreshold to " + timeThreshold);
+        LOGGER.info("Successfully set timeInterval to " + timeInterval);
         LOGGER.info("Successfully set isochroneFunction to " + isochroneFunction);
 
         JSONObject response = new JSONObject();
-        response.put("message", "Successfully set isochroneFunction to " + isochroneFunction);
+        response.put("message", "Successfully set isochroneFunction to " + isochroneFunction+ ", timeInterval" + timeInterval+", timeThreshold" + timeThreshold);
+
 
         Path POI_PATH = Path.of("/inputs/"+isochroneFunction+"/POIqueries");
         Path EDGESTABLESQL_PATH = Path.of("/inputs/"+isochroneFunction+"/edgesSQLTable");
@@ -132,7 +137,10 @@ public class IsochroneAgent extends JPSAgent {
 
             // Split road into multiple smaller segment and find the nearest_node
             RouteSegmentization routeSegmentization = new RouteSegmentization();
+            if (!routeSegmentization.doesTableExist(remoteRDBStoreClient)){
+            //If segment table doesnt exist, segment table
             routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
+            }
 
             // Create a table to store nearest_node
             routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
@@ -191,6 +199,14 @@ public class IsochroneAgent extends JPSAgent {
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (!requestParams.has(FUNCTION_KEY)) {
             LOGGER.error("Function is missing.");
+            return false;
+        }
+        if (!requestParams.has(TIMEINTERVAL_KEY)) {
+            LOGGER.error("TimeInterval is missing.");
+            return false;
+        }
+        if (!requestParams.has(TIMETHRESHOLD_KEY)) {
+            LOGGER.error("TimeThreshold is missing.");
             return false;
         }
         return true;
