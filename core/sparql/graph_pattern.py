@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import itertools
-from typing import List, Tuple
+from typing import Tuple
 
 from core.sparql.sparql_base import SparqlBase
 
@@ -12,7 +12,7 @@ class GraphPattern(SparqlBase):
 @dataclass
 class ValuesClause(GraphPattern):
     var: str
-    values: List[str]
+    values: Tuple[str, ...] = field(default_factory=tuple)
 
     def __str__(self):
         return "VALUES {var} {{ {values} }}".format(
@@ -32,7 +32,8 @@ class FilterClause(GraphPattern):
 @dataclass
 class TriplePattern(GraphPattern):
     subj: str
-    tails: List[Tuple[str, str]]  # [(p1, o1), (p2, o2), ...]
+    # [(p1, o1), (p2, o2), ...]
+    tails: Tuple[Tuple[str, str], ...] = field(default_factory=tuple)
 
     @classmethod
     def from_triple(cls, subj: str, predicate: str, obj: str):
@@ -52,7 +53,7 @@ class TriplePattern(GraphPattern):
 
 @dataclass
 class OptionalClause(GraphPattern):
-    graph_patterns: List[GraphPattern]
+    graph_patterns: Tuple[GraphPattern, ...] = field(default_factory=tuple)
 
     def __str__(self):
         return "OPTIONAL {{\n{patterns}\n}}".format(

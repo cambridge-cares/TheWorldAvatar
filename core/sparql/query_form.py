@@ -1,12 +1,12 @@
-from dataclasses import dataclass
-from typing import List
+from dataclasses import dataclass, field
+from typing import Tuple
 
 from core.sparql.sparql_base import SparqlBase
 
 
 @dataclass
 class SelectClause(SparqlBase):
-    vars: List[str]
+    vars: Tuple[str, ...] = field(default_factory=tuple)
     solution_modifier: str = ""
 
     def __str__(self):

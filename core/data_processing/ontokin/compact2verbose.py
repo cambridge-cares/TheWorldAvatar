@@ -126,18 +126,15 @@ class OKSparqlCompact2VerboseConverter:
         except AssertionError:
             return None
 
+    def _try_convert_rxn_hasratecoeffs_triple(self, pattern: GraphPattern):
+        pass
+
     def convert(self, sparql_compact: SparqlQuery):
         graph_patterns = list(sparql_compact.graph_patterns)
         graph_patterns.reverse()
 
         select_vars_verbose = list(sparql_compact.select_clause.vars)
-        select_vars_verbose.append("?SpeciesLabel")
-        graph_patterns_verbose = [
-            TriplePattern(
-                "?Species",
-                tails=[("rdf:type", "os:Species"), ("rdfs:label", "?SpeciesLabel")],
-            )
-        ]
+        graph_patterns_verbose = []
 
         while len(graph_patterns) > 0:
             pattern = graph_patterns.pop()

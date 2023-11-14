@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import List
+from dataclasses import dataclass, field
+from typing import Tuple
 
 from core.sparql.graph_pattern import (
     FilterClause,
@@ -14,7 +14,7 @@ from core.sparql.sparql_base import SparqlBase
 @dataclass
 class SparqlQuery(SparqlBase):
     select_clause: SelectClause
-    graph_patterns: List[GraphPattern]
+    graph_patterns: Tuple[GraphPattern, ...] = field(default_factory=tuple)
 
     def __str__(self):
         return "{select_clause} WHERE {{\n{group_graph_pattern}\n}}".format(
