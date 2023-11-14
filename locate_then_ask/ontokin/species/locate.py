@@ -45,14 +45,18 @@ class OKSpeciesLocator:
 
         mechanism_iri = random.choice(entity.mechanism_iris)
         mechanism = self.store.get(mechanism_iri)
+
+        mechanism_node = "Mechanism"
+        literal_node = "Literal"
+
         query_graph.add_nodes_from(
             [
                 (
-                    "Mechanism",
+                    mechanism_node,
                     dict(iri=mechanism.iri, rdf_type="okin:ReactionMechanism"),
                 ),
                 (
-                    "Literal",
+                    literal_node,
                     dict(label=mechanism.doi, template_node=True, literal=True),
                 ),
             ]
@@ -61,17 +65,17 @@ class OKSpeciesLocator:
             [
                 (
                     "Species",
-                    "Mechanism",
+                    mechanism_node,
                     dict(label="okin:belongsToPhase/^okin:hasGasPhase"),
                 ),
-                ("Mechanism", "Literal", dict(label="okin:hasProvenance/oprvn:hasDOI")),
+                (
+                    mechanism_node,
+                    literal_node,
+                    dict(label="okin:hasProvenance/oprvn:hasDOI"),
+                ),
             ]
         )
 
-        verbalization += (
-            " that appears in the reaction mechanism found in [{label}]".format(
-                label=mechanism.doi
-            )
-        )
+        verbalization += " that appears in the reaction mechanism found in [{DOI}]".format(DOI=mechanism.doi)
 
         return query_graph, verbalization

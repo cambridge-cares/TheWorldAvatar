@@ -72,7 +72,7 @@ class OKMechanismLocator:
         query_graph.add_node(
             species_node,
             iri=species_iri,
-            rdf_type="okin:Species",
+            rdf_type="os:Species",
             label=species.label,
             template_node=True,
         )
@@ -117,11 +117,12 @@ class OKMechanismLocator:
         assert isinstance(rxn, OKGasPhaseReaction)
 
         rxn_node = "Reaction_" + str(len(sampled_rxn_nodes))
+        rxn_eqn = random.choice(rxn.equations)
         query_graph.add_node(
             rxn_node,
             iri=rxn_iri,
             rdf_type="okin:GasPhaseReaction",
-            label=random.choice(rxn.equations),
+            label=rxn_eqn,
             template_node=True,
         )
         query_graph.add_edge(
@@ -130,7 +131,7 @@ class OKMechanismLocator:
             label="okin:hasReaction",
         )
 
-        verbalization = "invovles the reaction [{label}]".format(label=rxn.equations)
+        verbalization = "invovles the reaction [{label}]".format(label=rxn_eqn)
 
         return query_graph, verbalization
     

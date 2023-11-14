@@ -14,7 +14,7 @@ class OKSpeciesAsker:
         query_graph.nodes["Species"]["question_node"] = True
 
         query_sparql = self.graph2sparql.convert(query_graph)
-        verbalization = "What are " + verbalization
+        verbalization = "What is " + verbalization
 
         return AskDatum(
             query_graph=query_graph,
@@ -42,8 +42,9 @@ class OKSpeciesAsker:
     def ask_attribute_or_relation(self, query_graph: QueryGraph, verbalization: str, attr_num: int = 1):
         query_graph = copy.deepcopy(query_graph)
 
-        attr_keys = ["ThermoModel", "TransportModel"]
-        q_keys = attr_keys + ["Mechanism"]
+        q_keys = ["ThermoModel", "TransportModel"]
+        if "Mechanism" not in query_graph.nodes():
+            q_keys += ["Mechanism"]
 
         idxes = random.sample(list(range(len(q_keys))), k=min(attr_num, len(q_keys)))
 

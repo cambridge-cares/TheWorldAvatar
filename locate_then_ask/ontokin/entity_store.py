@@ -24,7 +24,9 @@ class OKEntityStore:
 
     def get_cls(self, entity_iri: str):
         if entity_iri not in self.iri2cls:
-            query_template = """SELECT DISTINCT * WHERE {{ <{IRI}> a/rdfs:subClassOf* ?Type }}"""
+            query_template = (
+                """SELECT DISTINCT * WHERE {{ <{IRI}> a/rdfs:subClassOf* ?Type }}"""
+            )
             query = query_template.format(IRI=entity_iri)
             response_bindings = self.kg_client.query(query)["results"]["bindings"]
             types = [binding["Type"]["value"] for binding in response_bindings]
@@ -36,7 +38,7 @@ class OKEntityStore:
                 self.iri2cls[entity_iri] = OKSpecies
             else:
                 raise ValueError(
-                    "The provided entity {iri} does not posess any expected types.\n Actual types: {types}.\nExpected types: okin:ReactionMechanism, okin:GasPhaseReaction, okin:Species".format(
+                    "The provided entity {iri} does not posess any expected types.\n Actual types: {types}.\nExpected types: okin:ReactionMechanism, okin:GasPhaseReaction, os:Species".format(
                         iri=entity_iri, types=types
                     )
                 )
@@ -54,13 +56,12 @@ class OKEntityStore:
         return self.iri2entity[entity_iri]
 
     def create_mechanism(self, entity_iri: str):
-        # doi = self.retrieve_mechanism_doi(entity_iri)
+        doi = self.retrieve_mechanism_doi(entity_iri)
         species_iris = self.retrieve_mechanism_species_iris(entity_iri)
         reaction_iris = self.retrieve_mechanism_rxn_iris(entity_iri)
         return OKMechanism(
             iri=entity_iri,
-            # doi=doi,
-            doi="",
+            doi=doi,
             species_iris=species_iris,
             reaction_iris=reaction_iris,
         )
@@ -91,7 +92,7 @@ class OKEntityStore:
         query_template = """PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 PREFIX oprvn: <http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#>
 
-SELECT * WHERE {{
+SELECT DISTINCT * WHERE {{
     <{IRI}> okin:hasProvenance/oprvn:hasDOI ?DOI .
 }}
 LIMIT 1"""
@@ -127,7 +128,7 @@ SELECT DISTINCT ?Reaction WHERE {{
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
-SELECT * WHERE {{
+SELECT DISTINCT * WHERE {{
     <{IRI}> okin:hasEquation ?Equation .
 }}"""
         query = query_template.format(IRI=entity_iri)
@@ -171,7 +172,7 @@ LIMIT 1"""
     def retrieve_species_label(self, entity_iri: str):
         query_template = """PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-SELECT * WHERE {{
+SELECT DISTINCT * WHERE {{
     <{IRI}> skos:altLabel ?Label .
 }}
 LIMIT 1"""
@@ -183,7 +184,7 @@ LIMIT 1"""
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
-SELECT * WHERE {{
+SELECT DISTINCT * WHERE {{
     <{IRI}> okin:belongsToPhase/^okin:hasGasPhase ?Mechanism .
 }}"""
         query = query_template.format(IRI=entity_iri)
