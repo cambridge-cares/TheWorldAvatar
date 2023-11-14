@@ -8,6 +8,7 @@ import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import uk.ac.cam.cares.jps.agent.dashboard.json.DashboardClient;
+import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +23,7 @@ class DashboardAgentTest {
     private static final String KEY_ROUTE = "requestUrl";
     private static final String BASE_ROUTE = "http://localhost:3067/dashboard-agent/";
     private static final JsonPrimitive JSON_BASE_ROUTE = new JsonPrimitive(BASE_ROUTE);
-
+    private static final JsonPrimitive RESET_ROUTE = new JsonPrimitive(BASE_ROUTE + "reset");
     private static final JsonPrimitive STATUS_ROUTE = new JsonPrimitive(BASE_ROUTE + "status");
     private static final JsonPrimitive SETUP_ROUTE = new JsonPrimitive(BASE_ROUTE + "setup");
 
@@ -38,6 +39,28 @@ class DashboardAgentTest {
         requestParams.add(KEY_ROUTE, JSON_BASE_ROUTE);
         JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
         assertEquals("Invalid route! Requested route does not exist for : ", response.getString("Result"));
+    }
+
+    @Test
+    void testProcessRequestParameters_ResetRouteViaGET() {
+        JsonObject requestParams = new JsonObject();
+        requestParams.add(KEY_METHOD, GET_METHOD);
+        requestParams.add(KEY_ROUTE, RESET_ROUTE);
+        // Mock the client
+        try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class)) {
+            // Execute method
+            JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
+            assertEquals("Agent has been successfully reset!", response.getString("Result"));
+        }
+    }
+
+    @Test
+    void testProcessRequestParameters_ResetRouteViaInvalidPOST() {
+        JsonObject requestParams = new JsonObject();
+        requestParams.add(KEY_METHOD, POST_METHOD);
+        requestParams.add(KEY_ROUTE, RESET_ROUTE);
+        JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
+        assertEquals("Invalid request type! Route reset can only accept GET request.", response.getString("Result"));
     }
 
     @Test
@@ -66,7 +89,6 @@ class DashboardAgentTest {
         requestParams.add(KEY_ROUTE, SETUP_ROUTE);
         File config = TestUtils.genSampleCredFile(true, IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
 
-        // Mock the bridge object, as it cannot be unit tested and requires integration test
         try (MockedConstruction<DashboardClient> mockDashboardClient = Mockito.mockConstruction(DashboardClient.class,
                 (mock, context) -> {
                     Mockito.when(mock.initDashboard()).thenAnswer((Answer<Void>) invocation -> null);

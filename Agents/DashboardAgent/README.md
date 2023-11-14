@@ -64,7 +64,17 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 {"Result":["Agent is ready to receive requests."]}
 ```
 
-#### 2.2 GET ROUTE: `~url~/dashboard-agent/setup`
+#### 2.2 GET ROUTE: `~url~/dashboard-agent/reset`
+This route requires a GET request without any parameters, to reset the agent and the queries it retrieves from the knowledge graph. A sample request for curl syntax (in one line) is as follows:
+```
+curl localhost:3838/dashboard-agent/reset 
+```
+If the agent ran successfully, a JSON Object would be returned as follows:
+```
+{"Result":["Agent has been successfully reset!"]}
+```
+
+#### 2.3 GET ROUTE: `~url~/dashboard-agent/setup`
 This route will communicate with the stack's dashboard container to set up a live analytical dashboard. At the moment, this agent will set up dashboards for the following:
 1) **Facility level** - Room- and asset-related time series are included.
 

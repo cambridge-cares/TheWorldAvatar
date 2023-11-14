@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author qhouyee
  */
-@WebServlet(urlPatterns = {"/status", "/setup"})
+@WebServlet(urlPatterns = {"/reset", "/status", "/setup"})
 public class DashboardAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     // Agent starts off in valid state, and will be invalid when running into exceptions
@@ -81,6 +81,14 @@ public class DashboardAgent extends JPSAgent {
         long startTime = System.nanoTime(); // Start timing agent runtime
         // Run logic based on request path
         switch (route) {
+            case "reset":
+                if (requestType.equals("GET")) {
+                    jsonMessage = resetRoute();
+                } else {
+                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                }
+                break;
             case "status":
                 if (requestType.equals("GET")) {
                     jsonMessage = statusRoute();
@@ -154,6 +162,22 @@ public class DashboardAgent extends JPSAgent {
             client.initDashboard();
             LOGGER.info("Dashboard has been successfully set up!");
             response.put("Result", "Dashboard has been successfully set up!");
+        } else {
+            response.put("Result", "Agent could not be initialised! Please check logs for more information...");
+        }
+        return response;
+    }
+
+    /**
+     * Run logic for the "/reset" route to reset the agent and re-execute all queries from the knowledge graph.
+     *
+     * @return A response to the request called as a JSON Object.
+     */
+    protected JSONObject resetRoute() {
+        JSONObject response = new JSONObject();
+        if (DashboardAgent.VALID) {
+            SERVICES = new StackClient();
+            response.put("Result", "Agent has been successfully reset!");
         } else {
             response.put("Result", "Agent could not be initialised! Please check logs for more information...");
         }
