@@ -49,9 +49,8 @@ public class BMSUpdateAgent {
     final String FAIL_TO_GET_BACNETOBJECTID = "Fail to get Bacnet Object ID!";
     final String FAIL_TO_GET_LATESTDATA = "Unable to get latest timeseries data for the following IRI: ";
     final String FAIL_TO_UPDATE_NEW_VALUE = "Unable to update new numerical value for the following IRI: ";
-
-    TimeSeries<OffsetDateTime> timeseries;
-    TimeSeriesClient<OffsetDateTime> tsClient;
+    final String FAIL_TO_INSERT_TRIPLES = "Unable to insert the following triples: ";
+    final String FAIL_TO_DELETE_TRIPLES = "Unable to delete the following triples: ";
 
     /**
      * Change the temperature of a fan's set point in the knowledge graph.
@@ -211,6 +210,60 @@ public class BMSUpdateAgent {
         }
     }
 
+    private boolean check(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue) {
+        TimeSeries<OffsetDateTime> timeseries;
+        TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(rsClient ,OffsetDateTime.class);
+        try (Connection conn = RDBClient.getConnection()) {
+            timeseries = tsClient.getLatestData(dataIRI, conn);
+        } catch (Exception e) {
+            throw new JPSRuntimeException(FAIL_TO_GET_LATESTDATA + dataIRI);
+        }
+        String latestValue = timeseries.getValuesAsString(dataIRI).get(timeseries.getValuesAsString(dataIRI).size() - 1);
+        OffsetDateTime latestTimeStamp = timeseries.getTimes().get(timeseries.getTimes().size() - 1);
+        Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
+        sdf.setTimeZone(TimeZone.getDefault());
+        Object ts = sdf.format(date);
+        LOGGER.info("The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
+        if (latestValue.equals(triggerValue)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private String insert(RemoteStoreClient rsClient,String insertString) {
+        ParameterizedSparqlString queryStr = new ParameterizedSparqlString();
+        queryStr.append("INSERT DATA ");
+        queryStr.append("{ ");
+        queryStr.append(insertString);
+        queryStr.append(" }");
+        LOGGER.info("The triples to insert is " + queryStr.toString());
+        try {
+            rsClient.executeUpdate(queryStr.asUpdate().toString());
+            LOGGER.info("Executed the following to the knowledge graph: " + queryStr.asUpdate().toString());
+            return "Executed the following to the knowledge graph: " + queryStr.asUpdate().toString();
+        } catch (Exception e) {
+            throw new JPSRuntimeException(FAIL_TO_INSERT_TRIPLES + queryStr.asUpdate().toString());
+        }
+    }
+
+    private String delete(RemoteStoreClient rsClient,String deleteString) {
+        ParameterizedSparqlString queryStr = new ParameterizedSparqlString();
+        queryStr.append("DELETE DATA ");
+        queryStr.append("{ ");
+        queryStr.append(deleteString);
+        queryStr.append(" }");
+        LOGGER.info("The triples to delete is " + queryStr.toString());
+        try {
+            rsClient.executeUpdate(queryStr.asUpdate().toString());
+            LOGGER.info("Executed the following to the knowledge graph: " + queryStr.asUpdate().toString());
+            return "Executed the following to the knowledge graph: " + queryStr.asUpdate().toString();
+        } catch (Exception e) {
+            throw new JPSRuntimeException(FAIL_TO_DELETE_TRIPLES + queryStr.asUpdate().toString());
+        }
+    }
+
     /**
      * Get latest timeseries value for the data IRI and compared it with the trigger value,
      * if they are equal, run a sparql update to insert a set of triples and delete a set of triples
@@ -224,44 +277,12 @@ public class BMSUpdateAgent {
      */
     public JSONObject checkInsertAndDelete(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue, String insertString, String deleteString) {
         JSONObject result = new JSONObject();
-        tsClient = new TimeSeriesClient<>(rsClient ,OffsetDateTime.class);
-        try (Connection conn = RDBClient.getConnection()) {
-            timeseries = tsClient.getLatestData(dataIRI, conn);
-        } catch (Exception e) {
-            throw new JPSRuntimeException(FAIL_TO_GET_LATESTDATA + dataIRI);
-        }
-        String latestValue = timeseries.getValuesAsString(dataIRI).get(timeseries.getValuesAsString(dataIRI).size() - 1);
-        OffsetDateTime latestTimeStamp = timeseries.getTimes().get(timeseries.getTimes().size() - 1);
-        Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
-        sdf.setTimeZone(TimeZone.getDefault());
-        Object ts = sdf.format(date);
-        LOGGER.info("The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
-        if (result.has("message")){
-            result.accumulate("message", "The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
+        boolean check = check(dataIRI, rsClient, RDBClient, triggerValue);
+        if (check == true) {
+            result.accumulate("message", insert(rsClient, insertString));
+            result.accumulate("message", delete(rsClient, deleteString));
         } else {
-            result.put("message", "The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
-        }
-        if (latestValue.equals(triggerValue)) {
-            ParameterizedSparqlString queryStr = new ParameterizedSparqlString();
-            queryStr.append("INSERT DATA ");
-            queryStr.append("{ ");
-            queryStr.append(insertString);
-            queryStr.append(" }");
-            LOGGER.info("The triples to insert is " + queryStr.toString());
-            rsClient.executeUpdate(queryStr.asUpdate().toString());
-            LOGGER.info("Inserted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
-            result.accumulate("message", "Inserted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
-
-            queryStr = new ParameterizedSparqlString();
-            queryStr.append("DELETE DATA ");
-            queryStr.append("{ ");
-            queryStr.append(deleteString);
-            queryStr.append(" }");
-            LOGGER.info("The triples to delete is " + queryStr.toString());
-            rsClient.executeUpdate(queryStr.asUpdate().toString());
-            LOGGER.info("Deleted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
-            result.accumulate("message", "Deleted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
+            result.accumulate("message", "The latest timeseries value of " + dataIRI + " is not equivalent to the trigger value " + triggerValue);
         }
         return result;
     }
@@ -278,34 +299,11 @@ public class BMSUpdateAgent {
      */
     public JSONObject checkInsert(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue, String insertString) {
         JSONObject result = new JSONObject();
-        tsClient = new TimeSeriesClient<>(rsClient ,OffsetDateTime.class);
-        try (Connection conn = RDBClient.getConnection()) {
-            timeseries = tsClient.getLatestData(dataIRI, conn);
-        } catch (Exception e) {
-            throw new JPSRuntimeException(FAIL_TO_GET_LATESTDATA + dataIRI);
-        }
-        String latestValue = timeseries.getValuesAsString(dataIRI).get(timeseries.getValuesAsString(dataIRI).size() - 1);
-        OffsetDateTime latestTimeStamp = timeseries.getTimes().get(timeseries.getTimes().size() - 1);
-        Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
-        sdf.setTimeZone(TimeZone.getDefault());
-        Object ts = sdf.format(date);
-        LOGGER.info("The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
-        if (result.has("message")){
-            result.accumulate("message", "The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
+        boolean check = check(dataIRI, rsClient, RDBClient, triggerValue);
+        if (check == true) {
+            result.accumulate("message", insert(rsClient, insertString));
         } else {
-            result.put("message", "The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
-        }
-        if (latestValue.equals(triggerValue)) {
-            ParameterizedSparqlString queryStr = new ParameterizedSparqlString();
-            queryStr.append("INSERT DATA ");
-            queryStr.append("{ ");
-            queryStr.append(insertString);
-            queryStr.append(" }");
-            LOGGER.info("The triples to insert is " + queryStr.toString());
-            rsClient.executeUpdate(queryStr.asUpdate().toString());
-            LOGGER.info("Inserted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
-            result.accumulate("message", "Inserted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
+            result.accumulate("message", "The latest timeseries value of " + dataIRI + " is not equivalent to the trigger value " + triggerValue);
         }
         return result;
     }
@@ -322,34 +320,11 @@ public class BMSUpdateAgent {
      */
     public JSONObject checkDelete(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue, String deleteString) {
         JSONObject result = new JSONObject();
-        tsClient = new TimeSeriesClient<>(rsClient ,OffsetDateTime.class);
-        try (Connection conn = RDBClient.getConnection()) {
-            timeseries = tsClient.getLatestData(dataIRI, conn);
-        } catch (Exception e) {
-            throw new JPSRuntimeException(FAIL_TO_GET_LATESTDATA + dataIRI);
-        }
-        String latestValue = timeseries.getValuesAsString(dataIRI).get(timeseries.getValuesAsString(dataIRI).size() - 1);
-        OffsetDateTime latestTimeStamp = timeseries.getTimes().get(timeseries.getTimes().size() - 1);
-        Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
-        sdf.setTimeZone(TimeZone.getDefault());
-        Object ts = sdf.format(date);
-        LOGGER.info("The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
-        if (result.has("message")){
-            result.accumulate("message", "The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
+        boolean check = check(dataIRI, rsClient, RDBClient, triggerValue);
+        if (check == true) {
+            result.accumulate("message", delete(rsClient, deleteString));
         } else {
-            result.put("message", "The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
-        }
-        if (latestValue.equals(triggerValue)) {
-            ParameterizedSparqlString queryStr = new ParameterizedSparqlString();
-            queryStr.append("DELETE DATA ");
-            queryStr.append("{ ");
-            queryStr.append(deleteString);
-            queryStr.append(" }");
-            LOGGER.info("The triples to delete is " + queryStr.toString());
-            rsClient.executeUpdate(queryStr.asUpdate().toString());
-            LOGGER.info("Deleted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
-            result.accumulate("message", "Deleted the follow triples to the knowledge graph: " + queryStr.asUpdate().toString());
+            result.accumulate("message", "The latest timeseries value of " + dataIRI + " is not equivalent to the trigger value " + triggerValue);
         }
         return result;
     }
