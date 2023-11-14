@@ -1,0 +1,42 @@
+{
+    "ServiceSpec": {
+        "Name": "isochroneagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "isochroneagent:1.0.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/IsochroneAgent/inputs",
+                        "Target": "/inputs"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "isochroneagent": {
+          "url": "http://localhost:8080/isochroneagent/",
+          "externalPath": "/isochroneagent/"
+        }
+    }
+}

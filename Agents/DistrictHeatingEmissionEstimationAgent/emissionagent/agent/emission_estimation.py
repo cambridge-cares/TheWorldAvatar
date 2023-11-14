@@ -29,13 +29,17 @@ PRESSURE = 101325.0     # Assume atmospheric pressure of 1atm (in Pa)
 # Emission factors (kg/MWh)
 EFW_FACTORS = {
     # in kg/MWh heat sourced
-    OD_NO2: 4.01351, 
+    # NOTE: NO2 is currently not supported by Aermod; hence, NOx is used instead
+    #OD_NO2: 4.01351, 
+    OD_NOX: 4.01351, 
     OD_PM10: 0.13260,
     OD_PM2_5: 0.11883
 }
 DH_FACTORS = {
     # in kg/MWh (lower calorific value) gas burned
-    OD_NO2: 0.22429, 
+    # NOTE: NO2 is currently not supported by Aermod; hence, NOx is used instead
+    #OD_NO2: 0.22429, 
+    OD_NOX: 0.22429, 
     OD_PM10: 0.00753,
     OD_PM2_5: 0.00605 
 }

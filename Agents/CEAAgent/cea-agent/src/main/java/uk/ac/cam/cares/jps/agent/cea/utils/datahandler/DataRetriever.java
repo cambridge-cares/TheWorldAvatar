@@ -199,10 +199,9 @@ public class DataRetriever {
      * Gets numerical value of specified measurement
      * @param measureUri Uri of the measurement with numerical value in KG
      * @param route route to pass to access agent
-     * @param graph graph name
      * @return list of iris
      */
-    public String getNumericalValue(String measureUri, String route, String graph) {
+    public String getNumericalValue(String measureUri, String route) {
         String result = "";
 
         WhereBuilder wb = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
@@ -210,13 +209,8 @@ public class DataRetriever {
 
         SelectBuilder sb = new SelectBuilder().addVar("?value");
 
-        if (!graph.isEmpty()) {
-            sb.addGraph(NodeFactory.createURI(graph), wb);
-        }
-        else {
-            sb.addWhere(wb);
-        }
-
+        sb.addWhere(wb);
+        
         sb.setVar( Var.alloc( "measure" ), NodeFactory.createURI(measureUri));
 
         JSONArray queryResultArray = new JSONArray(AccessAgentCaller.queryStore(route, sb.build().toString()));

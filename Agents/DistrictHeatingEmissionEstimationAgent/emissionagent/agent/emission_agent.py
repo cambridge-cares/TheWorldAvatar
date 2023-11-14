@@ -22,7 +22,8 @@ class EmissionAgent(DerivationAgent):
 
     def __init__(self, **kwargs):
         # Specify emission types to be considered
-        self.POLLUTANTS = [OD_NO2, OD_PM2_5, OD_PM10]
+        # NOTE: NO2 is currently not supported by Aermod; hence, NOx is used instead
+        self.POLLUTANTS = [OD_NOX, OD_PM2_5, OD_PM10]
         # Initialise DerivationAgent parent instance
         super().__init__(**kwargs)
 
