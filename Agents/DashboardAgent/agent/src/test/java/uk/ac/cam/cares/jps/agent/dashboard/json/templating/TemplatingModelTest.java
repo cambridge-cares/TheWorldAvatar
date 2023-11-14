@@ -57,7 +57,6 @@ public class TemplatingModelTest {
         // Test outputs
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleSystemMeasureMap();
         sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, false, true, true);
-        System.out.println("sajsu: " + result);
         assertEquals(genExpectedJsonSyntax(SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), result);
     }
 
