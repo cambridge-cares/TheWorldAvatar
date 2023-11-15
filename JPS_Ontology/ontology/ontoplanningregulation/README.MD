@@ -39,3 +39,24 @@ Prefix | Namespace
 >CompetentAuthority
 
 - As planning regulations differ in various cities, a generalisable concept of a competent authority is included. These allows the planning regulations instantiated in an ABox to be linked to their specific context in which their competent authority operates. For example, a competent authority instance can be created for URA, with a name and description.
+
+>Datum
+
+- Datum is a reference point or baseline used as a starting point for measurements or calculations.
+- This concept has been adopted for the building height restrictions as each city have localised restrictions that have different reference points. A sample ABox usage is illustrated in Figure 2.
+
+*Figure 2. Snippet of datum and building height ABox*
+```mermaid
+    erDiagram 
+    "BuildingHeightControlPlan_Instance" ||--o{ "ontoplot:Plot" : appliesTo
+    "BuildingHeightControlPlan_Instance" ||--o{ "BuildingHeight" : allowsBuildingHeight
+    "BuildingHeightControlPlan_Instance" {
+       rdf-type PlanningRegulation
+    }
+    "BuildingHeight" ||--o{ "GroundFloorDatum_Instance" : "isRelativeTo"
+    "GroundFloorDatum_Instance" {
+       rdf-type Datum
+       rdfs-label GroundFloor
+       rdfs-comment GroundFloorOfABuilding 
+    }
+```
