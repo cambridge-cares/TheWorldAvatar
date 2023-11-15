@@ -24,7 +24,3 @@ def preprocess_sparql(text: str):
 def postprocess_sparql(text: str):
     text = replace_multi(text, T5_SPARQL_DECODINGS)
     return text
-
-def normalize_query(query: str):
-    query = query.replace(".", " .").replace('("', '( "').replace('")', '" )')
-    return " ".join(query.split())

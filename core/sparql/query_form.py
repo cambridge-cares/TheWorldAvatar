@@ -16,6 +16,9 @@ class SelectClause(SparqlBase):
             else "",
             vars=" ".join(self.vars),
         )
+    
+    def _keys(self):
+        return (self.vars, self.solution_modifier)
 
     def tolines(self):
         return [str(self)]

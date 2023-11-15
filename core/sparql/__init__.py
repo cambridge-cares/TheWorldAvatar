@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Tuple
+from typing import Hashable, Tuple
 
 from core.sparql.graph_pattern import (
     FilterClause,
@@ -21,6 +21,9 @@ class SparqlQuery(SparqlBase):
             select_clause=self.select_clause,
             group_graph_pattern="\n".join(["  " + line for pattern in self.graph_patterns for line in pattern.tolines()]),
         )
+    
+    def _keys(self):
+        return (self.select_clause, self.graph_patterns)
 
     @classmethod
     def _extract_select_clause(cls, sparql_compact: str):
@@ -114,7 +117,7 @@ class SparqlQuery(SparqlBase):
             else:
                 obj, = splits
                 graph_patterns_str = ""
-                
+
             if obj.endswith("."):
                 obj = obj[:-1]
             else:

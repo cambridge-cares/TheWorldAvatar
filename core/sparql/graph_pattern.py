@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import itertools
-from typing import Tuple
+from typing import Hashable, Tuple
 
 from core.sparql.sparql_base import SparqlBase
 
@@ -20,6 +20,8 @@ class ValuesClause(GraphPattern):
             values=" ".join(['"{val}"'.format(val=val) if ":" not in val else val for val in self.values]),
         )
 
+    def _keys(self):
+        return (self.var, self.values)
 
 @dataclass
 class FilterClause(GraphPattern):
@@ -27,6 +29,9 @@ class FilterClause(GraphPattern):
 
     def __str__(self):
         return "FILTER ( {constraint} )".format(constraint=self.constraint)
+    
+    def _keys(self):
+        return (self.constraint,)
 
 
 @dataclass
@@ -49,6 +54,9 @@ class TriplePattern(GraphPattern):
                 ]
             ),
         )
+    
+    def _keys(self):
+        return (self.subj, self.tails)
 
 
 @dataclass
@@ -59,6 +67,9 @@ class OptionalClause(GraphPattern):
         return "OPTIONAL {{\n{patterns}\n}}".format(
             patterns="\n".join(["  " + str(pattern) for pattern in self.graph_patterns])
         )
+    
+    def _keys(self):
+        return (self.graph_patterns,)
 
     def tolines(self):
         return list(
@@ -79,3 +90,6 @@ class BindClause(GraphPattern):
 
     def __str__(self):
         return "BIND ({expr} AS {var})".format(expr=self.exprn, var=self.var)
+
+    def _keys(self):
+        return (self.exprn, self.var)
