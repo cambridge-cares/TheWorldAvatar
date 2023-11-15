@@ -16,6 +16,8 @@ def infer():
     )
     model_args, data_args, infer_args = hfparser.parse_args_into_dataclasses()
 
+    os.makedirs(os.path.dirname(infer_args.out_file), exist_ok=True)
+
     if data_args.domain == "multi":
         trans_model = MultiDomainTranslator(model_args, max_new_tokens=infer_args.max_new_tokens)
     else:
@@ -54,7 +56,6 @@ def infer():
         mem_usage = None
         task()
 
-    os.makedirs(os.path.dirname(infer_args.out_file), exist_ok=True)
     with open(infer_args.out_file, "w") as f:
         json.dump(data_out, f, indent=4)
 

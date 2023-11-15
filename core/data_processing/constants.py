@@ -1,7 +1,7 @@
 T5_PREFIX_NL2SPARQL = "translate to SPARQL: "
 T5_PREFIX_DOMAINCLS = "classify query domain: "
 
-T5_NL_ENCODINGS = {"<": "&lt;", "<=": "&le;", ">": "&gt;", ">=": "&ge;"}
+T5_NL_ENCODINGS = {"<": "&lt;", "<=": "&le;", ">": "&gt;", ">=": "&ge;", "^": "&Hat;"}
 T5_SPARQL_ENCODINGS = {
     **T5_NL_ENCODINGS,
     **{
