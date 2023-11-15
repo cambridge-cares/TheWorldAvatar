@@ -9,7 +9,7 @@ abstract class DataLayer {
     public name: string;
 
     /**
-     * Unique name of layer.
+     * Unique ID of layer.
      */
     public id: string;
 
@@ -34,6 +34,13 @@ abstract class DataLayer {
     public interactions = "all";
 
     /**
+     * A cached visibility state that persists across map terrain
+     * changes. Should be updated whenever visibility is changed
+     * via the mapping API
+     */
+    private isVisible = true;
+
+    /**
      * Initialise a new DataLayer instance.
      */
     constructor(id: string, name: string, source: DataSource) {
@@ -44,4 +51,23 @@ abstract class DataLayer {
         console.info("Created DataLayer instance '" + this.name + "' with id '" + this.id + "'.");
     }
 
+    /**
+     * Cache the current visibility state.
+     * 
+     * @param isVisible current visibility state
+     */
+    public cacheVisibility(isVisible) {
+        this.isVisible = isVisible;
+    }
+
+    /**
+     * Returns the cached visibility state.
+     * 
+     * @returns boolean of cached visibility
+     */
+    public getVisibility() {
+        return this.isVisible;
+    }
+
 }
+// End of class.

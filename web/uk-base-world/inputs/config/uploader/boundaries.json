@@ -1,7 +1,7 @@
 {
     "database": "postgres",
     "workspace": "twa",
-    "datasetDirectory": "uk_base_world",
+    "datasetDirectory": "./",
     "skip": false,
     "dataSubsets": [
         {

@@ -62,3 +62,15 @@ No pre-processing is needed on this data set, we're using it as is.
   * An SQL query to determine the number of people within a 1KM radius of each power plant. 
 * [Raster style](./inputs/config/uk-population-style.sld)
   * SLD file to style the population raster data in GeoServer. 
+
+
+### Digest of UK Energy Statistics (DUKES)
+
+### National Grid 
+National Grid publish shapefiles of their whole network including lines, pylons and substations. There are links to :Peach download page in the relevant `data` subdirectory. There is a good number of files (20) to download but they are all backed up on pavilion. Individual links for each file and where they go is given in the *Running the Stack* section of this page
+
+### UKPN
+Similarly to above, download links are in each of the relevant Uk Power Networks subdirectory and are backed up on pavilion. Links also given in the *Running the Stack* section
+
+### Forestry
+Shapefiles are obtained from [national forestry inventory 2020](https://data-forestry.opendata.arcgis.com/datasets/eb05bd0be3b449459b9ad0692a8fc203_0/explore?location=55.089693%2C-2.724655%2C6.98) and backed upon pavilion. The feature info agent is used to cross reference with the power lines and determine whether or not they intersect.

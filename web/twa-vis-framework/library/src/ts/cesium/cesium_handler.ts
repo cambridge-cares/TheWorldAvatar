@@ -5,11 +5,6 @@
 class MapHandler_Cesium extends MapHandler {
 
     /**
-     * Mapbox popup element.
-     */
-    public static POPUP;
-
-    /**
      * Map of data source keyed by layer name.
      */
     public static DATA_SOURCES = {};
@@ -34,11 +29,9 @@ class MapHandler_Cesium extends MapHandler {
      * Initialise and store a new map object.
      */
     public initialiseMap(mapOptions: Object) {
-
         MapHandler.MAP_OPTIONS = mapOptions;
 
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
-
             // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
             MapHandler.MAP = new Cesium.Viewer('map', {
                 timeline: false,
@@ -72,8 +65,8 @@ class MapHandler_Cesium extends MapHandler {
             // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
             var tileURL = getDefaultImagery();
             if(tileURL.endsWith("access_token=")) {
-                tileURL = tileURL + MapHandler.MAP_API;
-            }
+                tileURL += MapHandler.MAP_API;
+            } 
 
             // Remove any existing imagery providers and add our own
             MapHandler.MAP.imageryLayers.removeAll(true);
@@ -155,6 +148,12 @@ class MapHandler_Cesium extends MapHandler {
         // Get the feature at the click point
         let self = this;
         CesiumUtils.getFeature(event, function(feature) {
+            if(feature == null) {
+                // Feature not over anything.
+                PopupHandler.setVisibility(false);
+                return;
+            }
+
             window.currentFeature = feature;
 
             // Try to get the layer object for the feature
@@ -208,12 +207,14 @@ class MapHandler_Cesium extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
-        let metaBox = document.getElementById("cesiumMetaBox");
-        metaBox.style.display = "none";
         document.getElementById("map").style.cursor = "default";
 
         // Get the feature at the click point
         CesiumUtils.getFeature(event, function(feature) {
+            if(feature == null) {
+                PopupHandler.setVisibility(false);
+                return;
+            }
 
             // Try to get the layer object for the feature
             let layerID = feature?.tileset?.layerID;
@@ -235,14 +236,7 @@ class MapHandler_Cesium extends MapHandler {
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                 // 2D WMS feature
                 let properties = {...feature.data.properties};
-                let name = getName(properties);
-
-                if(name != null && name !== "") {
-                    metaBox.style.display = "block";
-                    metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
-                    metaBox.style.left = `${event.endPosition.x - 100}px`;
-                    metaBox.innerHTML = CesiumUtils.getPopupContent(properties);
-                } 
+                CesiumUtils.showPopup(properties);
 
             } else {
                 // 3D feature
@@ -266,13 +260,8 @@ class MapHandler_Cesium extends MapHandler {
                     return;
                 }
 
-                let name = getName(properties);
-                if(name != null && name !== "") {
-                    metaBox.style.display = "block";
-                    metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
-                    metaBox.style.left = `${event.endPosition.x - 100}px`;
-                    metaBox.innerHTML = CesiumUtils.getPopupContent(properties);
-                }
+                // Show popup element
+                CesiumUtils.showPopup(properties);
             }
         });
     }
@@ -397,7 +386,7 @@ class MapHandler_Cesium extends MapHandler {
         let sourceKML = Cesium.KmlDataSource.load(source["uri"]);
         sourceKML.then((result) => {
             
-            result["show"] = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible";
+            result["show"] = layer.getVisibility();
             result["layerID"] = layer.id;
 
             MapHandler.MAP.dataSources.add(result);
@@ -447,7 +436,7 @@ class MapHandler_Cesium extends MapHandler {
                 uri: source["uri"],
                 scale: source.hasOwnProperty("scale") ? source["scale"] : 1.0
             },
-            show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
+            show: layer.getVisibility()
         };
 
         MapHandler.MAP.entities.add(sourceEntity);
@@ -503,8 +492,13 @@ class MapHandler_Cesium extends MapHandler {
         // Define tileset options
         let options = {
             modelMatrix: position,
-            show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
+            show: layer.getVisibility()
         };
+
+        // If backFaceCulling option is present, set it
+        if(source.hasOwnProperty("backFaceCulling")) {
+            options["backFaceCulling"] = source["backFaceCulling"];
+        }
 
         // If clipping is enabled, pre-generate a clipping plane
         if(layer.definition.hasOwnProperty("clipping")) {
@@ -523,9 +517,6 @@ class MapHandler_Cesium extends MapHandler {
         // Cache custom layerID for later use
         tileset["layerID"] = layer.id;
        
-        // Add the tileset to the map
-
-
         // If a style has been expressed in JSON, load it
         if("style" in layer.definition) {
             let style = layer.definition["style"];
@@ -565,7 +556,8 @@ class MapHandler_Cesium extends MapHandler {
             layers: wmsLayer,
             parameters: {
                 transparent: source.hasOwnProperty("transparency") ? source["transparency"] : false,
-                format: source.hasOwnProperty("format") ? source["format"] : "image/png"
+                format: source.hasOwnProperty("format") ? source["format"] : "image/png",
+                opacity: 0.5
             },
             credit: layer.id,
         });
@@ -577,7 +569,7 @@ class MapHandler_Cesium extends MapHandler {
         // Now that it's added, we can hide it (unfortunatly there's no constructor option for this)
         for(let i = 0; i < layers.length; i++) {
             if(layers.get(i).imageryProvider === provider) {
-                layers.get(i).show = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
+                layers.get(i).show = layer.getVisibility()
             }
         }
 

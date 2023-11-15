@@ -95,13 +95,6 @@ h6 {
     min-width: 400px;
 }
 
-.thumbnail {
-    margin-left: 40px;
-    width: 300px;
-    height: 200px;
-    object-fit: cover;
-}
-
 /* Side Panel */
 #sidePanel {
     z-index: 999;
@@ -517,6 +510,7 @@ h6 {
     width: 100%;
     margin-top: 10px;
     overflow-y: hidden;
+    flex-grow: 1;
 }
 #metaTreeContainer {
     height: 100%;
@@ -1102,6 +1096,15 @@ label[for="select-feature"] {
 
 #layerContainer {
     max-height: 550px;
+    display: flex;
+	flex-flow: column;
+	overflow: hidden;
+}
+
+#layerContainer .controlContents {
+    display: flex;
+	flex-flow: column;
+	overflow: hidden;
 }
 
 #layerTree {
@@ -1114,11 +1117,10 @@ label[for="select-feature"] {
     list-style-type: none;
 }
 
-
 #layerTreeContainer {
     min-height: 30vh;
     max-height: 50vh;
-    overflow-y: auto;
+    overflow: scroll;
 }
 
 @media only screen and (max-height: 900px) {
@@ -1449,4 +1451,30 @@ label[for="select-feature"] {
     text-align: center;
     cursor: pointer;
     margin-right: 10px;
+}
+
+/* Custom popup component when hovering over features */
+#popup {
+    display: none;
+    overflow: auto;
+    position: absolute;
+    min-width: 50px;
+    max-width: 400px;
+    background-color: rgba(0,0,0,.4);
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: left;
+}
+#popup b {
+    font-size: 11pt;
+}
+#popup p {
+    font-size: 10pt;
+}
+.thumbnail {
+    min-width: 100px;
+    max-width: 360px;
+    padding: 20px;
+    object-fit: cover
 }

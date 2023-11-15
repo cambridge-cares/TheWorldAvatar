@@ -1,0 +1,11 @@
+{
+    "services": {
+        "includes": [
+            "feature_info_agent"
+        ],
+        "excludes": [
+            "citydbimpexp",
+            "citytiler"
+        ]
+    }
+}

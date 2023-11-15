@@ -2,6 +2,9 @@
     "externalDatasets": [
         "population",
         "dukes_2023",
-        "boundaries"
+        "boundaries",
+        "ukpn",
+        "national-grid",
+        "forestry"
     ]
 }

@@ -21,21 +21,6 @@ class MapboxLayer extends DataLayer {
     }
 
     /**
-     * Returns true if layer is currently visible.
-     */
-    public isVisible(): boolean {
-        let onMap = MapHandler.MAP.getLayer(this.id) !== undefined;
-        if(onMap) {
-            return MapHandler.MAP.getLayoutProperty(this.id, "visibility") === "visible";
-        } else {
-            if(this.definition["layout"] == null || this.definition["layout"]["visibility"] == null) {
-                return true;
-            }
-            return this.definition["layout"]["visibility"] === "visible";
-        }
-    }
-
-    /**
      * Returns a map of properties (key, value) that have been cached as
      * injectable with hoverable or selectable IRIs.
      * 

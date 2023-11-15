@@ -10,7 +10,6 @@ Data for this visualisation has been gathered from the sources listed on the [Da
 
 As a base world visualisation, more data sources will be added in future; as and when they are, they should be documented within the aforementioned page.
 
-
 ## Uploading data
 
 Once the correct files for each data source have been acquired, we can spin up an instance of the stack (see [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for details on how to do this) then run the data uploader to get our data into a relational database. Before trying to upload data, the [uploader's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader) is considered required reading; this file will not detail the generic upload process.
@@ -18,7 +17,6 @@ Once the correct files for each data source have been acquired, we can spin up a
 With each data set come a number of pre-written associated files (configurations, queries, styles etc.). These files are documented along with their corresponding data source on the [Data](./docs/data.md) page.
 
 Once the data uploader has finished running, you should be able to log into the GeoServer web dashboard and preview the layers (and feature locations within them).
-
 
 ## Creating a visualisation
 
@@ -54,16 +52,13 @@ To run the script and bring up a local instance of the UK Base World visualisati
 3. Add your Mapbox credentials:
    - Add your username to a file at `./visualisation/mapbox_username`
    - Add your API key to a file at `./visualisation/mapbox_api_key`
-4. Add the data files:
-   - Add the processed DUKES 2023 CSV to the `./inputs/data/uk_base_world/dukes_2023` directory.
-   - Add the OntoEIP OWL and TTL files to the `./inputs/data/uk_base_world/ontoeip` directory (note that these need to be in a flat structure, no subdirectories).
-   - Add the UK population density GeoTIFF to the `./inputs/data/uk_base_world/population` directory.
-   - Add the UK boundary shape files to the relevant subdirectories in `./inputs/data/uk_base_world/boundaries` directory.
-5. Run the script from the `uk-base-world` directory, passing a password for PostGIS and GeoServer:
+4. Add the data files: 
+   - Add the correct files according to the [data documentation](./docs/data.md).
+5. Run the script from the `uk-base-world` directory, passing a password for PostGIS and GeoServer.
    - Example command: `./scripts/start.sh PASSWORD=pickapassword`
    - If deploying behind an existing URL, the `HOST` parameter can be passed to auto-update the visualisation's client side files (e.g. `./scripts/start.sh PASSWORD=pickapassword HOST=https://theworldavatar.io/demo/uk-base-world`)
 6. Confirm that the required data files are present by pressing the `Y` key.
-7. Once prompted, wait for the stack to spin up, then press `ENTER`.
+7. Once prompted, wait for the stack to spin up, the data uploader should run automatically a few seconds after the manager has exited.
    - That stack is considered "spun up" once the stack-manager container has stopped (although there is some wiggle-room here if you're also spinning up containers that have lengthy service start-ups).
    - If running for the first time, this may take a while as Docker images will need to be downloaded.
 8. Confirm the visualisation is working by visiting `localhost:38383/visualisation`

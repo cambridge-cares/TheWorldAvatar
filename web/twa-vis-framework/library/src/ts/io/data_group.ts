@@ -39,13 +39,6 @@ class DataGroup {
     public defaultExpanded: boolean = true; 
 
     /**
-     * Constructor
-     */
-    constructor() {
-        // Empty
-    }
-
-    /**
      * Parses the definition of each data set defined within the group. Note that
      * this just parse the definitions to create instance objects, it may not
      * read the full data at this point.
@@ -53,8 +46,8 @@ class DataGroup {
      * @param sourceJSON JSON array of source nodes.
      */
     public parseDataSources(sourcesJSON) {
-        for(var i = 0; i < sourcesJSON.length; i++) {
-            let node = sourcesJSON[i];
+        for(const element of sourcesJSON) {
+            let node = element;
 
             // Create and store source
             let source = new DataSource(node);
@@ -80,16 +73,21 @@ class DataGroup {
         for(var i = 0; i < layersJSON.length; i++) {
             let node = layersJSON[i];
 
+            // Find the data source for this layer
             let source = this.findSource(node["source"]);
-            if(source === null || source === undefined) {
-                console.error("Layer with id '" + node["id"] + "' references a source that is not defined, will skip it!");
+            if(source == null) {
+                console.error("Layer with ID '" + node["id"] + "' references a source that is not defined, will skip it!");
                 continue;
             }
+
+            // Update the source setting to use updated source ID
             node["source"] = source.id;
            
-            let layer = null;
+            // Append the layer's position to it's ID, making it unique
             let layerID = this.id + "." + node["id"];
 
+            // Create a layer of the correct concrete instance
+            let layer = null;
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
                     layer = new MapboxLayer(layerID, node["name"], source);
@@ -130,6 +128,27 @@ class DataGroup {
                     throw new Error("Unknown map provider specified!");
                 break;
             }
+
+            // Cache the layer's original definition
+            layer.definition = node;
+
+            // Store display order if present
+            if(node.hasOwnProperty("order")) {
+                layer.order = node["order"];
+            }
+
+            // Cache visibility is present
+            if(node?.layout?.visibility != null) {
+                layer.cacheVisibility((node?.layout?.visibility == "visible") ? true : false);
+            } else if(node?.visibility != null) {
+                layer.cacheVisibility((node?.visibility == "visible") ? true : false);
+            }
+            
+            // Register this layer to this connected stack
+            if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
+                Manager.STACK_LAYERS[stack] = [];
+            }
+            Manager.STACK_LAYERS[stack].push(layerID);
            
             if(node.hasOwnProperty("interactions")) {
                 // Store the level of acceptable mouse interactions

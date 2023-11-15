@@ -1,9 +1,0 @@
-{
-    
-    "queries": [
-        {
-            "class": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant",
-            "metaFile": "fia_dukes_query.sparql"
-        }
-    ]
-}

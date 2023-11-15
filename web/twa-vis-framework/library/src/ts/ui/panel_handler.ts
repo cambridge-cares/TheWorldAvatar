@@ -432,10 +432,10 @@ class PanelHandler {
         .fail(() => {
             console.warn("Could not read links.json, skipping.");
             let linksTab = document.querySelector("li[aria-controls=\"sidePanelLinks\"]") as HTMLElement;
-            if(linksTab !== null) linksTab.style.display = "none";
+            if(linksTab != null) linksTab.style.display = "none";
         })
         .done((json) => {
-            if(json === null || !json["links"]) {
+            if(json == null || !json["links"]) {
                 let linksTab = document.querySelector("li[aria-controls=\"sidePanelLinks\"]") as HTMLElement;
                 if(linksTab !== null) linksTab.style.display = "none";
                 return;

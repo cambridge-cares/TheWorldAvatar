@@ -1,7 +1,7 @@
 {
     "database": "postgres",
     "workspace": "twa",
-    "datasetDirectory": "uk_base_world",
+    "datasetDirectory": "./",
     "skip": false,
     "dataSubsets": [
         {
@@ -22,7 +22,7 @@
     "styles": [
         {
             "name": "uk-population-style",
-            "file": "uk-population-style.sld"
+            "file": "./sld/uk-population-style.sld"
         }
     ]
 }

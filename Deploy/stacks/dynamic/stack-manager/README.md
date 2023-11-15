@@ -27,9 +27,9 @@ To spin up the stack (with default settings) please follow the instructions belo
 
 1. If you haven't already, test your access to the CMCL Docker registry, simply run 
     ```console
-    docker login docker.cmclinnovations.com
+    docker login ghcr.io
     ```
-    If you are not already logged in then, when prompted, enter the username and password you were given.
+    If you are not already logged in then, when prompted, enter your GitHub username and an access token with scope to read (and write to, if developing) the container repository.
 
 2. Open the Workspace in the `Deploy/stacks/dynamic` directory in VSCode (or go to the `stack-manager` subdirectory within it in a `bash` terminal).
 
@@ -267,10 +267,11 @@ The format of the stack configuration file is as follows:
     }
 }
 ```
+> NOTE: When adding services to the `includes` and `excludes` sections, use the file name (excluding the `.json` file extension) from the stack config files, rather than the name specified in `ServiceSpec`.
 
 ## Example - including a visualisation
 
-This example explains how to spin up a DTVF based visualisation container within a stack. The visualisation container requires a volume called `vis-files` to be populated and secrets `mapbox_username`, and `mapbox_api_key` to be created.
+This example explains how to spin up a TWA-VF based visualisation container within a stack. The visualisation container requires a volume called `vis-files` to be populated and secrets `mapbox_username`, and `mapbox_api_key` to be created.
 The steps to configure the stack are as follows:
 * Enable the visualisation container by adding it to the `services` `includes` list in the stack config file.
 * Specify the sub-directory of the `stack-manager/inputs/data/` folder from which the custom files that configure the visualisation should be copied, in this example the sub-directory is called `webspace`.

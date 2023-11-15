@@ -1,7 +1,7 @@
 {
     "database": "postgres",
     "workspace": "twa",
-    "datasetDirectory": "uk_base_world",
+    "datasetDirectory": "./",
     "skip": false,
     "dataSubsets": [
         {
@@ -44,7 +44,7 @@
             "schema": "public",
             "table": "dukes_2023_pop",
             "subdirectory": "dukes_2023",
-            "sql": "@/inputs/config/dukes_2023_pop.sql",
+            "sql": "@/inputs/config/sql/dukes_2023_pop.sql",
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:4326",
                 "sridOut": "EPSG:4326",

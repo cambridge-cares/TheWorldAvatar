@@ -23,6 +23,12 @@ class ControlHandler {
     constructor() {
         window.terrain = "light";
         this.treeHandler = new TreeHandler();
+
+        // Remove deprecated Cesium popup element
+        if(Manager.PROVIDER === MapProvider.CESIUM) {
+            let oldElement = document.getElementById("cesiumMetaBox");
+            if(oldElement != null) document.body.removeChild(oldElement);
+        }
     }
 
     /**

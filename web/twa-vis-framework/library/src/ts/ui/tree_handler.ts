@@ -74,7 +74,7 @@ class TreeHandler {
      * Rebuilds the tree based on the input DataStore instance.
      */
     public rebuild(dataStore: DataStore) {
-        // // Reset the element
+        // Reset the element
         let element = document.getElementById("treeview");
         element.innerHTML = "";
 
@@ -187,7 +187,7 @@ class TreeHandler {
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
                     let mbLayer = <MapboxLayer> value[0];
-                    if(mbLayer.isVisible()) preCheck.push(dataID);
+                    if(mbLayer.getVisibility()) preCheck.push(dataID);
                 break;
 
                 case MapProvider.CESIUM:
@@ -196,9 +196,13 @@ class TreeHandler {
 
                     if(dataSources == null || dataSources.length === 0) {
                         let visibility = csLayer.definition["visibility"];
+                        if(visibility == null && csLayer.definition.hasOwnProperty("layout")) {
+                            visibility = csLayer.definition["layout"]["visibility"];
+                        }
+            
                         if(visibility == null || visibility === "visible") preCheck.push(dataID);
                     } else {
-                        if(csLayer.isVisible()) preCheck.push(dataID);
+                        if(csLayer.getVisibility()) preCheck.push(dataID);
                     }
                 break;
             }

@@ -1,10 +1,9 @@
 /**
- * Sore manager class for DVTF visualisations.
+ * Sore manager class for TWA-VF visualisations.
  * 
  * An instance of this class should have been created and setup for global access
- * under the "manager" variable name.
- * 
- * TODO: Move out the feature finder functionality to a better (or new) class.
+ * under the "manager" variable name, within the <script> element of the visualisation's
+ * main HTML file.
  */
 class Manager {
 
@@ -34,12 +33,12 @@ class Manager {
     private mapHandler: MapHandler;
    
     /**
-     * Handles controls on left.
+     * Handles map controls (on the left).
      */
     private controlHandler: ControlHandler;
 
     /**
-     * Handles the side panel.
+     * Handles the side panel (on the right).
      */
     private panelHandler: PanelHandler;
 
@@ -48,11 +47,6 @@ class Manager {
      */
     private searchHandler: SearchHandler;
 
-    /**
-     * Currently in full screen mode?
-     */
-    private inFullscreen: boolean = false;
-    
     /**
      * Optional callbacks to trigger once a singluar feature has been selected.
      */
@@ -88,22 +82,23 @@ class Manager {
 
             default:
                 throw new Error("Unknown map provider specified!");
-            break;
         }
     }
 
     /**
-     * Reads credentials from files.
+     * Reads Mapbox credentials from files/docker secrets.
      */
     public async readCredentials() {
         // Enter Mapbox account name and API key here!
         await $.get("mapbox_username", {}, function (result) {
             MapHandler.MAP_USER = result;
+            console.log("USERNAME = " + MapHandler.MAP_USER);
         }).fail(function () {
             console.error("Could not read Mapbox username from 'mapbox_username' secret file.");
         });
         await $.get("mapbox_api_key", {}, function (result) {
             MapHandler.MAP_API = result;
+            console.log("KEY = " + MapHandler.MAP_API);
         }).fail(function () {
             console.error("Could not read Mapbox API key from 'mapbox_api_key' secret file.");
         });
@@ -120,8 +115,6 @@ class Manager {
         this.mapHandler.initialiseMap(mapOptions);
 
         this.controlHandler.showControls();
-        this.controlHandler.rebuildTree(Manager.DATA_STORE);
-
         this.panelHandler.toggleMode();
 
         // Show attributions if present
@@ -135,7 +128,6 @@ class Manager {
         document.addEventListener("keydown", function(e){
             if ((e.ctrlKey || e.metaKey) && e.key === "f") {
                 if(self.searchHandler === null || self.searchHandler === undefined) {
-
 
                     // Initialise the seach handler instance
                     switch(Manager.PROVIDER) {
@@ -243,6 +235,8 @@ class Manager {
 
         let promise =  Manager.DATA_STORE.loadDataGroups(dataJSON) as Promise<any>;
         return promise.then(() => {
+            // Rebuild the layer tree
+            this.controlHandler.rebuildTree(Manager.DATA_STORE);
             if(this.dataLoadCallback != null) this.dataLoadCallback();
         });
     }
@@ -266,24 +260,26 @@ class Manager {
     }
 
     /**
+     * Loads custom image and link content.
      * 
+     * @returns Promise object, resolves when all loading is complete.
      */
     public loadImagesAndLinks() {
         let promises = [];
 
-            if(Manager.PROVIDER === MapProvider.MAPBOX) {
+        // Load images
+        if(Manager.PROVIDER === MapProvider.MAPBOX) {
             let iconFile = "./icons.json";
-                let iconPromise = (<MapHandler_Mapbox> this.mapHandler).addIcons(iconFile);
-                promises.push(iconPromise);
-            }
+            let iconPromise = (<MapHandler_Mapbox> this.mapHandler).addIcons(iconFile);
+            promises.push(iconPromise);
+        }
 
-        let linksFile = "./links.json"
-            promises.push(this.panelHandler.addLinks(linksFile));
+        // Load links
+        let linksFile = "./links.json";
+        promises.push(this.panelHandler.addLinks(linksFile));
 
-        let promise = Promise.all(promises).catch(function(err) {
-            console.warn("Loading icons and/or links has failed, these will be skipped."); 
-        });
-        return promise;
+        // Return combined promise
+        return Promise.allSettled(promises);
     }
     
     /**
@@ -314,7 +310,6 @@ class Manager {
      */
     public plotData() {
         this.mapHandler.plotData(Manager.DATA_STORE);
-        this.controlHandler.rebuildTree(Manager.DATA_STORE);
     }
 
     /**
