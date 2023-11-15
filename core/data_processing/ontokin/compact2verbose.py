@@ -1,7 +1,8 @@
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Set
 from core.sparql import SparqlQuery
 from core.sparql.query_form import SelectClause
 from core.sparql.graph_pattern import (
+    BindClause,
     GraphPattern,
     OptionalClause,
     TriplePattern,
@@ -10,18 +11,20 @@ from core.sparql.graph_pattern import (
 
 
 class OKSparqlCompact2VerboseConverter:
-    def _get_topic_entity_type(self, query: SparqlQuery):
+    def _get_types_topicentities_selectvars(self, query: SparqlQuery):
+        vars: Set[str] = set()
+
         for var in query.select_clause.vars:
             if var in ["?Species", "?ThermoModel", "TransportModel"]:
-                return "Species"
+                vars.add("Species")
             elif var in ["?Reaction", "?KineticModel"]:
-                return "Reaction"
+                vars.add("Reaction")
             elif var == "?Mechanism":
-                return "Mechanism"
+                vars.add("Mechanism")
 
-        return None
+        return tuple(vars)
 
-    def _is_topic_entity_grounded(
+    def _is_entity_grounded(
         self,
         query: SparqlQuery,
         topic_entity_type: Optional[Literal["Species", "Reaction", "Mechanism"]],
@@ -33,21 +36,21 @@ class OKSparqlCompact2VerboseConverter:
             return (
                 isinstance(pattern, TriplePattern)
                 and pattern.subj == "?Species"
-                and pattern.tails[0][0] == "rdfs:label"
+                and any(pred == "skos:altLabel" for pred, _ in pattern.tails)
             )
 
         def is_rxn_grounded(pattern: GraphPattern):
             return (
                 isinstance(pattern, TriplePattern)
                 and pattern.subj == "?Reaction"
-                and pattern.tails[0][0] == "okin:hasEquation"
+                and any(pred == "okin:hasEquation" for pred, _ in pattern.tails)
             )
 
         def is_mechanism_grounded(pattern: GraphPattern):
             return (
                 isinstance(pattern, TriplePattern)
                 and pattern.subj == "?Mechanism"
-                and pattern.tails[0][0] == "rdfs:label"
+                and any(pred == "okin:hasProvenance/oprvn:hasDOI" for pred, _ in pattern.tails)
             )
 
         if topic_entity_type == "Species":
@@ -59,73 +62,69 @@ class OKSparqlCompact2VerboseConverter:
         else:
             checker = lambda _: False
 
-        for pattern in query.graph_patterns:
-            if checker(pattern):
-                return True
+        return any(checker(pattern) for pattern in query.graph_patterns)
 
-        return False
-
-    def make_topic_entity_type_and_label(self, query: SparqlQuery):
+    def add_type_and_label_for_select_entities(self, query: SparqlQuery):
         patterns = []
         select_vars = []
 
-        topic_entity_type = self._get_topic_entity_type(query)
-        is_topic_entity_grounded = self._is_topic_entity_grounded(
-            query, topic_entity_type
-        )
-
-        if topic_entity_type == "Species":
-            if is_topic_entity_grounded:
-                patterns.append(
-                    TriplePattern.from_triple(
-                        "?Species", "a/rdfs:subClassOf*", "os:Species"
+        entity_types = self._get_types_topicentities_selectvars(query)
+        for entity_type in entity_types:
+            is_entity_grounded = self._is_entity_grounded(
+                query, entity_types
+            )
+            if entity_type == "Species":
+                if is_entity_grounded:
+                    patterns.append(
+                        TriplePattern.from_triple(
+                            "?Species", "a/rdfs:subClassOf*", "os:Species"
+                        )
                     )
-                )
-            else:
-                patterns.append(
-                    TriplePattern(
-                        subj="?Species",
-                        tails=[
-                            ("a/rdfs:subClassOf*", "os:Species"),
-                            ("skos:altLabel", "?SpeciesLabel"),
-                        ],
+                else:
+                    patterns.append(
+                        TriplePattern(
+                            subj="?Species",
+                            tails=[
+                                ("a/rdfs:subClassOf*", "os:Species"),
+                                ("skos:altLabel", "?SpeciesLabel"),
+                            ],
+                        )
                     )
-                )
-                select_vars.append("?SpeciesLabel")
-        elif topic_entity_type == "Reaction":
-            if is_topic_entity_grounded:
-                patterns.append(
-                    TriplePattern.from_triple("?Reaction", "a", "okin:GasPhaseReaction")
-                )
-            else:
-                patterns.append(
-                    TriplePattern(
-                        subj="?Reaction",
-                        tails=[
-                            ("a", "okin:GasPhaseReaction"),
-                            ("okin:hasEquation", "?ReactionEquation"),
-                        ],
+                    select_vars.append("?SpeciesLabel")
+            elif entity_type == "Reaction":
+                if is_entity_grounded:
+                    patterns.append(
+                        TriplePattern.from_triple("?Reaction", "a", "okin:GasPhaseReaction")
                     )
-                )
-                select_vars.append("?ReactionEquation")
-        elif topic_entity_type == "Mechanism":
-            if is_topic_entity_grounded:
-                patterns.append(
-                    TriplePattern.from_triple(
-                        "?Mechanism", "a", "okin:ReactionMechanism"
+                else:
+                    patterns.append(
+                        TriplePattern(
+                            subj="?Reaction",
+                            tails=[
+                                ("a", "okin:GasPhaseReaction"),
+                                ("okin:hasEquation", "?ReactionEquation"),
+                            ],
+                        )
                     )
-                )
-            else:
-                patterns.append(
-                    TriplePattern(
-                        subj="?Mechanism",
-                        tails=[
-                            ("a", "okin:ReactionMechanism"),
-                            ("okin:hasProvenance/oprvn:hasDOI", "?DOI"),
-                        ],
+                    select_vars.append("?ReactionEquation")
+            elif entity_type == "Mechanism":
+                if is_entity_grounded:
+                    patterns.append(
+                        TriplePattern.from_triple(
+                            "?Mechanism", "a", "okin:ReactionMechanism"
+                        )
                     )
-                )
-                select_vars.append("?DOI")
+                else:
+                    patterns.append(
+                        TriplePattern(
+                            subj="?Mechanism",
+                            tails=[
+                                ("a", "okin:ReactionMechanism"),
+                                ("okin:hasProvenance/oprvn:hasDOI", "?DOI"),
+                            ],
+                        )
+                    )
+                    select_vars.append("?DOI")
 
         return patterns, select_vars
 
@@ -280,6 +279,7 @@ class OKSparqlCompact2VerboseConverter:
             """
             ?Reaction okin:hasKineticModel ?KineticModel .
             ?KineticModel a ?KineticModelType .
+            BIND (STRAFTER(STR(?KineticModelType), "#") AS ?ModelType)
             OPTIONAL {
                 VALUES ?KineticModelType { okin:ArrheniusModel }
                 ?KineticModel okin:hasActivationEnergy [ okin:value ?ActivationEnergyValue ; okin:unit ?ActivationEnergyUnit ] ;
@@ -436,18 +436,16 @@ class OKSparqlCompact2VerboseConverter:
             patterns: List[GraphPattern] = [
                 pattern,
                 TriplePattern.from_triple("?KineticModel", "a", "?KineticModelType"),
+                BindClause(exprn='STRAFTER(STR(?KineticModelType), "#")', var="?ModelType"),
                 OptionalClause(arrheniusmodel_patterns),
                 OptionalClause(multiarrheniusmodel_patterns),
                 OptionalClause(falloffmodel_patterns),
             ]
-            select_vars = ["?KineticModelType"] + list(set(arrheniusmodel_vars).union(set(multiarrheniusmodel_vars)).union(set(falloffmodel_vars)))
+            select_vars = ["?ModelType"] + list(set(arrheniusmodel_vars).union(set(multiarrheniusmodel_vars)).union(set(falloffmodel_vars)))
 
             return patterns, select_vars
         except AssertionError:
             return None
-
-    def _try_convert_rxn_hasratecoeffs_triple(self, pattern: GraphPattern):
-        pass
 
     def convert(self, sparql_compact: SparqlQuery):
         graph_patterns = list(sparql_compact.graph_patterns)
@@ -456,7 +454,7 @@ class OKSparqlCompact2VerboseConverter:
         select_vars_verbose = list(sparql_compact.select_clause.vars)
         graph_patterns_verbose = []
 
-        patterns, select_vars = self.make_topic_entity_type_and_label(sparql_compact)
+        patterns, select_vars = self.add_type_and_label_for_select_entities(sparql_compact)
         graph_patterns_verbose.extend(patterns)
         select_vars_verbose.extend(select_vars)
 
