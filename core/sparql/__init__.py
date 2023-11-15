@@ -108,7 +108,13 @@ class SparqlQuery(SparqlBase):
             assert graph_patterns_str.startswith("."), graph_patterns_str
             graph_patterns_str = graph_patterns_str[1:]
         else:
-            obj, graph_patterns_str = graph_patterns_str.split(maxsplit=1)
+            splits = graph_patterns_str.split(maxsplit=1)
+            if len(splits) == 2:
+                obj, graph_patterns_str = splits
+            else:
+                obj, = splits
+                graph_patterns_str = ""
+                
             if obj.endswith("."):
                 obj = obj[:-1]
             else:
