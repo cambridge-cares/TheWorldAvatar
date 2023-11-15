@@ -25,16 +25,8 @@ public class TSPRouteGenerator {
                 "            ),\n" +
                 "            false\n" +
                 "        )$$, \n" +
-                "        (\n" +
-                "            SELECT %source%\n" +
-                "            FROM poi_tsp_nearest_node, flood_polygon_single_10cm\n" +
-                "            WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005 LIMIT 1\n" +
-                "        ), \n" +
-                "        (\n" +
-                "            SELECT %source%\n" +
-                "            FROM poi_tsp_nearest_node, flood_polygon_single_10cm\n" +
-                "            WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005 LIMIT 1\n" +
-                "        )\n" +
+                "        (%target%),"+
+                "        (%target%)"+
                 "    )\n" +
                 "),\n" +
                 "tsp_route AS (\n" +
@@ -50,7 +42,7 @@ public class TSPRouteGenerator {
                 "JOIN pgr_dijkstra(\n" +
                 "    '"+cost_table+"',\n" +
                 "    n1.node,\n" +
-                "    n2.node\n" +
+                "    n2.node, false\n" +
                 ") AS di ON true\n" +
                 "JOIN routing_ways ON di.edge = routing_ways.gid\n" +
                 "ORDER BY n1.seq\n" +
@@ -64,7 +56,7 @@ public class TSPRouteGenerator {
         virtualTableTSPRoute.setSql(tspLayer);
         virtualTableTSPRoute.setEscapeSql(true);
         virtualTableTSPRoute.setName(LayerName);
-        virtualTableTSPRoute.addVirtualTableParameter("source","4121","^[\\\\d]+$");
+        virtualTableTSPRoute.addVirtualTableParameter("target","4121","^[\\d]+$");
         virtualTableTSPRoute.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
         geoServerVectorSettingsTSPRoute.setVirtualTable(virtualTableTSPRoute);
         geoServerClient.createPostGISDataStore(workspaceName,LayerName, dbName, schema);

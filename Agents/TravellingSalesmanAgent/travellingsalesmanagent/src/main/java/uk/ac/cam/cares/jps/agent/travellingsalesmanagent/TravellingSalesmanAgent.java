@@ -116,17 +116,17 @@ public class TravellingSalesmanAgent extends JPSAgent {
         try {
             init();
             // Read SPARQL and SQL files.
-//            Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
+            Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
             Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
-//
-//            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
-//            JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
-//
-//            // Split road into multiple smaller segment and find the nearest_node
-//            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder();
-//
-//            // Create a table to store nearest_node
-//            nearestNodeFinder.insertPoiData(remoteRDBStoreClient, cumulativePOI);
+
+            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
+            JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
+
+            // Split road into multiple smaller segment and find the nearest_node
+            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder();
+
+            // Create a table to store nearest_node
+            nearestNodeFinder.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
@@ -148,7 +148,12 @@ public class TravellingSalesmanAgent extends JPSAgent {
                 // Find nearest TSP_node which is the nearest grid
                 UpdatedGSVirtualTableEncoder virtualTableReachNearestTSPPOI = new UpdatedGSVirtualTableEncoder();
                 GeoServerVectorSettings geoServerVectorSettingsReachNearestTSPPOI = new GeoServerVectorSettings();
-                virtualTableReachNearestTSPPOI.setSql("SELECT v.id, v.the_geom FROM routing_ways_vertices_pgr AS v, routing_ways AS e WHERE v.id = (SELECT nearest_node FROM poi_tsp_nearest_node ORDER BY \"geom\" <-> ST_SetSRID(ST_MakePoint(%lon%, %lat%), 4326) LIMIT 1) AND (e.source = v.id OR e.target = v.id) GROUP BY v.id, v.the_geom");
+                virtualTableReachNearestTSPPOI.setSql("SELECT nearest_node as id\n" +
+                        "FROM flood_polygon_single_10cm, poi_tsp_nearest_node\n" +
+                        "WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom)\n" +
+                        "   OR ST_DISTANCE(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005\n" +
+                        "ORDER BY poi_tsp_nearest_node.\"geom\" <-> ST_SetSRID(ST_MakePoint(%lon%, %lat%), 4326)\n" +
+                        "LIMIT 1\n");
                 virtualTableReachNearestTSPPOI.setEscapeSql(true);
                 virtualTableReachNearestTSPPOI.setName("nearest_tsp_poi");
                 virtualTableReachNearestTSPPOI.addVirtualTableParameter("lon","1","^[\\\\d\\\\.\\\\+-eE]+$");
