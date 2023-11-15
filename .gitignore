@@ -1,5 +1,6 @@
 # Project-specific
 data/
+predictions/
 wandb/
 
 # Byte-compiled / optimized / DLL files
