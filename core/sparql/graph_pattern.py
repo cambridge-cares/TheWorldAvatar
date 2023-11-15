@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import itertools
-from typing import Hashable, Tuple
+from typing import Iterable, Tuple
 
 from core.sparql.sparql_base import SparqlBase
 
@@ -9,36 +9,44 @@ class GraphPattern(SparqlBase):
     pass
 
 
-@dataclass
+@dataclass(order=True, frozen=True)
 class ValuesClause(GraphPattern):
     var: str
-    values: Tuple[str, ...] = field(default_factory=tuple)
+    values: Tuple[str, ...]
+
+    def __init__(self, var: str, values: Iterable[str]):
+        object.__setattr__(self, "var", var)
+        object.__setattr__(self, "values", tuple(values))
 
     def __str__(self):
         return "VALUES {var} {{ {values} }}".format(
             var=self.var,
-            values=" ".join(['"{val}"'.format(val=val) if ":" not in val else val for val in self.values]),
+            values=" ".join(
+                [
+                    '"{val}"'.format(val=val) if ":" not in val else val
+                    for val in self.values
+                ]
+            ),
         )
 
-    def _keys(self):
-        return (self.var, self.values)
 
-@dataclass
+@dataclass(order=True, frozen=True)
 class FilterClause(GraphPattern):
     constraint: str
 
     def __str__(self):
         return "FILTER ( {constraint} )".format(constraint=self.constraint)
-    
-    def _keys(self):
-        return (self.constraint,)
 
 
-@dataclass
+@dataclass(order=True, frozen=True)
 class TriplePattern(GraphPattern):
     subj: str
     # [(p1, o1), (p2, o2), ...]
-    tails: Tuple[Tuple[str, str], ...] = field(default_factory=tuple)
+    tails: Tuple[Tuple[str, str], ...]
+
+    def __init__(self, subj: str, tails: Iterable[Tuple[str, str]]):
+        object.__setattr__(self, "subj", subj)
+        object.__setattr__(self, "tails", tuple(tails))
 
     @classmethod
     def from_triple(cls, subj: str, predicate: str, obj: str):
@@ -54,42 +62,40 @@ class TriplePattern(GraphPattern):
                 ]
             ),
         )
-    
-    def _keys(self):
-        return (self.subj, self.tails)
 
 
-@dataclass
+@dataclass(order=True, frozen=True)
 class OptionalClause(GraphPattern):
-    graph_patterns: Tuple[GraphPattern, ...] = field(default_factory=tuple)
+    graph_patterns: Tuple[GraphPattern, ...]
+
+    def __init__(self, graph_patterns: Iterable[GraphPattern]):
+        object.__setattr__(self, "graph_patterns", tuple(graph_patterns))
 
     def __str__(self):
         return "OPTIONAL {{\n{patterns}\n}}".format(
             patterns="\n".join(["  " + str(pattern) for pattern in self.graph_patterns])
         )
-    
-    def _keys(self):
-        return (self.graph_patterns,)
 
     def tolines(self):
         return list(
             itertools.chain.from_iterable(
                 [
                     ["OPTIONAL {"],
-                    ["  " + str(line) for pattern in self.graph_patterns for line in pattern.tolines()],
+                    [
+                        "  " + str(line)
+                        for pattern in self.graph_patterns
+                        for line in pattern.tolines()
+                    ],
                     ["}"],
                 ]
             )
         )
 
 
-@dataclass
+@dataclass(order=True, frozen=True)
 class BindClause(GraphPattern):
     exprn: str
     var: str
 
     def __str__(self):
         return "BIND ({expr} AS {var})".format(expr=self.exprn, var=self.var)
-
-    def _keys(self):
-        return (self.exprn, self.var)

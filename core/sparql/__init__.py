@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Hashable, Tuple
+from typing import Hashable, Iterable, Tuple
 
 from core.sparql.graph_pattern import (
     FilterClause,
@@ -11,19 +11,26 @@ from core.sparql.query_form import SelectClause
 from core.sparql.sparql_base import SparqlBase
 
 
-@dataclass
+@dataclass(order=True, frozen=True)
 class SparqlQuery(SparqlBase):
     select_clause: SelectClause
-    graph_patterns: Tuple[GraphPattern, ...] = field(default_factory=tuple)
+    graph_patterns: Tuple[GraphPattern, ...]
+
+    def __init__(self, select_clause: SelectClause, graph_patterns: Iterable[GraphPattern]):
+        object.__setattr__(self, "select_clause", select_clause)
+        object.__setattr__(self, "graph_patterns", tuple(graph_patterns))
 
     def __str__(self):
         return "{select_clause} WHERE {{\n{group_graph_pattern}\n}}".format(
             select_clause=self.select_clause,
-            group_graph_pattern="\n".join(["  " + line for pattern in self.graph_patterns for line in pattern.tolines()]),
+            group_graph_pattern="\n".join(
+                [
+                    "  " + line
+                    for pattern in self.graph_patterns
+                    for line in pattern.tolines()
+                ]
+            ),
         )
-    
-    def _keys(self):
-        return (self.select_clause, self.graph_patterns)
 
     @classmethod
     def _extract_select_clause(cls, sparql_compact: str):
@@ -115,7 +122,7 @@ class SparqlQuery(SparqlBase):
             if len(splits) == 2:
                 obj, graph_patterns_str = splits
             else:
-                obj, = splits
+                (obj,) = splits
                 graph_patterns_str = ""
 
             if obj.endswith("."):

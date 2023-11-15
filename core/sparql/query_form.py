@@ -1,13 +1,17 @@
 from dataclasses import dataclass, field
-from typing import Tuple
+from typing import Iterable, Tuple
 
 from core.sparql.sparql_base import SparqlBase
 
 
-@dataclass
+@dataclass(order=True, frozen=True)
 class SelectClause(SparqlBase):
-    vars: Tuple[str, ...] = field(default_factory=tuple)
+    vars: Tuple[str, ...]
     solution_modifier: str = ""
+
+    def __init__(self, vars: Iterable[str], solution_modifier: str = ""):
+        object.__setattr__(self, "vars", tuple(vars))
+        object.__setattr__(self, "solution_modifier", solution_modifier)
 
     def __str__(self):
         return "SELECT{solution_modifier} {vars}".format(
@@ -16,9 +20,3 @@ class SelectClause(SparqlBase):
             else "",
             vars=" ".join(self.vars),
         )
-    
-    def _keys(self):
-        return (self.vars, self.solution_modifier)
-
-    def tolines(self):
-        return [str(self)]
