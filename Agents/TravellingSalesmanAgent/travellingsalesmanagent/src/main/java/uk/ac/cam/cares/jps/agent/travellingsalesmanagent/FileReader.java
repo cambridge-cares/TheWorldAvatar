@@ -73,7 +73,7 @@ public class FileReader {
                     .filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".sql"))
                     .collect(Collectors.toMap(
-                            path -> path.getFileName().toString(),
+                            path -> path.getFileName().toString().replace(".sql", ""),
                             path -> {
                                 try {
                                     return new String(Files.readAllBytes(path));

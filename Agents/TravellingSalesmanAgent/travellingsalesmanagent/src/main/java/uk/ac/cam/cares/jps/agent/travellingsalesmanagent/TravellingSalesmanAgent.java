@@ -116,27 +116,17 @@ public class TravellingSalesmanAgent extends JPSAgent {
         try {
             init();
             // Read SPARQL and SQL files.
-            Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
+//            Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
             Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
-
-            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
-            JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
-
-            // Split road into multiple smaller segment and find the nearest_node
-            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder();
-
-            // Create a table to store nearest_node
-            nearestNodeFinder.insertPoiData(remoteRDBStoreClient, cumulativePOI);
-
-
-            if (tspFunction.equals("UR")){
-            }
-
-
-
-
-
-
+//
+//            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
+//            JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
+//
+//            // Split road into multiple smaller segment and find the nearest_node
+//            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder();
+//
+//            // Create a table to store nearest_node
+//            nearestNodeFinder.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
             //Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
@@ -171,7 +161,7 @@ public class TravellingSalesmanAgent extends JPSAgent {
 
                 TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator();
                 for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
-                    String layerName = entry.getKey();
+                    String layerName = "TSP_"+entry.getKey();
                     String sql = entry.getValue();
                     tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
                 }

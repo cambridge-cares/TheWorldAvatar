@@ -28,12 +28,12 @@ public class TSPRouteGenerator {
                 "        (\n" +
                 "            SELECT %source%\n" +
                 "            FROM poi_tsp_nearest_node, flood_polygon_single_10cm\n" +
-                "            WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005\n" +
+                "            WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005 LIMIT 1\n" +
                 "        ), \n" +
                 "        (\n" +
                 "            SELECT %source%\n" +
                 "            FROM poi_tsp_nearest_node, flood_polygon_single_10cm\n" +
-                "            WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005\n" +
+                "            WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005 LIMIT 1\n" +
                 "        )\n" +
                 "    )\n" +
                 "),\n" +
@@ -64,7 +64,7 @@ public class TSPRouteGenerator {
         virtualTableTSPRoute.setSql(tspLayer);
         virtualTableTSPRoute.setEscapeSql(true);
         virtualTableTSPRoute.setName(LayerName);
-        virtualTableTSPRoute.addVirtualTableParameter("%source%","1","^[\\\\d]+$");
+        virtualTableTSPRoute.addVirtualTableParameter("source","4121","^[\\\\d]+$");
         virtualTableTSPRoute.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
         geoServerVectorSettingsTSPRoute.setVirtualTable(virtualTableTSPRoute);
         geoServerClient.createPostGISDataStore(workspaceName,LayerName, dbName, schema);
