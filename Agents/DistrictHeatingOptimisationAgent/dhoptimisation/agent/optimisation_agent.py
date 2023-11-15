@@ -19,7 +19,7 @@ from dhoptimisation.utils import *
 from dhoptimisation.datamodel.iris import *
 from dhoptimisation.agent.config import *
 from dhoptimisation.agent.generator_models import *
-from dhoptimisation.agent.optimisation_tasks import *
+from dhoptimisation.agent.optimisation_setup import *
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
 from dhoptimisation.utils.env_configs import DB_USER, DB_PASSWORD
@@ -168,11 +168,14 @@ class DHOptimisationAgent(DerivationAgent):
         #    would just get updated (checks for actual forecast instances)
         outputs = self.sparql_client.get_existing_optimisation_outputs(opti_inputs['q_demand'])
         
-        # Query further inputs from KG and construct optimisation model setup
-        setup, index = define_optimisation_setup(self.sparql_client, ts_client,
+        # Query further inputs from KG and construct optimisation model setup dictionary
+        setup_dict, index = define_optimisation_setup(self.sparql_client, ts_client,
                                                  consumption_models, cogen_models,
                                                  opti_inputs, opti_start_dt, opti_end_dt)
         
+        # create MarketPrices and MunicipalUtility objects
+        prices, swps = create_optimisation_setup(setup_dict)
+       
        
         # Mock optimisation data
         # 1) retrieve 1 input time series
