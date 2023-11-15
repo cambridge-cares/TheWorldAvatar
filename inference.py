@@ -1,4 +1,5 @@
 import json
+import os
 import time
 
 import transformers
@@ -53,6 +54,7 @@ def infer():
         mem_usage = None
         task()
 
+    os.makedirs(os.path.dirname(infer_args.out_file), exist_ok=True)
     with open(infer_args.out_file, "w") as f:
         json.dump(data_out, f, indent=4)
 
