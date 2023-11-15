@@ -476,9 +476,9 @@
 							"name": "Poles",
 							"source": "national-grid-poles",
 							"source-layer": "ng_poles",
-							"treeable": true,
 							"minzoom": 8,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
@@ -499,8 +499,8 @@
 							"name": "Towers",
 							"source": "national-grid-towers",
 							"source-layer": "ng_towers",
-							"treeable": true,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
@@ -523,8 +523,8 @@
 							"name": "Substations",
 							"source": "substations-points",
 							"source-layer": "ng_substations",
-							"treeable": true,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
@@ -548,7 +548,9 @@
 							"source": "national-grid-overhead-lines",
 							"minzoom": 8,
 							"source-layer": "ng_overhead_lines",
-							"treeable": true,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -569,7 +571,9 @@
 							"source": "national-grid-cables",
 							"minzoom": 8,
 							"source-layer": "ng_underground_cables",
-							"treeable": true,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": "#895a5a",
 								"line-width": [
@@ -639,8 +643,10 @@
 							"name": "High voltage OHL",
 							"source": "high-overhead-lines",
 							"source-layer": "ukpn_overhead_lines_high",
-							"treeable": true,
 							"minzoom": 8,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -660,8 +666,10 @@
 							"name": "Medium voltage OHL",
 							"source": "medium-overhead-lines",
 							"source-layer": "ukpn_overhead_lines_medium",
-							"treeable": true,
 							"minzoom": 8,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -681,8 +689,10 @@
 							"name": "High distribution voltage OHL",
 							"source": "high-distribution-overhead-lines",
 							"source-layer": "ukpn_overhead_lines_high_distribution",
-							"treeable": true,
 							"minzoom": 8,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -702,8 +712,10 @@
 							"name": "Low distribution voltage OHL",
 							"source": "low-distribution-overhead-lines",
 							"source-layer": "ukpn_overhead_lines_low_distribution",
-							"treeable": true,
 							"minzoom": 8,
+                            "layout": {
+                                "visibility": "none"
+                            },
 							"paint": {
 								"line-color": ["get", "line_colour"],
 								"line-width": [
@@ -723,9 +735,9 @@
 							"name": "High voltage pole towers",
 							"source": "high-poles-towers",
 							"source-layer": "ukpn_poles_towers_high",
-							"treeable": true,
 							"minzoom": 8,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
@@ -748,9 +760,9 @@
 							"name": "Medium pole towers",
 							"source": "medium-poles-towers",
 							"source-layer": "ukpn_poles_towers_medium",
-							"treeable": true,
 							"minzoom": 8,
 							"layout": {
+                                "visibility": "none",
 								"icon-allow-overlap": true,
 								"icon-ignore-placement": true,
 								"icon-image": ["get", "icon"],
