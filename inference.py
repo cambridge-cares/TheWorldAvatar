@@ -37,7 +37,7 @@ def infer():
             datum_out = dict(
                 id=datum["id"],
                 question=datum["question"],
-                query_sparql=datum["query"]["sparql"],
+                groundtruth=datum["query"]["sparql"],
                 prediction=pred,
                 latency=t_end - t_start,
             )
