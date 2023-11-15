@@ -1,0 +1,17 @@
+---
+title: Glossary of terms
+slug: glossary
+description: A breakdown of technical terms used through the project.
+---
+
+<h1>Glossary</h1>
+
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque interdum purus eu velit ullamcorper tincidunt. Praesent vel faucibus lorem. Sed laoreet, nunc eget viverra consectetur, urna nibh vestibulum leo, quis aliquet eros ligula sed lorem. Suspendisse vulputate porttitor pretium. Curabitur ut velit at urna feugiat iaculis in quis nunc. Morbi quis magna vitae augue vehicula vulputate. Nulla facilisi.</p>
+
+<ul>
+    <li>Here is a test bullet point</li>
+</ul>
+
+<p>Anyway, here's an image of a cat I found online (purely to test HTML elements in this optional page):</p>
+
+<img src="https://i.pinimg.com/564x/86/de/a8/86dea8830dd6345788d2e09e9bac91a2.jpg" alt="cat" width="500" height="334">
