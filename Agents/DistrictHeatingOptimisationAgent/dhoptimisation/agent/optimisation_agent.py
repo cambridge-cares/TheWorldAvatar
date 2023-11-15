@@ -154,7 +154,7 @@ class DHOptimisationAgent(DerivationAgent):
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
 
-        # Get validated optimisation model inputs
+        # Validate suitability of provided derivation inputs
         opti_inputs, opti_start_dt, opti_end_dt, ts_client, time_format = \
             self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
 
@@ -162,14 +162,13 @@ class DHOptimisationAgent(DerivationAgent):
         consumption_models, cogen_models = get_generator_models(self.sparql_client,
                                                                 ts_client, opti_start_dt)
 
-        # Optimise heat generation
-        #TODO: mocked for now; to be properly implemented
-        # 3) Get potentially already instantiated optimisation output instances, i.e.,
-        #    ProvidedHeat and ConsumedGas Amounts, which ts would just get updated
-        #    (checks for actual forecast instances)
+        ###  Optimise heat generation  ###
+        # 1) Get potentially already instantiated optimisation output instances, i.e.,
+        #    ProvidedHeat, ConsumedGas and GeneratedHeat Amounts, for which time series
+        #    would just get updated (checks for actual forecast instances)
         outputs = self.sparql_client.get_existing_optimisation_outputs(opti_inputs['q_demand'])
         
-        
+        # Query further inputs from KG and construct optimisation model setup
         setup, index = define_optimisation_setup(self.sparql_client, ts_client,
                                                  consumption_models, cogen_models,
                                                  opti_inputs, opti_start_dt, opti_end_dt)

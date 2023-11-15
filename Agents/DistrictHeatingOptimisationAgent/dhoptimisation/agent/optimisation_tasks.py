@@ -115,9 +115,9 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
     ###########################################################################
     # 1) Construct overall optimisation setup parameter dict by querying KG
     
-    logger.info('Retrieving optimisation setup input from KG...')
+    logger.info('Retrieving optimisation setup inputs from KG...')
     
-    # Initialise setup dictionary
+    # Initialise setup parameters dictionary
     params = {}
     
     # Add market prices
@@ -192,7 +192,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         # Add to overall optimisation detup
         params = extend_setup_dictionary(params, gt)
     
-    logger.info('Optimisation setup queried from KG with placeholder IRIs for ts data.')
+    logger.info('Optimisation inputs queried from KG with placeholder IRIs for ts data.')
     
     ###########################################################################
     # 2) Construct overall DataFrame for all time series data

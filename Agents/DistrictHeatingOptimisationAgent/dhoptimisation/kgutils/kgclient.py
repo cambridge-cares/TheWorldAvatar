@@ -271,18 +271,17 @@ class KGClient(PySparqlClient):
         """
         Returns a list of all generation optimisation outputs associated with
         provided forecast IRI as input
-        NOTE: Only considers ts:Forecast types as relevant outputs
+        NOTE: Only considers ohn:ProvidedHeatAmount, ohn:ConsumedGasAmount and
+              ohn:GeneratedHeatAmount types as relevant outputs
 
         Arguments:
             forecast_iri (str) -- IRI of heat demand or grid temperature forecast
                                   (i.e., inputs to the generation optimisation)
         Returns:
             output_iris (list) -- list of instantiated optimisation derivation outputs
-                                  (empty list if not exist)
+                                  (empty dict if not exist)
         """
 
-        #TODO: To be revisited whether that's the final way we want to do it,
-        #      or rather query via OntoHeatNet instead of OntoDerivation
         query = f"""
             SELECT DISTINCT ?type ?output_iri
             WHERE {{
@@ -297,7 +296,7 @@ class KGClient(PySparqlClient):
         res = self.performQuery(query)
 
         # Extract relevant information from unique query result
-        keys = [OHN_PROVIDED_HEAT_AMOUNT, OHN_CONSUMED_GAS_AMOUNT]
+        keys = [OHN_PROVIDED_HEAT_AMOUNT, OHN_CONSUMED_GAS_AMOUNT, OHN_GENERATED_HEAT_AMOUNT]
         outputs = {k: set([x['output_iri'] for x in res if x['type'] == k]) for k in keys}
         # Remove empty keys
         outputs = {key: list(value) for key, value in outputs.items() if value}
