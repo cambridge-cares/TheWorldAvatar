@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Iterable, Tuple
 
 from core.sparql.sparql_base import SparqlBase

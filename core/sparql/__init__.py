@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
-from typing import Hashable, Iterable, Tuple
+from dataclasses import dataclass
+from typing import Iterable, Tuple
 
 from core.sparql.graph_pattern import (
     FilterClause,
@@ -16,7 +16,9 @@ class SparqlQuery(SparqlBase):
     select_clause: SelectClause
     graph_patterns: Tuple[GraphPattern, ...]
 
-    def __init__(self, select_clause: SelectClause, graph_patterns: Iterable[GraphPattern]):
+    def __init__(
+        self, select_clause: SelectClause, graph_patterns: Iterable[GraphPattern]
+    ):
         object.__setattr__(self, "select_clause", select_clause)
         object.__setattr__(self, "graph_patterns", tuple(graph_patterns))
 
