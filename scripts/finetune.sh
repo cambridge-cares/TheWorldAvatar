@@ -3,6 +3,7 @@ torchrun \
     --model_path google/flan-t5-small \
     --train_data_path train.json \
     --eval_data_path dev.json \
+    --domain ontospecies \
     --output_dir outputs \
     --do_train \
     --do_eval \

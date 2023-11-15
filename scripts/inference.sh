@@ -1,4 +1,4 @@
 python inference.py \
-    --model_path model \
-    --eval_data_path data/test_2023-09-21_16.12.12.json \
+    --model_path google/flan-t5-small \
+    --eval_data_path test.json \
     --out_file predictions.json
