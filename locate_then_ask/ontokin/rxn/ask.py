@@ -18,7 +18,7 @@ class OKReactionAsker:
         qnode = "Mechanism"
         query_graph.add_node(qnode, question_node=True)
         query_graph.add_edge(
-            "Reaction", qnode, label="^okin:hasEquation"
+            "Reaction", qnode, label="^okin:hasReaction"
         )
 
         verbalization += " across all the mechanisms that it appears in"
@@ -74,6 +74,8 @@ class OKReactionAsker:
         verbalization = template.format(E=verbalization)
 
         query_graph, verbalization = self._ask_mechanism(query_graph, verbalization)
+        query_graph.add_edge("KineticModel", "Mechanism", label="okin:definedIn")
+
         query_sparql = self.graph2sparql.convert(query_graph)
 
         return AskDatum(

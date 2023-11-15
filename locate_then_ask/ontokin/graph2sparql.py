@@ -10,6 +10,8 @@ class OKGraph2Sparql(Graph2Sparql):
         label = query_graph.nodes[topic_node]["label"]
         if topic_node == "Reaction":
             template = '?{topic_entity} okin:hasEquation "{label}" .'
+        elif topic_node == "Species":
+            template = '?{topic_entity} skos:altLabel "{label}" .'
         else:
             template = '?{topic_entity} rdfs:label "{label}" .'
 

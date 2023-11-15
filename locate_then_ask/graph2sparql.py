@@ -104,7 +104,7 @@ class Graph2Sparql(ABC):
         if query_graph.nodes[topic_node].get("template_node"):
             graph_patterns.extend(self.make_patterns_for_topic_entity_linking(query_graph, topic_node))
 
-        for s, o in nx.dfs_edges(query_graph, topic_node):
+        for s, o in nx.edge_dfs(query_graph, topic_node):
             graph_patterns.append(self.make_graph_pattern(query_graph, s, o))
 
         return "WHERE {{\n  {group_graph_pattern}\n}}".format(

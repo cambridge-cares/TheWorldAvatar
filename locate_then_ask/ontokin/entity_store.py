@@ -70,13 +70,13 @@ class OKEntityStore:
         equations = self.retrieve_rxn_eqns(entity_iri)
         reactants = self.retrieve_rxn_reactants(entity_iri)
         products = self.retrieve_rxn_products(entity_iri)
-        mechanism = self.retrieve_rxn_mechansim(entity_iri)
+        mechanisms = self.retrieve_rxn_mechansims(entity_iri)
         return OKGasPhaseReaction(
             iri=entity_iri,
             equations=equations,
             reactant_iris=reactants,
             product_iris=products,
-            mechanism_iri=mechanism,
+            mechanism_iris=mechanisms,
         )
 
     def create_species(self, entity_iri: str):
@@ -157,17 +157,16 @@ SELECT DISTINCT * WHERE {{
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
         return [binding["Product"]["value"] for binding in response_bindings]
 
-    def retrieve_rxn_mechansim(self, entity_iri: str):
+    def retrieve_rxn_mechansims(self, entity_iri: str):
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
 SELECT DISTINCT * WHERE {{
     <{ReactionIRI}> ^okin:hasReaction ?Mechanism .
-}}
-LIMIT 1"""
+}}"""
         query = query_template.format(ReactionIRI=entity_iri)
         response_bindings = self.kg_client.query(query)["results"]["bindings"]
-        return response_bindings[0]["Mechanism"]["value"]
+        return [binding["Mechanism"]["value"] for binding in response_bindings]
 
     def retrieve_species_label(self, entity_iri: str):
         query_template = """PREFIX skos: <http://www.w3.org/2004/02/skos/core#>

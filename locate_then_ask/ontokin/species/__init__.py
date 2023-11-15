@@ -34,8 +34,9 @@ class OKSpeciesExampleMaker(ExampleMakerBase):
         elif ask_strategy == "count":
             ask_datum = self.asker.ask_count(query_graph, verbalization)
         elif ask_strategy == "attribute_or_relation":
+            attr_num = random.sample(population=[1, 2], counts=[2, 1], k=1)[0]
             ask_datum = self.asker.ask_attribute_or_relation(
-                query_graph, verbalization
+                query_graph, verbalization, attr_num=attr_num
             )
         else:
             raise Exception()

@@ -21,7 +21,7 @@ class OKReactionLocator:
         eqn = random.choice(entity.equations)
 
         query_graph = QueryGraph()
-        literal_node = "Literal_0" 
+        literal_node = "Literal_0"
         query_graph.add_nodes_from(
             [
                 (
@@ -40,7 +40,8 @@ class OKReactionLocator:
         verbalization = "the chemical reaction [{entity}]".format(entity=eqn)
 
         if "Mechanism" not in query_graph.nodes() and random.getrandbits(1):
-            mechanism = self.store.get(entity.mechanism_iri)
+            mechanism_iri = random.choice(entity.mechanism_iris)
+            mechanism = self.store.get(mechanism_iri)
             assert isinstance(mechanism, OKMechanism)
 
             mechanism_node = "Mechanism"
@@ -124,7 +125,7 @@ class OKReactionLocator:
         )
         assert len(sampled_mechanism_nodes) <= 1
         if len(sampled_mechanism_nodes) == 0:
-            sampling_frame += [entity.mechanism_iri]
+            sampling_frame += [random.choice(entity.mechanism_iris)]
 
         if len(sampling_frame) == 0:
             return query_graph, ""
@@ -183,8 +184,8 @@ class OKReactionLocator:
                     ),
                 ]
             )
-            verbalization = "is involved in the mechanism found in [{label}]".format(
-                label=sampled_entity.doi
+            verbalization = "is involved in the mechanism found in [{DOI}]".format(
+                DOI=sampled_entity.doi
             )
 
         return query_graph, verbalization
