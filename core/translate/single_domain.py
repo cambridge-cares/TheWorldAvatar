@@ -1,3 +1,4 @@
+import traceback
 from core.args_schema import ModelArguments
 
 from core.data_processing.constants import T5_PREFIX_NL2SPARQL
@@ -36,7 +37,7 @@ class SingleDomainTranslator:
             pred_verbose = self.postprocessor.postprocess(query=pred_decoded_parsed, nlq=question)
             pred_verbose_str = str(pred_verbose)
         except Exception as e:
-            print(e)
+            traceback.print_tb(e.__traceback__)
             pred_verbose_str = None
 
         return dict(

@@ -15,10 +15,10 @@ def infer():
     )
     model_args, data_args, infer_args = hfparser.parse_args_into_dataclasses()
 
-    if data_args.multi_domain:
+    if data_args.domain == "multi":
         trans_model = MultiDomainTranslator(model_args, max_new_tokens=infer_args.max_new_tokens)
     else:
-        trans_model = SingleDomainTranslator(model_args, max_new_tokens=infer_args.max_new_tokens)
+        trans_model = SingleDomainTranslator(model_args, domain=data_args.domain, max_new_tokens=infer_args.max_new_tokens)
 
     with open(data_args.eval_data_path, "r") as task:
         data = json.load(task)
@@ -34,7 +34,7 @@ def infer():
             datum_out = dict(
                 id=datum["id"],
                 question=datum["question"],
-                query_sparql=datum["query"]["sparql_compact"],
+                query_sparql=datum["query"]["sparql"],
                 prediction=pred,
                 latency=t_end - t_start,
             )

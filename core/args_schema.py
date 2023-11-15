@@ -34,9 +34,9 @@ class DatasetArguments:
             "help": "Maximum target sequence length. Sequences will be right padded (and possibly truncated)."
         },
     )
-    multi_domain: bool = field(
-        default=False,
-        metadata={"help": "Whether the dataset contains multiple knowledge domains."},
+    domain: str = field(
+        default="multi",
+        metadata={"help": "`ontospecies`, `ontokin`, or `multi`"},
     )
 
 

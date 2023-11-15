@@ -9,12 +9,9 @@ from transformers import (
     Seq2SeqTrainer,
 )
 
-from core.data_processing import (
-    T5_PREFIX_DOMAINCLS,
-    T5_PREFIX_NL2SPARQL,
-    preprocess_nl,
-    preprocess_sparql,
-)
+from core.data_processing.constants import T5_PREFIX_DOMAINCLS, T5_PREFIX_NL2SPARQL
+from core.data_processing.nl import preprocess_nl
+from core.data_processing.sparql import preprocess_sparql
 from core.args_schema import DatasetArguments, ModelArguments
 from core.model_utils import get_hf_model_and_tokenizer
 
@@ -44,7 +41,7 @@ def get_trainer(
         source = [T5_PREFIX_NL2SPARQL + x for x in nlqs]
         target = [preprocess_sparql(x["query"]["sparql"]) for x in data]
 
-        if data_args.multi_domain:
+        if data_args.domain == "multi":
             src_for_cls = [T5_PREFIX_DOMAINCLS + x for x in nlqs]
             domains = [x["domain"] for x in data]
 
