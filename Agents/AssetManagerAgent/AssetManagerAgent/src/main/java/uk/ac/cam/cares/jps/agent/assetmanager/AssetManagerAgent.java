@@ -453,10 +453,10 @@ public class AssetManagerAgent extends JPSAgent{
             //When ID is not there, the asset is possibly a BMS device, check for lab namespace
             if (IRI == null || ID == null){
                 if (IRI == null) {
-                    ID = instanceHandler.existenceChecker.getLabelbyIRIString(IRI);
+                    IRI = instanceHandler.existenceChecker.getIRIbyLabelString(ID);
                 }
                 else if (ID == null) {
-                    IRI = instanceHandler.existenceChecker.getIRIbyLabelString(ID);
+                    ID = instanceHandler.existenceChecker.getLabelbyIRIString(IRI);
                 }
                 isBMSdevice = true;
             }
