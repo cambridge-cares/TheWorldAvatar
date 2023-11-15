@@ -34,10 +34,11 @@ def infer():
             pred = trans_model.nl2sparql(datum["question"])
             t_end = time.time()
 
+            domain = data_args.domain if data_args.domain != "multi" else datum["domain"]
             datum_out = dict(
                 id=datum["id"],
                 question=datum["question"],
-                groundtruth=datum["query"]["sparql"],
+                groundtruth=dict(sparql=datum["query"]["sparql"], domain=domain),
                 prediction=pred,
                 latency=t_end - t_start,
             )

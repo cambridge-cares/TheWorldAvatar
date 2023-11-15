@@ -34,14 +34,18 @@ class SingleDomainTranslator:
 
         try:
             pred_decoded_parsed = SparqlQuery.fromstring(pred_decoded)
-            pred_verbose = self.postprocessor.postprocess(query=pred_decoded_parsed, nlq=question)
+            pred_verbose = self.postprocessor.postprocess(
+                query=pred_decoded_parsed, nlq=question
+            )
             pred_verbose_str = str(pred_verbose)
         except Exception as e:
             traceback.print_tb(e.__traceback__)
             pred_verbose_str = None
 
         return dict(
-            raw=pred_raw,
-            decoded=pred_decoded,
-            verbose=pred_verbose_str,
+            sparql=dict(
+                raw=pred_raw,
+                decoded=pred_decoded,
+                verbose=pred_verbose_str,
+            )
         )

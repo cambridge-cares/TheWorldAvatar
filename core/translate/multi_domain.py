@@ -19,8 +19,7 @@ class MultiDomainTranslator:
     ):
         self.model = ModelWrapper(model_args, max_new_tokens=max_new_tokens)
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
-            ontospecies=OSPostProcessor(),
-            ontokin=OKPostProcessor()
+            ontospecies=OSPostProcessor(), ontokin=OKPostProcessor()
         )
 
     def nl2sparql(self, question: str):
@@ -32,7 +31,9 @@ class MultiDomainTranslator:
 
         try:
             pred_decoded_parsed = SparqlQuery.fromstring(pred_decoded)
-            pred_verbose = self.domain2postprocessor[domain].postprocess(query=pred_decoded_parsed, nlq=question)
+            pred_verbose = self.domain2postprocessor[domain].postprocess(
+                query=pred_decoded_parsed, nlq=question
+            )
             pred_verbose_str = str(pred_verbose)
         except Exception as e:
             print(e)
@@ -40,7 +41,9 @@ class MultiDomainTranslator:
 
         return dict(
             domain=domain,
-            raw=pred_raw,
-            decoded=pred_decoded,
-            verbose=pred_verbose_str,
+            sparql=dict(
+                raw=pred_raw,
+                decoded=pred_decoded,
+                verbose=pred_verbose_str,
+            ),
         )
