@@ -32,6 +32,6 @@
     cursor: pointer;
 }
 
-#sparql-query {
+#sparql-query-predicted, #sparql-query-postprocessed {
     white-space: pre-wrap;
 }

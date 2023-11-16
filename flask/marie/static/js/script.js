@@ -28,10 +28,17 @@ Functions that manipulate UI
 
 function hideElems() {
     document.getElementById("preprocessed-question").style.display = "none"
+    document.getElementById("query-domain").style.display = "none"
     document.getElementById("latency-info").style.display = "none";
-    document.getElementById('sparql-query-container').style.display = "none";
+    document.getElementById('sparql-query-predicted-container').style.display = "none";
+    document.getElementById('sparql-query-postprocessed-container').style.display = "none";
     document.getElementById("error-container").style.display = "none"
     document.getElementById("results").style.display = "none"
+}
+
+function displayDomainPredicted(domain) {
+    document.getElementById("query-domain").innerHTML = `<p>Predicted query domain: ${domain}</p>`;
+    document.getElementById('query-domain').style.display = "block";
 }
 
 function display_latency_info(trans_latency, kg_latency) {
@@ -46,9 +53,14 @@ function displayPreprocessedQuestion(question) {
     elem.style.display = "block";
 }
 
-function displaySparqlQuery(sparql_query) {
-    document.getElementById("sparql-query").innerHTML = sparql_query;
-    document.getElementById('sparql-query-container').style.display = "block";
+function displaySparqlQueryPredicted(sparql_query) {
+    document.getElementById("sparql-query-predicted").innerHTML = sparql_query
+    document.getElementById('sparql-query-predicted-container').style.display = "block";
+}
+
+function displaySparqlQueryPostProcessed(sparql_query) {
+    document.getElementById("sparql-query-postprocessed").innerHTML = sparql_query;
+    document.getElementById('sparql-query-postprocessed-container').style.display = "block";
 }
 
 function displayResults(data) {
@@ -145,15 +157,18 @@ function askQuestion() {
         }
         return res.json()
     }).then(json => {
+        if (json["question"] != json["preprocessed_question"]) {
+            displayPreprocessedQuestion(json["preprocessed_question"])
+        }
+        displayDomainPredicted(json["domain"])
         display_latency_info(json["translation_latency"], json["kg_latency"])
-        if (json["sparql_query"]) {
-            if (json["question"] != json["preprocessed_question"]) {
-                displayPreprocessedQuestion(json["preprocessed_question"])
-            }
-            displaySparqlQuery(json["sparql_query"])
+        
+        displaySparqlQueryPredicted(json["sparql"]["predicted"])
+        if (json["sparql"]["postprocessed"]) {
+            displaySparqlQueryPostProcessed(json["sparql"]["postprocessed"])
             displayResults(json["data"])
         } else {
-            displayError("The given question cannot be translated to a SPARQL query. Please try to reformulate your question.")
+            displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
         }
     }).catch(error => {
         if (error instanceof HttpError) {

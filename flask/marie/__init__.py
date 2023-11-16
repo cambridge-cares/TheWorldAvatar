@@ -45,32 +45,33 @@ def ask():
         sanitized_inputs["preprocessed_text_for_trans"]
     )
     end_trans = time.time()
-    print(translation_result)
+
     app.logger.info("Translation result: " + str(translation_result))
 
     domain = translation_result["domain"]
-    sparql_query = translation_result["sparql"]["verbose"].strip()
-    print(sparql_query)
+    sparql_query_verbose = translation_result["sparql"]["verbose"].strip()
+
     app.logger.info("Sending sparql query to KG server...")
     start_kg = time.time()
-    if sparql_query:
+    if sparql_query_verbose:
         try:
-            data = kg_executor.query(domain=domain, query=sparql_query)
+            data = kg_executor.query(domain=domain, query=sparql_query_verbose)
         except Exception as e:
             app.logger.exception(e)
             data = None
     else:
-        sparql_query = None
+        sparql_query_verbose = None
         data = None
     end_kg = time.time()
-
-    print("sparql_query: ", sparql_query)
-    print("data: ", data)
 
     return dict(
         question=question,
         preprocessed_question=sanitized_inputs["preprocessed_text_for_user"],
-        sparql_query=sparql_query,
+        domain=translation_result["domain"],
+        sparql=dict(
+            predicted=translation_result["sparql"]["decoded"],
+            postprocessed=sparql_query_verbose
+        ),
         data=data,
         translation_latency=end_trans - start_trans,
         kg_latency=end_kg - start_kg,

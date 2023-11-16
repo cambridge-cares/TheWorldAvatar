@@ -95,10 +95,15 @@
             <section class="three-quarter-width" style="margin-bottom: 2rem;">
                 <div id="error-container" style="display: none; margin-bottom: 2rem; color: red;"></div>
                 <div id="preprocessed-question" style="display: none; margin-bottom: 2rem;"></div>
+                <div id="query-domain" style="display: none;"></div>
                 <div id="latency-info" style="display: none;"></div>
-                <div id="sparql-query-container" style="display: none; margin-bottom: 2rem;">
+                <div id="sparql-query-predicted-container" style="display: none;">
                     <button type='submit' class='accordion'>Click to view the predicted SPARQL query</button>
-                    <div id="sparql-query" class='accordion-panel'></div>
+                    <div id="sparql-query-predicted" class='accordion-panel'></div>
+                </div>
+                <div id="sparql-query-postprocessed-container" style="display: none; margin-bottom: 2rem;">
+                    <button type='submit' class='accordion'>Click to view the post-processed SPARQL query</button>
+                    <div id="sparql-query-postprocessed" class='accordion-panel'></div>
                 </div>
                 <div id="results" style="display: none;"></div>
             </section>
