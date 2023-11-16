@@ -1,0 +1,50 @@
+{   "MicroController":{
+        "type": null,
+        "name": null,
+        "label" :null,
+
+        "MainSensorMap":{
+            "MainSensor1":{
+                "sensor1": {
+                    "type": null,
+                    "ext_lib":[],
+                    "description":"",
+                    "pin":[
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false},
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false}
+                    ],
+                    "output" : {
+                        "datatype" : null,
+                        "fieldname" : null,
+                        "defval" :null,
+                        "type": null,
+                        "unit" : null
+                    }
+                },
+    
+                "sensor2": {
+                    "type": null,
+                    "ext_lib":[],
+                    "description":"",
+                    "pin":[
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false},
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false}
+                    ],
+                    "output" : {
+                        "datatype" : null,
+                        "fieldname" : null,
+                        "defval" :null,
+                        "type": null,
+                        "unit" : null
+                    }
+                }
+            }
+        }
+    },
+    "IRIMapper":{
+        "id1":null,
+        "id2":null,
+        "id3":"iri1"
+    },
+    "AdditionalQuery":[]
+}
