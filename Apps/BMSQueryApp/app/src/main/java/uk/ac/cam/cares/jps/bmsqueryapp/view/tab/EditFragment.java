@@ -36,6 +36,8 @@ public class EditFragment extends Fragment {
     private FragmentEditBinding binding;
 
     private final HttpUrl.Builder ESPHOME_CONTROL_URL = Constants.constructUrlBuilder(Constants.HOST_LAB_WIFI, 3839, "bms-update-agent/set");
+
+    private final HttpUrl.Builder WACNET_WRITE_URL = Constants.constructUrlBuilder(Constants.HOST_PROD, 3838, "bms-update-agent/wacnet/write");
     private List<EditableAttribute> editableAttributes = new ArrayList<>();
 
     public EditFragment() {
@@ -74,22 +76,62 @@ public class EditFragment extends Fragment {
             try {
 //                Double temperatureDouble = Double.parseDouble(temperature);
                 JSONObject params = new JSONObject();
-                params.put("dataIRI", editableAttributes.get(0).getIri());
-                params.put("temperature", Double.parseDouble(editableAttributes.get(0).getValue()));
-                params.put("clientProperties", "CLIENT_PROPERTIES");
-
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ESPHOME_CONTROL_URL.build().toString(), params, response -> {
-                    try {
-                        String fanStatus = response.getString("fanStatus");
-                        Toast.makeText(this.getContext(), fanStatus.isEmpty() ? fanStatus : "Successfully updated.", Toast.LENGTH_LONG).show();
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, error -> Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show());
-                SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
-
+                String dataIRI = editableAttributes.get(0).getIri();
+                if (dataIRI.equals("https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature")) {
+                    params.put("dataIRI", dataIRI);
+                    params.put("temperature", Double.parseDouble(editableAttributes.get(0).getValue()));
+                    params.put("clientProperties", "CLIENT_PROPERTIES");
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ESPHOME_CONTROL_URL.build().toString(), params, response -> {
+                        try {
+                            String fanStatus = response.getString("fanStatus");
+                            Toast.makeText(this.getContext(), fanStatus.isEmpty() ? fanStatus : "Successfully updated.", Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, error -> Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show());
+                    SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
+                    hideKeyboardFrom(view.getContext(), view);
 //                binding.temperatureEdit.clearFocus();
-                hideKeyboardFrom(view.getContext(), view);
+                } else if (dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-1_FlowSP_CARES")
+                        || dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-2_FlowSP_CARES")
+                        || dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_CAV_E-7-7_FlowSP_CARES")) {
+                    params.put("dataIRI", dataIRI);
+                    params.put("value", Double.parseDouble(editableAttributes.get(0).getValue()));
+                    params.put("clientProperties", "WRITE_CLIENT_PROPERTIES");
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, WACNET_WRITE_URL.build().toString(), params, response -> {
+                        try {
+                            String responseString = response.getString("message");
+                            Toast.makeText(this.getContext(), responseString, Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, error -> Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show());
+                    SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
+                    hideKeyboardFrom(view.getContext(), view);
+                    params = new JSONObject();
+                    //set control mode to CARES
+                    if (dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-1_FlowSP_CARES")) {
+                        params.put("dataIRI", "https://www.theworldavatar.com/kg/ontobms/V_VAV_E_7-1_Control_Mode");
+                        params.put("value", 1.0);
+                        params.put("clientProperties", "WRITE_CLIENT_PROPERTIES");
+                    } else if (dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-2_FlowSP_CARES")) {
+                        params.put("dataIRI", "https://www.theworldavatar.com/kg/ontobms/V_VAV_E_7-2_Control_Mode");
+                        params.put("value", 1.0);
+                        params.put("clientProperties", "WRITE_CLIENT_PROPERTIES");
+                    } else if (dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_CAV_E-7-7_FlowSP_CARES")) {
+                        params.put("dataIRI", "https://www.theworldavatar.com/kg/ontobms/V_CAV_E_7-7_Control_Mode");
+                        params.put("value", 1.0);
+                        params.put("clientProperties", "WRITE_CLIENT_PROPERTIES");
+                    }
+                    jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, WACNET_WRITE_URL.build().toString(), params, response -> {
+                        try {
+                            String responseString = response.getString("message");
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, error -> Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show());
+                    SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
+                }
             } catch (NumberFormatException e) {
                 Toast.makeText(this.getContext(), "The input value should be number.", Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {
