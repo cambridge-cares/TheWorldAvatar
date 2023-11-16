@@ -1,44 +1,30 @@
 [
     {
-        "title": "Property search",
-        "description": "To search for properties, chemical classes, uses, and identifiers of molecules",
+        "title": "Chemical Species Properties",
+        "description": "Queries related to properties of chemical species",
         "questions": [
             "What is the charge of benzene?",
-            "ethanol boils at what temperature?",
-            "How many hydrogen bond acceptors does H2O have?",
-            "CH3O5P compound complexity?",
-            "What is the molecular weight of CH4?",
-            "Enlighten me about the vapor pressure and boiling point specific to 1-chloro-2,4-dinitrobenzene",
-            "Examine how the heavy atom count differs in C(CC(C(=O)O)N)CC(=O)O and C(CC(C(=O)O)NC(=O)CCC(=O)O)CN=C(N)N",
-            "Give me a summary of the properties of C6H14O12P2?",
-
-            "What is the covalent unit count of chemical entities belonging to aminoacridines?",
+            "How many hydrogen bond acceptors does H2O have and what is its boiling point?",
             "Could you provide the number of defined atom stereocenters for chemical species categorized as trinitrotoluene?",
             
-            "Show me all identifiers of butanal",
             "Can you provide information about the chemical classes attributed to InChI=1S/C3H9NO/c1-3(5)2-4/h3,5H,2,4H2,1H3?",
+            "What are the applications of 2-amino-4-sulfanyl-butanoic acid",
+            "Show the IUPAC name of CH2O2",
 
-            "What are the applications of InChI=1S/C9H13NO/c1-10-7-9(11)8-5-3-2-4-6-8/h2-6,9-11H,7H2,1H3?",
-            
-            "What is the molecular formula of CSCC1C(C(C(O1)OP(=O)(O)O)O)O?",
-            "InChI of 2-amino-4-sulfanyl-butanoic acid",
-            "Show the IUPAC name of CH2O2"
+            "Find all species with boiling point above 0°C",
+            "What are the chemical species having molecular weight around 150 g/mol?",
+            "Provide a roster of chemical entities used as pH regulating agent",
+            "list of chemical species classified as alcohol, employed as a Solvent, with a boiling point between 100°C and 120°C"
         ]
     },
     {
-        "title": "Species search",
-        "description": "To find species based on their properties, chemical classes, uses, and identifiers",
+        "title": "Gas-Phase Reaction Mechanisms",
+        "description": "Queries related to the mechanisms of gas-phase reactions",
         "questions": [
-            "Find all species with boiling point above 0°C",
-            "Catalog compounds wherein the logS value is lower than 29",
-            "What are the chemical species having molecular weight around 150 g/mol?",
-            "Compile a roster of molecules demonstrating mono isotopic weight in the range of 120 to 130, and melting point above 310 K",
-
-            "Enumerate the molecules categorized as ketotetrose phosphate",
-            "Provide a roster of chemical entities employed as pH regulating agent",
-            
-            "Enumerate molecules with solubility exceeding 478 g/L and falling into the aromatic amine classification",
-            "List the compounds displaying viscosity less than 494 g/m/s, employed as a disinfectant"
+            "what are the reactions involved in the mechanism outlined by www.osti.gov/servlets/purl/90098-26Ev73/webviewable/",
+            "list all mechanisms that contain O, H, and AR",
+            "compare the kinetic models of the reaction H2 + OH <=> H + H2O across all the mechanisms it appears in",
+            "compare thermodynamic data of the species O2 across all the mechanisms in which it appears"
         ]
     }
 ]
