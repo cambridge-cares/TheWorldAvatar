@@ -90,8 +90,10 @@ class GasProperties:
 
 class SourcingContract:
     # Class defining external heat sourcing by time-dependent take-or-pay contract
-    def __init__(self, name, qlimits_pa, prices, current_price, entry_point, availability, qmin, qmax, q_hist=[]):
+    def __init__(self, iri, name, qlimits_pa, prices, current_price, entry_point, 
+                 availability, qmin, qmax, q_hist=[]):
         # Constant (time-independent) attributes
+        self.iri = iri                      # IRI of fulfilling heating plant
         self.name = name                    # name/ID of heat sourcing contract
         self.qlimits_pa = qlimits_pa        # contractually agreed sourcing/supply limits [min_pa, max_pa], MWh/a
         # min_pa: contractually agreed minimum quantity to be sourced from MHKW p.a. (take-or-pay)
@@ -148,16 +150,18 @@ class SourcingContract:
             q_hist = self.q_hist.iloc[start: stop].reset_index(drop=True)
 
             # Return new SourcingContract object with copied data for specified period/indices
-            return SourcingContract(name=self.name, qlimits_pa=self.qlimits_pa, prices=self.prices,
-                                    current_price=self.current_price, entry_point=self.grid_entry_point,
-                                    availability=available, qmin=qmin, qmax=qmax, q_hist=q_hist)
+            return SourcingContract(iri=self.iri, name=self.name, qlimits_pa=self.qlimits_pa, 
+                                    prices=self.prices, current_price=self.current_price, 
+                                    entry_point=self.grid_entry_point, availability=available, 
+                                    qmin=qmin, qmax=qmax, q_hist=q_hist)
 
 
 class HeatBoiler:
     # Class defining a conventional heat boiler
-    def __init__(self, name, capacity, gas_demand, start_up_cost, shut_down_cost, wear_cost,
-                 availability, labour_cost, q_hist=[]):
+    def __init__(self, iri, name, capacity, gas_demand, start_up_cost, shut_down_cost, 
+                 wear_cost, availability, labour_cost, q_hist=[]):
         # Constant (time-independent) attributes
+        self.iri = iri                      # IRI of boiler instance
         self.name = name                    # name/ID of heat boiler
         self.capacity = capacity            # maximum heat generation capacity, MW
         self.gas_demand = gas_demand        # gas demand model, calculating gas consumption based on generated heat
@@ -199,18 +203,19 @@ class HeatBoiler:
             q_hist = self.q_hist.iloc[start: stop].reset_index(drop=True)
 
             # return new HeatBoiler object with copied data for specified period/indices
-            return HeatBoiler(name=self.name, capacity=self.capacity, gas_demand=self.gas_demand,
-                              start_up_cost=self.cost_start, shut_down_cost=self.cost_shut, 
-                              wear_cost=wear, availability=available, labour_cost=cost_labour,
-                              q_hist=q_hist)
+            return HeatBoiler(iri=self.iri, name=self.name, capacity=self.capacity, 
+                              gas_demand=self.gas_demand, start_up_cost=self.cost_start, 
+                              shut_down_cost=self.cost_shut, wear_cost=wear, availability=available,
+                              labour_cost=cost_labour, q_hist=q_hist)
 
 
 class GasTurbine:
     # Class defining a CHP gas turbine
-    def __init__(self, name, power_el, power_q, min_load, gas_demand, el_output, idle_period,
-                 wear_cost, availability, labour_cost, start_up_cost=None, shut_down_cost=None,
-                 gas=None, prices=None, q_hist=[]):
+    def __init__(self, iri, name, power_el, power_q, min_load, gas_demand, el_output, 
+                 idle_period, wear_cost, availability, labour_cost, start_up_cost=None, 
+                 shut_down_cost=None, gas=None, prices=None, q_hist=[]):
         # Constant (time-independent) attributes
+        self.iri = iri                      # IRI of gas turbine instance
         self.name = name                    # name/ID of gas turbine
         self.power_el = power_el            # maximum electricity generation capacity, MW
         self.power_q = power_q              # maximum heat generation capacity, MW
@@ -231,8 +236,7 @@ class GasTurbine:
         if not self.cost_start:
             self.set_startup_cost(gas, prices)
         if not self.cost_shut:
-            self.set_shutdown_cost()
-        
+            self.set_shutdown_cost()        
 
         # Total power of gas turbine, MW
         self.power = self.power_q + self.power_el
@@ -318,11 +322,13 @@ class GasTurbine:
             q_hist = self.q_hist.iloc[start: stop].reset_index(drop=True)
 
             # Return new GasTurbine object with copied data for specified period/indices
-            return GasTurbine(name=self.name, power_el=self.power_el, power_q=self.power_q, min_load=self.min_load,
+            return GasTurbine(iri=self.iri, name=self.name, power_el=self.power_el, 
+                              power_q=self.power_q, min_load=self.min_load,
                               gas_demand=self.gas_demand, el_output=self.el_output,
-                              idle_period=self.idle_period, 
-                              wear_cost=wear, availability=available, labour_cost=cost_labour, 
-                              start_up_cost=cost_start, shut_down_cost=cost_shut, q_hist=q_hist)
+                              idle_period=self.idle_period, wear_cost=wear, 
+                              availability=available, labour_cost=cost_labour, 
+                              start_up_cost=cost_start, shut_down_cost=cost_shut, 
+                              q_hist=q_hist)
 
 
 class MunicipalUtility:
@@ -510,6 +516,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
             'gp2':        # hu, kWh/m³
             'gp3':        # co2 factor, t_CO2/MWh_g (wrt hu)
         # (List of) heat sourcing contract(s)
+            'sc0':        # IRI of fulfilling heating plant (i.e., EfW plant)
             'sc1':        # name
             'sc2':        # annual sourcing limits [min, max], MWh/a
             'sc3':        # base unit price [p_reg, p_red], €/MWh
@@ -521,6 +528,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
             'sc9':        # heat sourcing history, MWh/h
                             (for current year prior to optimisation interval)
         # (List of) conventional heat boiler(s)
+            'hb0':        # IRI of heat boiler
             'hb1':        # name
             'hb2':        # capacity, MW
             'hb4':        # gas consumption/demand models (wrt hu)
@@ -532,6 +540,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
             'hb10':       # heat generation history, MWh/h
                             (for x hours prior to optimisation interval)
         # (List of) gas turbine(s)
+            'gt0':        # IRI of gas turbine
             'gt1':        # name
             'gt2':        # max. el. load, MW - irrelevant since using generator model
             'gt3':        # max. heat load, MW
@@ -610,9 +619,11 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
     
     # Add heat sourcing contracts
     for provider in heat_providers.get('efw_plant', []):
+        # Assign EfW plant instance IRI
+        sc = {'sc0': provider}
         # Get static contract details 
         # (include instance IRIs for which to retrieve ts data subsequently)
-        sc = kg_client.get_sourcing_contract_properties(provider)
+        sc.update(kg_client.get_sourcing_contract_properties(provider))
         # Get tiered unit price structure
         sc.update(kg_client.get_tiered_unit_prices(sc.pop('tiered_price')))        
         # Add to overall optimisation detup
@@ -620,9 +631,11 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
             
     # Add gas boilers
     for boiler in heat_providers.get('boilers', []):
+        # Assign boiler instance IRI
+        hb = {'hb0': boiler}
         # Get static boiler details 
         # (include instance IRIs for which to retrieve ts data subsequently)
-        hb = kg_client.get_heat_boiler_properties(boiler)
+        hb.update(kg_client.get_heat_boiler_properties(boiler))
         # Set gas consumption model
         hb.update({'hb4': consumption_models[boiler]})
         # Set start-up and shut-down cost to zero
@@ -633,9 +646,11 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
             
     # Add gas turbine
     for turbine in heat_providers.get('gt', []):
+        # Assign turbine instance IRI
+        gt = {'gt0': turbine}
         # Get static gas turbine details
         # (include instance IRIs for which to retrieve ts data subsequently)
-        gt = kg_client.get_gas_turbine_properties(turbine)
+        gt.update(kg_client.get_gas_turbine_properties(turbine))
         # Set gas consumption and co-gen model
         gt.update({'gt6': consumption_models[turbine]})
         gt.update({'gt7': cogen_models[turbine]})
@@ -669,24 +684,26 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
             (datetime.strptime(opti_start_dt, time_format)-timedelta(hours=1)).strftime(time_format))
     }
 
-    # Query ts data for all placeholder IRIs
+    # Query ts data for all placeholder IRIs (NOTE: still includes generator IRIs)
     ts_data_iris = extract_iris_from_setup_dict(params)
     for iri in ts_data_iris:
         # NOTE: Optimisation assumes data in certain units; hence, query ts 
         #       data for expected units!
         rdf_type = kg_client.get_rdftype(iri)
-        unit = UNITS[rdf_type]
-        # Retrieve ts data for corresponding time bounds; default: opti interval
-        t1, t2 = ts_bounds.get(rdf_type, (opti_start_dt, opti_end_dt))        
-        df = retrieve_consolidated_timeseries_as_dataframe(kg_client, ts_client,
-                        instance_iri=iri, unit=unit, lowerbound=t1, 
-                        upperbound=t2, column_name=iri)
-        if rdf_type == OHN_GENERATED_HEAT_AMOUNT:
-            q_generated = q_generated.merge(df, on='time', how='outer')
-        elif rdf_type == OHN_PROVIDED_HEAT_AMOUNT:
-            q_provided = q_provided.merge(df, on='time', how='outer')
-        else:
-            forecasts = forecasts.merge(df, on='time', how='outer')
+        # Only retrieve ts data for meaningsful properties (i.e., not for generator IRIs)
+        if rdf_type in UNITS.keys():
+            unit = UNITS[rdf_type]
+            # Retrieve ts data for corresponding time bounds; default: opti interval
+            t1, t2 = ts_bounds.get(rdf_type, (opti_start_dt, opti_end_dt))        
+            df = retrieve_consolidated_timeseries_as_dataframe(kg_client, ts_client,
+                            instance_iri=iri, unit=unit, lowerbound=t1, 
+                            upperbound=t2, column_name=iri)
+            if rdf_type == OHN_GENERATED_HEAT_AMOUNT:
+                q_generated = q_generated.merge(df, on='time', how='outer')
+            elif rdf_type == OHN_PROVIDED_HEAT_AMOUNT:
+                q_provided = q_provided.merge(df, on='time', how='outer')
+            else:
+                forecasts = forecasts.merge(df, on='time', how='outer')
     
     # Condition forecasts collectively (to ensure availability of all required optimisation inputs)
     check_interval_spacing(forecasts)
@@ -755,28 +772,28 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
 
     # Add heat sourcing contract(s) to setup
     for i in range(len(params['sc1'])):
-        setup['sourcing_contracts'].append({'name': params['sc1'][i], 'qlimits_pa': params['sc2'][i],
-                                            'prices': params['sc3'][i], 'current_price': params['sc4'][i],
-                                            'entry_point': params['sc5'][i],
+        setup['sourcing_contracts'].append({'iri': params['sc0'][i], 'name': params['sc1'][i], 
+                                            'qlimits_pa': params['sc2'][i], 'prices': params['sc3'][i],
+                                            'current_price': params['sc4'][i], 'entry_point': params['sc5'][i],
                                             'availability': pd.Series(params['sc6'][i], name='availability'),
                                             'qmin': pd.Series(params['sc7'][i], name='qmin'),
                                             'qmax': pd.Series(params['sc8'][i], name='qmax'),
                                             'q_hist': pd.Series(params['sc9'][i], name='q_hist')})
     # Add boiler(s) to setup
     for i in range(len(params['hb1'])):
-        setup['heat_boilers'].append({'name': params['hb1'][i], 'capacity': params['hb2'][i],
-                                      'gas_demand': params['hb4'][i], 'start_up_cost': params['hb5'][i], 
-                                      'shut_down_cost': params['hb6'][i], 
+        setup['heat_boilers'].append({'iri': params['hb0'][i], 'name': params['hb1'][i], 
+                                      'capacity': params['hb2'][i], 'gas_demand': params['hb4'][i], 
+                                      'start_up_cost': params['hb5'][i], 'shut_down_cost': params['hb6'][i], 
                                       'wear_cost': pd.Series(params['hb7'][i], name='wear_cost'),
                                       'availability': pd.Series(params['hb8'][i], name='availability'),
                                       'labour_cost': pd.Series(params['hb9'][i], name='labour_cost'),
                                       'q_hist': pd.Series(params['hb10'][i], name='q_hist')})
     # Add gas turbine(s) to setup
     for i in range(len(params['gt1'])):
-        setup['gas_turbines'].append({'name': params['gt1'][i], 'power_el': params['gt2'][i],
-                                      'power_q': params['gt3'][i], 'min_load': params['gt4'][i],
-                                      'gas_demand': params['gt6'][i], 'el_output': params['gt7'][i],
-                                      'idle_period': params['gt8'][i],
+        setup['gas_turbines'].append({'iri': params['gt0'][i], 'name': params['gt1'][i], 
+                                      'power_el': params['gt2'][i], 'power_q': params['gt3'][i], 
+                                      'min_load': params['gt4'][i], 'gas_demand': params['gt6'][i], 
+                                      'el_output': params['gt7'][i], 'idle_period': params['gt8'][i],
                                       'wear_cost': pd.Series(params['gt9'][i], name='wear_cost'),
                                       'availability': pd.Series(params['gt10'][i], name='availability'),
                                       'labour_cost': pd.Series(params['gt11'][i], name='labour_cost'),
@@ -859,7 +876,7 @@ def create_optimisation_setup(setup_dict):
         mu_c.update_internal_price()
         # initialise qmin based on flow and return temperature @ entry point
         index = mu_c.qmin.index.to_series()
-        mu_c.qmin = index.apply(lambda i: minimum_supply(grid, mu_c.grid_entry_point, i))
+        #mu_c.qmin = index.apply(lambda i: minimum_supply(grid, mu_c.grid_entry_point, i))
         # add to municipal utility
         utility.add_contract(mu_c)
     for mu_b in mu_boilers:
