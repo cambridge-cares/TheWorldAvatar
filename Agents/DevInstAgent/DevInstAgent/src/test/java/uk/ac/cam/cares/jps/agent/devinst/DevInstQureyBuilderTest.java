@@ -9,7 +9,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.jena.base.Sys;
-import org.apache.jena.sparql.function.library.print;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -21,7 +20,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
-import static org.mockito.ArgumentMatchers.isA;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,33 +29,23 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.semanticweb.owlapi.util.IRIComparator;
-import org.springframework.test.context.transaction.BeforeTransaction;
 
-import com.bigdata.service.ndx.pipeline.IndexWriteTask.M;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import wiremock.com.jayway.jsonpath.internal.function.text.Length;
 import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.*;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 
 public class DevInstQureyBuilderTest {
@@ -75,6 +63,10 @@ public class DevInstQureyBuilderTest {
     private static final Iri consistsOf = P_SAREF.iri("consistsOf");
     private static final Iri sendsSignalTo = P_DEV.iri("sendsSignalTo");
     private static final Iri measures = P_DEV.iri("measures");
+    private static final Iri Task = P_SAREF.iri("Task");
+    private static final Iri hasCommand = P_SAREF.iri("hasCommand");
+    private static final Iri Command = P_SAREF.iri("Command");
+    private static final Iri accomplishes = P_SAREF.iri("accomplishes");
     // Temporary folder to place a properties file
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -118,7 +110,7 @@ public class DevInstQureyBuilderTest {
 			// Start Blazegraph container
 			blazegraph.start();
 		} catch (Exception e) {
-			throw new JPSRuntimeException("Docker container startup failed. Please try running tests again");
+			throw new JPSRuntimeException("Docker container startup failed. Please try running tests again", e);
 		}
 
         //URI for blazegraph endpoint
@@ -262,6 +254,12 @@ public class DevInstQureyBuilderTest {
         obtainedIRI = result.getJSONObject(0).getString("x1");
         Assert.assertTrue(obtainedIRI.contains("AvgDist_FH02"));
 
+        //Task
+        query = Queries.SELECT();
+        query.where(query.var().has(accomplishes, query.var()));
+        result = storeClient.executeQuery(query.getQueryString());
+        Assert.assertTrue(result.length() == 3);
+
     }
 
     @Ignore("Test containers requires docker to function")
@@ -331,6 +329,7 @@ public class DevInstQureyBuilderTest {
 
     }
 
+    @Ignore("The new image requires credential. This ignore is here just for quick testing. To be deleted later")
     @Test
     public void testCheckConceptExistence() {
         Iri doesNotExist = iri("http://www.example.com/prefix/api_AvgDist_FH02");

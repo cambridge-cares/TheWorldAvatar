@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.devinst;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
-import org.jooq.False;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -20,8 +19,6 @@ import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import jena.rset;
 
 import java.util.*;
 
@@ -66,12 +63,19 @@ public class DevInstQueryBuilder {
     private static Map<String, String> MeasurementToUnitMap = new HashMap<>();
     private static Map<String, Iri> UnitIRIMap = new HashMap<>();
 
+    private List<String> taskArr = new ArrayList<>();
+    private List<String> commandArr = new ArrayList<>();
+
     private static final Iri SmartSensor = P_DEV.iri("SmartSensor");
     private static final Iri MicroController = P_DEV.iri("MicroController");
     private static final Iri Sensor = P_SAREF.iri("Sensor");
 
     //properties
     private static final Iri consistsOf = P_SAREF.iri("consistsOf");
+    private static final Iri Task = P_SAREF.iri("Task");
+    private static final Iri hasCommand = P_SAREF.iri("hasCommand");
+    private static final Iri Command = P_SAREF.iri("Command");
+    private static final Iri accomplishes = P_SAREF.iri("accomplishes");
     private static final Iri sendsSignalTo = P_DEV.iri("sendsSignalTo");
     private static final Iri measures = P_DEV.iri("measures");
     private static final Iri hasUnit = P_OM.iri("hasUnit");
@@ -158,7 +162,18 @@ public class DevInstQueryBuilder {
                 String query = additional.getString(i);
                 AdditionalQuery.add(query);
             }
-            
+
+            //Tasks and commands
+            JSONArray sensorTask = desc.getJSONArray("Task");
+            JSONArray sensorComm = desc.getJSONArray("Command");
+            for (int i = 0; i < sensorTask.length(); i++){
+                String task = sensorTask.getString(i);
+                taskArr.add(task);
+            }
+            for (int i = 0; i < sensorComm.length(); i++){
+                String comm = sensorComm.getString(i);
+                commandArr.add(comm);
+            }
         }
         catch( JSONException e) {
             throw new JPSRuntimeException("Failed to obtain IRI from IRI Mapper.", e);
@@ -279,6 +294,64 @@ public class DevInstQueryBuilder {
             //System.out.println(modify.getQueryString());
             storeClient.executeUpdate(modify.getQueryString());
         }
+
+        //Task and command
+        if (taskArr.size() > 0) {
+            taskArr.add("NotProvided");
+        }
+            LOGGER.info("Executing tasks queries...");
+            Iri taskIRI = genIRI("Task", storeClient.getUpdateEndpoint());
+
+            modify = Queries.MODIFY();
+            modify.prefix(P_AGENT, P_DEV, P_OM, P_SAREF);
+            modify.insert(SmartSensor_UUID.has(accomplishes, taskIRI));
+            modify.insert(taskIRI.isA(Task));
+
+            for (String task : taskArr){
+                modify. insert(taskIRI.has(RDFS.COMMENT, Rdf.literalOf(task)));
+            }
+
+            modify.insert(MicroController_UUID.has(accomplishes, taskIRI));
+            
+            for(String SensorName : Sensor_UUID_Map.keySet()){
+                Iri UUID = Sensor_UUID_Map.get(SensorName);
+                modify.insert(UUID.has(accomplishes, taskIRI));
+            }
+
+            for(String SensorCompName : SensorComp_UUID_Map.keySet()){
+                Iri UUID = SensorComp_UUID_Map.get(SensorCompName);
+                modify.insert(UUID.has(accomplishes, taskIRI));
+            }
+            storeClient.executeUpdate(modify.getQueryString());
+        
+
+        if (commandArr.size() > 0) {
+            LOGGER.info("Executing command queries...");
+            Iri commandIRI = genIRI("Command", storeClient.getUpdateEndpoint());
+
+            modify = Queries.MODIFY();
+            modify.prefix(P_AGENT, P_DEV, P_OM, P_SAREF);
+            modify.insert(SmartSensor_UUID.has(hasCommand, commandIRI));
+            modify.insert(commandIRI.isA(Command));
+
+            for (String command : commandArr){
+                modify. insert(commandIRI.has(RDFS.COMMENT, Rdf.literalOf(command)));
+            }
+
+            modify.insert(MicroController_UUID.has(hasCommand, commandIRI));
+            
+            for(String SensorName : Sensor_UUID_Map.keySet()){
+                Iri UUID = Sensor_UUID_Map.get(SensorName);
+                modify.insert(UUID.has(hasCommand, commandIRI));
+            }
+
+            for(String SensorCompName : SensorComp_UUID_Map.keySet()){
+                Iri UUID = SensorComp_UUID_Map.get(SensorCompName);
+                modify.insert(UUID.has(hasCommand, commandIRI));
+            }
+            storeClient.executeUpdate(modify.getQueryString());
+        }
+
     }
 
     /*

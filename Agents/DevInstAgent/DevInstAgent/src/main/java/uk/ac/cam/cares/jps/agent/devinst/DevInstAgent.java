@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.devinst;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -33,6 +34,8 @@ public class DevInstAgent extends JPSAgent {
 	public static final String KEY_IRIMAPPER = "IRIMapper";
 	public static final String KEY_ADDITRIONALQUERY = "AdditionalQuery";
     public static final String KEY_CLIENTPROPERTY = "CLIENTPROPERTIES";
+    public static final String KEY_TASK = "Task";
+    public static final String KEY_COMMAND = "Command";
 
     private static RemoteStoreClient storeClient;
     private static RemoteStoreClient ontodevStoreClient;
@@ -75,6 +78,14 @@ public class DevInstAgent extends JPSAgent {
       if (validateInput(requestParams)) {
         	LOGGER.info("Passing request to Device Instantiation Agent..");
             clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTY));
+
+            if (!requestParams.has(KEY_TASK)){
+                requestParams.put("Task", new JSONArray());
+            }
+
+            if (!requestParams.has(KEY_COMMAND)){
+                requestParams.put("Command", new JSONArray());
+            }
 
             try{
                 ReadPropFile(clientProperties);
