@@ -120,19 +120,19 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
             return new ArrayList<>();
         } else if (type.equals("https://www.theworldavatar.com/kg/ontodevice/SmartSensor") || type.equals("https://w3id.org/s3n/SmartSensor")) {
             ArrayList<EditableAttribute> attributes = new ArrayList<>();
-            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature", "Temperature", "double", "°C"));
+            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature", "Temperature Setpoint", "double", "°C"));
             return attributes;
         } else if (type.equals("https://www.theworldavatar.com/kg/ontobms/ExhaustVAV") && equipmentIRI.equals("https://www.theworldavatar.com/kg/ontobms/VAV_E7_01_d00bd62d-9f86-4f01-8940-c52a62269f4c")) {
             ArrayList<EditableAttribute> attributes = new ArrayList<>();
-            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-1_FlowSP_CARES", "Airflow", "double", "m3/h"));
+            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-1_FlowSP_CARES", "Airflow Setpoint", "double", "m3/h"));
             return attributes;
         } else if (type.equals("https://www.theworldavatar.com/kg/ontobms/ExhaustVAV") && equipmentIRI.equals("https://www.theworldavatar.com/kg/ontobms/VAV_E7_02_e4ac5287-26d8-4638-9ba2-74b9e9994814")) {
             ArrayList<EditableAttribute> attributes = new ArrayList<>();
-            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-2_FlowSP_CARES", "Airflow", "double", "m3/h"));
+            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-2_FlowSP_CARES", "Airflow Setpoint", "double", "m3/h"));
             return attributes;
         } else if (type.equals("https://www.theworldavatar.com/kg/ontobms/CanopyHood") && equipmentIRI.equals("https://www.theworldavatar.com/kg/ontobms/CH-7-7_CAV_90f2f336-03f7-4c0e-80a0-6d85873e42a8")) {
             ArrayList<EditableAttribute> attributes = new ArrayList<>();
-            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontobms/V_CAV_E-7-7_FlowSP_CARES", "Airflow", "double", "m3/h"));
+            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontobms/V_CAV_E-7-7_FlowSP_CARES", "Airflow Setpoint", "double", "m3/h"));
             return attributes;
         }
         return new ArrayList<>();
