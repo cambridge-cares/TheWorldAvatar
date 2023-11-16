@@ -3,7 +3,7 @@
 The IsochroneAgent is an agent that
 1) Retrieves Points of Interest (POI) locations from the knowledge graph.
 2) Generates isochrones from the locations with different mode of transport and or road conditions as according to OntoIsochrone. 
-3) Performs 15 Minute Smart City (15MSC) and Urban Resillience (UR) planning. 
+3) Performs 15 Minute Smart City (15MSC), Urban Resillience (UR) planning and/or any additional use cases. 
 4) Instantiates the isochrones via OBDA mapping. 
 
 ## 2. Prerequisites
@@ -77,20 +77,21 @@ The agent is reachable at the `/update` endpoint.
 To run the agent, simply run the following cURL command:
 
 #### 15 Minute Smart City (15MSC)
-Below curl command specify a 15 minutes time threshold and with a 5 minute interval in between isochrones for 15 Minute Smart City scenario. 
+Below curl command specify a 15 minutes time threshold and with a 5 minute interval in between isochrones for 15 Minute Smart City scenario.
 ```
 curl -X POST "localhost:3838/isochroneagent/update?function=15MSC&timethreshold=15&timeinterval=5"
 ```
 
-#### Toilet Isochrone
-Below curl command specify a 10 minutes time threshold and with a 2 minute interval in between isochrones generated from toilets.
-```
-curl -X POST "localhost:3838/isochroneagent/update?function=Toilet&timethreshold=10&timeinterval=2"
-```
-
 #### Urban Resilience Planning (UR)
+Below curl command specify a 10 minutes time threshold and with a 2 minute interval in between isochrones for urban resillience. This generates isochrones for flooded, unflooded area and a geoserver layer that outlines the unreachable area. 
 ```
 curl -X POST "localhost:3838/isochroneagent/update?function=UR&timethreshold=10&timeinterval=2"
+```
+
+#### Toilet Isochrone
+Below curl command specify a 10 minutes time threshold and with a 2 minute interval in between isochrones generated from public infrastructure - toilets.
+```
+curl -X POST "localhost:3838/isochroneagent/update?function=Toilet&timethreshold=10&timeinterval=2"
 ```
 
 
