@@ -131,7 +131,7 @@ def get_ort_model_and_tokenizer(model_args: ModelArguments):
                 + "-bit quantization is not supported for ONNX Runtime on CPU."
             )
         print("-----ONNX Runtime model is loaded to CPU-----")
-    elif device_map == "cuda":
+    elif device_map == "cuda" or (device_map == "auto" and torch.cuda.is_available()):
         assert torch.cuda.is_available(), "CUDA is not available to load model into"
         model = ORTModelForSeq2SeqLM.from_pretrained(
             model_args.model_path, provider="CUDAExecutionProvider"
