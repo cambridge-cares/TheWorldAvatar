@@ -22,6 +22,10 @@ BOOLEAN = jpsBaseLibView.java.lang.Boolean.TYPE
 # Time series format
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
+# Heat generation/sourcing history length to retrieve, i.e., to assess active
+# heat generators in previous time step and gas turbine idle time
+HIST_LENGTH = 12    # hours
+
 
 def get_rdb_endpoint(ts_details:dict):
     """

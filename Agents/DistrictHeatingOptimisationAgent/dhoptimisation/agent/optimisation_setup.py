@@ -9,9 +9,11 @@
 import copy
 import pandas as pd
 import numpy as np
+from datetime import datetime, timedelta
 
 from dhoptimisation.utils import *
 from dhoptimisation.datamodel.iris import *
+from dhoptimisation.agent.config import HIST_LENGTH, TIME_FORMAT
 from dhoptimisation.datamodel.unit_mapping import UNITS
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
@@ -42,6 +44,7 @@ class MarketPrices:
         return self.el_spot[timestep] + self.chp_bonus[timestep] + self.grid_save[timestep]
 
 
+    #TODO: Check whether all copies are needed in the end
     def create_copy(self, start=0, stop=None):
         # Create copy of MarketPrices object for period of integer-location indices [start, stop)
 
@@ -97,7 +100,6 @@ class SourcingContract:
         # p_reg: regular base price per heat unit for quantities up to 'min_pa' (contractually fixed for each year)
         # p_red: reduced base price for volumes exceeding 'min_pa' quantity
         self.current_price = current_price  # current heat unit price, €/MWh
-        #TODO: add annual sourced volume
         self.grid_entry_point = entry_point # associated district heating grid entry point (needs to match a key
                                             # in DistrictHeatingGrid entry_points dict)
 
@@ -105,7 +107,7 @@ class SourcingContract:
         self.available = availability       # availability of contracted heat: [1, 0] ... yes,no
         self.qmin = qmin                    # technical hourly supply minimum (defined by minimum pump speed), MWh/h
         self.qmax = qmax                    # technical hourly supply maximum (constrained by grid hydraulics), MWh/h
-        self.q_hist = q_hist                # heat sourcing history, MWh/h
+        self.q_hist = q_hist                # annual heat sourcing history, MWh/h
 
 
     def __repr__(self):
@@ -113,16 +115,13 @@ class SourcingContract:
         return '{}_{}'.format(self.__class__.__name__, self.name)
 
 
-    def update_price(self):
-        #TODO: update; likely to move outside of object
+    def update_internal_price(self):
         # Updates current heat unit price (depending on total annual heat sourcing volume)
+        # NOTE: Current heat unit price queried from KG; however, this ensures
+        #       that heat sourcing beyond annual supply limit is suppressed
+        #       (as infinity cannot be represented as xsd datatype)
         total = self.q_hist.sum(skipna=True)
-        if total <= self.qlimits_pa[0]:
-            self.current_price = self.prices[0]
-        elif total <= self.qlimits_pa[1]:
-            self.current_price = self.prices[1]
-        else:
-            # suppress heat sourcing beyond annual maximum supply limit
+        if total >= self.qlimits_pa[1]:
             self.current_price = np.inf
 
 
@@ -169,7 +168,7 @@ class HeatBoiler:
         self.cost_wear = wear_cost          # wear cost per operating hour, €/MWh_q
         self.available = availability       # availability of boiler: [1, 0] ... yes,no
         self.cost_labour = labour_cost      # personnel cost per operating hour (shift surcharges, etc.), €/h
-        self.q_hist = q_hist                # heat generation history, MWh/h
+        self.q_hist = q_hist                # recent heat generation history, MWh/h
 
 
     def __repr__(self):
@@ -224,7 +223,7 @@ class GasTurbine:
         self.cost_wear = wear_cost          # wear cost per operating hour, €/h
         self.available = availability       # availability of GT: [1, 0] ... yes,no
         self.cost_labour = labour_cost      # personnel cost per operating hour (shift surcharges, etc.), €/h
-        self.q_hist = q_hist                # (annual) heat generation history, MWh/h        
+        self.q_hist = q_hist                # recent heat generation history, MWh/h        
         self.cost_start = start_up_cost     # start-up cost, €/start-up
         self.cost_shut = shut_down_cost     # shut-down cost, €/shut-down
         # Initialise start-up and shut-down cost as functions of labour, fuel, 
@@ -469,7 +468,8 @@ class DistrictHeatingGrid:
 def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
                               consumption_models: dict, cogen_models: dict,
                               optimisation_input_iris: dict, 
-                              opti_start_dt: str, opti_end_dt: str):
+                              opti_start_dt: str, opti_end_dt: str, 
+                              time_format=TIME_FORMAT):
     """
     Returns a dictionary describing the full SWPS optimization setup by querying 
     relevant input data from KG, with first level keys referring to object instances, 
@@ -488,6 +488,7 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
                                           by `validate_input_values`
         opti_start_dt {str} -- optimisation start datetime as string
         opti_end_dt {str} -- optimisation end datetime as string
+        time_format {str} -- Python compliant time format to parse time values
             
     Returns:
         setup {dict} -- dictionary describing the full optimisation setup with
@@ -518,8 +519,9 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
             'sc7':        # technical min. supply, MWh/h
             'sc8':        # technical max. supply, MWh/h
             'sc9':        # heat sourcing history, MWh/h
+                            (for current year prior to optimisation interval)
         # (List of) conventional heat boiler(s)
-            'hb1':        # name(s)
+            'hb1':        # name
             'hb2':        # capacity, MW
             'hb4':        # gas consumption/demand models (wrt hu)
             'hb5':        # start up cost, €/startup
@@ -527,7 +529,8 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
             'hb7':        # wear cost, €/MWh
             'hb8':        # availability
             'hb9':        # labour cost
-            'hb10':       # (annual) heat generation history, MWh/h
+            'hb10':       # heat generation history, MWh/h
+                            (for x hours prior to optimisation interval)
         # (List of) gas turbine(s)
             'gt1':        # name
             'gt2':        # max. el. load, MW - irrelevant since using generator model
@@ -541,7 +544,8 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
             'gt11':       # labour cost, €/h
             'gt12':       # start up cost, €/startup
             'gt13':       # shut down cost, €/shut-down
-            'gt14':       # (annual) heat generation history, MWh/h
+            'gt14':       # heat generation history, MWh/h
+                            (for x hours prior to optimisation interval)
         # District heating grid
             'dh1':        # name
             'dh2':        # dict of heat entry points
@@ -648,11 +652,23 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
     
     logger.info('Querying and validating time series data...')
     
-    # Initialise list of heat generation/sourcing history IRIs
-    histories = []
-    # Initialise overarching ts DataFrame with 'time' column to merge data on
-    all_ts = pd.DataFrame()
-    all_ts.index.name = 'time'
+    # Initialise consolidated time series DataFrames with 'time' column to merge data on
+    df = pd.DataFrame()
+    df.index.name = 'time'    
+    q_generated = df.copy()
+    q_provided = df.copy()
+    forecasts = df.copy()
+    
+    # Map time bounds and DataFrames to corresponding data types
+    ts_bounds = {
+        OHN_GENERATED_HEAT_AMOUNT: (
+            (datetime.strptime(opti_start_dt, time_format)-timedelta(hours=HIST_LENGTH)).strftime(time_format),
+            (datetime.strptime(opti_start_dt, time_format)-timedelta(hours=1)).strftime(time_format)),
+        OHN_PROVIDED_HEAT_AMOUNT: (
+            datetime(datetime.strptime(opti_start_dt, TIME_FORMAT).year, 1, 1).strftime(time_format),
+            (datetime.strptime(opti_start_dt, time_format)-timedelta(hours=1)).strftime(time_format))
+    }
+
     # Query ts data for all placeholder IRIs
     ts_data_iris = extract_iris_from_setup_dict(params)
     for iri in ts_data_iris:
@@ -660,34 +676,36 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
         #       data for expected units!
         rdf_type = kg_client.get_rdftype(iri)
         unit = UNITS[rdf_type]
+        # Retrieve ts data for corresponding time bounds; default: opti interval
+        t1, t2 = ts_bounds.get(rdf_type, (opti_start_dt, opti_end_dt))        
         df = retrieve_consolidated_timeseries_as_dataframe(kg_client, ts_client,
-                        instance_iri=iri, unit=unit, lowerbound=opti_start_dt, 
-                        upperbound=opti_end_dt, column_name=iri)
-        all_ts = all_ts.merge(df, on='time', how='outer')
-        # Add heat generation/sourcing history IRIs to list
-        if rdf_type in [OHN_GENERATED_HEAT_AMOUNT, OHN_PROVIDED_HEAT_AMOUNT]:
-            histories.append(iri)
-        
-    # Condition time series collectively
-    check_interval_spacing(all_ts)
+                        instance_iri=iri, unit=unit, lowerbound=t1, 
+                        upperbound=t2, column_name=iri)
+        if rdf_type == OHN_GENERATED_HEAT_AMOUNT:
+            q_generated = q_generated.merge(df, on='time', how='outer')
+        elif rdf_type == OHN_PROVIDED_HEAT_AMOUNT:
+            q_provided = q_provided.merge(df, on='time', how='outer')
+        else:
+            forecasts = forecasts.merge(df, on='time', how='outer')
+    
+    # Condition forecasts collectively (to ensure availability of all required optimisation inputs)
+    check_interval_spacing(forecasts)
     # Check for missing data
-    if all_ts.isna().sum().sum() != 0:
+    if forecasts.isna().sum().sum() != 0:
         logger.warn('Some time series data is missing and will be forward filled.')
-        logger.info(all_ts.isna().sum())
-        all_ts.fillna(method='ffill', inplace=True)
+        logger.info(forecasts.isna().sum())
+        forecasts.fillna(method='ffill', inplace=True)
     # Verify data availability for entire optimisation interval
-    if not pd.Timestamp(opti_start_dt).tz_localize(None) == all_ts.index.min() or \
-       not pd.Timestamp(opti_end_dt).tz_localize(None) == all_ts.index.max():
+    if not pd.Timestamp(opti_start_dt).tz_localize(None) == forecasts.index.min() or \
+       not pd.Timestamp(opti_end_dt).tz_localize(None) == forecasts.index.max():
            raise_error(ValueError, 'Not all time series data available for optimisation interval.')
     # Convert boolean availabilities to one-hot encoded data
-    bool_columns = all_ts.select_dtypes(include=['bool']).columns
-    all_ts[bool_columns] = all_ts[bool_columns].astype(int) 
-    # Reset historical heat generation/sourcing data
-    all_ts[histories] = np.nan
+    bool_columns = forecasts.select_dtypes(include=['bool']).columns
+    forecasts[bool_columns] = forecasts[bool_columns].astype(int) 
         
     # Extract DataTime index (for later use); then drop to ensure internal consistency
-    index = pd.to_datetime(all_ts.index)
-    all_ts.reset_index(drop=True, inplace=True)
+    index = pd.to_datetime(forecasts.index)
+    forecasts.reset_index(drop=True, inplace=True)
     
     logger.info('Queried and validated time series data.')
     
@@ -696,7 +714,9 @@ def define_optimisation_setup(kg_client: KGClient, ts_client: TSClient,
     #
     logger.info('Replacing placeholder IRIs with time series data...')
     
-    replacements = all_ts.to_dict(orient='list')
+    replacements = forecasts.to_dict(orient='list')
+    replacements.update(q_generated.to_dict(orient='list'))
+    replacements.update(q_provided.to_dict(orient='list'))
     # Iterate through the original dictionary and apply replacements
     for key, value in params.items():
         params[key] = replace_values(replacements, value) 
@@ -836,7 +856,7 @@ def create_optimisation_setup(setup_dict):
     # Add heat sourcing contracts, boilers, and turbines to municipal utility
     for mu_c in mu_contracts:
         # initialise current price
-        mu_c.update_price()
+        mu_c.update_internal_price()
         # initialise qmin based on flow and return temperature @ entry point
         index = mu_c.qmin.index.to_series()
         mu_c.qmin = index.apply(lambda i: minimum_supply(grid, mu_c.grid_entry_point, i))

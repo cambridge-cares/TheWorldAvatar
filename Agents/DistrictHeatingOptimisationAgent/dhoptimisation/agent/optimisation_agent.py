@@ -171,7 +171,8 @@ class DHOptimisationAgent(DerivationAgent):
         # Query further inputs from KG and construct optimisation model setup dictionary
         setup_dict, index = define_optimisation_setup(self.sparql_client, ts_client,
                                                  consumption_models, cogen_models,
-                                                 opti_inputs, opti_start_dt, opti_end_dt)
+                                                 opti_inputs, opti_start_dt, opti_end_dt,
+                                                 time_format)
         
         # create MarketPrices and MunicipalUtility objects
         prices, swps = create_optimisation_setup(setup_dict)
@@ -184,6 +185,9 @@ class DHOptimisationAgent(DerivationAgent):
         import random
         provided_heat = [round(random.uniform(2.0, 11.0),1) for _ in times]
         consumed_gas = [round(random.uniform(1.0, 6.0),1) for _ in times]
+        
+        # Update current tier unit price (based on new incremental heat sourcing)
+        #TODO: to implement
 
         # Instantiate new optimisation outputs in KG and RDB (if not yet existing)
         if not outputs:
