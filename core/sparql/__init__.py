@@ -108,33 +108,42 @@ class SparqlQuery(SparqlBase):
 
     @classmethod
     def _extract_triple_pattern(cls, graph_patterns_str: str):
-        subj, predicate, graph_patterns_str = graph_patterns_str.split(maxsplit=2)
+        subj, graph_patterns_str = graph_patterns_str.split(maxsplit=1)
 
-        graph_patterns_str = graph_patterns_str.strip()
-        if graph_patterns_str.startswith('"'):
-            ptr = 1
-            while ptr < len(graph_patterns_str) and graph_patterns_str[ptr] != '"':
-                ptr += 1
-            obj = graph_patterns_str[: ptr + 1]
-            graph_patterns_str = graph_patterns_str[ptr + 1 :].strip()
-            assert graph_patterns_str.startswith("."), graph_patterns_str
+        tails = []
+        while True:
+            graph_patterns_str = graph_patterns_str.strip()
+            predicate, graph_patterns_str = graph_patterns_str.split(maxsplit=1)
+
+            graph_patterns_str = graph_patterns_str.strip()
+            if graph_patterns_str.startswith('"'):
+                ptr = 1
+                while ptr < len(graph_patterns_str) and graph_patterns_str[ptr] != '"':
+                    ptr += 1
+                obj = graph_patterns_str[: ptr + 1]
+                graph_patterns_str = graph_patterns_str[ptr + 1 :].strip()
+            else:
+                splits = graph_patterns_str.split(maxsplit=1)
+                if len(splits) == 2:
+                    obj, graph_patterns_str = splits
+                else:
+                    (obj,) = splits
+                    graph_patterns_str = ""
+
+                if obj.endswith(".") or obj.endswith(";"):
+                    punctuation = obj[-1]
+                    graph_patterns_str = punctuation + graph_patterns_str
+                    obj = obj[:-1]
+
+            tails.append((predicate, obj))
+
+            assert graph_patterns_str[0] in [";", "."], graph_patterns_str
+            punctuation = graph_patterns_str[0]
             graph_patterns_str = graph_patterns_str[1:]
-        else:
-            splits = graph_patterns_str.split(maxsplit=1)
-            if len(splits) == 2:
-                obj, graph_patterns_str = splits
-            else:
-                (obj,) = splits
-                graph_patterns_str = ""
+            if punctuation == ".":
+                break
 
-            if obj.endswith("."):
-                obj = obj[:-1]
-            else:
-                graph_patterns_str = graph_patterns_str.strip()
-                assert graph_patterns_str.startswith("."), graph_patterns_str
-                graph_patterns_str = graph_patterns_str[1:]
-
-        triple_pattern = TriplePattern.from_triple(subj, predicate, obj)
+        triple_pattern = TriplePattern(subj=subj, tails=tails)
 
         return graph_patterns_str, triple_pattern
 
