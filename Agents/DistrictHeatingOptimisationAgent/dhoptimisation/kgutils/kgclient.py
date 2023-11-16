@@ -600,6 +600,47 @@ class KGClient(PySparqlClient):
         q, p = zip(*comb)
         
         return {'sc2': list(q), 'sc3': list(p)}
+    
+    
+    def get_price_tier_iri(self, provider_iri:str, annual_amount:float, 
+                           unit=OM_MEGAWATTHOUR):
+        """
+        Returns IRI of unit price tier applicable to the total amount of heat
+        sourced (in that given year)
+
+        Arguments:
+            provider_iri (str) -- IRI of heat provider, i.e., party fulfilling
+                                  the heat provision contract
+            annual_amount (float) -- cumulative value of annual heat amount sourced
+            
+        Returns:
+            IRI of price tier corresponding to total amount of heat sourced
+        """
+
+        # Constrain unit value if given
+        unit_constrain = ''
+        if unit:
+            unit_constrain = f"""
+                VALUES ?unit {{ <{unit}> }}
+                ?measure <{OM_HASUNIT}> ?unit . """            
+
+        query = f"""
+            SELECT DISTINCT ?tier
+            WHERE {{
+            {unit_constrain}
+            <{provider_iri}> ^<{OHN_IS_FULFILLED_BY}> ?contract .
+            ?contract <{OHN_HAS_TIERED_UNIT_PRICE}>/<{OHN_HAS_TIER}> ?tier .
+            ?tier <{OHN_HAS_CUMULATIVE_ENERGYCAP}>/<{OM_HASVALUE}> ?measure .
+            ?measure <{OM_HAS_NUMERICAL_VALUE}> ?amount .
+            FILTER (?amount > \"{annual_amount}\"^^<{XSD_FLOAT}> )
+            }}
+            ORDER BY ?amount
+            LIMIT 1
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        
+        return self.get_unique_value(res, 'tier', str)
             
             
     def get_heat_boiler_properties(self, boiler_iri:str):
@@ -826,6 +867,32 @@ class KGClient(PySparqlClient):
                     g.add((URIRef(fc_iri), URIRef(OM_HASUNIT), URIRef(OM_MEGAWATTHOUR)))
 
         return g, outputs
+    
+    
+    def update_current_price_tier(self, provider_iri:str, price_tier_iri:str):
+        """
+        Update connection between sourcing contract and potentially updated 
+        current unit price tier
+
+        Arguments:
+            provider_iri (str) -- IRI of heat provider, i.e., party fulfilling
+                                  the heat provision contract
+            price_tier_iri (iri) -- IRI of (potentially new) price tier
+        """
+        
+        update = f"""
+            DELETE {{
+                ?contract <{OHN_HAS_CURRENT_UNIT_PRICE}> ?tier .
+            }} INSERT {{
+                ?contract <{OHN_HAS_CURRENT_UNIT_PRICE}> <{price_tier_iri}> .
+            }} WHERE {{
+                <{provider_iri}> ^<{OHN_IS_FULFILLED_BY}> ?contract .
+                ?contract <{OHN_HAS_CURRENT_UNIT_PRICE}> ?tier .
+            }}
+        """
+
+        update = self.remove_unnecessary_whitespace(update)
+        self.performUpdate(update)
     
 
     #

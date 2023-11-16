@@ -176,8 +176,7 @@ class DHOptimisationAgent(DerivationAgent):
         
         # create MarketPrices and MunicipalUtility objects
         prices, swps = create_optimisation_setup(setup_dict)
-       
-       
+               
         # Mock optimisation data
         # 1) retrieve 1 input time series
         times, values = ts_client.retrieve_timeseries(opti_inputs['q_demand'])
@@ -232,6 +231,18 @@ class DHOptimisationAgent(DerivationAgent):
             ts_client.replace_ts_data(dataIRI=data_IRI, 
                                       times=times, values=consumed_gas)
         
+        # Update instantiated current sourcing prices
+        for c in swps.contracts:
+            # Assess updated cumulative annual sourcing amount
+            total = c.q_hist.sum(skipna=True)
+            #TODO: Add optimised sourcing amount for current (first) time step            
+            # Query applicable price tier for updated annual amount
+            # NOTE: Returns None for amounts exceeding annual max supply -> no update anymore
+            tier = self.sparql_client.get_price_tier_iri(c.iri, total)
+            if tier:
+                # Assign (potentially updated) price tier as current price
+                self.sparql_client.update_current_price_tier(c.iri, tier)        
+
         created_at = pd.to_datetime('now', utc=True)
         logger.info(f'Created generation optimisation at: {created_at}')
 

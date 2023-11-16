@@ -119,11 +119,16 @@ class SourcingContract:
 
     def update_internal_price(self):
         # Updates current heat unit price (depending on total annual heat sourcing volume)
-        # NOTE: Current heat unit price queried from KG; however, this ensures
-        #       that heat sourcing beyond annual supply limit is suppressed
-        #       (as infinity cannot be represented as xsd datatype)
+        # NOTE: Current heat unit price queried from KG, but updated here, as instantiated
+        #       price does not necessarily reflect state as of previous time step
+        #       (as unrelated periods can be optimised in subsequent request)
         total = self.q_hist.sum(skipna=True)
-        if total >= self.qlimits_pa[1]:
+        if total <= self.qlimits_pa[0]:
+            self.current_price = self.prices[0]
+        elif total <= self.qlimits_pa[1]:
+            self.current_price = self.prices[1]
+        else:
+            # Suppress heat sourcing beyond annual maximum supply limit
             self.current_price = np.inf
 
 
@@ -876,6 +881,7 @@ def create_optimisation_setup(setup_dict):
         mu_c.update_internal_price()
         # initialise qmin based on flow and return temperature @ entry point
         index = mu_c.qmin.index.to_series()
+        #TODO: uncomment
         #mu_c.qmin = index.apply(lambda i: minimum_supply(grid, mu_c.grid_entry_point, i))
         # add to municipal utility
         utility.add_contract(mu_c)
