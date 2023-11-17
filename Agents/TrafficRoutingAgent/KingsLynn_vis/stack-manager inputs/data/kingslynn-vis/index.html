@@ -544,7 +544,7 @@
                             type: 'geojson',
                             data: data
                         });
-                        routeData[sourceName] = data; 
+                        rrouteData[sourceName] = data;
                         routeData[layerId] = MapHandler.MAP.addLayer({
                             id: layerId,
                             type: 'line',
@@ -555,8 +555,15 @@
                                 'line-width': 3
                             }
                         });
+                        // Set layer visibility based on checkbox state
+                        var checkbox = document.getElementById(checkboxId);
+                        if (checkbox.checked) {
+                            MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'visible');
+                        } else {
+                            MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'none');
+                        }
                     });
-            }
+            };
             // function to remove the layer
             function removeLayer() {
                 // Remove layers and sources and set variables to null
@@ -576,19 +583,16 @@
                 if (MapHandler.MAP.getLayer('tsp-layer-normal') != null) {
                     MapHandler.MAP.removeLayer('tsp-layer-normal');
                     MapHandler.MAP.removeSource('tsp-data-normal');
-
                 };
 
                 if (MapHandler.MAP.getLayer('tsp-layer-30') != null) {
                     MapHandler.MAP.removeLayer('tsp-layer-30');
                     MapHandler.MAP.removeSource('tsp-data-30');
-
                 };
 
                 if (MapHandler.MAP.getLayer('tsp-layer-90') != null) {
                     MapHandler.MAP.removeLayer('tsp-layer-90');
                     MapHandler.MAP.removeSource('tsp-data-90');
-
                 };
 
             }
