@@ -241,7 +241,7 @@ class DHOptimisationAgent(DerivationAgent):
             tier = self.sparql_client.get_price_tier_iri(c.iri, total)
             if tier:
                 # Assign (potentially updated) price tier as current price
-                self.sparql_client.update_current_price_tier(c.iri, tier)        
+                self.sparql_client.update_current_heat_unit_price(c.iri, tier)
 
         created_at = pd.to_datetime('now', utc=True)
         logger.info(f'Created generation optimisation at: {created_at}')

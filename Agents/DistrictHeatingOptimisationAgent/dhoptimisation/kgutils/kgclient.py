@@ -605,7 +605,7 @@ class KGClient(PySparqlClient):
     def get_price_tier_iri(self, provider_iri:str, annual_amount:float, 
                            unit=OM_MEGAWATTHOUR):
         """
-        Returns IRI of unit price tier applicable to the total amount of heat
+        Returns IRI of price tier applicable to the total amount of heat
         sourced (in that given year)
 
         Arguments:
@@ -869,10 +869,10 @@ class KGClient(PySparqlClient):
         return g, outputs
     
     
-    def update_current_price_tier(self, provider_iri:str, price_tier_iri:str):
+    def update_current_heat_unit_price(self, provider_iri:str, price_tier_iri:str):
         """
-        Update connection between sourcing contract and potentially updated 
-        current unit price tier
+        Update connection between sourcing contract and current heat unit price 
+        for potentially updated price tier
 
         Arguments:
             provider_iri (str) -- IRI of heat provider, i.e., party fulfilling
@@ -882,12 +882,13 @@ class KGClient(PySparqlClient):
         
         update = f"""
             DELETE {{
-                ?contract <{OHN_HAS_CURRENT_UNIT_PRICE}> ?tier .
+                ?contract <{OHN_HAS_CURRENT_UNIT_PRICE}> ?price_old .
             }} INSERT {{
-                ?contract <{OHN_HAS_CURRENT_UNIT_PRICE}> <{price_tier_iri}> .
+                ?contract <{OHN_HAS_CURRENT_UNIT_PRICE}> ?price_new .
             }} WHERE {{
                 <{provider_iri}> ^<{OHN_IS_FULFILLED_BY}> ?contract .
-                ?contract <{OHN_HAS_CURRENT_UNIT_PRICE}> ?tier .
+                ?contract <{OHN_HAS_CURRENT_UNIT_PRICE}> ?price_old .
+                <{price_tier_iri}> <{OHN_HAS_UNIT_PRICE}> ?price_new .
             }}
         """
 
