@@ -9,7 +9,7 @@ public class TSPRouteGenerator {
 
 
     /**
-     * Create isochrone_aggregated table to store all final isochrone.
+     * Create tsp layer.
      */
     public void generateTSPLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName, String LayerName, String cost_table){
 
@@ -17,9 +17,9 @@ public class TSPRouteGenerator {
                 "    SELECT *\n" +
                 "    FROM pgr_TSP(\n" +
                 "        $$SELECT * FROM pgr_dijkstraCostMatrix(\n" +
-                "            'SELECT gid as id, source, target, cost_s as cost FROM routing_ways',\n" +
+                "            '"+cost_table+"',\n" +
                 "            (\n" +
-                "                SELECT array_agg(id)\n" +
+                "                SELECT ARRAY_APPEND(array_agg(id), (%target%))\n" +
                 "                FROM routing_ways_vertices_pgr\n" +
                 "                WHERE id IN (SELECT DISTINCT nearest_node FROM poi_tsp_nearest_node, flood_polygon_single_10cm WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005)\n" +
                 "            ),\n" +
@@ -63,7 +63,44 @@ public class TSPRouteGenerator {
         geoServerClient.createPostGISLayer(workspaceName, dbName,LayerName ,geoServerVectorSettingsTSPRoute);
     }
 
+    /**
+     * Generate sequence layer
+     */
+    public void generateSequenceLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName, String LayerName, String cost_table){
 
-    
+        LayerName= LayerName+"_seq";
 
+
+        String tspLayer = "WITH tsp AS (\n" +
+                "    SELECT *\n" +
+                "    FROM pgr_TSP(\n" +
+                "        $$SELECT * FROM pgr_dijkstraCostMatrix(\n" +
+                "            '"+cost_table+"',\n" +
+                "            (\n" +
+                "                SELECT array_agg(id)\n" +
+                "                FROM routing_ways_vertices_pgr\n" +
+                "                WHERE id IN (SELECT DISTINCT nearest_node FROM poi_tsp_nearest_node, flood_polygon_single_10cm WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005)\n" +
+                "            ),\n" +
+                "            false\n" +
+                "        )$$, \n" +
+                "        (%target%),"+
+                "        (%target%)"+
+                "    )\n" +
+                "), tsp_seq AS (SELECT nearest_node as id, geom FROM poi_tsp_nearest_node)\n" +
+                "SELECT tsp.*, tsp_seq.geom\n" +
+                "FROM tsp\n" +
+                "LEFT JOIN tsp_seq ON tsp.node = tsp_seq.id";
+
+        // Find nearest TSP_node which is the nearest grid
+        UpdatedGSVirtualTableEncoder virtualTableTSPRoute = new UpdatedGSVirtualTableEncoder();
+        GeoServerVectorSettings geoServerVectorSettingsTSPRoute = new GeoServerVectorSettings();
+        virtualTableTSPRoute.setSql(tspLayer);
+        virtualTableTSPRoute.setEscapeSql(true);
+        virtualTableTSPRoute.setName(LayerName);
+        virtualTableTSPRoute.addVirtualTableParameter("target","4121","^[\\d]+$");
+        virtualTableTSPRoute.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
+        geoServerVectorSettingsTSPRoute.setVirtualTable(virtualTableTSPRoute);
+        geoServerClient.createPostGISDataStore(workspaceName,LayerName, dbName, schema);
+        geoServerClient.createPostGISLayer(workspaceName, dbName,LayerName ,geoServerVectorSettingsTSPRoute);
+    }
 }

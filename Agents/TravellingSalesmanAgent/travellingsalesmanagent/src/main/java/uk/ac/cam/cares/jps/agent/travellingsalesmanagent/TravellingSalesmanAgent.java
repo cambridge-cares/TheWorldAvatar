@@ -145,30 +145,12 @@ public class TravellingSalesmanAgent extends JPSAgent {
             geoServerClient.createPostGISLayer(workspaceName, dbName,"poi_tsp_nearest_node" ,geoServerVectorSettings);
 
             if (tspFunction.equals("UR")){
-                // Find nearest TSP_node which is the nearest grid
-                UpdatedGSVirtualTableEncoder virtualTableReachNearestTSPPOI = new UpdatedGSVirtualTableEncoder();
-                GeoServerVectorSettings geoServerVectorSettingsReachNearestTSPPOI = new GeoServerVectorSettings();
-                virtualTableReachNearestTSPPOI.setSql("SELECT nearest_node as id\n" +
-                        "FROM flood_polygon_single_10cm, poi_tsp_nearest_node\n" +
-                        "WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom)\n" +
-                        "   OR ST_DISTANCE(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005\n" +
-                        "ORDER BY poi_tsp_nearest_node.\"geom\" <-> ST_SetSRID(ST_MakePoint(%lon%, %lat%), 4326)\n" +
-                        "LIMIT 1\n");
-                virtualTableReachNearestTSPPOI.setEscapeSql(true);
-                virtualTableReachNearestTSPPOI.setName("nearest_tsp_poi");
-                virtualTableReachNearestTSPPOI.addVirtualTableParameter("lon","1","^[\\\\d\\\\.\\\\+-eE]+$");
-                virtualTableReachNearestTSPPOI.addVirtualTableParameter("lat","1","^[\\\\d\\\\.\\\\+-eE]+$");
-                virtualTableReachNearestTSPPOI.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
-                geoServerVectorSettingsReachNearestTSPPOI.setVirtualTable(virtualTableReachNearestTSPPOI);
-                geoServerClient.createPostGISDataStore(workspaceName,"nearest_tsp_poi" , dbName, schema);
-                geoServerClient.createPostGISLayer(workspaceName, dbName,"nearest_tsp_poi" ,geoServerVectorSettingsReachNearestTSPPOI);
-
-
                 TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator();
                 for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
                     String layerName = "TSP_"+entry.getKey();
                     String sql = entry.getValue();
                     tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
+                    //tspRouteGenerator.generateSequenceLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
                 }
             }
 
