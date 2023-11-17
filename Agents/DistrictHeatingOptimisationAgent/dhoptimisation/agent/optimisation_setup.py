@@ -286,20 +286,17 @@ class GasTurbine:
 
 
     def get_idle_time(self):
-        # Returns gas turbine's idle time (count of inactive time steps since last operation)
-        if (len(self.q_hist[self.q_hist.notna()]) < self.idle_period) & (self.q_hist.sum(skipna=True) == 0.0):
-            # If generation history has less than 'idle_period' entries and all are zero
-            idle = self.idle_period
-        else:
-            if self.q_hist.sum(skipna=True, min_count=1) == 0.0:
-                # If all non-NaN entries are zeros, hence gas turbine has not been active (yet)
-                idle = self.q_hist[self.q_hist.notna()].index[-1] + 1
-            else:
-                # Derive index of last active operation
-                last_active = self.q_hist[self.q_hist > 0.0].index[-1]
-                # Derive difference between last non-NaN entry and last active entry
-                idle = self.q_hist[self.q_hist.notna()].index[-1] - last_active
-        return idle
+        # Returns GT's idle time (count of inactive time steps since last operation)
+        # Create copy of recent generation history and replace potential NaN with 0
+        q_hist = self.q_hist.copy()
+        q_hist.fillna(0, inplace=True)
+        # Reverse order to count backwards from optimisation start datetime
+        reversed_q_hist = self.q_hist[::-1]
+        reversed_q_hist = reversed_q_hist.cumsum()
+        # Keep only consecutively inactive time steps
+        inactive = reversed_q_hist[reversed_q_hist == 0]
+        
+        return len(inactive)
 
 
     def create_copy(self, start=0, stop=None):

@@ -62,14 +62,13 @@ def minimum_supply(grid_operator, timestep):
     return min_stability_demand
 
 
-def generation_optimization(municipal_utility, market_prices, fc_input, datetime_index, evaluation_period, mpc_horizon,
+def generation_optimization(municipal_utility, market_prices, datetime_index, evaluation_period, mpc_horizon,
                             out_file_gt, out_file_opt, previous_state, histeval=False, live_updates=False):
     """
     Run heat generation/sourcing cost optimization as model-predictive control implementation
 
     :param MunicipalUtility municipal_utility: municipal utility object (with heat demand, connected grid, etc.)
     :param MarketPrices market_prices: market prices object with electricity, co2, gas, etc. prices as time series
-    :param pd.DataFrame fc_input: DataFrame of required forecast(s) input, i.e. historical time series, temperature etc.
     :param DateTimeIndex datetime_index: original datetime indices to integer-based indices of objects
     :param int evaluation_period: total number of time steps to be evaluated/forecasted
     :param int mpc_horizon: time steps to be optimized in each optimization run (mpc horizon)
@@ -81,45 +80,34 @@ def generation_optimization(municipal_utility, market_prices, fc_input, datetime
                             as well as internally optimised modes w/ GT ('wgt') and w/o GT ('wogt')
     :returns pd.DataFrame: ('mpc_horizon' ahead) forecasts of heat load and grid temperatures for 'evaluation_period'
     """
-  
-
-    # create "updated" copies of municipal utility and market prices objects for mpc horizon (optimisation period)
-    # TODO: refactor/remove
-    prices = market_prices.create_copy(start=t, stop=t + mpc_horizon)
-    mu = municipal_utility.create_copy(start=t, stop=t + mpc_horizon)
-    # whether gas turbine start up cost are already included in optimized mode w/ GT
+    
+    # Whether GT has been active in previous time step
+    gt_active = previous_state.gt_active
+    gt_benefit = previous_state.gt_benefit
+    ops1_last_setup = previous_state.ops1_last_setup
+    ops2_last_setup = previous_state.ops2_last_setup  
+    # Whether GT start up cost are already included in optimized mode w/ GT
     startup_cost_included = False  # default: add (additional) start-up cost
 
-    # incorporate gas turbine idle time requirement and update start-up/shut-down cost
+    # Incorporate GT idle time requirement (i.e., potentially mark GT as unavailable)
     gts = [gt.name for gt in municipal_utility.gas_turbines]
     for gt in municipal_utility.gas_turbines:
         if (not gt_active) and (gt.get_idle_time() < gt.idle_period):
-            # only for currently not active gas turbines: if current idle time since last active operation is
+            # Only for currently not active GT: if current idle time since last active operation is
             # shorter than required idle_period, flag gas turbine as unavailable for remaining time steps
             remaining = gt.idle_period - gt.get_idle_time()
-            mu.gas_turbines[gts.index(gt.name)].available[0: remaining] = 0
-        # update gas turbine start-up and shut-down cost
-        mu.gas_turbines[gts.index(gt.name)].set_startup_cost(municipal_utility.fuel, prices)
-        mu.gas_turbines[gts.index(gt.name)].set_shutdown_cost()
+            municipal_utility.gas_turbines[gts.index(gt.name)].available[0: remaining] = 0
 
-    # incorporate technical supply minimum for external sourcing contracts (depend on flow and return temperature
-    # at respective grid entry point); supply maximum is static and does not need to be updated
-    cs = [c.name for c in municipal_utility.contracts]
-    for contract in municipal_utility.contracts:
-        index = mu.contracts[cs.index(contract.name)].qmin.index.to_series()
-        mu.contracts[cs.index(contract.name)].qmin = index.apply(lambda i: minimum_supply(mu.network,
-                                                        mu.contracts[cs.index(contract.name)].grid_entry_point, i))
-
-    # define heat sources for both heat generation modes: mode1 w/o GT, mode2 w/ GT
+    # Define heat sources for both heat generation modes: mode1 w/o GT, mode2 w/ GT
     sources_mode1 = []
-    sources_mode1.extend(mu.boilers)
-    sources_mode1.extend(mu.contracts)
+    sources_mode1.extend(municipal_utility.boilers)
+    sources_mode1.extend(municipal_utility.contracts)
     sources_mode2 = sources_mode1.copy()
-    sources_mode2.extend(mu.gas_turbines)
+    sources_mode2.extend(municipal_utility.gas_turbines)
 
     # create profit lines for both heat generation modes
-    ops1 = minimize_generation_cost(mu, sources_mode1, prices, mpc_horizon, preceding_setup=ops1_last_setup)
-    ops2 = minimize_generation_cost(mu, sources_mode2, prices, mpc_horizon, preceding_setup=ops2_last_setup)
+    ops1 = minimize_generation_cost(municipal_utility, sources_mode1, market_prices, mpc_horizon, preceding_setup=ops1_last_setup)
+    ops2 = minimize_generation_cost(municipal_utility, sources_mode2, market_prices, mpc_horizon, preceding_setup=ops2_last_setup)
     ops1_last_setup = ops1['Active_generator_objects'][0]
     ops2_last_setup = ops2['Active_generator_objects'][0]
 

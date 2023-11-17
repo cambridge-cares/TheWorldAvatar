@@ -173,24 +173,24 @@ class DHOptimisationAgent(DerivationAgent):
         #    would just get updated (checks for actual forecast instances)
         outputs = self.sparql_client.get_existing_optimisation_outputs(opti_inputs['q_demand'])
         
+        # 2) Create optimisation input objects from KG data
         # Query further inputs from KG and construct optimisation model setup dictionary
         setup_dict, index = define_optimisation_setup(self.sparql_client, ts_client,
                                                  consumption_models, cogen_models,
                                                  opti_inputs, opti_start_dt, opti_end_dt,
-                                                 time_format)
-        
+                                                 time_format)        
         # Create MarketPrices and MunicipalUtility objects for optimisation
         prices, swps = create_optimisation_setup(setup_dict)
         
-        # Optimize heat generation modes
+        # 3) Optimize heat generation modes
+        # Reset gas turbine etc. states for non-related optimisation runs
         if (datetime.strptime(opti_start_dt, time_format) - timedelta(hours=1)).strftime(time_format) != self.previous_state.start_dt:
-            # Reset gas turbine etc. states for non-related optimisation runs
             # Otherwise: If the previous optimisation interval covered [t1, t2] and
-            # the subsequent request covers [t1+1h, t3] -> runs are considered related
+            # the current request covers [t1+1h, t3] -> runs are considered related
             # and the optimised state for t1 will be used as starting conditions
             self.previous_state.reset_system_state()
         
-        generation_optimization(*[None]*3, index, *[None]*4, self.previous_state)
+        generation_optimization(swps, prices, index, *[None]*4, self.previous_state)
         # res, res_wogt, res_wgt, fcs = generation_optimization(swps, prices, ts_input, index, opt_period, mpc_horizon,
         #                                                     out_file_gt, out_file_opt, histeval=True, live_updates=False)
                
