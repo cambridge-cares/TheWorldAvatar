@@ -2,27 +2,16 @@
 ## 1. Description
 The TravellingSalesmanAgent is an agent that
 1) Retrieves Points of Interest (POI) locations from the knowledge graph.
-2) Generates isochrones from the locations with different mode of transport and or road conditions as according to OntoIsochrone. 
-3) Performs 15 Minute Smart City (15MSC) and Urban Resillience (UR) planning. 
-4) Instantiates the isochrones via OBDA mapping. 
+2) Based on the specific usecases, generate geoserver layers on Travelling Salesman Problem. 
 
 ## 2. Prerequisites
 ### 2.1. Stack Set Up
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack. Several pre-configured examples for the different use cases for King's Lynn and Pirmasens can be found in [stack-data-uploader-inputs](stack-data-uploader-inputs/).
  
-### 2.2. Uploading OSM Data via stack-data-uploader
-1) Download desired bounding box from [BBBike.org](https://extract.bbbike.org/) (check junk email) or [GeoFabrik](https://download.geofabrik.de/) in `.pbf` format.
-2) `.pbf` uploaded via [stack-data-uploader] in [osm2pgrouting](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#osm-data) data type.
-
-### 2.3. Uploading population data via stack-data-uploader
-1) Download High Resolution Population Density Maps from [HDX - Meta Data For Good](https://data.humdata.org/dataset/germany-high-resolution-population-density-maps-demographic-estimates?).
-2) Upload population data using [stack-data-uploader].
 
 ## 3. Agent Configuration 
 ### 3.1 Config Properties
-Items to configure in [config.properties](inputs/config.properties): 
-1) `populationTables` - The exact table names of the population tables should follow the names of population table as per [uploaded via stack-data-uploader](#23-uploading-population-data-via-stack-data-uploader). 
-2) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. Blazegraph endpoint can be on the same stack or different stack.
+1) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. Blazegraph endpoint can be on the same stack or different stack.
 
 ### 3.2 SPARQL Queries
 SPARQL queries are used to retrieve the locations of POI. 
@@ -32,12 +21,7 @@ The SPARQL queries follow the format which requires the returned variable to be 
 2) `poi_type` refers to the POI's iri type. 
 3) `geometry` refers to the WKT literals of the POI location in EPSG 4326. 
 
-SPARQL queries are created for [15MSC in Pirmasens](inputs/15MSC/POIqueries/) and [UR in King's Lynn](inputs/UR/POIqueries/) use cases.
-
-To use the example created in [15MSC in Pirmasens](inputs/15MSC/POIqueries/), replace `[ONTOP]` with your Ontop endpoint as per the format below: 
-```
-<http://<STACK-NAME>-ontop:8080/sparql/>
-```
+SPARQL queries are created for [UR in King's Lynn](inputs/UR/POIqueries/) use cases.
 
 ### 3.3 EdgeTableSQL
 [EdgeTable](https://docs.pgrouting.org/2.5/en/pgRouting-concepts.html#description-of-the-edges-sql-query-for-dijkstra-like-functions) describes the characteristic of the road networks. It is used to define the transport mode and road conditions during the calculation of isochrone. 
@@ -68,7 +52,7 @@ The agent has been implemented to work in the stack, which requires the Travelli
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
 ### 5.3 Running the Agent
-The agent is reachable at the `/update` endpoint.
+The agent is reachable at the `/runtsp` endpoint.
 #### Input specification
 1) `function` - The use case scenario to run the isochrones.
 
