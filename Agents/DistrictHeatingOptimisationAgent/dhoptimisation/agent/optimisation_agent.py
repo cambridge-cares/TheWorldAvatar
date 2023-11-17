@@ -174,7 +174,7 @@ class DHOptimisationAgent(DerivationAgent):
                                                  opti_inputs, opti_start_dt, opti_end_dt,
                                                  time_format)
         
-        # create MarketPrices and MunicipalUtility objects
+        # Create MarketPrices and MunicipalUtility objects for optimisation
         prices, swps = create_optimisation_setup(setup_dict)
                
         # Mock optimisation data

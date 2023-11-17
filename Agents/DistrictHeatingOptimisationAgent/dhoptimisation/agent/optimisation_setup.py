@@ -13,8 +13,8 @@ from datetime import datetime, timedelta
 
 from dhoptimisation.utils import *
 from dhoptimisation.datamodel.iris import *
-from dhoptimisation.agent.config import HIST_LENGTH, TIME_FORMAT
 from dhoptimisation.datamodel.unit_mapping import UNITS
+from dhoptimisation.agent.config import HIST_LENGTH, TIME_FORMAT
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
 
@@ -879,10 +879,6 @@ def create_optimisation_setup(setup_dict):
     for mu_c in mu_contracts:
         # initialise current price
         mu_c.update_internal_price()
-        # initialise qmin based on flow and return temperature @ entry point
-        index = mu_c.qmin.index.to_series()
-        #TODO: uncomment
-        #mu_c.qmin = index.apply(lambda i: minimum_supply(grid, mu_c.grid_entry_point, i))
         # add to municipal utility
         utility.add_contract(mu_c)
     for mu_b in mu_boilers:
