@@ -4,8 +4,9 @@
 ##########################################
 '''
 Log:
-Renamed module tboxcleaner.py to tboxtools.py
-Added verification of the UUID in the instance name
+Clean-up:
+deleted the old code with definitions of datatypes
+
 '''
 
 
@@ -55,7 +56,6 @@ The structure of the dictionary:
 The short names (like 'integer' or 'rdfs:literal' must be in low case,
 even if originally it has upper case.
 In csv file these types can be in either case."""
-DATA_TYPES = dict()
 
 def standard_data_types():
     output = dict()
@@ -81,56 +81,6 @@ def standard_data_types():
     return output
 
 DATA_TYPES = standard_data_types()
-"""
-DATA_TYPES = dict()
-
-DATA_TYPES['anyURI'   ] = [ XSD.anyURI,   'anyuri',   'xsd:anyuri' ]
-DATA_TYPES['base64Binary'] = [ XSD.base64Binary,'base64binary','xsd:base64binary' ]
-DATA_TYPES['boolean'  ] = [ XSD.boolean,  'boolean',  'xsd:boolean' ]
-DATA_TYPES['byte'     ] = [ XSD.byte,     'byte',     'xsd:byte' ]
-DATA_TYPES['dateTime' ] = [ XSD.dateTime, 'datetime', 'xsd:datetime' ]
-DATA_TYPES['dateTimeStamp'] = [ XSD.dateTimeStamp, 'datetimestamp', 'xsd:datetimestamp' ]
-DATA_TYPES['decimal'  ] = [ XSD.decimal,  'decimal',  'xsd:decimal' ]
-DATA_TYPES['double'   ] = [ XSD.double,   'double',   'xsd:double' ]
-DATA_TYPES['float'    ] = [ XSD.float,    'float',    'xsd:float' ]
-DATA_TYPES['hexBinary'] = [ XSD.hexBinary,'hexbinary','xsd:hexbinary' ]
-DATA_TYPES['int'      ] = [ XSD.int,      'int',      'xsd:int' ]
-DATA_TYPES['integer'  ] = [ XSD.integer,  'integer',  'xsd:integer' ]
-DATA_TYPES['language' ] = [ XSD.language, 'language', 'xsd:language' ]
-DATA_TYPES['long'     ] = [ XSD.long,     'long',     'xsd:long' ]
-DATA_TYPES['Name'     ] = [ XSD.Name,     'name',     'xsd:name' ]
-DATA_TYPES['NCName'   ] = [ XSD.NCName,   'ncname',   'xsd:ncname' ]
-DATA_TYPES['negativeInteger' ] = [ XSD.negativeInteger, 'negativeinteger', 'xsd:negativeinteger' ]
-DATA_TYPES['NMTOKEN'  ] = [ XSD.NMTOKEN,  'nmtoken',  'xsd:nmtoken' ]
-DATA_TYPES['nonNegativeInteger' ] = [ XSD.nonNegativeInteger, 'nonnegativeinteger', 'xsd:nonnegativeinteger' ]
-DATA_TYPES['nonPositiveInteger' ] = [ XSD.nonPositiveInteger, 'nonpositiveinteger', 'xsd:nonpositiveinteger' ]
-DATA_TYPES['normalizedString'  ] = [ XSD.normalizedString,   'normalizedstring',   'xsd:normalizedstring' ]
-DATA_TYPES['positiveInteger' ] = [ XSD.positiveInteger, 'positiveinteger', 'xsd:positiveinteger' ]
-DATA_TYPES['short'   ] = [ XSD.short,    'short',    'xsd:short' ]
-DATA_TYPES['string'  ] = [ XSD.string,   'string',   'xsd:string' ]
-DATA_TYPES['token'   ] = [ XSD.token,    'token',    'xsd:token' ]
-DATA_TYPES['unsignedByte'] = [ XSD.unsignedByte, 'unsignedbyte', 'xsd:unsignedbyte' ]
-DATA_TYPES['unsignedInt' ] = [ XSD.unsignedInt,  'unsignedint',  'xsd:unsignedint' ]
-DATA_TYPES['unsignedLong'] = [ XSD.unsignedLong, 'unsignedlong', 'xsd:unsignedlong' ]
-DATA_TYPES['unsignedShort']= [ XSD.unsignedShort,'unsignedshort','xsd:unsignedshort' ]
-
-DATA_TYPES['langString'  ] = [ RDF.langString,   'langstring',   'rdf:langstring' ]
-DATA_TYPES['PlainLiteral'] = [ RDF.PlainLiteral, 'plainliteral', 'rdf:plainliteral' ]
-DATA_TYPES['XMLLiteral'  ] = [ RDF.XMLLiteral,   'xmlliteral',   'rdf:xmlliteral' ]
-DATA_TYPES['Literal'     ] = [ RDFS.Literal,     'literal',      'rdfs:literal' ]
-
-# Below is a list of Properties, not data types:
-#DATA_TYPES['label'       ] = [ RDFS.label,       'label',        'rdfs:label' ]
-#DATA_TYPES['domain'      ] = [ RDFS.domain,      'domain',       'rdfs:domain' ]
-#DATA_TYPES['range'       ] = [ RDFS.range,       'range',        'rdfs:range' ]
-#DATA_TYPES['comment'     ] = [ RDFS.comment,     'comment',      'rdfs:comment' ]
-#DATA_TYPES['seeAlso'     ] = [ RDFS.seeAlso,      'seealso',       'rdfs:seealso' ]
-#DATA_TYPES['isDefinedBy' ] = [ RDFS.isDefinedBy,  'isdefinedby',   'rdfs:isdefinedby' ]
-#DATA_TYPES['member'      ] = [ RDFS.member,       'member',        'rdfs:member' ]
-#DATA_TYPES['DataType'    ] = [ RDFS.DataType,     'datatype',      'rdfs:datatype' ]
-#DATA_TYPES['Resource'    ] = [ RDFS.Resource,     'resource',      'rdfs:resource' ]
-#DATA_TYPES['Class'       ] = [ RDFS.Class,        'class',         'rdfs:class' ]
-"""
 
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
@@ -638,6 +588,7 @@ if __name__ == "__main__":
     n,u = split_name_uuid( "UnitCell_PTY-628b0598-8429-4748-8570-af693be90476", "in file_line" )
     n,u = split_name_uuid( "UnitCell_PTY_628b0598-8429-4748-8570-af693be90476", "in file_line" )
     #print(f"name = '{n}', uuid = '{u}'" )
+
     print( "=======================================" )
     print( "Test convert_into_rdf():" )
     #filename = "ontospecies_abox.csv"
