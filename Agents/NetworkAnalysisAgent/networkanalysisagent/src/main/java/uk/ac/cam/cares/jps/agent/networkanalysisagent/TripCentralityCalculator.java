@@ -103,7 +103,7 @@ public class TripCentralityCalculator {
                 "CROSS JOIN\n" +
                 "    maxcount -- Include the CTE in the FROM clause\n" +
                 "ORDER BY \n" +
-                "    count_difference_percentage DESC;";
+                "    count_difference_percentage DESC";
 
         // Find nearest TSP_node which is the nearest grid
         UpdatedGSVirtualTableEncoder virtualTableTSPRoute = new UpdatedGSVirtualTableEncoder();
@@ -111,7 +111,6 @@ public class TripCentralityCalculator {
         virtualTableTSPRoute.setSql(tspLayer);
         virtualTableTSPRoute.setEscapeSql(true);
         virtualTableTSPRoute.setName(LayerName);
-        virtualTableTSPRoute.addVirtualTableParameter("target","4121","^[\\d]+$");
         virtualTableTSPRoute.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
         geoServerVectorSettingsTSPRoute.setVirtualTable(virtualTableTSPRoute);
         geoServerClient.createPostGISDataStore(workspaceName,LayerName, dbName, schema);

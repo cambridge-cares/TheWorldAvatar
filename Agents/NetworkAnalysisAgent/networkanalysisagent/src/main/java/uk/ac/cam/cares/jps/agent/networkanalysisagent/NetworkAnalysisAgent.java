@@ -129,9 +129,9 @@ public class NetworkAnalysisAgent extends JPSAgent {
                 List<String> tcTableNameList = new ArrayList<>();
 
                 for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
-                    String tableName = entry.getKey();
-                    String sql = entry.getValue().toLowerCase();
-                    tcTableNameList.add(sql);
+                    String tableName = entry.getKey().toLowerCase();
+                    String sql = entry.getValue();
+                    tcTableNameList.add(tableName);
                     System.out.println("Begin generating tables for "+tableName+" with the edgeTableSQL as " + sql);
                     tripCentralityCalculator.calculateTripCentrality(remoteRDBStoreClient, cumulativePOI, tableName, sql);
                 }
