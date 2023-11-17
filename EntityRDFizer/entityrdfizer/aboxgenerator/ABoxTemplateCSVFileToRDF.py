@@ -64,7 +64,8 @@ def standard_data_types():
             'integer', 'language', 'long', 'Name', 'NCName', 'negativeInteger',\
             'NMTOKEN', 'nonNegativeInteger', 'nonPositiveInteger', \
             'normalizedString', 'positiveInteger', 'short', 'string', 'token' \
-            'unsignedByte', 'unsignedInt', 'unsignedLong', 'unsignedShort' ]
+            'unsignedByte', 'unsignedInt', 'unsignedLong', 'unsignedShort', \
+            'date', 'gYearMonth', 'gMonthDay', 'gYear', 'gMonth', 'gDay' ]
     for key in xsd:
         output[key] = [ getattr(XSD,key), key.lower(), 'xsd:' + key.lower() ]
     rdf = [ 'langString', 'PlainLiteral', 'XMLLiteral' ]
