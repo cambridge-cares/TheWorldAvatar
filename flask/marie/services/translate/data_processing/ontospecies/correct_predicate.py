@@ -1,5 +1,8 @@
-from sentence_transformers import SentenceTransformer, util
+import numpy as np
 
+from marie.services.translate.triton_client.feature_extraction_client import (
+    FeatureExtractionClient,
+)
 from .constants import (
     ABSTRACT_IDENTIFIER_KEY,
     ABSTRACT_PROPERTY_KEY,
@@ -38,6 +41,10 @@ def tokenize(text: str):
     return tokens
 
 
+def cos_sim(a: np.ndarray, b: np.ndarray):
+    return a @ b.T / (np.linalg.norm(a) * np.linalg.norm(b))
+
+
 class OSPredicateCorrector:
     ABSTRACT_KEYS = [ABSTRACT_PROPERTY_KEY, ABSTRACT_IDENTIFIER_KEY]
     PROPERTY_IDENTIFIER_KEYS = PROPERTY_KEYS + IDENTIFIER_KEYS
@@ -52,11 +59,17 @@ class OSPredicateCorrector:
         + ["os:has{key}/rdfs:label".format(key=x) for x in USE_CHEMCLASS_KEYS]
     )
 
-    def __init__(self, model: str = "sentence-transformers/all-MiniLM-L12-v2"):
-        self.model = SentenceTransformer(model)
-        self.embed_matrix = self.model.encode(
-            [" ".join(tokenize(x)) for x in self.KEYS], convert_to_tensor=True
-        )
+    def __init__(self):
+        self.model = FeatureExtractionClient()
+        self._embed_matrix = None
+    
+    @property
+    def embed_matrix(self):
+        if self._embed_matrix is None:
+            self._embed_matrix = self.model.forward(
+                [" ".join(tokenize(x)) for x in self.KEYS]
+            )
+        return self._embed_matrix
 
     def correct(self, predicate: str):
         if (
@@ -68,8 +81,8 @@ class OSPredicateCorrector:
 
         key = predicate.split("/", maxsplit=1)[0].rsplit("has", maxsplit=1)[-1]
 
-        embed_key = self.model.encode([" ".join(tokenize(key))], convert_to_tensor=True)
-        cosine_scores = util.cos_sim(self.embed_matrix, embed_key).flatten()
+        embed_key = self.model.forward([" ".join(tokenize(key))])[0]
+        cosine_scores = cos_sim(self.embed_matrix, embed_key)
         closest_idx = cosine_scores.argmax()
         closest_key = self.KEYS[closest_idx]
 
@@ -80,7 +93,7 @@ class OSPredicateCorrector:
                 return "os:has{key}/os:value".format(key=closest_key)
             else:
                 return "os:has" + closest_key
-        else: # self.USE_CHEMCLASS_KEYS:
+        else:  # self.USE_CHEMCLASS_KEYS:
             if "/" in predicate:
                 return "os:has{key}/rdfs:label".format(key=closest_key)
             else:

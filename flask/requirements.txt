@@ -5,6 +5,4 @@ SPARQLWrapper
 unit_parse
 Pint
 numpy
-scikit-learn
-sentence-transformers
 Levenshtein

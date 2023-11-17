@@ -1,10 +1,12 @@
 import numpy as np
 import tritonclient.http as httpclient
 
+from .constants import TRITON_ENDPOINT
+
 
 class Seq2SeqClient:
-    def __init__(self, triton_endpoint: str = "localhost:8000"):
-        self.client = httpclient.InferenceServerClient(url=triton_endpoint)
+    def __init__(self):
+        self.client = httpclient.InferenceServerClient(url=TRITON_ENDPOINT)
 
     def forward(self, text: str):
         text = np.array(

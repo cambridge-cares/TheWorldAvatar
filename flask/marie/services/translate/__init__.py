@@ -7,16 +7,12 @@ from .data_processing.ontospecies.postprocess import OSPostProcessor
 from .data_processing.postprocess import PostProcessor
 from .data_processing.sparql import postprocess_sparql
 from .sparql import SparqlQuery
-from .seq2seq_client import Seq2SeqClient
+from .triton_client.seq2seq_client import Seq2SeqClient
 
 
 class MultiDomainTranslator:
-    def __init__(
-        self,
-        triton_endpoint: str = "localhost:8000"
-    ):
-        print("Connecting to inference server at " + triton_endpoint)
-        self.model = Seq2SeqClient(triton_endpoint)
+    def __init__(self):
+        self.model = Seq2SeqClient()
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
             ontospecies=OSPostProcessor(), ontokin=OKPostProcessor()
         )

@@ -13,9 +13,7 @@ SAMPLE_QUESTIONS = json.loads(
 )
 app = Flask(__name__)
 
-translator = MultiDomainTranslator(
-    triton_endpoint=os.environ.get("TRITON_ENDPOINT", "localhost:8000")
-)
+translator = MultiDomainTranslator()
 kg_executor = KgExecutor()
 
 
