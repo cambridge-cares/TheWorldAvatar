@@ -102,10 +102,11 @@ LIMIT 100"""
         self.seed_entities = self.retrieve_seed_entities(endpoint, user, pw)
         random.shuffle(self.seed_entities)
 
-    def generate(self):
+    def generate(self, repeats: int = 1):
         examples = []
 
-        for id, entity_iri in enumerate(tqdm(self.seed_entities)):
+        for i in tqdm(range(len(self.seed_entities) * repeats)):
+            entity_iri = self.seed_entities[i % len(self.seed_entities)]
             cls = self.store.get_cls(entity_iri)
 
             if cls == OKMechanism:
@@ -123,7 +124,7 @@ LIMIT 100"""
             ask_datum = example_maker.make_example(entity_iri)
 
             example = dict(
-                id=id,
+                id=i,
                 topic_entity=topic_entity,
                 verbalization=ask_datum.verbalization,
                 query=dict(
@@ -141,10 +142,11 @@ if __name__ == "__main__":
     parser.add_argument("--endpoint", required=True)
     parser.add_argument("--user", default=None)
     parser.add_argument("--pw", default=None)
+    parser.add_argument("--repeats", type=int, default=1)
     args = parser.parse_args()
 
     ds_gen = DatasetGenerator(endpoint=args.endpoint, user=args.user, pw=args.pw)
-    examples = ds_gen.generate()
+    examples = ds_gen.generate(repeats=args.repeats)
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")
     filename = "data/ontokin_{timestamp}.json".format(timestamp=time_label)
