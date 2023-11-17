@@ -61,12 +61,13 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     ops1_last_setup = ops1['Active_generator_objects'][0]
     ops2_last_setup = ops2['Active_generator_objects'][0]
 
-    # check whether GT start-up cost need to be added in case of switching
-    if (t > 0) and (ops2['SWPS_GT'][0] > 0.0) and (previous == 0.0):
-        # start-up cost could potentially be already included in optimized mode w/GT in case of "inner-mode"
-        # switching due to lower q_demand than GT min load
-        startup_cost_included = True
-    previous = ops2['SWPS_GT'][0]
+    # TODO: to be reviewed / properly understood
+    # # check whether GT start-up cost need to be added in case of switching
+    # if (t > 0) and (ops2['SWPS_GT'][0] > 0.0) and (previous == 0.0):
+    #     # start-up cost could potentially be already included in optimized mode w/GT in case of "inner-mode"
+    #     # switching due to lower q_demand than GT min load
+    #     startup_cost_included = True
+    # previous = ops2['SWPS_GT'][0]
 
     # optimize operating modes
     opt = optimize_operating_modes(ops1, ops2, gt_active=gt_active, startup_cost_included=startup_cost_included,
@@ -198,6 +199,185 @@ def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices, op
     ops_overview.index = municipal_utility.q_demand.index[:optimization_period]
 
     return ops_overview
+
+
+def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=False, startup_cost_included=False,
+                             prev_gt_benefit=None, mpc_eval=True):
+    """
+    Returns a DataFrame of optimized heat generation modes and associated cost
+
+    :param pd.DataFrame operating_mode_woGT: optimized heat generation for each time step based on mode w/o GT
+    :param pd.DataFrame operating_mode_wGT: optimized heat generation for each time step based on mode w/ GT
+    :param boolean gt_active: flag whether gas turbine is currently active
+    :param boolean startup_cost_included: flag whether gas turbine start-up cost are already included in minimized cost
+                                          for mode w/ GT
+    :param float prev_gt_benefit: cumulative previous benefit from current gas turbine operation
+    :param boolean mpc_eval: indicates whether this evaluation is used in a MPC optimization or not
+    :returns pd.DataFrame: DataFrame with optimized heat generation conditions (based on mode 1 and 2) for each time step
+    """
+
+    # initialize DataFrame with optimized operating conditions
+    optimized = pd.DataFrame(columns=operating_mode_woGT.columns[:-1])
+
+    # initialize current best AND alternative operating mode for initial time step
+    if gt_active:
+        current_best = operating_mode_wGT.copy()
+        alternative = operating_mode_woGT.copy()
+    else:
+        current_best = operating_mode_woGT.copy()
+        alternative = operating_mode_wGT.copy()
+        # re-adjusted 'Min_cost' for optimized mode w/ GT if start up cost are already included in first time step
+        if startup_cost_included:
+            alternative.loc[0, 'Min_cost'] -= switching_cost([], 0, [gt for gt in alternative['Active_generator_objects'][0]
+                                                             if isinstance(gt, GasTurbine)], 0)
+
+    # initialize previous GT benefit parameters
+    gt_benefit = prev_gt_benefit if prev_gt_benefit else [0.0, 0.0]
+
+    t = 0
+    # loop over all time steps in operating_modes
+    while t < len(current_best.index):
+        # check whether current operating mode is still more profitable
+        if current_best['Min_cost'][t] <= alternative['Min_cost'][t]:
+            # append current_best operating conditions to optimized conditions for respective time step
+            optimized = pd.concat([optimized, current_best.iloc[t, :-1].to_frame().transpose()])
+            if gt_active:
+                # update cumulative and max benefit from CURRENT GT operation
+                gt_benefit[1] += alternative['Min_cost'][t] - current_best['Min_cost'][t]
+                gt_benefit[0] = max(gt_benefit[0], gt_benefit[1])
+            t += 1
+        else:
+            # extract profit lines and heat generation set-ups for current time step and onwards & reset indices
+            current_cost = current_best['Min_cost'][t:].reset_index(drop=True)
+            alternative_cost = alternative['Min_cost'][t:].reset_index(drop=True)
+            current_setup = current_best['Active_generator_objects'][t:].reset_index(drop=True)
+            alternative_setup = alternative['Active_generator_objects'][t:].reset_index(drop=True)
+            if gt_active:
+                switch, period, cost = assess_switching_period(current_cost, alternative_cost, current_setup,
+                                                               alternative_setup, prev_gt_benefit=gt_benefit,
+                                                               mpc_eval=mpc_eval)
+            else:
+                switch, period, cost = assess_switching_period(current_cost, alternative_cost, current_setup,
+                                                               alternative_setup, mpc_eval=mpc_eval)
+            # loop over length of evaluated 'switching' period
+            for dt in range(period+1):
+                if switch:
+                    if dt == 0:
+                        # reset previously accumulated gt benefit
+                        gt_benefit = [0, 0]
+                        # add switching cost to first interval in switching period
+                        switching_interval = alternative.iloc[t, :-1]
+                        switching_interval['Min_cost'] += cost
+                        optimized = pd.concat([optimized, switching_interval.to_frame().transpose()])
+                    else:
+                        optimized = pd.concat([optimized, alternative.iloc[t, :-1].to_frame().transpose()])
+                else:
+                    optimized = pd.concat([optimized, current_best.iloc[t, :-1].to_frame().transpose()])
+                    if gt_active:
+                        # update cumulative and max benefit from CURRENT GT operation
+                        gt_benefit[1] += alternative['Min_cost'][t] - current_best['Min_cost'][t]
+                        gt_benefit[0] = max(gt_benefit[0], gt_benefit[1])
+                t += 1
+
+    return optimized
+
+
+def assess_switching_period(current_cost_line, alternative_cost_line, current_set_up, alternative_set_up,
+                            prev_gt_benefit=None, mpc_eval=True):
+    """
+    Returns a boolean flag whether heat generation modes shall be switched, associated switching cost and
+    the respective time period for which the modes shall/shall not be switched
+
+    :param pd.DataFrame current_cost_line: series of minimal cost for each time step in optimization period
+    :param pd.DataFrame alternative_cost_line: series of minimal cost for each time step in optimization period
+    :param pd.DataFrame current_set_up: list of active heat generation/sourcing objects associated with max profit for
+                                        each time step in optimization period
+    :param pd.DataFrame alternative_set_up: list of active heat generation/sourcing objects associated with max profit for
+                                            each time step in optimization period
+    :param float prev_gt_benefit: max and cumulative previous benefit from current gas turbine operation
+    :param boolean mpc_eval: indicates whether this evaluation is used in a MPC optimization or not
+    :returns boolean switch: flag whether to switch profitably or not
+    :returns int timesteps: number of time steps for which switching is/is not profitable
+    :returns float cost: switching cost incurred by switching between modes
+    """
+
+    # initialize parameters
+    switch = False              # switching flag
+    first_neg = True            # flag to indicate when accumulated benefit trend reverses, i.e., acc. benefit decreases
+    # accumulated benefit from CURRENT gas turbine operation (over multiple time steps)
+    if prev_gt_benefit:
+        benefit = prev_gt_benefit[1]
+        acc_benefit = np.array([prev_gt_benefit[0]])
+    else:
+        benefit = 0.0
+        acc_benefit = np.array([benefit])   # track accumulated benefit over time
+    dt = 0                                  # relative time stepping wrt start of benefit evaluation
+
+    # add incremental switching benefits (until sum decreases by more than switching cost OR time series end is reached)
+    while dt < len(current_cost_line):
+        # evaluate benefit increment of alternative mode vs. current mode for timestep dt
+        inc = current_cost_line[dt] - alternative_cost_line[dt]
+        # if gas turbine currently active, adjust sign to account for incremental benefit loss (as cost lines only cross
+        # and 'assess_switching_period' is called when alternative becomes more economical than current)
+        if acc_benefit[0] > 0:
+            inc *= -1
+        benefit += inc
+        acc_benefit = np.append(acc_benefit, benefit)
+
+        # in case of negative incremental benefit
+        if inc < 0:
+            # assess switching cost to timestep dt with maximum benefit
+            if first_neg:
+                # get time step with maximum accumulated benefit, i.e. find local maximum in current assessment interval
+                tmax = acc_benefit[1:].argmax()
+                # evaluate switching cost @ time steps 0 and tmax
+                # initial switch to alternative set_up
+                cost1 = switching_cost(current_set_up[0], 0, alternative_set_up[0], 0)
+                # final switch back to current set_up
+                cost2 = switching_cost(alternative_set_up[tmax], tmax, current_set_up[tmax], tmax)
+                first_neg = False
+            # if accumulated benefit drops by more than switching cost, stop further evaluation and assess "only"
+            # period until tmax (period of decreasing acc. benefit thereafter is more profitable without switching)
+            if (((acc_benefit.max() - benefit) > (cost1 + cost2)) or (benefit < 0)):
+                # assess whether switching modes is beneficial considering switching cost (if gas turbine not active)
+                if ((acc_benefit[0] == 0)) and (acc_benefit.max() > (cost1 + cost2)):
+                    switch = True
+                # in case gas turbine is active, switch only if benefit 'continuously' decreases from maximum @ dt == 0
+                elif ((acc_benefit[0] > 0) and (tmax == 0)):
+                    switch = True
+                    tmax = dt
+                    # in case gas turbine has not generated any previous benefit, adjust switching cost to suppress
+                    # artificially high switching cost for occasions when 'optimize_operating_modes' is called with
+                    # 'active' gt, but mode w/o gt is lastingly more economical
+                    if acc_benefit.max() == 0:
+                        cost1, cost2 = 0.0, 0.0
+                if mpc_eval:
+                    # return only initial switching cost for MPC optimizations, as switching back will be included in
+                    # evaluation at later time step (MPC only extracts very first time step at each iteration)
+                    return switch, tmax, cost1
+                else:
+                    # for non-MPC optimizations, return sum of switching cost (as 'tmax' time steps will be implemented
+                    # in final optimization output without explicit evaluation of switching back at a later stage)
+                    return switch, tmax, (cost1 + cost2)
+
+        else:
+            # potentially reset 'first_neg' flag (e.g., if acc. benefit again increases after a single drop)
+            first_neg = True
+
+        # increment time
+        dt += 1
+
+    # in case end of time series is reached (without any larger drops etc.):
+    # evaluate initial switching cost @ time step 0 (without switching back)
+    cost = switching_cost(current_set_up[0], 0, alternative_set_up[0], 0)
+
+    # assess whether switching modes is beneficial considering switching cost; only include final check if gas turbine
+    # is currently not active and might be potentially switched on; if gas turbine is currently active and accumulated
+    # benefit drops significantly, this case is already handled above, otherwise keep gas turbine running
+    if ((acc_benefit[0] == 0) and (acc_benefit[dt-1] > cost)):
+        switch = True
+
+    return switch, dt-1, cost
 
 
 def get_available_heat_capacities(heat_sources, min_supply, gas_props, market_prices, timestep):
