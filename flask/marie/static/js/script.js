@@ -17,8 +17,9 @@ Global variables
 ------------------------------
 */
 
-let isProcessing = false;
-let isShowingIRI = false;
+let isProcessing = false
+let isShowingIRI = false
+let table = null
 
 /* 
 ------------------------------
@@ -69,7 +70,7 @@ function displayResults(data) {
         displayError("The predicted SPARQL query is malformed and cannot be executed against the OntoSpecies knowledge graph.")
         return
     }
-    let content = "<thead><tr>"
+    let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
 
     let vars = data["head"]["vars"].slice();
     if (data["results"]["bindings"].length > 0) {
@@ -94,14 +95,14 @@ function displayResults(data) {
         content += "</tr>"
     })
 
-    content += "</tbody>"
-    document.getElementById("results-table").innerHTML = content;
+    content += "</tbody></table>"
+    document.getElementById("table-container").innerHTML = content;
     document.getElementById("toggle-iri").style.display = "block"
     document.getElementById("results").style.display = "block"
 
-    // create paginated table
-    new DataTable('#results-table', {
-        scrollX: true
+    table = new DataTable('#results-table', {
+        retrieve: true,
+        scrollX: true,
     });
 
     isShowingIRI = true
@@ -184,7 +185,10 @@ function askQuestion() {
 }
 
 function toggleIRIColumns() {
-    const table = $('#results-table').DataTable()
+    if (table === null) {
+        return
+    }
+
     const rowNum = table.rows().count()
     if (rowNum == 0) {
         return

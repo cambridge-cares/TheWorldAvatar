@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from typing import Iterable, Tuple
+from typing import Iterable, Optional, Tuple
 
+from .aggregate import GroupByClause
 from .graph_pattern import (
     FilterClause,
     GraphPattern,
@@ -15,15 +16,17 @@ from .sparql_base import SparqlBase
 class SparqlQuery(SparqlBase):
     select_clause: SelectClause
     graph_patterns: Tuple[GraphPattern, ...]
+    groupby_clause: Optional[GroupByClause] = None
 
     def __init__(
-        self, select_clause: SelectClause, graph_patterns: Iterable[GraphPattern]
+        self, select_clause: SelectClause, graph_patterns: Iterable[GraphPattern], groupby_clause: Optional[GroupByClause] = None
     ):
         object.__setattr__(self, "select_clause", select_clause)
         object.__setattr__(self, "graph_patterns", tuple(graph_patterns))
+        object.__setattr__(self, "groupby_clause", groupby_clause)
 
     def __str__(self):
-        return "{select_clause} WHERE {{\n{group_graph_pattern}\n}}".format(
+        return "{select_clause} WHERE {{\n{group_graph_pattern}\n}}{groupby_clause}".format(
             select_clause=self.select_clause,
             group_graph_pattern="\n".join(
                 [
@@ -32,6 +35,7 @@ class SparqlQuery(SparqlBase):
                     for line in pattern.tolines()
                 ]
             ),
+            groupby_clause="\n" + str(self.groupby_clause) if self.groupby_clause is not None else ""
         )
 
     @classmethod

@@ -9,6 +9,7 @@ from marie.services.translate.sparql.graph_pattern import (
     TriplePattern,
     ValuesClause,
 )
+from marie.services.translate.sparql.aggregate import GroupByClause
 
 
 class OKSparqlCompact2VerboseConverter:
@@ -448,6 +449,18 @@ class OKSparqlCompact2VerboseConverter:
         except AssertionError:
             return None
 
+    def _sample_rxn_eqn(self, query: SparqlQuery):
+        if "?ReactionEquation" not in query.select_clause.vars:
+            return query
+        
+        vars = [x if x != "?ReactionEquation" else "(SAMPLE(?ReactionEquation) AS ?SampledReactionEquation)" for x in query.select_clause.vars]
+        return SparqlQuery(
+            select_clause=SelectClause(vars=vars, solution_modifier=query.select_clause.solution_modifier),
+            graph_patterns=query.graph_patterns,
+            groupby_clause=GroupByClause(vars=[x for x in query.select_clause.vars if x != "?ReactionEquation"])
+        )
+
+
     def convert(self, sparql_compact: SparqlQuery):
         graph_patterns = list(sparql_compact.graph_patterns)
         graph_patterns.reverse()
@@ -485,9 +498,10 @@ class OKSparqlCompact2VerboseConverter:
 
             graph_patterns_verbose.append(pattern)
 
-        return SparqlQuery(
+        sparql_verbose = SparqlQuery(
             select_clause=SelectClause(
                 solution_modifier="DISTINCT", vars=select_vars_verbose
             ),
             graph_patterns=graph_patterns_verbose,
         )
+        return self._sample_rxn_eqn(sparql_verbose)

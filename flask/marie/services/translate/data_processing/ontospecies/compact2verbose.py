@@ -33,7 +33,7 @@ class OSSparqlCompact2VerboseConverter:
                     "[ rdf:type/rdfs:subClassOf os:Identifier ; os:value ?SpeciesIdentifierValue ]",
                 ),
             ]
-            select_vars: List[str] = []
+            select_vars: List[str] = ["?Species"]
             return patterns, select_vars
         except AssertionError:
             return None
