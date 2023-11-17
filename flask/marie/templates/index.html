@@ -105,7 +105,10 @@
                     <button type='submit' class='accordion'>Click to view the post-processed SPARQL query</button>
                     <div id="sparql-query-postprocessed" class='accordion-panel'></div>
                 </div>
-                <div id="results" style="display: none;"></div>
+                <div id="results" style="display: none;">
+                    <button id="toggle-iri" type="button" class="btn btn-info" onclick="toggleIRIColumns();" style="margin-bottom: 1rem;">Show IRIs</button>
+                    <table id='results-table' class='table table-striped table-bordered' style='width: 100%;'></table>
+                </div>
             </section>
 
             <section class="three-quarter-width">

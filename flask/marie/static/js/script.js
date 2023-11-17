@@ -17,8 +17,8 @@ Global variables
 ------------------------------
 */
 
-let is_processing = false;
-
+let isProcessing = false;
+let isShowingIRI = false;
 
 /* 
 ------------------------------
@@ -34,6 +34,7 @@ function hideElems() {
     document.getElementById('sparql-query-postprocessed-container').style.display = "none";
     document.getElementById("error-container").style.display = "none"
     document.getElementById("results").style.display = "none"
+    document.getElementById("toggle-iri").style.display = "none"
 }
 
 function displayDomainPredicted(domain) {
@@ -41,7 +42,7 @@ function displayDomainPredicted(domain) {
     document.getElementById('query-domain').style.display = "block";
 }
 
-function display_latency_info(trans_latency, kg_latency) {
+function displayLatencyInfo(trans_latency, kg_latency) {
     elem = document.getElementById("latency-info")
     elem.innerHTML = `<p style="margin: auto;">Translation latency: ${trans_latency.toFixed(2)}s.</p><p style="margin: auto;">SPARQL query execution latency: ${kg_latency.toFixed(2)}s.</p>`
     elem.style.display = "block";
@@ -68,7 +69,7 @@ function displayResults(data) {
         displayError("The predicted SPARQL query is malformed and cannot be executed against the OntoSpecies knowledge graph.")
         return
     }
-    let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
+    let content = "<thead><tr>"
 
     let vars = data["head"]["vars"].slice();
     if (data["results"]["bindings"].length > 0) {
@@ -93,18 +94,18 @@ function displayResults(data) {
         content += "</tr>"
     })
 
-    content += "</tbody></table>"
-    elem = document.getElementById("results")
-    elem.innerHTML = content;
-
-
-    elem.style.display = "block"
+    content += "</tbody>"
+    document.getElementById("results-table").innerHTML = content;
+    document.getElementById("toggle-iri").style.display = "block"
+    document.getElementById("results").style.display = "block"
 
     // create paginated table
     new DataTable('#results-table', {
         scrollX: true
     });
 
+    isShowingIRI = true
+    toggleIRIColumns()
 }
 
 function displayError(message) {
@@ -130,7 +131,7 @@ function addToInputText(text) {
 }
 
 function askQuestion() {
-    if (is_processing) { // No concurrent questions
+    if (isProcessing) { // No concurrent questions
         return;
     }
 
@@ -141,7 +142,7 @@ function askQuestion() {
 
     hideElems();
 
-    is_processing = true;
+    isProcessing = true;
     document.getElementById('ask-button').className = "mybutton spinner"
 
     fetch("/", {
@@ -161,8 +162,8 @@ function askQuestion() {
             displayPreprocessedQuestion(json["preprocessed_question"])
         }
         displayDomainPredicted(json["domain"])
-        display_latency_info(json["translation_latency"], json["kg_latency"])
-        
+        displayLatencyInfo(json["translation_latency"], json["kg_latency"])
+
         displaySparqlQueryPredicted(json["sparql"]["predicted"])
         if (json["sparql"]["postprocessed"]) {
             displaySparqlQueryPostProcessed(json["sparql"]["postprocessed"])
@@ -177,7 +178,34 @@ function askQuestion() {
             }
         }
     }).finally(() => {
-        is_processing = false;
+        isProcessing = false;
         document.getElementById('ask-button').className = "mybutton"
     })
+}
+
+function toggleIRIColumns() {
+    const table = $('#results-table').DataTable()
+    const rowNum = table.rows().count()
+    if (rowNum == 0) {
+        return
+    }
+
+    isShowingIRI = !isShowingIRI
+    const rowData = table.row(0).data()
+    const IRIcolIdx = rowData.reduce((arr, val, idx) => {
+        if (val.startsWith("http://www.theworldavatar.com/kb/")) {
+            arr.push(idx)
+        }
+        return arr
+    }, [])
+    IRIcolIdx.forEach(colIdx => {
+        const col = table.column(colIdx)
+        col.visible(isShowingIRI)
+    })
+
+    if (isShowingIRI) {
+        document.getElementById("toggle-iri").innerHTML = "Hide IRIs"
+    } else {
+        document.getElementById("toggle-iri").innerHTML = "Show IRIs"
+    }
 }
