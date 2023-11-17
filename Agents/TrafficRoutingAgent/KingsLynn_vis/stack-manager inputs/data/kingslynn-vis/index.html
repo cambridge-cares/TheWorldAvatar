@@ -175,17 +175,70 @@
                     </div>
 
                     <div>
-
                         <input type="checkbox" id="toggleRoutesCheckbox3" checked
                             onclick="MapHandler.MAP.setLayoutProperty('my-layer-90', 'visibility', (this.checked) ? 'visible' : 'none');">
                         <span>90cm Wading Depth</span>
                     </div>
                 </div>
+            </div>
 
+            <!-- Container for the clickable box for TSP TSP -->
+            <div id="tspContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+
+                    <p>Show TSP</p>
+
+                    <div class="tooltip" id="routeTooltip">
+                        <span class="tooltiptext">Different vehicles have different wading capability.</span>
+                        <span>?</span>
+
+                    </div>
+                </div>
+                <div class="controlContents">
+                    <div>
+                        <input type="checkbox" id="toggleTSPCheckbox_normal" checked
+                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-normal', 'visibility', (this.checked) ? 'visible' : 'none');">
+                        <span>TSP Normal</span>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="toggleTSPCheckbox_30" checked
+                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-30', 'visibility', (this.checked) ? 'visible' : 'none');">
+                        <span>TSP 30</span>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="toggleTSPCheckbox_90" checked
+                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-90', 'visibility', (this.checked) ? 'visible' : 'none');">
+                        <span>TSP 90</span>
+                    </div>
+                </div>
             </div>
 
 
-            <!-- Help
+            <!-- Container for the clickable box for marker -->
+            <!-- <div id="markerContainer" class="controlBlock">
+                <div id="controlTitle" class="controlTitle">
+                    <p>Show TSP</p>
+                    <div class="tooltip" id="routeTooltip">
+                        <span class="tooltiptext">Different vehicles have different wading capability.</span>
+                        <span>?</span>
+                    </div>
+                </div>
+                <div class="controlContents">
+                    <div>
+                        <input type="checkbox" id="toggleSourceMarker" checked
+                            onclick="toggleMarker('sourceMarker', this.checked);">
+                        <span>Show Source Marker</span>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="toggleTargetMarker" checked
+                            onclick="toggleMarker('targetMarker', this.checked);">
+                        <span>Show Target Marker</span>
+                    </div>
+                </div>
+            </div> -->
+
+
+
 
             <!-- Container for developer info -->
             <div id="developerContainer" class="controlBlock" style="display: none;">
@@ -305,12 +358,6 @@
                 `);
 
             manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
-            // ===== CUSTOMISABLE =====
-
-                    // ===== CUSTOMISABLE =====
-        // Enter Mapbox account name and API key here!
-        MapHandler.MAP_USER = "szp20";
-        MapHandler.MAP_API = "pk.eyJ1Ijoic3pwMjAiLCJhIjoiY2xmdDlnMWxuMGU4aTNkcGplcWhtZ2lyeCJ9.2v__IHlc2wzlgexRdxfZ8w";
 
             // Save general tab state as default
             manager.getPanelHandler().storeDefault();
@@ -371,12 +418,22 @@
             'my-layer-10': null,
             'my-layer-30': null,
             'my-layer-90': null,
+            'tsp-data-normal': null,
+            'tsp-layer-normal': null,
+            'tsp-data-30': null,
+            'tsp-layer-30': null,
+            'tsp-data-90': null,
+            'tsp-layer-90': null,
         };
+
+
+
 
         function getRouteStart() {
             // draggable marker for starting point
             var sourceMarker = new mapboxgl.Marker({
-                draggable: true
+                draggable: true,
+                color: "#808080"
             })
                 .setLngLat([0.43321000694120926, 52.77256458644632])
                 .addTo(MapHandler.MAP);
@@ -386,16 +443,25 @@
                 console.log('Start Point moved to', e.target.getLngLat());
                 selectedPoint = e.target.getLngLat();
                 getVertex(selectedPoint);
+                // getTSPVertex(selectedPoint);
+
                 removeLayer();
-                let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'routing_workspace:shortest_paths_with_flood_90');
-                let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'routing_workspace:shortest_paths_with_flood_30');
-                let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'routing_workspace:shortest_paths_with_flood_10');
-                Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
+                let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
+                let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
+                let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
+
+                let tsp_normal = getRouteTSP('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
+                let tsp_30 = getRouteTSP('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
+                let tsp_90 = getRouteTSP('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
+                Promise.all([promise_10, promise_30, promise_90,tsp_normal,tsp_30, ,tsp_90,]).then(() => { populateDistanceContainer() });
             });
+
+        
 
             // draggable marker for destination point
             var targetMarker = new mapboxgl.Marker({
-                draggable: true
+                draggable: true,
+                color: "#FF0000"
             })
                 .setLngLat([0.42379297261513216, 52.75383051061422])
                 .addTo(MapHandler.MAP);
@@ -406,14 +472,14 @@
                 selectedPoint = e.target.getLngLat();
                 getVertex(selectedPoint);
                 removeLayer();
-                let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'routing_workspace:shortest_paths_with_flood_90');
-                let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'routing_workspace:shortest_paths_with_flood_30');
-                let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'routing_workspace:shortest_paths_with_flood_10');
+                let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
+                let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
+                let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
                 Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
             });
             // function to get nearest vertex to the passed point
             function getVertex(selectedPoint) {
-                var url = `https://theworldavatar.io/demos/flood-routing/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=routing_workspace:routing_ways_vertices_pgr&outputformat=application/json&viewparams=lon:${selectedPoint.lng};lat:${selectedPoint.lat};`;
+                var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn:routing_ways_vertices_pgr&outputformat=application/json&viewparams=lon:${selectedPoint.lng};lat:${selectedPoint.lat};`;
 
                 $.ajax({
                     url: url,
@@ -435,9 +501,39 @@
                     target = features[0].properties.id;
                 }
             }
+
+            
+            // function to get TSP routes
+            function getRouteTSP(sourceName, layerId, checkboxId, lineColour, typeName) {
+                var url = `http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}&outputFormat=application%2Fjson&viewparams=target:${source};`
+
+                // Retrieve the GeoJSON data from the URL
+                return fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Add the GeoJSON data as a source
+                        MapHandler.MAP.addSource(sourceName, {
+                            type: 'geojson',
+                            data: data
+                        });
+                        routeData[sourceName] = data; 
+                        routeData[layerId] = MapHandler.MAP.addLayer({
+                            id: layerId,
+                            type: 'line',
+                            source: sourceName,
+                            paint: {
+                                'line-color': lineColour,
+                                'line-opacity': 1,
+                                'line-width': 3
+                            }
+                        });
+                    });
+            }
+
+
             // // function to get the shortest path from the give source and target nodes
             function getRoute(sourceName, layerId, checkboxId, lineColour, typeName) {
-                var url = `https://theworldavatar.io/demos/flood-routing/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=${typeName}&outputformat=application/json&viewparams=source:${source};target:${target};`
+                var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=${typeName}&outputformat=application/json&viewparams=source:${source};target:${target};`;
 
                 // Retrieve the GeoJSON data from the URL
                 return fetch(url)
@@ -475,6 +571,24 @@
                 if (MapHandler.MAP.getLayer('my-layer-10') != null) {
                     MapHandler.MAP.removeLayer('my-layer-10');
                     MapHandler.MAP.removeSource('my-data-10');
+                };
+
+                if (MapHandler.MAP.getLayer('tsp-layer-normal') != null) {
+                    MapHandler.MAP.removeLayer('tsp-layer-normal');
+                    MapHandler.MAP.removeSource('tsp-data-normal');
+
+                };
+
+                if (MapHandler.MAP.getLayer('tsp-layer-30') != null) {
+                    MapHandler.MAP.removeLayer('tsp-layer-30');
+                    MapHandler.MAP.removeSource('tsp-data-30');
+
+                };
+
+                if (MapHandler.MAP.getLayer('tsp-layer-90') != null) {
+                    MapHandler.MAP.removeLayer('tsp-layer-90');
+                    MapHandler.MAP.removeSource('tsp-data-90');
+
                 };
 
             }
@@ -532,9 +646,9 @@
             function initialRoute() {
                 getVertex(sourceMarker.getLngLat());
                 getVertex(targetMarker.getLngLat());
-                let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'routing_workspace:shortest_paths_with_flood_90');
-                let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'routing_workspace:shortest_paths_with_flood_30');
-                let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'routing_workspace:shortest_paths_with_flood_10');
+                let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
+                let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
+                let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
                 Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
             }
             dataPromise.then(() => initialRoute());
