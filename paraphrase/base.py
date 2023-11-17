@@ -1,8 +1,7 @@
-import argparse
 import csv
 import json
 import os
-from typing import List
+from typing import List, Optional
 
 import openai
 from tqdm import tqdm
@@ -102,14 +101,18 @@ class OpenAiClientForBulletPointResponse:
 
 
 class Paraphraser:
-    def __init__(self, openai_kwargs: dict):
-        self.openai_client = OpenAiClientForBulletPointResponse(**openai_kwargs)
+    def __init__(self, openai_kwargs: Optional[dict] = None):
+        if openai_kwargs is None:
+            self.openai_client = OpenAiClientForBulletPointResponse()
+        else:
+            self.openai_client = OpenAiClientForBulletPointResponse(**openai_kwargs)
 
     def paraphrase_from_file(self, filepath: str):
         with open(filepath, "r") as f:
             data = json.load(f)
 
-        filepath_out = filepath.rsplit(".")[0] + "_paraphrases.csv"
+        filepath_out = filepath.rsplit(".", maxsplit=1)[0] + "_paraphrases.csv"
+        print("Writing to file: ", filepath_out)
         if not os.path.exists(filepath_out):
             f = open(filepath_out, "w")
             writer = csv.writer(f)
