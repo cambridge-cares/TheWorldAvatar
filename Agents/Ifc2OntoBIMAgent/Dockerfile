@@ -46,7 +46,7 @@ CMD mvn test
 FROM tomcat:9.0.68-jre11-temurin as agent
 
 # Copies all files in config directory to destination
-COPY --from=builder /root/Ifc2OntoBIM/output/ifc2ontobim-agent##1.2.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/Ifc2OntoBIM/output/ifc2ontobim-agent##1.2.1.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

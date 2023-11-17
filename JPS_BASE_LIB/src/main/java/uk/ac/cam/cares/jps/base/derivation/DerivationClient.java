@@ -15,6 +15,9 @@ import java.util.stream.Stream;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -212,14 +215,15 @@ public class DerivationClient {
 		// execute HTTP request to create new information
 		LOGGER.debug("Creating <" + derivationIRI + "> using agent at <" + agentURL
 				+ "> with http request " + requestParams);
-		String originalRequest = agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET + requestParams.toString();
+
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			HttpGet httpGet = new HttpGet(agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
-					+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
-			try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet)) {
+			HttpPost post = new HttpPost(agentURL);
+	        StringEntity stringEntity = new StringEntity(requestParams.toString(), ContentType.APPLICATION_JSON);
+		    post.setEntity(stringEntity);
+			try (CloseableHttpResponse httpResponse = httpClient.execute(post)) {
 				if (httpResponse.getStatusLine().getStatusCode() != 200) {
 					String msg = "Failed to update derivation <" + derivationIRI + "> with original request: "
-							+ originalRequest;
+							+ requestParams;
 					String body = EntityUtils.toString(httpResponse.getEntity());
 					LOGGER.error(msg);
 					throw new JPSRuntimeException(msg + " Error body: " + body);
@@ -245,9 +249,9 @@ public class DerivationClient {
 				return createdDerivation;
 			}
 		} catch (Exception e) {
-			LOGGER.error("Failed to update derivation <" + derivationIRI + "> with original request: " + originalRequest, e);
+			LOGGER.error("Failed to update derivation <" + derivationIRI + "> with original request: " + requestParams.toString(), e);
 			throw new JPSRuntimeException("Failed to update derivation <" + derivationIRI + "> with original request: "
-				+ originalRequest, e);
+				+ requestParams, e);
 		}
 	}
 
@@ -991,15 +995,15 @@ public class DerivationClient {
 			// at uk.ac.cam.cares.jps.base.discovery.AgentCaller.createURIWithURLandJSON(AgentCaller.java:185)
 			// at uk.ac.cam.cares.jps.base.discovery.AgentCaller.executeGetWithURLAndJSON(AgentCaller.java:178)
 			// at uk.ac.cam.cares.jps.base.derivation.DerivationClient.updatePureSyncDerivation(DerivationClient.java:1010)
-			String originalRequest = agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
-						+ requestParams.toString();
+			
 			try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-				HttpGet httpGet = new HttpGet(agentURL + GET_AGENT_INPUT_PARAMS_KEY_JPSHTTPSERVLET
-						+ URLEncoder.encode(requestParams.toString(), StandardCharsets.UTF_8.toString()));
-				try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet)) {
+				HttpPost post = new HttpPost(agentURL);
+		        StringEntity stringEntity = new StringEntity(requestParams.toString(), ContentType.APPLICATION_JSON);
+		        post.setEntity(stringEntity);
+				try (CloseableHttpResponse httpResponse = httpClient.execute(post)) {
 					if (httpResponse.getStatusLine().getStatusCode() != 200) {
 						String msg = "Failed to update derivation <" + derivation.getIri() + "> with original request: "
-								+ originalRequest;
+								+ requestParams;
 						String body = EntityUtils.toString(httpResponse.getEntity());
 						LOGGER.error(msg);
 						throw new JPSRuntimeException(msg + " Error body: " + body);
@@ -1090,9 +1094,9 @@ public class DerivationClient {
 					}
 				}
 			} catch (Exception e) {
-				LOGGER.error("Failed to update derivation <" + derivation.getIri() + "> with original request: " + originalRequest, e);
+				LOGGER.error("Failed to update derivation <" + derivation.getIri() + "> with original request: " + requestParams, e);
 				throw new JPSRuntimeException("Failed to update derivation <" + derivation.getIri() + "> with original request: "
-					+ originalRequest, e);
+					+ requestParams, e);
 			}
 		}
 	}

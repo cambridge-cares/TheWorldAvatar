@@ -101,7 +101,7 @@ It is recommended to pull the published Docker image from [Github container regi
 
 ```bash
 # Pull published (production) image
-docker pull ghcr.io/cambridge-cares/dh-emission-agent:1.0.0
+docker pull ghcr.io/cambridge-cares/dh-emission-agent:1.1.0
 ```
 
 ###  **Standalone Deployment**
