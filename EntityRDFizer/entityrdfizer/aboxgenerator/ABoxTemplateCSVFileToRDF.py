@@ -4,6 +4,8 @@
 ##########################################
 '''
 Log:
+Renamed module tboxcleaner.py to tboxtools.py
+Added verification of the UUID in the instance name
 '''
 
 
@@ -20,10 +22,10 @@ import os
 from pathlib import Path as PathlibPath
 import io
 import textwrap
-import entityrdfizer.aboxgenerator.tboxcleaner as tboxcleaner
+import entityrdfizer.aboxgenerator.tboxtools as tboxtools
 
 """Optional TBox structure to verify ABox entities vs classes and properties in TBox.
-Requires module tboxcleaner.
+Requires module tboxtools.
 Not fully implemented yet. """
 tBox = None
 
@@ -131,6 +133,7 @@ DATA_TYPES['Literal'     ] = [ RDFS.Literal,     'literal',      'rdfs:literal' 
 
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
+instancesShort = dict()
 g = Graph()
 warning_count = 0
 show_warning = True
@@ -228,13 +231,14 @@ def set_abox_iri( value, file_line ):
     propread.setABoxIRI(value.strip())
 
 """This function checks the validity of header in the ABox CSV template file"""
-def is_header_valid(row):
+def is_header_valid(row, file_line):
     global warning_count, show_warning
     output = True
 
     if len(row) < TOTAL_NO_OF_COLUMNS:
         if show_warning:
-            print(f"Error: Csv headers must have at least {TOTAL_NO_OF_COLUMNS} columns." )
+            print(f"Error: Csv headers must have at least " + \
+                  f"{TOTAL_NO_OF_COLUMNS} columns {file_line}." )
         warning_count += 1
         return False
 
@@ -242,12 +246,42 @@ def is_header_valid(row):
     for i in range( TOTAL_NO_OF_COLUMNS ):
         if row[i].strip().lower() != HEADERS[i].lower():
             if show_warning:
-                print(f"Error: Column header {columnLetter[i]} must be " + \
-                      f"'{HEADERS[i]}', but got '{row[i]}'." )
+                print(f"Error: In column {columnLetter[i]} the header must " + \
+                      f"be '{HEADERS[i]}', but got '{row[i]}' {file_line}.")
             warning_count += 1
             output = False
 
     return output
+
+"""Extract the NAME and UUID from the full name,
+assuming the instance notation follows the pattern 'NAME_UUID4' as recommended in
+https://www.dropbox.com/scl/fi/hivvg0qsms7tp2dsne641/2023-08-02-Abox.pptx?rlkey=ip5k1qj5rcsj9kqo5ptw3xojg&dl=0
+"""
+def split_name_uuid( value, file_line ):
+    global warning_count, show_warning
+    if len(value) > 36:
+        name = value[:-37]
+        uuid = value[-36:].lower()
+        if uuid[8] == "-" and uuid[13] == "-" and uuid[18] == "-" and uuid[23] == "-":
+            if value[-37] != "_":
+                if show_warning:
+                    print(f"Warning: Missing '_' as NAME_UUID in instance '{value}' {file_line}." )
+                warning_count += 1
+            if uuid[14] != "4" or uuid[19] not in "89ab":
+                if show_warning:
+                    print(f"Warning: Instance '{value}' uses UUID version other than UUID4 {file_line}." )
+        else:
+            if show_warning:
+                print(f"Warning: Instance '{value}' does not follow pattern NAME_UUID {file_line}." )
+            warning_count += 1
+    else:
+        if show_warning:
+            print(f"Warning: Instance '{value}' does not follow pattern NAME_UUID {file_line}." )
+        warning_count += 1
+        name = value
+        uuid = ""
+
+    return name, uuid
 
 """Check for duplicates in the instance names."""
 def check_existing_instances( value, file_line ):
@@ -257,6 +291,13 @@ def check_existing_instances( value, file_line ):
             print(f"Warning: Repeatedly initialized instance '{value.strip()}'" + \
                   f" {file_line}." )
         warning_count += 1
+    name, uuid = split_name_uuid( value, file_line )
+    return
+
+    # FIXME
+    # Is it allowed to have instance with same name but different UUID?
+    # Do I need the verification below?
+
     # UUID4 has a standard structure: 8char-4char-4char-4char-12char
     if len(value) >= 36:
         name = value[:-36]
@@ -506,7 +547,7 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
     #tbox_file_path = "ontocrystal.csv"
     if tbox_file_path:
         if os.path.isfile(tbox_file_path):
-            tBox = tboxcleaner.TBoxCleaner()
+            tBox = tboxtools.TBoxTools()
             tBox.readExcel(tbox_file_path)
             tBox.parseInputData()
         else:
@@ -542,8 +583,9 @@ def convert_csv_string_into_rdf(csv_string):
 
 
 def _serialize_csv_row(csv_row, filename, line_count):
+    file_line = "in " + filename + " line " + str(line_count+1)
     if line_count == 0:
-        if not is_header_valid(csv_row):
+        if not is_header_valid(csv_row, file_line):
             raise ValueError(textwrap.dedent(f"""
                     Error: Found invalid csv header:
                            {csv_row}
@@ -554,7 +596,6 @@ def _serialize_csv_row(csv_row, filename, line_count):
 
     if line_count > 0:
         """(line_count+1) makes the 1-st line equal to 1 (for warnings)"""
-        file_line = "in " + filename + " line " + str(line_count+1)
         process_data(csv_row, file_line )
 
 if __name__ == "__main__":
@@ -580,8 +621,8 @@ if __name__ == "__main__":
     set_abox_iri( "undefined", "in file on line" )
 
     print( "Test is_header_valid():" )
-    is_header_valid(["first","second","third"])
-    is_header_valid(["first","second","third","forth","fifth","sixth"])
+    is_header_valid(["first","second","third"], "in unit testing")
+    is_header_valid(["first","second","third","forth","fifth","sixth"], "in unit testing")
 
     print( "Test save_instances():" )
     save_instances( "tosave" )
@@ -590,6 +631,12 @@ if __name__ == "__main__":
     print( "Test convert_into_rdf():" )
     convert_into_rdf( "invalid/path" )
 
+    print( "Test split_name_uuid():" )
+    n,u = split_name_uuid( "UnitCell_PTY_628b0598-8429-3748-8570-af693be90476", "in file_line" )
+    n,u = split_name_uuid( "UnitCell_PTY_628b0598-8429-4748-7570-af693be90476", "in file_line" )
+    n,u = split_name_uuid( "UnitCell_PTY-628b0598-8429-4748-8570-af693be90476", "in file_line" )
+    n,u = split_name_uuid( "UnitCell_PTY_628b0598-8429-4748-8570-af693be90476", "in file_line" )
+    #print(f"name = '{n}', uuid = '{u}'" )
     print( "=======================================" )
     print( "Test convert_into_rdf():" )
     #filename = "ontospecies_abox.csv"
