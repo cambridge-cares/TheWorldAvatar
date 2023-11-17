@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.dict.IRIMapping;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityEquipmentInstanceBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.EditFragment;
 import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
@@ -115,6 +116,7 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
     }
 
     private List<EditableAttribute> getEditableAttributeList(String type, String equipmentIRI) {
+        IRIMapping iriMapping = new IRIMapping();
         // determine the list of editable attribute based on the equipment type
         if (type.equals("https://www.theworldavatar.com/kg/ontobms/WalkInFumeHood")) {
             return new ArrayList<>();
@@ -122,18 +124,13 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
             ArrayList<EditableAttribute> attributes = new ArrayList<>();
             attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature", "Temperature Setpoint", "double", "°C"));
             return attributes;
-        } else if (type.equals("https://www.theworldavatar.com/kg/ontobms/ExhaustVAV") && equipmentIRI.equals("https://www.theworldavatar.com/kg/ontobms/VAV_E7_01_d00bd62d-9f86-4f01-8940-c52a62269f4c")) {
+        } else if (type.equals("https://www.theworldavatar.com/kg/ontobms/ExhaustVAV") || type.equals("https://www.theworldavatar.com/kg/ontobms/CanopyHood")) {
             ArrayList<EditableAttribute> attributes = new ArrayList<>();
-            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-1_FlowSP_CARES", "Airflow Setpoint", "double", "m3/h"));
-            return attributes;
-        } else if (type.equals("https://www.theworldavatar.com/kg/ontobms/ExhaustVAV") && equipmentIRI.equals("https://www.theworldavatar.com/kg/ontobms/VAV_E7_02_e4ac5287-26d8-4638-9ba2-74b9e9994814")) {
-            ArrayList<EditableAttribute> attributes = new ArrayList<>();
-            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-2_FlowSP_CARES", "Airflow Setpoint", "double", "m3/h"));
-            return attributes;
-        } else if (type.equals("https://www.theworldavatar.com/kg/ontobms/CanopyHood") && equipmentIRI.equals("https://www.theworldavatar.com/kg/ontobms/CH-7-7_CAV_90f2f336-03f7-4c0e-80a0-6d85873e42a8")) {
-            ArrayList<EditableAttribute> attributes = new ArrayList<>();
-            attributes.add(new EditableAttribute("https://www.theworldavatar.com/kg/ontobms/V_CAV_E-7-7_FlowSP_CARES", "Airflow Setpoint", "double", "m3/h"));
-            return attributes;
+            String editableDataIRI = iriMapping.getEditableDataIRIFromEquipmentIRI(equipmentIRI);
+            if (editableDataIRI != null) {
+                attributes.add(new EditableAttribute(editableDataIRI, "Airflow Setpoint", "double", "m3/h"));
+                return attributes;
+            }
         }
         return new ArrayList<>();
     }
