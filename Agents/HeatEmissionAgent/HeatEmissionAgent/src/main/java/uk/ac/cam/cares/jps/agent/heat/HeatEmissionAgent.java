@@ -54,7 +54,6 @@ import com.jayway.jsonpath.JsonPath;
 
 @WebServlet(urlPatterns = { HeatEmissionAgent.URL_PATH })
 
-// Agent begins
 public class HeatEmissionAgent extends JPSAgent {
 
 	public static final String URL_PATH = "/performheatquery";
@@ -106,7 +105,7 @@ public class HeatEmissionAgent extends JPSAgent {
 					row.put("Coordinate", heatcoordi);
 					row.put("Heat Emission", heatamount);
 					heatresult.put(row);
-					sparqlUpdate(Plant_item, Double.toString(heatamount));
+					// sparqlUpdate(Plant_item, Double.toString(heatamount));
 					heat_data = heatamount;
 				}
 
@@ -215,6 +214,7 @@ public class HeatEmissionAgent extends JPSAgent {
 		IRIandCO2Query.append("PREFIX geo: <http://www.opengis.net/ont/geosparql#>\n");
 		IRIandCO2Query.append("PREFIX ocp: <http://www.theworldavatar.com/kg/ontochemplant/>\n");
 		IRIandCO2Query.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
+		IRIandCO2Query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
 		IRIandCO2Query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
 		IRIandCO2Query.append("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n");
 		IRIandCO2Query.append("SELECT ?chemical_plant ?plant_item ?IRI ?CO2 ?unit WHERE { \n");
@@ -223,12 +223,12 @@ public class HeatEmissionAgent extends JPSAgent {
 		IRIandCO2Query.append("?ft rdfs:label ?ftl. \n");
 		IRIandCO2Query.append("?chemical_plant geo:ehContains ?plant_item . \n");
 		IRIandCO2Query.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI . \n");
+		IRIandCO2Query.append(
+				"?plant_item rdf:type <http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/plantitem>. \n");
 		IRIandCO2Query.append("?plant_item ocp:hasIndividualCO2Emission ?x .  \n");
 		IRIandCO2Query.append("?x om:hasNumericalValue ?CO2 . \n");
 		IRIandCO2Query.append("?x om:hasUnit ?a . \n");
 		IRIandCO2Query.append("?a om:symbol ?unit . \n");
-		IRIandCO2Query.append("FILTER regex(str(?ftl),\"Natural gas liquid\").");
-		IRIandCO2Query.append("FILTER regex(str(?plant_item), \"plantitem\"). \n");
 		IRIandCO2Query.append(
 				"FILTER (str(?plant_name) not in (\"Chemical_plant_of_Sembcorp Integrated Wastewater Treatment Plant\","
 						+
