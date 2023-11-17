@@ -1,3 +1,4 @@
 torch
 transformers
 optimum[onnxruntime]
+sentence-transformers

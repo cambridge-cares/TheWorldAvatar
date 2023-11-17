@@ -44,8 +44,8 @@ class TritonPythonModel:
         )
 
     def initialize(self, args):
-        model_path = os.getenv("MODEL_PATH", "picas9dan/20231115_6_onnx_8bit")
-        print("Loading weights from: " + model_path, flush=True)
+        model_path = os.getenv("SEQ2SEQ_MODEL_PATH", "picas9dan/20231115_6_onnx_8bit")
+        print("Loading weights for seq2seq model from: " + model_path, flush=True)
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = self._load_model(model_path)
