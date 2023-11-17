@@ -3,7 +3,7 @@
 		"Name": "weather-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/weatheragent:1.2-dev-aermod-vis-SNAPSHOT",
+				"Image": "ghcr.io/cambridge-cares/weatheragent:1.2",
 				"Env": [
 					"DATABASE=postgres",
 					"LAYERNAME=weatherstations",
