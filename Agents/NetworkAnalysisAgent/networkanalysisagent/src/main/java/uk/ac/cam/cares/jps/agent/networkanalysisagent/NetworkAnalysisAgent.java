@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.json.JSONArray;
@@ -124,26 +126,23 @@ public class NetworkAnalysisAgent extends JPSAgent {
              *  - TSP_seq:  Gives the sequence of order to visit all the TSP points
              */
             if (tcFunction.equals("UR")){
+                List<String> tcTableNameList = new ArrayList<>();
 
                 for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
                     String tableName = entry.getKey();
-                    String sql = entry.getValue();
+                    String sql = entry.getValue().toLowerCase();
+                    tcTableNameList.add(sql);
                     System.out.println("Begin generating tables for "+tableName+" with the edgeTableSQL as " + sql);
-
                     tripCentralityCalculator.calculateTripCentrality(remoteRDBStoreClient, cumulativePOI, tableName, sql);
                 }
+
                 //Create geoserver layer
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
                 String workspaceName= "twa";
                 String schema = "public";
                 geoServerClient.createWorkspace(workspaceName);
-                //tripCentralityCalculator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
+                tripCentralityCalculator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, "tripcentrality_"+tcTableNameList.get(1),tcTableNameList.get(0), tcTableNameList.get(1));
             }
-
-
-
-
-
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
