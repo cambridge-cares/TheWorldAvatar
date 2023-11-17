@@ -7,33 +7,36 @@
     <!-- ===== CUSTOMISABLE ===== -->
 
 
-        <!-- JS -->
-        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
-        <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
-        <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="./twa-vf/twa-vf.min.js" charset="utf-8"></script>
+    <!-- JS -->
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+    <script
+        src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
+    <script src="./twa-vf/twa-vf.min.js" charset="utf-8"></script>
 
-        <!-- ===== CUSTOMISABLE ===== -->
-        <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
-        <script src="./local.js"></script>
-        <!-- ===== CUSTOMISABLE ===== -->
+    <!-- ===== CUSTOMISABLE ===== -->
+    <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
+    <script src="./local.js"></script>
+    <!-- ===== CUSTOMISABLE ===== -->
 
-        <!-- CSS -->
-        <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
-        <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="./twa-vf/twa-vf.min.css" rel="stylesheet" />
+    <!-- CSS -->
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css"
+        rel="stylesheet">
+    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+    <link href="./twa-vf/twa-vf.min.css" rel="stylesheet" />
 
-        <!-- ===== CUSTOMISABLE ===== -->
-        <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
-        <link href="./local.css" rel="stylesheet" />
-        <!-- ===== CUSTOMISABLE ===== -->
+    <!-- ===== CUSTOMISABLE ===== -->
+    <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
+    <link href="./local.css" rel="stylesheet" />
+    <!-- ===== CUSTOMISABLE ===== -->
 
     <style>
         /* Style for the clickable box */
@@ -297,7 +300,8 @@
             <div id="sidePanelLinks">
                 <p>Contains OS data &copy; Crown copyright and database rights 2022 (100025252)<br><br>
                     Contains public sector information licensed under the Open Government Licence v3.0.<br><br>
-                    This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"</p>
+                    This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"
+                </p>
             </div>
         </div>
         <div id="returnContainer" style="display: none;">
@@ -320,28 +324,28 @@
         window.manager = manager;
 
         // Read credentials
-        var credentialPromise = manager.readCredentials();
-        
-        // Only start the map after data definitions have been read.
-        var dataPromise = manager.loadDefinitions();
-        dataPromise.then(() => start());
-        dataPromise.then(() => getRouteStart());
-        dataPromise.then(() => addHospital());
+        // Read credentials
+        manager.readCredentials().then(() => {
 
-        // Start when credentials and definitions have been loaded
-        Promise.all([credentialPromise, dataPromise]).then(() => start());
+            // Only start the map after data definitions have been read.
+            var dataPromise = manager.loadDefinitions();
+            dataPromise.then(() => start());
+            dataPromise.then(() => getRouteStart());
+            dataPromise.then(() => addHospital());
 
-        /**
-         * Starts the visualisation setup process.
-         */
-        function start() {
-            // Initialise the map object
-            manager.initialiseMap();
+            // Start when credentials and definitions have been loaded
 
-            // ===== CUSTOMISABLE =====
-            // Set the default content in the "General" tab of the side panel
-            manager.getPanelHandler().setTitle("<h1>Flood Routing tool</h1>");
-            manager.getPanelHandler().setContent(`
+            /**
+             * Starts the visualisation setup process.
+             */
+            function start() {
+                // Initialise the map object
+                manager.initialiseMap();
+
+                // ===== CUSTOMISABLE =====
+                // Set the default content in the "General" tab of the side panel
+                manager.getPanelHandler().setTitle("<h1>Flood Routing tool</h1>");
+                manager.getPanelHandler().setContent(`
                 <p>
                     This demonstrator visualisation is instantiated in The World Avatar&trade;.<br><br>
 
@@ -357,309 +361,314 @@
                   </p>
                 `);
 
-            manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
 
-            // Save general tab state as default
-            manager.getPanelHandler().storeDefault();
+                // Save general tab state as default
+                manager.getPanelHandler().storeDefault();
 
-            // Once the underlying style has loaded...
-            MapHandler.MAP.on("style.load", function () {
-                // Load registered images and linked files
-                manager.loadImagesAndLinks().then(() => {
+                // Once the underlying style has loaded...
+                MapHandler.MAP.on("style.load", function () {
+                    // Load registered images and linked files
+                    manager.loadImagesAndLinks().then(() => {
 
-                    // TODO: This SHOULD only kick in after all images have bee loaded and added to the map,
-                    // but I cannot get the nest Promises to wait for each other properly. As it doesn't
-                    // seem to be causing any issues, I'm leaving it as is for the time being. - Michael
+                        // TODO: This SHOULD only kick in after all images have bee loaded and added to the map,
+                        // but I cannot get the nest Promises to wait for each other properly. As it doesn't
+                        // seem to be causing any issues, I'm leaving it as is for the time being. - Michael
 
-                    // Plot the default visible data
-                    manager.plotData();
+                        // Plot the default visible data
+                        manager.plotData();
+                    });
                 });
-            });
 
-        }
+            }
 
-        function addHospital() {
-            var markerCoordinates = [0.44596810988223834, 52.75684401611818];
-            var hospitalIcon = "https://theworldavatar.io/demos/flood-routing/geoserver/www/icons/health-hospital.png";
+            function addHospital() {
+                var markerCoordinates = [0.44596810988223834, 52.75684401611818];
+                var hospitalIcon = "https://theworldavatar.io/demos/flood-routing/geoserver/www/icons/health-hospital.png";
 
-            // Create a new marker instance with the hospital icon
-            var marker = new mapboxgl.Marker({
-                element: createHospitalIconElement(hospitalIcon), // Create a custom icon element
-                draggable: false
-            })
-                .setLngLat(markerCoordinates)
-                .addTo(MapHandler.MAP);
+                // Create a new marker instance with the hospital icon
+                var marker = new mapboxgl.Marker({
+                    element: createHospitalIconElement(hospitalIcon), // Create a custom icon element
+                    draggable: false
+                })
+                    .setLngLat(markerCoordinates)
+                    .addTo(MapHandler.MAP);
 
-            // Create the box container
-            var boxContainer = document.createElement('div');
-            boxContainer.className = 'box-container';
-            boxContainer.innerHTML = '<h2>Mapbox JS Div Container Display</h2>' +
-                '<p>This is a box displayed as a JS-generated div container on top of the Mapbox map.</p>';
-            document.body.appendChild(boxContainer);
-        }
+                // Create the box container
+                var boxContainer = document.createElement('div');
+                boxContainer.className = 'box-container';
+                boxContainer.innerHTML = '<h2>Mapbox JS Div Container Display</h2>' +
+                    '<p>This is a box displayed as a JS-generated div container on top of the Mapbox map.</p>';
+                document.body.appendChild(boxContainer);
+            }
 
-        // Function to create a custom hospital icon element
-        function createHospitalIconElement(iconUrl) {
-            var iconElement = document.createElement('div');
-            iconElement.className = 'custom-marker';
-            iconElement.style.backgroundImage = 'url(' + iconUrl + ')';
-            iconElement.style.backgroundSize = 'cover';
-            iconElement.style.width = '30px'; 
-            iconElement.style.height = '30px';
-            iconElement.style.zIndex = 1;
-            return iconElement;
-        }
+            // Function to create a custom hospital icon element
+            function createHospitalIconElement(iconUrl) {
+                var iconElement = document.createElement('div');
+                iconElement.className = 'custom-marker';
+                iconElement.style.backgroundImage = 'url(' + iconUrl + ')';
+                iconElement.style.backgroundSize = 'cover';
+                iconElement.style.width = '30px';
+                iconElement.style.height = '30px';
+                iconElement.style.zIndex = 1;
+                return iconElement;
+            }
 
-        // Global object to store data and layers
-        var routeData = {
-            'my-data-10': null,
-            'my-data-30': null,
-            'my-data-90': null,
-            'my-layer-10': null,
-            'my-layer-30': null,
-            'my-layer-90': null,
-            'tsp-data-normal': null,
-            'tsp-layer-normal': null,
-            'tsp-data-30': null,
-            'tsp-layer-30': null,
-            'tsp-data-90': null,
-            'tsp-layer-90': null,
-        };
-
+            // Global object to store data and layers
+            var routeData = {
+                'my-data-10': null,
+                'my-data-30': null,
+                'my-data-90': null,
+                'my-layer-10': null,
+                'my-layer-30': null,
+                'my-layer-90': null,
+                'tsp-data-normal': null,
+                'tsp-layer-normal': null,
+                'tsp-data-30': null,
+                'tsp-layer-30': null,
+                'tsp-data-90': null,
+                'tsp-layer-90': null,
+            };
 
 
 
-        function getRouteStart() {
-            // draggable marker for starting point
-            var sourceMarker = new mapboxgl.Marker({
-                draggable: true,
-                color: "#808080"
-            })
-                .setLngLat([0.43321000694120926, 52.77256458644632])
-                .addTo(MapHandler.MAP);
-            sourceMarker.getElement().style.zIndex = 999; 
 
-            sourceMarker.on("dragend", function (e) {
-                console.log('Start Point moved to', e.target.getLngLat());
-                selectedPoint = e.target.getLngLat();
-                getVertex(selectedPoint);
-                // getTSPVertex(selectedPoint);
+            function getRouteStart() {
+                // draggable marker for starting point
+                var sourceMarker = new mapboxgl.Marker({
+                    draggable: true,
+                    color: "#808080"
+                })
+                    .setLngLat([0.43321000694120926, 52.77256458644632])
+                    .addTo(MapHandler.MAP);
+                sourceMarker.getElement().style.zIndex = 999;
 
-                removeLayer();
-                let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
-                let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
-                let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
+                sourceMarker.on("dragend", function (e) {
+                    console.log('Start Point moved to', e.target.getLngLat());
+                    selectedPoint = e.target.getLngLat();
+                    getVertex(selectedPoint);
+                    // getTSPVertex(selectedPoint);
 
-                let tsp_normal = getRouteTSP('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
-                let tsp_30 = getRouteTSP('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
-                let tsp_90 = getRouteTSP('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
-                Promise.all([promise_10, promise_30, promise_90,tsp_normal,tsp_30, ,tsp_90,]).then(() => { populateDistanceContainer() });
-            });
+                    removeLayer();
+                    let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
+                    let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
+                    let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
 
-        
+                    let tsp_normal = getRouteTSP('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
+                    let tsp_30 = getRouteTSP('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
+                    let tsp_90 = getRouteTSP('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
+                    Promise.all([promise_10, promise_30, promise_90, tsp_normal, tsp_30, , tsp_90,]).then(() => { populateDistanceContainer() });
+                });
 
-            // draggable marker for destination point
-            var targetMarker = new mapboxgl.Marker({
-                draggable: true,
-                color: "#FF0000"
-            })
-                .setLngLat([0.42379297261513216, 52.75383051061422])
-                .addTo(MapHandler.MAP);
-            targetMarker.getElement().style.zIndex = 998; // Set a high z-index value
 
-            targetMarker.on("dragend", function (e) {
-                console.log('Endpoint moved to', e.target.getLngLat());
-                selectedPoint = e.target.getLngLat();
-                getVertex(selectedPoint);
-                removeLayer();
-                let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
-                let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
-                let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
-                Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
-            });
-            // function to get nearest vertex to the passed point
-            function getVertex(selectedPoint) {
-                var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn:routing_ways_vertices_pgr&outputformat=application/json&viewparams=lon:${selectedPoint.lng};lat:${selectedPoint.lat};`;
 
-                $.ajax({
-                    url: url,
-                    async: false,
-                    success: function (data) {
-                        loadVertex(
-                            data,
-                            selectedPoint.toString() === sourceMarker.getLngLat().toString()
-                        );
+                // draggable marker for destination point
+                var targetMarker = new mapboxgl.Marker({
+                    draggable: true,
+                    color: "#FF0000"
+                })
+                    .setLngLat([0.42379297261513216, 52.75383051061422])
+                    .addTo(MapHandler.MAP);
+                targetMarker.getElement().style.zIndex = 998; // Set a high z-index value
+
+                targetMarker.on("dragend", function (e) {
+                    console.log('Endpoint moved to', e.target.getLngLat());
+                    selectedPoint = e.target.getLngLat();
+                    getVertex(selectedPoint);
+                    removeLayer();
+                    let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
+                    let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
+                    let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
+                    Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
+                });
+                // function to get nearest vertex to the passed point
+                function getVertex(selectedPoint) {
+                    var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn:routing_ways_vertices_pgr&outputformat=application/json&viewparams=lon:${selectedPoint.lng};lat:${selectedPoint.lat};`;
+
+                    $.ajax({
+                        url: url,
+                        async: false,
+                        success: function (data) {
+                            loadVertex(
+                                data,
+                                selectedPoint.toString() === sourceMarker.getLngLat().toString()
+                            );
+                        }
+                    });
+                }
+                // function to update the source and target nodes as returned from geoserver for later querying
+                function loadVertex(response, isSource) {
+                    var features = response.features;
+                    if (isSource) {
+                        source = features[0].properties.id;
+                    } else {
+                        target = features[0].properties.id;
                     }
-                });
-            }
-            // function to update the source and target nodes as returned from geoserver for later querying
-            function loadVertex(response, isSource) {
-                var features = response.features;
-                if (isSource) {
-                    source = features[0].properties.id;
-                } else {
-                    target = features[0].properties.id;
                 }
-            }
 
-            
-            // function to get TSP routes
-            function getRouteTSP(sourceName, layerId, checkboxId, lineColour, typeName) {
-                var url = `http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}&outputFormat=application%2Fjson&viewparams=target:${source};`
 
-                // Retrieve the GeoJSON data from the URL
-                return fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Add the GeoJSON data as a source
-                        MapHandler.MAP.addSource(sourceName, {
-                            type: 'geojson',
-                            data: data
+                // function to get TSP routes
+                function getRouteTSP(sourceName, layerId, checkboxId, lineColour, typeName) {
+                    var url = `http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}&outputFormat=application%2Fjson&viewparams=target:${source};`
+
+                    // Retrieve the GeoJSON data from the URL
+                    return fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Add the GeoJSON data as a source
+                            MapHandler.MAP.addSource(sourceName, {
+                                type: 'geojson',
+                                data: data
+                            });
+                            routeData[sourceName] = data;
+                            routeData[layerId] = MapHandler.MAP.addLayer({
+                                id: layerId,
+                                type: 'line',
+                                source: sourceName,
+                                paint: {
+                                    'line-color': lineColour,
+                                    'line-opacity': 1,
+                                    'line-width': 3
+                                }
+                            });
                         });
-                        routeData[sourceName] = data; 
-                        routeData[layerId] = MapHandler.MAP.addLayer({
-                            id: layerId,
-                            type: 'line',
-                            source: sourceName,
-                            paint: {
-                                'line-color': lineColour,
-                                'line-opacity': 1,
-                                'line-width': 3
+                }
+
+
+                // // function to get the shortest path from the give source and target nodes
+                function getRoute(sourceName, layerId, checkboxId, lineColour, typeName) {
+                    var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=${typeName}&outputformat=application/json&viewparams=source:${source};target:${target};`;
+
+                    // Retrieve the GeoJSON data from the URL
+                    return fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Add the GeoJSON data as a source
+                            MapHandler.MAP.addSource(sourceName, {
+                                type: 'geojson',
+                                data: data
+                            });
+                            routeData[sourceName] = data;
+                            routeData[layerId] = MapHandler.MAP.addLayer({
+                                id: layerId,
+                                type: 'line',
+                                source: sourceName,
+                                paint: {
+                                    'line-color': lineColour,
+                                    'line-opacity': 1,
+                                    'line-width': 3
+                                }
+                            });
+                            // Set layer visibility based on checkbox state
+                            var checkbox = document.getElementById(checkboxId);
+                            if (checkbox.checked) {
+                                MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'visible');
+                            } else {
+                                MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'none');
                             }
                         });
-                    });
-            }
+                };
+                // function to remove the layer
+                function removeLayer() {
+                    // Remove layers and sources and set variables to null
+                    if (MapHandler.MAP.getLayer('my-layer-90') != null) {
+                        MapHandler.MAP.removeLayer('my-layer-90');
+                        MapHandler.MAP.removeSource('my-data-90');
+                    }
+                    if (MapHandler.MAP.getLayer('my-layer-30') != null) {
+                        MapHandler.MAP.removeLayer('my-layer-30');
+                        MapHandler.MAP.removeSource('my-data-30');
+                    }
+                    if (MapHandler.MAP.getLayer('my-layer-10') != null) {
+                        MapHandler.MAP.removeLayer('my-layer-10');
+                        MapHandler.MAP.removeSource('my-data-10');
+                    };
+
+                    if (MapHandler.MAP.getLayer('tsp-layer-normal') != null) {
+                        MapHandler.MAP.removeLayer('tsp-layer-normal');
+                        MapHandler.MAP.removeSource('tsp-data-normal');
+                    };
+
+                    if (MapHandler.MAP.getLayer('tsp-layer-30') != null) {
+                        MapHandler.MAP.removeLayer('tsp-layer-30');
+                        MapHandler.MAP.removeSource('tsp-data-30');
+                    };
+
+                    if (MapHandler.MAP.getLayer('tsp-layer-90') != null) {
+                        MapHandler.MAP.removeLayer('tsp-layer-90');
+                        MapHandler.MAP.removeSource('tsp-data-90');
+                    };
+
+                }
+                // function to populate distance container
+                function populateDistanceContainer() {
+                    const distanceContainer = document.getElementById('distance');
+                    const value = document.createElement('pre');
+
+                    let shortestRoute = {
+                        sourceName: '',
+                        totalLength: Number.MAX_SAFE_INTEGER, // Initialize to a high value
+                        description: '',
+                    };
 
 
-            // // function to get the shortest path from the give source and target nodes
-            function getRoute(sourceName, layerId, checkboxId, lineColour, typeName) {
-                var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=${typeName}&outputformat=application/json&viewparams=source:${source};target:${target};`;
-
-                // Retrieve the GeoJSON data from the URL
-                return fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Add the GeoJSON data as a source
-                        MapHandler.MAP.addSource(sourceName, {
-                            type: 'geojson',
-                            data: data
-                        });
-                        routeData[sourceName] = data; 
-                        routeData[layerId] = MapHandler.MAP.addLayer({
-                            id: layerId,
-                            type: 'line',
-                            source: sourceName,
-                            paint: {
-                                'line-color': lineColour,
-                                'line-opacity': 1,
-                                'line-width': 3
+                    for (const sourceName of ['my-data-10', 'my-data-30', 'my-data-90']) {
+                        const data = routeData[sourceName];
+                        if (data && data.features) {
+                            const features = data.features;
+                            const lineStrings = features.map((feature) => feature.geometry);
+                            const totalLength = lineStrings.reduce((acc, lineString) => {
+                                return acc + turf.length(lineString, { units: 'kilometres' });
+                            }, 0);
+                            console.log(totalLength)
+                            if (totalLength < shortestRoute.totalLength && totalLength > 0) {
+                                shortestRoute.sourceName = sourceName;
+                                shortestRoute.totalLength = totalLength;
                             }
-                        });
-                    });
-            }
-            // function to remove the layer
-            function removeLayer() {
-                // Remove layers and sources and set variables to null
-                if (MapHandler.MAP.getLayer('my-layer-90') != null) {
-                    MapHandler.MAP.removeLayer('my-layer-90');
-                    MapHandler.MAP.removeSource('my-data-90');
-                }
-                if (MapHandler.MAP.getLayer('my-layer-30') != null) {
-                    MapHandler.MAP.removeLayer('my-layer-30');
-                    MapHandler.MAP.removeSource('my-data-30');
-                }
-                if (MapHandler.MAP.getLayer('my-layer-10') != null) {
-                    MapHandler.MAP.removeLayer('my-layer-10');
-                    MapHandler.MAP.removeSource('my-data-10');
-                };
-
-                if (MapHandler.MAP.getLayer('tsp-layer-normal') != null) {
-                    MapHandler.MAP.removeLayer('tsp-layer-normal');
-                    MapHandler.MAP.removeSource('tsp-data-normal');
-
-                };
-
-                if (MapHandler.MAP.getLayer('tsp-layer-30') != null) {
-                    MapHandler.MAP.removeLayer('tsp-layer-30');
-                    MapHandler.MAP.removeSource('tsp-data-30');
-
-                };
-
-                if (MapHandler.MAP.getLayer('tsp-layer-90') != null) {
-                    MapHandler.MAP.removeLayer('tsp-layer-90');
-                    MapHandler.MAP.removeSource('tsp-data-90');
-
-                };
-
-            }
-            // function to populate distance container
-            function populateDistanceContainer() {
-                const distanceContainer = document.getElementById('distance');
-                const value = document.createElement('pre');
-
-                let shortestRoute = {
-                    sourceName: '',
-                    totalLength: Number.MAX_SAFE_INTEGER, // Initialize to a high value
-                    description: '',
-                };
-
-
-                for (const sourceName of ['my-data-10', 'my-data-30', 'my-data-90']) {
-                    const data = routeData[sourceName];
-                    if (data && data.features) {
-                        const features = data.features;
-                        const lineStrings = features.map((feature) => feature.geometry);
-                        const totalLength = lineStrings.reduce((acc, lineString) => {
-                            return acc + turf.length(lineString, { units: 'kilometres' });
-                        }, 0);
-                        console.log(totalLength)
-                        if (totalLength < shortestRoute.totalLength && totalLength > 0) {
-                            shortestRoute.sourceName = sourceName;
-                            shortestRoute.totalLength = totalLength;
                         }
                     }
-                }
 
-                if (shortestRoute.totalLength !== Number.MAX_SAFE_INTEGER) {
-                    if (shortestRoute.sourceName === 'my-data-10' && shortestRoute.totalLength !== 0) {
-                        console.log("10cm route available");
-                        shortestRoute.description = `Best available route: ${shortestRoute.totalLength.toLocaleString()} km, by any vehicle`;
-                    } else if (shortestRoute.sourceName === 'my-data-30' && shortestRoute.totalLength !== 0) {
-                        console.log("30cm route available");
-                        shortestRoute.description = `Best available route: ${shortestRoute.totalLength.toLocaleString()} km, by vehicle with medium wading depth`;
-                    } else if (shortestRoute.sourceName === 'my-data-90' && shortestRoute.totalLength !== 0) {
-                        console.log("90cm route available");
-                        shortestRoute.description = `Best available route: ${shortestRoute.totalLength.toLocaleString()} km, by vehicle with deep wading depth`;
+                    if (shortestRoute.totalLength !== Number.MAX_SAFE_INTEGER) {
+                        if (shortestRoute.sourceName === 'my-data-10' && shortestRoute.totalLength !== 0) {
+                            console.log("10cm route available");
+                            shortestRoute.description = `Best available route: ${shortestRoute.totalLength.toLocaleString()} km, by any vehicle`;
+                        } else if (shortestRoute.sourceName === 'my-data-30' && shortestRoute.totalLength !== 0) {
+                            console.log("30cm route available");
+                            shortestRoute.description = `Best available route: ${shortestRoute.totalLength.toLocaleString()} km, by vehicle with medium wading depth`;
+                        } else if (shortestRoute.sourceName === 'my-data-90' && shortestRoute.totalLength !== 0) {
+                            console.log("90cm route available");
+                            shortestRoute.description = `Best available route: ${shortestRoute.totalLength.toLocaleString()} km, by vehicle with deep wading depth`;
+                        }
+                    } else {
+                        // No route available
+                        console.log("No possible route.");
+                        shortestRoute.description = `Area inaccessible`;
                     }
-                } else {
-                    // No route available
-                    console.log("No possible route.");
-                    shortestRoute.description = `Area inaccessible`;
+
+                    // Populate the distanceContainer with the shortest route
+                    value.textContent = shortestRoute.description;
+                    distanceContainer.innerHTML = '';
+                    distanceContainer.appendChild(value);
                 }
-
-                // Populate the distanceContainer with the shortest route
-                value.textContent = shortestRoute.description;
-                distanceContainer.innerHTML = '';
-                distanceContainer.appendChild(value);
+                //To get initial route
+                function initialRoute() {
+                    getVertex(sourceMarker.getLngLat());
+                    getVertex(targetMarker.getLngLat());
+                    let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
+                    let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
+                    let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
+                    Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
+                }
+                dataPromise.then(() => initialRoute());
+                // Add a scale control to the map
+                MapHandler.MAP.addControl(new mapboxgl.ScaleControl());
             }
-            //To get initial route
-            function initialRoute() {
-                getVertex(sourceMarker.getLngLat());
-                getVertex(targetMarker.getLngLat());
-                let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
-                let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
-                let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
-                Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
-            }
-            dataPromise.then(() => initialRoute());
-        }
-        // Add a scale control to the map
-        MapHandler.MAP.addControl(new mapboxgl.ScaleControl());
-
+        });
     </script>
 
 
 </body>
 
 </html>
+
 </html>
