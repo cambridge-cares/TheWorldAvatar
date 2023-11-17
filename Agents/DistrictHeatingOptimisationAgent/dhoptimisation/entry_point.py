@@ -4,6 +4,7 @@
 import logging
 logging.getLogger("py4j").setLevel(logging.ERROR)
 # Specify logger level to be used throughout the agent: dev, prod
+# TODO: adjust for production
 logger_level = 'dev'
 
 from py4jps import agentlogging

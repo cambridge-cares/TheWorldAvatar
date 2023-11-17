@@ -473,6 +473,39 @@ class DistrictHeatingGrid:
         return DistrictHeatingGrid(name=self.name, entry_points=entry_points)
     
     
+class PreviousSystemState:
+    # The purpose of this class is to provide a link between subsequent optimisation runs:
+    # The current design sends each optimisation interval as a separate request to the
+    # agent (i.e., via DIF); hence, this class ensures that relevant outputs from the
+    # previous time step are available for the current optimisation run
+    def __init__(self, start_dt=None, gt_active=False, gt_benefit=None,
+                 ops1_last_setup=[], ops2_last_setup=[]):
+        self.start_dt = start_dt                    # datetime string of first timestep of previous
+                                                    # optimisation interval
+        self.gt_active = gt_active                  # Boolean flag whether to start with/without GT
+        self.gt_benefit = gt_benefit                # Cumulative profit from previous GT operation
+        self.ops1_last_setup = ops1_last_setup      # Heat generation setups in preceding time step
+        self.ops2_last_setup = ops2_last_setup
+
+
+    def update_system_state(self, new_start_dt, new_gt_active, new_gt_benefit, 
+                            new_ops1_last_setup, new_ops2_last_setup):
+        # Update operational state and gas turbine conditions
+        self.start_dt = new_start_dt
+        self.gt_active = new_gt_active
+        self.gt_benefit = new_gt_benefit
+        self.ops1_last_setup = new_ops1_last_setup
+        self.ops2_last_setup = new_ops2_last_setup
+            
+    def reset_system_state(self):
+        # Reset to default optimisation start conditions
+        self.start_dt = None
+        self.gt_active = False
+        self.gt_benefit = None
+        self.ops1_last_setup = []
+        self.ops2_last_setup = []    
+    
+    
 ####################     METHODS     ####################
 
 

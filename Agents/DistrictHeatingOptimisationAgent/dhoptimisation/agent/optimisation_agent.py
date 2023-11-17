@@ -20,6 +20,7 @@ from dhoptimisation.datamodel.iris import *
 from dhoptimisation.agent.config import *
 from dhoptimisation.agent.generator_models import *
 from dhoptimisation.agent.optimisation_setup import *
+from dhoptimisation.agent.optimisation_tasks import *
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
 from dhoptimisation.utils.env_configs import DB_USER, DB_PASSWORD
@@ -33,6 +34,10 @@ class DHOptimisationAgent(DerivationAgent):
 
         # Initialise the Sparql_client (with defaults specified in environment variables)
         self.sparql_client = self.get_sparql_client(KGClient)
+        
+        # Initialise previous state object
+        # (i.e., to ensure link between related subsequent optimisation runs)
+        self.previous_state = PreviousSystemState()
         
 
     def agent_input_concepts(self) -> list:
@@ -176,6 +181,18 @@ class DHOptimisationAgent(DerivationAgent):
         
         # Create MarketPrices and MunicipalUtility objects for optimisation
         prices, swps = create_optimisation_setup(setup_dict)
+        
+        # Optimize heat generation modes
+        if (datetime.strptime(opti_start_dt, time_format) - timedelta(hours=1)).strftime(time_format) != self.previous_state.start_dt:
+            # Reset gas turbine etc. states for non-related optimisation runs
+            # Otherwise: If the previous optimisation interval covered [t1, t2] and
+            # the subsequent request covers [t1+1h, t3] -> runs are considered related
+            # and the optimised state for t1 will be used as starting conditions
+            self.previous_state.reset_system_state()
+        
+        generation_optimization(*[None]*3, index, *[None]*4, self.previous_state)
+        # res, res_wogt, res_wgt, fcs = generation_optimization(swps, prices, ts_input, index, opt_period, mpc_horizon,
+        #                                                     out_file_gt, out_file_opt, histeval=True, live_updates=False)
                
         # Mock optimisation data
         # 1) retrieve 1 input time series
