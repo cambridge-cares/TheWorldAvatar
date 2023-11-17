@@ -32,6 +32,9 @@ python csv_maker.py
 --out,-o   : The name of the output file(s). Each   
 -??? 
 
+TODO:
+- Not urgent: add number of warnings (like in entityfizer)
+
 """
 
 # TODO Add the space group number to UnitCell
@@ -66,8 +69,8 @@ import os
 import logging
 #logging.basicConfig( level = logging.DEBUG )
 #logging.basicConfig( level = logging.INFO )
-#logging.basicConfig( level = logging.WARNING )
-logging.basicConfig( level = logging.ERROR )
+logging.basicConfig( level = logging.WARNING )
+#logging.basicConfig( level = logging.ERROR )
 
 import tools
 import zeolist
@@ -111,21 +114,21 @@ def splitStr( value ):
     ie = 1
     factor = []
     for ix,x in enumerate(vOut[::-1]):
-      if "." == x:
-        factor.insert( 0, "." )
-      elif ie <= len( eOut ):
-        factor.insert( 0, eOut[-ie] )
-        ie += 1
-      else:
-        factor.insert( 0, "0" )
-        ie += 1
+        if "." == x:
+            factor.insert( 0, "." )
+        elif ie <= len( eOut ):
+            factor.insert( 0, eOut[-ie] )
+            ie += 1
+        else:
+            factor.insert( 0, "0" )
+            ie += 1
 
     #print( factor )
     factor = "".join( factor )
     if factor.find( "." ) < 0:
-      eOut = str( int(factor) )
+        eOut = str( int(factor) )
     else:
-      eOut = str( float(factor) )
+        eOut = str( float(factor) )
     #for i in range( len( eOut ) ):
       #vOut[-i-1] = eOut[-i-1]
     return vOut, eOut
@@ -137,15 +140,21 @@ def cleanString( line ):
     
     """
     if not isinstance( line, str ):
-      logging.error( "Input line '" + str(line) + "' is not a string in cleanString()" )
-      return str(line)
+        logging.error( "Input line '" + str(line) + "' is not a string in cleanString()" )
+        return str(line)
     pos = line.find( "#" )
     if pos < 0:
-      tmp = line.strip()
+        tmp = line.strip()
     else:
-      tmp = line[:pos].strip()
+        tmp = line[:pos].strip()
 
     return tmp
+
+def is_http( value ):
+    if value.strip().lower().startswith( "http://" ) or \
+       value.strip().lower().startswith( "https://" ):
+        return True
+    return False
 
 # Ontology for Crystal, 
 crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
@@ -156,9 +165,18 @@ OM2_KEYWORDS = [ "angstrom", "cubicAngstrom", "reciprocalAngstrom",
                  "hasUnit", 
                  "Measure", "Unit" 
                ]
+
 def omInitUnit( unit ):
     """
+    A function specially for OM-2 ontology. Define the unit in abox.
+
+    This initialization is redundant. Originally units are loaded from OM-2.
+    Ideally this function is not necessary, but for debugging/testing it is 
+    easier to define it here and don't load OM-2 .owl every time.
     """
+    logging.warning( " Initializing unit '" + unit + "', it should be" + \
+                     " removed in the production run." )
+
     if unit.strip().startswith( "om:" ):
         newUnit = unit.strip()[3:]
     else:
@@ -171,10 +189,21 @@ def omInitUnit( unit ):
                      omOntoPrefix + "Unit", "", "", "" ] )
     output.append( [ "rdfs:label", "Data Property",
                      omOntoPrefix + newUnit, "", newUnit, "xsd:string" ] )
+
     return output
     pass # omInitUnit()
     
 def omSetUnit( subject, unit ):
+    """
+    A function specially for OM-2 ontology. Assign the unit to given subject.
+
+    Function expects an instance of class OM-2:Unit from units-of-measurement.
+    It is user's responsibility to confirm that this unit exists in OM-2.
+    Input must be with short prefix, i.e. for unit 'xxx' input is 'om:xxx'.
+    This is to remind user that the unit is from the OM-2 ontology.
+    Return:
+    A row to be saved in the abox .csv file.
+    """
     #print( ">>>>>>>>>> start omSetUnit ", subject, unit )
     if unit.strip().startswith( "om:" ):
         newUnit = unit.strip()[3:]
@@ -183,6 +212,10 @@ def omSetUnit( subject, unit ):
                        " but got '" + unit + "'." )
         newUnit = unit
 
+    if newUnit not in OM2_KEYWORDS:
+        logging.error( " Unknown unit '" + unit + "'. You may update the" + \
+                       " OM2_KEYWORDS array if unit is missing." )
+
     output = []
     output.append( [ subject, "Instance", omOntoPrefix + newUnit, 
                                           omOntoPrefix + "hasUnit", "", "" ] )
@@ -190,20 +223,20 @@ def omSetUnit( subject, unit ):
     pass # omSetUnit()
 
 def omNameConvert( unitIn ):
-  """
-  A function specially for OM-2 ontology. Adds the full path in front.
-  """
-  if unitIn.startswith( "om:" ):
-    if unitIn[3:] in OM2_KEYWORDS :
-      unitOut = "http://www.ontology-of-units-of-measure.org/resource/om-2/" + \
-                unitIn[3:]
+    """
+    A function specially for OM-2 ontology. Adds the full path in front.
+    """
+    if unitIn.startswith( "om:" ):
+        if unitIn[3:] in OM2_KEYWORDS :
+            unitOut = "http://www.ontology-of-units-of-measure.org/resource/om-2/" + \
+                      unitIn[3:]
+        else:
+            logging.error( " Unknown unit '" + unitIn + "', require a full IRI." )
     else:
-      logging.error( " Unknown unit '" + unitIn + "', require a full IRI." )
-  else:
-    unitOut = unitIn
+        unitOut = unitIn
 
-  return unitOut
-  pass # omNameConvert()
+    return unitOut
+    pass # omNameConvert()
 
 
 
@@ -315,146 +348,155 @@ class CommandLine:
   pass # class CommandLine
 
 class OntoMeasureWithUncertainty:
-  """
-  self.uuid - is the unique name of the entity of this class.
-  """
-
-  __slots__ = [ "uuidDB", "uuid", "className", "itemName", 
-                "aPrefix", "tPrefix",
-                "value", "error", "unit"
-              ]
-  def __init__( self, itemName, className = "", 
-                tPrefix = "",   aPrefix = "",   
-                uuidDB = None ):
     """
-    itemName  - (required) name of the new variable.
-    className - (optional) the class name. If not specified, 
-                the basic OntoCrystal/MeasureWithUncertainty is used.
-    tPrefix   - (optional) the prefix for TBox, where a class derived from this class is defined.
-                ###### If not specified OntoCrystal is used.
-                If not specified, the entity will not have any prefix 
-                      (i.e. will use the global tbox prefix from abox csv file)
-    aPrefix   - (optional) the prefix for ABox, where this entiry should be stored.
-                If not specified, the entity will not have any prefix 
-                      (i.e. will use the global abox prefix from csv file)
-    uuidDB    - The database of uuid(s) where this Measure is saved.
-                If not specified, a default filename will be used (not recommended).
-
+    self.uuid - is the unique name of the entity of this class.
     """
+
+    __slots__ = [ "uuidDB", "uuid", "className", "itemName", \
+                  "aPrefix", "tPrefix",    \
+                  "value", "error", "unit" \
+                ]
+    def __init__( self, itemName, className = "", \
+                  tPrefix = "",   aPrefix = "",   \
+                  uuidDB = None ):
+      """
+      itemName  - (required) name of the new variable.
+      className - (optional) the class name. If not specified, 
+                  the basic OntoCrystal/MeasureWithUncertainty is used.
+      tPrefix   - (optional) the prefix for TBox, where a class derived from this class is defined.
+                  ###### If not specified OntoCrystal is used.
+                  If not specified, the entity will not have any prefix 
+                        (i.e. will use the global tbox prefix from abox csv file)
+      aPrefix   - (optional) the prefix for ABox, where this entiry should be stored.
+                  If not specified, the entity will not have any prefix 
+                        (i.e. will use the global abox prefix from csv file)
+      uuidDB    - The database of uuid(s) where this Measure is saved.
+                  If not specified, a default filename will be used (not recommended).
+
+      """
  
-    if "" == itemName:
-      self.itemName = "Unknown"
-      logging.error( " Empty id in '" + self.itemName + "'," + \
-                     " in class OntoMeasureWithUncertainty." ) 
-    else:   
-      self.itemName = omNameConvert( itemName )
-      self.itemName = itemName
+      if "" == itemName:
+          self.itemName = "Unknown"
+          logging.error( " Empty id in '" + self.itemName + "'," + \
+                         " in class OntoMeasureWithUncertainty." ) 
+      else:   
+          self.itemName = omNameConvert( itemName )
+          self.itemName = itemName
                  
-    if "" == className:
-      self.className = "MeasureWithUncertainty"
-      logging.warning( " Empty class in '" + self.itemName + "'," + \
-                       " using class MeasureWithUncertainty." ) 
-    else:   
-      self.className = omNameConvert( className )
-      self.className = className
+      if "" == className:
+          self.className = "MeasureWithUncertainty"
+          logging.warning( " Empty class in '" + self.itemName + "'," + \
+                           " using class MeasureWithUncertainty." ) 
+      else:   
+          self.className = omNameConvert( className )
+          self.className = className
 
-    if "" == tPrefix:
-      self.tPrefix = ""
-      logging.warning( " Empty tPrefix in '" + self.itemName + "'," + \
-                       " using global TBox from csv file." ) 
-    else:
-      self.tPrefix = tPrefix
+      if "" == tPrefix:
+          self.tPrefix = ""
+          logging.warning( " Empty tPrefix in '" + self.itemName + "'," + \
+                           " using global TBox from csv file." ) 
+      else:
+          self.tPrefix = tPrefix
 
-    if "" == aPrefix:
-      self.aPrefix = ""
-      logging.warning( " Empty aPrefix in '" + self.itemName + "'," + \
-                       " using global ABox from csv file." ) 
-    else:
-      self.aPrefix = aPrefix
+      if "" == aPrefix:
+          self.aPrefix = ""
+          logging.warning( " Empty aPrefix in '" + self.itemName + "'," + \
+                           " using global ABox from csv file." ) 
+      else:
+          self.aPrefix = aPrefix
 
-    if None == uuidDB:
-      logging.error( " Empty uuidDB in '" + self.itemName + "'" + \
-                     " in class OntoMeasureWithUncertainty. Using default." ) 
-    elif isinstance( uuidDB, tools.UuidDB ):
-      self.uuidDB = uuidDB
-    else:   
-      logging.error( "Wrong type of uuidDB, expected 'UuidDB', got '" + str(type(uuid)) + "'." )
-      pass
+      if None == uuidDB:
+          logging.error( " Empty uuidDB in '" + self.itemName + "'" + \
+                         " in class OntoMeasureWithUncertainty. Using default." ) 
+      elif isinstance( uuidDB, tools.UuidDB ):
+          self.uuidDB = uuidDB
+      else:   
+          logging.error( "Wrong type of uuidDB, expected 'UuidDB', got '" + str(type(uuid)) + "'." )
+          pass
 
-    self.value = None
-    self.error = None
-    self.unit  = None
+      self.value = None
+      self.error = None
+      self.unit  = None
 
-    pass # OntoMeasureWithUncertainty.__init__()
+      pass # OntoMeasureWithUncertainty.__init__()
 
 
-  def setValue( self, value = "", unit = "", error = "" ):
-    if "" == value:
-      logging.error( " Empty value in '" + self.itemName + "' " ) 
-    else:
-      self.value = value
+    def setValue( self, value, unit = "", error = "" ):
+        if "" == value:
+            logging.info( " Empty value in '" + self.itemName + "' " ) 
+        else:
+            self.value = value
 
-    if "" == error:
-      logging.warning( " Empty error in '" + self.itemName + "' " ) 
-    else:
-      self.error = error
+        if "" == error:
+            logging.info( " Empty error in '" + self.itemName + "' " ) 
+        else:
+            self.error = error
 
-    if "" == unit:
-      logging.warning( " Empty unit in '" + self.itemName + "' " ) 
-    else:
-      self.unit = unit
+        if "" == unit:
+            logging.info( " Empty unit in '" + self.itemName + "' " ) 
+        else:
+            self.unit = unit
 
-    pass # OntoMeasureWithUncertainty.setValue()
+        pass # OntoMeasureWithUncertainty.setValue()
 
-  def getCsvArr( self, subject, predicate ):
-    """
-    subject   - Is the full hame of instance of class, 
-                which contains this entity of MeasureWithUncertainty class.
-    predicate - Is the Object Property linking the Subject and 
-                the current entity of MeasureWithUncertainty." 
+    #def getValue( self ):
+    #  return self.value
 
-    # These property values are not guaranteed:
-    if subject.find( "CrystalInformation" ) < 0:
-      logging.warning( " Subject in arrUnitCell() is '" + subject + "'," +
-                       " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
+    def getCsvArr( self, subject, predicate ):
+        """
+        subject   - Is the full hame of instance of class, 
+                    which contains this entity of MeasureWithUncertainty class.
+        predicate - Is the Object Property linking the Subject and 
+                    the current entity of MeasureWithUncertainty." 
 
-    """
-    if not predicate.startswith("has"):
-      logging.warning( " Predicate in arrValue() is '" + predicate + "'," +
-                       " but expecting it to have '" + "has" + "'." ) 
+        # These property values are not guaranteed:
+        if subject.find( "CrystalInformation" ) < 0:
+          logging.warning( " Subject in arrUnitCell() is '" + subject + "'," +
+                           " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
 
-    output = []
+        """
+        if is_http( predicate ):
+            short = predicate.split("/")[-1]
+        else:
+            short = predicate
 
-    #output += omInitUnit( "om:cubicAngstrom" )
+        if not short.startswith("has"):
+            logging.warning( " Predicate in OntoMeasure.getCsvArr() is '" + \
+                             predicate + "'," + " but expecting it to have '" + \
+                             "has" + "'." ) 
 
-    # FIXME ??? The tbox prefix should be OntoCrystal if the item is defined in OntoCrystal
-    #           And can be overwritten for types defined in other ontologies.
-    #           But this means I have to save somewhere a full list of classes defined in OntoCrystal.
-    #
-    #myClass = "MeasureWithUncertainty"
-    #self.uuid = tools.getUUID( self.uuidDB, self.className, self.itemName ) #self.value["name"] )
-    self.uuid,_ = self.uuidDB.addUUID( self.tPrefix + self.className, 
-                                       self.aPrefix + self.itemName )
-    output.append( [ self.uuid, "Instance", self.tPrefix + self.className, "", "", "" ] )
-    output.append( [   subject, "Instance", self.uuid, predicate, "", "" ] )
+        output = []
 
-    if self.value != None:
-      output.append( [ omOntoPrefix + "hasNumericalValue", "Data Property", 
-                       self.uuid, "", self.value, "decimal" ] )
+      #output += omInitUnit( "om:cubicAngstrom" )
 
-    if self.error != None:
-      output.append( [ crystOntoPrefix + "hasUncertaintyValue", "Data Property", 
-                       self.uuid, "", self.error, "decimal" ] )
+      # FIXME ??? The tbox prefix should be OntoCrystal if the item is defined in OntoCrystal
+      #           And can be overwritten for types defined in other ontologies.
+      #           But this means I have to save somewhere a full list of classes defined in OntoCrystal.
+      #
+      #myClass = "MeasureWithUncertainty"
+      #self.uuid = tools.getUUID( self.uuidDB, self.className, self.itemName ) #self.value["name"] )
+        self.uuid,_ = self.uuidDB.addUUID( self.tPrefix + self.className, 
+                                         self.aPrefix + self.itemName )
+        output.append( [ self.uuid, "Instance", self.tPrefix + self.className, "", "", "" ] )
+        output.append( [   subject, "Instance", self.uuid, predicate, "", "" ] )
 
-    if self.unit != None:
-      output += omSetUnit( self.uuid, self.unit )
+        if self.value != None:
+            output.append( [ omOntoPrefix + "hasNumericalValue", "Data Property", 
+                             self.uuid, "", self.value, "decimal" ] )
 
-    #logging.error( " arrValue() is not implemented yet" )
+        if self.error != None:
+            output.append( [ crystOntoPrefix + "hasUncertaintyValue", "Data Property", 
+                             self.uuid, "", self.error, "decimal" ] )
 
-    return output
-    pass # OntoMeasureWithUncertainty.getCsvArr()
+        if self.unit != None:
+            output += omSetUnit( self.uuid, self.unit )
 
-  pass # OntoMeasureWithUncertainty
+        #logging.error( " arrValue() is not implemented yet" )
+
+        return output
+        pass # OntoMeasureWithUncertainty.getCsvArr()
+
+    pass # OntoMeasureWithUncertainty
 
 class OntoVector:
   """
@@ -480,16 +522,16 @@ class OntoVector:
 
 
   """
-  __slots__ = [ "uuidDB", "uuid", "uuid4", "value", #"itemName",
+  __slots__ = [ "uuidDB", "uuid", "uuid4", "value", "itemName", "className",
                 "tPrefix", "aPrefix",
-                "ontoPrefix", "uuid_error", #"unit",
+                "ontoPrefix", "uuid_error", "unit",
                 "compList", "compErrList",
                 "compDict", "compErrDict"
               ]
   def __init__( self, className, itemName, 
-                uuidDB = None, #myClass = "", myName = "", 
+                uuidDB = None, 
                 tPrefix = "", aPrefix = "", 
-                unit = "", vectorLabel = "",
+                unit = None, vectorLabel = None
                 #prefix = "", 
                 #myUnit = "",  
                 #myLabel = "" 
@@ -499,6 +541,7 @@ class OntoVector:
                 or an existing uuidDB (as dict or UUID class)
                 If not specified (or None), a default filename 'defailt-uuid.csv' will be used,
                 or a new file will be created with this name (not recommended).
+    unit      - a unit with "om:" prefix.
 
     """
 
@@ -511,21 +554,28 @@ class OntoVector:
       self.value = dict()
       self.value["name"] = itemName
 
+      self.itemName = itemName
+
+
     if "" == className:
       logging.warning( " In OntoVector the class name is not specified" + \
-                       " for '" + self.value["name"] + "'." + \
+                       " for '" + self.itemName + "'." + \
                        " Using default 'Vector'." )
       self.value["class"] = "Vector"
+      self.className = "Vector"
     else:
       self.value["class"] = className
+      self.className = className
+
 
     if None == uuidDB:
       logging.warning( " In OntoVector uuidDB is not specified" + \
-                       " for '" + self.value["name"] + "'."  )
+                       " for '" + self.itemName + "'."  )
       1/0
       " to create a new uuid here"
     elif isinstance( uuidDB, str ):
-
+      logging.warning( " In OntoVector uuidDB is not specified" + \
+                       " for '" + self.itemName + "'."  )
       1/0
       " to create a new uuid here"
     elif isinstance( uuidDB, tools.UuidDB ):
@@ -540,16 +590,18 @@ class OntoVector:
 
     if "" == unit:
       logging.warning( " In OntoVector unit is not specified" +
-                     " for '" + self.value["name"] + "'." )
+                     " for '" + self.itemName + "'." )
+      #self.unit = ""
       #self.value["unit"] = "Unknown"
     else:
       self.value["unit"] = omNameConvert( unit )
       self.value["unit"] = unit 
+      self.unit = unit
 
     if "UnitCellLatticeVector" == self.value["class"]:
       if "" == vectorLabel:
         logging.error( " In OntoVector label is not specified" +
-                       " for '" + self.value["name"] + "'." )
+                       " for '" + self.itemName + "'." )
         #self.value["label"] = "Unknown"
       else:
         self.value["label"] = vectorLabel
@@ -558,14 +610,14 @@ class OntoVector:
 
     if "" == tPrefix:
       self.tPrefix = ""
-      logging.warning( " Empty tPrefix in '" + self.value["name"] + "'," + \
+      logging.warning( " Empty tPrefix in '" + self.itemName + "'," + \
                        " using global TBox from csv file." ) 
     else:
       self.tPrefix = tPrefix
 
     if "" == aPrefix:
       self.aPrefix = ""
-      logging.warning( " Empty aPrefix in '" + self.value["name"] + "'," + \
+      logging.warning( " Empty aPrefix in '" + self.itemName + "'," + \
                        " using global ABox from csv file." ) 
     else:
       self.aPrefix = aPrefix
@@ -574,18 +626,18 @@ class OntoVector:
     self.ontoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
     #if "" == prefix:
     #  logging.error( " In OntoVector ontology prefix is not specified" +
-    #                 " for '" + self.value["name"] + "'." )
+    #                 " for '" + self.itemName + "'." )
     #else:
     #  self.ontoPrefix = prefix
 
     self.value["comp"] = list()
 
     #self.value["list"] = dict()
-    self.compList      = None
-    self.compErrList   = None
+    self.compList      = []
+    self.compErrList   = []
 
-    self.compDict      = None
-    self.compErrDict   = None
+    self.compDict      = {}
+    self.compErrDict   = {}
 
     self.uuid4      = None
     self.uuid_error = None      # This is used to avoid double creation of the Uncertainty Vector
@@ -594,12 +646,17 @@ class OntoVector:
     pass # OntoVector.__init__()
 
   def addComponentList( self, valList, unit = "", errList = None ):
+    """
+    The size of errList must be the same as valList,
+    The errList may contain 'None' values for some entries.
+    In this case the output will not have an uncertainty.
+    """
     #logging.error( " in CsvMaker addComponentList() is not implemented" )
 
     if None != self.compList:
-      logging.warning( "Over-writing existing compunents in vector '" + self.value["name"] + "'." )
+      logging.warning( "Over-writing existing values in vector '" + self.itemName + "'." )
     if None != self.compErrList:
-      logging.warning( "Over-writing existing compunents in vector '" + self.value["name"] + "'." )
+      logging.warning( "Over-writing existing errors in vector '" + self.itemName + "'." )
 
     #-----------------------------------
     if isinstance( valList, list ):
@@ -615,19 +672,39 @@ class OntoVector:
 
     #-----------------------------------
     if None == errList:
-      # Do nothing, no error
+      # Do nothing, no error list
       self.compErrList = None
-      return
+
     elif isinstance( errList, list ):
-      self.compErrList = list( errList )
+      if len(valList) != len(errList):
+        logging.error( " In OntoVector.addComponentList() the size of err " + \
+             str(len(errList)) + " is not equal to size of val " + \
+             str(len(valList)) + ", skipping error list." )
+      else:
+        self.compErrList = list( errList )
+
     else:
       logging.error( " In OntoVector.addComponentList expect an error list," + \
                      " got '" + str(type(errList)) + "'." )
       self.compErrList = None
+
     #-----------------------------------
-    if "" != unit:
+    if "" == unit:
+      logging.info( " No unit in vector component list" )
+      pass
+    elif isinstance( unit, list ):
+      # Individual unit for each component, as a list
+      logging.error( " Not implemented unit in vector list" )
       self.unit = unit
-      logging.error( "Not implemented unit in vector" )
+      pass
+    elif isinstance( unit, str ) and unit.startswith( "om:" ):
+      logging.error( " Not implemented unit in vector list" )
+      self.unit = unit
+      pass
+    else:
+      logging.error( " Unknown case for unit '" + str(unit) + "'." )
+      # Do nothing. Need a warning?
+      pass
 
     pass # OntoVector.addComponentList()
 
@@ -643,15 +720,15 @@ class OntoVector:
 
     if isinstance( label, str ):
       if "" == label:
-        logging.error( " Not specified label for vector component in '" + self.value["name"] + "'." )
+        logging.error( " Not specified label for vector component in '" + self.itemName + "'. 22" )
         errCount += 1
 
     if isinstance( value, str ):
       if "" == value:
-        logging.error( " Not specified value for vector component in '" + self.value["name"] + "'." )
+        logging.error( " Not specified value for vector component in '" + self.itemName + "'." )
         errCount += 1
     else:
-      logging.error( "value = '" + str( value ) + "' is not a string in '" + self.value["name"] + "'." )
+      logging.error( "value = '" + str( value ) + "' is not a string in '" + self.itemName + "'." )
 
     self.compDict[label] = {}
     if value != "":
@@ -665,10 +742,11 @@ class OntoVector:
       if unit != "":
         self.compErrDict[label]["unit"]  = unit
 
+    return errCount
     pass # OntoVector.addComponent()
 
   def addComponent( self, label, value = "", unit = "", error = "" ):
-    logging.warning( "Starting addComponent '" + self.value["name"] + "' label: '" + label + "'" )
+    logging.info( "Starting addComponent '" + self.itemName + "' label: '" + label + "'" )
     """
     Adding a component to a vector.
     TODO: how to create a vector made of multiple values as a list?
@@ -684,41 +762,47 @@ class OntoVector:
     errCount = 0
     if isinstance( value, str ):
       if "" == value:
-        logging.error( " Not specified value for vector component in '" + self.value["name"] + "'." )
+        logging.error( " Not specified value for vector component in '" + \
+                       self.itemName + "'." )
         errCount += 1
     else:
-      logging.error( "value = '" + str( value ) + "' is not a string in '" + self.value["name"] + "'." )
+      logging.error( "value = '" + str( value ) + "' is not a string in '" + \
+                     self.itemName + "'." )
 
     if isinstance( label, str ):
       if "" == label:
-        logging.error( " Not specified label for vector component in '" + self.value["name"] + "'." )
+        logging.error( " Not specified label for vector component in '" + \
+                       self.itemName + "'. 33" )
         errCount += 1
 
       keys = [ x["label"] for x in self.value["comp"] ]
       #keys = list(self.value["comp"].keys())
       if label in keys:
         logging.warning( " Repeatedly adding (overwriting) a component '" + 
-                         label + "' in vector '" + self.value["name"] + "'." )
-        logging.warning( "Components-2 of vector =" + str(self.value["comp"]) + " new value = '" + value + "'."  )
+                         label + "' in vector '" + self.itemName + "'." )
+        logging.warning( "Components-2 of vector =" + str(self.value["comp"]) + \
+                         " new value = '" + value + "'."  )
         #errCount += 1 # No need to count as error. It may be intensional.
 
-
     else:
-      logging.error( "label = '" + str( label ) + "' is not a string in '" + self.value["name"] + "'." )
+      logging.error( "label = '" + str( label ) + "' is not a string in '" + \
+                     self.itemName + "'." )
 
     if 0 == errCount:
         newComp = dict()
         newComp["label"] = label
         newComp["value"] = value
         if "" == unit:
-          logging.warning( " Not specified label for vector component in '" + self.value["name"] + "'." )
+          logging.info( " Not specified unit for vector component in '" + \
+                        self.itemName + "'. 44" )
           pass
         else:
           newComp["unit"]  = unit
 
         if "" != error:
           newComp["error"] = error
-          logging.warning( "Components of vector = ", self.value["comp"], " value = '" + value + "'."  )
+          logging.info( " Components of vector = " + str(self.value["comp"]) + \
+                           " value = '" + value + "'."  )
           if "" != unit:
             # Generally speaking the error bars may have different units, 
             # though such situation looks strange:
@@ -746,6 +830,7 @@ class OntoVector:
             self.value["comp"][label]["errorunit"]  = unit
             pass
         """    
+    return errCount
     pass # OntoVector.addComponent()
 
   def getCsvArr( self, subject, predicate ):
@@ -763,9 +848,15 @@ class OntoVector:
     """
 
     #if "has" != predicate:
-    if not predicate.startswith("has"):
-      logging.warning( " Predicate in getCsvArr() is '" + predicate + "'," +
-                       " but expecting it to have '" + "has" + "'." ) 
+    if is_http( predicate ):
+        short = predicate.split("/")[-1]
+    else:
+        short = predicate
+
+    if not short.startswith("has"):
+        logging.warning( " Predicate in OntoVector.getCsvArr() is '" + \
+                         predicate + "'," + " but expecting it to have '" + \
+                         "has" + "'." ) 
 
     """
     Create a vector with specified values.
@@ -1214,12 +1305,12 @@ class OntoVector:
 
     for iv,v in enumerate(self.compErrList):
       if None == v:
-        logging.error( "Invalid value '" + str(v) + "' in '" + self.value["name"] + "'." )
+        logging.error( "Invalid value '" + str(v) + "' in '" + self.itemName + "'." )
         continue
       output  
 
       uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", 
-                                         self.value["name"] + "_error_" + str(iv+1), 
+                                         self.itemName + "_error_" + str(iv+1), 
                                          newUuid = self.uuid4 )
 
       output.append( [ self.aPrefix + uuid_comp, "Instance", 
@@ -1239,18 +1330,17 @@ class OntoVector:
     return output
     pass # OntoVector._getCsvErrorList()
 
-
   def _getCsvValueDict( self ):
     output = []
 
     for ik,k in enumerate(self.compDict.keys()):
       if None == k:
-        logging.error( "Invalid value '" + str(k) + "' in '" + self.value["name"] + "'." )
+        logging.error( "Invalid value '" + str(k) + "' in '" + self.itemName + "'." )
         continue
       #output +=  
 
       uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", 
-                                         self.value["name"] + "_comp_" + k,
+                                         self.itemName + "_comp_" + k,
                                          newUuid = self.uuid4 )
 
       output.append( [ self.aPrefix + uuid_comp, "Instance", 
@@ -1270,29 +1360,41 @@ class OntoVector:
     pass # OntoVector._getCsvValueDict()
 
   def _getCsvErrorDict( self):
-    output = []
-    logging.error( " Not implemetned _getCsvErrDict" )
+        output = []
+        logging.error( " Not implemetned _getCsvErrDict" )
 
-    return output
-    pass # OntoVector._getCsvErrorDict()
+        return output
+        pass # OntoVector._getCsvErrorDict()
 
 
   pass # class OntoVector
 
 class OntoMatrix:
-  __slots__ = [ "uuidDB", "uuid", "myId", 
-                "className", "itemName", 
-              ]
-  def __init__( self, myId ):
+    __slots__ = [ "uuidDB", "uuid", "myId", 
+                  "className", "itemName", 
+                ]
+    def __init__( self, myId ):
 
-    pass # OntoMatrix.__init__()
 
-  def getCsvArr( self ):
-    logging.error( " Not implemented OntoMatrix.getCsvArr" )
+        if is_http( predicate ):
+            short = predicate.split("/")[-1]
+        else:
+            short = predicate
 
-    pass # OntoMatrix.getCsvArr()
+        if not short.startswith("has"):
+            logging.warning( " Predicate in OntoMatrix.getCsvArr() is '" + \
+                             predicate + "'," + " but expecting it to have '" + \
+                             "has" + "'." ) 
 
-  pass # class OntoMatrix
+
+        pass # OntoMatrix.__init__()
+
+    def getCsvArr( self ):
+        logging.error( " Not implemented OntoMatrix.getCsvArr" )
+
+        pass # OntoMatrix.getCsvArr()
+
+    pass # class OntoMatrix
 
 class OntoPlot:
   """
@@ -1705,7 +1807,7 @@ class CrystalInformation:
     # The Unit Cell Angles:
     self.unitCellAngles = OntoVector( className = "UnitCellAngles", 
                                       itemName  = "UnitCellAngles_" + self.cifName,
-    uuidDB = self.uuidDB, 
+                                       uuidDB = self.uuidDB, 
                                       unit  = "om:degree" )
          #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/degree" )
 
@@ -1722,7 +1824,7 @@ class CrystalInformation:
     self.unitCellRecipLengths = OntoVector( 
                                        className = "UnitCellLengths", 
                                        itemName  = "ReciprocalUnitCellLengths_" + self.cifName,
-    uuidDB = self.uuidDB, 
+                                       uuidDB = self.uuidDB, 
                                        #myName  = "ReciprocalUnitCellLengths_" + self.cifName,
                                        unit  = "om:reciprocalAngstrom" )
          #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom" )
@@ -2304,6 +2406,13 @@ class CrystalInformation:
 
 
 def getCsvInit( baseName, tPrefix, aPrefix ):
+    """
+    Return the top several lines for the .csv abox:
+    - The column headerss,
+    - The ABox and TBox definitions.
+
+    """
+
     output = [ ]
     output.append( [ "Source", "Type", "Target", "Relation", "Value", "Data Type" ] )
 
@@ -2313,7 +2422,7 @@ def getCsvInit( baseName, tPrefix, aPrefix ):
     output.append( [ baseName, "Ontology", aPrefix, "base", "", "" ] )
     return output
     pass # getCsvInit()
-
+u
 class CsvMaker:
   """
   An adjustable constructor of a .csv file for the ABox of a crystal or zeolite.
@@ -3978,30 +4087,35 @@ class CsvMaker:
       #arr += self.arrInitZeolite( uuid_zeolite )
 
       tmp = self.arrUnitCell( uuid_cif, self.crystOntoPrefix + "hasUnitCell", z )
-      if None != tmp:
-        arr += tmp
-      else:
+      if None == tmp:
         logging.warning( " Missing Unit Cell information!" )
+      else:
+        arr += tmp
 
       tmp = self.arrTransform( uuid_cif, self.crystOntoPrefix + "hasCoordinateTransformation", z )
-      if None != tmp:
+      if None == tmp:
+        logging.warning( " Missing Transformation information!" )
+      else:
         arr += tmp
 
       tmp = self.arrAtomSite( uuid_cif, self.crystOntoPrefix + "hasAtomicStructure", z )
-      if None != tmp:
-        arr += tmp
-      else:
+      if None == tmp:
         logging.warning( " Missing Atom Site information!" )
+      else:
+        arr += tmp
 
       tmp = self.arrTiles( uuid_cif, self.crystOntoPrefix + "hasTiledStructure", z )
-      if None != tmp:
+      if None == tmp:
+        logging.warning( " Missing Tiled Structure information!" )
+      else:
         arr += tmp
 
       tmp = self.arrSpectrum( uuid_cif, self.crystOntoPrefix + "hasXRDSpectrum", z )
-      if None != tmp:
+      if None == tmp:
+        logging.warning( " Missing Spectrum information!" )
+      else:
         arr += tmp
       # FIXME
-
 
       #print( "arr =", arr )
       #csvWrite( arr )
@@ -4022,8 +4136,9 @@ class CsvMaker:
 
     self.finalize() # << Important! Saves the current list of the UUIDs
 
-    if errCount > 0:
-      logging.warning( "Detected " + str(errCount) + " errors" )
+    logging.warning( "Detected " + str(errCount) + " errors" )
+    #if errCount > 0:
+    #  logging.warning( "Detected " + str(errCount) + " errors" )
 
     pass # CsvMaker.makeCsvs()
 
