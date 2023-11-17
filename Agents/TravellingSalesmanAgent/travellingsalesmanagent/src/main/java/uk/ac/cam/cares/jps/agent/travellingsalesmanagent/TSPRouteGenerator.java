@@ -9,7 +9,13 @@ public class TSPRouteGenerator {
 
 
     /**
-     * Create tsp layer.
+     * Generate TSP route layer
+     * @param geoServerClient
+     * @param workspaceName
+     * @param schema
+     * @param dbName
+     * @param LayerName
+     * @param cost_table
      */
     public void generateTSPLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName, String LayerName, String cost_table){
 
@@ -64,7 +70,13 @@ public class TSPRouteGenerator {
     }
 
     /**
-     * Generate sequence layer
+     * Generate TSP sequence layer
+     * @param geoServerClient
+     * @param workspaceName
+     * @param schema
+     * @param dbName
+     * @param LayerName
+     * @param cost_table
      */
     public void generateSequenceLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName, String LayerName, String cost_table){
 
@@ -77,7 +89,7 @@ public class TSPRouteGenerator {
                 "        $$SELECT * FROM pgr_dijkstraCostMatrix(\n" +
                 "            '"+cost_table+"',\n" +
                 "            (\n" +
-                "                SELECT array_agg(id)\n" +
+                "                SELECT ARRAY_APPEND(array_agg(id), (%target%))\n" +
                 "                FROM routing_ways_vertices_pgr\n" +
                 "                WHERE id IN (SELECT DISTINCT nearest_node FROM poi_tsp_nearest_node, flood_polygon_single_10cm WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005)\n" +
                 "            ),\n" +

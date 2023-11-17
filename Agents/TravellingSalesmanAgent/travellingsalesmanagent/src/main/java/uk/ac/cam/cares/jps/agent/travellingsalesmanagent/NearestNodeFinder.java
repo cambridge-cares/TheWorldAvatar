@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 public class NearestNodeFinder {
     
     /**
-     * Pass POI_tsp in arrays and finds the nearest nodes based on routing_ways_segment road data.
+     * Pass POI_tsp in arrays and finds the nearest nodes based on routing_ways road data.
      * @param remoteRDBStoreClient
      * @param jsonArray POI_tsp in array format
      */

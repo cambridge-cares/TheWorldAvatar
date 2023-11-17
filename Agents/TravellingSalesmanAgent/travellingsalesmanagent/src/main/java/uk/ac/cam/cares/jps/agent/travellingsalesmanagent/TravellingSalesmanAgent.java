@@ -8,8 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 import org.json.JSONArray;
@@ -21,7 +19,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 @WebServlet(urlPatterns = "/runtsp")
 
@@ -86,11 +83,8 @@ public class TravellingSalesmanAgent extends JPSAgent {
      * Process request parameters and run functions within agent in the following flow
      * 1) Read files
      * 2) Retrieve POI locations from KG
-     * 3) Segmentize road networks, find nearest_nodes of POIs
-     * 4) Generate isochrones based on settings
-     * 5) Map population to the isochrones
-     * 6) Create geoserver layer using geoserverclient
-     * 7) Upload .obda mapping using ontopclient
+     * 3) Find nearest_nodes of POIs
+     * 4) Create TSP layer using geoserverclient - TSP Route, TSP sequence
      * @param requestParams
      * @return
      */
@@ -144,13 +138,19 @@ public class TravellingSalesmanAgent extends JPSAgent {
             geoServerClient.createPostGISDataStore(workspaceName,"poi_tsp_nearest_node" , dbName, schema);
             geoServerClient.createPostGISLayer(workspaceName, dbName,"poi_tsp_nearest_node" ,geoServerVectorSettings);
 
+
+            /**
+             *  Loop through the edgeTable SQL and generate two geoserver layer for each edgeTableSQL
+             *  - TSP_route:  Gives the geometry of the shortest path for all TSP points
+             *  - TSP_seq:  Gives the sequence of order to visit all the TSP points
+             */
             if (tspFunction.equals("UR")){
                 TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator();
                 for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
                     String layerName = "TSP_"+entry.getKey();
                     String sql = entry.getValue();
                     tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
-                    //tspRouteGenerator.generateSequenceLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
+                    tspRouteGenerator.generateSequenceLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
                 }
             }
 
