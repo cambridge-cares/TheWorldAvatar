@@ -83,8 +83,9 @@ public class NetworkAnalysisAgent extends JPSAgent {
      * Process request parameters and run functions within agent in the following flow
      * 1) Read files
      * 2) Retrieve POI locations from KG
-     * 3) Find nearest_nodes of POIs
-     * 4) Create TSP layer using geoserverclient - TSP Route, TSP sequence
+     * 3) Find nearest_node of POI
+     * 4) Create Trip Centrality table
+     * 5) Create geoserver layer
      * @param requestParams
      * @return
      */
@@ -120,11 +121,7 @@ public class NetworkAnalysisAgent extends JPSAgent {
             TripCentralityCalculator tripCentralityCalculator = new TripCentralityCalculator();
 
 
-            /**
-             *  Loop through the edgeTable SQL and generate two geoserver layer for each edgeTableSQL
-             *  - TSP_route:  Gives the geometry of the shortest path for all TSP points
-             *  - TSP_seq:  Gives the sequence of order to visit all the TSP points
-             */
+            
             if (tcFunction.equals("UR")){
                 List<String> tcTableNameList = new ArrayList<>();
 
@@ -141,7 +138,7 @@ public class NetworkAnalysisAgent extends JPSAgent {
                 String workspaceName= "twa";
                 String schema = "public";
                 geoServerClient.createWorkspace(workspaceName);
-                tripCentralityCalculator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, "tripcentrality_"+tcTableNameList.get(1),tcTableNameList.get(0), tcTableNameList.get(1));
+                tripCentralityCalculator.generateTCLayer(geoServerClient, workspaceName, schema, dbName, "tripcentrality_"+tcTableNameList.get(1),tcTableNameList.get(0), tcTableNameList.get(1));
             }
         } catch (Exception e) {
             e.printStackTrace();

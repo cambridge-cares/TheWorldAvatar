@@ -16,10 +16,11 @@ public class TripCentralityCalculator {
 
 
     /**
-     * Pass POI_tsp in arrays and finds the nearest nodes based on routing_ways road data.
-     *
+     * Get the nearest node of POI and create the tripcentrality table
      * @param remoteRDBStoreClient
-     * @param jsonArray            POI_tsp in array format
+     * @param jsonArray JSONArray of POI
+     * @param tableName Table name of trip centrality table 
+     * @param sql EdgeTableSQL 
      */
     public void calculateTripCentrality(RemoteRDBStoreClient remoteRDBStoreClient, JSONArray jsonArray,String tableName, String sql ) {
 
@@ -27,8 +28,8 @@ public class TripCentralityCalculator {
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
 
             for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject poi_tsp = jsonArray.getJSONObject(i);
-                String geometry = poi_tsp.getString("geometry");
+                JSONObject poi = jsonArray.getJSONObject(i);
+                String geometry = poi.getString("geometry");
                 PGgeometry pgGeometry = new PGgeometry(geometry);
                 pgGeometry.getGeometry().setSrid(4326);
 
@@ -44,6 +45,14 @@ public class TripCentralityCalculator {
         }
 
     }
+
+    /** Create trip centrality 
+     * @param connection
+     * @param node POI node id
+     * @param tableName Table name of trip centrality table
+     * @param costTable Edge table SQL
+     * @throws SQLException
+     */
     private void generateTripCentralityTable(Connection connection, int node, String tableName, String costTable) throws SQLException {
 
         String tripCentrality_sql = "CREATE TABLE tc_"+tableName+" AS (\n" +
@@ -67,17 +76,19 @@ public class TripCentralityCalculator {
 
 
     /**
-     * Generate TSP route layer
+     * Generate Trip centrality layer that compares 
      * @param geoServerClient
-     * @param workspaceName
+     * @param workspaceName 
      * @param schema
      * @param dbName
      * @param LayerName
+     * @param normalTableName First TC table 
+     * @param floodTableName Second TC table to be compared
      */
-    public void generateTSPLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName, String LayerName,String normalTableName, String floodTableName){
+    public void generateTCLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName, String LayerName, String normalTableName, String floodTableName){
 
 
-        String tspLayer = "WITH maxcount AS (\n" +
+        String tcLayer = "WITH maxcount AS (\n" +
                 "    SELECT MAX(ABS(COALESCE(f.count, 0) - n.count)) AS max\n" +
                 "    FROM tc_"+normalTableName+" n\n" +
                 "    LEFT JOIN tc_"+ floodTableName +" f ON n.gid = f.gid AND n.geom = f.geom\n" +
@@ -105,23 +116,22 @@ public class TripCentralityCalculator {
                 "ORDER BY \n" +
                 "    count_difference_percentage DESC";
 
-        // Find nearest TSP_node which is the nearest grid
-        UpdatedGSVirtualTableEncoder virtualTableTSPRoute = new UpdatedGSVirtualTableEncoder();
-        GeoServerVectorSettings geoServerVectorSettingsTSPRoute = new GeoServerVectorSettings();
-        virtualTableTSPRoute.setSql(tspLayer);
-        virtualTableTSPRoute.setEscapeSql(true);
-        virtualTableTSPRoute.setName(LayerName);
-        virtualTableTSPRoute.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
-        geoServerVectorSettingsTSPRoute.setVirtualTable(virtualTableTSPRoute);
+        UpdatedGSVirtualTableEncoder virtualTableTC = new UpdatedGSVirtualTableEncoder();
+        GeoServerVectorSettings geoServerVectorSettingsTC = new GeoServerVectorSettings();
+        virtualTableTC.setSql(tcLayer);
+        virtualTableTC.setEscapeSql(true);
+        virtualTableTC.setName(LayerName);
+        virtualTableTC.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
+        geoServerVectorSettingsTC.setVirtualTable(virtualTableTC);
         geoServerClient.createPostGISDataStore(workspaceName,LayerName, dbName, schema);
-        geoServerClient.createPostGISLayer(workspaceName, dbName,LayerName ,geoServerVectorSettingsTSPRoute);
+        geoServerClient.createPostGISLayer(workspaceName, dbName,LayerName ,geoServerVectorSettingsTC);
     }
 
 
 
 
     /**
-     * Finds the nearest node of the POI_tsp from routing_ways table
+     * Finds the nearest node of the POI from routing_ways table
      * @param connection
      * @param geom
      * @return
