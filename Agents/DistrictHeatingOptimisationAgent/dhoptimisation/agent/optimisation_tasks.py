@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from CoolProp.CoolProp import PropsSI
 
+from dhoptimisation.utils import *
 from dhoptimisation.agent.config import TIME_FORMAT
 from dhoptimisation.agent.optimisation_setup import HeatBoiler, GasTurbine, SourcingContract
 
@@ -64,19 +65,22 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
 
     # Create profit lines for both heat generation modes
     # TODO: add more granular gas consumption, i.e. per generator
+    logger.info('Minimising generation cost for heat generation w/o GT ...')
     wogt = minimize_generation_cost(municipal_utility, sources_mode1, market_prices, 
                                     datetime_index, preceding_setup=previous_setup)
+    logger.info('Minimising generation cost for heat generation with GT ...')
     wgt = minimize_generation_cost(municipal_utility, sources_mode2, market_prices, 
                                    datetime_index, preceding_setup=previous_setup)
 
     # Optimize operating modes
-    opt = optimize_operating_modes(wogt, wgt, gt_active=gt_active, prev_gt_benefit=gt_benefit, 
-                                   mpc_eval=True)
+    logger.info('Optimising both operating modes ...')
+    opt = optimize_operating_modes(wogt, wgt, gt_active=gt_active, prev_gt_benefit=gt_benefit)
     # Extract optimised setup for first time step as new previous setup (for subsequent run)
     new_previous_setup = opt['Active_generator_objects'][0]
 
     # Update parameters describing GT state and benefit (max, cumulative) based 
     # on first optimised time step in current interval
+    logger.info('Assessing GT activity flag and (max, cumulative) benefit ...')
     for gt in municipal_utility.gas_turbines:
         if opt[gt.name][datetime_index[0]] > 0:
             gt_active = True
@@ -97,6 +101,7 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
             gt_benefit = None
 
     if rounding:
+        logger.info(f'Rounding numeric results to {rounding} digits ...')
         # Exclude list of generator objects from rounding
         columns_to_round = opt.columns.difference(['Active_generator_objects'])  
         # Round results to meaningful number of decimal places
@@ -106,7 +111,7 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     
     # Set optimisation results for first time step as new previous system state
     # (i.e., to be used in subsequent optimisation run for next time step)
-    # TODO: finalise
+    logger.info('Updating system state for (potential) subsequent optimisation ...')
     opti_start_dt = datetime_index[0].strftime(TIME_FORMAT)
     previous_state.update_system_state(opti_start_dt, gt_active, gt_benefit,
                                        new_previous_setup)
@@ -124,8 +129,10 @@ def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices,
     :param list sourcing_mode: list of heat generator/sourcing objects to be generally considered 
                                (HeatBoiler, GasTurbine, SourcingContract)
     :param MarketPrices market_prices: market price object
-    :param pd.DatetimeIndex datetime_index: time steps in optimization period
-
+    :param pd.DatetimeIndex datetime_index: datetime time steps to optimise
+    :param list preceding_setup: list of heat generator/sourcing objects active in time step
+                                 prior to current optimisation interval
+    
     :returns pd.DataFrame: DataFrame with operating conditions (heat generation per source) for each time step in
                           'datetime_index', along with associated minimal cost and active heat generator objects
     """
@@ -143,6 +150,7 @@ def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices,
 
     # loop over all time steps in datetime_index (using generic integer index)
     for t in range(len(datetime_index)):
+        logger.info(f'Minimising cost for timestep {t}/{len(datetime_index)} ...')
 
         # Retrieve minimum amount of heat to be supplied by SWPS to ensure grid stability
         # (due to min circulation volume by SWPS), MWh
@@ -151,10 +159,12 @@ def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices,
         demand = max(min_supply, municipal_utility.q_demand[t])
 
         # get sorted DataFrame of available heat capacities for respective heat generation mode and timestep
+        logger.info('Deriving available heat generators, sorted by unit cost and capacity ...')
         capas = get_available_heat_capacities(sourcing_mode, min_supply, municipal_utility.fuel, market_prices, t)
 
         # calculate minimum cost required to satisfy heat demand
-        ops_data = get_min_cost_for_interval(demand, capas, municipal_utility.fuel, market_prices, t)
+        logger.info('Deriving minimal cost to satisfy heat demand ...')
+        ops_data = get_min_cost_for_timestep(demand, capas, municipal_utility.fuel, market_prices, t)
 
         ###   include switching cost WITHIN same operating mode   ###
         # i.e., switching cost incurred by demand-driven shut-down/start-up of heat generators 
@@ -185,7 +195,7 @@ def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices,
 
 
 def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=False,
-                             prev_gt_benefit=None, mpc_eval=True):
+                             prev_gt_benefit=None):
     """
     Returns a DataFrame of optimized heat generation modes and associated cost
 
@@ -193,12 +203,12 @@ def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=
     :param pd.DataFrame operating_mode_wGT: optimized heat generation for each time step based on mode w/ GT
     :param boolean gt_active: flag whether gas turbine is currently active
     :param float prev_gt_benefit: cumulative previous benefit from current gas turbine operation
-    :param boolean mpc_eval: indicates whether this evaluation is used in a MPC optimization or not
+    
     :returns pd.DataFrame: DataFrame with optimized heat generation conditions (based on mode 1 and 2) for each time step
     """
 
     # initialize DataFrame with optimized operating conditions
-    optimized = pd.DataFrame(columns=operating_mode_woGT.columns[:-1])
+    optimized = pd.DataFrame(columns=operating_mode_woGT.columns)
 
     # initialize current best AND alternative operating mode for initial time step
     if gt_active:
@@ -215,9 +225,9 @@ def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=
     # loop over all time steps in operating_modes
     while t < len(current_best.index):
         # check whether current operating mode is still more profitable
-        if current_best['Min_cost'][t] <= alternative['Min_cost'][t]:
+        if current_best['Min_cost'].iloc[t] <= alternative['Min_cost'].iloc[t]:
             # append current_best operating conditions to optimized conditions for respective time step
-            optimized = pd.concat([optimized, current_best.iloc[t, :-1].to_frame().transpose()])
+            optimized = pd.concat([optimized, current_best.iloc[t].to_frame().transpose()])
             if gt_active:
                 # update cumulative and max benefit from CURRENT GT operation
                 gt_benefit[1] += alternative['Min_cost'][t] - current_best['Min_cost'][t]
@@ -231,11 +241,10 @@ def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=
             alternative_setup = alternative['Active_generator_objects'][t:].reset_index(drop=True)
             if gt_active:
                 switch, period, cost = assess_switching_period(current_cost, alternative_cost, current_setup,
-                                                               alternative_setup, prev_gt_benefit=gt_benefit,
-                                                               mpc_eval=mpc_eval)
+                                                               alternative_setup, prev_gt_benefit=gt_benefit)
             else:
                 switch, period, cost = assess_switching_period(current_cost, alternative_cost, current_setup,
-                                                               alternative_setup, mpc_eval=mpc_eval)
+                                                               alternative_setup)
             # loop over length of evaluated 'switching' period
             for dt in range(period+1):
                 if switch:
@@ -243,13 +252,13 @@ def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=
                         # reset previously accumulated gt benefit
                         gt_benefit = [0, 0]
                         # add switching cost to first interval in switching period
-                        switching_interval = alternative.iloc[t, :-1]
+                        switching_interval = alternative.iloc[t]
                         switching_interval['Min_cost'] += cost
                         optimized = pd.concat([optimized, switching_interval.to_frame().transpose()])
                     else:
-                        optimized = pd.concat([optimized, alternative.iloc[t, :-1].to_frame().transpose()])
+                        optimized = pd.concat([optimized, alternative.iloc[t].to_frame().transpose()])
                 else:
-                    optimized = pd.concat([optimized, current_best.iloc[t, :-1].to_frame().transpose()])
+                    optimized = pd.concat([optimized, current_best.iloc[t].to_frame().transpose()])
                     if gt_active:
                         # update cumulative and max benefit from CURRENT GT operation
                         gt_benefit[1] += alternative['Min_cost'][t] - current_best['Min_cost'][t]
@@ -259,8 +268,8 @@ def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=
     return optimized
 
 
-def assess_switching_period(current_cost_line, alternative_cost_line, current_set_up, alternative_set_up,
-                            prev_gt_benefit=None, mpc_eval=True):
+def assess_switching_period(current_cost_line, alternative_cost_line, current_set_up,
+                            alternative_set_up, prev_gt_benefit=None):
     """
     Returns a boolean flag whether heat generation modes shall be switched, associated switching cost and
     the respective time period for which the modes shall/shall not be switched
@@ -272,7 +281,7 @@ def assess_switching_period(current_cost_line, alternative_cost_line, current_se
     :param pd.DataFrame alternative_set_up: list of active heat generation/sourcing objects associated with max profit for
                                             each time step in optimization period
     :param float prev_gt_benefit: max and cumulative previous benefit from current gas turbine operation
-    :param boolean mpc_eval: indicates whether this evaluation is used in a MPC optimization or not
+    
     :returns boolean switch: flag whether to switch profitably or not
     :returns int timesteps: number of time steps for which switching is/is not profitable
     :returns float cost: switching cost incurred by switching between modes
@@ -280,7 +289,8 @@ def assess_switching_period(current_cost_line, alternative_cost_line, current_se
 
     # initialize parameters
     switch = False              # switching flag
-    first_neg = True            # flag to indicate when accumulated benefit trend reverses, i.e., acc. benefit decreases
+    first_neg = True            # flag to indicate when accumulated benefit trend reverses,
+                                # i.e., acc. benefit decreases
     # accumulated benefit from CURRENT gas turbine operation (over multiple time steps)
     if prev_gt_benefit:
         benefit = prev_gt_benefit[1]
@@ -328,14 +338,9 @@ def assess_switching_period(current_cost_line, alternative_cost_line, current_se
                     # 'active' gt, but mode w/o gt is lastingly more economical
                     if acc_benefit.max() == 0:
                         cost1, cost2 = 0.0, 0.0
-                if mpc_eval:
-                    # return only initial switching cost for MPC optimizations, as switching back will be included in
-                    # evaluation at later time step (MPC only extracts very first time step at each iteration)
+                    # NOTE: Return only initial switching cost due to MPC style optimization;
+                    # Switching back will be included in subsequent optimisation at later time step
                     return switch, tmax, cost1
-                else:
-                    # for non-MPC optimizations, return sum of switching cost (as 'tmax' time steps will be implemented
-                    # in final optimization output without explicit evaluation of switching back at a later stage)
-                    return switch, tmax, (cost1 + cost2)
 
         else:
             # potentially reset 'first_neg' flag (e.g., if acc. benefit again increases after a single drop)
@@ -367,6 +372,7 @@ def get_available_heat_capacities(heat_sources, min_supply, gas_props, market_pr
     :param GasProperties gas_props: gas properties object describing the gas used by heat generators
     :param MarketPrices market_prices: market price object
     :param int timestep: time step in optimization period to derive available heat capacity for
+    
     :returns pd.DataFrame: sorted DataFrame of all available heat capacities at time 'timestep'
     """
 
@@ -519,6 +525,7 @@ def opex_per_h(generator, timestep):
 
     :param HeatBoiler|GasTurbine generator: heat generator object (HeatBoiler or GasTurbine)
     :param int timestep: time step in optimization period to evaluate opex for
+    
     :returns float: OPEX per operating hour
     """
 
@@ -540,8 +547,8 @@ def opex_per_h(generator, timestep):
 
 def opex_per_MWh(generator, gas_props, market_prices, timestep, quant_old=0.0, quant_new=1.0):
     """
-    Returns load-dependent (average) OPEX per generated MWh of heat (€/MWh_q) as well as specific (average) gas
-    consumption (MWh_g(wrt Hu)/MWh_q)
+    Returns load-dependent (average) OPEX per generated MWh of heat (€/MWh_q) as well as 
+    specific (average) gas consumption (MWh_g(wrt Hu)/MWh_q)
         - for gas turbines also returns specific (average) electricity generation (MWh_el/MWh_q)
         - for gas turbines: if heat load < minimum heat load, returns np.nans
 
@@ -551,6 +558,7 @@ def opex_per_MWh(generator, gas_props, market_prices, timestep, quant_old=0.0, q
     :param int timestep: time step in optimization period to evaluate opex for
     :param float quant_old: previously generated heat quantity on generator (in SAME timestep), MWh
     :param float quant_new: (additional) heat quantity to be generated, MWh
+    
     :returns float: (average) OPEX per generated MWh of heat (already includes electricity revenue for GT)
     :returns float: (average) amount of gas per generated MWh of heat (wrt lower calorific value)
     :returns float: (average) amount of electricity co-generated per generated MWh of heat
@@ -635,17 +643,18 @@ def opex_per_MWh(generator, gas_props, market_prices, timestep, quant_old=0.0, q
     return spec_opex, spec_gas_cons, spec_el_gen
 
 
-def get_min_cost_for_interval(q_demand, sourcing_capacities, gas_props, market_prices, timestep):
+def get_min_cost_for_timestep(q_demand, sourcing_capacities, gas_props, market_prices, timestep):
     """
     Returns dictionary comprised of minimal cost (both sourcing and generation) to satisfy heat demand, how heat
     generation shall be distributed across available sources, and list of required heat generation objects
 
-    :param float q_demand: expected heat demand for current optimization interval
+    :param float q_demand: expected heat demand for current optimization time step
     :param pd.DataFrame sourcing_capacities: sorted DataFrame of all available heat capacities at time 'timestep'
                                              (as returned by function 'get_available_heat_capacities')
     :param GasProperties gas_props: gas properties object (containing calorific values and CO2 factor)
     :param MarketPrices market_prices: market price object
     :param int timestep: time step in optimization period to derive minimum sourcing/generation cost for
+    
     :returns dict: dict of heat generation per available source, associated minimal required cost, and list of
                    required heat generator objects
     """
@@ -702,6 +711,7 @@ def get_min_cost_for_interval(q_demand, sourcing_capacities, gas_props, market_p
             # if full capacity of current heat source is needed
             if q_demand >= 0:
                 cost_min += row['capacity'] * row['unit_price']
+                #TODO: implement more granular gas demand tracking
                 gas_cons += row['capacity'] * row['gas_cons']
                 el_gen += row['capacity'] * row['el_gen']
                 # if heat source already in active heat sources, only increment needed capacity
@@ -796,6 +806,7 @@ def switching_cost(old_set_up, old_timestep, new_set_up, new_timestep):
     :param list new_set_up: list of heat generator/sourcing objects (HeatBoiler, GasTurbine, SourcingContract)
                             after potentially switching
     :param int new_timestep: time step in optimization period associated with new_set_up
+    
     :returns float: switching cost
     """
 

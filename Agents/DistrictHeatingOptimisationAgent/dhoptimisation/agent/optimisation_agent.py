@@ -77,6 +77,8 @@ class DHOptimisationAgent(DerivationAgent):
             time_format {str} -- Python compliant time format
         """
         
+        self.logger.info(f'Validating inputs for derivation {derivationIRI}...')
+        
         # Initialise dict of return values
         opti_inputs = {}
         
@@ -124,6 +126,8 @@ class DHOptimisationAgent(DerivationAgent):
         
         # Otherwise append mapped IRIs to return dict
         opti_inputs.update(fc_mapping)
+        
+        self.logger.info('Inputs successfully validated.')
 
         return opti_inputs, t1, t2, ts_client, time_format
 
@@ -169,9 +173,11 @@ class DHOptimisationAgent(DerivationAgent):
         # 1) Get potentially already instantiated optimisation output instances, i.e.,
         #    ProvidedHeat, ConsumedGas and GeneratedHeat Amounts, for which time series
         #    would just get updated (checks for actual forecast instances)
+        self.logger.info('Retrieving already instantiated optimisation output IRIs ...')
         outputs = self.sparql_client.get_existing_optimisation_outputs(opti_inputs['q_demand'])
         
         # 2) Create optimisation input objects from KG data
+        self.logger.info('Creating optimisation input objects ...')
         # Query further inputs from KG and construct optimisation model setup dictionary
         setup_dict, index = define_optimisation_setup(self.sparql_client, ts_client,
                                                  consumption_models, cogen_models,
@@ -181,11 +187,14 @@ class DHOptimisationAgent(DerivationAgent):
         prices, swps = create_optimisation_setup(setup_dict)
         
         # 3) Optimize heat generation modes
+        self.logger.info('Optimising heat generation ...')
         # Reset gas turbine etc. states for non-related optimisation runs
         if (datetime.strptime(opti_start_dt, time_format) - timedelta(hours=1)).strftime(time_format) != self.previous_state.start_dt:
             # Otherwise: If the previous optimisation interval covered [t1, t2] and
             # the current request covers [t1+1h, t3] -> runs are considered related
             # and the optimised state for t1 will be used as starting conditions
+            self.logger.info('Requested optimisation interval not related to previous optimisation. ' +
+                             'Resetting system state prior to optimisation ...')
             self.previous_state.reset_system_state()
         # Run generation optimisation for entire optimisation horizon
         res, res_wogt, res_wgt = generation_optimization(swps, prices, index, self.previous_state)

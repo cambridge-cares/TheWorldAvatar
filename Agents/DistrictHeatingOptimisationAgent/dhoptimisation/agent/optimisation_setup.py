@@ -6,7 +6,6 @@
 # The purpose of this module is to provide functionality to create the required
 # optimisation setup and model objects based on data queried from the KG
 
-import copy
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta

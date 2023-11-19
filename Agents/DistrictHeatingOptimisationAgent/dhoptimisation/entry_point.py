@@ -1,6 +1,7 @@
 # To avoid unnecessary logging information from py4j package, set logger level before 
 # first creation of JPS_BASE_LIB module view (i.e. jpsBaseLibView = jpsBaseLibGW.createModuleView())
 
+import warnings
 import logging
 logging.getLogger("py4j").setLevel(logging.ERROR)
 # Specify logger level to be used throughout the agent: dev, prod
@@ -17,6 +18,8 @@ from dhoptimisation.utils.env_configs import SPARQL_QUERY_ENDPOINT, \
 
 # Initialise logger for this module (to avoid circular imports)
 logger = agentlogging.get_logger(logger_level)
+# Suppress FutureWarnings (i.e., from Pandas)
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def create_app():
