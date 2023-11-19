@@ -206,9 +206,6 @@ class DHOptimisationAgent(DerivationAgent):
         import random
         provided_heat = [round(random.uniform(2.0, 11.0),1) for _ in times]
         consumed_gas = [round(random.uniform(1.0, 6.0),1) for _ in times]
-        
-        # Update current tier unit price (based on new incremental heat sourcing)
-        #TODO: to implement
 
         # Instantiate new optimisation outputs in KG and RDB (if not yet existing)
         if not outputs:
@@ -253,7 +250,7 @@ class DHOptimisationAgent(DerivationAgent):
             ts_client.replace_ts_data(dataIRI=data_IRI, 
                                       times=times, values=consumed_gas)
         
-        # Update instantiated current sourcing prices
+        # Update instantiated current tier unit price (based on new incremental heat sourcing)
         for c in swps.contracts:
             # Assess updated cumulative annual sourcing amount
             total = c.q_hist.sum(skipna=True)

@@ -64,7 +64,6 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     sources_mode2.extend(municipal_utility.gas_turbines)
 
     # Create profit lines for both heat generation modes
-    # TODO: add more granular gas consumption, i.e. per generator
     logger.info('Minimising generation cost for heat generation w/o GT ...')
     wogt = minimize_generation_cost(municipal_utility, sources_mode1, market_prices, 
                                     datetime_index, preceding_setup=previous_setup)
@@ -82,7 +81,7 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     # on first optimised time step in current interval
     logger.info('Assessing GT activity flag and (max, cumulative) benefit ...')
     for gt in municipal_utility.gas_turbines:
-        if opt[gt.name][datetime_index[0]] > 0:
+        if opt[gt.name+'_q'][datetime_index[0]] > 0:
             gt_active = True
             if gt.q_hist.iloc[-1] == 0:
                 # in case GT has just been activated, initialise max and cumulative
@@ -140,9 +139,13 @@ def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices,
     # Create empty DataFrame with required columns
     columns = ['Q_demand', 'Min_cost', 'Gas_consumption', 'Electricity_generation', 
                'Used_capacity', 'Idle_capacity', 'Active_generator_objects']
-    columns.extend([c.name for c in municipal_utility.contracts])
-    columns.extend([g.name for g in municipal_utility.gas_turbines])
-    columns.extend([b.name for b in municipal_utility.boilers])
+    # Add heat generation columns
+    columns.extend([c.name+'_q' for c in municipal_utility.contracts])
+    columns.extend([g.name+'_q' for g in municipal_utility.gas_turbines])
+    columns.extend([b.name+'_q' for b in municipal_utility.boilers])
+    # Add gas consumption columns
+    columns.extend([g.name+'_gas' for g in municipal_utility.gas_turbines])
+    columns.extend([b.name+'_gas' for b in municipal_utility.boilers])
     ops_overview = pd.DataFrame(columns=columns)
 
     # initialise generator setup from preceding time step
@@ -711,42 +714,45 @@ def get_min_cost_for_timestep(q_demand, sourcing_capacities, gas_props, market_p
             # if full capacity of current heat source is needed
             if q_demand >= 0:
                 cost_min += row['capacity'] * row['unit_price']
-                #TODO: implement more granular gas demand tracking
                 gas_cons += row['capacity'] * row['gas_cons']
                 el_gen += row['capacity'] * row['el_gen']
                 # if heat source already in active heat sources, only increment needed capacity
-                if row['source'] in active.keys():
-                    active[row['source']] += row['capacity']
+                if row['source']+'_q' in active.keys():
+                    active[row['source']+'_q'] += row['capacity']
+                    active[row['source']+'_gas'] += row['capacity'] * row['gas_cons']
                 else:
-                    active[row['source']] = row['capacity']
+                    active[row['source']+'_q'] = row['capacity']
+                    active[row['source']+'_gas'] = row['capacity'] * row['gas_cons']
                     active['Active_generator_objects'].append(row['generator_object'])
             # if current heat source is only needed partially
             else:
                 # conventional heat boilers are fully flexible (no minimum load)
                 if isinstance(row['generator_object'], HeatBoiler):
                     # re-evaluate OPEX for heat generation below maximum capacity
-                    if row['source'] in active.keys():
+                    if row['source']+'_q' in active.keys():
                         # if boiler already in active heat sources, only increment needed capacity and only
                         # consider marginal variable cost driven by additional heat quantity
-                        used = active[row['source']]    # already used quantity on heat boiler
-                        active[row['source']] += row['capacity'] + q_demand
+                        used = active[row['source']+'_q']    # already used quantity on heat boiler
                         opex, gas_demand, _ = opex_per_MWh(row['generator_object'], gas_props, market_prices, timestep,
                                                            quant_old=used, quant_new=(row['capacity'] + q_demand))
                         cost_min += opex * (row['capacity'] + q_demand)
                         gas_cons += gas_demand * (row['capacity'] + q_demand)
+                        active[row['source']+'_q'] += row['capacity'] + q_demand
+                        active[row['source']+'_gas'] += gas_demand * (row['capacity'] + q_demand)
                     else:
                         # if boiler not yet in active heat sources, consider full hourly cost, despite only
                         # partial use of maximum generation capacity
-                        active[row['source']] = row['capacity'] + q_demand
                         opex1 = opex_per_h(row['generator_object'], timestep)
                         opex2, gas_demand, _ = opex_per_MWh(row['generator_object'], gas_props, market_prices, timestep,
                                                          quant_new=(row['capacity'] + q_demand))
                         cost_min += opex1 + (opex2 * (row['capacity'] + q_demand))
                         gas_cons += gas_demand * (row['capacity'] + q_demand)
+                        active[row['source']+'_q'] = row['capacity'] + q_demand
+                        active[row['source']+'_gas'] = gas_demand * (row['capacity'] + q_demand)
                         active['Active_generator_objects'].append(row['generator_object'])
                     # store used and idle capacity on 'swing' boiler (most expensive current heat source)
-                    active['Used_capacity'] = active[row['source']]
-                    active['Idle_capacity'] = row['generator_object'].capacity - active[row['source']]
+                    active['Used_capacity'] = active[row['source']+'_q']
+                    active['Idle_capacity'] = row['generator_object'].capacity - active[row['source']+'_q']
 
                 # gas turbine can only be operated above certain minimal load
                 elif isinstance(row['generator_object'], GasTurbine):
@@ -754,17 +760,18 @@ def get_min_cost_for_timestep(q_demand, sourcing_capacities, gas_props, market_p
                     if (row['capacity'] + q_demand) >= row['generator_object'].min_load:
                         # re-evaluate OPEX for heat generation below maximum capacity (full hourly cost,
                         # despite only partial use of maximum generation potential)
-                        active[row['source']] = row['capacity'] + q_demand
                         opex1 = opex_per_h(row['generator_object'], timestep)
                         opex2, gas_demand, cogen = opex_per_MWh(row['generator_object'], gas_props, market_prices,
                                                                 timestep, quant_new=(row['capacity'] + q_demand))
                         cost_min += opex1 + (opex2 * (row['capacity'] + q_demand))
                         gas_cons += gas_demand * (row['capacity'] + q_demand)
                         el_gen += cogen * (row['capacity'] + q_demand)
+                        active[row['source']+'_q'] = row['capacity'] + q_demand
+                        active[row['source']+'_gas'] = gas_demand * (row['capacity'] + q_demand)
                         active['Active_generator_objects'].append(row['generator_object'])
                         # store used and idle capacity on 'swing' GT (most expensive current heat source)
-                        active['Used_capacity'] = active[row['source']]
-                        active['Idle_capacity'] = row['generator_object'].power_q - active[row['source']]
+                        active['Used_capacity'] = active[row['source']+'_q']
+                        active['Idle_capacity'] = row['generator_object'].power_q - active[row['source']+'_q']
                     else:
                         # 'reset' remaining heat demand if below minimum heat load of gas turbine
                         q_demand += row['capacity']
@@ -773,7 +780,7 @@ def get_min_cost_for_timestep(q_demand, sourcing_capacities, gas_props, market_p
                 elif isinstance(row['generator_object'], SourcingContract):
                     # only consider MHKW if required capacity from MHKW >= minimal technical limit (MW)
                     if (row['capacity'] + q_demand) >= row['generator_object'].qmin[timestep]:
-                        active[row['source']] = row['capacity'] + q_demand
+                        active[row['source']+'_q'] = row['capacity'] + q_demand
                         cost_min += row['unit_price'] * (row['capacity'] + q_demand)
                         active['Active_generator_objects'].append(row['generator_object'])
                         # store used and idle capacity on 'swing' sourcing contract (most expensive current heat source)
