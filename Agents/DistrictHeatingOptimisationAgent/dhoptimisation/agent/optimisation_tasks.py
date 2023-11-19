@@ -16,26 +16,33 @@ from dhoptimisation.agent.optimisation_setup import HeatBoiler, GasTurbine, Sour
 
 def generation_optimization(municipal_utility, market_prices, datetime_index, previous_state):
     """
-    Run heat generation/sourcing cost optimization as model-predictive control implementation
+    Run heat generation/sourcing cost optimization as "model-predictive control" implementation
+    NOTE: Using the DIF, receding optimisation periods are sent to the agent as subsequent
+          requests (get triggered when optimisation period gets updated), i.e.,
+          If an overall period [2020-01-01 00:00:00, 2020-01-03 00:00:00] shall be
+          optimised with an MPC horizon of 24h, 24 subsequent requests/optimisations
+          will be handled by the agent:
+          1) Optimise [2020-01-01 00:00:00, 2020-01-02 00:00:00]
+          2) Populate optimised results as forecasts back to KG for entire period (24h)
+          3) The subsequent request will retrieve and optimise data for
+             [2020-01-01 01:00:00, 2020-01-02 01:00:00] and, hence, use the output
+             for the first optimised time step from the previous step
+          etc.
 
     :param MunicipalUtility municipal_utility: municipal utility object (with heat demand, connected grid, etc.)
     :param MarketPrices market_prices: market prices object with electricity, co2, gas, etc. prices as time series
-    :param DateTimeIndex datetime_index: original datetime indices to integer-based indices of objects
+    :param DateTimeIndex datetime_index: original datetime index corresponding to integer-based indices of objects
     
-    :returns pd.DataFrames: holistically optimised heat generation across modes w/ and w/o GT ('mpc_results'),
+    :returns pd.DataFrames: optimised heat generation across modes w/ and w/o GT ('opt'),
                             as well as internally optimised modes w/ GT ('wgt') and w/o GT ('wogt')
-    :returns pd.DataFrame: ('mpc_horizon' ahead) forecasts of heat load and grid temperatures for 'evaluation_period'
     """
-    
-    opti_horizon = len(datetime_index)
-    
-    # Whether GT has been active in previous time step
+
+    # Load previous generation setups/ generator states to define starting conditions
+    # (i.e., whether GT has been active in previous time step)
     gt_active = previous_state.gt_active
     gt_benefit = previous_state.gt_benefit
     ops1_last_setup = previous_state.ops1_last_setup
     ops2_last_setup = previous_state.ops2_last_setup  
-    # Whether GT start up cost are already included in optimized mode w/ GT
-    startup_cost_included = False  # default: add (additional) start-up cost
 
     # Incorporate GT idle time requirement (i.e., potentially mark GT as unavailable)
     gts = [gt.name for gt in municipal_utility.gas_turbines]
@@ -54,41 +61,17 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     sources_mode2.extend(municipal_utility.gas_turbines)
 
     # Create profit lines for both heat generation modes
-    ops1 = minimize_generation_cost(municipal_utility, sources_mode1, market_prices, 
-                                    opti_horizon, preceding_setup=ops1_last_setup)
-    ops2 = minimize_generation_cost(municipal_utility, sources_mode2, market_prices, 
-                                    opti_horizon, preceding_setup=ops2_last_setup)
-    ops1_last_setup = ops1['Active_generator_objects'][0]
-    ops2_last_setup = ops2['Active_generator_objects'][0]
+    wogt = minimize_generation_cost(municipal_utility, sources_mode1, market_prices, 
+                                    len(datetime_index), preceding_setup=ops1_last_setup)
+    wgt = minimize_generation_cost(municipal_utility, sources_mode2, market_prices, 
+                                   len(datetime_index), preceding_setup=ops2_last_setup)
+    ops1_last_setup = wogt['Active_generator_objects'][0]
+    ops2_last_setup = wgt['Active_generator_objects'][0]
 
-    # TODO: to be reviewed / properly understood
-    # # check whether GT start-up cost need to be added in case of switching
-    # if (t > 0) and (ops2['SWPS_GT'][0] > 0.0) and (previous == 0.0):
-    #     # start-up cost could potentially be already included in optimized mode w/GT in case of "inner-mode"
-    #     # switching due to lower q_demand than GT min load
-    #     startup_cost_included = True
-    # previous = ops2['SWPS_GT'][0]
+    # Optimize operating modes
+    opt = optimize_operating_modes(wogt, wgt, gt_active=gt_active, prev_gt_benefit=gt_benefit, 
+                                   mpc_eval=True)
 
-    # optimize operating modes
-    opt = optimize_operating_modes(ops1, ops2, gt_active=gt_active, startup_cost_included=startup_cost_included,
-                                    prev_gt_benefit=gt_benefit, mpc_eval=True)
-
-    # extract very first optimisation result for current time step and attach to overall mpc results
-    if t == 0:
-        # initialise mpc results DataFrame
-        columns = opt.iloc[[0], :].columns
-        index = pd.RangeIndex(start=0, stop=evaluation_period, step=1)
-        mpc_results = pd.DataFrame(index=index, columns=columns)
-        # include results for "internally" optimised modes w/o and w/ GT
-        wogt = mpc_results.copy()
-        wgt = wogt.copy()
-    # attach results for very first optimisation time step as mpc results for current time step
-    mpc_results.iloc[t, :] = opt.iloc[0, :]
-    # exclude last column with active heat generator objects in ops1 and ops2 DataFrames
-    wogt.iloc[t, :] = ops1.iloc[0, :-1]
-    wgt.iloc[t, :] = ops2.iloc[0, :-1]
-
-    
 
     #####---------------    UPDATE OPTIMISATION OBJECTS   ---------------#####
 
@@ -104,7 +87,7 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
                 # in case GT has just been activated, initialise max and cumulative benefit from current operation
                 gt_benefit = [0.0, 0.0]
                 gt_benefit[1] += wogt['Min_cost'][t] - mpc_results['Min_cost'][t] + switching_cost([], 0,
-                            [gt for gt in ops2.iloc[0]['Active_generator_objects'] if isinstance(gt, GasTurbine)], 0)
+                            [gt for gt in wgt.iloc[0]['Active_generator_objects'] if isinstance(gt, GasTurbine)], 0)
             else:
                 # update cumulative GT benefit from current operation
                 gt_benefit[1] += wogt['Min_cost'][t] - mpc_results['Min_cost'][t]
@@ -113,7 +96,7 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
         else:
             if gt_active:
                 # 'correct' GT activity for current time step in 'wgt' if GT has just been switched off
-                wgt.iloc[t, :] = ops1.iloc[0, :-1]
+                wgt.iloc[t, :] = wogt.iloc[0, :-1]
             gt_active = False
             gt_benefit = None
     for contract in municipal_utility.contracts:
@@ -132,7 +115,7 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     opti_start_dt = datetime_index[0].strftime(TIME_FORMAT)
     #previous_state.update_system_state(opti_start_dt, )
 
-    # return mpc_results, wogt, wgt, forecasts_out
+    return opt, wogt, wgt
     
     
 def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices, optimization_period,
@@ -201,7 +184,7 @@ def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices, op
     return ops_overview
 
 
-def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=False, startup_cost_included=False,
+def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=False,
                              prev_gt_benefit=None, mpc_eval=True):
     """
     Returns a DataFrame of optimized heat generation modes and associated cost
@@ -209,8 +192,6 @@ def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=
     :param pd.DataFrame operating_mode_woGT: optimized heat generation for each time step based on mode w/o GT
     :param pd.DataFrame operating_mode_wGT: optimized heat generation for each time step based on mode w/ GT
     :param boolean gt_active: flag whether gas turbine is currently active
-    :param boolean startup_cost_included: flag whether gas turbine start-up cost are already included in minimized cost
-                                          for mode w/ GT
     :param float prev_gt_benefit: cumulative previous benefit from current gas turbine operation
     :param boolean mpc_eval: indicates whether this evaluation is used in a MPC optimization or not
     :returns pd.DataFrame: DataFrame with optimized heat generation conditions (based on mode 1 and 2) for each time step
@@ -226,10 +207,6 @@ def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=
     else:
         current_best = operating_mode_woGT.copy()
         alternative = operating_mode_wGT.copy()
-        # re-adjusted 'Min_cost' for optimized mode w/ GT if start up cost are already included in first time step
-        if startup_cost_included:
-            alternative.loc[0, 'Min_cost'] -= switching_cost([], 0, [gt for gt in alternative['Active_generator_objects'][0]
-                                                             if isinstance(gt, GasTurbine)], 0)
 
     # initialize previous GT benefit parameters
     gt_benefit = prev_gt_benefit if prev_gt_benefit else [0.0, 0.0]

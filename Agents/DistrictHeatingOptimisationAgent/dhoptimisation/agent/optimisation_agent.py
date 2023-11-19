@@ -189,10 +189,8 @@ class DHOptimisationAgent(DerivationAgent):
             # the current request covers [t1+1h, t3] -> runs are considered related
             # and the optimised state for t1 will be used as starting conditions
             self.previous_state.reset_system_state()
-        
-        generation_optimization(swps, prices, index, self.previous_state)
-        # res, res_wogt, res_wgt, fcs = generation_optimization(swps, prices, ts_input, index, opt_period, mpc_horizon,
-        #                                                     out_file_gt, out_file_opt, histeval=True, live_updates=False)
+        # Run generation optimisation for entire optimisation horizon
+        res, res_wogt, res_wgt = generation_optimization(swps, prices, index, self.previous_state)
                
         # Mock optimisation data
         # 1) retrieve 1 input time series
