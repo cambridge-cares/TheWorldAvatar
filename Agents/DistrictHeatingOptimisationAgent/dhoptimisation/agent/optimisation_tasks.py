@@ -14,7 +14,8 @@ from dhoptimisation.agent.config import TIME_FORMAT
 from dhoptimisation.agent.optimisation_setup import HeatBoiler, GasTurbine, SourcingContract
 
 
-def generation_optimization(municipal_utility, market_prices, datetime_index, previous_state):
+def generation_optimization(municipal_utility, market_prices, datetime_index, previous_state,
+                            rounding=2):
     """
     Run heat generation/sourcing cost optimization as "model-predictive control" implementation
     NOTE: Using the DIF, receding optimisation periods are sent to the agent as subsequent
@@ -32,6 +33,8 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     :param MunicipalUtility municipal_utility: municipal utility object (with heat demand, connected grid, etc.)
     :param MarketPrices market_prices: market prices object with electricity, co2, gas, etc. prices as time series
     :param DateTimeIndex datetime_index: original datetime index corresponding to integer-based indices of objects
+    :param PreviousSystemState previous_state: object describing the generation setup of the previous time step
+    :param int rounding: Number of meaningful decimal places to round results
     
     :returns pd.DataFrames: optimised heat generation across modes w/ and w/o GT ('opt'),
                             as well as internally optimised modes w/ GT ('wgt') and w/o GT ('wogt')
@@ -60,6 +63,7 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     sources_mode2.extend(municipal_utility.gas_turbines)
 
     # Create profit lines for both heat generation modes
+    # TODO: add more granular gas consumption, i.e. per generator
     wogt = minimize_generation_cost(municipal_utility, sources_mode1, market_prices, 
                                     datetime_index, preceding_setup=previous_setup)
     wgt = minimize_generation_cost(municipal_utility, sources_mode2, market_prices, 
@@ -71,49 +75,40 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     # Extract optimised setup for first time step as new previous setup (for subsequent run)
     new_previous_setup = opt['Active_generator_objects'][0]
 
-    #####---------------    UPDATE OPTIMISATION OBJECTS   ---------------#####
-
-    # implement current optimisation results in overall municipal utility object and update q_hist of boilers
-    for boiler in municipal_utility.boilers:
-        boiler.q_hist[t] = mpc_results[boiler.name][t]
-    # update q_hist of gas turbine
+    # Update parameters describing GT state and benefit (max, cumulative) based 
+    # on first optimised time step in current interval
     for gt in municipal_utility.gas_turbines:
-        gt.q_hist[t] = mpc_results[gt.name][t]
-        if mpc_results[gt.name][t] > 0:
+        if opt[gt.name][datetime_index[0]] > 0:
             gt_active = True
-            if (t > 0) and (mpc_results[gt.name][t-1] == 0):
-                # in case GT has just been activated, initialise max and cumulative benefit from current operation
+            if gt.q_hist.iloc[-1] == 0:
+                # in case GT has just been activated, initialise max and cumulative
+                # benefit from current operation
                 gt_benefit = [0.0, 0.0]
-                gt_benefit[1] += wogt['Min_cost'][t] - mpc_results['Min_cost'][t] + switching_cost([], 0,
+                gt_benefit[1] += wogt['Min_cost'].iloc[0] - opt['Min_cost'].iloc[0] + switching_cost([], 0,
                             [gt for gt in wgt.iloc[0]['Active_generator_objects'] if isinstance(gt, GasTurbine)], 0)
             else:
                 # update cumulative GT benefit from current operation
-                gt_benefit[1] += wogt['Min_cost'][t] - mpc_results['Min_cost'][t]
+                gt_benefit[1] += wogt['Min_cost'].iloc[0] - opt['Min_cost'].iloc[0]
             # update max benefit from current operation
             gt_benefit[0] = max(gt_benefit[0], gt_benefit[1])
         else:
-            if gt_active:
-                # 'correct' GT activity for current time step in 'wgt' if GT has just been switched off
-                wgt.iloc[t, :] = wogt.iloc[0, :-1]
+            # Mark GT as inactive and reset benefit
             gt_active = False
             gt_benefit = None
-    for contract in municipal_utility.contracts:
-        # update q_hist of sourcing contract and update unit price (to include potential volume discount)
-        contract.q_hist[t] = mpc_results[contract.name][t]
-        contract.update_price()
 
-
-    # round results to 2 decimal places
-    mpc_results = mpc_results.astype(float).round(2)
-    wogt = wogt.astype(float).round(2)
-    wgt = wgt.astype(float).round(2)
-    forecasts_out = forecasts_out.astype(float).round(2)
+    if rounding:
+        # Exclude list of generator objects from rounding
+        columns_to_round = opt.columns.difference(['Active_generator_objects'])  
+        # Round results to meaningful number of decimal places
+        opt[columns_to_round] = opt[columns_to_round].astype(float).round(rounding)
+        wogt[columns_to_round] = wogt[columns_to_round].astype(float).round(rounding)
+        wgt[columns_to_round] = wgt[columns_to_round].astype(float).round(rounding)
     
     # Set optimisation results for first time step as new previous system state
     # (i.e., to be used in subsequent optimisation run for next time step)
     # TODO: finalise
     opti_start_dt = datetime_index[0].strftime(TIME_FORMAT)
-    previous_state.update_system_state(opti_start_dt, None, None,
+    previous_state.update_system_state(opti_start_dt, gt_active, gt_benefit,
                                        new_previous_setup)
 
     return opt, wogt, wgt

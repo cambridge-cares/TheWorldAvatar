@@ -152,8 +152,6 @@ class DHOptimisationAgent(DerivationAgent):
               are actually considered
         """
 
-        #TODO: Decide on whether to round or not
-
         # Get input IRIs from the agent inputs (derivation_inputs)
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
