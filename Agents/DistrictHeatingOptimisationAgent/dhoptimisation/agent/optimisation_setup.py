@@ -44,36 +44,6 @@ class MarketPrices:
         return self.el_spot[timestep] + self.chp_bonus[timestep] + self.grid_save[timestep]
 
 
-    #TODO: Check whether all copies are needed in the end
-    def create_copy(self, start=0, stop=None):
-        # Create copy of MarketPrices object for period of integer-location indices [start, stop)
-
-        # Extract current index (from any time series attribute)
-        index = self.gas_q.index
-        # Copy object in full length if 'stop' is None
-        stop = stop if stop else len(index)
-        
-        # Raise errors for erroneous indices
-        if not (isinstance(start, int) & isinstance(stop, int)):
-            raise_error(IndexError, "Indices 'start' and 'stop' need to be integers for .iloc based indexing")
-        if start < 0:
-            raise_error(ValueError, "'Start' index out of bounds (smaller than zero)")
-        if stop > len(index):
-            raise_error(ValueError, "'Stop' index out of bounds (larger than maximum index)")
-        else:
-            # Extract time series for specified integer indices (.iloc)
-            gas_q = self.gas_q.iloc[start: stop].reset_index(drop=True)
-            gas_gt = self.gas_gt.iloc[start: stop].reset_index(drop=True)
-            el_spot = self.el_spot.iloc[start: stop].reset_index(drop=True)
-            co2 = self.co2.iloc[start: stop].reset_index(drop=True)
-            chp_bonus = self.chp_bonus.iloc[start: stop].reset_index(drop=True)
-            grid_save = self.grid_save.iloc[start: stop].reset_index(drop=True)
-
-            # Return new MarketPrices object with copied data for specified period/indices
-            return MarketPrices(gas_q=gas_q, gas_gt=gas_gt, el_spot=el_spot, co2=co2, chp_bonus=chp_bonus,
-                                grid_save=grid_save)
-
-
 class GasProperties:
     # Class defining gas properties used by boilers and gas turbine
     def __init__(self, ho, hu, co2_factor):
@@ -132,35 +102,6 @@ class SourcingContract:
             self.current_price = np.inf
 
 
-    def create_copy(self, start=0, stop=None):
-        # Create copy of SourcingContract object for period of integer-location indices [start, stop)
-
-        # Extract current index (from any time series attribute)
-        index = self.available.index
-        # Copy object in full length if 'stop' is None
-        stop = stop if stop else len(index)
-
-        # Raise errors for erroneous indices
-        if not (isinstance(start, int) & isinstance(stop, int)):
-            raise_error(IndexError, "Indices 'start' and 'stop' need to be integers for .iloc based indexing")
-        if start < 0:
-            raise_error(ValueError, "'Start' index out of bounds (smaller than zero)")
-        if stop > len(index):
-            raise_error(ValueError, "'Stop' index out of bounds (larger than maximum index)")
-        else:
-            # Extract time series for specified integer indices (.iloc)
-            available = self.available.iloc[start: stop].reset_index(drop=True)
-            qmin = self.qmin.iloc[start: stop].reset_index(drop=True)
-            qmax = self.qmax.iloc[start: stop].reset_index(drop=True)
-            q_hist = self.q_hist.iloc[start: stop].reset_index(drop=True)
-
-            # Return new SourcingContract object with copied data for specified period/indices
-            return SourcingContract(iri=self.iri, name=self.name, qlimits_pa=self.qlimits_pa, 
-                                    prices=self.prices, current_price=self.current_price, 
-                                    entry_point=self.grid_entry_point, availability=available, 
-                                    qmin=qmin, qmax=qmax, q_hist=q_hist)
-
-
 class HeatBoiler:
     # Class defining a conventional heat boiler
     def __init__(self, iri, name, capacity, gas_demand, start_up_cost, shut_down_cost, 
@@ -183,35 +124,6 @@ class HeatBoiler:
     def __repr__(self):
         # Override generic default naming method by assigning 'name' as printable representation of object
         return '{}_{}'.format(self.__class__.__name__, self.name)
-
-
-    def create_copy(self, start=0, stop=None):
-        # Create copy of HeatBoiler object for period of integer-location indices [start, stop)
-
-        # Extract current index (from any time series attribute)
-        index = self.available.index
-        # Copy object in full length if 'stop' is None
-        stop = stop if stop else len(index)
-
-        # Raise errors for erroneous indices
-        if not (isinstance(start, int) & isinstance(stop, int)):
-            raise_error(IndexError, "Indices 'start' and 'stop' need to be integers for .iloc based indexing")
-        if start < 0:
-            raise_error(ValueError, "'Start' index out of bounds (smaller than zero)")
-        if stop > len(index):
-            raise_error(ValueError, "'Stop' index out of bounds (larger than maximum index)")
-        else:
-            # Extract time series for specified integer indices (.iloc)
-            wear = self.cost_wear.iloc[start: stop].reset_index(drop=True)
-            available = self.available.iloc[start: stop].reset_index(drop=True)
-            cost_labour = self.cost_labour.iloc[start: stop].reset_index(drop=True)
-            q_hist = self.q_hist.iloc[start: stop].reset_index(drop=True)
-
-            # return new HeatBoiler object with copied data for specified period/indices
-            return HeatBoiler(iri=self.iri, name=self.name, capacity=self.capacity, 
-                              gas_demand=self.gas_demand, start_up_cost=self.cost_start, 
-                              shut_down_cost=self.cost_shut, wear_cost=wear, availability=available,
-                              labour_cost=cost_labour, q_hist=q_hist)
 
 
 class GasTurbine:
@@ -299,40 +211,6 @@ class GasTurbine:
         return len(inactive)
 
 
-    def create_copy(self, start=0, stop=None):
-        # Create copy of GasTurbine object for period of integer-location indices [start, stop)
-
-        # Extract current index (from any time series attribute)
-        index = self.available.index
-        # Copy object in full length if 'stop' is None
-        stop = stop if stop else len(index)
-
-        # Raise errors for erroneous indices
-        if not (isinstance(start, int) & isinstance(stop, int)):
-            raise_error(IndexError, "Indices 'start' and 'stop' need to be integers for .iloc based indexing")
-        if start < 0:
-            raise_error(ValueError, "'Start' index out of bounds (smaller than zero)")
-        if stop > len(index):
-            raise_error(ValueError, "'Stop' index out of bounds (larger than maximum index)")
-        else:
-            # Extract time series for specified integer indices (.iloc)
-            wear = self.cost_wear.iloc[start: stop].reset_index(drop=True)
-            available = self.available.iloc[start: stop].reset_index(drop=True)
-            cost_labour = self.cost_labour.iloc[start: stop].reset_index(drop=True)
-            cost_start = self.cost_start.iloc[start: stop].reset_index(drop=True)
-            cost_shut = self.cost_shut.iloc[start: stop].reset_index(drop=True)
-            q_hist = self.q_hist.iloc[start: stop].reset_index(drop=True)
-
-            # Return new GasTurbine object with copied data for specified period/indices
-            return GasTurbine(iri=self.iri, name=self.name, power_el=self.power_el, 
-                              power_q=self.power_q, min_load=self.min_load,
-                              gas_demand=self.gas_demand, el_output=self.el_output,
-                              idle_period=self.idle_period, wear_cost=wear, 
-                              availability=available, labour_cost=cost_labour, 
-                              start_up_cost=cost_start, shut_down_cost=cost_shut, 
-                              q_hist=q_hist)
-
-
 class MunicipalUtility:
     # Class defining a municipal utility company providing district heating
     def __init__(self, name, conv_boilers, gas_turbines, contracts, fuel, network, q_demand):
@@ -367,43 +245,6 @@ class MunicipalUtility:
         self.network = network
 
 
-    def create_copy(self, start=0, stop=None):
-        # Create copy of MunicipalUtility object for period of integer-location indices [start, stop)
-
-        # Extract current index (from any time series attribute)
-        index = self.q_demand.index
-        # Copy object in full length if 'stop' is None
-        stop = stop if stop else len(index)
-
-        # Raise errors for erroneous indices
-        if not (isinstance(start, int) & isinstance(stop, int)):
-            raise_error(IndexError, "Indices 'start' and 'stop' need to be integers for .iloc based indexing")
-        if start < 0:
-            raise_error(ValueError, "'Start' index out of bounds (smaller than zero)")
-        if stop > len(index):
-            raise_error(ValueError, "'Stop' index out of bounds (larger than maximum index)")
-        else:
-            # Extract time series for specified integer indices (.iloc)
-            q_demand = self.q_demand.iloc[start: stop].reset_index(drop=True)
-
-            # Create new MunicipalUtility object with copied data for specified period/indices
-            mu = MunicipalUtility(name=self.name, conv_boilers=[], gas_turbines=[], contracts=[], fuel=self.fuel,
-                                  network=None, q_demand=q_demand)
-
-            # Add copies of boilers, contracts, and gas turbines
-            for b in self.boilers:
-                mu.add_boiler(b.create_copy(start, stop))
-            for gt in self.gas_turbines:
-                mu.add_gas_turbine(gt.create_copy(start, stop))
-            for c in self.contracts:
-                mu.add_contract(c.create_copy(start, stop))
-
-            # Add copy of heating grid
-            mu.connect_network(self.network.create_copy(start, stop))
-
-            return mu
-
-
 class DistrictHeatingGrid:
     # Class defining the district heating network
     def __init__(self, name, entry_points):
@@ -431,43 +272,6 @@ class DistrictHeatingGrid:
             self.entry_points[name] = characteristics
         else:
             raise_error(ValueError, "Entry point's 'name' needs to be a string")
-
-
-    def create_copy(self, start=0, stop=None):
-        # Create copy of DistrictHeatingGrid object for period of integer-location indices [start, stop)
-        
-        if len(self.entry_points.keys()) == 0:
-            # In case original DistrictHeatingGrid does not have any entry points
-            entry_points = {}
-        else:
-            # Retrieve names of entry points
-            names = list(self.entry_points.keys())
-
-            # Extract current index (from any time series attribute)
-            index = self.entry_points[names[0]]['pressure'].index
-            stop = stop if stop else len(index)
-
-            # Raise errors for erroneous indices
-            if not (isinstance(start, int) & isinstance(stop, int)):
-                raise_error(IndexError, "Indices 'start' and 'stop' need to be integers for .iloc based indexing")
-            if start < 0:
-                raise_error(ValueError, "'Start' index out of bounds (smaller than zero)")
-            if stop > len(index):
-                raise_error(ValueError, "'Stop' index out of bounds (larger than maximum index)")
-            else:
-                # Create deep copy of original entry_points dict (to fully break binding between copy and original)
-                entry_points = copy.deepcopy(self.entry_points)
-                for name in names:
-                    entry_points[name]['min_circulation'] = self.entry_points[name]['min_circulation']
-                    # Extract entry point time series for specified integer indices (.iloc)
-                    entry_points[name]['pressure'] = self.entry_points[name]['pressure'].iloc[start: stop].\
-                                                     reset_index(drop=True)
-                    entry_points[name]['temp_flow'] = self.entry_points[name]['temp_flow'].iloc[start: stop].\
-                                                      reset_index(drop=True)
-                    entry_points[name]['temp_return'] = self.entry_points[name]['temp_return'].iloc[start: stop].\
-                                                        reset_index(drop=True)
-
-        return DistrictHeatingGrid(name=self.name, entry_points=entry_points)
     
     
 class PreviousSystemState:
