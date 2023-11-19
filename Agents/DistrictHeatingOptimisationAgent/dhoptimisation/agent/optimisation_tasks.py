@@ -37,12 +37,11 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
                             as well as internally optimised modes w/ GT ('wgt') and w/o GT ('wogt')
     """
 
-    # Load previous generation setups/ generator states to define starting conditions
+    # Load previous generation setup/generator states to define starting conditions
     # (i.e., whether GT has been active in previous time step)
     gt_active = previous_state.gt_active
     gt_benefit = previous_state.gt_benefit
-    ops1_last_setup = previous_state.ops1_last_setup
-    ops2_last_setup = previous_state.ops2_last_setup  
+    previous_setup = previous_state.generation_setup
 
     # Incorporate GT idle time requirement (i.e., potentially mark GT as unavailable)
     gts = [gt.name for gt in municipal_utility.gas_turbines]
@@ -62,16 +61,15 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
 
     # Create profit lines for both heat generation modes
     wogt = minimize_generation_cost(municipal_utility, sources_mode1, market_prices, 
-                                    len(datetime_index), preceding_setup=ops1_last_setup)
+                                    datetime_index, preceding_setup=previous_setup)
     wgt = minimize_generation_cost(municipal_utility, sources_mode2, market_prices, 
-                                   len(datetime_index), preceding_setup=ops2_last_setup)
-    ops1_last_setup = wogt['Active_generator_objects'][0]
-    ops2_last_setup = wgt['Active_generator_objects'][0]
+                                   datetime_index, preceding_setup=previous_setup)
 
     # Optimize operating modes
     opt = optimize_operating_modes(wogt, wgt, gt_active=gt_active, prev_gt_benefit=gt_benefit, 
                                    mpc_eval=True)
-
+    # Extract optimised setup for first time step as new previous setup (for subsequent run)
+    new_previous_setup = opt['Active_generator_objects'][0]
 
     #####---------------    UPDATE OPTIMISATION OBJECTS   ---------------#####
 
@@ -111,38 +109,45 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     wgt = wgt.astype(float).round(2)
     forecasts_out = forecasts_out.astype(float).round(2)
     
-    # TODO: to be implemented
+    # Set optimisation results for first time step as new previous system state
+    # (i.e., to be used in subsequent optimisation run for next time step)
+    # TODO: finalise
     opti_start_dt = datetime_index[0].strftime(TIME_FORMAT)
-    #previous_state.update_system_state(opti_start_dt, )
+    previous_state.update_system_state(opti_start_dt, None, None,
+                                       new_previous_setup)
 
     return opt, wogt, wgt
     
     
-def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices, optimization_period,
-                             preceding_setup=[]):
+def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices,
+                             datetime_index, preceding_setup=[]):
     """
-    Returns DataFrame with operating conditions (generation capacity per heat source) for 'optimization_period'
-    timesteps, as well as associated cost
+    Returns DataFrame with operating conditions (i.e., generation amount per heat source)
+    for timesteps contained in "datetime_index", as well as associated cost
 
     :param MunicipalUtility municipal_utility: municipal utility object (with heat demand, connected grid, etc.)
-    :param list sourcing_mode: list of heat generator/sourcing objects (HeatBoiler, GasTurbine, SourcingContract)
+    :param list sourcing_mode: list of heat generator/sourcing objects to be generally considered 
+                               (HeatBoiler, GasTurbine, SourcingContract)
     :param MarketPrices market_prices: market price object
-    :param int optimization_period: number of time steps in optimization period
-    :param boolean hist_eval: specifies whether optimisation is run in 'forecasting' or 'historical_evaluation' mode
+    :param pd.DatetimeIndex datetime_index: time steps in optimization period
+
     :returns pd.DataFrame: DataFrame with operating conditions (heat generation per source) for each time step in
-                          'optimization_period', along with associated minimal cost and active heat generator objects
+                          'datetime_index', along with associated minimal cost and active heat generator objects
     """
 
-    # create empty DataFrame with required columns
-    columns = ['Q_demand', 'Min_cost', 'SWPS_GT', 'MHKW_ToP', 'Kessel4', 'Kessel5', 'Kessel6', 'Gas_consumption',
-               'Electricity_generation', 'Used_capacity', 'Idle_capacity', 'Active_generator_objects']
+    # Create empty DataFrame with required columns
+    columns = ['Q_demand', 'Min_cost', 'Gas_consumption', 'Electricity_generation', 
+               'Used_capacity', 'Idle_capacity', 'Active_generator_objects']
+    columns.extend([c.name for c in municipal_utility.contracts])
+    columns.extend([g.name for g in municipal_utility.gas_turbines])
+    columns.extend([b.name for b in municipal_utility.boilers])
     ops_overview = pd.DataFrame(columns=columns)
 
     # initialise generator setup from preceding time step
     old = preceding_setup
 
-    # loop over all time steps in optimization_period
-    for t in range(optimization_period):
+    # loop over all time steps in datetime_index (using generic integer index)
+    for t in range(len(datetime_index)):
 
         # Retrieve minimum amount of heat to be supplied by SWPS to ensure grid stability
         # (due to min circulation volume by SWPS), MWh
@@ -178,8 +183,8 @@ def minimize_generation_cost(municipal_utility, sourcing_mode, market_prices, op
 
     # fill all empty cells with 0's
     ops_overview.fillna(0, inplace=True)
-    # replace generic integer index with first 'optimization_period' elements of Q_demand index
-    ops_overview.index = municipal_utility.q_demand.index[:optimization_period]
+    # replace generic integer index with corresponding datetime_index
+    ops_overview.index = datetime_index
 
     return ops_overview
 
