@@ -28,8 +28,6 @@ public class NetworkAnalysisAgent extends JPSAgent {
 
     private static final String PROPETIES_PATH = "/inputs/config.properties";
     private final String FUNCTION_KEY = "function";
-
-
     private static final Logger LOGGER = LogManager.getLogger(NetworkAnalysisAgent.class);
 
     private EndpointConfig endpointConfig = new EndpointConfig();
@@ -84,7 +82,7 @@ public class NetworkAnalysisAgent extends JPSAgent {
      * 1) Read files
      * 2) Retrieve POI locations from KG
      * 3) Find nearest_node of POI
-     * 4) Create Trip Centrality table
+     * 4) Create trip centrality table
      * 5) Create geoserver layer
      * @param requestParams
      * @return
@@ -117,10 +115,7 @@ public class NetworkAnalysisAgent extends JPSAgent {
             // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
             JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
 
-            // Split road into multiple smaller segment and find the nearest_node
             TripCentralityCalculator tripCentralityCalculator = new TripCentralityCalculator();
-
-
             
             if (tcFunction.equals("UR")){
                 List<String> tcTableNameList = new ArrayList<>();

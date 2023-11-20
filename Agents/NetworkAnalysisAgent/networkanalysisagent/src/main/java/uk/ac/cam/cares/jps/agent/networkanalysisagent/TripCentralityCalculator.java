@@ -76,14 +76,14 @@ public class TripCentralityCalculator {
 
 
     /**
-     * Generate Trip centrality layer that compares 
+     * Generate trip centrality layer that compares the two centrality table by finding the difference of it.
      * @param geoServerClient
      * @param workspaceName 
-     * @param schema
-     * @param dbName
-     * @param LayerName
-     * @param normalTableName First TC table 
-     * @param floodTableName Second TC table to be compared
+     * @param schema Schema name - default to public
+     * @param dbName Datbase name
+     * @param LayerName Geoserver layer name
+     * @param normalTableName First trip centrality table 
+     * @param floodTableName Second trip centrality table to be compared
      */
     public void generateTCLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName, String LayerName, String normalTableName, String floodTableName){
 
@@ -128,13 +128,11 @@ public class TripCentralityCalculator {
     }
 
 
-
-
     /**
-     * Finds the nearest node of the POI from routing_ways table
+     * Find the nearest node
      * @param connection
-     * @param geom
-     * @return
+     * @param geom geom wkt from poi
+     * @return String of id
      * @throws SQLException
      */
     private String findNearestNode(Connection connection, String geom) throws SQLException {
