@@ -192,26 +192,26 @@
                     <p>Show TSP</p>
 
                     <div class="tooltip" id="routeTooltip">
-                        <span class="tooltiptext">Different vehicles have different wading capability.</span>
+                        <span class="tooltiptext">Fastest route to fix all the flooded power stations.</span>
                         <span>?</span>
 
                     </div>
                 </div>
                 <div class="controlContents">
                     <div>
-                        <input type="checkbox" id="toggleTSPCheckbox_normal" checked
+                        <input type="checkbox" id="toggleTSPCheckbox_normal" 
                             onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-normal', 'visibility', (this.checked) ? 'visible' : 'none');">
-                        <span>TSP Normal</span>
+                        <span>Normal road conditions</span>
                     </div>
                     <div>
-                        <input type="checkbox" id="toggleTSPCheckbox_30" checked
+                        <input type="checkbox" id="toggleTSPCheckbox_30" 
                             onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-30', 'visibility', (this.checked) ? 'visible' : 'none');">
-                        <span>TSP 30</span>
+                        <span>30cm Wading Depth</span>
                     </div>
                     <div>
-                        <input type="checkbox" id="toggleTSPCheckbox_90" checked
+                        <input type="checkbox" id="toggleTSPCheckbox_90" 
                             onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-90', 'visibility', (this.checked) ? 'visible' : 'none');">
-                        <span>TSP 90</span>
+                        <span>90cm Wading Depth</span>
                     </div>
                 </div>
             </div>
@@ -531,7 +531,17 @@
                                     'line-width': 3
                                 }
                             });
+
+                            // Set layer visibility based on checkbox state
+                            var checkbox = document.getElementById(checkboxId);
+                            if (checkbox.checked) {
+                                MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'visible');
+                            } else {
+                                MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'none');
+                            }
                         });
+
+
                 }
 
 
