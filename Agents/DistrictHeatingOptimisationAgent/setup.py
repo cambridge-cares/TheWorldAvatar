@@ -20,7 +20,6 @@ setup(
         'pyderivationagent~=1.6.0',
         'pandas~=2.1.0',
         'numpy~= 1.26.0',
-        'tabulate~=0.9.0',
         'scikit-learn~=1.3.0',
         'matplotlib~=3.8.0'
     ]
