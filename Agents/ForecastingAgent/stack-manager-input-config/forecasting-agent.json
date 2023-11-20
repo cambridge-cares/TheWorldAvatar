@@ -3,7 +3,7 @@
         "Name": "forecasting-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.2.0",
+                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.2.1",
                 "Mounts": [
                     {
                         "Type": "bind",
