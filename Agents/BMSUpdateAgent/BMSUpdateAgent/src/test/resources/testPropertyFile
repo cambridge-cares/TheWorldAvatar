@@ -5,7 +5,25 @@ esphome.agent.toggle=http://[ESP_HOST]/esphome-agent/toggle
 esphome.update.agent.retrieve=http://[ESP_UPDATE_HOST]/esphome-update-agent/retrieve
 
 #SPARQL Query endpoint of triple store
-sparql.query.endpoint=http://[BLAZEGRAPH_QUERY_HOST]/blazegraph/namespace/test/sparql
+sparql.query.endpoint=http://[SPARQL_QUERY_HOST]/blazegraph/namespace/test/sparql
 
 #SPARQL Update endpoint of triple store
-sparql.update.endpoint=http://[BLAZEGRAPH_UPDATE_HOST]/blazegraph/namespace/test/sparql
+sparql.update.endpoint=http://[SPARQL_UPDATE_HOST]/blazegraph/namespace/test/sparql
+
+#SPARQL Username
+sparql.username=[SPARQL_USER]
+
+#SPARQL Password
+sparql.password=[SPARQL_PASSWORD]
+
+#DB url
+db.url=[DB_URL]
+
+#DB Username
+db.user=[DB_USER]
+
+#DB Password
+db.password=[DB_PASSWORD]
+
+#api url
+api.url=[WACNET_API_PATH]

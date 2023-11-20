@@ -23,8 +23,7 @@ public class RouteSegmentization {
      */
     public void segmentize(RemoteRDBStoreClient remoteRDBStoreClient, double segmentization_length){
                 try (Connection connection = remoteRDBStoreClient.getConnection()) {
-                String segmentization_create_table="DROP TABLE IF EXISTS routing_ways_segment;\n" +
-                "\n" +
+                String segmentization_create_table=
                 "-- Create a new table with the same structure as the old table\n" +
                 "CREATE TABLE routing_ways_segment AS\n" +
                 "SELECT *\n" +
@@ -87,9 +86,24 @@ public class RouteSegmentization {
 
                 System.out.println("Begin on recalculating topology, this may take awhile.");
                 executeSql(connection,("SELECT pgr_createTopology('routing_ways_segment', 0.000001, 'the_geom', 'gid', 'source', 'target', clean := true);"));
-                System.out.println("Recreated routing topology.(4/4)");
-                
-                System.out.println("Segmentization completed. Routing_ways_segment table created.");
+                System.out.println("Recreated routing topology.");
+                System.out.println("Analzye isolated edge in graph network.");
+                executeSql(connection, "SELECT pgr_analyzeGraph ('routing_ways_segment', 0.001, 'the_geom', 'gid')");
+                System.out.println("Dropping isolated networks  in graph network.");
+                executeSql(connection, "CREATE TEMPORARY TABLE isolated AS\n" +
+                        "SELECT a.gid as ways_id, b.id as source_vertice, c.id as target_vertice\n" +
+                        "    FROM routing_ways_segment a, routing_ways_segment_vertices_pgr b, routing_ways_segment_vertices_pgr c\n" +
+                        "    WHERE a.source=b.id AND b.cnt=1 AND a.target=c.id AND c.cnt=1;\n" +
+                        "\n" +
+                        "DELETE FROM routing_ways_segment\n" +
+                        "WHERE gid IN ( SELECT ways_id FROM isolated);\n" +
+                        "\n" +
+                        "DELETE FROM routing_ways_segment_vertices_pgr\n" +
+                        "WHERE id IN ( SELECT source_vertice FROM isolated);\n" +
+                        "\n" +
+                        "DELETE FROM routing_ways_segment_vertices_pgr\n" +
+                        "WHERE id IN ( SELECT target_vertice FROM isolated);");
+                System.out.println("Segmentization completed. Routing_ways_segment table created. (4/4)");
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -187,6 +201,25 @@ public class RouteSegmentization {
     private void executeSql(Connection connection, String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
+        }
+    }
+
+    public boolean doesTableExist(RemoteRDBStoreClient remoteRDBStoreClient) {
+    try (Connection connection = remoteRDBStoreClient.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                // Use a ResultSet to query for the table's existence
+                ResultSet resultSet = statement.executeQuery("SELECT 1 FROM routing_ways_segment");
+                // If the query is successful, the table exists
+                return true;
+            }
+            catch (SQLException e) {
+                // If an exception is thrown, the table does not exist
+                return false;
+            }
+        }  
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
         }
     }
 

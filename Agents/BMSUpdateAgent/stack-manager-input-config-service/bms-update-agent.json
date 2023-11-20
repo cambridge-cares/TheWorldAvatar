@@ -3,9 +3,12 @@
     "Name": "bms-update-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "bms-update-agent:1.0.0",
+        "Image": "bms-update-agent:1.1.0",
         "Env": [
-          "CLIENT_PROPERTIES=/app/config/client.properties"
+          "SET_CLIENT_PROPERTIES=/app/config/setClient.properties",
+          "WRITE_CLIENT_PROPERTIES=/app/config/writeClient.properties",
+          "UPDATETRIPLES_CLIENT_PROPERTIES=/app/config/updateTriplesClient.properties",
+          "WACNET_API_PROPERTIES=/app/config/api.properties"
         ],
         "Mounts": [
           {
