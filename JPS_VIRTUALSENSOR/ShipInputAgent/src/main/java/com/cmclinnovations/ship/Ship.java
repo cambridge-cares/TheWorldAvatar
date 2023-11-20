@@ -20,6 +20,7 @@ public class Ship {
     private double lat;
     private double lon;
     private Instant timestamp; // timestamp when data was obtained
+    private String shipName;
 
     public Ship() {
     }
@@ -35,6 +36,13 @@ public class Ship {
         this.shipType = json.getInt("SHIPTYPE");
         this.timestamp = LocalDateTime.parse(json.getString("TIMESTAMP")).toInstant(ZoneOffset.UTC)
                 .plus(Duration.ofHours(timeOffset));
+
+        shipName = "Ship: ";
+        if (json.has("SHIPNAME")) {
+            shipName += json.getString("SHIPNAME");
+        } else {
+            shipName += "Ship - " + mmsi;
+        }
     }
 
     public Instant getTimestamp() {
@@ -128,5 +136,9 @@ public class Ship {
 
     public String getSpeedMeasureIri() {
         return this.speedMeasureIri;
+    }
+
+    public String getShipName() {
+        return shipName;
     }
 }
