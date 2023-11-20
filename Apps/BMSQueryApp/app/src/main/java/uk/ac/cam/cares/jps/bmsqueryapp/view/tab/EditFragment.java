@@ -146,13 +146,13 @@ public class EditFragment extends Fragment {
             JsonObjectRequest controlJsonObjectRequest = new JsonObjectRequest(Request.Method.POST, WACNET_WRITE_URL.build().toString(), controlParams, controlResponse -> {
                 try {
                     String responseString = controlResponse.getString("message");
-                    if (responseString.contains("Successfully written")) {
-                        Toast.makeText(this.getContext(), "Control mode has been changed successfully", Toast.LENGTH_LONG).show();
+                    if (!responseString.contains("Successfully written")) {
+                        Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
-            }, error -> Toast.makeText(this.getContext(), "Failed to submit the change to the control mode, please resubmit later.", Toast.LENGTH_SHORT).show());
+            }, error -> Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show());
             SingletonConnection.getInstance(this.getContext()).addToRequestQueue(controlJsonObjectRequest);
 
             try {
@@ -161,7 +161,7 @@ public class EditFragment extends Fragment {
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-            }, error -> Toast.makeText(this.getContext(), "Failed to submit the change to the editable variable, please resubmit later.", Toast.LENGTH_SHORT).show());
+            }, error -> Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show());
         SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
     }
 
