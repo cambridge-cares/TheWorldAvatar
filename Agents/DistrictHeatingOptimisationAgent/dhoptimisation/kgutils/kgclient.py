@@ -839,19 +839,21 @@ class KGClient(PySparqlClient):
     # 
     def instantiate_new_outputs(self, g: Graph, outputs: dict):
         """
-        Instantiate forecast relationships for all generation optimisation outputs
+        Instantiate forecast relationships for all generation optimisation outputs,
+        i.e., sourced/generated heat, generated electricity, consumed gas, and
+        generator availability
         NOTE: All optimisation outputs are instantiated as forecasts to 
               indicate "hypothetical" nature of values and to not interfere
               with actual historical measurements
         
+        Arguments:
+            outputs (dict) -- dictionary with rdf types as keys and associated 
+                              instance IRIs as values            
         Returns:
-            outputs (dict) -- dictionary with keys 'heat', 'gas', 'electricity',
-                              'availability', ...
-                              and associated time series IRIs as values
+            outputs (dict) -- dictionary with rdf types as keys and associated
+                              Forecast IRIs as values (i.e., dataIRIs of time series)
         """
 
-        #TODO: add proper instantiation of units
-        #      (incl. prior query) where relevant
         for output in outputs:
             # Suppres instantiation of non applicable instances (i.e., co-gen 
             # electricity for conventional heat boilers)

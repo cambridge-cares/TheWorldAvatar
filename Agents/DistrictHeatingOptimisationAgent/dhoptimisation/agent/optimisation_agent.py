@@ -49,7 +49,9 @@ class DHOptimisationAgent(DerivationAgent):
     def agent_output_concepts(self) -> list:
         # Output concepts (i.e., results) of the Derivation
         return [OHN_PROVIDED_HEAT_AMOUNT, OHN_CONSUMED_GAS_AMOUNT,
-                OHN_GENERATED_HEAT_AMOUNT]
+                OHN_GENERATED_HEAT_AMOUNT,
+                # less relevant, but also optimisation outputs
+                OHN_COGEN_ELECTRICITY_AMOUNT, OHN_AVAILABILITY]
 
 
     def validate_inputs(self, http_request) -> bool:
@@ -197,38 +199,67 @@ class DHOptimisationAgent(DerivationAgent):
                              'Resetting system state prior to optimisation ...')
             self.previous_state.reset_system_state()
         # Run generation optimisation for entire optimisation horizon
-        res, res_wogt, res_wgt = generation_optimization(swps, prices, index, self.previous_state)
-               
-        # Mock optimisation data
-        # 1) retrieve 1 input time series
-        times, values = ts_client.retrieve_timeseries(opti_inputs['q_demand'])
-        # 2) initialise output forecast for "random" values
-        import random
-        provided_heat = [round(random.uniform(2.0, 11.0),1) for _ in times]
-        consumed_gas = [round(random.uniform(1.0, 6.0),1) for _ in times]
-
-        # Instantiate new optimisation outputs in KG and RDB (if not yet existing)
+        res, _, _ = generation_optimization(swps, prices, index, self.previous_state)
+        
+        # 4) Instantiate (relevant) optimisation outputs
+        # Extract timestamps for optimisation outputs to instantiate
+        times = [datetime.strftime(dt, time_format) for dt in index]
+        
         if not outputs:
-            # Initialise return Graph
-            g = Graph()
-            providers = self.sparql_client.get_heat_providers()
-            # efw plant
-            efw_outputs = self.sparql_client.get_efw_output_iris(providers['efw_plant'][0])
-            g, efw_ts = self.sparql_client.instantiate_new_outputs(g, efw_outputs)
-            # gas boiler
-            boiler_outputs = self.sparql_client.get_heatgenerator_output_iris(providers['boilers'][0])
-            g, boiler_ts = self.sparql_client.instantiate_new_outputs(g, boiler_outputs)
+            # Instantiate new optimisation outputs for all heat providers/generators
+            # in KG and RDB (if not yet existing)
+            providers = swps.boilers + swps.gas_turbines + swps.contracts
             
-            # Initialise time series
-            ts_client.init_timeseries(dataIRI=efw_ts[OHN_PROVIDED_HEAT_AMOUNT], 
-                                      times=times, values=provided_heat,
-                                      ts_type=DOUBLE,
-                                      time_format=time_format)
-            ts_client.init_timeseries(dataIRI=boiler_ts[OHN_CONSUMED_GAS_AMOUNT], 
-                                      times=times, values=consumed_gas, 
-                                      ts_type=DOUBLE,
-                                      time_format=time_format)
+            # Initialise return Graph            
+            g = Graph()            
+            
+            for pro in providers:
+                # Get provider IRI and rdf type
+                iri = pro.iri
+                rdftype = self.sparql_client.get_rdftype(iri)
+                
+                # Retrieve optimisation output concept IRIs
+                if rdftype == OHN_INCINERATIONPLANT:
+                    outputs = self.sparql_client.get_efw_output_iris(iri)
+                elif rdftype in [OHN_HEATBOILER, OHN_GASTURBINE]:
+                    outputs = self.sparql_client.get_heatgenerator_output_iris(iri, 
+                                gt=(rdftype == OHN_GASTURBINE))
+                    
+                # Add new forecast IRIs for optimisation output data to return graph
+                # NOTE: All optimisation outputs are instantiated as forecasts
+                g, fc_iris = self.sparql_client.instantiate_new_outputs(g, outputs)
+                
+                # Extract optimisation output time series data
+                if rdftype == OHN_INCINERATIONPLANT:
+                    provided_heat = list(res[pro.name+'_q'].values)
+                    generated_heat, consumed_gas, cogen_electricity = None, None, None
+                elif rdftype == OHN_HEATBOILER:
+                    generated_heat = list(res[pro.name+'_q'].values)
+                    consumed_gas = list(res[pro.name+'_gas'].values)
+                    provided_heat, cogen_electricity = None, None
+                elif rdftype == OHN_GASTURBINE:
+                    generated_heat = list(res[pro.name+'_q'].values)
+                    consumed_gas = list(res[pro.name+'_gas'].values)
+                    cogen_electricity = list(res['Electricity_generation'].values)
+                    provided_heat = None
 
+                # Cast availability to default boolean datatype to avoid issues
+                # with TSClient and e.g. numpy booleans (as per .astype(bool))
+                ts_data = {
+                    OHN_PROVIDED_HEAT_AMOUNT: provided_heat,
+                    OHN_GENERATED_HEAT_AMOUNT: generated_heat,
+                    OHN_CONSUMED_GAS_AMOUNT: consumed_gas,
+                    OHN_COGEN_ELECTRICITY_AMOUNT: cogen_electricity,
+                    OHN_AVAILABILITY: list(map(bool, pro.available))
+                }
+                
+                # Initialise optimisation output time series
+                for data_iri, data_values in ts_data.items():
+                    if data_values:
+                        ts_client.init_timeseries(dataIRI=fc_iris[data_iri], times=times, 
+                                    values=data_values, time_format=time_format,
+                                    ts_type=(DOUBLE if data_iri != OHN_AVAILABILITY else BOOLEAN))
+                  
             # Add output graph to ensure complete derivation markup
             # --> this part of the code is only relevant when called via 
             # 'createSyncDerivationForNewInfo' and its only purpose is to ensure
@@ -249,6 +280,10 @@ class DHOptimisationAgent(DerivationAgent):
                                                                     unit=None, forecast=True)
             ts_client.replace_ts_data(dataIRI=data_IRI, 
                                       times=times, values=consumed_gas)
+            data_IRI, _ = self.sparql_client.get_associated_dataIRI(instance_iri=outputs[OHN_GENERATED_HEAT_AMOUNT][0],
+                                                                    unit=None, forecast=True)
+            ts_client.replace_ts_data(dataIRI=data_IRI, 
+                                      times=times, values=generated_heat)
         
         # Update instantiated current tier unit price (based on new incremental heat sourcing)
         for c in swps.contracts:
