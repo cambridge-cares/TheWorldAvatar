@@ -851,6 +851,37 @@ class KGClient(PySparqlClient):
         if gt:
             outputs[OHN_COGEN_ELECTRICITY_AMOUNT] = self.get_unique_value(res, 'electricity')
         return outputs
+    
+    
+    def get_historic_generation_datairi(self, heat_generator:str, unit=OM_MEGAWATTHOUR):
+        """
+        Query IRIs for heat generator (gas turbine, gas boiler) output concepts,
+        i.e., consumed gas amount, generated heat amount, co-generated electricity,
+        availability
+
+        Arguments:
+            heat_generator (str) -- IRI of heat boiler or gas trubine instance
+
+        Returns:
+            outputs (dict) -- dictionary with keys 'gas', 'heat', 'electricity',
+                              'availability', ...
+        """
+
+        query = f"""
+            SELECT DISTINCT ?dataIRI_hist
+            WHERE {{
+            ?q <{OM_HASVALUE}> ?dataIRI_hist .
+            ?dataIRI_hist <{OM_HASUNIT}> <{unit}> .
+            {{ <{heat_generator}> <{OHN_HAS_PROVIDED_HEAT_AMOUNT}> ?q }}
+            UNION
+            {{ <{heat_generator}> <{OHN_HAS_GENERATED_HEAT_AMOUNT}> ?q }}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        return self.get_unique_value(res, 'dataIRI_hist')
 
 
     #

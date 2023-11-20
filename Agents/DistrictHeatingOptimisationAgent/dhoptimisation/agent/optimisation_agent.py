@@ -21,6 +21,7 @@ from dhoptimisation.agent.config import *
 from dhoptimisation.agent.generator_models import *
 from dhoptimisation.agent.optimisation_setup import *
 from dhoptimisation.agent.optimisation_tasks import *
+from dhoptimisation.agent.postprocessing import *
 from dhoptimisation.kgutils.kgclient import KGClient
 from dhoptimisation.kgutils.tsclient import TSClient
 from dhoptimisation.utils.env_configs import DB_USER, DB_PASSWORD
@@ -286,11 +287,33 @@ class DHOptimisationAgent(DerivationAgent):
 
         created_at = pd.to_datetime('now', utc=True)
         logger.info(f'Created generation optimisation at: {created_at}')
-
+        
+        # 5) Compare generation cost (historical vs. optimised)
+        # Create DataFrame for optimised time series
+        cols = [p.name+'_q' for p in providers] + ['Q_demand', 'Min_cost']
+        generation_opt = optimised[cols].copy()
+        generation_opt.rename(columns=lambda x: x.rstrip('_q'), inplace=True)
+        
+        # Initialise consolidated DataFrame with 'time' column to merge data on
+        generation_hist = pd.DataFrame()
+        generation_hist.index.name = 'time'
+        for pro in providers:
+            # Add historical heat generation for all providers/generators
+            dataIRI = self.sparql_client.get_historic_generation_datairi(pro.iri)
+            df = ts_client.retrieve_timeseries_as_dataframe(dataIRI, pro.name, opti_start_dt, 
+                                                            opti_end_dt)
+            generation_hist = generation_hist.merge(df, on='time', how='outer')
+        
+        # 
+        evaluate_historic_generation(generation_hist, providers, swps.fuel, prices)
+        
+        print('')
+        
+        
         # NOTE: DerivationWithTimeSeries does not return any output triples, 
         #       as all updates to the time series are expected to be conducted
-        #       within the agent logic 
-        
+        #       within the agent logic
+         
 
 def default():
     """

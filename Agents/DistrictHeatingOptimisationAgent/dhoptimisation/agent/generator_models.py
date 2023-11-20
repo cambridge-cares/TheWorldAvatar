@@ -1,6 +1,6 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 12 oct 2023                            #
+# Date: 12 Oct 2023                            #
 ################################################
 
 # The purpose of this module is to provide methods for fitting, saving and
