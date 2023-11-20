@@ -73,7 +73,8 @@ class SelectDropdownComponent {
     try {
       // Retrieve the sparql results and process it for zone types
       let bindings: SparqlResult[] = await execSparqlQuery(endpoint, sparqlQuery);
-      return bindings.map((binding: SparqlResult) => binding.zoneType.value);
+      return bindings.map((binding: SparqlResult) => binding.zoneType.value)
+        .sort((a, b) => a.localeCompare(b)); // Sort the results
     } catch (error) {
       console.error("Error executing Sparql query:", error);
       throw error;
