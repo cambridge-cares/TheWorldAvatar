@@ -3,14 +3,19 @@
 # Date: 20 Nov 2023                            #
 ################################################
 
-# The purpose of this module is to provide methods for fitting, saving and
-# loading gas consumption and electricity co-generation models for heat generators
+# 
 
+import os
+import math
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from dhoptimisation.agent.optimisation_setup import *
 from dhoptimisation.agent.optimisation_tasks import *
 
+
+# Specify relative file paths to store/load model files
+OPTIMISATION_FIGURES_REPO = '/app/dhoptimisation/resources/optimisation_figures/'
 
 def evaluate_historic_generation(historic_generation, gen_objects, gas_props, market_prices):
     """
@@ -49,7 +54,7 @@ def evaluate_historic_generation(historic_generation, gen_objects, gas_props, ma
             el_overview = pd.concat([el_overview, el], axis=1)
             
     # Add summary columns
-    cost_overview['Min_Cost'] = cost_overview.sum(axis=1)
+    cost_overview['Min_cost'] = cost_overview.sum(axis=1)
     gas_overview['Gas_consumption'] = gas_overview.sum(axis=1)
     el_overview['Electricity_generation'] = el_overview.sum(axis=1)
     
@@ -137,3 +142,77 @@ def evaluate_generation_series(generation_series, generator, gas_props, market_p
         cost.iloc[:, 0] = gen_hist.iloc[:, 0] * cost['Unit_price']
 
     return cost.iloc[:, 0], gas_demand, el_gen
+
+
+def plot_entire_heat_generation(historic_generation, optimized_generation, el_prices,
+                                fig_name='Generation_comparison'):
+    """
+    Creates plot of non-optimized vs. optimized heat generation in three subplots:
+        1) heat load and electricity spot price vs. time
+        2) historic heat generation distribution
+        3) optimized heat generation distribution
+
+    :param pd.DataFrame historic_generation: historic heat generation for each time step in optimization period
+                                                (DataFrame layout similar as returned by 'optimize_operating_modes')
+    :param pd.DataFrame optimized_generation: DataFrame as returned by 'optimize_operating_modes' with overall optimal operation
+    :param pd.DataFrame el_prices: electricity spot price for each time step in optimization period
+    """
+    
+    # Extract relevant heat generator column names
+    cols = optimized_generation.columns.difference(['Q_demand', 'Min_cost'])
+    # Update integer based default index for price
+    el_prices.index = optimized_generation.index
+
+    # set global plotting parameters
+    plt.rcParams['font.size'] = 14
+
+    # derive limits and ticks for subplots
+    y_max1 = math.ceil(1.1 * optimized_generation['Q_demand'].max())
+    yticks1 = [i for i in range(0, y_max1, 2)]
+    y_max2 = math.ceil(1.1 * optimized_generation[cols].max().max())
+    yticks2 = [i for i in range(0, y_max2, 2)]
+
+    # define legend colors
+    colors = ['tab:blue', 'tab:red', 'tab:orange', 'tab:purple', 'tab:green']
+
+    # create figure
+    f, ax = plt.subplots(3, 1, figsize=(16, 9))
+    f.suptitle('Total heat generation/sourcing')
+
+    # first subplot with heat load and electricity spot price
+    color = 'tab:red'
+    ax[0].grid('both', ls='--', lw=0.5)
+    ax[0].plot(optimized_generation['Q_demand'], '.-', color=color, ms=2.0, lw=1.0)
+    ax[0].set_ylim([0, y_max1])  # align y axis between plots
+    ax[0].set_yticks(yticks1)
+    ax[0].set_ylabel('Heat load (MWh/h)', color=color)
+    ax[0].tick_params(axis='y', labelcolor=color)
+    # add second y axis
+    ax2 = ax[0].twinx()
+    color = 'tab:blue'
+    ax2.plot(el_prices, '.-', color=color, ms=2.0, lw=1.0)
+    ax2.set_ylabel('Electricity spot \n price (€/MWh)', color=color)
+    ax2.tick_params(axis='y', labelcolor=color)
+
+    # second subplot with historic heat generation
+    plot_data = historic_generation[cols].copy()
+    ax[1].grid('both', ls='--', lw=0.5)
+    for i in range(len(cols)):
+        ax[1].plot(plot_data.iloc[:, i], '.-', color=colors[i], ms=2.0, lw=1.0)
+    ax[1].legend(cols, loc='upper right')
+    ax[1].set_ylim([0, y_max2])  # align y axis between plots
+    ax[1].set_yticks(yticks2)
+    ax[1].set_ylabel('Historical heat \n generation (MWh/h)')
+
+    # third subplot with optimized heat generation
+    plot_data = optimized_generation[cols].copy()
+    ax[2].grid('both', ls='--', lw=0.5)
+    for i in range(len(cols)):
+        ax[2].plot(plot_data.iloc[:, i], '.-', color=colors[i], ms=2.0, lw=1.0)
+    ax[2].legend(cols, loc='upper right')
+    ax[2].set_ylim([0, y_max2])  # align y axis between plots
+    ax[2].set_yticks(yticks2)
+    ax[2].set_ylabel('Optimized heat \n generation (MWh/h)')
+    ax[2].set_xlabel('Date')
+
+    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name +'.png'))

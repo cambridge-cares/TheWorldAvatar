@@ -305,7 +305,10 @@ class DHOptimisationAgent(DerivationAgent):
             generation_hist = generation_hist.merge(df, on='time', how='outer')
         
         # 
-        evaluate_historic_generation(generation_hist, providers, swps.fuel, prices)
+        cost, _, _ = evaluate_historic_generation(generation_hist, providers, swps.fuel, prices)
+        generation_hist = generation_hist.merge(cost[['Min_cost']], on='time', how='outer')
+        
+        plot_entire_heat_generation(generation_hist, generation_opt, prices.el_spot)
         
         print('')
         
