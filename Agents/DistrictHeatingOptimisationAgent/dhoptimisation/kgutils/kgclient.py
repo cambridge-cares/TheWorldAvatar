@@ -7,15 +7,13 @@
 # KG queries and updates using the PySparqlClient from the DerivationAgent
 
 import uuid
-import numpy as np
+from rdflib import URIRef, Graph
 from distutils.util import strtobool
-from rdflib import URIRef, Literal, Graph
-from rdflib.namespace import XSD
 
 from pyderivationagent.kg_operations import PySparqlClient
 
-from dhoptimisation.datamodel.iris import *
 from dhoptimisation.utils import *
+from dhoptimisation.datamodel.iris import *
 
 
 class KGClient(PySparqlClient):
@@ -193,7 +191,6 @@ class KGClient(PySparqlClient):
             ts (dict) -- dictionary with keys 'ts_iri', 'rdb_url' and 'time_format'
         """
 
-        #TODO: Include unit of forecast, i.e. MW?
         query = f"""
             SELECT DISTINCT ?ts_iri ?unit ?rdb_url ?time_format
             WHERE {{   

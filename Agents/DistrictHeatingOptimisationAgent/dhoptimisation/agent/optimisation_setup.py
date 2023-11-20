@@ -6,8 +6,8 @@
 # The purpose of this module is to provide functionality to create the required
 # optimisation setup and model objects based on data queried from the KG
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from datetime import datetime, timedelta
 
 from dhoptimisation.utils import *

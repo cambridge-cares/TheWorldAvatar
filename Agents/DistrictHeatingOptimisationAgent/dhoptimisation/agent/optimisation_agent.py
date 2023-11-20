@@ -8,8 +8,8 @@
 # heating generation optimisation agent as derivation agent using synchronous 
 # derivation with time series
 
+from rdflib import Graph
 from datetime import datetime
-from rdflib import Graph, URIRef
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -275,7 +275,8 @@ class DHOptimisationAgent(DerivationAgent):
         for c in swps.contracts:
             # Assess updated cumulative annual sourcing amount
             total = c.q_hist.sum(skipna=True)
-            #TODO: Add optimised sourcing amount for current (first) time step            
+            # Add optimised sourcing amount for current (first) time step
+            total += optimised[c.name+'_q'].iloc[0]
             # Query applicable price tier for updated annual amount
             # NOTE: Returns None for amounts exceeding annual max supply -> no update anymore
             tier = self.sparql_client.get_price_tier_iri(c.iri, total)
