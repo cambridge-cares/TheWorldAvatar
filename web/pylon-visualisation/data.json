@@ -9,7 +9,7 @@
                     "id": "vegetation-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 }
             ],
@@ -35,7 +35,7 @@
                     "id": "woodland-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 }
             ],
@@ -61,21 +61,21 @@
                     "id": "national-grid-overhead-lines-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 },
                 {
                     "id": "national-grid-cables-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 },
                 {
                     "id": "national-grid-poles-towers-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_poles_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_poles_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 }
             ],
@@ -123,35 +123,35 @@
                     "id": "high-overhead-lines-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 },
                 {
                     "id": "medium-overhead-lines-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 },
                 {
                     "id": "low-overhead-lines-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_low&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_low&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 },
                 {
                     "id": "high-poles-towers-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 },
                 {
                     "id": "medium-poles-towers-source",
                     "type": "raster",
                     "tiles": [
-                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                        "http://localhost:38383/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
                     ]
                 }
             ],

@@ -1,0 +1,20 @@
+{
+    "name": "kingslynn",
+    "database": "postgres",
+    "workspace": "kingslynn",
+    "datasetDirectory": "kingslynn",
+    "dataSubsets": [
+
+        {
+            "type": "raster",
+            "name": "population",
+            "skip": false,
+            "subdirectory": "population",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        }
+    ]
+}

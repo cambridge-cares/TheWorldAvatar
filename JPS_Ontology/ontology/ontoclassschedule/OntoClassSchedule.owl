@@ -1,0 +1,274 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontoclassschedule/"
+     xml:base="https://www.theworldavatar.com/kg/ontoclassschedule/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:ontoclassschedule="https://www.theworldavatar.com/kg/ontoclassschedule/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/">
+        <owl:imports rdf:resource="http://www.w3.org/2006/time#"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">18 October 2023</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoClassSchedule is designed to represent and manage class schedules in an educational setting. It captures the relationships between sessions, courses, and various types of course offerings.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#time -->
+
+
+    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#time"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/hasDayOfWeek -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/hasDayOfWeek">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#DayOfWeek"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates the specific day of the week on which a session occurs, such as Monday or Tuesday.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/hasSession -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/hasSession">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/isPartOfCourse -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/isPartOfCourse">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Course"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Establishes a relationship between a session and the course to which it belongs.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/hasCourseCode -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/hasCourseCode">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Course"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents the unique identifier or code assigned to a course for organizational purposes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/hasCourseName -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/hasCourseName">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Course"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates the official name or title of a course.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/hasCourseRemark -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/hasCourseRemark">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Course"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Provides additional notes, comments, or observations related to a specific course.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/hasEndTime -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/hasEndTime">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#time"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Denotes the time when a session concludes, without referencing a specific date.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/hasStartTime -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/hasStartTime">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#time"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifies the time when a session begins, without referencing a specific date.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.w3.org/2006/time#DayOfWeek -->
+
+
+    <owl:Class rdf:about="http://www.w3.org/2006/time#DayOfWeek"/>
+    
+
+
+    <!-- https://w3id.org/bot#Zone -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Zone">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/hasSession"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/Course -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/Course">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A structured unit of study or training, encompassing various sessions and topics.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/Laboratory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/Laboratory">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A hands-on, practical session focused on experiments or activities, typically associated with scientific or technical subjects.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/Lecture -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/Lecture">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A formal instructional session where content is delivered to students, primarily through speech and visual aids.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/Seminar -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/Seminar">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A presentation or discussion-based session where specific topics are explored in-depth, often with guest speakers or experts.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/Session -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/Session">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/hasDayOfWeek"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.w3.org/2006/time#DayOfWeek"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/isPartOfCourse"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Course"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specific class meeting or event, capturing details like timing and association with a particular course.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoclassschedule/Tutorial -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoclassschedule/Tutorial">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoclassschedule/Session"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An interactive session designed for detailed discussion, problem-solving, or study on specific topics.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoclassschedule/OntoClassSchedule.owl</rdfs:isDefinedBy>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
