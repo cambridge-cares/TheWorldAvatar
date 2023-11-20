@@ -14,7 +14,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.AuthFailureError;
@@ -38,7 +37,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import okhttp3.HttpUrl;
-import uk.ac.cam.cares.jps.bmsqueryapp.EquipmentInstanceActivity;
 import uk.ac.cam.cares.jps.bmsqueryapp.R;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.EditableAttributesAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.authorization.AuthorizationHelper;
@@ -100,49 +98,15 @@ public class EditFragment extends Fragment {
 
         binding.submitButton.setOnClickListener(view1 -> {
             try {
-//                Double temperatureDouble = Double.parseDouble(temperature);
-                JSONObject params = new JSONObject();
                 String dataIRI = editableAttributes.get(0).getIri();
                 if (dataIRI.equals("https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature")) {
-                    authHelper.performActionWithFreshTokens(this::createEditRequest);
-                    hideKeyboardFrom(view.getContext(), view);
-//                binding.temperatureEdit.clearFocus();
+                    authHelper.performActionWithFreshTokens(this::createEditTemperatureRequest);
                 } else if (dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-1_FlowSP_CARES")
                         || dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-2_FlowSP_CARES")
                         || dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_CAV_E-7-7_FlowSP_CARES")) {
-                    params.put("dataIRI", dataIRI);
-                    params.put("value", Double.parseDouble(editableAttributes.get(0).getValue()));
-                    params.put("clientProperties", "WRITE_CLIENT_PROPERTIES");
-
-                    IRIMapping iriMapping = new IRIMapping();
-                    //create control params
-                    JSONObject controlParams = new JSONObject();
-                    controlParams.put("dataIRI", iriMapping.getControlIRIFromEditableDataIRI(dataIRI));
-                    controlParams.put("value", 1.0);
-                    controlParams.put("clientProperties", "WRITE_CLIENT_PROPERTIES");
-                    //write values before changing control mode
-                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, WACNET_WRITE_URL.build().toString(), params, response -> {
-                        JsonObjectRequest controlJsonObjectRequest = new JsonObjectRequest(Request.Method.POST, WACNET_WRITE_URL.build().toString(), controlParams, controlResponse -> {
-                            try {
-                                String responseString = controlResponse.getString("message");
-                                if (responseString.contains("Successfully written")) {
-                                    Toast.makeText(this.getContext(), "Control mode has been changed successfully", Toast.LENGTH_LONG).show();
-                                }
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
-                            }, error -> Toast.makeText(this.getContext(), "Failed to submit the change to the control mode, please resubmit later.", Toast.LENGTH_SHORT).show());
-                        SingletonConnection.getInstance(this.getContext()).addToRequestQueue(controlJsonObjectRequest);
-                        try {
-                            String responseString = response.getString("message");
-                            Toast.makeText(this.getContext(), responseString, Toast.LENGTH_LONG).show();
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                        }, error -> Toast.makeText(this.getContext(), "Failed to submit the change to the editable variable, please resubmit later.", Toast.LENGTH_SHORT).show());
-                    SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
-                    hideKeyboardFrom(view.getContext(), view);
+                    sendUpdateAirFlowCheckpointRequest(dataIRI);
                 }
+                hideKeyboardFrom(view.getContext(), view);
             } catch (NumberFormatException e) {
                 Toast.makeText(this.getContext(), "The input value should be number.", Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {
@@ -151,7 +115,57 @@ public class EditFragment extends Fragment {
         });
     }
 
-    private void createEditRequest(String accessToken, String idToken, AuthorizationException ex) {
+    private void sendUpdateAirFlowCheckpointRequest(String dataIRI) throws JSONException {
+        double newSetpoint = Double.parseDouble(editableAttributes.get(0).getValue());
+        if (newSetpoint > 1100 || newSetpoint < 400) {
+            new MaterialAlertDialogBuilder(requireActivity())
+                    .setTitle(R.string.setpoint_out_of_range)
+                    .setMessage(R.string.setpoint_should_be_within_1100_to_400)
+                    .setPositiveButton(R.string.ok, null)
+                    .show();
+            return;
+        }
+
+        JSONObject params = new JSONObject();
+        params.put("dataIRI", dataIRI);
+        params.put("value", Double.parseDouble(editableAttributes.get(0).getValue()));
+        params.put("clientProperties", "WRITE_CLIENT_PROPERTIES");
+
+        //write values before changing control mode
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, WACNET_WRITE_URL.build().toString(), params, response -> {
+            //create control params
+            JSONObject controlParams = new JSONObject();
+            try {
+                IRIMapping iriMapping = new IRIMapping();
+                controlParams.put("dataIRI", iriMapping.getControlIRIFromEditableDataIRI(dataIRI));
+                controlParams.put("value", 1.0);
+                controlParams.put("clientProperties", "WRITE_CLIENT_PROPERTIES");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            JsonObjectRequest controlJsonObjectRequest = new JsonObjectRequest(Request.Method.POST, WACNET_WRITE_URL.build().toString(), controlParams, controlResponse -> {
+                try {
+                    String responseString = controlResponse.getString("message");
+                    if (responseString.contains("Successfully written")) {
+                        Toast.makeText(this.getContext(), "Control mode has been changed successfully", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }, error -> Toast.makeText(this.getContext(), "Failed to submit the change to the control mode, please resubmit later.", Toast.LENGTH_SHORT).show());
+            SingletonConnection.getInstance(this.getContext()).addToRequestQueue(controlJsonObjectRequest);
+
+            try {
+                String responseString = response.getString("message");
+                Toast.makeText(this.getContext(), responseString, Toast.LENGTH_LONG).show();
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            }, error -> Toast.makeText(this.getContext(), "Failed to submit the change to the editable variable, please resubmit later.", Toast.LENGTH_SHORT).show());
+        SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void createEditTemperatureRequest(String accessToken, String idToken, AuthorizationException ex) {
         if (ex != null) {
             LOGGER.error("Failed to refresh access token. Reauthorization is needed.");
             if (getContext() != null) {
