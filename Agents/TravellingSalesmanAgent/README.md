@@ -49,7 +49,7 @@ The agent is reachable at the `/runtsp` endpoint.
 #### Input specification
 1) `function` - The use case scenario to run the isochrones.
 
-To run the agent, simply run the following cURL command:
+
 
 #### Urban Resilience Planning (UR)
 Generates travelling salesman route via geoserver SQL view. this route runs through the points of interest and return back to the original location. The SQL view layers takes TWA-VF marker location as the target node for its calculations. The geoserver layers generated include: 
@@ -57,6 +57,7 @@ Generates travelling salesman route via geoserver SQL view. this route runs thro
 - 30cm wading depth capability
 - 90cm wading depth capability
 
+To run the agent, simply run the following cURL command:
 ```
 curl -X POST "localhost:3838/travellingsalesmanagent/runtsp?function=UR"
 ```
