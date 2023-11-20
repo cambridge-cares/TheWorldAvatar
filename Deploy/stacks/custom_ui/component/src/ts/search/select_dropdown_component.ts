@@ -21,6 +21,7 @@ class SelectDropdownComponent {
     dropdownButtonElement.textContent = "Select " + parameterName;
     // Add a dropdown option list for zone types
     this.dropdown_options_container = createDiv();
+    this.dropdown_options_container.style.display = "none";
     // Retrieve all available zone types
     this.retrieveZoneTypes(stackUrl, plotNamespace)
       .then((zoneTypes: string[]) => {
@@ -32,13 +33,13 @@ class SelectDropdownComponent {
     // Event listeners
     // When the button is clicked, display the dropdown options
     dropdownButtonElement.addEventListener('click', () => {
-      this.dropdown_options_container.style.display = 'block';
+      this.dropdown_options_container.style.display = "block";
     });
 
     // Close the list of dropdown options when a user click outside this component
     document.addEventListener('click', (event) => {
       if (!dropdownButtonElement.contains(event.target as Node) && !this.dropdown_options_container.contains(event.target as Node)) {
-        this.dropdown_options_container.style.display = 'none'
+        this.dropdown_options_container.style.display = "none";
       }
     });
     // Append the new elements to the containers
