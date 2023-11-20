@@ -154,7 +154,6 @@ amenity,bicycle_parking,Parking for bicycles,NA
 amenity,motorcycle_parking,Parking for motorcycles,NA
 amenity,parking,Car park. Nodes and areas (without access tag) will get a parking symbol. Areas will be coloured. Streets on car parking are often tagged highway=service and service=parking_aisle.,NA
 amenity,baby_hatch,"A place where a baby can be, out of necessity, anonymously left to be safely cared for and perhaps adopted.",NA
-building,public,"A building constructed as accessible to the general public (a town hall, police station, court house, etc.).",Non-Domestic
 building,toilets,A toilet block.,Non-Domestic
 building,farm_auxiliary,A building on a farm that is not a dwelling (use 'farm' or 'house' for the farm house).,Non-Domestic
 building,ruins,"Frequently used for a house or other building that is abandoned and in poor repair. However, some believe this usage is incorrect, and the tag should only be used for buildings constructed as fake ruins (for example sham ruins in an English landscape garden). See also lifecycle tagging.",Non-Domestic
