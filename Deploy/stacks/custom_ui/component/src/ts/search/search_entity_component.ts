@@ -23,7 +23,7 @@ interface ConfigurationOptions {
  * This component provides a list of parameters that users can select to search for the related urban entities visualised in the TWA-VF.
  */
 class SeachEntityComponent extends DynamicComponent {
-  private baseStackUrl: string;
+  private options: ConfigurationOptions;
   private numerical_placeholder_message: string = "Type a number";
 
   /**
@@ -34,18 +34,18 @@ class SeachEntityComponent extends DynamicComponent {
   constructor(title: string, mapboxMapHandler: any, options: ConfigurationOptions) {
     // Call the super class constructor
     super(title);
-    this.baseStackUrl = options.stackUrl;
+    this.options = options;
     this.initContainerAttributes();
     let parentElement: HTMLElement = this.container_content;
     // Create a dropdown component for zone types
-    new SelectDropdownComponent("Zone Type", this.baseStackUrl, options.plotNamespace).render(parentElement);
+    new SelectDropdownComponent("Zone Type", this.options.stackUrl, options.plotNamespace).render(parentElement);
     // Create a text input component for site area
     let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Plot Area [m2]", this.numerical_placeholder_message, "Invalid input. Please enter a numerical value.");
     siteAreaTextInput.render(parentElement);
     // Create a submit button
     let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement('button');
     submitButton.textContent = "Submit";
-    submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, options.layerId, [siteAreaTextInput]));
+    submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, this.options.layerId, [siteAreaTextInput]));
     parentElement.appendChild(submitButton);
   };
 
@@ -93,13 +93,14 @@ class SeachEntityComponent extends DynamicComponent {
     // Retrieve the option for site area search parameter
     let siteArea: string = this.retrieveTextInput(textComponentArray[0], true);
     // Define the request parameters
-    let params: { subs: string } = {
-      subs: `{"area":"${siteArea}", "zonetype":"${zoneTypes}"}`
+    let params: { subs: string, namespace: string } = {
+      subs: `{"area":"${siteArea}", "zonetype":"${zoneTypes}"}`,
+      namespace: this.options.plotNamespace
     };
 
     // Send the GET request
     $.ajax({
-      url: `${this.baseStackUrl}/filter-agent/filter`,
+      url: `${this.options.stackUrl}/filter-agent/filter`,
       type: "GET",
       data: params,
       success: function (response) {
