@@ -75,6 +75,7 @@ public class WeatherHelper extends JPSAgent {
         this.ontologyUriHelper = uriHelper;
 
     }
+
     /**
      * Retrieves weather data
      * @param weatherRoute route to weather data

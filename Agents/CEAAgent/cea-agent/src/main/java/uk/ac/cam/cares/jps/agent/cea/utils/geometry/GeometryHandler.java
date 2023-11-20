@@ -31,16 +31,20 @@ public class GeometryHandler {
     public static final String METER_EPSG_STRING = "EPSG:" + METER_EPSG;
     public static final Double FLOOR_HEIGHT = 3.2;
 
+    /**
+     * Parses a WKT string to a geometry object
+     * @param geometryString WKT string
+     * @return geometryString as a geometry object
+     */
     public static Geometry toGeometry(String geometryString) {
         return WKTReader.extract(geometryString).getGeometry();
     }
 
     /**
-     *
-     * @param geom
+     * Buffers a geometry object
+     * @param geom geometry object
      * @param sourceCRS source CRS of geometry with EPSG prefix
-     * @param distance
-     * @return
+     * @param distance buffer distance
      */
     public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance)  {
         if (distance == 0) {
@@ -171,11 +175,11 @@ public class GeometryHandler {
     }
 
     /**
-     *
-     * @param surfaceArray
+     * Extracts the footprint given a JSONArray of building surface geometries as WKT strings
+     * @param surfaceArray JSONArray of building surface geometries as WKT strings
      * @param originalCRS CRS of surfaceArray as String
-     * @param height
-     * @return
+     * @param height building height
+     * @return list of geomtry objects representing the building footprint
      */
     public static List<Geometry> extractFootprint(JSONArray surfaceArray, String originalCRS, Double height) {
         double distance = 0.0;
@@ -334,10 +338,20 @@ public class GeometryHandler {
         }
     }
 
+    /**
+     * Extracts and returns the exterior ring of a polygon object
+     * @param polygon polygon object
+     * @return polygon's exterior ring as a polygon object
+     */
     public static Polygon extractExterior(Polygon polygon) {
         return new GeometryFactory().createPolygon(polygon.getExteriorRing());
     }
 
+    /**
+     * Swaps the coordinates of a polygon object
+     * @param polygon polygon object
+     * @return polygon with its coordinates swapped
+     */
     public static Polygon swapCoordinates(Geometry polygon) {
         Coordinate[] coordinates = polygon.getCoordinates();
 
@@ -352,6 +366,11 @@ public class GeometryHandler {
         return new GeometryFactory().createPolygon(coordinates);
     }
 
+    /**
+     * Check if the CEAGeometryDatas in ceaGeometries have the same CRS
+     * @param ceaGeometries list of CEAGeometryDatas
+     * @return true if CEAGeometryDatas in ceaGeometries have the same CRS, false otherwise
+     */
     private static boolean checkSameCRS(List<CEAGeometryData> ceaGeometries) {
         List<String> crsList = ceaGeometries.stream()
                 .map(CEAGeometryData::getCrs)

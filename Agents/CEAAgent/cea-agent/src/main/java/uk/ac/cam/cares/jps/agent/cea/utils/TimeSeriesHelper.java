@@ -131,7 +131,6 @@ public class TimeSeriesHelper {
         return true;
     }
 
-
     /**
      * Returns data using time series client for given data iri
      * @param dataIri iri in time series database

@@ -26,6 +26,12 @@ public class AnnualValueHelper {
         this.ontologyURIHelper = ontologyUriHelper;
     }
 
+    /**
+     * Instantiate annual value triples for CEA time series
+     * @param values CEA time series values
+     * @param iriMap map of the CEA data IRIs
+     * @param route route to the IRIs in iriMap
+     */
     public void instantiateAnnual(List<List<?>> values, LinkedHashMap<String, String> iriMap, String route) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ub", ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
@@ -116,12 +122,24 @@ public class AnnualValueHelper {
         }
     }
 
+    /**
+     * Update WhereBuilders for updating existing annual value IRI
+     * @param deleteWB WhereBuilder to delete old annual value
+     * @param updateWB WhereBuilder to insert new annual value
+     * @param iri annual value IRI
+     * @param value annual value
+     */
     public void updateAnnual(WhereBuilder deleteWB, WhereBuilder updateWB, String iri, Double value) {
         deleteWB.addWhere(NodeFactory.createURI(iri), "om:hasNumericalValue", "?o");
 
         updateWB.addWhere(NodeFactory.createURI(iri), "om:hasNumericalValue", value);
     }
 
+    /**
+     * Return a query that will retrieve the quantity type of iri
+     * @param iri data IRI
+     * @return query object that will retrieve the quantity type of iri
+     */
     public Query getType(String iri) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("rdf", ontologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
@@ -137,6 +155,12 @@ public class AnnualValueHelper {
         return sb.build();
     }
 
+    /**
+     * Returns a query that will retrieve the type of energy, i.e. heat or electricity, attached to iri
+     * @param iri data IRI
+     * @param energy string stating whether the data IRI is attached to a consumption or supply device
+     * @return query object that will retrieve the type of energy attached to iri
+     */
     public Query getInfo(String iri, String energy) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ub", ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
@@ -158,6 +182,14 @@ public class AnnualValueHelper {
         return sb.build();
     }
 
+    /**
+     * Update WhereBuilder with update statements for annual value triples
+     * @param wb WhereBuilder
+     * @param iri data IRI
+     * @param energy string stating whether the data IRI is attached to a consumption or supply device
+     * @param energyType energy type, electricity or heat
+     * @param value annual value
+     */
     public void insertUpdate(WhereBuilder wb, String iri, String energy, String energyType, Double value) {
         String quantity = ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy + "Quantity_" + UUID.randomUUID();
         String measure = ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy + "Value_" + UUID.randomUUID();
@@ -180,6 +212,13 @@ public class AnnualValueHelper {
                 .addWhere(NodeFactory.createURI(measure), "om:hasNumericalValue", value);
     }
 
+    /**
+     * Check if annual value exists
+     * @param iri data IRI
+     * @param energyType energy type, electricity or heat
+     * @param route route to iri
+     * @return IRI to annual value if exists, empty string if not exists
+     */
     public String checkAnnual(String iri, String energyType, String route) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ub", ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))

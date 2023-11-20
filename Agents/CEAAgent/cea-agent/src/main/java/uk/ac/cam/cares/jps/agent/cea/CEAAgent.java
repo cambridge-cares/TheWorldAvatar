@@ -76,7 +76,6 @@ public class CEAAgent extends JPSAgent {
     private RemoteStoreClient storeClient;
     private String stackAccessAgentBase;
     private String defaultCeaLabel;
-    private String defaultUsageLabel;
     private String dbUser;
     private String dbPassword;
     private String tsDb;

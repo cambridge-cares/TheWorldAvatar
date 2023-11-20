@@ -146,7 +146,7 @@ public class RunCEATask implements Runnable {
 
         for (int i = 0; i < dataInputs.size(); i++) {
             Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("geometry", polygonToString(dataInputs.get(i).getGeometry().getFootprint()));
+            tempMap.put("geometry", geometriesToStrings(dataInputs.get(i).getGeometry().getFootprint()));
             tempMap.put("height", dataInputs.get(i).getGeometry().getHeight());
             tempMap.put("usage", dataInputs.get(i).getUsage());
             tempMap.put("id", i);
@@ -173,7 +173,12 @@ public class RunCEATask implements Runnable {
         }
     }
 
-    private List<String> polygonToString(List<Geometry> geometries) {
+    /**
+     * Parses geometry objects to WKT strings and return the strings as a list
+     * @param geometries list of geometry objects
+     * @return list of WKT strings of the geometry objects in geometries
+     */
+    private List<String> geometriesToStrings(List<Geometry> geometries) {
         List<String> result = new ArrayList<>();
 
         for (Geometry geometry : geometries) {
@@ -184,7 +189,7 @@ public class RunCEATask implements Runnable {
     }
 
     /**
-     * Converts surrounding data into text file to be read by the Python scripts
+     * Writes surrounding data into text file to be read by create_shapefile.py for shapefile creation
      * @param surroundings list of CEAGeometryData of the surrounding buildings
      * @param directory_path directory path
      * @param file_path path to store data file
@@ -198,7 +203,7 @@ public class RunCEATask implements Runnable {
 
             for (int i = 0; i < surroundings.size(); i++) {
                 Map<String, Object> tempMap = new HashMap<>();
-                tempMap.put("geometry", polygonToString(surroundings.get(i).getFootprint()));
+                tempMap.put("geometry", geometriesToStrings(surroundings.get(i).getFootprint()));
                 tempMap.put("height", surroundings.get(i).getHeight());
                 dataString += new Gson().toJson(tempMap);
                 if (i != surroundings.size() - 1) {
@@ -224,6 +229,14 @@ public class RunCEATask implements Runnable {
         }
     }
 
+    /**
+     * Writes weather data into text file to be read by create_weatherfile.py for EPW file creation
+     * @param weatherTimes timestamps of weather data
+     * @param weather weather data
+     * @param weatherMetaData weather meta data
+     * @param weatherTimes_path path to store
+     * @param weather_path path to store weather data files
+     */
     private void parseWeather(List<OffsetDateTime> weatherTimes, Map<String, List<Double>> weather, List<Double> weatherMetaData, String weatherTimes_path, String weather_path) {
         if (weatherTimes != null) {
             List<Map<String, Integer>> timeMap = new ArrayList<>();
