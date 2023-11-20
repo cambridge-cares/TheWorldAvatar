@@ -142,8 +142,8 @@ class SeachEntityComponent extends DynamicComponent {
     });
 
     // Initialise string that should be sent to the Filter Agent
-    // If there are no selected options, null should be returned and enclosed in single quotes
-    let optionsString: string = "'null'";
+    // If there are no selected options, an empty string should be returned with single quote
+    let optionsString: string = "''";
     // When there are options selected, parse them by enclosing them in single quotes
     if (selectedOptions.length > 0) {
       let wrappedValues: string[] = selectedOptions.map(value => `'${value}'`);
@@ -162,13 +162,13 @@ class SeachEntityComponent extends DynamicComponent {
     let currentText: string = component.getCurrentValue();
     // Use regex to verify only digits are inside
     let isANumber: boolean = /^\d+$/.test(currentText);
-    // If the current text is an empty string, do not do anything
+    // If the current text is an empty string, return an empty string with single quotes
     if (currentText === "") {
-      currentText = "'null'";
+      currentText = "''";
       // When the text input must be a number and the user input is not
     } else if (isNumerical && !isANumber) {
       // Set the text to null for meeting the filter agent requirements
-      currentText = "'null'";
+      currentText = "''";
       // Invoke the error message
       component.invokeError();
     }
