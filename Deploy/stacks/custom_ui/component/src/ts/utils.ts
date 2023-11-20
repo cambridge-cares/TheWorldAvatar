@@ -1,3 +1,8 @@
+// A generalisable interface for storing the sparql results.
+interface SparqlResult {
+  [key: string]: { type: string; value: string };
+}
+
 /**
  * Creates a new div element that displays an error message.
  * @param {string} errorMessage - The error message to display.
@@ -41,4 +46,36 @@ function createHTMLElement(elementType: string, options?: { id?: string; classes
     if (options.classes) { htmlElement.classList.add(...options.classes); }
   }
   return htmlElement;
+};
+
+/**
+ * Execute a sparql query.
+ * @param {string} sparqlEndpoint - The SPARQL endpoint to query from.
+ * @param {string} sparqlQuery - The SPARQL query to execute.
+ * @returns {Promise<SparqlResult[]>} A Promise that resolves to an array of Sparql Result.
+*/
+function execSparqlQuery(sparqlEndpoint: string, sparqlQuery: string): Promise<SparqlResult[]> {
+  return new Promise<SparqlResult[]>(function (resolve, reject) {
+    $.ajax({
+      type: "GET",
+      url: sparqlEndpoint,
+      dataType: "json",
+      data: {
+        query: sparqlQuery,
+        format: "json"
+      },
+      success: function (data) {
+        if (data.results && data.results.bindings) {
+          // Resolve the Promise with the "bindings" array
+          resolve(data.results.bindings);
+        } else {
+          // Reject the Promise with an error message
+          reject("Invalid SPARQL result format! " + data);
+        }
+      },
+      error: function (status, error) {
+        reject(status + ": " + error);
+      }
+    });
+  });
 };

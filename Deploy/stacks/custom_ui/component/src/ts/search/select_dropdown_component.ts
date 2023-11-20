@@ -1,8 +1,3 @@
-interface SelectOption {
-  value: string;
-  label: string;
-}
-
 /**
  * This component creates a dropdown list of values for the user to search on the parameter of interest.
 */
@@ -14,21 +9,25 @@ class SelectDropdownComponent {
   /**
     * Create a new dropdown list for the specified parameter.
     * @param {string} parameterName - The name of the parameter of interest.
-  */
-  constructor(parameterName: string) {
+    * @param {string} stackUrl - The base url for the stack. Typically domain:port.
+    * @param {string} plotNamespace - The SPARQL namespace containing the land plot triples.
+*/
+  constructor(parameterName: string, stackUrl: string, plotNamespace: string) {
     // Create a new container item
     this.container = createDiv();
     // Create a button that can be clicked to reveal the list of dropdown options
     let dropdownButtonElement: HTMLElement = createHTMLElement("button");
     dropdownButtonElement.textContent = "Select " + parameterName;
-    // Add a dropdown option list
+    // Add a dropdown option list for zone types
     this.dropdown_options_container = createDiv();
-    // Retrieve all available option values
-    let options: SelectOption[] = this.retrieveOptionValues();
-    // Add the options to the container
-    options.forEach((option) => {
-      this.addOption(parameterName, option.value, option.label);
-    });
+    // Retrieve all available zone types
+    this.retrieveZoneTypes(stackUrl, plotNamespace)
+      .then((zoneTypes: string[]) => {
+        // Add the options to the container
+        zoneTypes.forEach((option: string) => {
+          this.addOption(parameterName, option, option);
+        });
+      });
     // Event listeners
     // When the button is clicked, display the dropdown options
     dropdownButtonElement.addEventListener('click', () => {
@@ -55,14 +54,29 @@ class SelectDropdownComponent {
   };
 
   /**
-     * Retrieve an array of option values. Will be refactored to retrieve values from the knowledge graph.
-      * @returns {SelectOption[]} An array of SelectOption.
-     */
-  private retrieveOptionValues(): SelectOption[] {
-    return [
-      { value: "Automeile", label: "Special Area (Automeile)" },
-      { value: "Industry", label: "Industry" },
-    ];
+    * Retrieve an array of zone types to populate as values.
+    * @param {string} stackUrl - The base url for the stack. Typically domain:port.
+    * @param {string} plotNamespace - The SPARQL namespace containing the land plot triples.
+ * @returns {Promise<string[]>} A Promise that resolves to an array of zone type string.
+  */
+  private async retrieveZoneTypes(stackUrl: string, plotNamespace: string): Promise<string[]> {
+    let sparqlQuery: string = `
+    PREFIX ontozoning:<https://www.theworldavatar.com/kg/ontozoning/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT ?zoneType
+    WHERE {
+      ?zone a ontozoning:Zone;
+        ontozoning:hasZoneType/rdfs:label ?zoneType.
+    }`;
+    let endpoint: string = stackUrl + "/blazegraph/namespace/" + plotNamespace + "/sparql";
+    try {
+      // Retrieve the sparql results and process it for zone types
+      let bindings: SparqlResult[] = await execSparqlQuery(endpoint, sparqlQuery);
+      return bindings.map((binding: SparqlResult) => binding.zoneType.value);
+    } catch (error) {
+      console.error("Error executing Sparql query:", error);
+      throw error;
+    }
   };
 
   /**

@@ -1,3 +1,24 @@
+// The configuration options for the component.
+interface ConfigurationOptions {
+  /**
+   * The base url for the stack. Typically http://domain:port
+   * @type {string}
+   */
+  stackUrl: string;
+
+  /**
+   * The SPARQL namespace containing the land plot triples.
+   * @type {string}
+   */
+  plotNamespace: string;
+
+  /**
+   * The ID name of the VF Mapbox layer to set filters on. Eg 0.0.plot
+   * @type {string}
+   */
+  layerId: string;
+}
+
 /**
  * This component provides a list of parameters that users can select to search for the related urban entities visualised in the TWA-VF.
  */
@@ -9,23 +30,22 @@ class SeachEntityComponent extends DynamicComponent {
    * Create a new HTML element to support the application requirements.
    * @param {string} title - The title displayed.
    * @param {any} mapboxMapHandler - The map object created for Mapbox.
-   * @param {string} layerId - The ID name of the layer to set filters on.
   */
-  constructor(title: string, stackUrl: string, mapboxMapHandler: any, layerId: string) {
+  constructor(title: string, mapboxMapHandler: any, options: ConfigurationOptions) {
     // Call the super class constructor
     super(title);
-    this.baseStackUrl = stackUrl;
+    this.baseStackUrl = options.stackUrl;
     this.initContainerAttributes();
     let parentElement: HTMLElement = this.container_content;
     // Create a dropdown component for zone types
-    new SelectDropdownComponent("Zone Type").render(parentElement);
+    new SelectDropdownComponent("Zone Type", this.baseStackUrl, options.plotNamespace).render(parentElement);
     // Create a text input component for site area
     let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Plot Area [m2]", this.numerical_placeholder_message, "Invalid input. Please enter a numerical value.");
     siteAreaTextInput.render(parentElement);
     // Create a submit button
     let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement('button');
     submitButton.textContent = "Submit";
-    submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, layerId, [siteAreaTextInput]));
+    submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, options.layerId, [siteAreaTextInput]));
     parentElement.appendChild(submitButton);
   };
 

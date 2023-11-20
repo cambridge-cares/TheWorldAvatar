@@ -219,7 +219,7 @@
             let beforeSiblingContainer = document.getElementById("helpContainer");
             // Create a new custom component
             // Edit your parameters here
-            let custom_component = new SeachEntityComponent("Search Land Plot", "http://domain:port", MapHandler.MAP, "layerID");
+            let custom_component = new SeachEntityComponent("Search Land Plot", MapHandler.MAP, { stackUrl: "http://domain:port", plotNamespace: "plot", layerId: "layerId" });
             // Render the custom component before the sibling container
             custom_component.render(beforeSiblingContainer);
         }
