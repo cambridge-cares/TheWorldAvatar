@@ -267,40 +267,62 @@ class KGClient(PySparqlClient):
             raise_error(ValueError, "No unique interval details could be retrieved from KG.")
     
     
-    def get_existing_optimisation_outputs(self, forecast_iri:str):
+    def get_existing_optimisation_outputs(self, forecast_iri:str, output_types:list):
         """
-        Returns a list of all generation optimisation outputs associated with
+        Returns a dict of all generation optimisation outputs associated with
         provided forecast IRI as input
-        NOTE: Only considers ohn:ProvidedHeatAmount, ohn:ConsumedGasAmount and
-              ohn:GeneratedHeatAmount types as relevant outputs
+        NOTE: Provides output IRIs only for rdf types listed in 'output_types'
 
         Arguments:
             forecast_iri (str) -- IRI of heat demand or grid temperature forecast
                                   (i.e., inputs to the generation optimisation)
+            output_types (list) -- list of IRIs specifying relevant optimisation 
+                                   output types
         Returns:
-            output_iris (list) -- list of instantiated optimisation derivation outputs
-                                  (empty dict if not exist)
+            outputs (dict) -- dictionary with heat provider IRIs as keys and
+                              associated optimisation output dict as values;
+                              each provider contains an output dict with all
+                              'output_types' as keys and corresponding IRIs as
+                              values, with not applicable IRIs set to None
+                              (empty dict if no outputs exist)
         """
-
+        
         query = f"""
-            SELECT DISTINCT ?type ?output_iri
+            SELECT DISTINCT ?source ?type ?output_iri
             WHERE {{
-            VALUES ?type {{ <{OHN_CONSUMED_GAS_AMOUNT}> <{OHN_GENERATED_HEAT_AMOUNT}> 
-                            <{OHN_PROVIDED_HEAT_AMOUNT}>  }}
-            <{forecast_iri}> ^<{ONTODERIVATION_ISDERIVEDFROM}> ?deriv_iri . 
-            ?deriv_iri ^<{ONTODERIVATION_BELONGSTO}> ?output_iri . 
-            ?output_iri <{RDF_TYPE}> ?type .
+            VALUES ?type {{ <{'> <'.join(output_types)}> }}
+            {{ ?output_iri ^<{OHN_HAS_PROVIDED_HEAT_AMOUNT}> ?source }}
+            UNION
+            {{ ?output_iri ^<{OHN_HAS_GENERATED_HEAT_AMOUNT}> ?source }}
+            UNION
+            {{ ?output_iri ^<{OHN_HAS_CONSUMED_GAS_AMOUNT}> ?source }}
+            UNION
+            {{ ?output_iri ^<{OHN_HAS_COGEN_ELECTRICITY_AMOUNT}> ?source }}
+            UNION
+            {{ ?output_iri ^<{OHN_HAS_OPERATING_AVAILABILITY}> ?source }}
+            {{
+                <{forecast_iri}> ^<{ONTODERIVATION_ISDERIVEDFROM}> ?deriv_iri . 
+                ?deriv_iri ^<{ONTODERIVATION_BELONGSTO}> ?output_iri . 
+                ?output_iri <{RDF_TYPE}> ?type .
+            }}
             }}
         """
+        
         query = self.remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
-
-        # Extract relevant information from unique query result
-        keys = [OHN_PROVIDED_HEAT_AMOUNT, OHN_CONSUMED_GAS_AMOUNT, OHN_GENERATED_HEAT_AMOUNT]
-        outputs = {k: set([x['output_iri'] for x in res if x['type'] == k]) for k in keys}
-        # Remove empty keys
-        outputs = {key: list(value) for key, value in outputs.items() if value}
         
+        # Extract all heat providers
+        sources = self.get_list_of_unique_values(res, 'source')
+        outputs = {}
+        # Add output dict {rdf type: iri} for all heat providers
+        for s in sources:
+            # Extract all relevant outputs for heat provider
+            sub_res = [r for r in res if r['source'] == s]
+            sub_res = {r['type']: r['output_iri'] for r in sub_res}
+            # Ensure that not present outputs are set to None
+            sub_res = {k: sub_res.get(k) for k in output_types}
+            outputs.update({s: sub_res})
+       
         return outputs
 
 

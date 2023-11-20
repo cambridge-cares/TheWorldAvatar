@@ -11,6 +11,7 @@ import pandas as pd
 from CoolProp.CoolProp import PropsSI
 
 from dhoptimisation.utils import *
+from dhoptimisation.datamodel import *
 from dhoptimisation.agent.config import TIME_FORMAT
 from dhoptimisation.agent.optimisation_setup import HeatBoiler, GasTurbine, SourcingContract
 
@@ -898,3 +899,48 @@ def minimum_supply(grid_operator, timestep):
     min_stability_demand = round(min_stability_demand, 1)
 
     return min_stability_demand
+
+
+def extract_output_timeseries(optimised:pd.DataFrame, rdftype:str,
+                              provider:(HeatBoiler, GasTurbine, SourcingContract)):
+    """
+    Extracts optimisation output time series data for given heat provider (object,
+    and rdftype) from overall optimisation outputs DataFrame
+
+    Arguments:
+        optimised {pd.DataFrame} -- DataFrame with optimised generation time series
+                                    as returned by 'generation_optimization'
+        rdftype {str} -- rdf type of heat generator/provider 
+        provider {HeatBoiler, GasTurbine, SourcingContract} -- corresponding heat
+                                                        generator/provider object
+    
+    Returns:
+        dictionary with optimisation output rdf types as keys and time series 
+        data as lists as values
+    """
+
+    # Extract optimised output time series data based on rdf type
+    if rdftype == OHN_INCINERATIONPLANT:
+        provided_heat = list(optimised[provider.name+'_q'].values)
+        generated_heat, consumed_gas, cogen_electricity = None, None, None
+    elif rdftype == OHN_HEATBOILER:
+        generated_heat = list(optimised[provider.name+'_q'].values)
+        consumed_gas = list(optimised[provider.name+'_gas'].values)
+        provided_heat, cogen_electricity = None, None
+    elif rdftype == OHN_GASTURBINE:
+        generated_heat = list(optimised[provider.name+'_q'].values)
+        consumed_gas = list(optimised[provider.name+'_gas'].values)
+        cogen_electricity = list(optimised['Electricity_generation'].values)
+        provided_heat = None
+
+    # Cast availability to default boolean datatype to avoid issues
+    # with TSClient and e.g. numpy booleans (as per .astype(bool))
+    ts_data = {
+        OHN_PROVIDED_HEAT_AMOUNT: provided_heat,
+        OHN_GENERATED_HEAT_AMOUNT: generated_heat,
+        OHN_CONSUMED_GAS_AMOUNT: consumed_gas,
+        OHN_COGEN_ELECTRICITY_AMOUNT: cogen_electricity,
+        OHN_AVAILABILITY: list(map(bool, provider.available))
+    }
+    
+    return ts_data
