@@ -1,7 +1,7 @@
 # Install the District Heating Optimisation Trigger Agent in Docker container
 #==================================================================================================
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM ghcr.io/cambridge-cares/stack-client:1.20.1 as stackclients
 
 FROM python:3.9.14-slim-buster
 # Meta data
