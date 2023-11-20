@@ -23,11 +23,7 @@ The SPARQL queries follow the format which requires the returned variable to be 
 SPARQL queries are created for [UR in King's Lynn](inputs/UR/POIqueries/) use cases.
 
 ### 3.3 EdgeTableSQL
-[EdgeTable](https://docs.pgrouting.org/2.5/en/pgRouting-concepts.html#description-of-the-edges-sql-query-for-dijkstra-like-functions) describes the characteristic of the road networks. It is used to define the transport mode and road conditions during the calculation of isochrone. 
-
-EdgeTableSQL refers to the cost table used for routing calculations. 
-
-EdgeTableSQL are created for [UR in King's Lynn](inputs/UR/edgesSQLTable/) use cases. 
+[EdgeTableSQL](https://docs.pgrouting.org/2.5/en/pgRouting-concepts.html#description-of-the-edges-sql-query-for-dijkstra-like-functions) describes the characteristic of the road networks. It represents the cost table used for routing calculations. EdgeTableSQL have been generated for [Urban Resillience (UR)](inputs/UR/edgesSQLTable/) use case in King's Lynn.
 
 ## 4. Build
 ### 4.1. GitHub Credentials
@@ -56,6 +52,11 @@ The agent is reachable at the `/runtsp` endpoint.
 To run the agent, simply run the following cURL command:
 
 #### Urban Resilience Planning (UR)
+Generates travelling salesman route via geoserver SQL view. this route runs through the points of interest and return back to the original location. The SQL view layers takes TWA-VF marker location as the target node for its calculations. The geoserver layers generated include: 
+- Normal wading depth capability
+- 30cm wading depth capability
+- 90cm wading depth capability
+
 ```
 curl -X POST "localhost:3838/travellingsalesmanagent/runtsp?function=UR"
 ```
@@ -73,8 +74,6 @@ The debugger port will be available at 5005.
 
 ## 7. TWA-VF Visualisation
 ### 7.1 Feature Info Agent
-The isochrones is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent.
-
 1) In the directory [stack-manager-config/data/webspace/](stack-manager-config/data/webspace/), contains the TWA-VF `data.json` prepared for the different scnearios that is meant to be placed inside [`stack-manager/inputs/data/webspace`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/data), following instruction [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
 
 
