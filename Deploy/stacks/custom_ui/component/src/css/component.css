@@ -34,6 +34,15 @@
   margin: 4px 0;
 }
 
+.line-padding {
+  padding-bottom: 0.4rem;
+}
+
+.scrollable-content {
+  height: 20vh;
+  overflow-y: auto;
+}
+
 /* Application-specific classes   */
 .asset-card-container {
   display: flex;

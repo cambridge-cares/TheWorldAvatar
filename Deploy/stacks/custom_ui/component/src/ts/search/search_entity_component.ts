@@ -72,6 +72,7 @@ class SeachEntityComponent extends DynamicComponent {
     this.container_title.classList.add("controlTitle");
     this.container_content.removeAttribute("id");
     this.container_content.classList.add("controlContents");
+    this.container_content.classList.add("scrollable-content");
   };
 
   /**

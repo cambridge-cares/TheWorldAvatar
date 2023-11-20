@@ -15,6 +15,7 @@ class SearchTextInputComponent {
   constructor(parameterName: string, placeholderText: string, errorMessage: string = "") {
     // Create a new container item
     this.container = createDiv();
+    this.container.classList.add("line-padding");
     // Create a name display for the search parameter
     let searchParameterName: HTMLElement = createDiv();
     searchParameterName.textContent = parameterName;
