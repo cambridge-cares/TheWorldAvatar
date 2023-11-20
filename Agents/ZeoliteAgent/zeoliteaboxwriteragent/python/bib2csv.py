@@ -8,6 +8,14 @@ import biblib.bib
 #import biblib.biblib as biblib
 import tools
 
+"""
+TODO
+- 
+- 
+.
+
+"""
+
 import bibtexparser
 import bibtexparser.middlewares as btpmiddle
 
@@ -28,10 +36,6 @@ this database of Journals and their abbreviations (updated around 2020-2021):
 https://github.com/jxhe/bib-journal-abbreviation
 """
 import json
-
-with open( "journals.json" ) as fp:
-    journalAbbreviations = json.load( fp )
-
 
 prefixFOAF = "foaf"
 prefixBIBO = "bibo"
@@ -57,10 +61,16 @@ class OntoBibo:
        Entry  which is a dict() containing a single citation/article/book/etc.
 
     """
+    __slots__ = [ "itemName", "className", "uuidDB", "errCount", 
+                  "tPrefix", "aPrefix", "entries", "entryInBibFile", "btpLibrary",
+                  "journalAbbreviations", "journalFullLow", "journalAltSpell", 
+                  "journalShortLow", "foreignWords",
+                  "fieldCountNote", "fieldCountLastchecked", 
+                  "uuid" ]
     #__slots__ = [ "year", "month", "title", "journal", "volume", "number", \
     #              "pages", "abstract", "issn", "doi", "eprint" \
     #]
-    def __init__( self, filePath, uuidDB = None,
+    def __init__( self, filePath = [], uuidDB = None,
                   tPrefix = "", aPrefix = ""  ):
         '''
         self.year    = None
@@ -79,6 +89,7 @@ class OntoBibo:
         self.itemName = "TODO_ITEM_NAME"
         self.className = "TODO_CLASS_NAME"
         self.uuidDB = None
+        self.errCount = 0
 
         if "" == tPrefix:
             self.tPrefix = "http://tPrefix/"
@@ -91,22 +102,104 @@ class OntoBibo:
             self.aPrefix = aPrefix
 
         if None == uuidDB:
-            logging.error( " Empty uuidDB in '" + self.itemName + "'" + \
-                           " in class OntoMeasureWithUncertainty. Using default." ) 
+            logging.warning( " Empty uuidDB in '" + self.itemName + "'" + \
+                           " in class OntoMeasureWithUncertainty." + \
+                           " Using default." ) 
             self.uuidDB = tools.UuidDB()
         elif isinstance( uuidDB, tools.UuidDB ):
             self.uuidDB = uuidDB
         else:   
             logging.error( "Wrong type of uuidDB, expected 'UuidDB', got '" + \
-                            str(type(uuid)) + "'." )
+                            str(type(uuid)) + "'. Using default instead." )
+            self.uuidDB = tools.UuidDB()
             pass
 
+        logging.error( "Not implemented _checkBibFile() in ontobibo " )
+
         self.entries = {}
+        self.entryInBibFile = {}
         self.btpLibrary = bibtexparser.Library() # btp = Bib Tex Parser
 
-        self.readBib( filePath )
-        pass # __INIT__()
+        if [] == filePath:
+            # Do nothing
+            pass
+        elif isinstance( filePath, list ):
+            for fPath in filePath:
+                self.readBib( fPath )
+        elif isinstance( filePath, str ):
+            self.readBib( filePath )
+        else:
+            logging.error( " Unknown file path in OntoBibo: '" + str(filePath) + "'." )
 
+        self.journalAbbreviations = {}
+        journals = [ "journals.json", "more-journals.json" ]
+        for path in journals:
+            self.loadJournal( path )
+
+        self.updateJournalDB()
+
+        #logging.error( ">>>>>>>>>>>>>>>>>>>>>>>" )
+        #for k in self.entryInBibFile.keys():
+        #    logging.error( "  > " + k )
+
+        pass # OntoBibo.__init__()
+
+    def loadJournal( self, path ):
+        if os.path.isfile( path ):
+            with open( path, encoding="utf-8" ) as fp:
+                tmp = json.load( fp )
+                self.journalAbbreviations |= tmp
+        else:
+            logging.error( "Unknown journal database: '" + path + "' in OntoBibo." )
+            self.errCount += 1
+
+        pass #OntoBibo.loadJournal()
+
+    def updateJournalDB( self ):
+        self.journalFullLow  = {}
+        self.journalAltSpell = {}
+        self.journalShortLow = {}
+        self.foreignWords = {}
+
+        for k in self.journalAbbreviations.keys():
+            self.journalFullLow[k.lower().strip()] = k.strip()
+            self.journalShortLow[self.journalAbbreviations[k].lower().strip()] = k.strip()
+
+        path = "journal-data.json"
+        if os.path.isfile( path ):
+            with open( path, encoding="utf-8" ) as fp:
+                tmp = json.load( fp )
+                self.foreignWords = tmp["foreign"]
+                for k in tmp["alternative"]:
+                    self.journalAltSpell[k.lower()] = tmp["alternative"][k]
+
+                self.foreignWords = tmp["foreign"]
+
+        """
+        print( "full low:" )
+        for k in self.journalFullLow:
+            #if k.find( "araday" ) >= 0:
+            if k.find( "olites" ) >= 0:
+                print( "   ", k, "=>", self.journalFullLow[k] )
+            pass
+
+        1/0
+        print( "short low:" )
+        for k in self.journalShortLow:
+            if k.find( "araday" ) >= 0:
+                print( "   ", k, "=>", self.journalShortLow[k] )
+            pass
+
+        print( "alt spell: " )
+        for k in self.journalAltSpell:
+            print( "   ", k, "=>", self.journalAltSpell[k] )
+            pass
+        1/0
+        """
+        #logging.error( " No foreignWords, no AltSpell " )
+
+        pass #OntoBibo.updateJournalDB()
+       
 
     #def addBib( self, filePath ):
     #    #self.btpLibrary.add( filePath )I
@@ -125,13 +218,15 @@ class OntoBibo:
         """
         #Bib file may contain several entries, so this function returns a list containing a number of entities of 
 
-        if not isinstance(filePath, str):
+        if not isinstance( filePath, str ):
             logging.error( "File path must be a string, but got '" + \
                            str(filePath) + "' in bib2csv." )
+            self.errCount += 1                
             return 
 
         if os.path.isdir( filePath ):
-            paths = os.path.listdir( filePath )
+            print( "filePath", filePath )
+            paths = os.listdir( filePath )
             for path in paths:
                 self.readBib( path )
 
@@ -140,14 +235,17 @@ class OntoBibo:
             if ".bib" != ext:
                 logging.error( " In readBib() in file '" + filePath + "'," + \
                                " but expected extension .bib. Skipped." )
+                self.errCount += 1                
                 return                
 
             #self._readAsBibLib( filePath )
 
+            self._checkBibFile( filePath )
             self._readAsBibtexParser( filePath )
 
         else:
             logging.error( " In bib2csv file '" + filePath + "' does not exist." )
+            self.errCount += 1                
             return 
 
         pass # OntoBibo.readBib()
@@ -160,6 +258,17 @@ class OntoBibo:
 
         pass # OntoBibo._readAsBibLib()
 
+    def _checkBibFile( self, filePath ):
+        """
+        There is a problem in bibtex.parser if author and others contain capital letters.
+
+        Need to read the file, find all entries names and list them.
+
+        """
+
+
+        pass # OntoBibo._checkBibFile()
+
     def _readAsBibtexParser( self, filePath ):
 
         layers = [
@@ -169,6 +278,18 @@ class OntoBibo:
                  ]
         library = bibtexparser.parse_file( filePath, append_middleware=layers)
 
+        for entry in library.entries:
+            #print( "====", entry.key )
+            if entry.key in self.entryInBibFile:
+                logging.error( " Bibliography entry repeated in '" + \
+                               filePath + "', previous definition in '" + \
+                               self.entryInBibFile[entry.key] + "'." )
+                self.errCount += 1
+            else:
+                self.entryInBibFile[entry.key] = filePath
+        #for k in self.entryInBibFile:
+        #    logging.error( "  - " + k )
+
         self.btpLibrary.add( library.entries )
 
         pass # OntoBibo._readAsBibtexParser()
@@ -176,6 +297,9 @@ class OntoBibo:
     def _getCsvArrBibtexParser( self, subject, predicate, options ):
         errCount = 0
         output = []
+
+        self.fieldCountNote = 0   
+        self.fieldCountLastchecked = 0   
 
         for i, ent in enumerate(self.btpLibrary.entries):
             #print ( "entry", i )
@@ -195,54 +319,132 @@ class OntoBibo:
 
     def pagesToStartEnd( self, pages ):
         start = None
-        end = None
+        end   = None
+
+        if not isinstance(pages, str):
+            return start, end
+
+        pos = pages.find( "-" )
+        if pos < 0:
+            # No '-', i.e. pages is pagesStart
+            start = pages.strip()
+        elif pos >= 0:
+            start = pages[:pos].strip()
+            end = pages[pos+1:]
+            end = end.replace("-","").strip()
+
+        if "" == start:
+            end = None
+        if "" == end:
+            end = None
 
         return start, end
+        pass # OntoBibo.pagesToStartEnd()
+
+    def toStandardJournalName( self, name ):
+        """ The journal name can be corrupted by the following 
+        1) Capital to low and vice versa
+        2) Misprint (extra comma, quote, etc)
+        3) Wrond spelling of the journal
+        4) Using short journal name instead of full name 
+        5) Using foreign letters instead of English, like German fur
+        6) 
+        """
+        # The 
+        output = name.strip()
+
+        #print( "  aaa:", output )
+        if output.lower() in self.journalFullLow:
+            # Case (1) Correction of 
+            output = self.journalFullLow[output.lower()]
+
+        #print( "  aaa:", output )
+        if output.lower() in self.journalShortLow:
+            # Case (4) Already in short form of the journal
+            output = self.journalShortLow[output.lower()]
+
+        #print( "  aaa:", output )
+        if output.lower() in self.journalAltSpell:
+            # Case (2) Misprint (comma, quote, etc)
+            # Case (3) Misspelling
+            #print( "Found alt spelling:", output )
+            output = self.journalAltSpell[output.lower()]
+            #print( "     New spelling = ", output )
+
+        for word in self.foreignWords:
+            # Case (5) foreign letters instead of English
+            #print( "  Before:", output )
+            output = output.replace( word, self.foreignWords[word] )
+            #print( "   After:", output )
+
+        return output
+        pass # OntoBibo.toStandardJournalName()
 
     def getIssueInfo( self, entity ):
 
         jFull = None
         jAbbr = None
         vol   = None
+        journal = "None"
+
+        #print( " Missing journal for ", entity.key )
         #print( "datatype of fields:", type( entity.fields ) )
         for f in entity.fields:
-            if "journal" == f.key:
+            #print( "key:", f.key )
+            if "journal" == f.key.lower():
+                #print( "Assigned journal", f.value )
                 journal = f.value
-                if journal in journalAbbreviations:
+                if journal in self.journalAbbreviations:
                     jFull = journal
-                    jAbbr = journalAbbreviations[journal]
+                    jAbbr = self.journalAbbreviations[journal]
+                    #print( "a know entry", jAbbr )
                 else:
-                    logging.error( "Uknonwn journal name in bib file: " + journal )
-                    jFull = journal
-                    jAbbr = journal
+                    jNew  = self.toStandardJournalName( journal )
+                    if jNew in self.journalAbbreviations:
+                        jFull = jNew
+                        jAbbr = self.journalAbbreviations[jNew]
+                    else:
+                        file = self.entryInBibFile[entity.key]
+                        logging.error( " Unknown journal name in bib file: '" + \
+                                     journal + "' in bib entry '" + file + "'." )
+                        #print (      "jNew = ", jNew )
+                        self.errCount += 1
+
+                        jFull = journal
+                        jAbbr = journal
 
 
-            elif "volume" == f.key:
+            elif "volume" == f.key.lower():
                 #print( "    ", f.value )
                 vol = str(f.value)
                 #break
 
         if None == jFull:
             logging.error( " Unknown journal full name " + journal )
+            self.errCount += 1
 
         if None == jAbbr:
             logging.error( " Unknown journal abbreviation " + journal )
+            self.errCount += 1
 
         if None == vol:
-            logging.error( " In bib entry '" + "xxx" + "' volume is not specified" )
+            logging.error( " In bib entry '" + entity.key + "' volume is not specified" )
             vol = "None"
+            self.errCount += 1
 
         return jFull, jAbbr, vol
-
+        pass # OntoBibo.getIssueInfo()
 
     def _csvBtpArticle( self, entity, subject, predicate, options ):
         output = []
         errCount = 0
 
+        #print( "Starting key: ",  entity.key )
+
         """
     print( "type: ", library.entries[0].entry_type )
-    print( "key: ",  library.entries[0].key )
     k = library.entries[0].key
+        print( "Starting key: ",  library.entries[0].key )
     print( type( library.entries[0].fields ) )
     #print( library.entries[0].fields )
     for f in library.entries[0].fields:
@@ -266,6 +468,7 @@ class OntoBibo:
         # The name consists of the abbreviated journal name, the volume, and uuid:
         # "J.Name"_"V"str(volume)_UUID
         jFull, jAbbr, vol = self.getIssueInfo( entity )
+        #print( f"'{jFull}', '{jAbbr}', '{vol}'" )
         jShort = jAbbr.replace( ".", "" ).replace( " ", "" ) 
 
         className = "Issue"
@@ -277,17 +480,18 @@ class OntoBibo:
         # Journal information:
         className = "Journal"
         jUuid, _ = self.uuidDB.addUUID( biboPrefix + className,
-                                        self.aPrefix + "Journal_" + jShort, newUuid = uuidStr )
+                                        self.aPrefix + "Journal_" + jShort )
         output.append( [ jUuid, "Instance", biboPrefix + className, "", "", "" ] )
         output.append( [ iUuid, "Instance", jUuid, dctPrefix + "isPartOf", "", "" ] )
 
         # For debugging only:
-        if True:
-            print( "------------------------------------------" )
+        if False:
+            print( "-------------------------------------------" )
+            print( "----------     In bib2csv.py     ----------" )
             print( "Citation:", self.uuid )
             print( "Journal: ", jUuid )
             print( "Issue:   ", iUuid )
-            print( "------------------------------------------" )
+            print( "-------------------------------------------" )
 
         #self.uuid,_ = self.uuidDB.addUUID( self.tPrefix + className,
         #                                   self.aPrefix + self.itemName )
@@ -300,7 +504,7 @@ class OntoBibo:
         #     pass
         #output += [  ]
         for field in entity.fields:
-            if   "author" == field.key:
+            if   "author" == field.key.lower():
                 #print( field.key, "not implemented" )
                 className = "rdf:List"
                 """
@@ -324,8 +528,10 @@ class OntoBibo:
                     #output.append( [ prev, "Instance", className, "", "", "" ] )
                     #output.append( [ alUuid, "Instance", auth, "rdf:first", "", "" ] )
 
-                    auth, _ = self.uuidDB.addUUID( foafPrefix + className, # al = Author List
-                                        foafPrefix + "Person_" + str(ia+1) )
+                    nameID = "".join( author.first + author.last )
+
+                    auth, _ = self.uuidDB.addUUID( foafPrefix + className, 
+                                     foafPrefix + "Person_" + nameID + str(ia+1) )
                     output.append( [ auth, "Instance", foafPrefix + className, "", "", "" ] )
                     output.append( [  self.uuid, "Instance", auth, crystPrefix + "hasAuthor", "", "" ] )
                 
@@ -338,74 +544,112 @@ class OntoBibo:
 
 
 
-            elif "title" == field.key:
+            elif "title" == field.key.lower():
                 #print( field.key, "not implemented" )
                 output.append( [ dctPrefix + "title", "Data Property", 
                                  self.uuid, "", field.value, "xsd:string" ] )
 
-            elif "abstract" == field.key:
+            elif "abstract" == field.key.lower():
                 #print( field.key, "not implemented" )
-                output.append( [ crystPrefix + "hasAbstract", "Data Property", 
-                                 self.uuid, "", field.value, "xsd:string" ] )
+                if field.value.strip() != "":
+                    output.append( [ crystPrefix + "hasAbstract", "Data Property", 
+                                     self.uuid, "", field.value, "xsd:string" ] )
 
-            elif "journal" == field.key:
+            elif "journal" == field.key.lower():
                 #print( field.key, "not implemented" )
                 output.append( [ dctPrefix + "title", "Data Property", 
                                  jUuid, "", field.value, "xsd:string" ] )
 
-            elif "issn" == field.key:
+            elif "issn" == field.key.lower():
                 #print( field.key, "not implemented" )
                 output.append( [ biboPrefix + "issn", "Data Property", 
                                  jUuid, "", field.value, "xsd:string" ] )
 
-            elif "volume" == field.key:
+            elif "publisher" == field.key.lower():
+                #print( field.key, "not implemented" )
+                output.append( [ dctPrefix + "publisher", "Data Property", 
+                                 jUuid, "", field.value, "xsd:string" ] )
+
+            elif "volume" == field.key.lower():
                 #print( field.key, "not implemented" )
                 output.append( [ biboPrefix + "volume", "Data Property", 
                                  iUuid, "", field.value, "xsd:integer" ] )
 
-            elif "year" == field.key:
+            elif "year" == field.key.lower():
                 #print( field.key, "not implemented" )
                 output.append( [ dctPrefix + "issued", "Data Property", 
                                  iUuid, "", field.value, "xsd:gYear" ] )
  
-            elif "month" == field.key:
+            elif "month" == field.key.lower():
                 #print( field.key, "not implemented, is it supported by bibo?" )
                 output.append( [ dctPrefix + "issued", "Data Property", 
                                  iUuid, "", field.value, "xsd:gMonth" ] )
 
-            elif "day" == field.key:
+            elif "day" == field.key.lower():
                 #print( field.key, "not implemented, is it supported by bibo?" )
                 output.append( [ dctPrefix + "issued", "Data Property", 
                                  iUuid, "", field.value, "xsd:gDay" ] )
 
-            elif "number" == field.key:
+            elif "number" == field.key.lower():
+                #print( field.key, "not implemented" )
+                output.append( [ biboPrefix + "issue", "Data Property", 
+                                 iUuid, "", field.value, "xsd:integer" ]  )
+
+            elif "issue" == field.key.lower():
                 #print( field.key, "not implemented" )
                 output.append( [ biboPrefix + "issue", "Data Property", 
                                  iUuid, "", field.value, "xsd:integer" ]  )
 
             elif "pages" == field.key:
-                logging.warning( field.key + " need to add pageStart and pageEnd properly" )
                 output.append( [ biboPrefix + "pages", "Data Property", 
                                  self.uuid, "", field.value, "xsd:string" ] )
 
+                #logging.warning( field.key + " need to add pageStart and pageEnd properly" )
                 start, end = self.pagesToStartEnd( field.value )
                 if start:
                     output.append( [ biboPrefix + "pageStart", "Data Property", 
-                                     self.uuid, "", field.value, "xsd:integer" ] )
+                                     self.uuid, "", start, "xsd:integer" ] )
                 if end:
                     output.append( [ biboPrefix + "pageEnd", "Data Property", 
-                                     self.uuid, "", field.value, "xsd:integer" ] )
+                                     self.uuid, "", end, "xsd:integer" ] )
 
-            elif "doi" == field.key:
+            elif "doi" == field.key.lower():
                 #print( field.key, "not implemented" )
                 output.append( [ biboPrefix + "doi", "Data Property", 
                                  self.uuid, "", field.value, "xsd:string" ] )
  
-            elif "url" == field.key:
+            elif "url" == field.key.lower():
                 #print( field.key, "not implemented" )
                 output.append( [ crystPrefix + "hasUrl", "Data Property", 
                                  self.uuid, "", field.value, "xsd:string" ] )
  
+            elif "eprint" == field.key.lower():
+                #print( field.key, "not implemented" )
+                output.append( [ crystPrefix + "hasEPrint", "Data Property", 
+                                 self.uuid, "", field.value, "xsd:string" ] )
+
+            elif "keywords" == field.key:
+                #print( field.key, "not implemented" )
+                for kw in field.value.split( "," ):
+                    output.append( [ crystPrefix + "hasKeyword", "Data Property", 
+                                     self.uuid, "", kw.strip(), "xsd:string" ] )
+ 
+            elif "note" == field.key:
+                if 0 == self.fieldCountNote:
+                    logging.warning( " Bib entry '" + field.key + "' " + \
+                                     "is not implemented (warning only once)" )
+                    self.errCount += 1
+                self.fieldCountNote += 1    
+
+ 
+            elif "lastchecked" == field.key:
+                if 0 == self.fieldCountLastchecked:
+                    logging.warning( " Bib entry '" + field.key + "' " + \
+                                     "is not implemented (warning only once)" )
+                    self.errCount += 1
+                self.fieldCountLastchecked += 1    
+
+
                 """
             elif "url" == field.key:
                 print( field.key, "not implemented" )
@@ -415,7 +659,9 @@ class OntoBibo:
 
 
             else:
-                logging.error( " Unknown key value '" + field.key + "' in bibliography" + entity.key )
+                logging.error( " Unknown key value '" + field.key + "'" + \
+                               " in bibliography '" + entity.key + "'." )
+                self.errCount += 1
 
         return output, errCount
         pass # OntoBibo._csvBtpArticle()
