@@ -14,8 +14,7 @@ class SelectDropdownComponent {
 */
   constructor(parameterName: string, stackUrl: string, plotNamespace: string) {
     // Create a new container item
-    this.container = createDiv();
-    this.container.classList.add("line-padding");
+    this.container = createDiv({ classes: ["line-padding"] });
     // Create a button that can be clicked to reveal the list of dropdown options
     let dropdownButtonElement: HTMLElement = createHTMLElement("button");
     dropdownButtonElement.textContent = "Select " + parameterName;
