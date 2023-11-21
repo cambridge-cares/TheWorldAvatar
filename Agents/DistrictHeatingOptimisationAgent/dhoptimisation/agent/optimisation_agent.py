@@ -10,6 +10,7 @@
 
 from rdflib import Graph
 from datetime import datetime
+from flask import request, jsonify
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -338,7 +339,52 @@ class DHOptimisationAgent(DerivationAgent):
         #       within the agent logic
         created_at = pd.to_datetime('now', utc=True)
         logger.info(f'Created generation optimisation at: {created_at}')
-         
+
+
+    def compare_generation_cost(self):
+        """
+        This method evaluates the total cost benefit from the optimised and instantiated
+        time interval, i.e., generation cost difference between historical generation
+        and forecast/optimised generation for entire municipal utility
+        
+        The method expects an empty HTTP GET request.
+        """
+        
+        try:
+            # 1) Verify that empty body has been received
+            if request.args:
+                raise_error(ValueError, 'This method expects an empty GET request.')
+
+            # 2) Compare generation cost for entire interval covered by optimisation
+            # Retrieve relevant time series data IRIs
+            cost = self.sparql_client.get_total_generation_cost()
+            ts_client = TSClient(kg_client=self.sparql_client)
+            
+            # Retrieve entire optimised time series
+            fc = ts_client.retrieve_timeseries_as_dataframe(cost.get('fc_data_iri'), 'fc')
+            t1 = fc.index[0].strftime(TIME_FORMAT)
+            t2 = fc.index[-1].strftime(TIME_FORMAT)
+            # Retrieve historical data within same bounds
+            hist = ts_client.retrieve_timeseries_as_dataframe(cost.get('hist_data_iri'), 
+                                                'hist', lowerbound=t1, upperbound=t2)
+            # Assess cost savings
+            df = pd.concat([fc, hist], axis=1)
+            df['saving'] = df['hist'] - df['fc']
+            
+            # Initialise return json
+            response = {
+                'Optimisation start': t1,
+                'Optimisation end': t2,
+                'Savings (EUR)': round(df['saving'].sum(), 2)
+            }
+
+            return jsonify(response), 200
+
+        except Exception as ex:
+            msg = 'Cost saving evaluation failed: ' + str(ex)
+            logger.error(msg)
+            return jsonify({'msg': msg}), 500
+
 
 def default():
     """

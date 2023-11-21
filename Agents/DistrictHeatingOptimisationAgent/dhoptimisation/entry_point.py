@@ -45,6 +45,8 @@ def create_app():
 
     # Add a root web page to the agent
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
+    # Add a URL route to assess optimisation cost improvement
+    agent.add_url_pattern('/compare_cost', 'cost', agent.compare_generation_cost, methods=['GET'])
 
     # Start all periodical jobs
     agent.start_all_periodical_job()

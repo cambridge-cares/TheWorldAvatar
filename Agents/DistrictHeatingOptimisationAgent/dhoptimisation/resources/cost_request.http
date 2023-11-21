@@ -1,0 +1,8 @@
+# This file shows a sample http request to assess the total cost savings
+# between historical generation and optimised/forecast generation
+# (i.e., using TFT forecast, over entire 24h period)
+#
+# NOTE: the corresponding method expects an empty GET request
+
+GET http://localhost:5000/compare_cost
+#GET http://167.172.72.42:3840/dh-optimisation-agent/compare_cost
