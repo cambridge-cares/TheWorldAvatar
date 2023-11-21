@@ -83,7 +83,7 @@ class SubunitBuilder:
         return lfr_atoms
 
     def find_bs_and_update(self, json_file_path, ref_atom_uuid, ref_atom_data, bs_type):
-        if bs_type == "NH2":
+        if bs_type == "MDNH2":
             target_atom = "N"
         elif bs_type == "MDCO":
             target_atom = "C"
@@ -249,7 +249,7 @@ if __name__ == "__main__":
 
     core_json_path = r'C:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder\output\core.json'
     lfr_folder_path = r'C:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder\output'
-    bs_type = "NH2"
+    bs_type = "MDNH2"
 
     # Find the midpoint and shift atoms to the origin in core.json
     core_atoms, reference_atoms = builder.shift_atoms_to_origin(core_json_path)
