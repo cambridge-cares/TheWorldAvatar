@@ -30,17 +30,16 @@ class SelectDropdownComponent {
         });
       });
     // Event listeners
-    // When the button is clicked, display the dropdown options
-    dropdownButtonElement.addEventListener('click', () => {
-      this.dropdown_options_container.style.display = "block";
-    });
-
-    // Close the list of dropdown options when a user click outside this component
-    document.addEventListener('click', (event) => {
-      if (!dropdownButtonElement.contains(event.target as Node) && !this.dropdown_options_container.contains(event.target as Node)) {
+    dropdownButtonElement.onclick = () => {
+      // When the options are hidden, display them on clicking the button
+      if (this.dropdown_options_container.style.display === "none") {
+        this.dropdown_options_container.style.display = "block";
+      } else {
+        // When the options are shown, hide them on click the button
         this.dropdown_options_container.style.display = "none";
       }
-    });
+    };
+
     // Append the new elements to the containers
     this.container.appendChild(dropdownButtonElement);
     this.container.appendChild(this.dropdown_options_container);
