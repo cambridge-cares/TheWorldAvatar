@@ -178,16 +178,16 @@ public class IntegrationTestUtils {
         }
     }
 
-    public static void createPostGisPasswordFile() {
+    public static void createPasswordFile(String path, String password) {
         try {
-            Files.write(Paths.get(TEST_POSTGIS_PASSWORD_PATH), TEST_POSTGIS_PASSWORD.getBytes());
+            Files.write(Paths.get(path), password.getBytes());
         } catch (IOException ex) {
             throw new IllegalArgumentException("Failed to write the password file.", ex);
         }
     }
 
-    public static void deletePostGisPasswordFile() {
-        Path path = Paths.get(TEST_POSTGIS_PASSWORD_PATH);
+    public static void deletePasswordFile(String filePath) {
+        Path path = Paths.get(filePath);
         // Only delete if there is a file
         if (Files.exists(path)) {
             try {
