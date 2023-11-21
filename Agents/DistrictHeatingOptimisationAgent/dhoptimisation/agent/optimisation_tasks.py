@@ -720,10 +720,12 @@ def get_min_cost_for_timestep(q_demand, sourcing_capacities, gas_props, market_p
                 # if heat source already in active heat sources, only increment needed capacity
                 if row['source']+'_q' in active.keys():
                     active[row['source']+'_q'] += row['capacity']
-                    active[row['source']+'_gas'] += row['capacity'] * row['gas_cons']
+                    if isinstance(row['generator_object'], (HeatBoiler, GasTurbine)):
+                        active[row['source']+'_gas'] += row['capacity'] * row['gas_cons']
                 else:
                     active[row['source']+'_q'] = row['capacity']
-                    active[row['source']+'_gas'] = row['capacity'] * row['gas_cons']
+                    if isinstance(row['generator_object'], (HeatBoiler, GasTurbine)):
+                        active[row['source']+'_gas'] = row['capacity'] * row['gas_cons']
                     active['Active_generator_objects'].append(row['generator_object'])
             # if current heat source is only needed partially
             else:
