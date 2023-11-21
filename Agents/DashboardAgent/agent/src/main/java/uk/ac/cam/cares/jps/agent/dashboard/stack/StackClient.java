@@ -2,11 +2,11 @@ package uk.ac.cam.cares.jps.agent.dashboard.stack;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.grafana.GrafanaEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Queue;
  * @author qhouyee
  */
 public class StackClient {
-    private String DASHBOARD_URL;
+    private final String DASHBOARD_URL;
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private final String STACK_RDB_DOMAIN;
     private final PostGisClient POSTGIS_CLIENT;
@@ -32,6 +32,7 @@ public class StackClient {
         ContainerClient client = new ContainerClient();
         BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
         PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+        GrafanaEndpointConfig dashboardConfig = client.readEndpointConfig("grafana", GrafanaEndpointConfig.class);
         LOGGER.debug("Retrieving PostGIS services...");
         this.STACK_RDB_DOMAIN = postConfig.getHostName() + ":" + postConfig.getPort();
         String stackJdbcUrl = "jdbc:postgresql://" + this.STACK_RDB_DOMAIN + "/";
@@ -45,28 +46,8 @@ public class StackClient {
                 "http://" + blazeConfig.getUsername() + ":" + blazeConfig.getPassword() + "@" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/";
         // Initialise a new Sparql client
         this.SPARQL_CLIENT = new SparqlClient(stackSparqlEndpoint, blazeConfig.getUsername(), blazeConfig.getPassword());
-        // Note that the container name and port number is dependent on the custom setup - This may change when we have a built-in container for grafana
-        this.DASHBOARD_URL = "http://" + getStackNameFromHost(blazeConfig.getHostName()) + "-grafana:3000";
+        this.DASHBOARD_URL = dashboardConfig.getServiceUrl();
         LOGGER.debug("Services have been successfully retrieved from the stack...");
-    }
-
-    /**
-     * Get the stack name from the container's host name in the stack.
-     *
-     * @param hostName The container's host name.
-     */
-    private static String getStackNameFromHost(String hostName) {
-        // WIP: Added this for integration test to function but will be removed in favor of endpoint config classes
-        if (hostName.equals("172.17.0.1")) return "172.17.0.1";
-        // Host names for stack's SPARQL endpoint are usually in the format: stackName-blazegraph
-        // Code here retrieves stackName
-        int stackIndex = hostName.lastIndexOf("-blazegraph");
-        // If the host name does not exit, it probably is invalid
-        if (stackIndex != -1) {
-            return hostName.substring(0, stackIndex);
-        }
-        LOGGER.fatal("Invalid host name! Please ensure the stack container name is correct in: " + hostName);
-        throw new JPSRuntimeException("Invalid host name! Please ensure the container name is correct in: " + hostName);
     }
 
     /**
@@ -103,13 +84,6 @@ public class StackClient {
      */
     public String getDashboardUrl() {
         return this.DASHBOARD_URL;
-    }
-
-    /**
-     * Set the dashboard service url within this stack.
-     */
-    public void setDashboardUrl(String url) {
-        this.DASHBOARD_URL = url;
     }
 
     /**

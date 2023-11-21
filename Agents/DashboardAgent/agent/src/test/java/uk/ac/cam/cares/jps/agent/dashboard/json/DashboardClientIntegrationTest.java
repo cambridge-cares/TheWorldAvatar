@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.json;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.grafana.GrafanaEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.google.gson.JsonArray;
 import org.junit.jupiter.api.AfterAll;
@@ -46,6 +47,7 @@ class DashboardClientIntegrationTest {
         IntegrationTestUtils.updateEndpoint(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, IntegrationTestUtils.SPARQL_DELETE);
         IntegrationTestUtils.updateEndpoint(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT, IntegrationTestUtils.SPARQL_DELETE);
         IntegrationTestUtils.deletePasswordFile(IntegrationTestUtils.TEST_POSTGIS_PASSWORD_PATH);
+        IntegrationTestUtils.deletePasswordFile(IntegrationTestUtils.TEST_DASHBOARD_PASSWORD_PATH);
     }
 
     @AfterAll
@@ -63,7 +65,7 @@ class DashboardClientIntegrationTest {
     void testConstructor() {
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
-            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
+            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
         })) {
             StackClient mockStackClient = new StackClient();
             // Execute method
@@ -75,7 +77,7 @@ class DashboardClientIntegrationTest {
     void testInitDashboardWithNoData() {
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
-            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
+            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
         })) {
@@ -98,7 +100,7 @@ class DashboardClientIntegrationTest {
     void testInitDashboardForExistingServiceAccountWithNoData() {
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
-            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
+            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
         })) {
@@ -122,7 +124,7 @@ class DashboardClientIntegrationTest {
     void testInitDashboardWithOneDatabaseConnection() {
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
-            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
+            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
@@ -148,7 +150,7 @@ class DashboardClientIntegrationTest {
     void testInitDashboardForRepeatedDatabaseConnection() {
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
-            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
+            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
@@ -176,15 +178,16 @@ class DashboardClientIntegrationTest {
         // Insert these triples into the blazegraph
         SparqlClientTest.insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
         SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
-        // Create a postgis password file
+        // Create password files
         IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_POSTGIS_PASSWORD_PATH, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
+        IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_DASHBOARD_PASSWORD_PATH, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
         try (MockedConstruction<ContainerClient> mockClient = Mockito.mockConstruction(ContainerClient.class, (mock, context) -> {
             // Ensure all mocks return the test config class for the method to continue
             Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
             Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
         })) {
             StackClient stackClient = new StackClient();
-            stackClient.setDashboardUrl(IntegrationTestUtils.TEST_DASHBOARD_URL);
             DashboardClient client = new DashboardClient(stackClient, IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             Queue<String> dashboardUids = client.initDashboard();
             while (!dashboardUids.isEmpty()) {

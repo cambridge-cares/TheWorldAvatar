@@ -83,11 +83,11 @@ class AgentCommunicationClientIntegrationTest {
 
     @Test
     void testSendGetRequest_Integration() {
-        String url = IntegrationTestUtils.TEST_DASHBOARD_URL + IntegrationTestUtils.SERVICE_ACCOUNT_ROUTE + IntegrationTestUtils.SERVICE_ACCOUNT_SEARCH_SUB_ROUTE;
+        String url = IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceAccountServiceUrl() + IntegrationTestUtils.SERVICE_ACCOUNT_SEARCH_SUB_ROUTE;
         // Test sending a GET request with no authentication
-        HttpResponse responseWithoutCredentials = AgentCommunicationClient.sendGetRequest(IntegrationTestUtils.TEST_DASHBOARD_URL);
+        HttpResponse responseWithoutCredentials = AgentCommunicationClient.sendGetRequest(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
         // Should return a redirect status code
-        assertEquals("(GET " + IntegrationTestUtils.TEST_DASHBOARD_URL + ") 302", responseWithoutCredentials.toString());
+        assertEquals("(GET " + IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl() + ") 302", responseWithoutCredentials.toString());
         // Test sending a GET request with random bearer token
         HttpResponse responseWithBearerToken = AgentCommunicationClient.sendGetRequest(url, "Invalid");
         // Should return unauthorised status code
@@ -100,7 +100,7 @@ class AgentCommunicationClientIntegrationTest {
 
     @Test
     void testSendPostRequest_Integration() {
-        String url = IntegrationTestUtils.TEST_DASHBOARD_URL + IntegrationTestUtils.SERVICE_ACCOUNT_ROUTE;
+        String url = IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceAccountServiceUrl();
         String sampleAccountName = "PostTest";
         String sampleAccountRole = "Viewer";
         String sampleAccountSettings = "false";

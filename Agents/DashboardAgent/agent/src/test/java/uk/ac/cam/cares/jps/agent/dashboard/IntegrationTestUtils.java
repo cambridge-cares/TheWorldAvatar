@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
+import com.cmclinnovations.stack.clients.grafana.GrafanaEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.google.gson.*;
 import org.apache.http.client.methods.HttpPost;
@@ -42,16 +43,15 @@ public class IntegrationTestUtils {
     public static final String TEST_POSTGIS_PASSWORD_PATH = "postgis_password.txt";
     public static final PostGISEndpointConfig POSTGIS_ENDPOINT_CONFIG = new PostGISEndpointConfig("postgis", DOCKER_HOST_NAME, "5431", TEST_POSTGIS_USER, TEST_POSTGIS_PASSWORD_PATH);
     public static final String NAME_KEY = "name";
-    public static final String TEST_DASHBOARD_URL = "http://" + DOCKER_HOST_NAME + ":3068";
     public static final String SERVICE_ACCOUNT_NAME = "grafana";
-    public static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
     public static final String SERVICE_ACCOUNT_SEARCH_SUB_ROUTE = "/search";
     public static final String DASHBOARD_ROUTE = "/api/dashboards/uid/";
     public static final String DASHBOARD_ACCOUNT_USER = "admin";
     public static final String DASHBOARD_ACCOUNT_PASS = "admin";
+    public static final String TEST_DASHBOARD_PASSWORD_PATH = "grafana_password.txt";
+    public static final GrafanaEndpointConfig DASHBOARD_ENDPOINT_CONFIG = new GrafanaEndpointConfig("grafana", DOCKER_HOST_NAME, "3068", TEST_DASHBOARD_PASSWORD_PATH);
     public static final String SPARQL_DELETE = "DELETE WHERE {?s ?p ?o}";
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
-    private static final String DATA_SOURCE_ROUTE = "/api/datasources";
     private static final String ID_KEY = "id";
 
     public static void createNamespace(String namespace) {
@@ -96,7 +96,7 @@ public class IntegrationTestUtils {
     }
 
     public static Object retrieveServiceAccounts(String user, String password) {
-        String route = TEST_DASHBOARD_URL + SERVICE_ACCOUNT_ROUTE;
+        String route = DASHBOARD_ENDPOINT_CONFIG.getServiceAccountServiceUrl();
         // Send a get request to target API for a response
         HttpResponse response = sendGetRequest(route + SERVICE_ACCOUNT_SEARCH_SUB_ROUTE, user, password);
         // Will always be a hash map
@@ -106,7 +106,7 @@ public class IntegrationTestUtils {
     }
 
     public static JsonArray retrieveDataSources(String user, String password) {
-        String route = TEST_DASHBOARD_URL + DATA_SOURCE_ROUTE;
+        String route = DASHBOARD_ENDPOINT_CONFIG.getDataSourceServiceUrl();
         // Send a get request to target API for a response
         HttpResponse response = sendGetRequest(route, user, password);
         JsonArray responseMap = (JsonArray) retrieveResponseBody(response);
@@ -114,7 +114,7 @@ public class IntegrationTestUtils {
     }
 
     public static Object retrieveDashboard(String uid, String user, String password) {
-        String route = TEST_DASHBOARD_URL + DASHBOARD_ROUTE + uid;
+        String route = DASHBOARD_ENDPOINT_CONFIG.getServiceUrl() + DASHBOARD_ROUTE + uid;
         // Send a get request to target API for a response
         HttpResponse response = sendGetRequest(route, user, password);
         // Will always be a hash map
@@ -124,7 +124,7 @@ public class IntegrationTestUtils {
     }
 
     public static void deleteServiceAccounts() {
-        String route = TEST_DASHBOARD_URL + SERVICE_ACCOUNT_ROUTE;
+        String route = DASHBOARD_ENDPOINT_CONFIG.getServiceAccountServiceUrl();
         List<Map<String, Object>> accountInfo = (List<Map<String, Object>>) retrieveServiceAccounts(DASHBOARD_ACCOUNT_USER, DASHBOARD_ACCOUNT_PASS);
         int accountId = -1;
         if (accountInfo.size() > 0) {
@@ -144,7 +144,7 @@ public class IntegrationTestUtils {
             accountId = idDoubleFormat.intValue();
         }
         if (accountId != -1) {
-            String route = TEST_DASHBOARD_URL + DATA_SOURCE_ROUTE;
+            String route = DASHBOARD_ENDPOINT_CONFIG.getDataSourceServiceUrl();
             HttpResponse response = sendGetRequest(route, DASHBOARD_ACCOUNT_USER, DASHBOARD_ACCOUNT_PASS);
             JsonArray dataSources = (JsonArray) retrieveResponseBody(response);
             for (JsonElement dataSource : dataSources) {
@@ -158,7 +158,7 @@ public class IntegrationTestUtils {
     }
 
     public static void deleteDashboard(String uid) {
-        String route = TEST_DASHBOARD_URL + DASHBOARD_ROUTE + uid;
+        String route = DASHBOARD_ENDPOINT_CONFIG.getServiceUrl() + DASHBOARD_ROUTE + uid;
         sendDeleteRequest(route, DASHBOARD_ACCOUNT_USER, DASHBOARD_ACCOUNT_PASS);
     }
 

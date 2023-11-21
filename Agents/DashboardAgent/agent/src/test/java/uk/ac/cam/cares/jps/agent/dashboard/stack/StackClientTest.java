@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.stack;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.grafana.GrafanaEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -46,26 +47,11 @@ class StackClientTest {
             // Ensure all mocks return the test config class for the method to continue
             Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
             Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
         })) {
             StackClient mockStackClient = new StackClient();
             // Verify there is no organisation if no relevant triples are found
-            assertEquals("http://" + IntegrationTestUtils.DOCKER_HOST_NAME + "-grafana:3000", mockStackClient.getDashboardUrl());
-        }
-    }
-
-    @Test
-    void testSetDashboardUrl() {
-        IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_POSTGIS_PASSWORD_PATH, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
-        try (MockedConstruction<ContainerClient> mockClient = Mockito.mockConstruction(ContainerClient.class, (mock, context) -> {
-            // Ensure all mocks return the test config class for the method to continue
-            Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
-            Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
-        })) {
-            StackClient mockStackClient = new StackClient();
-            String sampleUrl = "Test";
-            mockStackClient.setDashboardUrl(sampleUrl);
-            // Verify there is no organisation if no relevant triples are found
-            assertEquals(sampleUrl, mockStackClient.getDashboardUrl());
+            assertEquals(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl(), mockStackClient.getDashboardUrl());
         }
     }
 
@@ -77,6 +63,7 @@ class StackClientTest {
             // Ensure all mocks return the test config class for the method to continue
             Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
             Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
         })) {
             StackClient mockStackClient = new StackClient();
             String[] organisations = mockStackClient.getAllOrganisations();
@@ -96,6 +83,7 @@ class StackClientTest {
             // Ensure all mocks return the test config class for the method to continue
             Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
             Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
         })) {
             StackClient mockStackClient = new StackClient();
             String[] organisations = mockStackClient.getAllOrganisations();
@@ -115,6 +103,7 @@ class StackClientTest {
             // Ensure all mocks return the test config class for the method to continue
             Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
             Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
         })) {
             StackClient mockStackClient = new StackClient();
             List<String> databases = mockStackClient.getDatabaseNames();
@@ -137,6 +126,7 @@ class StackClientTest {
             // Ensure all mocks return the test config class for the method to continue
             Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
             Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
         })) {
             StackClient mockStackClient = new StackClient();
             String[] credentials = mockStackClient.getPostGisCredentials();
@@ -160,9 +150,9 @@ class StackClientTest {
             // Ensure all mocks return the test config class for the method to continue
             Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
             Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
         })) {
             StackClient mockStackClient = new StackClient();
-            mockStackClient.setDashboardUrl(IntegrationTestUtils.TEST_DASHBOARD_URL);
             String[] organisations = mockStackClient.getAllOrganisations();
             assertEquals(1, organisations.length); // verifies if there is only one organisation
             for (String organisation : organisations) {
