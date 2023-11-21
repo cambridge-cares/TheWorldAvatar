@@ -9,6 +9,7 @@ import os
 import math
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 from dhoptimisation.agent.optimisation_setup import *
 from dhoptimisation.agent.optimisation_tasks import *
@@ -213,6 +214,67 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
     ax[2].set_ylim([0, y_max2])  # align y axis between plots
     ax[2].set_yticks(yticks2)
     ax[2].set_ylabel('Optimized heat \n generation (MWh/h)')
-    ax[2].set_xlabel('Date')
+    ax[2].set_xlabel('Time')
+    
+    # Formatting the datetime axis
+    # Formatting the datetime axis
+    ax[2].xaxis.set_major_locator(mdates.DayLocator())                  # major locator for days
+    ax[2].xaxis.set_minor_locator(mdates.HourLocator(interval=3))       # minor locator for hours
+    ax[2].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%y"))   # formatter
+    ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M")) 
+    ax[2].set_xlim([historic_generation.index[0], historic_generation.index[-1]])
+    
+    plt.tight_layout()    
+    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name +'.png'))
 
+
+def plot_forecast_quality(historical_ts, forecasted_ts,
+                          fig_name='Forecast_analysis'):
+    """
+    Creates figure with 2 subplots
+        1) comparison of time series
+        2) histogram of forecast errors
+
+    :param pd.DataFrame historical_ts: historical time series of variable
+    :param pd.DataFrame forecasted_ts: forecasted time series of variable
+    """
+
+    # evaluate forecast errors
+    error = forecasted_ts - historical_ts
+    bins = np.arange(math.floor(error.min()), math.ceil(error.max()), step=0.1)
+
+    # set global plotting parameters
+    plt.rcParams['font.size'] = 14
+
+    # create figure
+    f, ax = plt.subplots(2, figsize=(16, 9))
+    # plot time series comparison
+    ax[0].grid('both')
+    ax[0].plot(historical_ts)
+    ax[0].plot(forecasted_ts)
+    ax[0].set_xlabel('Time')
+    ax[0].set_ylabel(historical_ts.name.replace('_', ' '))
+    ax[0].legend(['Historical time series', 'Forecast'])
+    ax[0].set_title('Time series comparison')
+    # Formatting the datetime axis
+    ax[0].xaxis.set_major_locator(mdates.DayLocator())                  # major locator for days
+    ax[0].xaxis.set_minor_locator(mdates.HourLocator(interval=3))       # minor locator for hours
+    ax[0].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%y"))   # formatter
+    ax[0].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M")) 
+    ax[0].set_xlim([historical_ts.index[0], historical_ts.index[-1]])
+    
+    # plot histogram of discrepancies
+    ax[1].grid('both')
+    ax[1].hist(error, bins=bins)
+    ax[1].axvline(error.mean(), color='orange')
+    ax[1].axvline(error.mean() - error.std(), ls='--', color='orange')
+    ax[1].axvline(error.mean() + error.std(), ls='--', color='orange', label='_nolegend_')
+    ax[1].set_xlabel('Forecast error (forecasted value - actual value)')
+    ax[1].set_ylabel('Count of occurrences')
+    ax[1].set_title('Forecast error histogram')
+    ax[1].legend(['Mean', '+/- Standard deviation', error.name.replace('_', ' ')])
+
+    f.suptitle(historical_ts.name.replace('_', ' ') + ' - forecast analysis')
+    plt.tight_layout()
+    
     plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name +'.png'))

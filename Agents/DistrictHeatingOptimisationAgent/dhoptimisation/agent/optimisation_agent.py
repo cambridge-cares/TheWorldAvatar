@@ -295,8 +295,9 @@ class DHOptimisationAgent(DerivationAgent):
         generation_opt.rename(columns=lambda x: x.rstrip('_q'), inplace=True)
         
         # Initialise consolidated DataFrame with 'time' column to merge data on
-        generation_hist = pd.DataFrame()
-        generation_hist.index.name = 'time'
+        dataIRI = self.sparql_client.get_historic_qdemand_datairi()
+        generation_hist = ts_client.retrieve_timeseries_as_dataframe(dataIRI, 
+                                        'Q_demand', opti_start_dt, opti_end_dt)
         for pro in providers:
             # Add historical heat generation for all providers/generators
             dataIRI = self.sparql_client.get_historic_generation_datairi(pro.iri)
@@ -309,6 +310,8 @@ class DHOptimisationAgent(DerivationAgent):
         generation_hist = generation_hist.merge(cost[['Min_cost']], on='time', how='outer')
         
         plot_entire_heat_generation(generation_hist, generation_opt, prices.el_spot)
+                
+        plot_forecast_quality(generation_hist['Q_demand'], generation_opt['Q_demand'])
         
         print('')
         
