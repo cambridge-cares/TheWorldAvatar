@@ -37,10 +37,11 @@ public class DashboardClient {
     /**
      * Standard Constructor.
      */
-    public DashboardClient(StackClient serviceClient, String dashboardContainerUsername, String dashboardContainerPassword) {
+    public DashboardClient(StackClient serviceClient) {
         this.SERVICE_CLIENT = serviceClient;
-        this.DASHBOARD_ACCOUNT_USER = dashboardContainerUsername;
-        this.DASHBOARD_ACCOUNT_PASSWORD = dashboardContainerPassword;
+        String[] credentials = serviceClient.getDashboardCredentials();
+        this.DASHBOARD_ACCOUNT_USER = credentials[0];
+        this.DASHBOARD_ACCOUNT_PASSWORD = credentials[1];
         // Verify if the dashboard container has been set up, and throws an error if not
         // A GET request to the endpoint should return a valid status code with an HTML file
         HttpResponse response = AgentCommunicationClient.sendGetRequest(this.SERVICE_CLIENT.getDashboardUrl(), this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);

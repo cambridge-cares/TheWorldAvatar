@@ -18,9 +18,9 @@ import java.util.Queue;
  * @author qhouyee
  */
 public class StackClient {
-    private final String DASHBOARD_URL;
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private final String STACK_RDB_DOMAIN;
+    private final GrafanaEndpointConfig DASHBOARD_CONFIG;
     private final PostGisClient POSTGIS_CLIENT;
     private final SparqlClient SPARQL_CLIENT;
 
@@ -32,7 +32,7 @@ public class StackClient {
         ContainerClient client = new ContainerClient();
         BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
         PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-        GrafanaEndpointConfig dashboardConfig = client.readEndpointConfig("grafana", GrafanaEndpointConfig.class);
+        this.DASHBOARD_CONFIG = client.readEndpointConfig("grafana", GrafanaEndpointConfig.class);
         LOGGER.debug("Retrieving PostGIS services...");
         this.STACK_RDB_DOMAIN = postConfig.getHostName() + ":" + postConfig.getPort();
         String stackJdbcUrl = "jdbc:postgresql://" + this.STACK_RDB_DOMAIN + "/";
@@ -46,7 +46,6 @@ public class StackClient {
                 "http://" + blazeConfig.getUsername() + ":" + blazeConfig.getPassword() + "@" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/";
         // Initialise a new Sparql client
         this.SPARQL_CLIENT = new SparqlClient(stackSparqlEndpoint, blazeConfig.getUsername(), blazeConfig.getPassword());
-        this.DASHBOARD_URL = dashboardConfig.getServiceUrl();
         LOGGER.debug("Services have been successfully retrieved from the stack...");
     }
 
@@ -83,8 +82,15 @@ public class StackClient {
      * Get the dashboard service within this stack.
      */
     public String getDashboardUrl() {
-        return this.DASHBOARD_URL;
+        return this.DASHBOARD_CONFIG.getServiceUrl();
     }
+
+    /**
+     * Get the dashboard credentials within this stack.
+     *
+     * @return An array containing the dashboard username and password in sequence.
+     */
+    public String[] getDashboardCredentials() {return new String[]{this.DASHBOARD_CONFIG.getUsername(), this.DASHBOARD_CONFIG.getPassword()};}
 
     /**
      * Get all time series associated with the spatial zones managed by an organisation, namely their assets and rooms' measures in the knowledge graph.

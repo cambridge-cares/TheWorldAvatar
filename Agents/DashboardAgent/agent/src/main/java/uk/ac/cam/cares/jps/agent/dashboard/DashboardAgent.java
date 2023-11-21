@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.dashboard.json.DashboardClient;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
-import uk.ac.cam.cares.jps.agent.dashboard.utils.ConfigStore;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 import javax.servlet.ServletException;
@@ -155,10 +154,8 @@ public class DashboardAgent extends JPSAgent {
     protected JSONObject setupRoute() {
         JSONObject response = new JSONObject();
         if (DashboardAgent.VALID) {
-            LOGGER.info("Retrieving credentials...");
-            String[] credentials = ConfigStore.retrieveCredentials();
             LOGGER.info("Setting up client to interact with dashboard...");
-            DashboardClient client = new DashboardClient(SERVICES, credentials[0], credentials[1]);
+            DashboardClient client = new DashboardClient(SERVICES);
             client.initDashboard();
             LOGGER.info("Dashboard has been successfully set up!");
             response.put("Result", "Dashboard has been successfully set up!");
