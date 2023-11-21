@@ -19,22 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SurroundingsHelper {
-    private OntologyURIHelper ontologyUriHelper;
-
-    public SurroundingsHelper(OntologyURIHelper uriHelper) {
-        this.ontologyUriHelper = uriHelper;
-    }
-
     /**
      * Retrieves the surrounding buildings
      * @param endpoint SPARQL endpoint
      * @return the surrounding buildings as an ArrayList of CEAInputData
      */
-    public List<CEAGeometryData> getSurroundings(ArrayList<CEABuildingData> ceaBuildingDataList, ArrayList<String> buildingIRIs, String endpoint) {
+    public static List<CEAGeometryData> getSurroundings(ArrayList<CEABuildingData> ceaBuildingDataList, ArrayList<String> buildingIRIs, String endpoint) {
         try {
             String uri;
             List<CEAGeometryData> surroundings = new ArrayList<>();
-            GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
 
             Double buffer = 50.0;
 
@@ -57,7 +50,7 @@ public class SurroundingsHelper {
             Polygon boundingBoxGeometry = (Polygon) GeometryHandler.bufferPolygon(envelope, "EPSG:" + crs, buffer);
 
             // CRS84 and EPSG:4326 has coordinate swapped
-            if (geometryQueryHelper.checkCRS84(endpoint) && crs.equals("4326")) {
+            if (GeometryQueryHelper.checkCRS84(endpoint) && crs.equals("4326")) {
                 boundingBoxGeometry = GeometryHandler.swapCoordinates(boundingBoxGeometry);
             }
 
@@ -74,7 +67,7 @@ public class SurroundingsHelper {
                 uri = queryResultArray.getJSONObject(i).get("building").toString();
 
                 if (!buildingIRIs.contains(uri)) {
-                    CEAGeometryData temp = geometryQueryHelper.getBuildingGeometry(uri, endpoint, false);
+                    CEAGeometryData temp = GeometryQueryHelper.getBuildingGeometry(uri, endpoint, false);
                     surroundings.add(temp);
                 }
             }
@@ -93,16 +86,16 @@ public class SurroundingsHelper {
      * @param crs CRS of boundingBox
      * @return returns a query string
      */
-    private Query getBuildingsWithinBoundsQuery(String boundingBox, String crs) throws ParseException {
+    private static Query getBuildingsWithinBoundsQuery(String boundingBox, String crs) throws ParseException {
         boundingBox = "\"" + boundingBox + "\"^^geo:wktLiteral";
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addPrefix("geof", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geof))
-                .addPrefix("bldg", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bldg))
-                .addPrefix("grp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.grp))
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo));
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("ocgml", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                .addPrefix("geof", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geof))
+                .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
+                .addPrefix("grp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.grp))
+                .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo));
 
         wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
                 .addWhere("?geometry", "grp:parent" , "?Lod0FootPrint")
@@ -110,7 +103,7 @@ public class SurroundingsHelper {
                 .addFilter("geof:sfIntersects(?wkt, ?box)");
 
         SelectBuilder sb = new SelectBuilder()
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
+                .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo))
                 .addBind(boundingBox, "box")
                 .addWhere(wb)
                 .addVar("?building")

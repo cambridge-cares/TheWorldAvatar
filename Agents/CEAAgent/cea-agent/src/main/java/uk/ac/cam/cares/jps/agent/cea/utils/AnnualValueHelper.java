@@ -20,29 +20,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AnnualValueHelper {
-    private OntologyURIHelper ontologyURIHelper;
-
-    public AnnualValueHelper(OntologyURIHelper ontologyUriHelper) {
-        this.ontologyURIHelper = ontologyUriHelper;
-    }
-
     /**
      * Instantiate annual value triples for CEA time series
      * @param values CEA time series values
      * @param iriMap map of the CEA data IRIs
      * @param route route to the IRIs in iriMap
      */
-    public void instantiateAnnual(List<List<?>> values, LinkedHashMap<String, String> iriMap, String route) {
+    public static void instantiateAnnual(List<List<?>> values, LinkedHashMap<String, String> iriMap, String route) {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ub", ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
-                .addPrefix("om", ontologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                .addPrefix("rdf", ontologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("owl", ontologyURIHelper.getOntologyUri(OntologyURIHelper.owl));
+                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("owl", OntologyURIHelper.getOntologyUri(OntologyURIHelper.owl));
 
         WhereBuilder wb1 = new WhereBuilder()
-                .addPrefix("om", ontologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
         WhereBuilder wb2 = new WhereBuilder()
-                .addPrefix("om", ontologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
         int i = 0;
 
@@ -58,9 +52,9 @@ public class AnnualValueHelper {
             String energyType = "";
 
             for (int j = 0; j < queryResultArray.length(); j++) {
-                if (queryResultArray.getJSONObject(j).getString("type").contains(ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))) {
+                if (queryResultArray.getJSONObject(j).getString("type").contains(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))) {
                     energyType = queryResultArray.getJSONObject(j).getString("type");
-                    String[] split = energyType.split(ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP));
+                    String[] split = energyType.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP));
                     energyType = "Annual" + split[1];
                     break;
                 }
@@ -129,7 +123,7 @@ public class AnnualValueHelper {
      * @param iri annual value IRI
      * @param value annual value
      */
-    public void updateAnnual(WhereBuilder deleteWB, WhereBuilder updateWB, String iri, Double value) {
+    public static void updateAnnual(WhereBuilder deleteWB, WhereBuilder updateWB, String iri, Double value) {
         deleteWB.addWhere(NodeFactory.createURI(iri), "om:hasNumericalValue", "?o");
 
         updateWB.addWhere(NodeFactory.createURI(iri), "om:hasNumericalValue", value);
@@ -140,10 +134,10 @@ public class AnnualValueHelper {
      * @param iri data IRI
      * @return query object that will retrieve the quantity type of iri
      */
-    public Query getType(String iri) {
+    public static Query getType(String iri) {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("rdf", ontologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("om", ontologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
         wb.addWhere("?quantity", "om:hasValue", NodeFactory.createURI(iri));
         wb.addWhere("?quantity", "rdf:type", "?type");
@@ -161,10 +155,10 @@ public class AnnualValueHelper {
      * @param energy string stating whether the data IRI is attached to a consumption or supply device
      * @return query object that will retrieve the type of energy attached to iri
      */
-    public Query getInfo(String iri, String energy) {
+    public static Query getInfo(String iri, String energy) {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ub", ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
-                .addPrefix("om", ontologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
         wb.addWhere("?quantity", "om:hasValue", NodeFactory.createURI(iri));
 
@@ -190,9 +184,9 @@ public class AnnualValueHelper {
      * @param energyType energy type, electricity or heat
      * @param value annual value
      */
-    public void insertUpdate(WhereBuilder wb, String iri, String energy, String energyType, Double value) {
-        String quantity = ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy + "Quantity_" + UUID.randomUUID();
-        String measure = ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy + "Value_" + UUID.randomUUID();
+    public static void insertUpdate(WhereBuilder wb, String iri, String energy, String energyType, Double value) {
+        String quantity = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy + "Quantity_" + UUID.randomUUID();
+        String measure = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + "Annual" + energy + "Value_" + UUID.randomUUID();
 
         if (energy.contains("Consumption")) {
             wb.addWhere(NodeFactory.createURI(iri), "ub:consumesEnergy", NodeFactory.createURI(quantity));
@@ -219,11 +213,11 @@ public class AnnualValueHelper {
      * @param route route to iri
      * @return IRI to annual value if exists, empty string if not exists
      */
-    public String checkAnnual(String iri, String energyType, String route) {
+    public static String checkAnnual(String iri, String energyType, String route) {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ub", ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
-                .addPrefix("rdf", ontologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("om", ontologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+                .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
         if (energyType.contains("Consumption")) {
             wb.addWhere(NodeFactory.createURI(iri), "ub:consumesEnergy", "?quantity");

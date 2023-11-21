@@ -24,16 +24,6 @@ import java.util.List;
 
 public class GeometryQueryHelper {
     private String ontopUrl = "http://stackNAME-ontop:8080/sparql";
-    private OntologyURIHelper ontologyUriHelper;
-
-    /**
-     * Constructs a GeometryQueryHelper object with the given OntologyURIHelper
-     * @param uriHelper OntologyURIHelper
-     */
-    public GeometryQueryHelper(OntologyURIHelper uriHelper) {
-        this.ontopUrl = ontopUrl.replace("stackNAME", StackClient.getStackName());
-        this.ontologyUriHelper = uriHelper;
-    }
 
     /**
      * Queries for building geometry related information
@@ -41,7 +31,7 @@ public class GeometryQueryHelper {
      * @param endpoint SPARQL endpoint
      * @return building geometry related information
      */
-    public CEAGeometryData getBuildingGeometry(String uriString, String endpoint, Boolean flag) {
+    public static CEAGeometryData getBuildingGeometry(String uriString, String endpoint, Boolean flag) {
         String height = getBuildingHeight(uriString, endpoint);
 
         CEAGeometryData ceaGeometryData = getLod0Footprint(uriString, endpoint, height, flag);
@@ -54,10 +44,10 @@ public class GeometryQueryHelper {
      * @param uriString city object id
      * @return returns a query string
      */
-    public String getBuildingHeight(String uriString, String endpoint) {
+    public static String getBuildingHeight(String uriString, String endpoint) {
         try {
             WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("bldg", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bldg))
+                    .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
                     .addWhere("?s", "bldg:measuredHeight", "?height")
                     .addFilter("!isBlank(?height)");
             SelectBuilder sb = new SelectBuilder()
@@ -83,21 +73,21 @@ public class GeometryQueryHelper {
         }
     }
 
-    public CEAGeometryData getLod0Footprint(String uriString, String endpoint, String height, Boolean flag) {
+    public static CEAGeometryData getLod0Footprint(String uriString, String endpoint, String height, Boolean flag) {
         try {
             RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
 
             WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
-                    .addPrefix("bldg", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bldg))
-                    .addPrefix("grp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.grp));
+                    .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo))
+                    .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
+                    .addPrefix("grp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.grp));
 
             wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
                     .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
                     .addWhere("?geometry", "geo:asWKT", "?wkt");
 
             SelectBuilder sb = new SelectBuilder()
-                    .addPrefix("geof", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geof))
+                    .addPrefix("geof", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geof))
                     .addWhere(wb)
                     .addVar("?wkt")
                     .addVar("geof:getSRID(?wkt)", "?crs");
@@ -110,7 +100,7 @@ public class GeometryQueryHelper {
             String crs = queryResultArray.getJSONObject(0).getString("crs");
 
             if (crs.contains("EPSG")) {
-                crs = crs.split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
+                crs = crs.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.epsg))[1];
                 crs = crs.split(">")[0];
             }
             else if (crs.contains("CRS84")){
@@ -149,20 +139,20 @@ public class GeometryQueryHelper {
         }
     }
 
-    public boolean checkCRS84(String endpoint) {
+    public static boolean checkCRS84(String endpoint) {
         try {
             RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
             WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
-                    .addPrefix("bldg", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bldg))
-                    .addPrefix("grp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.grp));
+                    .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo))
+                    .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
+                    .addPrefix("grp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.grp));
 
             wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
                     .addWhere("?geometry", "grp:parent", "?Lod0FootPrint")
                     .addWhere("?geometry", "geo:asWKT", "?wkt");
 
             SelectBuilder sb = new SelectBuilder()
-                    .addPrefix("geof", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geof))
+                    .addPrefix("geof", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geof))
                     .addWhere(wb)
                     .addVar("geof:getSRID(?wkt)", "?crs")
                     .setDistinct(true);

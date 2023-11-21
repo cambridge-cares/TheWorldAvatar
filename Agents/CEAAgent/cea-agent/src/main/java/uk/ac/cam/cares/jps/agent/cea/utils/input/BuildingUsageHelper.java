@@ -19,19 +19,13 @@ import java.util.stream.Collectors;
 
 public class BuildingUsageHelper
 {
-    private OntologyURIHelper ontologyURIHelper;
-    
-    public BuildingUsageHelper(OntologyURIHelper uriHelper) {
-        this.ontologyURIHelper = uriHelper;
-    }
-
     /**
      * Retrieves the usages of a building and each usage's corresponding weight, and returns the usages and their weight as a map
      * @param uriString city object id
      * @param endpoint SPARQL endpoint
      * @return the usages and their corresponding weighting
      */
-    public Map<String, Double> getBuildingUsages(String uriString, String endpoint) {
+    public static Map<String, Double> getBuildingUsages(String uriString, String endpoint) {
         Map<String, Double> result = new HashMap<>();
         Map<String, Double> temp = new HashMap<>();
         String usage;
@@ -57,13 +51,13 @@ public class BuildingUsageHelper
             result.put(usage, 1.00);
         }
         else if (queryResultArray.length() == 1){
-            usage = queryResultArray.getJSONObject(0).get("BuildingUsage").toString().split(ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
+            usage = queryResultArray.getJSONObject(0).get("BuildingUsage").toString().split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
             usage = toCEAConvention(usage);
             result.put(usage, 1.00);
         }
         else {
             for (int i = 0; i < queryResultArray.length(); i++) {
-                usage = queryResultArray.getJSONObject(i).get("BuildingUsage").toString().split(ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
+                usage = queryResultArray.getJSONObject(i).get("BuildingUsage").toString().split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
                 usage = toCEAConvention(usage);
 
                 if (temp.containsKey(usage)) {
@@ -100,12 +94,12 @@ public class BuildingUsageHelper
      * @param uriString city object id
      * @return returns a query string
      */
-    private Query getBuildingUsagesQuery(String uriString) {
+    private static Query getBuildingUsagesQuery(String uriString) {
         WhereBuilder wb = new WhereBuilder();
         SelectBuilder sb = new SelectBuilder();
 
-        wb.addPrefix("ontoBuiltEnv", ontologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
-                .addPrefix("rdf", ontologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+        wb.addPrefix("ontoBuiltEnv", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addWhere("?building", "ontoBuiltEnv:hasPropertyUsage", "?usage")
                 .addWhere("?usage", "rdf:type", "?BuildingUsage")
                 .addOptional("?usage", "ontoBuiltEnv:hasUsageShare", "?UsageShare");
@@ -124,7 +118,7 @@ public class BuildingUsageHelper
      * @param usage OntoBuiltEnv building usage type
      * @return building usage per CEA convention
      */
-    public String toCEAConvention(String usage){
+    public static String toCEAConvention(String usage){
         switch(usage){
             case("DOMESTIC"):
                 return "MULTI_RES";

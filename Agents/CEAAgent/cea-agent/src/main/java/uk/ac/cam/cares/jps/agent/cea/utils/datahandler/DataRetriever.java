@@ -13,12 +13,6 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 
 public class DataRetriever {
-    private OntologyURIHelper ontologyUriHelper;
-
-    public DataRetriever(OntologyURIHelper uriHelper) {
-        this.ontologyUriHelper = uriHelper;
-    }
-
     /**
      * Retrieves iris from KG for the data type requested
      * @param building uri of building in energyprofile graph
@@ -26,7 +20,7 @@ public class DataRetriever {
      * @param route route to pass to access agent
      * @return list of iris
      */
-    public ArrayList<String> getDataIRI(String building, String value, String route) {
+    public static ArrayList<String> getDataIRI(String building, String value, String route) {
         ArrayList<String> result = new ArrayList<>();
 
         SelectBuilder sb = new SelectBuilder();
@@ -36,11 +30,11 @@ public class DataRetriever {
             return result;
         }
 
-        wb.addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                .addPrefix("ontoubemmp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
-                .addPrefix("obs", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltstructure));
+        wb.addPrefix("ocgml", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                .addPrefix("ontoubemmp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("obs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltstructure));
 
         switch(value) {
             case CEAConstants.KEY_ROOF_SOLAR_SUITABLE_AREA:
@@ -201,10 +195,10 @@ public class DataRetriever {
      * @param route route to pass to access agent
      * @return list of iris
      */
-    public String getNumericalValue(String measureUri, String route) {
+    public static String getNumericalValue(String measureUri, String route) {
         String result = "";
 
-        WhereBuilder wb = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+        WhereBuilder wb = new WhereBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                 .addWhere("?measure", "om:hasNumericalValue", "?value");
 
         SelectBuilder sb = new SelectBuilder().addVar("?value");
@@ -227,7 +221,7 @@ public class DataRetriever {
      * @param ontologyUnit unit iri in ontology
      * @return unit as a String
      */
-    public String getUnit(String ontologyUnit) {
+    public static String getUnit(String ontologyUnit) {
         switch(ontologyUnit) {
             case("http://www.ontology-of-units-of-measure.org/resource/om-2/kilowattHour"):
                 return "kWh";
@@ -243,7 +237,7 @@ public class DataRetriever {
      * @param builder update builder
      * @param type energy type in ontology
      */
-    public void addBuildingConsumptionWhere(WhereBuilder builder, String type){
+    public static void addBuildingConsumptionWhere(WhereBuilder builder, String type){
         builder.addWhere("?building", "ontoubemmp:consumesEnergy", "?grid")
                 .addWhere("?grid", "rdf:type", type)
                 .addWhere("?grid", "om:hasValue", "?measure")
@@ -257,7 +251,7 @@ public class DataRetriever {
      * @param energyType type of energy supply
      * @param facadeType  type of facade that the generator is theoretically installed on
      */
-    public void addSupplyDeviceWhere(WhereBuilder builder, String generatorType, String energyType, String facadeType) {
+    public static void addSupplyDeviceWhere(WhereBuilder builder, String generatorType, String energyType, String facadeType) {
         builder.addWhere("?building", "obs:hasFacade", "?facade")
                 .addWhere("?facade", "rdf:type", facadeType)
                 .addWhere("?facade", "ontoubemmp:hasTheoreticalEnergyProduction", "?SolarGenerators")
@@ -274,7 +268,7 @@ public class DataRetriever {
      * @param building iri of building
      * @param facadeType type of facade
      */
-    public void addSupplyDeviceAreaWhere(WhereBuilder builder, String building, String facadeType) {
+    public static void addSupplyDeviceAreaWhere(WhereBuilder builder, String building, String facadeType) {
         builder.addWhere(NodeFactory.createURI(building), "obs:hasFacade" , "?facade")
                 .addWhere("?facade", "rdf:type", facadeType)
                 .addWhere("?facade", "ontoubemmp:hasSolarSuitableArea", "?area")
