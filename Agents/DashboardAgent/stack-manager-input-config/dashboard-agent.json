@@ -4,18 +4,15 @@
       "TaskTemplate": {
         "ContainerSpec": {
           "Image": "dashboard-agent:1.0.0",
-          "Mounts": [
-            {
-              "Type": "bind",
-              "Source": "/home/common/Codes/TheWorldAvatar/Agents/DashboardAgent/config",
-              "Target": "/usr/local/tomcat/config"
-            }],
           "Configs": [
             {
               "ConfigName": "blazegraph"
             },
             {
               "ConfigName": "postgis"
+            },
+            {
+              "ConfigName": "grafana"
             }
           ],
           "Secrets": [
@@ -23,6 +20,9 @@
               "SecretName": "blazegraph_password"
             }, {
               "SecretName": "postgis_password"
+            },
+            {
+              "SecretName": "grafana_password"
             }
           ]
         }

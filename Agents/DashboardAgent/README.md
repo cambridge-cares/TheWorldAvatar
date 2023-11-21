@@ -24,9 +24,11 @@ which must have a 'scope' that [allows you to publish and install packages](http
 This agent requires the following tools, which **MUST** run on the same stack. Please read more from the [stack manager page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for setting these containers up.
 
 (1) [Grafana](https://grafana.com/docs/grafana/latest/) dashboard
-- Required for this agent to configure and set up dashboards
-- Image version: **grafana-oss:10.0.3** 
-- Please run this container with a name of `grafana` within the stack. At the moment, the agent requires the dashboard url at `http://<STACK_NAME>-grafana:3000`.
+- Requires the deployment of the built-in optional `grafana` service on the stack to configure and set up dashboards
+- For deploying the service,
+  - include `grafana` as a service following the [stack-manager configuration file](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#stack-configuration)
+  - include a `grafana_password` with your password as a Docker Secret in the `stack-manager/inputs/secrets` directory.
+- Once deployed, the service can be accessed at the `/analytics` route with a default username of admin. 
 
 (2) PostGIS database
 - Contains the time series data
@@ -78,12 +80,7 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 This route will communicate with the stack's dashboard container to set up a live analytical dashboard. At the moment, this agent will set up dashboards for the following:
 1) **Facility level** - Room- and asset-related time series are included.
 
-To execute this route, please send a GET request without any parameters and a configuration file called `credentials.properties` placed at the `<root>/config/` directory of your bind mount. 
-The file will contain the configuration for:
-- `dashboard.user`: The username for the dashboard container running within the stack. Default for Grafana is admin.
-- `dashboard.pass`: The password for the dashboard container running within the stack. Default for Grafana is admin.
-
-A sample request for curl syntax (in one line) is as follows:
+To execute this route, please send a GET request without any parameters. A sample request for curl syntax (in one line) is as follows:
 ```
 curl localhost:3838/dashboard-agent/setup 
 ```
