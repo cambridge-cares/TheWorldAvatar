@@ -20,7 +20,7 @@ class SelectDropdownComponent {
     let dropdownButtonElement: HTMLElement = createHTMLElement("button");
     dropdownButtonElement.textContent = "Select " + parameterName;
     // Add a dropdown option list for zone types
-    this.dropdown_options_container = createDiv();
+    this.dropdown_options_container = createDiv({ classes: ["dropdown-box"] });
     this.dropdown_options_container.style.display = "none";
     // Retrieve all available zone types
     this.retrieveZoneTypes(stackUrl, plotNamespace)
