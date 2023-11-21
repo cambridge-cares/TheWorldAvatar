@@ -3,7 +3,9 @@
 # Date: 20 Nov 2023                            #
 ################################################
 
-# 
+# The purpose of this module is to provide multiple post-processing methods to
+# analyse the optimised heat generation in comparison to the actual historical 
+# data (i.e., through creating plots stored inside the container)
 
 import os
 import math
@@ -15,8 +17,9 @@ from dhoptimisation.agent.optimisation_setup import *
 from dhoptimisation.agent.optimisation_tasks import *
 
 
-# Specify relative file paths to store/load model files
+# Specify relative file path to store plots
 OPTIMISATION_FIGURES_REPO = '/app/dhoptimisation/resources/optimisation_figures/'
+
 
 def evaluate_historic_generation(historic_generation, gen_objects, gas_props, market_prices):
     """
@@ -154,8 +157,9 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
         3) optimized heat generation distribution
 
     :param pd.DataFrame historic_generation: historic heat generation for each time step in optimization period
-                                                (DataFrame layout similar as returned by 'optimize_operating_modes')
-    :param pd.DataFrame optimized_generation: DataFrame as returned by 'optimize_operating_modes' with overall optimal operation
+                                             (DataFrame layout similar as returned by 'optimize_operating_modes')
+    :param pd.DataFrame optimized_generation: DataFrame as returned by 'optimize_operating_modes' with overall
+                                              optimal operation
     :param pd.DataFrame el_prices: electricity spot price for each time step in optimization period
     """
     
@@ -215,8 +219,7 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
     ax[2].set_yticks(yticks2)
     ax[2].set_ylabel('Optimized heat \n generation (MWh/h)')
     ax[2].set_xlabel('Time')
-    
-    # Formatting the datetime axis
+
     # Formatting the datetime axis
     ax[2].xaxis.set_major_locator(mdates.DayLocator())                  # major locator for days
     ax[2].xaxis.set_minor_locator(mdates.HourLocator(interval=3))       # minor locator for hours
@@ -224,6 +227,75 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
     ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M")) 
     ax[2].set_xlim([historic_generation.index[0], historic_generation.index[-1]])
     
+    plt.tight_layout()    
+    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name +'.png'))
+
+
+def plot_generation_cost(generation_hist, optimized_generation,
+                         fig_name='Cost_comparison'):
+    """
+    Creates plot of heat generation induced cost in three subplots:
+        1) heat generation distribution
+        2) incremental cost  per time interval
+        3) accumulated cost over time
+
+    :param pd.DataFrame generation_hist: historic/non-optimized heat generation for each time step in optimization period
+                                         (DataFrame layout similar as returned by 'optimize_operating_modes')
+    :param pd.DataFrame optimized_generation: DataFrame as returned by 'optimize_operating_modes' with overall optimal operation
+    :returns figure: plot of heat generation cost
+    """
+    
+    # Extract relevant heat generator column names
+    cols = optimized_generation.columns.difference(['Q_demand', 'Min_cost'])
+
+    # set global plotting parameters
+    plt.rcParams['font.size'] = 14
+
+    # derive limit and ticks for heat load
+    y_max = math.ceil(1.1 * optimized_generation[cols].max().max())
+    yticks = [i for i in range(0, y_max, 2)]
+
+    # define legend and colors
+    colors = ['tab:blue', 'tab:red', 'tab:orange', 'tab:purple', 'tab:green']
+
+    # create figure
+    f, ax = plt.subplots(3, figsize=(16, 9))
+    f.suptitle('Fully optimized heat generation/sourcing')
+
+    # first subplot with heat generation
+    plot_data = optimized_generation[cols].copy()
+    ax[0].grid('both', ls='--', lw=0.5)
+    for i in range(len(cols)):
+        ax[0].plot(plot_data.iloc[:, i], '.-', color=colors[i], ms=2.0, lw=1.0)
+    ax[0].legend(cols, loc='upper right')
+    ax[0].set_ylim([0, y_max])  # align y axis between plots
+    ax[0].set_yticks(yticks)
+    ax[0].set_ylabel('Heat generation \n (MWh/h)')
+
+    # second subplot with incremental cost lines
+    ax[1].grid('both', ls='--', lw=0.5)
+    ax[1].plot(generation_hist['Min_cost'], '.-', color='tab:gray', ms=2.0, lw=1.0)
+    ax[1].plot(optimized_generation['Min_cost'], '.--', color='tab:red', ms=2.0, lw=1.0)
+    legend = ['Actual historic generation', 'Fully optimized heat generation']
+    ax[1].legend(legend, loc='upper left')
+    ax[1].set_ylabel('Incremental \n generation cost (€/h)')
+
+    # third subplot with accumulated profit
+    ax[2].grid('both', ls='--', lw=0.5)
+    ax[2].plot(generation_hist['Min_cost'].cumsum()/1000, '.-', color='tab:gray', ms=2.0, lw=1.0)
+    ax[2].plot(optimized_generation['Min_cost'].cumsum()/1000, '.--', color='tab:red', ms=2.0, lw=1.0)
+    legend = ['Actual historic generation', 'Fully optimized heat generation']
+    ax[2].legend(legend, loc='upper left')
+    ax[2].set_ylabel('Cumulative \n generation cost (k€)')
+    ax[2].set_xlabel('Time')
+    
+    # Formatting the datetime axis
+    ax[2].xaxis.set_major_locator(mdates.DayLocator())                  # major locator for days
+    ax[2].xaxis.set_minor_locator(mdates.HourLocator(interval=3))       # minor locator for hours
+    ax[2].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%y"))   # formatter
+    ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M")) 
+    ax[2].set_xlim([generation_hist.index[0], generation_hist.index[-1]])
+
     plt.tight_layout()    
     plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name +'.png'))
 

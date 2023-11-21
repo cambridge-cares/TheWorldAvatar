@@ -294,7 +294,7 @@ class DHOptimisationAgent(DerivationAgent):
         generation_opt = optimised[cols].copy()
         generation_opt.rename(columns=lambda x: x.rstrip('_q'), inplace=True)
         
-        # Initialise consolidated DataFrame with 'time' column to merge data on
+        # Initialise consolidated DataFrame for historical generation
         dataIRI = self.sparql_client.get_historic_qdemand_datairi()
         generation_hist = ts_client.retrieve_timeseries_as_dataframe(dataIRI, 
                                         'Q_demand', opti_start_dt, opti_end_dt)
@@ -303,19 +303,20 @@ class DHOptimisationAgent(DerivationAgent):
             dataIRI = self.sparql_client.get_historic_generation_datairi(pro.iri)
             df = ts_client.retrieve_timeseries_as_dataframe(dataIRI, pro.name, opti_start_dt, 
                                                             opti_end_dt)
-            generation_hist = generation_hist.merge(df, on='time', how='outer')
-        
-        # 
+            generation_hist = generation_hist.merge(df, on='time', how='outer')        
+        # Assess historical generation cost
         cost, _, _ = evaluate_historic_generation(generation_hist, providers, swps.fuel, prices)
         generation_hist = generation_hist.merge(cost[['Min_cost']], on='time', how='outer')
         
+        # Create plots
+        self.logger.info('Creating output plots ...')
+        # 1) plot comparison of heat generation/sourcing composition
         plot_entire_heat_generation(generation_hist, generation_opt, prices.el_spot)
-                
+        # 2) plot cost of non-optimized vs. optimised generation
+        plot_generation_cost(generation_hist, generation_opt)
+        # 3) plot forecast analysis for heat demand
         plot_forecast_quality(generation_hist['Q_demand'], generation_opt['Q_demand'])
-        
-        print('')
-        
-        
+
         # NOTE: DerivationWithTimeSeries does not return any output triples, 
         #       as all updates to the time series are expected to be conducted
         #       within the agent logic
