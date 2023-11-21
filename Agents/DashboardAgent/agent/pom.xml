@@ -95,7 +95,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.13.1</version>
+            <version>1.20.2</version>
         </dependency>
         <!-- JDBC driver -->
         <dependency>
