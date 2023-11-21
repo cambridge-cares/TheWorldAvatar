@@ -284,11 +284,8 @@ class DHOptimisationAgent(DerivationAgent):
             if tier:
                 # Assign (potentially updated) price tier as current price
                 self.sparql_client.update_current_heat_unit_price(c.iri, tier)
-
-        created_at = pd.to_datetime('now', utc=True)
-        logger.info(f'Created generation optimisation at: {created_at}')
         
-        # 5) Compare generation cost (historical vs. optimised)
+        # 5) Compare generation and cost (historical vs. optimised)
         # Create DataFrame for optimised time series
         cols = [p.name+'_q' for p in providers] + ['Q_demand', 'Min_cost']
         generation_opt = optimised[cols].copy()
@@ -308,6 +305,25 @@ class DHOptimisationAgent(DerivationAgent):
         cost, _, _ = evaluate_historic_generation(generation_hist, providers, swps.fuel, prices)
         generation_hist = generation_hist.merge(cost[['Min_cost']], on='time', how='outer')
         
+        # Retrieve potentially already existing cost instances (to be updated)
+        cost = self.sparql_client.get_total_generation_cost()
+        if not cost.get('hist_data_iri'):
+            # Instantiate new cost instances for historical and optimised forecast
+            data_iris = self.sparql_client.instantiate_generation_cost(cost.get('mu'))
+            # Initialise cost time series
+            ts_client.init_timeseries(dataIRI=data_iris.get('hist_data_iri'), times=times, 
+                                      values=generation_hist.get('Min_cost').values, 
+                                      time_format=time_format, ts_type=DOUBLE)
+            ts_client.init_timeseries(dataIRI=data_iris.get('fc_data_iri'), times=times, 
+                                      values=generation_opt.get('Min_cost').values, 
+                                      time_format=time_format, ts_type=DOUBLE)
+        else:
+            # Overwrite existing cost data with new (optimised) results
+            ts_client.replace_ts_data(dataIRI=cost.get('hist_data_iri'), times=times, 
+                                      values=generation_hist.get('Min_cost').values)
+            ts_client.replace_ts_data(dataIRI=cost.get('fc_data_iri'), times=times, 
+                                      values=generation_opt.get('Min_cost').values)
+        
         # Create plots
         self.logger.info('Creating output plots ...')
         # 1) plot comparison of heat generation/sourcing composition
@@ -320,6 +336,8 @@ class DHOptimisationAgent(DerivationAgent):
         # NOTE: DerivationWithTimeSeries does not return any output triples, 
         #       as all updates to the time series are expected to be conducted
         #       within the agent logic
+        created_at = pd.to_datetime('now', utc=True)
+        logger.info(f'Created generation optimisation at: {created_at}')
          
 
 def default():

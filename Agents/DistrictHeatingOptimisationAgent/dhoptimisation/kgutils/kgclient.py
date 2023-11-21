@@ -906,6 +906,37 @@ class KGClient(PySparqlClient):
 
         # Extract relevant information from unique query result
         return self.get_unique_value(res, 'dataIRI_hist')
+    
+    
+    def get_total_generation_cost(self):
+        """
+        Query dataIRIs for both historical and optimised forecast cost instance
+        
+        Returns:
+            cost {dict} -- dictionary with municipal utility IRI as well as 
+                           dataIRIs for cost time series
+        """
+
+        query = f"""
+            SELECT DISTINCT ?mu ?hist_data_iri ?fc_data_iri
+            WHERE {{
+            ?mu <{RDF_TYPE}> <{OHN_MUNICIPAL_UTILITY}> .
+            OPTIONAL {{
+                ?mu <{ONTOCAPE_HASCOST}> ?cost .
+                ?cost <{OM_HASVALUE}> ?hist_data_iri ;
+                      <{TS_HASFORECAST}> ?fc_data_iri
+                }}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        cost = {'mu': self.get_unique_value(res, 'mu'),
+                'hist_data_iri': self.get_unique_value(res, 'hist_data_iri'),
+                'fc_data_iri': self.get_unique_value(res, 'fc_data_iri')
+        }
+        return cost
 
 
     #
@@ -970,6 +1001,42 @@ class KGClient(PySparqlClient):
 
         update = self.remove_unnecessary_whitespace(update)
         self.performUpdate(update)
+        
+        
+    def instantiate_generation_cost(self, municipal_utility:str):
+        """
+        Instantiate relationship for total heat generation cost at municipal
+        utility level and add both om:Mease and ts:Forecast for both actual
+        historical and optimised forecast cost data
+
+        Arguments:
+            municipal_utility (iri) -- IRI of municipal utility
+        
+        Returns:
+            dict with dataIRIs for cost time series (historical and optimised forecast)
+        """
+        
+        cost_iri = KB + 'CostInTimeInterval_' + str(uuid.uuid4())
+        measure_iri = KB + 'Measure_' + str(uuid.uuid4())
+        fc_iri = KB + 'Forecast_' + str(uuid.uuid4())
+        
+        update = f"""
+            INSERT DATA {{
+                <{municipal_utility}> <{ONTOCAPE_HASCOST}> <{cost_iri}> .
+                <{cost_iri}> <{RDF_TYPE}> <{OHN_COST_IN_TIME_INTERVAL}> .
+                <{cost_iri}> <{OM_HASVALUE}> <{measure_iri}> .
+                <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> .
+                <{measure_iri}> <{OM_HASUNIT}> <{OM_EURO}> .
+                <{cost_iri}> <{TS_HASFORECAST}> <{fc_iri}> .
+                <{fc_iri}> <{RDF_TYPE}> <{TS_FORECAST}> .
+                <{fc_iri}> <{OM_HASUNIT}> <{OM_EURO}> .
+            }}
+        """
+
+        update = self.remove_unnecessary_whitespace(update)
+        self.performUpdate(update)
+        
+        return {'hist_data_iri' : measure_iri, 'fc_data_iri': fc_iri }
     
 
     #
