@@ -98,7 +98,7 @@ public class RFIDQueryAgentLauncherTest {
         RFIDQueryAgentLauncher testLauncher = new RFIDQueryAgentLauncher();
         String[] args = {};
         try {
-            testLauncher.initializeAgent(args);
+            testLauncher.initializeAgent(args, "/test");
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
@@ -114,7 +114,7 @@ public class RFIDQueryAgentLauncherTest {
         try(MockedConstruction<RFIDQueryAgent> mockAgent =  Mockito.mockConstruction(RFIDQueryAgent.class,
         (mock, context) -> Mockito.when(mock.queriesStatusAndCheckTimeStamps()).thenThrow(new JPSRuntimeException("exception")))) {
                 try {
-                    testLauncher.initializeAgent(args);
+                    testLauncher.initializeAgent(args, "/check");
                     Assert.fail();
                 }
                 catch (JPSRuntimeException e) {

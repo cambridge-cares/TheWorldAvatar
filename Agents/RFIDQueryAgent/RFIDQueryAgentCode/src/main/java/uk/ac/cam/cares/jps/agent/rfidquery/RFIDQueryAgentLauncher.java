@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 
 
-@WebServlet(urlPatterns = {"/retrieve"})
+@WebServlet(urlPatterns = {"/check, /retrieveData"})
 public class RFIDQueryAgentLauncher extends JPSAgent{
 	/**
      * Logger for reporting info/errors.
@@ -74,11 +74,6 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        return processRequestParameters(requestParams);
-    } 
-
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
     	JSONObject jsonMessage = new JSONObject();
 		String[] args;
 		if (validateInput(requestParams)) {
@@ -89,7 +84,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			String speciesProperties = System.getenv(requestParams.getString(KEY_SPECIES_PROPERTIES));
 			String containSpecies = requestParams.getString(KEY_CONTAINSPECIES);
             args = new String[] {timeseriesDataClientProperties, DataIRIs, numOfHours, speciesProperties, containSpecies};
-            jsonMessage = initializeAgent(args);
+			String originalUrl = request.getRequestURI();
+            jsonMessage = initializeAgent(args, originalUrl);
             jsonMessage.accumulate("message","POST request has been sent successfully.");
             requestParams = jsonMessage;
 		}
@@ -142,56 +138,75 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 	 /**
      * @param args A String[] {timeseriesDataClientProperties, DataIRIs, numOfHours, speciesProperties, containSpecies}
      */
-    public JSONObject initializeAgent(String[] args) {
+    public JSONObject initializeAgent(String[] args, String originalUrl) {
     	 // Ensure that there are five arguments provided
         if (args.length != 5) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
-        LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
-    	
-         // Create the agent
-		 RFIDQueryAgent agent;
+		JSONObject result = new JSONObject();
+		LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
+		String url = originalUrl.substring(originalUrl.lastIndexOf("/"), originalUrl.length());
+		LOGGER.info("The url is " + url);
+		switch (url) {
+			case "/check": {
+				result = executeCheck(args);
+				break;
+			}
+			case "/retrieveData": {
+				result = executeRetrieveData(args);
+				break;
+			}
+		}
+		return result;
+	}
 
-		 try {
-			 agent = new RFIDQueryAgent(args[1], args[2]);
-		 } catch (IOException e) {
-			 LOGGER.error(AGENT_ERROR_MSG, e);
-			 throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
-		 }
-		 LOGGER.info("Input agent object initialized.");
+	private JSONObject executeRetrieveData(String[] args) {
+		return null;
+	}
 
-		 JSONObject jsonMessage = new JSONObject();
-		 jsonMessage.accumulate("Result", "Input agent object initialized.");
+	private JSONObject executeCheck(String[] args) {
+		// Create the agent
+		RFIDQueryAgent agent;
+		try {
+			agent = new RFIDQueryAgent(args[1], args[2]);
+		} catch (IOException e) {
+			LOGGER.error(AGENT_ERROR_MSG, e);
+			throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
+		}
+		LOGGER.info("Input agent object initialized.");
+
+		JSONObject jsonMessage = new JSONObject();
+		jsonMessage.accumulate("Result", "Input agent object initialized.");
 		 
-		 try {
-			 loadTSClientConfigs(args[0]);
-		 } catch (IOException e) {
-			 throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
-		 }
+		try {
+			loadTSClientConfigs(args[0]);
+		} catch (IOException e) {
+			throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
+		}
 		 
-		 RemoteStoreClient kbClient = new RemoteStoreClient();
-		 kbClient.setQueryEndpoint(sparqlQueryEndpoint);
-		 kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
+		RemoteStoreClient kbClient = new RemoteStoreClient();
+		kbClient.setQueryEndpoint(sparqlQueryEndpoint);
+		kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
 		 
-		 RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
-		 agent.setRDBClient(rdbStoreClient);
+		RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
+		agent.setRDBClient(rdbStoreClient);
 		 
-		 // Create and set the time series client
-		 try {
-			 tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
-			 agent.setTsClient(tsClient);
-		 } catch (JPSRuntimeException e) {
-			 LOGGER.error(TSCLIENT_ERROR_MSG, e);
-			 throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
-		 }
+		// Create and set the time series client
+		try {
+			tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
+			agent.setTsClient(tsClient);
+		} catch (JPSRuntimeException e) {
+			LOGGER.error(TSCLIENT_ERROR_MSG, e);
+			throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
+		}
 
-		 LOGGER.info("Time series client object initialized.");
-		 jsonMessage.accumulate("Result", "Time series client object initialized.");
+		LOGGER.info("Time series client object initialized.");
+		jsonMessage.accumulate("Result", "Time series client object initialized.");
 
-		 JSONObject overallResults = new JSONObject();
+		JSONObject overallResults = new JSONObject();
 
-		 try {
+		try {
 			overallResults = agent.queriesStatusAndCheckTimeStamps();
 			LOGGER.info("Queried for latest RFID tag status and checked timestamp threshold.");
 			jsonMessage.accumulate("Result", "Queried for latest RFID tag status and checked timestamp threshold.");
