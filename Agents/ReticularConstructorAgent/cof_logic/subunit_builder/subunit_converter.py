@@ -1,13 +1,24 @@
+__author__ = "Aleksandar Kondinski"
+__license__ = "MIT" 
+__version__ = '0.1.0' 
+__status__ = "development" 
+
 import uuid
 import json
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class SubunitConverter:
-    def __init__(self, directory, output_directory):
+    
+    def __init__(self, directory, output_directory, core_inp_name, lfr_inp_name):
         self.directory = directory
         self.output_directory = output_directory
+        self.core_inp_name = core_inp_name
+        self.lfr_inp_name = lfr_inp_name
         self.core_file, self.lfr_file = self.find_inp_files()
-
+        
     def parse_line(self, line, uuid_mapping):
         parts = line.split()
         data = {
@@ -66,23 +77,20 @@ class SubunitConverter:
                 index += 1
 
         return geometry_data
-
+    
     def find_inp_files(self):
-        core_file = None
-        lfr_file = None
-
-        for file in os.listdir(self.directory):
-            if file.endswith(".inp"):
-                if file.startswith("LFR"):
-                    lfr_file = os.path.join(self.directory, file)
-                else:
-                    core_file = os.path.join(self.directory, file)
+        core_file = os.path.join(self.directory, self.core_inp_name)
+        lfr_file = os.path.join(self.directory, self.lfr_inp_name)
         
-        return core_file, lfr_file
+        # Check if files exist
+        if not os.path.exists(core_file) or not os.path.exists(lfr_file):
+            raise FileNotFoundError(f"Input files not found: {core_file}, {lfr_file}")
 
+        return core_file, lfr_file
+    
     def process_files(self, bs_denticity, bs_type):
         if self.core_file is None or self.lfr_file is None:
-            print("Missing required inp files.")
+            logging.error("Missing required inp files.")
             return
         
         geometry_data_core = self.generate_uuids_and_parse_inp(self.core_file)
@@ -91,14 +99,14 @@ class SubunitConverter:
         
         with open(os.path.join(self.output_directory, "core.json"), 'w') as f:
             json.dump(geometry_data_core, f, indent=4)
-        print("Data for the CORE input file has been written to core.json")
+        logging.info("Data for the CORE input file has been written to core.json")
         
         for i in range(modularity_core):
             geometry_data_lfr = self.generate_uuids_and_parse_inp(self.lfr_file)
             output_path = os.path.join(self.output_directory, f"lfr_copy_{i+1}.json")
             with open(output_path, 'w') as f:
                 json.dump(geometry_data_lfr, f, indent=4)
-            print(f"Data for copy {i+1} has been written to {output_path}")
+            logging.info(f"Data for copy {i+1} has been written to {output_path}")
 
 def main():
     directory = r'C:\TheWorldAvatar\Agents\ReticularConstructorAgent\cof_logic\subunit_builder'
