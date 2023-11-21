@@ -12,7 +12,7 @@ Documentation for the TWA-VF is spread across a number of files, and is broken d
 
 * [Overview](./docs/overview.md)
   * _Provides a high level overview on the TWA-VF._
-* [Change Log](./CHANGELOG.md)
+* [Change Log](./library/CHANGELOG.md)
   * _History of changes and requirements for each version._ 
 * [Development](./library/README.md)
   * _Information for developers of the TWA-VF._
@@ -24,19 +24,21 @@ Documentation for the TWA-VF is spread across a number of files, and is broken d
   * _Enabling and configuring more advanced features._
 * [Tutorials](./docs/tutorials.md)
   * _Tutorials for creating new visualisations._
+* [Example](./example/README.md)
+  * _A quickly-bootable example that can be used as a sandbox._
 * [Troubleshooting](./docs/troubleshooting.md)
   * _Solutions to common issues and questions._ 
 
 ## Examples
 
 <p align="center">
- <img src="./example-mapbox-vis/readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="75%"/>
+ <img src="./docs/img/readme-mapbox.JPG" alt="Example of 2D data on a Mapbox visualisation" width="75%"/>
 </p>
 <p align="center">
  <em>Example of 2D data on a Mapbox visualisation.</em><br/><br/><br/>
 </p>
 <p align="center">
- <img src="./example-cesium-vis/readme-styling.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="75%"/>
+ <img src="./docs/img/readme-cesium.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="75%"/>
 </p>
 <p align="center">
  <em>Example of 3D data on a CesiumJS visualisation.</em>

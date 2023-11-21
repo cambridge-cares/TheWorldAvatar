@@ -14,7 +14,6 @@ class SearchHandler_Mapbox extends SearchHandler {
      */
     private cachedSources = {};
 
-
     /**
      * When applicable, turn off clustering for each source currently
      * loaded within the map's style object.

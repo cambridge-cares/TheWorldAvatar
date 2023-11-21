@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +32,6 @@ import org.springframework.core.io.ClassPathResource;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import org.apache.commons.io.FilenameUtils;
@@ -48,6 +49,7 @@ public class ShipInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ShipInputAgent.class);
     private static final String JSON_EXT = ".json";
     private QueryClient queryClient;
+    private RemoteRDBStoreClient remoteRDBStoreClient;
 
     @Override
     public void init() throws ServletException {
@@ -55,7 +57,7 @@ public class ShipInputAgent extends HttpServlet {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
         DerivationClient derivationClient = new DerivationClient(storeClient, QueryClient.PREFIX);
-        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
+        remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         queryClient = new QueryClient(storeClient, tsClient, derivationClient, remoteRDBStoreClient);
     }
@@ -71,6 +73,7 @@ public class ShipInputAgent extends HttpServlet {
         // in a servlet
         try {
             fileNamesAsInt = Arrays.asList(dataDir.listFiles()).stream()
+                    .filter(f -> !f.getName().contentEquals(".gitignore"))
                     .map(f -> Integer.parseInt(FilenameUtils.removeExtension(f.getName())))
                     .collect(Collectors.toList());
         } catch (NumberFormatException e) {
@@ -149,9 +152,8 @@ public class ShipInputAgent extends HttpServlet {
                 }
             }
 
-            // boolean initialiseObda = false;
             if (!queryClient.initialised()) {
-                PostGISClient postGISClient = new PostGISClient();
+                PostGISClient postGISClient = PostGISClient.getInstance();
                 Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
                 String sqlFunction = null;
                 try {
@@ -160,8 +162,7 @@ public class ShipInputAgent extends HttpServlet {
                     LOGGER.error("Failed to read file containing custom SQL function");
                     LOGGER.error(e.getMessage());
                 }
-                postGISClient.executeUpdate(EnvConfig.DATABASE, sqlFunction);
-                // initialiseObda = true;
+                postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sqlFunction);
 
                 // this adds the OntoAgent triples, only do this once
                 queryClient.initialiseAgent();
@@ -182,11 +183,24 @@ public class ShipInputAgent extends HttpServlet {
             // new derivations are created on the spot (request sent to agent immediately)
             queryClient.createNewDerivations(newlyCreatedShips);
 
+            // populate ship iri lookup table, for creation of geoserver layer in aermod
+            // agent
+            try (Connection conn = remoteRDBStoreClient.getConnection()) {
+                ShipRDBClient rdbClient = new ShipRDBClient();
+                rdbClient.createIriLookUpTable(conn);
+                rdbClient.populateTable(newlyCreatedShips, conn);
+            } catch (SQLException e) {
+                String errmsg = "Probably failed to close connection while dealing with ship look up table";
+                LOGGER.error(errmsg);
+                LOGGER.error(e.getMessage());
+                throw new RuntimeException(errmsg, e);
+            }
+
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum()
                     / ships.size();
             LOGGER.info("Creating GeoServer layer for the average timestamp = {}", averageTimestamp);
-            createGeoServerLayer(averageTimestamp, ships);
+            createGeoServerLayer();
 
             JSONObject responseJson = new JSONObject();
             responseJson.put("averageTimestamp", averageTimestamp);
@@ -194,14 +208,6 @@ public class ShipInputAgent extends HttpServlet {
             resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().print(responseJson);
-
-            // // first time adding ontop mapping
-            // if (initialiseObda) {
-            // LOGGER.info("Initialising ontop mapping file");
-            // // add ontop mapping
-            // Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
-            // new OntopClient().updateOBDA(obdaFile);
-            // }
         }
     }
 
@@ -213,26 +219,25 @@ public class ShipInputAgent extends HttpServlet {
         }
     }
 
-    void createGeoServerLayer(long averageTimestamp, List<Ship> ships) {
-        // build sql query to get points within 30 minutes of average timestamp
-        Set<String> shipSet = new HashSet<>();
-        ships.forEach(ship -> shipSet.add(String.format("'%s'", ship.getLocationMeasureIri())));
-        String shipList = shipSet.stream().collect(Collectors.joining(","));
+    void createGeoServerLayer() {
+        String sqlQuery = """
+                SELECT timeseries.time AS time,
+                    timeseries.value AS geom,
+                    s.ship AS iri,
+                    s.shipname AS name
+                FROM "dbTable",
+                    public.get_geometry_table("tableName", "columnName") AS timeseries,
+                    ship_location_iri AS s,
+                    information_schema.columns c
+                WHERE "dbTable"."dataIRI" = s.location
+                    AND c.table_schema = 'public'
+                    AND c.table_name = "tableName"
+                    AND c.column_name = "columnName"
+                    AND c.udt_name = 'geometry'
+                """;
 
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT timeseries.value as geom, \"dbTable\".\"dataIRI\" as iri ");
-        queryBuilder
-                .append("FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries ");
-        queryBuilder.append(
-                String.format("WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d",
-                        shipList, averageTimestamp - 1800, averageTimestamp + 1800));
-        String sqlQuery = queryBuilder.toString();
-
-        GeoServerClient geoserverClient = new GeoServerClient();
+        GeoServerClient geoserverClient = GeoServerClient.getInstance();
         geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-
-        // hardcoded "ships_" in AermodAgent
-        String layerName = "ships_" + averageTimestamp;
 
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
 
@@ -244,7 +249,7 @@ public class ShipInputAgent extends HttpServlet {
         LOGGER.info(virtualTable.getName());
         geoServerVectorSettings.setVirtualTable(virtualTable);
 
-        geoserverClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
-                geoServerVectorSettings);
+        geoserverClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                EnvConfig.SHIPS_LAYER_NAME, geoServerVectorSettings);
     }
 }

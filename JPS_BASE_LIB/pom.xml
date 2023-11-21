@@ -10,7 +10,7 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.40.1</version>
+    <version>1.41.0</version>
 
     <!-- Project Properties -->
     <properties>
@@ -48,7 +48,30 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <release>8</release>
+                    <compilerArgs>
+                        <arg>-Xpkginfo:always</arg>
+                    </compilerArgs>
+                    <excludes>
+                        <!-- Ignore the fed code as it is only a proof of concept -->
+                        <exclude>**/fed/*.java</exclude>
+                    </excludes>
                 </configuration>
+
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <testExcludes>
+                                <!-- Ignore the fed tests as it is only a proof of concept -->
+                                <exclude>**/fed/*.java</exclude>
+                            </testExcludes>
+                        </configuration>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Edit the manifest file that goes inside the .jar file -->
@@ -102,7 +125,10 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.1</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -127,21 +153,21 @@
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-sparqlbuilder</artifactId>
-            <version>3.4.3</version>
+            <version>3.7.7</version>
         </dependency>
 
         <!-- Driver for connecting to postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.4.0</version>
+            <version>42.6.0</version>
         </dependency>
 
         <!-- ??? -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>32.1.3-jre</version>
         </dependency>
 
         <!-- ??? -->
@@ -158,6 +184,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring-version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -207,7 +234,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20180813</version>
+            <version>20231013</version>
         </dependency>
 
         <!-- ??? -->
@@ -228,42 +255,42 @@
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
-            <version>4.5.0</version>
+            <version>4.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-querybuilder</artifactId>
-            <version>4.5.0</version>
+            <version>4.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-rdfconnection</artifactId>
-            <version>4.5.0</version>
+            <version>4.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-shaded-guava</artifactId>
-            <version>4.5.0</version>
+            <version>4.8.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-jdbc-driver-mem</artifactId>
-            <version>4.5.0</version>
+            <version>4.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-jdbc-core</artifactId>
-            <version>4.5.0</version>
+            <version>4.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-jdbc-driver-remote</artifactId>
-            <version>4.5.0</version>
+            <version>4.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-jdbc</artifactId>
-            <version>4.5.0</version>
+            <version>4.10.0</version>
             <type>pom</type>
         </dependency>
 
@@ -278,7 +305,7 @@
         <dependency>
             <groupId>net.lingala.zip4j</groupId>
             <artifactId>zip4j</artifactId>
-            <version>2.11.1</version>
+            <version>2.11.5</version>
         </dependency>
 
         <!-- ??? -->
@@ -302,26 +329,18 @@
             <version>0.10.9.1</version>
         </dependency>
 
-        <!-- For BlazegraphRepositoryWrapper -->
-        <!-- https://mvnrepository.com/artifact/com.blazegraph/bigdata-core -->
-        <dependency>
-            <groupId>com.blazegraph</groupId>
-            <artifactId>bigdata-core</artifactId>
-            <version>2.1.4</version>
-        </dependency>
-
         <!-- Following RDF4J dependencies are added for enabling the federated query
 		feature supported by FedX-->
         <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-repository-http</artifactId>
-            <version>3.0.4</version>
+            <version>3.7.7</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-tools-federation</artifactId>
-            <version>3.1.0</version>
+            <version>3.7.7</version>
         </dependency>
         <!-- used in the DerivationClient to detect circular dependencies -->
         <dependency>
@@ -332,17 +351,9 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>5.7.2</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -384,19 +395,19 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>1.16.2</version>
+            <version>1.19.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.16.2</version>
+            <version>1.19.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>1.16.2</version>
+            <version>1.19.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -415,7 +426,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>4.0</version>
+            <version>5.8</version>
         </dependency>
         <dependency>
             <groupId>jfree</groupId>
@@ -425,7 +436,7 @@
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-distribution</artifactId>
-            <version>5.1.0</version>
+            <version>5.5.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.jena/jena -->

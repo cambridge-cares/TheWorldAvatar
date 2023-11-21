@@ -1,19 +1,18 @@
 package uk.ac.cam.cares.jps.agent.bmsupdate;
 
-import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
 import java.nio.file.Paths;
 import java.util.List;
+import java.lang.reflect.Method;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static uk.ac.cam.cares.jps.agent.bmsupdate.helper.PropertiesFileHelper.readClientPropertiesTemplateFile;
+import static uk.ac.cam.cares.jps.agent.bmsupdate.helper.PropertiesFileHelper.readSetClientPropertiesTemplateFile;
+import static uk.ac.cam.cares.jps.agent.bmsupdate.helper.PropertiesFileHelper.readSparqlClientPropertiesTemplateFile;
+import static uk.ac.cam.cares.jps.agent.bmsupdate.helper.PropertiesFileHelper.readWriteClientPropertiesTemplateFile;
 import static uk.ac.cam.cares.jps.agent.bmsupdate.helper.PropertiesFileHelper.writeToTempFolder;
-import static uk.org.webcompere.systemstubs.SystemStubs.withEnvironmentVariable;
 
 public class BMSUpdateAgentLauncherTest {
     @ClassRule
@@ -27,146 +26,144 @@ public class BMSUpdateAgentLauncherTest {
     }
 
     @Test
-    public void validateInput() throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("dataIRI", "https://www.theworldavatar.com/kg/ontodevice/mock-Temperature");
-        jsonObject.put("temperature", 26.0);
-        jsonObject.put("clientProperties", "CLIENT_PROPERTIES");
+    public void testInitSetProperties() throws Exception {
+        List<String> lines = readSetClientPropertiesTemplateFile(null, "esp_update_host", "blazegraph_query_host", "blazegraph_update_host");
+        writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
 
-        withEnvironmentVariable("CLIENT_PROPERTIES", Paths.get(folder.getRoot().toString(), "client.properties").toString())
-                .execute(() -> assertTrue(launcher.validateInput(jsonObject)));
-    }
+         // Set private method to be accessible
+        Method initSetProperties = BMSUpdateAgentLauncher.class.getDeclaredMethod("initSetProperties", String.class);
+        initSetProperties.setAccessible(true);
 
-    @Test
-    public void validateInput_EmptyRequestParam() {
-        JSONObject jsonObject = new JSONObject();
+        //test missing esphome.agent.toggle
         try {
-            launcher.validateInput(jsonObject);
-        } catch (JPSRuntimeException e) {
-            assertEquals("The request param is empty", e.getMessage());
+            initSetProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"esphome.agent.toggle=<esphome_agent_toggle>\"", e.getCause().getMessage());
+        }
+
+        lines = readSetClientPropertiesTemplateFile("esp_home_host", null, "blazegraph_query_host", "blazegraph_update_host");
+        writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
+        
+        //test missing esphome.update.agent.retrieve
+        try {
+            initSetProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"esphome.update.agent.retrieve=<esphome_update_agent_retrieve>\"", e.getCause().getMessage());
+        }
+
+        lines = readSetClientPropertiesTemplateFile("esp_home_host", "esp_update_host", null, "blazegraph_update_host");
+        writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
+        
+        //test missing sparql.query.endpoint
+        try {
+            initSetProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\"", e.getCause().getMessage());
+        }
+
+        lines = readSetClientPropertiesTemplateFile("esp_home_host", "esp_update_host", "blazegraph_query_host", null);
+        writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
+        
+        //test missing sparql.update.endpoint
+        try {
+            initSetProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\"", e.getCause().getMessage());
         }
     }
 
     @Test
-    public void validateInput_DataIRIMissing() throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("temperature", 26.0);
-        jsonObject.put("clientProperties", "CLIENT_PROPERTIES");
-
-        withEnvironmentVariable("CLIENT_PROPERTIES", Paths.get(folder.getRoot().toString(), "client.properties").toString())
-                .execute(() -> assertFalse(launcher.validateInput(jsonObject)));
-    }
-
-    @Test
-    public void validateInput_TemperatureMissing() throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("dataIRI", "https://www.theworldavatar.com/kg/ontodevice/mock-Temperature");
-        jsonObject.put("clientProperties", "CLIENT_PROPERTIES");
-
-        withEnvironmentVariable("CLIENT_PROPERTIES", Paths.get(folder.getRoot().toString(), "client.properties").toString())
-                .execute(() -> assertFalse(launcher.validateInput(jsonObject)));
-    }
-
-    @Test
-    public void validateInput_TemperatureNotDouble() throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("dataIRI", "https://www.theworldavatar.com/kg/ontodevice/mock-Temperature");
-        jsonObject.put("temperature", "not double");
-        jsonObject.put("clientProperties", "CLIENT_PROPERTIES");
-
-        withEnvironmentVariable("CLIENT_PROPERTIES", Paths.get(folder.getRoot().toString(), "client.properties").toString())
-                .execute(() -> assertFalse(launcher.validateInput(jsonObject)));
-    }
-
-    @Test
-    public void validateInput_PropertyFileMissing() throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("dataIRI", "https://www.theworldavatar.com/kg/ontodevice/mock-Temperature");
-        jsonObject.put("temperature", 26.0);
-
-        withEnvironmentVariable("CLIENT_PROPERTIES", Paths.get(folder.getRoot().toString(), "client.properties").toString())
-                .execute(() -> assertFalse(launcher.validateInput(jsonObject)));
-    }
-
-    @Test
-    public void validateInput_PropertyFileNotExist() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("dataIRI", "https://www.theworldavatar.com/kg/ontodevice/mock-Temperature");
-        jsonObject.put("temperature", 26.0);
-        jsonObject.put("clientProperties", "CLIENT_PROPERTIES");
-
-        assertFalse(launcher.validateInput(jsonObject));
-
-    }
-
-
-    @Test
-    public void testLauncherProcessRequestParam_MissingESPHomeHost() throws Exception {
-        List<String> lines = readClientPropertiesTemplateFile(null, "esp_update_host", "blazegraph_query_host", "blazegraph_update_host");
+    public void testinitUpdateTriplesProperties() throws Exception {
+        List<String> lines = readWriteClientPropertiesTemplateFile(null, "sparql_update_host", "sparql_user", "sparql_password", "db_url", "db_user", "db_password");
         writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
 
-        withEnvironmentVariable("CLIENT_PROPERTIES", Paths.get(folder.getRoot().toString(), "client.properties").toString())
-                .execute(() -> {
-                    try {
-                        launcher.processRequestParameters(getLauncherInput(26));
-                    } catch (JPSRuntimeException e) {
-                        assertEquals("Properties file is missing \"esphome.agent.toggle=<esphome_agent_toggle>\"", e.getMessage());
-                    }
-                });
+         // Set private method to be accessible
+        Method initUpdateTriplesProperties = BMSUpdateAgentLauncher.class.getDeclaredMethod("initUpdateTriplesProperties", String.class);
+        initUpdateTriplesProperties.setAccessible(true);
+
+        //test missing sparql.query.endpoint
+        try {
+            initUpdateTriplesProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\"", e.getCause().getMessage());
+        }
+
+        lines = readWriteClientPropertiesTemplateFile("sparql_query_host", null, "sparql_user", "sparql_password", "db_url", "db_user", "db_password");
+        writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
+        
+        //test missing sparql.update.endpoint
+        try {
+            initUpdateTriplesProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\"", e.getCause().getMessage());
+        }
+
+        lines = readWriteClientPropertiesTemplateFile("sparql_query_host", "sparql_update_host", "sparql_user", "sparql_password", null, "db_user", "db_password");
+        writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
+        
+        //test missing db.url
+        try {
+            initUpdateTriplesProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"db.url=<db_url>\"", e.getCause().getMessage());
+        }
+
+        lines = readWriteClientPropertiesTemplateFile("sparql_query_host", "sparql_update_host", "sparql_user", "sparql_password", "db_url", null, "db_password");
+        writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
+        
+        //test missing db.user
+        try {
+            initUpdateTriplesProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"db.user=<db_user>\"", e.getCause().getMessage());
+        }
+
+        lines = readWriteClientPropertiesTemplateFile("sparql_query_host", "sparql_update_host", "sparql_user", "sparql_password", "db_url", "db_user", null);
+        writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
+        
+        //test missing db.password
+        try {
+            initUpdateTriplesProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"db.password=<db_password>\"", e.getCause().getMessage());
+        }
     }
 
     @Test
-    public void testLauncherProcessRequestParam_MissingESPUpdateHost() throws Exception {
-        List<String> lines = readClientPropertiesTemplateFile("esp_home_host", null, "blazegraph_query_host", "blazegraph_update_host");
+    public void testinitSparqlProperties() throws Exception {
+        List<String> lines = readSparqlClientPropertiesTemplateFile(null, "sparql_update_host", "sparql_user", "sparql_password");
         writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
 
-        withEnvironmentVariable("CLIENT_PROPERTIES", Paths.get(folder.getRoot().toString(), "client.properties").toString())
-                .execute(() -> {
-                    try {
-                        launcher.processRequestParameters(getLauncherInput(26));
-                    } catch (JPSRuntimeException e) {
-                        assertEquals("Properties file is missing \"esphome.update.agent.retrieve=<esphome_update_agent_retrieve>\"", e.getMessage());
-                    }
-                });
-    }
+         // Set private method to be accessible
+        Method initSparqlProperties = BMSUpdateAgentLauncher.class.getDeclaredMethod("initSparqlProperties", String.class);
+        initSparqlProperties.setAccessible(true);
 
-    @Test
-    public void testLauncherProcessRequestParam_MissingBlazegraphQueryHost() throws Exception {
-        List<String> lines = readClientPropertiesTemplateFile("esp_home_host", "esp_update_host", null, "blazegraph_update_host");
+        //test missing sparql.query.endpoint
+        try {
+            initSparqlProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\"", e.getCause().getMessage());
+        }
+
+        lines = readSparqlClientPropertiesTemplateFile("sparql_query_host", null, "sparql_user", "sparql_password");
         writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
-
-        withEnvironmentVariable("CLIENT_PROPERTIES", Paths.get(folder.getRoot().toString(), "client.properties").toString())
-                .execute(() -> {
-                    try {
-                        launcher.processRequestParameters(getLauncherInput(26));
-                    } catch (JPSRuntimeException e) {
-                        assertEquals("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\"", e.getMessage());
-                    }
-                });
+        
+        //test missing sparql.update.endpoint key
+        try {
+            initSparqlProperties.invoke(launcher, Paths.get(folder.getRoot().toString(), "client.properties").toString());
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertEquals("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\"", e.getCause().getMessage());
+        }
     }
-
-    @Test
-    public void testLauncherProcessRequestParam_MissingBlazegraphUpdateHost() throws Exception {
-        List<String> lines = readClientPropertiesTemplateFile("esp_home_host", "esp_update_host", "blazegraph_query_host", null);
-        writeToTempFolder(Paths.get(folder.getRoot().toString(), "client.properties").toString(), lines);
-
-        withEnvironmentVariable("CLIENT_PROPERTIES", Paths.get(folder.getRoot().toString(), "client.properties").toString())
-                .execute(() -> {
-                    try {
-                        launcher.processRequestParameters(getLauncherInput(26));
-                    } catch (JPSRuntimeException e) {
-                        assertEquals("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\"", e.getMessage());
-                    }
-                });
-    }
-
-
-    private JSONObject getLauncherInput(double temperature) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("dataIRI", "https://www.theworldavatar.com/kg/ontodevice/mock_setpoint");
-        jsonObject.put("temperature", temperature);
-        jsonObject.put("clientProperties", "CLIENT_PROPERTIES");
-        return jsonObject;
-    }
-
 }

@@ -1,7 +1,8 @@
 {
     "name": "elevation",
+	"skip": true,
     "database": "postgres",
-    "workspace": "the_world_avatar",
+    "workspace": "dispersion",
     "datasetDirectory": "elevation",
     "dataSubsets": [
         {
@@ -10,12 +11,19 @@
             "skip": false,
             "geoServerSettings": {
                 "layerSettings": {
-                    "defaultStyle": "raster"
+                    "defaultStyle": "dispersion:elevation"
                 }
             },
             "gdalTranslateOptions": {
-                "sridOut": "EPSG:4326"
+                "sridIn": "EPSG:32632",
+				"sridOut": "EPSG:4326"
             }
         }
-    ]
+    ],
+	"styles": [
+	    {
+		    "name": "elevation",
+		    "file": "elevation.sld"
+	    }
+	]
 }

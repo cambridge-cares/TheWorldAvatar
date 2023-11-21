@@ -3,7 +3,7 @@ version: "3.8"
 services:
   cea-agent:
     container_name: cea-agent
-    image: ghcr.io/cambridge-cares/cea-agent:3.1.0
+    image: ghcr.io/cambridge-cares/cea-agent:3.1.1
     build: .
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
