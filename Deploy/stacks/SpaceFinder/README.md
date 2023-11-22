@@ -20,7 +20,7 @@ PREFIX plt:     <https://www.theworldavatar.com/kg/ontoplot/>
 PREFIX zone:    <https://www.theworldavatar.com/kg/ontozoning/>
 
 SELECT DISTINCT ?ZoneType WHERE {
-    SERVICE <http://psdt-ontop:8080/sparql/> {
+    SERVICE <http://pirmasens-ontop:8080/sparql/> {
         ?zone zone:hasPlot [a plt:Plot];
             zone:hasZoneType [rdfs:label ?ZoneType] .
     }
