@@ -77,6 +77,7 @@ DATA_TYPES_RDF["plainliteral"] = "PlainLiteral"
 DATA_TYPES_RDF["xmlliteral"] = "XMLLiteral"
 DATA_TYPES_RDFS = dict()
 DATA_TYPES_RDFS["literal"] = "Literal"
+#DATA_TYPES_RDFS["label"] = "label"
 
 DATA_PROPS = dict() # These all are RDFS
 #DATA_TYPES_RDFS["label"]   = "label"
@@ -85,7 +86,7 @@ DATA_PROPS['domain'      ] = 'domain'
 DATA_PROPS['type'        ] = 'type'
 DATA_PROPS['subclassof'  ] = 'subClassOf'
 DATA_PROPS['subpropertyof'] = 'subPropertyOf'
-DATA_PROPS['label'       ] = 'label'
+DATA_PROPS['rdfs:label'  ] = 'label'
 DATA_PROPS['comment'     ] = 'comment'
 
 # These are classes, not properties.
@@ -753,6 +754,8 @@ class TBoxTools:
         # The rest of the input data:
         for il, line in enumerate(self.dataIn):
             file_line = "in '" + self.fileIn + "' on " + str(il+1) 
+            #if il > 20:
+            #    1/0
 
             if 0 == il:
                 self.extractHeaders(  line, file_line )
@@ -1162,6 +1165,20 @@ class TBoxTools:
         return False, obj
         pass # TBoxTools.isDataType()
 
+    def isPredicate( self, pred ):
+        short = pred.strip().lower()
+        print( " >>> short = ", short )
+        if short in DATA_PROPS:
+            return True
+        for k in DATA_PROPS.keys():
+            if short == "rdfs:" + k:
+                return True
+            if short == "rdfs:" + DATA_PROPS[k]:
+                return True
+ 
+        return False
+        pass # TBoxTools.isPredicate()
+
     def checkTriple( self, subj, predicate, obj, file_line ):
         errCount = 0
 
@@ -1180,7 +1197,14 @@ class TBoxTools:
                            file_line )
             errCount += 1
 
-        if predicate not in self.triples:
+        if predicate in self.triples:
+            # Do nothing
+            pass
+        #elif self.isPredicate( predicate ):
+        #    self.triples[predicate] = { "range": "xsd:string" }
+        #    # Do nothing
+        #    pass
+        else:
             logging.error( " Predicate '" + predicate + "' is not in TBox " + \
                            file_line )
             #for k in self.triples.keys():
