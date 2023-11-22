@@ -554,7 +554,7 @@ class OntoVector:
                 "ontoPrefix", "uuid_error", # <- old options, need to remove
                 "unit", "vectorLabel",
                 "compList", "compErrList", "compUnitList",
-                "compDict", "compErrDict"
+                "compDict" #, "compErrDict"
               ]
   def __init__( self, className, itemName, 
                 uuidDB  = None, 
@@ -564,39 +564,39 @@ class OntoVector:
                 #myUnit = "",  
                 #myLabel = "" 
                 ):
-    """
-    uuidDB    - Either a path to new/existing uuidDataBase (as string),
-                or an existing uuidDB (as dict or UUID class)
-                If not specified (or None), a default filename 'defailt-uuid.csv' will be used,
-                or a new file will be created with this name (not recommended).
-    unit      - a unit with "om:" prefix.
+        """
+        uuidDB    - Either a path to new/existing uuidDataBase (as string),
+                    or an existing uuidDB (as dict or UUID class)
+                    If not specified (or None), a default filename 'defailt-uuid.csv' will be used,
+                    or a new file will be created with this name (not recommended).
+        unit      - a unit with "om:" prefix.
 
-    """
+        """
 
-    if "" == itemName:
-      logging.error( " In OntoVector the entity name is not specified." + \
-                     " Critical error!")
-      #self.value["name"] = "Unknown"
-      return
-    else:
-      self.value = dict()
-      self.value["name"] = itemName
+        if "" == itemName:
+            logging.error( " In OntoVector the entity name is not specified." + \
+                           " Critical error!")
+            #self.value["name"] = "Unknown"
+            return
+        else:
+            self.value = dict()
+            self.value["name"] = itemName
 
-      self.itemName = itemName
-
-
-    if "" == className:
-      logging.warning( " In OntoVector the class name is not specified" + \
-                       " for '" + self.itemName + "'." + \
-                       " Using default 'Vector'." )
-      self.value["class"] = "Vector"
-      self.className = "Vector"
-    else:
-      self.value["class"] = className
-      self.className = className
+            self.itemName = itemName
 
 
-    """
+        if "" == className:
+            logging.warning( " In OntoVector the class name is not specified" + \
+                             " for '" + self.itemName + "'." + \
+                             " Using default 'Vector'." )
+            #self.value["class"] = "Vector"
+            self.className = "Vector"
+        else:
+            #self.value["class"] = className
+            self.className = className
+
+
+        """
     if None == uuidDB:
       logging.warning( " In OntoVector uuidDB is not specified" + \
                        " for '" + self.itemName + "'."  )
@@ -607,86 +607,86 @@ class OntoVector:
                        " for '" + self.itemName + "'."  )
       1/0
       " to create a new uuid here"
-      """
-    if isinstance( uuidDB, tools.UuidDB ):
-      self.uuidDB = uuidDB
+        """
+        if isinstance( uuidDB, tools.UuidDB ):
+            self.uuidDB = uuidDB
 
-    else:
-      """
-      logging.error( " Invalid value or type of uuidDB in OntoVector." + \
-                     " Extected class UuidDB, but got '" + \
-                     str(type(uuidDB)) + "'." )
-      self.uuidDB = uuidDB
-      """
+        else:
+            """
+            logging.error( " Invalid value or type of uuidDB in OntoVector." + \
+                           " Extected class UuidDB, but got '" + \
+                           str(type(uuidDB)) + "'." )
+            self.uuidDB = uuidDB
+            """
 
-      self.uuidDB = tools.UuidDB( uuidDB )
-      logging.warning( " Creating a new UuidDB database, in file '" + \
-                       self.uuidDB.dbFilename + "'." )
+            self.uuidDB = tools.UuidDB( uuidDB )
+            logging.warning( " Creating a new UuidDB database, in file '" + \
+                             self.uuidDB.dbFilename + "'." )
 
-    if "" == unit or None == unit:
-        logging.warning( " In OntoVector unit is not specified" +
-                         " for '" + self.itemName + "'." )
-        self.unit = None
-      #self.value["unit"] = "Unknown"
-    else:
-        self.value["unit"] = omNameConvert( unit )
-        self.value["unit"] = unit 
-        self.unit = unit
+        if "" == unit or None == unit:
+            logging.warning( " In OntoVector unit is not specified" +
+                             " for '" + self.itemName + "'." )
+            self.unit = None
+          #self.value["unit"] = "Unknown"
+        else:
+            #self.value["unit"] = omNameConvert( unit )
+            #self.value["unit"] = unit 
+            self.unit = unit
 
-    if None == vectorLabel:
-        #self.value["label"] = "Unknown"
-        if "UnitCellLatticeVector" == self.className:
-            logging.error( " In OntoVector label is not specified" +
-                           " for '" + self.itemName + "'." )
-        self.vectorLabel = vectorLabel
-        #self.vectorLabel = None
-    else:
-        self.value["label"] = vectorLabel
-        self.vectorLabel = vectorLabel
-        if self.className in [ "MeasureVector", "MillerIndices" ]:
-            logging.error( " In OntoVector class '" + self.className + "'" + \
-                           " should not have vectorLabel, but given '" + \
-                           self.vectorLabel + "'." )
-        pass
+        if None == vectorLabel:
+            #self.value["label"] = "Unknown"
+            if "UnitCellLatticeVector" == self.className:
+                logging.error( " In OntoVector label is not specified" +
+                               " for '" + self.itemName + "'." )
+            self.vectorLabel = vectorLabel
+            #self.vectorLabel = None
+        else:
+            #self.value["label"] = vectorLabel
+            self.vectorLabel = vectorLabel
+            if self.className in [ "MeasureVector", "MillerIndices" ]:
+                logging.error( " In OntoVector class '" + self.className + "'" + \
+                               " should not have vectorLabel, but given '" + \
+                               self.vectorLabel + "'." )
+            pass
 
-    if None == tPrefix:
-        self.tPrefix = crystOntoPrefix
-        #logging.warning( " Empty tPrefix in '" + self.itemName + "'," + \
-        #                 " using global TBox from csv file." ) 
-    else:
-        self.tPrefix = tPrefix
+        if None == tPrefix:
+            self.tPrefix = crystOntoPrefix
+            #logging.warning( " Empty tPrefix in '" + self.itemName + "'," + \
+            #                 " using global TBox from csv file." ) 
+        else:
+            self.tPrefix = tPrefix
 
-    if None == aPrefix:
-        self.aPrefix = ""
-        #logging.warning( " Empty aPrefix in '" + self.itemName + "'," + \
-        #                 " using global ABox from csv file." ) 
-    else:
-        self.aPrefix = aPrefix
+        if None == aPrefix:
+            self.aPrefix = ""
+            #logging.warning( " Empty aPrefix in '" + self.itemName + "'," + \
+            #                 " using global ABox from csv file." ) 
+        else:
+            self.aPrefix = aPrefix
 
-    # The vector class is defined in the OntoCrystal ontology:
-    self.ontoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
-    #if "" == prefix:
-    #  logging.error( " In OntoVector ontology prefix is not specified" +
-    #                 " for '" + self.itemName + "'." )
-    #else:
-    #  self.ontoPrefix = prefix
+        # The vector class is defined in the OntoCrystal ontology:
+        self.ontoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+        #if "" == prefix:
+        #  logging.error( " In OntoVector ontology prefix is not specified" +
+        #                 " for '" + self.itemName + "'." )
+        #else:
+        #  self.ontoPrefix = prefix
 
-    self.value["comp"] = list()
+        self.value["comp"] = list()
 
 
-    #self.value["list"] = dict()
-    self.compList      = []
-    self.compErrList   = []
-    self.compUnitList  = []
+        #self.value["list"] = dict()
+        self.compList      = []
+        self.compErrList   = []
+        self.compUnitList  = []
 
-    self.compDict      = {}
-    self.compErrDict   = {}
+        self.compDict      = {}
+        #self.compErrDict   = {}
 
-    self.uuid4      = None
-    self.uuid_error = None      # This is used to avoid double creation of the Uncertainty Vector
-    #self.error = dict()
+        self.uuid4      = None
+        self.uuid_error = None      # This is used to avoid double creation of the Uncertainty Vector
+        #self.error = dict()
 
-    pass # OntoVector.__init__()
+        pass # OntoVector.__init__()
 
   def addComponentList( self, valList, unit = None, errList = None ):
         """
@@ -770,48 +770,51 @@ class OntoVector:
 
   def addComponent( self, label, value = "", unit = "", error = "" ):
 
-    errCount = 0
+        errCount = 0
 
-    if None == self.compDict:
-      self.compDict = {}
-    if None == self.compErrDict and error != "":
-      self.compErrDict = {}
+        if not isinstance( self.compDict, dict ):
+            self.compDict = {}
+        #if None == self.compErrDict and error != "":
+        #    self.compErrDict = {}
 
+        if isinstance( label, str ):
+            if "" == label:
+                logging.error( " Not specified label for vector component in '" + \
+                               self.itemName + "'. 22" )
+                errCount += 1
 
-    if isinstance( label, str ):
-        if "" == label:
-            logging.error( " Not specified label for vector component in '" + \
-                           self.itemName + "'. 22" )
-            errCount += 1
-
-    if isinstance( value, str ):
-        if "" == value:
-            logging.error( " Not specified value for vector component in '" + \
+        if isinstance( value, str ):
+            if "" == value:
+                logging.error( " Not specified value for vector component in '" + \
+                               self.itemName + "'." )
+                errCount += 1
+        else:
+            logging.info( "value = '" + str( value ) + "' is not a string in '" + \
                            self.itemName + "'." )
-            errCount += 1
-    else:
-        logging.info( "value = '" + str( value ) + "' is not a string in '" + \
-                       self.itemName + "'." )
-        pass
+            pass
 
-    self.compDict[label] = {}
-    if "" != label:
-        self.compDict[label]["label"] = str(label)
-    if "" != value:
-        self.compDict[label]["value"] = str(value)
-    if error != "":
-        self.compDict[label]["error"] = str(error)
-    if unit != "":
-        self.compDict[label]["unit" ] = str(unit)
+        if label in self.compDict:
+            logging.error( "Over-writing an existing component with label '" + \
+                           label + "' for Vector '" + self.itemName + "'." )
+
+        self.compDict[label] = {}
+        if "" != label:
+            self.compDict[label]["label"] = str(label)
+        if "" != value:
+            self.compDict[label]["value"] = str(value)
+        if "" != error:
+            self.compDict[label]["error"] = str(error)
+        if "" != unit:
+            self.compDict[label]["unit" ] = str(unit)
     
-    #if error != "":
-    #  self.compErrDict[label] = {}
-    #  self.compErrDict[label]["value"] = value
-    #  if unit != "":
-    #    self.compErrDict[label]["unit"]  = unit
+        #if error != "":
+        #  self.compErrDict[label] = {}
+        #  self.compErrDict[label]["value"] = value
+        #  if unit != "":
+        #    self.compErrDict[label]["unit"]  = unit
 
-    return errCount
-    pass # OntoVector.addComponent()
+        return errCount
+        pass # OntoVector.addComponent()
 
   def addComponentOld( self, label, value = "", unit = "", error = "" ):
     logging.info( "Starting addComponent '" + self.itemName + "' label: '" + label + "'" )
@@ -829,54 +832,54 @@ class OntoVector:
     """
     errCount = 0
     if isinstance( value, str ):
-      if "" == value:
-        logging.error( " Not specified value for vector component in '" + \
-                       self.itemName + "'." )
-        errCount += 1
+        if "" == value:
+            logging.error( " Not specified value for vector component in '" + \
+                           self.itemName + "'." )
+            errCount += 1
     else:
-      logging.error( "value = '" + str( value ) + "' is not a string in '" + \
-                     self.itemName + "'." )
+        logging.error( "value = '" + str( value ) + "' is not a string in '" + \
+                       self.itemName + "'." )
 
     if isinstance( label, str ):
-      if "" == label:
-        logging.error( " Not specified label for vector component in '" + \
-                       self.itemName + "'. 33" )
-        errCount += 1
+        if "" == label:
+            logging.error( " Not specified label for vector component in '" + \
+                           self.itemName + "'. 33" )
+            errCount += 1
 
-      keys = [ x["label"] for x in self.value["comp"] ]
-      #keys = list(self.value["comp"].keys())
-      if label in keys:
-        logging.warning( " Repeatedly adding (overwriting) a component '" + 
-                         label + "' in vector '" + self.itemName + "'." )
-        logging.warning( "Components-2 of vector =" + str(self.value["comp"]) + \
-                         " new value = '" + value + "'."  )
-        #errCount += 1 # No need to count as error. It may be intensional.
+        keys = [ x["label"] for x in self.value["comp"] ]
+        #keys = list(self.value["comp"].keys())
+        if label in keys:
+            logging.warning( " Repeatedly adding (overwriting) a component '" + \
+                             label + "' in vector '" + self.itemName + "'." )
+            logging.warning( "Components-2 of vector =" + str(self.value["comp"]) + \
+                             " new value = '" + value + "'."  )
+            #errCount += 1 # No need to count as error. It may be intensional.
 
     else:
-      logging.error( "label = '" + str( label ) + "' is not a string in '" + \
-                     self.itemName + "'." )
+        logging.error( "label = '" + str( label ) + "' is not a string in '" + \
+                       self.itemName + "'." )
 
     if 0 == errCount:
         newComp = dict()
         newComp["label"] = label
         newComp["value"] = value
         if "" == unit:
-          logging.info( " Not specified unit for vector component in '" + \
-                        self.itemName + "'. 44" )
-          pass
+            logging.info( " Not specified unit for vector component in '" + \
+                          self.itemName + "'. 44" )
+            pass
         else:
-          newComp["unit"]  = unit
+            newComp["unit"]  = unit
 
         if "" != error:
-          newComp["error"] = error
-          logging.info( " Components of vector = " + str(self.value["comp"]) + \
-                           " value = '" + str(value) + "'."  )
-          if "" != unit:
-            # Generally speaking the error bars may have different units, 
-            # though such situation looks strange:
-            #print( " Assigned unit to", label )
-            newComp["errorunit"]  = unit
-            pass
+            newComp["error"] = error
+            logging.info( " Components of vector = " + str(self.value["comp"]) + \
+                             " value = '" + str(value) + "'."  )
+            if "" != unit:
+                # Generally speaking the error bars may have different units, 
+                # though such situation looks strange:
+                #print( " Assigned unit to", label )
+                newComp["errorunit"]  = unit
+                pass
        
         self.value["comp"].append( newComp )
         
@@ -955,31 +958,12 @@ class OntoVector:
     #logging.error( " getCsvArr() is not implemented yet" )
     # FIXME TODO
 
-    keys = self.value.keys()
-    if "name" not in keys:
-      logging.error( " Creating a vector without the vector['name'] specified. I skip it." )
-      return []
+    self.uuid,self.uuid4 = self.uuidDB.addUUID( self.tPrefix + self.className, \
+                                                self.aPrefix + self.itemName )
 
-    if "class" in keys:
-      myClass = self.value["class"]
-    else:
-      logging.error( " Missing vector['class'] for vector '" + self.value["name"] + 
-                     "', will use default 'Vector'."  )
-      myClass = "Vector" 
-
-    if "comp" not in keys:
-      logging.error( " Missing vector['comp'] for vector '" + self.value["name"] + "'"  )
-
-##    self.uuid,_ = self.uuidDB.addUUID( self.tPrefix + self.className, 
-##                                       self.aPrefix + self.itemName )
-##    output.append( [ self.uuid, "Instance", self.tPrefix + self.className, "", "", "" ] )
-##    output.append( [   subject, "Instance", self.uuid, predicate, "", "" ] )
-
-
-    # Vector for Unit Cell length parameters (a,b,c):
-    self.uuid,self.uuid4 = self.uuidDB.addUUID( 
-                           self.tPrefix + self.value["class"], 
-                           self.aPrefix + self.value["name" ] )
+    #self.uuid,self.uuid4 = self.uuidDB.addUUID( 
+    #                       self.tPrefix + self.value["class"], 
+    #                       self.aPrefix + self.value["name" ] )
     #self.uuid = tools.getUUID( self.uuidDB, self.tPrefix + self.value["class"], self.aPrefix + self.value["name"] )
     output.append( [ self.uuid, "Instance", 
                      self.tPrefix + self.className, "", "", "" ] )
@@ -988,15 +972,14 @@ class OntoVector:
 
     # Global unit of the vector:
     if None != self.unit:
-      output += omSetUnit( self.uuid, self.unit )
+        output += omSetUnit( self.uuid, self.unit )
 
     if None != self.vectorLabel:
         output.append( [ self.ontoPrefix + "hasVectorLabel", "Data Property", 
                          self.uuid, "", self.vectorLabel, "xsd:string" ] )
 
-
     if None != self.compList:
-      output += self._getCsvValueList( )
+        output += self._getCsvValueList( )
 
     # Redundant now:
     #if None != self.compErrList:
@@ -1005,13 +988,14 @@ class OntoVector:
       #output += omSetUnit( self.uuid, self.value["unit"] )
 
     if None != self.compDict:
-      output += self._getCsvValueDict()
+        output += self._getCsvValueDict()
 
     #if None != self.compErrDict:
       #output += self._getCsvErrorDict()
 
     return output
 
+    '''
     # Verification of the class and its components:
     if self.value["class"] in [ "Vector" ]:
       # Classes derived from the basic 'Vector':
@@ -1334,6 +1318,7 @@ class OntoVector:
     #output.append( ["Ended getCsvArr()" , "", "" ] )
     #print( "==============================" )
     return output
+    '''
     pass # OntoVector.getCsvArr()
 
   def _getCsvValueList( self ):
@@ -1428,40 +1413,42 @@ class OntoVector:
     output = []
 
     for ik,k in enumerate(self.compDict.keys()):
-      if None == k:
-        logging.error( "Invalid value '" + str(k) + "' in '" + self.itemName + "'." )
-        continue
+        if None == k:
+            logging.error( "Invalid value '" + str(k) + "' in '" + self.itemName + "'." )
+            continue
       #output +=  
 
-      uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", 
-                                         self.itemName + "_comp_" + k,
-                                         newUuid = self.uuid4 )
+        uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", 
+                                           self.itemName + "_comp_" + k,
+                                           newUuid = self.uuid4 )
 
-      output.append( [ self.aPrefix + uuid_comp, "Instance", 
-                       self.ontoPrefix + "VectorComponent", "", "", "" ] )
+        output.append( [ self.aPrefix + uuid_comp, "Instance", 
+                         crystOntoPrefix + "VectorComponent", "", "", "" ] )
 
-      output.append( [ self.uuid, "Instance", self.aPrefix + uuid_comp,  
-                       self.ontoPrefix + "hasVectorComponent", "", "" ] )
+        output.append( [ self.uuid, "Instance", self.aPrefix + uuid_comp,  
+                         crystOntoPrefix + "hasVectorComponent", "", "" ] )
 
       #output.append( [ self.ontoPrefix + "hasComponentIndex", "Data Property", 
       #                 self.aPrefix + uuid_comp, "", (iv + 1), "xsd:integer" ] )
 
-      if "unit" in self.compDict[k]:
-          u = self.compDict[k]["unit"]
-          if None != u:
-              output += omSetUnit( self.aPrefix + uuid_comp, u )
+        if "unit" in self.compDict[k]:
+            u = self.compDict[k]["unit"]
+            if None != u:
+                output += omSetUnit( self.aPrefix + uuid_comp, u )
 
-      if "label" in self.compDict[k]:
-          output.append( [ self.ontoPrefix + "hasComponentLabel", "Data Property", 
-                           self.aPrefix + uuid_comp, "", self.compDict[k]["label"], "xsd:string" ] )
+        if "label" in self.compDict[k]:
+            output.append( [ self.ontoPrefix + "hasComponentLabel", \
+                             "Data Property", self.aPrefix + uuid_comp, \
+                             "", self.compDict[k]["label"], "xsd:string" ] )
 
-      if "value" in self.compDict[k]:
-          output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
-                           self.aPrefix + uuid_comp, "", self.compDict[k]["value"], "rdfs:Literal" ] )
+        if "value" in self.compDict[k]:
+            output.append( [ self.ontoPrefix + "hasComponentValue", \
+                             "Data Property", self.aPrefix + uuid_comp, \
+                             "", self.compDict[k]["value"], "rdfs:Literal" ] )
 
-      if "error" in self.compDict[k]:
-          output.append( [ self.ontoPrefix + "hasComponentUncertainty", "Data Property", 
-                           self.aPrefix + uuid_comp, "", self.compDict[k]["error"], "rdfs:Literal" ] )
+        if "error" in self.compDict[k]:
+            output.append( [ self.ontoPrefix + "hasComponentUncertainty", "Data Property", 
+                             self.aPrefix + uuid_comp, "", self.compDict[k]["error"], "rdfs:Literal" ] )
 
 
       #output.append( [ self.ontoPrefix + "hasComponentLabel", "Data Property", 
@@ -1471,6 +1458,7 @@ class OntoVector:
     return output
     pass # OntoVector._getCsvValueDict()
 
+  """
   def _getCsvErrorDict( self):
         output = []
         logging.error( " Not implemetned _getCsvErrDict" )
@@ -1478,16 +1466,22 @@ class OntoVector:
         return output
         pass # OntoVector._getCsvErrorDict()
 
+  """
 
   pass # class OntoVector
 
 class OntoMatrix:
-    __slots__ = [ "uuidDB", "uuid", "myId", 
+    __slots__ = [ "uuidDB", "uuid", "myId", "unit",
                   "className", "itemName", 
+                  "compList", "compDict"
                 ]
-    def __init__( self, myId ):
+    def __init__( self, className, itemName, uuidDB  = None, 
+                  tPrefix = None,     aPrefix = None, 
+                  unit    = None 
+                ):
 
 
+        """
         if is_http( predicate ):
             short = predicate.split("/")[-1]
         else:
@@ -1497,107 +1491,232 @@ class OntoMatrix:
             logging.warning( " Predicate in OntoMatrix.getCsvArr() is '" + \
                              predicate + "'," + " but expecting it to have '" + \
                              "has" + "'." ) 
+        """
+        if "" == itemName:
+            logging.error( " In OntoVector the entity name is not specified." + \
+                           " Critical error!")
+            return
+        else:
+            self.itemName = itemName
 
+
+            if "" == className:
+                logging.warning( " In OntoMatrix the class name is not" + \
+                                 " specified for '" + self.itemName + "'." + \
+                                 " Using default 'Matrix'." )
+                self.className = "MeasureMatrix"
+            else:
+                self.className = className
+
+        if isinstance( uuidDB, tools.UuidDB ):
+            self.uuidDB = uuidDB
+        else:
+            self.uuidDB = tools.UuidDB( uuidDB )
+            logging.warning( " Creating a new UuidDB database, in file '" + \
+                             self.uuidDB.dbFilename + "'." )
+
+        if "" == unit or None == unit:
+            logging.warning( " In OntoMatrix unit is not specified" + \
+                             " for '" + self.itemName + "'." )
+            self.unit = None
+        else:
+            self.unit = unit
+
+        self.compList = []
+        self.compDict = {}
 
         pass # OntoMatrix.__init__()
 
-    def getCsvArr( self ):
+    def addComponent( self, label, value = None, error = None, unit = None ):
+
+        if not isinstance( self.compDict, dict):
+            self.compDict = {}
+
+        if isinstance( label, str ):
+            if "" == label:
+                logging.error( " Not specified label for vector component" + \
+                               " in '" + self.itemName + "'. 22" )
+                errCount += 1
+        else:
+            logging.warning( "label = '" + str( label ) + "' is not a string" + \
+                             " in '" + self.itemName + "'." )
+            pass
+
+        if label in self.compDict:
+            logging.error( "Over-writing an existing component with label '" + \
+                           label + "' for Matrix '" + self.itemName + "'." )
+
+        self.compDict[label] = {}
+        if None != value:
+            self.compDict[label]["value"] = value
+
+        if None != error:
+            self.compDict[label]["error"] = error
+
+        if None != unit:
+            self.compDict[label]["unit"] = unit
+
+        pass # OntoMatrix.addComponent
+
+    def addComponentList( self, label, valList = None, errList = None, unit = None ):
+        logging.error( " Not implemented addComponentList() e3e3e3." )
+
+        pass # OntoMatrix.addComponentList
+
+    def getCsvArr( self, subject, predicate ):
+        if is_http( predicate ):
+            short = predicate.split("/")[-1]
+        else:
+            short = predicate
+
+        if not short.startswith("has"):
+            logging.warning( " Predicate in OntoMatrix.getCsvArr() is '" + \
+                             predicate + "'," + " but expecting it" + \
+                             " to have 'has'." ) 
+        output = []
+
         logging.error( " Not implemented OntoMatrix.getCsvArr" )
 
+    # Vector for Unit Cell length parameters (a,b,c):
+        self.uuid,self.uuid4 = self.uuidDB.addUUID( 
+                               self.tPrefix + self.value["class"], 
+                               self.aPrefix + self.value["name" ] )
+                               #self.uuid = tools.getUUID( self.uuidDB, self.tPrefix + self.value["class"], self.aPrefix + self.value["name"] )
+        output.append( [ self.uuid, "Instance", 
+                         self.tPrefix + self.className, "", "", "" ] )
+                         #self.tPrefix + self.value["class"], "", "", "" ] )
+        output.append( [   subject, "Instance", self.uuid, predicate, "", "" ] )
+
+        # Global unit of the vector:
+        if None != self.unit:
+            output += omSetUnit( self.uuid, self.unit )
+
+        if None != self.vectorLabel:
+            output.append( [ self.ontoPrefix + "hasVectorLabel", "Data Property", 
+            self.uuid, "", self.vectorLabel, "xsd:string" ] )
+
+        if None != self.compList:
+            output += self._getCsvValueList( )
+
+
+        if None != self.compDict:
+            output += self._getCsvValueDict()
+
+        return output
         pass # OntoMatrix.getCsvArr()
+
+    """
+    def _getCsvValueList( self ):
+        output = []
+        return output
+        pass # OntoVector._getCsvValueList() 
+
+    def _getCsvValueDict( self ):
+        output = []   
+
+        return output
+        pass # OntoVector._getCsvValueDict()
+    """
 
     pass # class OntoMatrix
 
+
 class OntoPlot:
-  """
-  uuid - is the unique name of the entity of this class.
-  """
-  __slots__ = [ "uuidDB", "plotId", "uuid", #"", 
-                "curveList", #"" 
-              ]
-  def __init__( self, uuidDB = None, plotId = None ):
-    self.uuidDB = uuidDB
-    self.plotId = plotId
+    """
+    uuid - is the unique name of the entity of this class.
+    """
+    __slots__ = [ "uuidDB", "plotId", "uuid", #"", 
+                  "curveList", #"" 
+                ]
+    def __init__( self, uuidDB = None, plotId = None ):
+        self.uuidDB = uuidDB
+        self.plotId = plotId
 
   # prefix = "", uuidDB = None, myClass = "", 
   #                    myName = "", myUnit = ""  ):
-    self.curveList = []
+        self.curveList = []
 
-    pass # OntoPlot.__init__()
+        pass # OntoPlot.__init__()
 
-  def addCurves( self, listAbscissa, listOrdinate ):
-    for a in listAbscissa:
-      if not isinstance( a, list ):
-        logging.error( " In addCurve listAbscissa must be a list of lists." )
-      for o in listOrdinate:
-        if not isinstance( o, list ):
-          logging.error( " In addCurve listOrdinate must be a list of lists." )
-        self.curveList.append( [a,o] )
+    def addCurves( self, listAbscissa, listOrdinate ):
+        if not isinstance( listAbscissa, list ):
+            logging.error( " In addCurve listAbscissa must be a list." )
+            return
+        if not isinstance( listOrdinate, list ):
+            logging.error( " In addCurve listOrdinate must be a list." )
+            return
 
-    pass # OntoPlot.addCurves()
+        for a in listAbscissa:
+            if not isinstance( a, list ):
+                logging.error( " In addCurve listAbscissa must be a list of lists." )
+                return
 
-  def getCsvArr( self, subject, predicate ):
-    """
-    subject   - Is the full hame of instance of class, 
-                which contains this Vector class.
-    predicate - Is the Object Property linking the Subject and the current UnitCell.
-                Typically is should be contain "has".
-    """
-    if subject.find("XRDSpectrum") < 0:
-      logging.warning( " OntoPlot expects a subject 'XRDSpectrum', " + \
-                       "but got '" + subject + "'." )
-    if predicate.find("hasPlot") < 0:
-      logging.warning( " OntoPlot expects a predicate 'hasPlot', " + \
-                       "but got '" + predicate + "'." )
+            for o in listOrdinate:
+                if not isinstance( o, list ):
+                    logging.error( " In addCurve listOrdinate must be a list of lists." )
+                    return
 
-    output = []
+                self.curveList.append( [a,o] )
 
-    if None == self.plotId:
-      logging.warning( " Neither plotId, nor '' is specified. " + 
-                       "I use a random number as label." )
-      plotLabel = tools.getUUID_random( "" )
-    else:
-      plotLabel = self.cifLabel
+        pass # OntoPlot.addCurves()
+
+    def getCsvArr( self, subject, predicate ):
+        """
+        subject   - Is the full hame of instance of class, 
+                    which contains this plot class.
+        predicate - Is the Object Property linking the Subject and the current Plot.
+                    Typically is should be contain "has".
+        """
+        if subject.find("XRDSpectrum") < 0:
+            logging.warning( " OntoPlot expects a subject 'XRDSpectrum', " + \
+                             "but got '" + subject + "'." )
+        if predicate.find("hasPlot") < 0:
+            logging.warning( " OntoPlot expects a predicate 'hasPlot', " + \
+                             "but got '" + predicate + "'." )
+
+        output = []
+
+        if None == self.plotId:
+            logging.warning( " Neither plotId, nor '' is specified. " + 
+                             "I use a random number as label." )
+            plotLabel = tools.getUUID_random( "" )
+        else:
+            plotLabel = self.cifLabel
     #elif label != None:
     #  atomLabel = str(label)
 
-    self.uuid,_ = self.uuidDB.addUUID( "PlotXY", "PlotXY_" + plotLabel )
-    #self.uuid = tools.getUUID( self.uuidDB, "PlotXY", "PlotXY_" + plotLabel )
-    output.append( [ self.uuid, "Instance", "PlotXY", "", "", "" ] )
+        self.uuid,_ = self.uuidDB.addUUID( "PlotXY", "PlotXY_" + plotLabel )
+        #self.uuid = tools.getUUID( self.uuidDB, "PlotXY", "PlotXY_" + plotLabel )
+        output.append( [ self.uuid, "Instance", "PlotXY", "", "", "" ] )
  
-    output.append( [ subject, "Instance", self.uuid, predicate, "", "" ] )
+        output.append( [ subject, "Instance", self.uuid, predicate, "", "" ] )
 
-    for ic,curve in enumerate(self.curveList):
-      plotX = OntoVector( uuidDB = self.uuidDB, \
-                          myClass = "AbscissaData", \
-                          myName  = plotLabel + "_Plot" + str(ic+1) + "X", \
-                          myUnit  = "om:dimensionOne" )
-      #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
+        for ic,curve in enumerate(self.curveList):
+            plotX = OntoVector( uuidDB = self.uuidDB, \
+                                myClass = "AbscissaData", \
+                                myName  = plotLabel + "_Plot" + str(ic+1) + "X", \
+                                myUnit  = "om:dimensionOne" )
 
-      plotX.addComponentList( curve[0], unit = "om:degree" )
-      #plotX.addComponent( label = "z", value = str(self.frac[2]) ) #, error = error )
+            plotX.addComponentList( curve[0], unit = "om:degree" )
 
-      output += plotX.getArrVector( uuid_plot, self.crystOntoPrefix + "hasAbscissaData" ) 
+            output += plotX.getArrVector( uuid_plot, self.crystOntoPrefix + "hasAbscissaData" ) 
  
-      plotY = OntoVector( uuidDB = self.uuidDB, \
-                          myClass = "OrdinateData", \
-                          myName  = plotLabel + "_Plot" + str(ic+1) + "Y",\
-                          myUnit  = "om:dimensionOne" )
-      #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
+            plotY = OntoVector( uuidDB = self.uuidDB, \
+                                myClass = "OrdinateData", \
+                                myName  = plotLabel + "_Plot" + str(ic+1) + "Y",\
+                                myUnit  = "om:dimensionOne" )
 
-      plotY.addComponentList( curve[1], unit = "om:dimensionOne" )
-      #plotX.addComponent( label = "z", value = str(self.frac[2]) ) #, error = error )
+            plotY.addComponentList( curve[1], unit = "om:dimensionOne" )
 
-      output += plotY.getArrVector( uuid_plot, self.crystOntoPrefix + "hasOrdinate" ) 
+            output += plotY.getArrVector( uuid_plot, self.crystOntoPrefix + "hasOrdinate" ) 
  
-      output.append( [ plotX.uuid, "Instance", plotY.uuid, \
-                       self.ontoPrefix + "isAbscissaOf", "", "" ] )
+            output.append( [ plotX.uuid, "Instance", plotY.uuid, \
+                             self.ontoPrefix + "isAbscissaOf", "", "" ] )
 
+        return output
+        pass # OntoPlot.getCsvArr()
 
-    return output
-    pass # OntoPlot.getCsvArr()
-
-  pass # class OntoPlot
+    pass # class OntoPlot
 
 class AtomInformation:
   """
@@ -1776,121 +1895,121 @@ class CrystalInformation:
                 "cifStandard", "loopHeaders", 
               ] 
   def __init__( self, algType, uuidDB ):
-    # Must be one of 'PyMatGen' or 'ValAndErr', depending how it was created:
-    if   "PyMatGen"  == algType:
-      self.algorithm  = algType
-    elif "ValAndErr" == algType:
-      self.algorithm  = algType
-    else:
-      logging.error( " Invalid algorithm type in CrystalInformation: '" + 
-                     algType + "'. Must be one of: 'PyMatGen', 'ValAndErr'." )
-      self.algorithm = None
+        # Must be one of 'PyMatGen' or 'ValAndErr', depending how it was created:
+        if   "PyMatGen"  == algType:
+            self.algorithm  = algType
+        elif "ValAndErr" == algType:
+            self.algorithm  = algType
+        else:
+            logging.error( " Invalid algorithm type in CrystalInformation: '" + 
+                           algType + "'. Must be one of: 'PyMatGen', 'ValAndErr'." )
+            self.algorithm = None
 
-    # The uuid database to generate unique uuid:
-    if isinstance( uuidDB, tools.UuidDB ):
-      self.uuidDB = uuidDB
-    else:
-      logging.error( " Invalid entry '" + str(uuidDB) + "', expecting a database." )
-      self.uuidDB = None
-    #if isinstance( uuidDB, dict ):
-    #  logging.error( " Invalid entry '" + str(uuidDB) + "', expecting a database." )
+        # The uuid database to generate unique uuid:
+        if isinstance( uuidDB, tools.UuidDB ):
+            self.uuidDB = uuidDB
+        else:
+            logging.error( " Invalid entry '" + str(uuidDB) + "', expecting a database." )
+            self.uuidDB = None
+        #if isinstance( uuidDB, dict ):
+        #  logging.error( " Invalid entry '" + str(uuidDB) + "', expecting a database." )
 
-    #self.cifStandard = None
-    self.cifStandard = self.readStandardFile( "CIF_standard_2.4.5.txt" )
+        #self.cifStandard = None
+        self.cifStandard = self.readStandardFile( "CIF_standard_2.4.5.txt" )
 
-    self.cifName = None
-    self.cifPath = None
+        self.cifName = None
+        self.cifPath = None
 
-    self.struct               = None # entity of PyMatGen Structure() class.
+        self.struct               = None # entity of PyMatGen Structure() class.
 
-    self.unitCellLengths      = None
-    self.unitCellAngles       = None
-    self.unitCellRecipLengths = None
-    self.unitCellRecipAngles  = None
-    self.unitCellVolume       = None
+        self.unitCellLengths      = None
+        self.unitCellAngles       = None
+        self.unitCellRecipLengths = None
+        self.unitCellRecipAngles  = None
+        self.unitCellVolume       = None
 
-    self.listAtomRaw  = None
-    self.listAtomAll  = None
-    self.listAtomSymm = None
+        self.listAtomRaw  = None
+        self.listAtomAll  = None
+        self.listAtomSymm = None
 
-    self.symmLatticeSystem = None
-    self.symmITNumber      = None
+        self.symmLatticeSystem = None
+        self.symmITNumber      = None
 
-    pass # CrystalInformation.__init__()
+        pass # CrystalInformation.__init__()
 
   def readStandardFile( self, path ):
-    output = []
-    if not os.path.isfile( path ):
-      logging.error( "CIF standard file does not exist: '" + path + "'" )
-      return []
-    f = open( path, encoding="utf8" )
-    for line in f:
-      short = cleanString( line )
-      pos = short.find( "_" )
-      if 0 == pos:
-        pos = short.find( "_[]" )
-        if pos < 0:
-          output.append(short)
-        else:
-          pass
+        output = []
+        if not os.path.isfile( path ):
+            logging.error( "CIF standard file does not exist: '" + path + "'" )
+            return []
+        f = open( path, encoding="utf8" )
+        for line in f:
+            short = cleanString( line )
+            pos = short.find( "_" )
+            if 0 == pos:
+                pos = short.find( "_[]" )
+                if pos < 0:
+                    output.append(short)
+                else:
+                    pass
 
-    f.close()
-    return output
+        f.close()
+        return output
 
-    pass # CrystalInformation.readStandardFile()
+        pass # CrystalInformation.readStandardFile()
 
   def loadData( self, cifPath, cifName ):
-    """
+        """
 
-    """
-    if None == self.algorithm:
-      logging.error( " Failed CrystalInformation.loadData(" + cifPath + ")," +
-                     " due to missing algorithm.")
-      return
+        """
+        if None == self.algorithm:
+            logging.error( " Failed CrystalInformation.loadData(" + cifPath + \
+                           ")," + " due to missing algorithm.")
+            return
 
-    self.cifName = cifName
-    self.cifPath = cifPath
+        self.cifName = cifName
+        self.cifPath = cifPath
 
-    where = " in '" + cifPath + "', algorithm '" + self.algorithm + "'"
-    if None != self.unitCellLengths:
-      logging.warning( " Overwriting 'unitCellLengths' " + where + "." )
-    if None != self.unitCellAngles:
-      logging.warning( " Overwriting 'unitCellAngles' " + where + "." )
-    if None != self.unitCellRecipLengths:
-      logging.warning( " Overwriting 'unitCellRecipLengths' " + where + "." )
-    if None != self.unitCellRecipAngles:
-      logging.warning( " Overwriting 'unitCellRecipAngles' " + where + "." )
-    if None != self.unitCellVolume:
-      logging.warning( " Overwriting 'unitCellVolume' " + where + "." )
-    if None != self.listAtomRaw:
-      logging.warning( " Overwriting 'listAtomRaw' " + where + "." )
-    if None != self.listAtomAll:
-      logging.warning( " Overwriting 'listAtomAll' " + where + "." )
-    if None != self.listAtomSymm:
-      logging.warning( " Overwriting 'listAtomSymm' " + where + "." )
+        where = " in '" + cifPath + "', algorithm '" + self.algorithm + "'"
+        if None != self.unitCellLengths:
+            logging.warning( " Overwriting 'unitCellLengths' " + where + "." )
+        if None != self.unitCellAngles:
+            logging.warning( " Overwriting 'unitCellAngles' " + where + "." )
+        if None != self.unitCellRecipLengths:
+            logging.warning( " Overwriting 'unitCellRecipLengths' " + where + "." )
+        if None != self.unitCellRecipAngles:
+            logging.warning( " Overwriting 'unitCellRecipAngles' " + where + "." )
+        if None != self.unitCellVolume:
+            logging.warning( " Overwriting 'unitCellVolume' " + where + "." )
+        if None != self.listAtomRaw:
+            logging.warning( " Overwriting 'listAtomRaw' " + where + "." )
+        if None != self.listAtomAll:
+            logging.warning( " Overwriting 'listAtomAll' " + where + "." )
+        if None != self.listAtomSymm:
+            logging.warning( " Overwriting 'listAtomSymm' " + where + "." )
 
-    if "PyMatGen" == self.algorithm:
-      self.loadPyMatGen( cifPath, cifName )
+        if "PyMatGen" == self.algorithm:
+            self.loadPyMatGen( cifPath, cifName )
 
-    elif "ValAndErr" == self.algorithm:
-      self.loadValAndErr( cifPath, cifName )
+        elif "ValAndErr" == self.algorithm:
+            self.loadValAndErr( cifPath, cifName )
        
-    else:
-      logging.error( " Unknown algorithm '" + str(self.algorithm) + "'. " +
-                     "Expecting 'PyMatGen' or 'ValAndErr'." )
+        else:
+            logging.error( " Unknown algorithm '" + str(self.algorithm) + "'. " +
+                           "Expecting 'PyMatGen' or 'ValAndErr'." )
 
-    pass # CrystalInformation.loadData()
+        pass # CrystalInformation.loadData()
 
   def loadPyMatGen( self, cifPath, cifName ):
-    if not os.path.isfile( cifPath ):
-      logging.error( " Failed to load CIF data, no input file '" + cifPath + "'." )
-      return
+        if not os.path.isfile( cifPath ):
+            logging.error( " Failed to load CIF data, no input file '" + cifPath + "'." )
+            return
 
-    self.struct = Structure.from_file( cifPath )
+        self.struct = Structure.from_file( cifPath )
 
-    #logging.error( " Not implemented def loadPyMatGen ( self, path ): " )
+        #logging.error( " Not implemented def loadPyMatGen ( self, path ): " )
 
-    pass # CrystalInformation.loadPyMatGen()
+        pass # CrystalInformation.loadPyMatGen()
 
   def evalPyMatGenUnitCell( self ):
     """
@@ -1973,7 +2092,6 @@ class CrystalInformation:
                                        className = "UnitCellLatticeVector", 
                                        itemName  = "UnitCellVectorA_" + self.cifName,
                                        unit  = "om:angstrom",
-         #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
                                        vectorLabel = "a" )
 
     self.unitCellVectorA.addComponent( label = "x", 
@@ -1988,9 +2106,7 @@ class CrystalInformation:
     self.unitCellVectorB = OntoVector( uuidDB = self.uuidDB, 
                                        className = "UnitCellLatticeVector", 
                                        itemName  = "UnitCellVectorB_" + self.cifName,
-                                       #myName  = "UnitCellVectorB_" + self.cifName,
                                        unit  = "om:angstrom",
-         #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
                                        vectorLabel = "b" )
 
     self.unitCellVectorB.addComponent( label = "x", 
@@ -2006,9 +2122,7 @@ class CrystalInformation:
     self.unitCellVectorC = OntoVector( uuidDB = self.uuidDB, 
                                        className = "UnitCellLatticeVector", 
                                        itemName  = "UnitCellVectorC_" + self.cifName,
-                                       #myName  = "UnitCellVectorC_" + self.cifName,
                                        unit  = "om:angstrom",
-         #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
                                        vectorLabel = "c" )
 
     self.unitCellVectorC.addComponent( label = "x", 
@@ -2023,12 +2137,10 @@ class CrystalInformation:
 
     # Vectors to keep three Reciprocal Unit Cell vectors (a,b,c):
     self.unitCellRecipVectorA = OntoVector( uuidDB = self.uuidDB, 
-                                       className = "UnitCellLatticeVector", 
-                                       itemName  = "ReciprocalUnitCellLatticeVectorA_" + self.cifName,
-                                       #myName  = "ReciprocalUnitCellLatticeVectorA_" + self.cifName,
-                                       unit  = "om:reciprocalAngstrom",
-         #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-                                       vectorLabel = "a" )
+                                  className = "UnitCellLatticeVector", 
+                                  itemName  = "ReciprocalUnitCellLatticeVectorA_" + self.cifName,
+                                  unit  = "om:reciprocalAngstrom",
+                                  vectorLabel = "a" )
 
     self.unitCellRecipVectorA.addComponent( label = "x", 
          value = str(round(self.struct.lattice.reciprocal_lattice.matrix[0][0], 12)), error = "" )
@@ -2040,12 +2152,10 @@ class CrystalInformation:
          value = str(round(self.struct.lattice.reciprocal_lattice.matrix[0][2], 12)), error = "" )
 
     self.unitCellRecipVectorB = OntoVector( uuidDB = self.uuidDB, 
-                                       className = "UnitCellLatticeVector", 
-                                       itemName  = "ReciprocalUnitCellLatticeVectorB_" + self.cifName,
-                                       #myName  = "ReciprocalUnitCellLatticeVectorB_" + self.cifName,
-                                       unit  = "om:reciprocalAngstrom",
-         #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-                                       vectorLabel = "a" )
+                                  className = "UnitCellLatticeVector", 
+                                  itemName  = "ReciprocalUnitCellLatticeVectorB_" + self.cifName,
+                                  unit  = "om:reciprocalAngstrom",
+                                  vectorLabel = "a" )
 
     self.unitCellRecipVectorB.addComponent( label = "x", 
          value = str(round(self.struct.lattice.reciprocal_lattice.matrix[1][0], 12)), error = "" )
@@ -2058,12 +2168,10 @@ class CrystalInformation:
 
 
     self.unitCellRecipVectorC = OntoVector( uuidDB = self.uuidDB, 
-                                       className = "UnitCellLatticeVector", 
-                                       itemName  = "ReciprocalUnitCellLatticeVectorC_" + self.cifName,
-                                       #myName  = "ReciprocalUnitCellLatticeVectorC_" + self.cifName,
-                                       unit  = "om:reciprocalAngstrom",
-         #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-                                       vectorLabel = "a" )
+                                  className = "UnitCellLatticeVector", 
+                                  itemName  = "ReciprocalUnitCellLatticeVectorC_" + self.cifName,
+                                  unit  = "om:reciprocalAngstrom",
+                                  vectorLabel = "a" )
 
     self.unitCellRecipVectorC.addComponent( label = "x", 
          value = str(round(self.struct.lattice.reciprocal_lattice.matrix[2][0], 12)), error = "" )
@@ -2080,7 +2188,6 @@ class CrystalInformation:
                                       uuidDB = self.uuidDB )
 
     self.unitCellVolume.setValue( self.struct.lattice.volume , unit = "om:cubicAngstrom" )
-    #print( "aaaaaaaaa Missing volume in loadCif FIXME" )
     
     sga = pymatgen.symmetry.analyzer.SpacegroupAnalyzer( self.struct )
 
@@ -2121,53 +2228,53 @@ class CrystalInformation:
     pass # CrystalInformation.evalPyMatGenUnitCell()
 
   def evalPyMatGen( self ):
-    #logging.error( " Not implemented eeetttwww2  def evalPyMatGen ( self, path ): " )
+        #logging.error( " Not implemented eeetttwww2  def evalPyMatGen ( self, path ): " )
 
-    if "PyMatGen" != self.algorithm:
-      logging_error( " Invalid algorithm '" + self.algorithm + "', expectec 'PyMatGen'" )
+        if "PyMatGen" != self.algorithm:
+            logging_error( " Invalid algorithm '" + self.algorithm + "', expectec 'PyMatGen'" )
 
-    self.evalPyMatGenUnitCell()
-    self.evalPyMatGenAtom()
+        self.evalPyMatGenUnitCell()
+        self.evalPyMatGenAtom()
 
-    pass # CrystalInformation.evalPyMatGen()
+        pass # CrystalInformation.evalPyMatGen()
 
   def evalPyMatGenAtom( self ):
-    """
-    Convert the PyMatGet-structure data into internal array listAtomAll.
+        """
+        Convert the PyMatGet-structure data into internal array listAtomAll.
 
 
-    """
+        """
     #logging.error( " Not implemented eeetttrrr  def loadPyMatGenAtom ( self, path ): " )
     #print( "Number of sites =", len(self.struct.sites) )
 
-    self.listAtomAll = []
-    for site in self.struct.sites:
-      atom = AtomInformation( self.uuidDB, compound = self.cifName   )
-      atom.setCoordFrac( site.frac_coords[0], site.frac_coords[1], site.frac_coords[2] )
-      atom.setCoordCart( site.coords[0], site.coords[1], site.coords[2] )
-      atom.setProp( element = site.species_string )
+        self.listAtomAll = []
+        for site in self.struct.sites:
+            atom = AtomInformation( self.uuidDB, compound = self.cifName   )
+            atom.setCoordFrac( site.frac_coords[0], site.frac_coords[1], site.frac_coords[2] )
+            atom.setCoordCart( site.coords[0], site.coords[1], site.coords[2] )
+            atom.setProp( element = site.species_string )
 
-      #atom.x = site.coords[0]
-      #atom.y = site.coords[1]
-      #atom.z = site.coords[2]
-      #atom.element   = site.species_string
-      # FIXME no occupancy ??
-      #atom.occupancy = site.species_and_occupancy[0].occupancy
+            #atom.x = site.coords[0]
+            #atom.y = site.coords[1]
+            #atom.z = site.coords[2]
+            #atom.element   = site.species_string
+            # FIXME no occupancy ??
+            #atom.occupancy = site.species_and_occupancy[0].occupancy
       
-      self.listAtomAll.append( atom )
+            self.listAtomAll.append( atom )
 
-    pass # CrystalInformation.evalPyMatGenAtom()
+        pass # CrystalInformation.evalPyMatGenAtom()
 
   def evalValAndErr( self ):
-    logging.error( " Not implemented eeetttwww3  def evalValAndErr ( self, path ): " )
+        logging.error( " Not implemented eeetttwww3  def evalValAndErr ( self, path ): " )
 
-    if "ValAndErr" != self.algorithm:
-      logging_error( " Invalid algorithm '" + self.algorithm + "', expectec 'ValAndErr'" )
+        if "ValAndErr" != self.algorithm:
+            logging_error( " Invalid algorithm '" + self.algorithm + "', expectec 'ValAndErr'" )
        
-    self.evalValAndErrUnitCell()
-    #self.evalValAndErrAtom()
+        self.evalValAndErrUnitCell()
+        #self.evalValAndErrAtom()
 
-    pass # CrystalInformation.evalValAndErr()
+        pass # CrystalInformation.evalValAndErr()
 
   def evalValAndErrUnitCell( self ):
 
@@ -2205,23 +2312,23 @@ class CrystalInformation:
     pass # CrystalInformation.evalValAndErrUnitCell()
 
   def loadValAndErr( self, cifPath, cifName ):
-    if not os.path.isfile( cifPath ):
-      logging.error( " Failed to load CIF data, no input file '" + cifPath + "'." )
-      return
+        if not os.path.isfile( cifPath ):
+            logging.error( " Failed to load CIF data, no input file '" + cifPath + "'." )
+            return
 
-    #self.
-    #logging.error( " Not implemented def loadValAndErr ( self, path ): " )
+        #self.
+        #logging.error( " Not implemented def loadValAndErr ( self, path ): " )
 
-    #All loading is done in one go:
-    nBracket = self.readWithUncertainties( cifPath, cifName, save = True )
-    #print( "Found brackets:",  nBracket, "in '" + cifName + "'." )
+        #All loading is done in one go:
+        nBracket = self.readWithUncertainties( cifPath, cifName, save = True )
+        #print( "Found brackets:",  nBracket, "in '" + cifName + "'." )
 
-    #self.loadValAndErrUnitCell()
-    #self.loadValAndErrAtom()
-    #self.loadValAndErr
+        #self.loadValAndErrUnitCell()
+        #self.loadValAndErrAtom()
+        #self.loadValAndErr
 
 
-    pass # CrystalInformation.loadValAndErr()
+        pass # CrystalInformation.loadValAndErr()
 
   def readWithUncertainties( self, fileIn, cifName, lineFr = None, lineTo = None, 
                              fileOut = "", save = False ):
@@ -2582,158 +2689,158 @@ class CsvMaker:
                 ]
 
   def __init__( self ):
-    #self.zeoOption = "main"
-    self.zeoOption = "test"
-    self.zeoList = []
+        #self.zeoOption = "main"
+        self.zeoOption = "test"
+        self.zeoList = []
 
-    self.ontoBase        = "OntoZeolite"
-    self.zeoOntoPrefix   = "http://www.theworldavatar.com/kg/ontozeolite/"
-    self.crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+        self.ontoBase        = "OntoZeolite"
+        self.zeoOntoPrefix   = "http://www.theworldavatar.com/kg/ontozeolite/"
+        self.crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
 
-    self.inputDir  = os.path.join( "ontozeolite", "data" )
-    self.outputDir = os.path.join( "ontozeolite", "zeocsv" )
+        self.inputDir  = os.path.join( "ontozeolite", "data" )
+        self.outputDir = os.path.join( "ontozeolite", "zeocsv" )
 
-    self.cifStandard = []
-    #self.cifStandard = CrystalInformation( "PyMatGen", None ).readStandardFile( "CIF_standard_2.4.5.txt" )
+        self.cifStandard = []
+        #self.cifStandard = CrystalInformation( "PyMatGen", None ).readStandardFile( "CIF_standard_2.4.5.txt" )
 
-    self.unitCellLengths = None
-    self.unitCellAngles = None
-    self.unitCellRecipLengths = None
-    self.unitCellRecipAngles = None
+        self.unitCellLengths = None
+        self.unitCellAngles = None
+        self.unitCellRecipLengths = None
+        self.unitCellRecipAngles = None
 
-    self.unitCellVectorA = None
-    self.unitCellVectorB = None
-    self.unitCellVectorC = None
+        self.unitCellVectorA = None
+        self.unitCellVectorB = None
+        self.unitCellVectorC = None
 
-    self.unitCellRecipVectorA = None
-    self.unitCellRecipVectorB = None
-    self.unitCellRecipVectorC = None
+        self.unitCellRecipVectorA = None
+        self.unitCellRecipVectorB = None
+        self.unitCellRecipVectorC = None
 
-    self.unitCellVolume = None
-    #baseName = self.ontoBase + "-" + zeoname
-    #self.ontoHttp = ""
+        self.unitCellVolume = None
+        #baseName = self.ontoBase + "-" + zeoname
+        #self.ontoHttp = ""
 
-    pass # CsvMaker.__init__()
+        pass # CsvMaker.__init__()
 
   def loadPyMatGen ( self, path, name ):
-    """
-    Load the CIF by the standard PyMatGen 
-    and save it to CrystalInformation class.
-    """
+        """
+        Load the CIF by the standard PyMatGen 
+        and save it to CrystalInformation class.
+        """
 
-    #logging.error( " Not implemented def CsvMaker.loadPyMatGen ( self, path ): " )
+        #logging.error( " Not implemented def CsvMaker.loadPyMatGen ( self, path ): " )
 
-    self.cifPyMatGen = CrystalInformation( "PyMatGen", self.uuidDB )
-    self.cifPyMatGen.loadData( path, name )
+        self.cifPyMatGen = CrystalInformation( "PyMatGen", self.uuidDB )
+        self.cifPyMatGen.loadData( path, name )
 
-    pass # CsvMaker.loadPyMatGen ()
+        pass # CsvMaker.loadPyMatGen ()
 
   def loadValAndErr( self, path, name ):
-    """
-    Load the CIF data written by this hand-made class (with uncertainty) 
-    and save it to CrystalInformation class.
-    """
+        """
+        Load the CIF data written by this hand-made class (with uncertainty) 
+        and save it to CrystalInformation class.
+        """
 
-    #logging.error( " Not implemented def loadValAndErr( self, path ): " )
+        #logging.error( " Not implemented def loadValAndErr( self, path ): " )
 
-    self.cifValAndErr = CrystalInformation( "ValAndErr", self.uuidDB )
-    self.cifValAndErr.loadData( path, name )
+        self.cifValAndErr = CrystalInformation( "ValAndErr", self.uuidDB )
+        self.cifValAndErr.loadData( path, name )
 
-    #print( self.cifValAndErr.unitCellLengths )
-    pass # CsvMaker.loadValAndErr()
+        #print( self.cifValAndErr.unitCellLengths )
+        pass # CsvMaker.loadValAndErr()
 
   def evalPyMatGen( self ):
-    self.cifPyMatGen.evalPyMatGen()
+        self.cifPyMatGen.evalPyMatGen()
 
-    pass # CsvMaker.evalPyMatGen()
+        pass # CsvMaker.evalPyMatGen()
 
   def evalValAndErr( self ):
-    self.cifValAndErr.evalValAndErr()
+        self.cifValAndErr.evalValAndErr()
 
-    pass # CsvMaker.evalValAndErr()
+        pass # CsvMaker.evalValAndErr()
 
 
   def mergeCrystInfo( self ):
-    """
-    Run through both versions: cifPyMatGen and cifValAndErr and fix by rules:
-    j) For cifValAndErr use math to compute not available data,
-    2) I there is uncertainty - use it,
-    3) If only one CIF has data - use it,
-    4) 
+        """
+        Run through both versions: cifPyMatGen and cifValAndErr and fix by rules:
+        j) For cifValAndErr use math to compute not available data,
+        2) I there is uncertainty - use it,
+        3) If only one CIF has data - use it,
+        4) 
 
-    """
+        """
 
-    #print( self.cifValAndErr.unitCellLengths )
-    self.cifOutput = self.cifPyMatGen
-    '''
-    self.cifOutput.unitCellLengths      = self.cifValAndErr.unitCellLengths
-    self.cifOutput.unitCellAngles       = self.cifValAndErr.unitCellAngles
-    self.cifOutput.unitCellRecipLengths = self.cifValAndErr.unitCellRecipLengths
-    self.cifOutput.unitCellRecipAngles  = self.cifValAndErr.unitCellRecipAngles
-    self.cifOutput.unitCellVolume       = self.cifValAndErr.unitCellVolume
-    '''
+        #print( self.cifValAndErr.unitCellLengths )
+        self.cifOutput = self.cifPyMatGen
+        '''
+        self.cifOutput.unitCellLengths      = self.cifValAndErr.unitCellLengths
+        self.cifOutput.unitCellAngles       = self.cifValAndErr.unitCellAngles
+        self.cifOutput.unitCellRecipLengths = self.cifValAndErr.unitCellRecipLengths
+        self.cifOutput.unitCellRecipAngles  = self.cifValAndErr.unitCellRecipAngles
+        self.cifOutput.unitCellVolume       = self.cifValAndErr.unitCellVolume
+        '''
 
-    #logging.error( " Not implemented def mergeCrystInfo( self ): " )
-    #print( " >>> ", self.cifPyMatGen.listAtomAll )
+        #logging.error( " Not implemented def mergeCrystInfo( self ): " )
+        #print( " >>> ", self.cifPyMatGen.listAtomAll )
 
-    pass # CsvMaker.mergeCrystInfo()
+        pass # CsvMaker.mergeCrystInfo()
 
   def loadCifZeolite( self, zeoname ):
-    """
-    - zeolite-specific, calls the next funtion:
-    """
+        """
+        - zeolite-specific, calls the next funtion:
+        """
 
-    filePath = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
+        filePath = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
 
-    #print( "Using a test case 913885.cif for the UnitCell class" )
-    #path = os.path.join( "test", "913885.cif" ) 
-    #dataIn = tools.readCsv( path )
-    if not os.path.isfile( filePath ):
-      logging.error( "File not found '" + filePath + "'." )
-      return 
+        #print( "Using a test case 913885.cif for the UnitCell class" )
+        #path = os.path.join( "test", "913885.cif" ) 
+        #dataIn = tools.readCsv( path )
+        if not os.path.isfile( filePath ):
+          logging.error( "File not found '" + filePath + "'." )
+          return 
 
-    #self.loadCifStructure( filePath, zeoname )
+        #self.loadCifStructure( filePath, zeoname )
 
-    nBracket = self.readWithUncertainties( filePath, zeoname, save = True )
-    print( "Found brackets:",  nBracket, "in '" + zeoname + "'." )
+        nBracket = self.readWithUncertainties( filePath, zeoname, save = True )
+        print( "Found brackets:",  nBracket, "in '" + zeoname + "'." )
  
-    return
-    pass # CsvMaker.loadCifZeolite()
+        return
+        pass # CsvMaker.loadCifZeolite()
 
 
   def loadCifStructure( self, filePath, cifName ):
-    """
-    This function does not know about zeolites, it can be used for any CIF file.
-    Loads CIF file and stores the data in internal variable(s) 
-    self.structure ?
+        """
+        This function does not know about zeolites, it can be used for any CIF file.
+        Loads CIF file and stores the data in internal variable(s) 
+        self.structure ?
 
-    ??? cifName is a unique name for the CIF structure, as it should appear in the ontology abox.
-    """
+        ??? cifName is a unique name for the CIF structure, as it should appear in the ontology abox.
+        """
 
-    self.struct = Structure.from_file( filePath )
-    pass # CsvMaker.loadCifStructure()
+        self.struct = Structure.from_file( filePath )
+        pass # CsvMaker.loadCifStructure()
 
   def prepare( self ):
-    self.zeoList = zeolist.getZeoList( self.zeoOption )
-    #self.zeoList = self.zeoList[210:240]
-    #self.zeoList = self.zeoList[240:]
-    #self.zeoList = [ os.path.join( "test", "913885.cif" ) ]
+        self.zeoList = zeolist.getZeoList( self.zeoOption )
+        #self.zeoList = self.zeoList[210:240]
+        #self.zeoList = self.zeoList[240:]
+        #self.zeoList = [ os.path.join( "test", "913885.cif" ) ]
 
-    #self.uuidDB  = tools.loadUUID( )
-    self.uuidDB  = tools.UuidDB( os.path.join( "ontozeolite", "uuid", "default.csv") )
+        #self.uuidDB  = tools.loadUUID( )
+        self.uuidDB  = tools.UuidDB( os.path.join( "ontozeolite", "uuid", "default.csv") )
 
-    # May be also command line arguments here:
-    pass # CsvMaker.prepare()
+        # May be also command line arguments here:
+        pass # CsvMaker.prepare()
 
   def __del__( self ):
-    #self.finalize()
-    pass # CsvMaker.__del__()
+        #self.finalize()
+        pass # CsvMaker.__del__()
 
   def finalize( self ):
 
-    #tools.saveUUID( self.uuidDB )
-    self.uuidDB.saveDB( )
-    pass # CsvMaker.finalize()
+        #tools.saveUUID( self.uuidDB )
+        self.uuidDB.saveDB( )
+        pass # CsvMaker.finalize()
 
   '''
   def getArrVector( self, subject, predicate, vector ):
@@ -2860,50 +2967,50 @@ class CsvMaker:
   '''   
 
   def arrInit( self, ontology ):
-    output = [ ]
-    baseName = self.ontoBase # + "-" + zeoname
+        output = [ ]
+        baseName = self.ontoBase # + "-" + zeoname
 
-    if "zeolite" == ontology:
-      tbox = "http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl"
-      abox = "http://www.theworldavatar.com/kg/ontozeolite"
-    else:
-      logging.error( " Unknown ontology name '" + ontology + "'." )
+        if "zeolite" == ontology:
+            tbox = "http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl"
+            abox = "http://www.theworldavatar.com/kg/ontozeolite"
+        else:
+            logging.error( " Unknown ontology name '" + ontology + "'." )
 
-    output += getCsvInit( self.ontoBase, tbox, abox )
+        output += getCsvInit( self.ontoBase, tbox, abox )
 
-    #########################
-    # This is a common instance for all measures.
+        #########################
+        # This is a common instance for all measures.
 
-    #uuid_om_angstrom = tools.getUUID( self.uuidDB, self.omOntoPrefix + "Unit", "angstrom" )
-    # FIXME This must be initialized in om-2, not here.
-    output += omInitUnit( "om:angstrom" )
-    output += omInitUnit( "om:reciprocalAngstrom" )
-    output += omInitUnit( "om:cubicAngstrom" )
-    output += omInitUnit( "om:degree" )
-    output += omInitUnit( "om:dimensionOne" )
-    output.append( [ omOntoPrefix + "angstrom", "Instance", 
-                     omOntoPrefix + "Unit", "", "", "" ] )
-    output.append( [ omOntoPrefix + "reciprocalAngstrom", "Instance", 
-                     omOntoPrefix + "Unit", "", "", "" ] )
-    output.append( [ omOntoPrefix + "cubicAngstrom", "Instance", 
-                     omOntoPrefix + "Unit", "", "", "" ] )
-    output.append( [ omOntoPrefix + "degree", "Instance", 
-                     omOntoPrefix + "Unit", "", "", "" ] )
-    output.append( [ omOntoPrefix + "dimensionOne", "Instance", 
-                     omOntoPrefix + "Unit", "", "", "" ] )
+        #uuid_om_angstrom = tools.getUUID( self.uuidDB, self.omOntoPrefix + "Unit", "angstrom" )
+        # FIXME This must be initialized in om-2, not here.
+        output += omInitUnit( "om:angstrom" )
+        output += omInitUnit( "om:reciprocalAngstrom" )
+        output += omInitUnit( "om:cubicAngstrom" )
+        output += omInitUnit( "om:degree" )
+        output += omInitUnit( "om:dimensionOne" )
+        output.append( [ omOntoPrefix + "angstrom", "Instance", 
+                         omOntoPrefix + "Unit", "", "", "" ] )
+        output.append( [ omOntoPrefix + "reciprocalAngstrom", "Instance", 
+                         omOntoPrefix + "Unit", "", "", "" ] )
+        output.append( [ omOntoPrefix + "cubicAngstrom", "Instance", 
+                         omOntoPrefix + "Unit", "", "", "" ] )
+        output.append( [ omOntoPrefix + "degree", "Instance", 
+                         omOntoPrefix + "Unit", "", "", "" ] )
+        output.append( [ omOntoPrefix + "dimensionOne", "Instance", 
+                         omOntoPrefix + "Unit", "", "", "" ] )
 
-    # Example of use:
-    #omSetUnit( uuid_volume, "cubicAngstrom" )
-    '''
-    '''
+        # Example of use:
+        #omSetUnit( uuid_volume, "cubicAngstrom" )
+        '''
+        '''
  
-    # The framework should be initialized only once.
-    #uuidDB = tools.loadUUID( )
-    #uuidDB = self.uuidDB
-    #tools.saveUUID( uuidDB )
+        # The framework should be initialized only once.
+        #uuidDB = tools.loadUUID( )
+        #uuidDB = self.uuidDB
+        #tools.saveUUID( uuidDB )
 
-    return output
-    pass # CsvMaker.arrInit()
+        return output
+        pass # CsvMaker.arrInit()
 
   def arrTransform( self, subject, predicate, zeoname ):
     """
@@ -3008,7 +3115,7 @@ class CsvMaker:
         output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
                          uuid_v_comp, "", DIRS[ix], "string" ] )
 
-        output.append( [ self.crystOntoPrefix + "hasVectorIndex", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasComponentIndex", "Data Property", 
                          uuid_v_comp, "", ix, "xsd:integer" ] )
 
         output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
@@ -3079,7 +3186,7 @@ class CsvMaker:
         output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
                          uuid_v_comp, "", DIRS[ix], "string" ] )
 
-        output.append( [ self.crystOntoPrefix + "hasVectorIndex", "Data Property", 
+        output.append( [ self.crystOntoPrefix + "hasComponentIndex", "Data Property", 
                          uuid_v_comp, "", ix, "xsd:integer" ] )
 
         output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
@@ -3140,8 +3247,8 @@ class CsvMaker:
     #path = os.path.join( "test", "913885.cif" ) 
     #dataIn = tools.readCsv( path )
     if not os.path.isfile( path ):
-      logging.error( "File not found '" + path + "'." )
-      return
+        logging.error( "File not found '" + path + "'." )
+        return
 
     structure = Structure.from_file( path )
 
@@ -3557,30 +3664,30 @@ class CsvMaker:
 
   def getTransitivity( self, strValue ):
     if not isinstance( strValue, str ):
-      logging.error( " input must be string" )
-      return None
+        logging.error( " input must be string" )
+        return None
 
     short = strValue.strip()
     if short[0] != "[" or short[-1] != "]":
-      logging.error( " Transitivity must be in [] brackets" )
+        logging.error( " Transitivity must be in [] brackets" )
 
     trans = [None]*4
     i = 1   # position of character in the string
     #it = 0  # iterator for transitivity vector. 0 to 3.
     for it in range( 4 ):
-      if short[i] != "(":
-        trans[it] = short[i]
-        i += 1
-      else:
-        i += 1
-        trans[it] = ""
-        while short[i] != ")":
-          trans[it] += short[i]
-          i += 1
+        if short[i] != "(":
+            trans[it] = short[i]
+            i += 1
         else:
-          i += 1 # To skip the ")" bracket
-      #it += 1
-      #print( "it = ", it, ":", trans, ", i =", i )
+            i += 1
+            trans[it] = ""
+            while short[i] != ")":
+                trans[it] += short[i]
+                i += 1
+            else:
+                i += 1 # To skip the ")" bracket
+        #it += 1
+        #print( "it = ", it, ":", trans, ", i =", i )
     #print( trans )
     return trans
     pass # CsvMaker.getTransitivity()
@@ -3591,11 +3698,11 @@ class CsvMaker:
     predicate - 
     """
     if subject.find("CrystalInformation") < 0:
-      logging.warning( " XRDSpectrum expects a subject 'CrystalInformation', " + \
-                       "but got '" + subject + "'." )
+        logging.warning( " XRDSpectrum expects a subject 'CrystalInformation'," + \
+                         " but got '" + subject + "'." )
     if predicate.find("hasXRDSpectrum") < 0:
-      logging.warning( " Spectrum expects a predicate 'hasXRDSpectrum', " + \
-                       "but got '" + predicate + "'." )
+        logging.warning( " Spectrum expects a predicate 'hasXRDSpectrum'," + \
+                         " but got '" + predicate + "'." )
  
     output = []
 
@@ -3608,26 +3715,26 @@ class CsvMaker:
     xrdData = xrdData[1:]
     for xrd in xrdData:
 
-      #print( "Framework:", xrd[2] )
-      if zeoname == xrd[2]:
-        nSpectra += 1
+        #print( "Framework:", xrd[2] )
+        if zeoname == xrd[2]:
+            nSpectra += 1
 
-        uuid_xrd = tools.getUUID( self.uuidDB.uuidDB, "XRDSpectrum", 
-                  "XRDSpectrum" + str(nSpectra) +"_" + zeoname)
-        output.append( [ uuid_xrd, "Instance", "XRDSpectrum", "", "", "" ] )
+            uuid_xrd = tools.getUUID( self.uuidDB.uuidDB, "XRDSpectrum", \
+                      "XRDSpectrum" + str(nSpectra) +"_" + zeoname)
+            output.append( [ uuid_xrd, "Instance", "XRDSpectrum", "", "", "" ] )
 
-        output.append( [ subject, "Instance", uuid_xrd, predicate, "", "" ] )
+            output.append( [ subject, "Instance", uuid_xrd, predicate, "", "" ] )
 
 
-        #print( zeoname, "=====>", xrd[5] )
-        output += self.loadXRDPeaks( uuid_xrd, 
-                               self.crystOntoPrefix + "hasCharacteristicPeak", 
-                               zeoname + str(nSpectra), xrd[5] )
+            #print( zeoname, "=====>", xrd[5] )
+            output += self.loadXRDPeaks( uuid_xrd, \
+                                self.crystOntoPrefix + "hasCharacteristicPeak", \
+                                zeoname + str(nSpectra), xrd[5] )
 
-        if xrd[6] != "" and xrd[6] != None:
-          print( "TODO Add DOI " )
+            if xrd[6] != "" and xrd[6] != None:
+                print( "TODO Add DOI " )
 
-        break
+            break
     #if z in xrdData:
 
     return output
@@ -3746,65 +3853,62 @@ class CsvMaker:
 
   # TODO detele this function from this class:
   def setValueAndError( self, cifName, entry, value, error ):
-    """
-    Setting the value and error values to the internal parameters.
+        """
+        Setting the value and error values to the internal parameters.
 
-    """
-    '''
-    self.entriesWithUncertainties = [ 
-                  "_cell_volume", "_cell_measurement_temperature",
-                  "_diffrn_ambient_temperature",
-                  "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
-                  "_atom_site_U_iso_or_equiv",
-                  "_atom_site_aniso_U_11", "_atom_site_aniso_U_22", 
-                  "_atom_site_aniso_U_33", "_atom_site_aniso_U_23", 
-                  "_atom_site_aniso_U_13", "_atom_site_aniso_U_12", 
-                  "_geom_bond_distance", "_geom_angle", 
-                  "_refine_ls_extinction_coef"
-                  ]
-    '''
+        """
+        '''
+        self.entriesWithUncertainties = [ 
+                      "_cell_volume", "_cell_measurement_temperature",
+                      "_diffrn_ambient_temperature",
+                      "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
+                      "_atom_site_U_iso_or_equiv",
+                      "_atom_site_aniso_U_11", "_atom_site_aniso_U_22", 
+                      "_atom_site_aniso_U_33", "_atom_site_aniso_U_23", 
+                      "_atom_site_aniso_U_13", "_atom_site_aniso_U_12", 
+                      "_geom_bond_distance", "_geom_angle", 
+                      "_refine_ls_extinction_coef"
+                      ]
+        '''
 
-#    #cifName = "QQQQQQ"
-    self.unitCellLengths = OntoVector( uuidDB = self.uuidDB, 
-                                       myClass = "UnitCellLengths", 
-                                       myName  = "UnitCellLengths_" + cifName,
-       #                                myUnit  = "angstrom" )
-       myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
+        self.unitCellLengths = OntoVector( uuidDB = self.uuidDB, 
+                                           myClass = "UnitCellLengths", 
+                                           myName  = "UnitCellLengths_" + cifName,
+                                           myUnit  = "om:angstrom" )
 
-    self.unitCellAngles = OntoVector( uuidDB = self.uuidDB, 
-                                       myClass = "UnitCellAngles", 
-                                       myName  = "UnitCellAngles_" + cifName,
-       #                                myUnit  = "angstrom" )
-       myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/degree" )
+        self.unitCellAngles = OntoVector( uuidDB = self.uuidDB, 
+                                           myClass = "UnitCellAngles", 
+                                           myName  = "UnitCellAngles_" + cifName,
+                                           myUnit  = "om:degree" )
 
 
-    logging.warning( "setValueAndError(): " + "cifName = '" + str(cifName) + "', " +
-           "entry = '" + str(entry) + "', " + 
-           "value = '" + str(value) + "', " + "error = '" + str(error) + "'." )
+        logging.warning( "setValueAndError(): " + "cifName = '" + str(cifName) + "', " +
+               "entry = '" + str(entry) + "', " + 
+               "value = '" + str(value) + "', " + "error = '" + str(error) + "'." )
 
-    if "_cell_length_a" == entry:
-      self.unitCellLengths.addComponent( label = "a", value = value, error = error )
+        if "_cell_length_a" == entry:
+            self.unitCellLengths.addComponent( label = "a", value = value, error = error )
 
-    elif "_cell_length_b" == entry:
-      self.unitCellLengths.addComponent( label = "b", value = value, error = error )
+        elif "_cell_length_b" == entry:
+            self.unitCellLengths.addComponent( label = "b", value = value, error = error )
 
-    elif "_cell_length_c" == entry:
-      self.unitCellLengths.addComponent( label = "c", value = value, error = error )
+        elif "_cell_length_c" == entry:
+            self.unitCellLengths.addComponent( label = "c", value = value, error = error )
 
-    elif "_cell_angle_alpha" == entry:
-      self.unitCellAngles.addComponent( label = "alpha", value = value, error = error )
+        elif "_cell_angle_alpha" == entry:
+            self.unitCellAngles.addComponent( label = "alpha", value = value, error = error )
 
-    elif "_cell_angle_beta" == entry:
-      self.unitCellAngles.addComponent( label = "beta", value = value, error = error )
+        elif "_cell_angle_beta" == entry:
+            self.unitCellAngles.addComponent( label = "beta", value = value, error = error )
 
-    elif "_cell_angle_gamma" == entry:
-      self.unitCellAngles.addComponent( label = "gamma", value = value, error = error )
+        elif "_cell_angle_gamma" == entry:
+            self.unitCellAngles.addComponent( label = "gamma", value = value, error = error )
 
-      pass
-    else:
-      logging.error( " Unknown entry to store data with error: '" + entry + "'." )
+            pass
+        else:
+            logging.error( " Unknown entry to store data with error: '" + entry + "'." )
 
-    pass # CsvMaker.setValueAndError()
+        pass # CsvMaker.setValueAndError()
 
   # TODO delete this function from here:
   def splitStr( self, value ):
@@ -3837,21 +3941,21 @@ class CsvMaker:
     ie = 1
     factor = []
     for ix,x in enumerate(vOut[::-1]):
-      if "." == x:
-        factor.insert( 0, "." )
-      elif ie <= len( eOut ):
-        factor.insert( 0, eOut[-ie] )
-        ie += 1
-      else:
-        factor.insert( 0, "0" )
-        ie += 1
+        if "." == x:
+            factor.insert( 0, "." )
+        elif ie <= len( eOut ):
+            factor.insert( 0, eOut[-ie] )
+            ie += 1
+        else:
+            factor.insert( 0, "0" )
+            ie += 1
 
     #print( factor )
     factor = "".join( factor )
     if factor.find( "." ) < 0:
-      eOut = str( int(factor) )
+        eOut = str( int(factor) )
     else:
-      eOut = str( float(factor) )
+        eOut = str( float(factor) )
     #for i in range( len( eOut ) ):
       #vOut[-i-1] = eOut[-i-1]
     return vOut, eOut
@@ -3865,75 +3969,76 @@ class CsvMaker:
     eOut = ""
 
     if not isinstance( value, str ):
-      logging.error( " Impossible error: not a string " + line + " " 
-                     + file_line )
-      return vOut,eOut
+        logging.error( " Impossible error: not a string " + str(line) + " " + \
+                       file_line )
+        return vOut,eOut
 
     pos1 = value.find( "(" )
     pos2 = value.find( ")" )
     if pos1 < 0 and pos2 < 0:
-      #logging.info( " Brackets are not detected. " + file_line )
-      pass
+        #logging.info( " Brackets are not detected. " + file_line )
+        pass
     elif pos1 >= 0 and pos2 >= 0 and pos1 < pos2:
-      #print( "pos1 = ", pos1, " pos2 = ", pos2 )
-      vOut,eOut = self.splitStr(value) 
+        #print( "pos1 = ", pos1, " pos2 = ", pos2 )
+        vOut,eOut = self.splitStr(value) 
     else:
-      logging.error( " Something is wrong with brackets: '" + line + 
-                     "' . " + file_line )
+        logging.error( " Something is wrong with brackets: '" + line + \
+                       "' . " + file_line )
 
     #print( "value, vOut, eOut =", value, vOut, eOut )
     return vOut, eOut
     pass # CsvMaker.splitErrorBar()
 
   #def getCifLineRanges( self, fileIn ):
-  #  return [ 0, 100, 400 ]
+  #    return [ 0, 100, 400 ]
 
   def cleanCif( self, fileIn ):
-    """ 
-    There are two situations when CIF file is not directly readable:
-    1) Single file contains several CIF data structures (concatenation of several files)
-    2) CIF file contains uncertainties (a.k.a. error bars) 
+        """ 
+        There are two situations when CIF file is not directly readable:
+        1) Single file contains several CIF data structures (concatenation of several files)
+        2) CIF file contains uncertainties (a.k.a. error bars) 
 
-    In both cases I read the file line-by-line and save new (corrected) file(s) 
-    to a temporary directory. 
-    The new file(s) is/are proper CIF file(s), and I can read it/them by the standard functions.
+        In both cases I read the file line-by-line and save new (corrected) file(s) 
+        to a temporary directory. 
+        The new file(s) is/are proper CIF file(s), and I can read it/them by the standard functions.
 
-    Return a list containing new filename(s).
-    If no correction was necessary the list is empty.
+        Return a list containing new filename(s).
+        If no correction was necessary the list is empty.
 
-    There are two independent operations:
-    - find the ranges of individual CIF files in a combined CIF file,
-    - divide the combined CIF file and save to several files,
-    - detect brackets.
-    """
+        There are two independent operations:
+        - find the ranges of individual CIF files in a combined CIF file,
+        - divide the combined CIF file and save to several files,
+        - detect brackets.
+        """
 
-    # Here lineRanges is the list of the first lines of the individual CIF(s) 
-    #    ??? and the last line appended behind.
-    # Later the file can be divided into several using this information.
-    lineRanges = tools.getCifLineRanges( fileIn )
-    filesOut = []
+        # Here lineRanges is the list of the first lines of the individual CIF(s) 
+        #    ??? and the last line appended behind.
+        # Later the file can be divided into several using this information.
+        lineRanges = tools.getCifLineRanges( fileIn )
+        filesOut = []
 
-    tmpDir = "tmp"
-    if not os.path.isdir( tmpDir ):
-      os.makedirs(  tmpDir )
+        tmpDir = "tmp"
+        if not os.path.isdir( tmpDir ):
+            os.makedirs(  tmpDir )
     
-    for i in range(len(lineRanges)-1):
-      #print( "i =", i, ", ", lineRanges[i] )
+        for i in range(len(lineRanges)-1):
+            #print( "i =", i, ", ", lineRanges[i] )
 
-      nBracket = self.readWithUncertainties( fileIn, zeoname, lineRanges[i], lineRanges[i+1] )
-      if ( nBracket > 0 ) or ( len(lineRanges) - 1 > 1 ):
-        fileBase, ext = os.path.splitext( os.path.basename(fileIn) )
-        print( "Input file name and extension:", fileBase, ext )
+            nBracket = self.readWithUncertainties( fileIn, zeoname, lineRanges[i], lineRanges[i+1] )
+            if ( nBracket > 0 ) or ( len(lineRanges) - 1 > 1 ):
+                fileBase, ext = os.path.splitext( os.path.basename(fileIn) )
+                print( "Input file name and extension:", fileBase, ext )
 
-        fileOut = os.path.join( tmpDir, fileBase + "_" + str(i+1) + ext )
-        filesOut.append( fileOut )
-        self.readWithUncertainties( fileIn, zeoname, lineRanges[i], lineRanges[i+1], fileOut = fileOut )
+                fileOut = os.path.join( tmpDir, fileBase + "_" + str(i+1) + ext )
+                filesOut.append( fileOut )
+                self.readWithUncertainties( fileIn, zeoname, lineRanges[i], \
+                                            lineRanges[i+1], fileOut = fileOut )
 
-    #else:
-    #fileOut = "after-913885.cif"
+        #else:
+        #fileOut = "after-913885.cif"
 
-    return filesOut
-    pass # CsvMaker.cleanCif()
+        return filesOut
+        pass # CsvMaker.cleanCif()
 
   def readWithUncertainties( self, fileIn, cifName, lineFr = None, lineTo = None, 
                              fileOut = "", save = False ):
@@ -3974,13 +4079,13 @@ class CsvMaker:
                   ]
 
     if not os.path.isfile( fileIn ):
-      logging.error( " Input file '" + fileIn + "' does not exist in cleanCif()." )
-      return -1
+        logging.error( " Input file '" + fileIn + "' does not exist in cleanCif()." )
+        return -1
 
     fIn = open( fileIn )
     
     if len(fileOut) > 0:
-      fOut = open( fileOut, "w", encoding="utf8" )
+        fOut = open( fileOut, "w", encoding="utf8" )
 
     inLoop = False
     countBrackets = 0
@@ -3990,57 +4095,57 @@ class CsvMaker:
       #print( file_line )
 
       if il >= 20:
-        logging.debug( " Break after 75 lines for testing. " + file_line )
-        #break
-        pass
+          logging.debug( " Break after 75 lines for testing. " + file_line )
+          #break
+          pass
 
       pos1 = line.find( "#" )
       pos2 = line.find( ";" )
       if   0 == pos1:
-        logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
-        #short = line[ :pos] + "\n"
-        if len(fileOut) > 0:
-          fOut.write( line )
-        continue
+          logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
+          #short = line[ :pos] + "\n"
+          if len(fileOut) > 0:
+              fOut.write( line )
+          continue
 
       elif 0 == pos2:
-        logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
-        #short = line[ :pos] + "\n"
-        if len(fileOut) > 0:
-          fOut.write( line )
-        continue
+          logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
+          #short = line[ :pos] + "\n"
+          if len(fileOut) > 0:
+              fOut.write( line )
+          continue
 
       elif pos1 > 0 or pos2 > 0:
-        logging.warning( " Comment starts not from beginning of the line: '" + 
-                       line.strip() + "' " + file_line + "."  
-                       #+ " This is not supported by readWithUncertainties()." 
-                     )
-        if len(fileOut) > 0:
-          fOut.write( line )
-        continue
+          logging.warning( " Comment starts not from beginning of the line: '" + \
+                         line.strip() + "' " + file_line + "."  \
+                         #+ " This is not supported by readWithUncertainties()." 
+                         )
+          if len(fileOut) > 0:
+              fOut.write( line )
+          continue
 
       #words = line.strip().split()
       words = tools.strSplit( line )
       #print( "on line", il, "words:", words )
       
       if len(words) == 0:
-        #logging.info( " Empty string " + file_line )
-        if len(fileOut) > 0:
-          fOut.write( line )
-        inLoop = False
-        continue
-        pass
+          #logging.info( " Empty string " + file_line )
+          if len(fileOut) > 0:
+              fOut.write( line )
+          inLoop = False
+          continue
+          pass
 
       elif "loop_" == words[0].strip():
-        #logging.info( " Found a 'loop_' option" )
-        inLoop = True
-        inLoopHead = True
-        inLoopBody = False
-        self.loopHeaders = []
-        if len(fileOut) > 0:
-          #fOut.write( "added 'loop_': " + line )
-          fOut.write( line )
-        continue
+          #logging.info( " Found a 'loop_' option" )
+          inLoop = True
+          inLoopHead = True
+          inLoopBody = False
+          self.loopHeaders = []
+          if len(fileOut) > 0:
+              #fOut.write( "added 'loop_': " + line )
+              fOut.write( line )
+          continue
 
       elif inLoop:
         #logging.info( " In inLoop option" )
@@ -4049,96 +4154,96 @@ class CsvMaker:
         if inLoopHead:
           #print( "Inside the loop head" )
           if "_" == words[0][0]:
-            self.loopHeaders.append( words[0].strip() )
-            if len(fileOut) > 0:
-              fOut.write( line )
+              self.loopHeaders.append( words[0].strip() )
+              if len(fileOut) > 0:
+                  fOut.write( line )
           else:
-            inLoopHead = False
-            inLoopBody = True
+              inLoopHead = False
+              inLoopBody = True
 
         if inLoopBody:
           if "_" == words[0][0]:
-            inLoop = False
-            #logging.info( " inLoop is set to False" )
-            if len(fileOut) > 0:
-              fOut.write( line )
-            #self.loopHeaders = []
+              inLoop = False
+              #logging.info( " inLoop is set to False" )
+              if len(fileOut) > 0:
+                  fOut.write( line )
+              #self.loopHeaders = []
             
           else:
-            lineNew, nbrac = self.splitErrorBarLoop( line, self.loopHeaders, file_line )
-            countBrackets += nbrac
-            #print( "after stplitErrorBarLoop():", lineNew, nbrac )
-            if len(fileOut) > 0:
-              fOut.write( lineNew )
-            continue
-            pass
+              lineNew, nbrac = self.splitErrorBarLoop( line, self.loopHeaders, file_line )
+              countBrackets += nbrac
+              #print( "after stplitErrorBarLoop():", lineNew, nbrac )
+              if len(fileOut) > 0:
+                  fOut.write( lineNew )
+              continue
+              pass
 
           pass
 
         #print( "headers =", self.loopHeaders )
 
       elif len(words) > 2:
-        #logging.info( " Length of string = " + str(len(words)) + " " + file_line )
-        if len(fileOut) > 0:
-          fOut.write( line )
-        pass
+          #logging.info( " Length of string = " + str(len(words)) + " " + file_line )
+          if len(fileOut) > 0:
+              fOut.write( line )
+          pass
 
       elif "_" == words[0][0]:
         #print( "Checking property", words[0], "is it in list of known?", words[0] in self.entriesWithUncertainties ) 
         if False == inLoop:
-          if len(words) == 1:
-            #logging.info( " Only 1 entry in '" + line.strip() + "' " + file_line + ". I skip this case." )
-            if len(fileOut) > 0:
-              fOut.write( line )
-            continue
-          elif len(words) > 2:
-            #logging.info( " More than 2 entries in '" + line.strip() + "' " + file_line + ". I skip this case." )
-            if len(fileOut) > 0:
-              fOut.write( line )
-            continue
+            if len(words) == 1:
+                #logging.info( " Only 1 entry in '" + line.strip() + "' " + file_line + ". I skip this case." )
+                if len(fileOut) > 0:
+                    fOut.write( line )
+                continue
+            elif len(words) > 2:
+                #logging.info( " More than 2 entries in '" + line.strip() + "' " + file_line + ". I skip this case." )
+                if len(fileOut) > 0:
+                    fOut.write( line )
+                continue
             
-          elif words[0] in self.entriesWithUncertainties:
-            logging.info( " Found one of the entries:" + words[0]  )
-            vOut, eOut = self.splitErrorBar( words[1], file_line )
-            if "" != eOut:
-              countBrackets += 1
-              self.setValueAndError( cifName, words[0], vOut, eOut )
+            elif words[0] in self.entriesWithUncertainties:
+                logging.info( " Found one of the entries:" + words[0]  )
+                vOut, eOut = self.splitErrorBar( words[1], file_line )
+                if "" != eOut:
+                    countBrackets += 1
+                    self.setValueAndError( cifName, words[0], vOut, eOut )
 
-            pos = line.find( words[1] )
+                pos = line.find( words[1] )
 
-            newLine = line.replace( words[1], vOut )
-            if len(fileOut) > 0:
-              fOut.write( newLine )
-              #fOut.write( line[:pos] + vOut + "\n" )
-            continue
+                newLine = line.replace( words[1], vOut )
+                if len(fileOut) > 0:
+                    fOut.write( newLine )
+                    #fOut.write( line[:pos] + vOut + "\n" )
+                continue
 
-          elif words[0] in self.cifStandard:
-            if len(fileOut) > 0:
-              fOut.write( line )
-          else:
-            logging.warning( " Unknown situation. Line = '" + line.strip() + 
-                             "'. " + file_line + "." )
-            if len(fileOut) > 0:
-              fOut.write( line )
+            elif words[0] in self.cifStandard:
+                if len(fileOut) > 0:
+                    fOut.write( line )
+            else:
+                logging.warning( " Unknown situation. Line = '" + line.strip() + 
+                                   "'. " + file_line + "." )
+                if len(fileOut) > 0:
+                    fOut.write( line )
         else:
-          if len(fileOut) > 0:
-            fOut.write( line )
+            if len(fileOut) > 0:
+                fOut.write( line )
 
       elif len(words) == 2:
-        #logging.warning( " Length of string = " + str(len(words)) + " " + file_line )
-        if len(fileOut) > 0:
-          fOut.write( line )
-        pass
+          #logging.warning( " Length of string = " + str(len(words)) + " " + file_line )
+          if len(fileOut) > 0:
+              fOut.write( line )
+          pass
 
       else:
-        #logging.warning( " default else option." )
-        if len(fileOut) > 0:
-          fOut.write( line )
-        pass
+          #logging.warning( " default else option." )
+          if len(fileOut) > 0:
+              fOut.write( line )
+          pass
 
     fIn.close()
     if len(fileOut) > 0:
-      fOut.close()
+        fOut.close()
 
     #print( "Number of brackets =", countBrackets )
     return countBrackets
@@ -4149,7 +4254,7 @@ class CsvMaker:
     errCount = 0
 
     self.prepare()
-    self.zeoList = self.zeoList[0:1]
+    #self.zeoList = self.zeoList[0:1]
 
     t_start = datetime.datetime.now()
     for iz, z in enumerate(self.zeoList):
