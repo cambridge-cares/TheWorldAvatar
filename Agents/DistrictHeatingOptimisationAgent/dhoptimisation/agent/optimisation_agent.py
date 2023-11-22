@@ -194,6 +194,7 @@ class DHOptimisationAgent(DerivationAgent):
         
         # 3) Optimize heat generation modes
         self.logger.info('Optimising heat generation ...')
+        clear_plots = False
         # Reset gas turbine etc. states for non-related optimisation runs
         if (datetime.strptime(opti_start_dt, time_format) - timedelta(hours=1)).strftime(time_format) != self.previous_state.start_dt:
             # Otherwise: If the previous optimisation interval covered [t1, t2] and
@@ -202,6 +203,7 @@ class DHOptimisationAgent(DerivationAgent):
             self.logger.info('Requested optimisation interval not related to previous optimisation. ' +
                              'Resetting system state prior to optimisation ...')
             self.previous_state.reset_system_state()
+            clear_plots = True
         # Run generation optimisation for entire optimisation horizon
         optimised, _, _ = generation_optimization(swps, prices, index, self.previous_state)
         
@@ -326,6 +328,9 @@ class DHOptimisationAgent(DerivationAgent):
                                       values=generation_opt.get('Min_cost').values)
         
         # Create plots
+        if clear_plots:
+            # Delete previous output figures from non-related optimisation runs
+            clear_repository()
         self.logger.info('Creating output plots ...')
         # 1) plot comparison of heat generation/sourcing composition
         plot_entire_heat_generation(generation_hist, generation_opt, prices.el_spot)

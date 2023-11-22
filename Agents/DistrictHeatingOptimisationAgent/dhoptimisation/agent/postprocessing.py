@@ -21,6 +21,24 @@ from dhoptimisation.agent.optimisation_tasks import *
 OPTIMISATION_FIGURES_REPO = '/app/dhoptimisation/resources/optimisation_figures/'
 
 
+def clear_repository(repo_path=OPTIMISATION_FIGURES_REPO):
+    """
+    Delete previous output figures from non-related optimisation runs
+    """
+    # Ensure the path is valid
+    if not os.path.exists(repo_path):
+        raise_error(ValueError, f"The repository '{repo_path}' does not exist.")
+
+    # Clear the repository
+    try:
+        for f in os.listdir(repo_path):
+            if f.endswith(".png"):
+                os.remove(os.path.join(repo_path, f))
+        logger.info(f"Repository at '{repo_path}' has been cleared.")
+    except Exception as ex:
+        raise_error(Exception, f"Unable to clear repository - {ex}")
+
+
 def evaluate_historic_generation(historic_generation, gen_objects, gas_props, market_prices):
     """
     Returns total generation/sourcing cost for given heat amounts (per source and time interval)
@@ -227,8 +245,11 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
     ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M")) 
     ax[2].set_xlim([historic_generation.index[0], historic_generation.index[-1]])
     
-    plt.tight_layout()    
-    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name +'.png'))
+    plt.tight_layout()  
+    
+    # Save figure with timestamp in name
+    fig_name += '_' + historic_generation.index[0].strftime(TIME_FORMAT) + '.png'
+    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name))
 
 
 def plot_generation_cost(generation_hist, optimized_generation,
@@ -296,8 +317,11 @@ def plot_generation_cost(generation_hist, optimized_generation,
     ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M")) 
     ax[2].set_xlim([generation_hist.index[0], generation_hist.index[-1]])
 
-    plt.tight_layout()    
-    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name +'.png'))
+    plt.tight_layout()   
+     
+    # Save figure with timestamp in name
+    fig_name += '_' + generation_hist.index[0].strftime(TIME_FORMAT) + '.png'
+    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name))
 
 
 def plot_forecast_quality(historical_ts, forecasted_ts,
@@ -349,4 +373,6 @@ def plot_forecast_quality(historical_ts, forecasted_ts,
     f.suptitle(historical_ts.name.replace('_', ' ') + ' - forecast analysis')
     plt.tight_layout()
     
-    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name +'.png'))
+    # Save figure with timestamp in name
+    fig_name += '_' + historical_ts.index[0].strftime(TIME_FORMAT) + '.png'
+    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name))
