@@ -345,7 +345,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		latestTimeStamp = LatestTimeSeries.getTimes().get(LatestTimeSeries.getTimes().size() - 1);
 		Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
-        sdf.setTimeZone(TimeZone.getTimeZone("SGT"));
+        sdf.setTimeZone(TimeZone.getDefault());
         Object ts = sdf.format(date);
 		result.put("Latest In/Out Status", latestTimeSeriesValue + " since " + ts.toString());
 
