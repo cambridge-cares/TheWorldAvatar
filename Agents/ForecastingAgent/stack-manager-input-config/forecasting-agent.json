@@ -7,7 +7,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/ForecastingAgent/forecastingagent/fcmodels",
+                        "Source": "/<REPLACE_WITH_PATH_TO_TWA_DIRECTORY>/Agents/ForecastingAgent/forecastingagent/fcmodels",
                         "Target": "/app/forecastingagent/fcmodels"
                     }
                 ],
