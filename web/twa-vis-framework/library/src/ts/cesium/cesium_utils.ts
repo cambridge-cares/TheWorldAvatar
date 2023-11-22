@@ -1,5 +1,5 @@
 /**
- * Utilities specific to Mapbox implementations
+ * Utilities specific to CesiumJS implementations.
  */
 class CesiumUtils {
     
@@ -446,7 +446,7 @@ class CesiumUtils {
     }
 
     /**
-     * 
+     * Returns lst of layer ID that support clipping planes.
      */
     public static getLayersWithClipping(dataStore: DataStore) {
         let matches = {};
@@ -458,6 +458,7 @@ class CesiumUtils {
     }
 
     /**
+     * Utility to recurse and find layer IDs that support clipping planes.
      * 
      * @param dataGroup 
      * @param matches 
@@ -484,6 +485,7 @@ class CesiumUtils {
     }
 
     /**
+     * Returns an array of Cesium primitives currently on the map.
      * 
      * @param layerID 
      * @returns 

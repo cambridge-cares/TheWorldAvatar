@@ -9,59 +9,14 @@ import os
 
 # Third-party imports
 import trimesh
+import pandas as pd
 
 # Self imports
-from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, append_tileset_assets, append_assets_to_tileset, \
+from agent.ifc2tileset.asset_tiles import append_tileset_assets, append_assets_to_tileset, \
     append_assets_to_tile
-from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
-from agent.ifc2tileset.tile_helper import make_root_tile
 from tests.unit_test.ifc2tileset.testutils import gen_sample_asset_df, gen_sample_tileset, gen_sample_asset_contents, \
     z_up_to_y_up
-
-
-def test_append_asset_metadata_schema():
-    # Arrange
-    root_tile = make_root_tile([])
-    tileset = make_tileset(root_tile)
-    append_tileset_schema_and_metadata(tileset, "buildingIri")
-
-    expected_asset_metadata_schema = {
-        "description": "A metadata class for all individual assets",
-        "name": "Asset metadata",
-        "properties": {
-            "name": {
-                "description": "Name of the asset",
-                "type": "STRING"
-            },
-            "uid": {
-                "description": "Unique identifier generated in IFC",
-                "type": "STRING"
-            },
-            "iri": {
-                "description": "Data IRI of the asset",
-                "type": "STRING"
-            }
-        }
-    }
-
-    # Act
-    append_asset_metadata_schema(tileset)
-
-    # Assert
-    assert "asset" in tileset and tileset["asset"] == {"version": "1.1"}
-    assert "geometricError" in tileset and tileset["geometricError"] == 1024
-    assert "root" in tileset
-    assert "schema" in tileset
-
-    root = tileset["root"]
-    assert "geometricError" in root and root["geometricError"] == 512
-    assert "content" not in root
-    assert "contents" not in root
-
-    schema = tileset["schema"]
-    assert "classes" in schema and "AssetMetaData" in schema["classes"] \
-           and schema["classes"]["AssetMetaData"] == expected_asset_metadata_schema
-
+from tests.unit_test.ifc2tileset.testconsts import expected_content_metadata_schema
 
 def test_append_assets_to_tile_node():
     # Arrange
@@ -182,6 +137,17 @@ def test_append_assets_more_than_six_assets():
             assert "children" not in child_node
         assert expected_fields.items() <= child_node.items()
 
+def test_append_tileset_assets_no_asset_values():
+    """
+    Tests gen_tileset_assets() when there is an empty dataframe ie no assets
+    """
+    # Generate sample tileset
+    tileset = {}
+    # Act
+    append_tileset_assets(tileset, pd.DataFrame())
+
+    # Assert
+    assert len(tileset) == 0
 
 def test_append_tileset_assets():
     """
@@ -216,6 +182,7 @@ def test_append_tileset_assets():
 
     # Assert
     assert "root" in tileset
+    assert tileset["schema"] == expected_content_metadata_schema
     child_nodes = flatten_child_nodes(tileset["root"])
     assert "children" not in child_nodes[-1]
     for i, (child_node, expected_fields) in enumerate(zip(child_nodes, expected_fields_of_child_nodes)):

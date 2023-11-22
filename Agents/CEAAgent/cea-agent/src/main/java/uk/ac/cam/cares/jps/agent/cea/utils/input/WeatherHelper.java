@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
+import org.locationtech.jts.geom.*;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -8,7 +10,6 @@ import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -30,8 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -78,33 +77,55 @@ public class WeatherHelper extends JPSAgent {
     }
     /**
      * Retrieves weather data
-     * @param uriString city object id
-     * @param route route to city object geometry data
      * @param weatherRoute route to weather data
      * @param crs CRS of city object geometry
      * @param result list to add the retrieved weather data to
      * @return true if weather data retrieved, false otherwise
      */
-    public boolean getWeather(String uriString, String route, String weatherRoute, String crs, List<Object> result) {
-        GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
-        String envelopeCoordinates = geometryQueryHelper.getValue(uriString, "envelope", route);
+    public boolean getWeather(CEAGeometryData building, List<CEAGeometryData> surroundings, String weatherRoute, String crs, List<Object> result) {
+        Envelope envelope = new Envelope();
+        Coordinate centerCoordinate;
+        Double elevation = 0.0;
+        long count = 0;
+        if (surroundings != null) {
+            for (CEAGeometryData ceaGeometryData : surroundings) {
+                for (Geometry geometry : ceaGeometryData.getFootprint()) {
+                    envelope.expandToInclude(geometry.getEnvelopeInternal());
+                    elevation += Arrays.stream(geometry.getCoordinates())
+                            .mapToDouble(coordinate -> Double.isNaN(coordinate.getZ()) ? 0.0 :coordinate.z)
+                            .sum();
+                    count += Arrays.stream(geometry.getCoordinates())
+                            .filter(coordinate -> !Double.isNaN(coordinate.getZ()))
+                            .count();
+                }
+            }
 
-        Polygon envelopePolygon = (Polygon) GeometryHandler.toPolygon(envelopeCoordinates);
+            elevation = elevation / count;
+        }
+        else {
+            for (Geometry geometry : building.getFootprint()) {
+                envelope.expandToInclude(geometry.getEnvelopeInternal());
+                elevation += Arrays.stream(geometry.getCoordinates())
+                        .mapToDouble(coordinate -> Double.isNaN(coordinate.getZ()) ? 0.0 :coordinate.z)
+                        .sum();
+                count += Arrays.stream(geometry.getCoordinates())
+                        .filter(coordinate -> !Double.isNaN(coordinate.getZ()))
+                        .count();
+            }
 
-        Double elevation = envelopePolygon.getCoordinate().getZ();
+            elevation = elevation / count;
+        }
+        if (count == 0) {
+            elevation = 100.00;
+        }
 
-        Point center = envelopePolygon.getCentroid();
-
-        Coordinate centerCoordinate = center.getCoordinate();
+        centerCoordinate = envelope.centre();
 
         crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
 
         try {
             // coordinate in (longitude, latitude) format
-            Coordinate transformedCoordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
-
-            // coordinate in (latitude, longitude) format
-            Coordinate coordinate = new Coordinate(transformedCoordinate.getY(), transformedCoordinate.getX(), transformedCoordinate.getZ());
+            Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
 
             String stationIRI = getWeatherStation(coordinate, 2.0, weatherRoute);
 
@@ -157,6 +178,7 @@ public class WeatherHelper extends JPSAgent {
 
             return true;
         } catch (Exception e) {
+            System.out.println("No weather data retrieved, agent will run CEA with CEA's default weather.");
             return false;
         }
     }
@@ -215,25 +237,25 @@ public class WeatherHelper extends JPSAgent {
     private String getWeatherStation(Coordinate center, Double radius, String route) {
         String result = "";
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
+                .addPrefix("geoservice", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoservice))
                 .addPrefix("geoliteral", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoliteral))
                 .addPrefix("ontoems", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems));
 
-        wb.addWhere("?station", "geo:search", "inCircle")
-                .addWhere("?station", "geo:searchDatatype", "geoliteral:lat-lon")
-                .addWhere("?station", "geo:predicate", "ontoems:hasObservationLocation")
+        wb.addWhere("?station", "geoservice:search", "inCircle")
+                .addWhere("?station", "geoservice:searchDatatype", "geoliteral:lat-lon")
+                .addWhere("?station", "geoservice:predicate", "ontoems:hasObservationLocation")
                 // PLACEHOLDER because the coordinate will be treated as doubles instead of string otherwise
-                .addWhere("?station", "geo:spatialCircleCenter", center.getX() + "PLACEHOLDER" + center.getY())
-                .addWhere("?station", "geo:spatialCircleRadius", radius);
+                .addWhere("?station", "geoservice:spatialCircleCenter", center.getX() + "PLACEHOLDER" + center.getY())
+                .addWhere("?station", "geoservice:spatialCircleRadius", radius);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar("?station");
 
         Query query = sb.build();
 
-        // add geospatial service
+        // add geoservicespatial service
         ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo) + "search", wb.build().getQueryPattern()));
+        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoservice) + "search", wb.build().getQueryPattern()));
         query.setQueryPattern(body);
 
         String queryString = query.toString().replace("PLACEHOLDER", "#");

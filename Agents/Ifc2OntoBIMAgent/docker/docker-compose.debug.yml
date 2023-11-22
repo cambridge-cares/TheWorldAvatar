@@ -3,7 +3,7 @@ version: '3.9'
 services:
   ifc2ontobim:
     container_name: ifc2ontobim-agent-debug
-    image: ifc2ontobim-agent:1.2.0
+    image: ifc2ontobim-agent:1.2.1
     build:
       context: ..
       target: agent
