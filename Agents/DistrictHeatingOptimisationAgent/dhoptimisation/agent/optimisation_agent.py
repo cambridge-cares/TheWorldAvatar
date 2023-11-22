@@ -370,12 +370,18 @@ class DHOptimisationAgent(DerivationAgent):
             # Assess cost savings
             df = pd.concat([fc, hist], axis=1)
             df['saving'] = df['hist'] - df['fc']
-            
+            # Optimisation interval in days
+            days = (df.index[-1] - df.index[0]).total_seconds()/(24*60*60)
             # Initialise return json
             response = {
-                'Optimisation start': t1,
-                'Optimisation end': t2,
-                'Savings (EUR)': round(df['saving'].sum(), 2)
+                'Optimisation interval': 
+                    {'Start': t1, 'End': t2 },
+                'Heat generation cost (EUR)': 
+                    {'Historical generation': round(df['hist'].sum(), 2),
+                     'Optimised generation': round(df['fc'].sum(), 2),
+                     'Total savings': round(df['saving'].sum(), 2),
+                     'Average savings per day': round(df['saving'].sum() / days, 2),
+                    }
             }
 
             return jsonify(response), 200
