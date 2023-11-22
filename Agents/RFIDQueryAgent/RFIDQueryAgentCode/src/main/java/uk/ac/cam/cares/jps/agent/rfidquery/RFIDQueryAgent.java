@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -65,15 +64,24 @@ public class RFIDQueryAgent{
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
     /**
-     * Standard constructor which receives and parses DataIRIs from the AgentLauncher class.
+     * Standard constructor for the check route which receives and parses DataIRIs from the AgentLauncher class.
      * @param dataIRIs The data IRIs to query latest data for
+     * @param Hours  The threshold number of hours
      */
     public RFIDQueryAgent(String dataIRIs, String Hours) throws IOException {
         for (int i = 0; i <= dataIRIs.split(",").length - 1; i++) {
             this.dataIRIList.add(i, dataIRIs.split(",")[i]);
         }
+        LOGGER.info("Created agent for check route...");
         LOGGER.info("The first element in this list is " + dataIRIList.get(0));
         this.numOfHours = Long.valueOf(Hours);
+    }
+
+    /**
+     * Standard constructor for the retrieveData route
+     */
+    public RFIDQueryAgent() throws IOException {
+        LOGGER.info("Created agent for retrieveData route...");
     }
 
     /**

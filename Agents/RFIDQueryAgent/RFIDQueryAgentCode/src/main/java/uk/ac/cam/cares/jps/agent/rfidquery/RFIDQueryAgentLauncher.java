@@ -13,15 +13,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.*;
 import javax.servlet.annotation.WebServlet;
-import javax.ws.rs.BadRequestException;
-
 import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 
 @WebServlet(urlPatterns = {"/check, /retrieveData"})
@@ -49,6 +49,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     //keys in the request's JSON Object
     public static final String KEY_TIMESERIES_CLIENTPROPERTIES = "timeSeriesClientProperties";
     public static final String KEY_DATAIRIS = "dataIRIs";
+	public static final String KEY_TAGGEDOBJECTIRI = "taggedObjectIRI";
 	public static final String KEY_NUMOFHOURS = "hours";
 	public static final String KEY_SPECIES_PROPERTIES = "speciesProperties";
 	public static final String KEY_CONTAINSPECIES = "containSpecies";
@@ -75,85 +76,46 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
     	JSONObject jsonMessage = new JSONObject();
-		String[] args;
-		if (validateInput(requestParams)) {
-			LOGGER.info("Passing request to Agent..");
-        	String timeseriesDataClientProperties = System.getenv(requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
-        	String DataIRIs = requestParams.getString(KEY_DATAIRIS);
-			String numOfHours = requestParams.getString(KEY_NUMOFHOURS);
-			String speciesProperties = System.getenv(requestParams.getString(KEY_SPECIES_PROPERTIES));
-			String containSpecies = requestParams.getString(KEY_CONTAINSPECIES);
-            args = new String[] {timeseriesDataClientProperties, DataIRIs, numOfHours, speciesProperties, containSpecies};
-			String originalUrl = request.getRequestURI();
-            jsonMessage = initializeAgent(args, originalUrl);
-            jsonMessage.accumulate("message","POST request has been sent successfully.");
-            requestParams = jsonMessage;
-		}
-		else {
-			LOGGER.info("Unable to validate request sent to the agent!");
-			throw new JPSRuntimeException("Unable to validate request sent to the agent!");
-		}
-		return requestParams;
+		LOGGER.info("Passing request to Agent..");
+		String originalUrl = request.getRequestURI();
+        jsonMessage = initializeAgent(requestParams, originalUrl);
+		return jsonMessage;
 	}
-    
-    @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-      boolean validate = true;
 
-      String timeseriesClientProperties;
-      String speciesProperties;
-      if (requestParams.isEmpty()) {
-    	  validate = false;
-    	  LOGGER.info("Empty Request!");  
-      }
-      else {
-		validate = requestParams.has(KEY_TIMESERIES_CLIENTPROPERTIES);
-		if (validate == true) {
-			validate = requestParams.has(KEY_DATAIRIS);
-		}
-		if (validate == true) {
-			validate = requestParams.has(KEY_NUMOFHOURS);
-		} if (validate == true) {
-			validate = requestParams.has(KEY_CONTAINSPECIES);
-		}
-		if (validate == true) {
-			timeseriesClientProperties =  (requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
-			if (System.getenv(timeseriesClientProperties) == null) {
-				validate = false;
-				LOGGER.info("Unable to validate location of client.properties!");
-			}
-		}
-		if (validate == true) {
-			speciesProperties =  (requestParams.getString(KEY_SPECIES_PROPERTIES));
-			if (System.getenv(speciesProperties) == null) {
-				validate = false;
-				LOGGER.info("Unable to validate location of species.properties!");
-			}
-		}
-		
-	}
-	return validate;
-    }
-    
-	 /**
-     * @param args A String[] {timeseriesDataClientProperties, DataIRIs, numOfHours, speciesProperties, containSpecies}
-     */
-    public JSONObject initializeAgent(String[] args, String originalUrl) {
-    	 // Ensure that there are five arguments provided
-        if (args.length != 5) {
-            LOGGER.error(ARGUMENT_MISMATCH_MSG);
-            throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
-        }
+	/**
+	 * Start agent and run the relevant route based on the url
+	 * @param requestParams
+	 * @param originalUrl
+	 * @return
+	 */
+    public JSONObject initializeAgent(JSONObject requestParams, String originalUrl) {
+		String[] args;
 		JSONObject result = new JSONObject();
-		LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
 		String url = originalUrl.substring(originalUrl.lastIndexOf("/"), originalUrl.length());
-		LOGGER.info("The url is " + url);
 		switch (url) {
 			case "/check": {
+				try {
+					String timeseriesDataClientProperties = System.getenv(requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
+        			String DataIRIs = requestParams.getString(KEY_DATAIRIS);
+					String numOfHours = requestParams.getString(KEY_NUMOFHOURS);
+					String speciesProperties = System.getenv(requestParams.getString(KEY_SPECIES_PROPERTIES));
+					String containSpecies = requestParams.getString(KEY_CONTAINSPECIES);
+            		args = new String[] {timeseriesDataClientProperties, DataIRIs, numOfHours, speciesProperties, containSpecies};
+				} catch (JSONException e) {
+					throw new JSONException("missing input parameters!", e);
+				}
 				result = executeCheck(args);
 				break;
 			}
 			case "/retrieveData": {
+				try {
+					String timeseriesDataClientProperties = System.getenv(requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
+        			String taggedObjectIRI = requestParams.getString(KEY_TAGGEDOBJECTIRI);
+					String speciesProperties = System.getenv(requestParams.getString(KEY_SPECIES_PROPERTIES));
+            		args = new String[] {timeseriesDataClientProperties, taggedObjectIRI, speciesProperties};
+				} catch (JSONException e) {
+					throw new JSONException("missing input parameters!", e);
+				}
 				result = executeRetrieveData(args);
 				break;
 			}
@@ -161,11 +123,12 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		return result;
 	}
 
-	private JSONObject executeRetrieveData(String[] args) {
-		return null;
-	}
-
 	private JSONObject executeCheck(String[] args) {
+		// Ensure that there are five arguments provided
+        if (args.length != 5) {
+            LOGGER.error(ARGUMENT_MISMATCH_MSG);
+            throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
+        }
 		// Create the agent
 		RFIDQueryAgent agent;
 		try {
@@ -174,10 +137,10 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			LOGGER.error(AGENT_ERROR_MSG, e);
 			throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
 		}
-		LOGGER.info("Input agent object initialized.");
+		LOGGER.info("Input agent initialized.");
 
 		JSONObject jsonMessage = new JSONObject();
-		jsonMessage.accumulate("Result", "Input agent object initialized.");
+		jsonMessage.accumulate("Result", "Input agent initialized.");
 		 
 		try {
 			loadTSClientConfigs(args[0]);
@@ -261,8 +224,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				String speciesIRI;
 				//check whether there are IRIs instantiated via ontocape_material:intrinsicCharacteristics
 				//If so continue the queries to retrieve the chemicalComponent IRI which is equivalent to the species IRI
-				if (builder.queryForChemicalComponentWithIntrinsicCharacteristics(chemicalIRI) != null){
-					speciesIRI = builder.queryForChemicalComponentWithIntrinsicCharacteristics(chemicalIRI);
+				if (builder.queryForChemicalComponent(chemicalIRI) != null){
+					speciesIRI = builder.queryForChemicalComponent(chemicalIRI);
 				} else {
 				//query for phase IRI with chemical IRI via ontocape_material:thermodynamicBehavior
 				String phaseIRI = builder.queryForPhaseWithThermodynamicBehavior(chemicalIRI);
@@ -323,6 +286,127 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		 return jsonMessage;
 	}
 
+	private JSONObject executeRetrieveData(String[] args) {
+		JSONObject result = new JSONObject();
+		// Create the agent
+		RFIDQueryAgent agent;
+		try {
+			agent = new RFIDQueryAgent();
+		} catch (IOException e) {
+			LOGGER.error(AGENT_ERROR_MSG, e);
+			throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
+		}
+		LOGGER.info("Input agent initialized.");
+
+		JSONObject jsonMessage = new JSONObject();
+		jsonMessage.accumulate("Result", "Input agent initialized.");
+		 
+		try {
+			loadTSClientConfigs(args[0]);
+		} catch (IOException e) {
+			throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
+		}
+		 
+		RemoteStoreClient kbClient = new RemoteStoreClient();
+		kbClient.setQueryEndpoint(sparqlQueryEndpoint);
+		kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
+		 
+		RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
+		agent.setRDBClient(rdbStoreClient);
+		 
+		// Create and set the time series client
+		try {
+			tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
+			agent.setTsClient(tsClient);
+		} catch (JPSRuntimeException e) {
+			LOGGER.error(TSCLIENT_ERROR_MSG, e);
+			throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
+		}
+
+		LOGGER.info("Time series client object initialized.");
+		jsonMessage.accumulate("Result", "Time series client object initialized.");
+
+		//Create RFIDQueryBuilder
+		RFIDQueryBuilder builder ;
+		try {
+			builder = new RFIDQueryBuilder(args[0], args[2]);
+		} catch (IOException e) {
+			throw new JPSRuntimeException(QUERYBUILDER_ERROR_MSG,e);
+		}
+
+		String taggedObjectLabel = builder.queryForTaggedObjectLabel(args[1]);
+		result.put("Bottle Label", taggedObjectLabel);
+
+		String tagStateIRI = builder.queryForTagStateIRIFromTaggedObjectIRI(args[1]);
+		OffsetDateTime latestTimeStamp ;
+		TimeSeries<OffsetDateTime> LatestTimeSeries = agent.queryLatestRFIDStatus(tagStateIRI);
+		List<String> dataValuesAsString = LatestTimeSeries.getValuesAsString(tagStateIRI);
+    	String latestTimeSeriesValue = dataValuesAsString.get(dataValuesAsString.size() - 1);
+		latestTimeStamp = LatestTimeSeries.getTimes().get(LatestTimeSeries.getTimes().size() - 1);
+		Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
+        sdf.setTimeZone(TimeZone.getTimeZone("SGT"));
+        Object ts = sdf.format(date);
+		result.put("Latest In/Out Status", latestTimeSeriesValue + " since " + ts.toString());
+
+		//query for tagged chemical container label via rdfs:label
+		String objectLabel = builder.queryForTaggedObjectLabel(args[1]);
+		LOGGER.info("The label of the tagged object is " + objectLabel);
+
+		//query for chemical amount IRI with tagged chemical container IRI via ontolab:isFilledWith
+		String chemicalAmountIRI = builder.queryForChemicalAmountWithIsFilledWith(args[1]);
+		LOGGER.info("The chemical amount IRI retrieved is " + chemicalAmountIRI);
+
+		//query for chemical IRI with chemical amount IRI via ontocape_cps_behavior:refersToMaterial
+		String chemicalIRI = builder.queryForChemicalWithRefersToMaterial(chemicalAmountIRI);
+		LOGGER.info("The material IRI retrieved is " + chemicalIRI);
+
+		String speciesIRI;
+		//check whether there are IRIs instantiated via ontocape_material:intrinsicCharacteristics
+		//If so continue the queries to retrieve the chemicalComponent IRI which is equivalent to the species IRI
+		if (builder.queryForChemicalComponent(chemicalIRI) != null){
+			speciesIRI = builder.queryForChemicalComponent(chemicalIRI);
+		} else {
+			//query for phase IRI with chemical IRI via ontocape_material:thermodynamicBehavior
+			String phaseIRI = builder.queryForPhaseWithThermodynamicBehavior(chemicalIRI);
+			LOGGER.info("The phase IRI retrieved is " + phaseIRI);
+
+			//query for phase component IRI with phase IRI via ontocape_system:isComposedOfSubsystem
+			String phaseComponentIRI = builder.queryForPhaseComponentWithIsComposedOfSubsystem(phaseIRI);
+			LOGGER.info("The phase component IRI retrieved is " + phaseComponentIRI);
+
+			//query for species IRI with phase component IRI via ontocape_phase_system:representsOccurenceOf
+			speciesIRI = builder.queryForSpeciesWithRepresentsOccurenceOf(phaseComponentIRI);
+			LOGGER.info("The species IRI retrieved is " + speciesIRI);
+		}
+
+		String molecularFormula = builder.queryForMolecularFormula(speciesIRI);
+		result.put("Molecular Formula", molecularFormula);
+
+		String molecularWeightValue = builder.queryForMolecularWeightValue(speciesIRI);
+		String molecularWeightUnit = builder.queryForMolecularWeightUnit(speciesIRI);
+		result.put("Molecular Weight", molecularWeightValue + " " + molecularWeightUnit);
+
+		//query for hazard statement IRIs via ontospecies:hasGHSHazardStatements
+		JSONArray GHSHazardStatements = builder.queryForGHSHazardStatements(speciesIRI);
+
+		//query for the label and comment of each hazard statement IRI and put them in a hash map
+		Map<String, List<String>> map = builder.queryForLabelAndCommentForGHSHazardStatements(GHSHazardStatements);
+
+		JSONObject ghsHazardStatements = new JSONObject();
+		
+		for (int i = 0; i <= map.get("label").size() - 1; i++) {
+			String label = map.get("label").get(i);
+			String comment = map.get("comment").get(i);
+			LOGGER.info("The label from the map is " + label);
+			LOGGER.info("The comment from the map is " + comment);
+			ghsHazardStatements.put(label, comment.substring(0, comment.indexOf("[") - 1));
+		}
+
+		result.put("GHS Hazard Statements", ghsHazardStatements);
+		return result;
+	}
+
 
 	/**
      * Reads the username, password, sparql endpoint from a properties file and saves it in fields.
@@ -365,6 +449,12 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 	        } else {
 	        	throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
 	        }
+			if (prop.containsKey("sparql.username")) {
+				kbClient.setUser(prop.getProperty("sparql.username"));
+			}
+			if (prop.containsKey("sparql.password")) {
+				kbClient.setPassword(prop.getProperty("sparql.password"));
+			}
         }
         }
     }
