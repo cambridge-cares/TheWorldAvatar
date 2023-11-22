@@ -200,20 +200,24 @@
                 <div class="controlContents">
                     <div>
                         <input type="checkbox" id="toggleTSPCheckbox_normal" 
-                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-normal', 'visibility', (this.checked) ? 'visible' : 'none');">
+                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-normal', 'visibility', (this.checked) ? 'visible' : 'none');
+                                     MapHandler.MAP.setLayoutProperty('tsp-layer-normal_seq', 'visibility', (this.checked) ? 'visible' : 'none');">
                         <span>Normal road conditions</span>
                     </div>
                     <div>
                         <input type="checkbox" id="toggleTSPCheckbox_30" 
-                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-30', 'visibility', (this.checked) ? 'visible' : 'none');">
+                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-30', 'visibility', (this.checked) ? 'visible' : 'none');
+                                     MapHandler.MAP.setLayoutProperty('tsp-layer-30_seq', 'visibility', (this.checked) ? 'visible' : 'none');">
                         <span>30cm Wading Depth</span>
                     </div>
                     <div>
                         <input type="checkbox" id="toggleTSPCheckbox_90" 
-                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-90', 'visibility', (this.checked) ? 'visible' : 'none');">
+                            onclick="MapHandler.MAP.setLayoutProperty('tsp-layer-90', 'visibility', (this.checked) ? 'visible' : 'none');
+                                     MapHandler.MAP.setLayoutProperty('tsp-layer-90_seq', 'visibility', (this.checked) ? 'visible' : 'none');">
                         <span>90cm Wading Depth</span>
                     </div>
                 </div>
+                
             </div>
 
 
@@ -428,6 +432,12 @@
                 'tsp-layer-30': null,
                 'tsp-data-90': null,
                 'tsp-layer-90': null,
+                'tsp-data-normal_seq': null,
+                'tsp-layer-normal_seq': null,
+                'tsp-data-30_seq': null,
+                'tsp-layer-30_seq': null,
+                'tsp-data-90_seq': null,
+                'tsp-layer-90_seq': null
             };
 
 
@@ -457,7 +467,10 @@
                     let tsp_normal = getRouteTSP('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
                     let tsp_30 = getRouteTSP('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
                     let tsp_90 = getRouteTSP('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
-                    Promise.all([promise_10, promise_30, promise_90, tsp_normal, tsp_30, , tsp_90,]).then(() => { populateDistanceContainer() });
+                    let tsp_normal_seq = getRouteTSP_seq('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
+                    let tsp_30_seq = getRouteTSP_seq('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
+                    let tsp_90_seq = getRouteTSP_seq('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
+                    Promise.all([promise_10, promise_30, promise_90, tsp_normal, tsp_30, , tsp_90,tsp_normal_seq,tsp_30_seq,tsp_90_seq,]).then(() => { populateDistanceContainer() });
                 });
 
 
@@ -507,9 +520,11 @@
                 }
 
 
-                // function to get TSP routes
-                function getRouteTSP(sourceName, layerId, checkboxId, lineColour, typeName) {
+                    // function to get TSP routes
+                    function getRouteTSP(sourceName, layerId, checkboxId, lineColour, typeName) {
                     var url = `http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}&outputFormat=application%2Fjson&viewparams=target:${source};`
+
+                    var tspSeqUrl = `http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}_seq&outputFormat=application%2Fjson&viewparams=target:${source};`
 
                     // Retrieve the GeoJSON data from the URL
                     return fetch(url)
@@ -540,6 +555,55 @@
                                 MapHandler.MAP.setLayoutProperty(layerId, 'visibility', 'none');
                             }
                         });
+
+                }
+                
+
+                // function to get TSP routes
+                function getRouteTSP_seq(sourceName, layerId, checkboxId, lineColour, typeName) {
+
+                var tspSeqUrl = `http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}_seq&outputFormat=application%2Fjson&viewparams=target:${source};`
+                    // Add the TSP sequence layer
+                return fetch(tspSeqUrl)
+                    .then(response => response.json())
+                    .then(seqData => {
+                        MapHandler.MAP.addSource(`${sourceName}_seq`, {
+                            type: 'geojson',
+                            data: seqData
+                        });
+
+                        routeData[`${sourceName}_seq`] = seqData;
+
+                        routeData[`${layerId}_seq`] = MapHandler.MAP.addLayer({
+                            id: `${layerId}_seq`,
+                            type: 'symbol',
+                            source: `${sourceName}_seq`,
+                            layout: {
+                                'text-field': [
+                                                'case',
+                                                ['!=', ['get', 'seq'], null], // Check if 'seq' is not null
+                                                ['get', 'seq'],
+                                                'Unreachable' // Default value if 'seq' is null
+                                            ],
+                                'text-size': 50,
+                                'text-offset': [0, 1],
+                            },
+                            paint: {
+                                'text-color': lineColour,
+                                'text-halo-blur': 10,
+                                'text-halo-color': '#FFFFFF',
+                                "text-halo-width": 3
+                            }
+                        });
+
+                        // Set layer visibility based on checkbox state
+                        var checkbox = document.getElementById(checkboxId);
+                        if (checkbox.checked) {
+                            MapHandler.MAP.setLayoutProperty(`${layerId}_seq`, 'visibility', 'visible');
+                        } else {
+                            MapHandler.MAP.setLayoutProperty(`${layerId}_seq`, 'visibility', 'none');
+                        }
+                    });
 
 
                 }
@@ -578,37 +642,41 @@
                             }
                         });
                 };
+
                 // function to remove the layer
                 function removeLayer() {
-                    // Remove layers and sources and set variables to null
-                    if (MapHandler.MAP.getLayer('my-layer-90') != null) {
-                        MapHandler.MAP.removeLayer('my-layer-90');
-                        MapHandler.MAP.removeSource('my-data-90');
+                    // Remove main layers and sources and set variables to null
+                    removeMainLayer('my-layer-90', 'my-data-90');
+                    removeMainLayer('my-layer-30', 'my-data-30');
+                    removeMainLayer('my-layer-10', 'my-data-10');
+
+                    // Remove TSP sequence layers and sources
+                    removeTSPLayer('tsp-layer-normal', 'tsp-data-normal');
+                    removeTSPLayer('tsp-layer-30', 'tsp-data-30');
+                    removeTSPLayer('tsp-layer-90', 'tsp-data-90');
+                }
+
+                function removeMainLayer(layerId, sourceId) {
+                    if (MapHandler.MAP.getLayer(layerId) != null) {
+                        MapHandler.MAP.removeLayer(layerId);
+                        MapHandler.MAP.removeSource(sourceId);
                     }
-                    if (MapHandler.MAP.getLayer('my-layer-30') != null) {
-                        MapHandler.MAP.removeLayer('my-layer-30');
-                        MapHandler.MAP.removeSource('my-data-30');
+                }
+
+                function removeTSPLayer(layerId, sourceId) {
+                    // Remove TSP sequence layer and source
+                    if (MapHandler.MAP.getLayer(layerId) != null) {
+                        MapHandler.MAP.removeLayer(layerId);
+                        MapHandler.MAP.removeSource(sourceId);
                     }
-                    if (MapHandler.MAP.getLayer('my-layer-10') != null) {
-                        MapHandler.MAP.removeLayer('my-layer-10');
-                        MapHandler.MAP.removeSource('my-data-10');
-                    };
 
-                    if (MapHandler.MAP.getLayer('tsp-layer-normal') != null) {
-                        MapHandler.MAP.removeLayer('tsp-layer-normal');
-                        MapHandler.MAP.removeSource('tsp-data-normal');
-                    };
-
-                    if (MapHandler.MAP.getLayer('tsp-layer-30') != null) {
-                        MapHandler.MAP.removeLayer('tsp-layer-30');
-                        MapHandler.MAP.removeSource('tsp-data-30');
-                    };
-
-                    if (MapHandler.MAP.getLayer('tsp-layer-90') != null) {
-                        MapHandler.MAP.removeLayer('tsp-layer-90');
-                        MapHandler.MAP.removeSource('tsp-data-90');
-                    };
-
+                    // Remove TSP sequence layer and source
+                    const seqLayerId = `${layerId}_seq`;
+                    const seqSourceId = `${sourceId}_seq`;
+                    if (MapHandler.MAP.getLayer(seqLayerId) != null) {
+                        MapHandler.MAP.removeLayer(seqLayerId);
+                        MapHandler.MAP.removeSource(seqSourceId);
+                    }
                 }
                 // function to populate distance container
                 function populateDistanceContainer() {
@@ -667,7 +735,14 @@
                     let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
                     let promise_30 = getRoute('my-data-30', 'my-layer-30', 'toggleRoutesCheckbox2', '#157B3E', 'kingslynn:shortest_paths_with_flood_30');
                     let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
-                    Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
+
+                    let tsp_normal = getRouteTSP('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
+                    let tsp_30 = getRouteTSP('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
+                    let tsp_90 = getRouteTSP('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
+                    let tsp_normal_seq = getRouteTSP_seq('tsp-data-normal', 'tsp-layer-normal', 'toggleTSPCheckbox_normal', '#e79b3d', 'TSP_Drive_Normal');
+                    let tsp_30_seq = getRouteTSP_seq('tsp-data-30', 'tsp-layer-30', 'toggleTSPCheckbox_30', '#157B3E', 'TSP_Drive_Flooded_30cm');
+                    let tsp_90_seq = getRouteTSP_seq('tsp-data-90', 'tsp-layer-90', 'toggleTSPCheckbox_90', '#0B4452', 'TSP_Drive_Flooded_90cm');
+                    Promise.all([promise_10, promise_30, promise_90, tsp_normal, tsp_30, , tsp_90,tsp_normal_seq,tsp_30_seq,tsp_90_seq,]).then(() => { populateDistanceContainer() });
                 }
                 dataPromise.then(() => initialRoute());
                 // Add a scale control to the map
