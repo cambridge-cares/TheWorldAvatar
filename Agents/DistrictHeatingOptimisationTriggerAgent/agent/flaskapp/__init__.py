@@ -137,6 +137,7 @@ def trigger_optimisation_task(params):
                 
                 ###   Instantiate derivation markups   ###
                 # 1) Forecast derivations
+                print('Instantiate/update forecast derivations ...')
                 #    1) Heat demand
                 if not fc_deriv_iris:
                     heat_demand = kg_client.get_heat_demand()
@@ -164,6 +165,7 @@ def trigger_optimisation_task(params):
                         print(f"Forecast derivation instance successfully updated: {d}")
 
                 # 2) Generation optimisation derivation
+                print('Instantiate/update heat generation optimisation derivation ...')
                 if not opti_deriv_iri:
                     # NOTE: Instantiated using "createSyncDerivationForNewInfo" for same
                     #       reason as above, i.e., ensure initial generation of output triples
@@ -180,6 +182,7 @@ def trigger_optimisation_task(params):
                     print(f"Generation optimisation derivation instance successfully updated: {opti_deriv_iri[0]}")
 
                 # 3) Emission estimation derivations
+                print('Instantiate/update emission estimation derivations ...')
                 if not em_deriv_iri:
                     # Get all optimisation derivation outputs
                     opti_outputs = kg_client.get_derivation_outputs(opti_deriv_iri)
@@ -206,6 +209,8 @@ def trigger_optimisation_task(params):
                 #    Interactor agent
                 # NOTE: Aermod architecture allows for initialisation/requesting
                 #       of multiple derivations at the same time
+                # Initialise dict of all dispersion derivations
+                disp_deriv_iris = {}
                 pathlist = list(Path("./resources/dispersion_interactor").glob('*.json'))
                 for p in pathlist:
                     # Read "hardcoded" parameters from json files (i.e., in bind-mount)
@@ -222,6 +227,7 @@ def trigger_optimisation_task(params):
                             # Parse the response JSON and extract "derivation" IRI
                             result = response.json()
                             disp_deriv_iri = result.get("derivation")
+                            disp_deriv_iris[parameters.get('label')] = disp_deriv_iri
                             print(f"Dispersion derivation instance with label \"{parameters.get('label')}\" "
                                   +f"(created or retrieved): {disp_deriv_iri}")
                         except:
@@ -241,11 +247,13 @@ def trigger_optimisation_task(params):
                                             sim_t, t1, opti_t1, t1, opti_t2, t2)
 
 
-            # Request derivation update via Aermod Agent
+            # Request derivation update(s) via Aermod Agent
             print('')
             print(f"Trigger optimisation run {run+1}/{params['numberOfTimeSteps']} "
-                  +"by requesting derivation update from Aermod ...")
-            derivation_client.unifiedUpdateDerivation(disp_deriv_iri)
+                  +"by requesting derivation update(s) from Aermod ...")
+            for key, value in disp_deriv_iris.items():
+                logger.info(f'Requesting update for dispersion derivation \"{key}\".')
+                derivation_client.unifiedUpdateDerivation(value)
             # NOTE: Aermod Agent queries emission derivations via StaticPointSources 
             # and requests update; all other derivation updates are handled by DIF 
             # directly as derivationscare directly linked via I/O relations in KG            
