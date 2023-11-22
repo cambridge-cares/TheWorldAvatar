@@ -4,9 +4,10 @@
 import warnings
 import logging
 logging.getLogger("py4j").setLevel(logging.ERROR)
+# Set the logging level to suppress findfont messages
+logging.getLogger('matplotlib').setLevel(logging.WARNING)
 # Specify logger level to be used throughout the agent: dev, prod
-# TODO: adjust for production
-logger_level = 'dev'
+logger_level = 'prod'
 
 from py4jps import agentlogging
 from pyderivationagent.conf import config_derivation_agent

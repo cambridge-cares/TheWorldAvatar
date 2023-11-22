@@ -76,12 +76,13 @@ class KGClient(PySparqlClient):
                    self.get_unique_value(res, 'unit')
 
         else:
-            # Throw exception if no or multiple dataIRIs (with units) are found
+            # Log situation and throw default exception (to be caught) if no or
+            # multiple dataIRIs (with units) are found
             if len(res) == 0:
-                msg = f'No "dataIRI" associated with given instance: {instance_iri} via {relationship}.'
+                logger.info(f'No "dataIRI" associated with given instance: {instance_iri} via {relationship}.')
             else:
-                msg = f'Multiple "dataIRI"s associated with given instance: {instance_iri} via {relationship}.'
-            raise_error(ValueError, msg)
+                logger.info(f'Multiple "dataIRI"s associated with given instance: {instance_iri} via {relationship}.')
+            raise ValueError
             
             
     def get_rdftype(self, instance_iri:str) -> tuple:
@@ -1115,5 +1116,5 @@ class KGClient(PySparqlClient):
                 msg = f"No value found for key: {key}."
             else:
                 msg = f"Multiple values found for key: {key}."
-            logger.warning(msg)
+            logger.info(msg)
             return None

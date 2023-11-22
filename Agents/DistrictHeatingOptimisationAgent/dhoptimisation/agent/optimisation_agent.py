@@ -81,7 +81,7 @@ class DHOptimisationAgent(DerivationAgent):
             time_format {str} -- Python compliant time format
         """
         
-        self.logger.info(f'Validating inputs for derivation {derivationIRI}...')
+        print(f'Validating inputs for derivation {derivationIRI} ...')
         
         # Initialise dict of return values
         opti_inputs = {}
@@ -131,7 +131,7 @@ class DHOptimisationAgent(DerivationAgent):
         # Otherwise append mapped IRIs to return dict
         opti_inputs.update(fc_mapping)
         
-        self.logger.info('Inputs successfully validated.')
+        print('Inputs successfully validated.')
 
         return opti_inputs, t1, t2, ts_client, time_format
 
@@ -177,13 +177,13 @@ class DHOptimisationAgent(DerivationAgent):
         # 1) Get potentially already instantiated optimisation output instances, i.e.,
         #    ProvidedHeat, ConsumedGas and GeneratedHeat Amounts, for which time series
         #    would just get updated (checks for actual forecast instances)
-        self.logger.info('Retrieving already instantiated optimisation output IRIs ...')
+        print('Retrieving already instantiated optimisation output IRIs ...')
         rdf_types = self.agent_output_concepts()
         outputs = self.sparql_client.get_existing_optimisation_outputs(opti_inputs['q_demand'],
                                                                        rdf_types)
         
         # 2) Create optimisation input objects from KG data
-        self.logger.info('Creating optimisation input objects ...')
+        print('Creating optimisation input objects ...')
         # Query further inputs from KG and construct optimisation model setup dictionary
         setup_dict, index = define_optimisation_setup(self.sparql_client, ts_client,
                                                  consumption_models, cogen_models,
@@ -191,35 +191,39 @@ class DHOptimisationAgent(DerivationAgent):
                                                  time_format)        
         # Create MarketPrices and MunicipalUtility objects for optimisation
         prices, swps = create_optimisation_setup(setup_dict)
+        print('Optimisation input objects successfully created.')
         
         # 3) Optimize heat generation modes
-        self.logger.info('Optimising heat generation ...')
+        print('Optimising heat generation ...')
         clear_plots = False
         # Reset gas turbine etc. states for non-related optimisation runs
         if (datetime.strptime(opti_start_dt, time_format) - timedelta(hours=1)).strftime(time_format) != self.previous_state.start_dt:
             # Otherwise: If the previous optimisation interval covered [t1, t2] and
             # the current request covers [t1+1h, t3] -> runs are considered related
             # and the optimised state for t1 will be used as starting conditions
-            self.logger.info('Requested optimisation interval not related to previous optimisation. ' +
-                             'Resetting system state prior to optimisation ...')
+            print('Requested optimisation interval not related to previous optimisation. ' +
+                  'Resetting system state prior to optimisation ...')
             self.previous_state.reset_system_state()
             clear_plots = True
         # Run generation optimisation for entire optimisation horizon
         optimised, _, _ = generation_optimization(swps, prices, index, self.previous_state)
+        print('Heat generation successfully optimised.')
         
         # 4) Instantiate (relevant) optimisation outputs
         # Extract timestamps for optimisation outputs to instantiate
         times = [datetime.strftime(dt, time_format) for dt in index]
         providers = swps.boilers + swps.gas_turbines + swps.contracts
         
+        print('Instantiating optimisation results ...')
         if not outputs:
             # Instantiate new optimisation outputs for all heat providers/generators
             # in KG and RDB (if not yet existing)
            
             # Initialise return Graph            
-            g = Graph()            
+            g = Graph()
             
             for pro in providers:
+                logger.info('Adding new optimisation outputs to return graph ...')
                 # Get provider IRI and rdf type
                 iri = pro.iri
                 rdftype = self.sparql_client.get_rdftype(iri)
@@ -230,14 +234,14 @@ class DHOptimisationAgent(DerivationAgent):
                 elif rdftype in [OHN_HEATBOILER, OHN_GASTURBINE]:
                     outputs = self.sparql_client.get_heatgenerator_output_iris(iri, 
                                 gt=(rdftype == OHN_GASTURBINE))
-                    
+
                 # Add new forecast IRIs for optimisation output data to return graph
                 # NOTE: All optimisation outputs are instantiated as forecasts
                 g, fc_iris = self.sparql_client.instantiate_new_outputs(g, outputs)
                 
+                logger.info('Instantiating associated output time series ...')
                 # Extract optimisation output time series data
-                ts_data = extract_output_timeseries(optimised, rdftype, pro)
-                
+                ts_data = extract_output_timeseries(optimised, rdftype, pro)                
                 # Initialise optimisation output time series
                 for data_iri, data_values in ts_data.items():
                     if data_values:
@@ -255,7 +259,8 @@ class DHOptimisationAgent(DerivationAgent):
             # Only update optimisation time series data in RDB
             # NOTE: Entire previous optimisation data is replaced, i.e., NOT just 
             #       appending new data and potentially overwriting existing data
-            
+
+            logger.info('Overwriting previous optimisation time series data ...')
             for pro_iri, outp_dict in outputs.items():
                 # Get corresponding provider object and rdf type
                 pro = [p for p in providers if p.iri == pro_iri][0]
@@ -277,6 +282,7 @@ class DHOptimisationAgent(DerivationAgent):
         
         # Update instantiated current tier unit price (based on new incremental heat sourcing)
         for c in swps.contracts:
+            logger.info(f'Updating current heat unit price for contract \"{c.name}\"')
             # Assess updated cumulative annual sourcing amount
             total = c.q_hist.sum(skipna=True)
             # Add optimised sourcing amount for current (first) time step
@@ -287,14 +293,17 @@ class DHOptimisationAgent(DerivationAgent):
             if tier:
                 # Assign (potentially updated) price tier as current price
                 self.sparql_client.update_current_heat_unit_price(c.iri, tier)
+        print('Optimisation results successfully instantiated.')
         
         # 5) Compare generation and cost (historical vs. optimised)
-        # Create DataFrame for optimised time series
+        print('Evaluating optimised generation (composition and cost) ...')
+        # Extract DataFrame of optimised time series
         cols = [p.name+'_q' for p in providers] + ['Q_demand', 'Min_cost']
         generation_opt = optimised[cols].copy()
         generation_opt.rename(columns=lambda x: x.rstrip('_q'), inplace=True)
         
         # Initialise consolidated DataFrame for historical generation
+        logger.info('Create DataFrame of historical generation ...')
         dataIRI = self.sparql_client.get_historic_qdemand_datairi()
         generation_hist = ts_client.retrieve_timeseries_as_dataframe(dataIRI, 
                                         'Q_demand', opti_start_dt, opti_end_dt)
@@ -304,13 +313,16 @@ class DHOptimisationAgent(DerivationAgent):
             df = ts_client.retrieve_timeseries_as_dataframe(dataIRI, pro.name, opti_start_dt, 
                                                             opti_end_dt)
             generation_hist = generation_hist.merge(df, on='time', how='outer')        
+        
         # Assess historical generation cost
+        logger.info('Assessing historical generation cost ...')
         cost, _, _ = evaluate_historic_generation(generation_hist, providers, swps.fuel, prices)
         generation_hist = generation_hist.merge(cost[['Min_cost']], on='time', how='outer')
         
         # Retrieve potentially already existing cost instances (to be updated)
         cost = self.sparql_client.get_total_generation_cost()
         if not cost.get('hist_data_iri'):
+            logger.info('Instantiating new cost outputs ...')
             # Instantiate new cost instances for historical and optimised forecast
             data_iris = self.sparql_client.instantiate_generation_cost(cost.get('mu'))
             # Initialise cost time series
@@ -321,6 +333,7 @@ class DHOptimisationAgent(DerivationAgent):
                                       values=generation_opt.get('Min_cost').values, 
                                       time_format=time_format, ts_type=DOUBLE)
         else:
+            logger.info('Overwriting previous cost data ...')
             # Overwrite existing cost data with new (optimised) results
             ts_client.replace_ts_data(dataIRI=cost.get('hist_data_iri'), times=times, 
                                       values=generation_hist.get('Min_cost').values)
@@ -338,12 +351,13 @@ class DHOptimisationAgent(DerivationAgent):
         plot_generation_cost(generation_hist, generation_opt)
         # 3) plot forecast analysis for heat demand
         plot_forecast_quality(generation_hist['Q_demand'], generation_opt['Q_demand'])
+        print('Comparison of optimised and historical generation completed.')
 
         # NOTE: DerivationWithTimeSeries does not return any output triples, 
         #       as all updates to the time series are expected to be conducted
         #       within the agent logic
         created_at = pd.to_datetime('now', utc=True)
-        logger.info(f'Created generation optimisation at: {created_at}')
+        print(f'Created generation optimisation at: {created_at}')
 
 
     def compare_generation_cost(self):

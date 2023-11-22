@@ -190,10 +190,11 @@ class TSClient:
         # Retrieve time series data
         times, values = self.retrieve_timeseries(dataIRI, lowerbound, upperbound)
         if len(values) == 0:
-            raise_error(ValueError, 'No time series data available for dataIRI '\
-                        +f'"{dataIRI}" between {lowerbound} and {upperbound}.')
-        logger.info(f'Loaded {len(values)} values for dataIRI "{dataIRI}" '\
-                    +f'from "{lowerbound}" to "{upperbound}".')
+            logger.info(f'No time series data available for dataIRI \"{dataIRI}" '
+                        + f'between {lowerbound} and {upperbound}.')
+            raise ValueError
+        logger.info(f'Loaded {len(values)} values for dataIRI "{dataIRI}" '
+                    + f'from "{lowerbound}" to "{upperbound}".')
 
         # Create Dataframe
         df = pd.DataFrame(zip(values, times), columns=[column_name, index_name])

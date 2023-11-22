@@ -46,6 +46,9 @@ def get_generator_models(kg_client:KGClient, ts_client:TSClient, tmax:str,
                                            of generated heat
         Both dictionaries have generator IRIs as keys and model objects as values
     """
+    
+    print('Loading/fitting heat generator gas consumption (and electricity '
+          'co-generation) models ...')
 
     # Initialise return dicts
     gas_consumption_models = {}
@@ -126,6 +129,8 @@ def get_generator_models(kg_client:KGClient, ts_client:TSClient, tmax:str,
         # Load existing/created models
         gas_consumption_models[iri] = pickle.load(open(fp_gas, 'rb'))
         electricity_cogen_models[iri] = pickle.load(open(fp_cogen, 'rb'))
+        
+    print('Heat generator models successfully loaded.')
     
     return gas_consumption_models, electricity_cogen_models
         

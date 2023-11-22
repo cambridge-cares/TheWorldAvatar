@@ -256,7 +256,7 @@ def optimize_operating_modes(operating_mode_woGT, operating_mode_wGT, gt_active=
                         # reset previously accumulated gt benefit
                         gt_benefit = [0, 0]
                         # add switching cost to first interval in switching period
-                        switching_interval = alternative.iloc[t]
+                        switching_interval = alternative.iloc[t].copy()
                         switching_interval['Min_cost'] += cost
                         optimized = pd.concat([optimized, switching_interval.to_frame().transpose()])
                     else:
