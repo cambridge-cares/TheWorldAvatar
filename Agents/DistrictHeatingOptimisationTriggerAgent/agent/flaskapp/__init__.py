@@ -220,9 +220,10 @@ def trigger_optimisation_task(params):
                         disp_deriv_iri = result.get("derivation")
                         logger.info(f"Dispersion derivation instance (created or retrieved): {disp_deriv_iri}")
                     except:
-                        tasks.raise_value_error(f"Dispersion creation/retrieval request failed: {response.text}")
+                        raise ValueError(f"Dispersion creation/retrieval request failed with message: {response.text}. "
+                                         +"Ensure that Ontop endpoint is running.")
                 else:
-                    tasks.raise_value_error(f"Dispersion creation/retrieval request failed: {response.text}")
+                    raise ValueError(f"Dispersion creation/retrieval request failed with message: {response.text}")
 
             else:
                 t1 += params['timeDelta_unix']
@@ -244,10 +245,10 @@ def trigger_optimisation_task(params):
 
         print("Optimisation completed successfully.")
 
-    except Exception:
+    except Exception as ex:
         # Log the exception
         logger.error("An error occurred during optimisation.", exc_info=True)
-        raise Exception("An error occurred during optimisation.", exc_info=True)
+        raise RuntimeError("An error occurred during optimisation.") from ex
 
 
 def is_processing_task_running():
