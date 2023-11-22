@@ -586,15 +586,19 @@
                                                 'Unreachable' // Default value if 'seq' is null
                                             ],
                                 'text-size': 50,
-                                'text-offset': [0, 1],
+                                'text-offset': [0, -1.5],
+                                'symbol-spacing': 10, // Adjust the spacing between symbols
                             },
                             paint: {
                                 'text-color': lineColour,
                                 'text-halo-blur': 10,
                                 'text-halo-color': '#FFFFFF',
-                                "text-halo-width": 3
+                                "text-halo-width": 10
                             }
                         });
+
+
+                        
 
                         // Set layer visibility based on checkbox state
                         var checkbox = document.getElementById(checkboxId);
