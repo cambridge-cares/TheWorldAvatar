@@ -22,17 +22,41 @@ class UuidDB:
     """
     __slots__ = [ "dbFilename", "uuidDB" ]
 
-    def __init__( self, filename = "" ):
+    def __init__( self, filename = None ):
+        """
+        The input parameter may be:
+        - string (i.e. the filename of the existing database):
+          Load the file and use the data as the database.
+        - an existing database of type UuidDB 
+          (copy it to the current database?)
+          
+        - None or not specified.
+          Warning and open a default data base 'uuid-default.csv' 
+          or create a new file if file does not exist.
+          Later save to the same file (create new, if necessary).
         """
 
-        """
-        if "" == filename:
-            self.dbFilename = os.path.join("uuid" + "-default.csv" )
-            #self.dbFilename = os.path.join( "ontozeolite", "uuid", "default.csv" )
+        default = os.path.join( "uuid" + "-default.csv" )
+        #default = os.path.join( "ontozeolite", "uuid", "default.csv" )
+
+        if None == filename or "" == filename:
+            self.dbFilename = default
+
+        elif isinstance( filename, str ):
+            if   os.path.isfile( filename ):
+                self.dbFilename = filename
+            elif os.path.isdir( filename ):
+                logging.error( " Uuid database path: '" + filename + \
+                               "' is a directory. Using default." )
+                self.dbFilename = default
+            else:
+                logging.error( " Uuid database file does not exist: '" + \
+                               filename + "'. Create a new one." )
+                self.dbFilename = filename
+
         else:
+            logging.error( " Uuid path must be a string, but got '" + str(type(filename)) + "'." )
             self.dbFilename = filename
-
-        self.uuidDB = None
 
         self.loadDB( self.dbFilename )
 
@@ -50,19 +74,19 @@ class UuidDB:
 
         short = value.strip()
         if len(short) == 0:
-            logging.error( " Value '" + value + "' is empty." )
+            logging.info( " Value '" + value + "' is empty." )
             return False
 
         if short.find( " " ) >= 0:
-            logging.error( " Value '" + value + "' contains space." )
+            logging.info( " Value '" + value + "' contains space." )
             return False
 
         if short.find( "," ) >= 0:
-            logging.error( " Value '" + value + "' contains comma." )
+            logging.info( " Value '" + value + "' contains comma." )
             return False
 
         if short.find( ";" ) >= 0:
-            logging.error( " Value '" + value + "' contains semicolon." )
+            logging.info( " Value '" + value + "' contains semicolon." )
             return False
 
         return True
@@ -138,7 +162,7 @@ class UuidDB:
         nLinesWarn = 20 * 1000
         if len( array ) > nLinesWarn:
             logging.warning( "The size of the uuid database is over " + 
-                           str(nLinesWarn) + " entries: " + str(len(array)) + "." )
+                    str(nLinesWarn) + " entries: " + str(len(array)) + "." )
 
         writeCsv( filePath, array )
 
@@ -169,12 +193,14 @@ class UuidDB:
 
         # Check the input names:
         if not self.valueIsValid( className ):
-            logging.error( " Class '" + className + "' is not valid. Failed to get UUID." )
+            logging.error( " Class '" + className + "' is not valid. Failed to get UUID. a1" )
             return None
 
         if not self.valueIsValid( instanceName ):
-            logging.error( " Instance '" + instanceName + "' is not valid. Failed to get UUID." )
-            return None
+            #logging.warning( " Instance '" + instanceName + "' is not valid. Failed to get UUID. a2" )
+            logging.info( " Instance '" + instanceName + "' is not valid. Removing wrong characters. a2" )
+            instanceName = valueToValid( instanceName )
+            #return None
 
         # Check whether the instanceName exists in other classes:
         # Warning! For big database this verification is slow.
@@ -215,11 +241,11 @@ class UuidDB:
 
         # This will be checked inside getUUID()
         #if not self.valueIsValid( className ):
-        #    logging.error( " Class '" + className + "' is not valid." )
+        #    logging.error( " Class '" + className + "' is not valid. a3" )
 
         # This will be checked inside getUUID()
         #if not self.valueIsValid( instanceName ):
-        #    logging.error( " Instance '" + instanceName + "' is not valid." )
+        #    logging.error( " Instance '" + instanceName + "' is not valid. a4" )
 
         if not isinstance( newUuid, str ):
             logging.error( " newUuid must be a string, but got " + str(type(newUuid)) + "." )
@@ -397,20 +423,29 @@ def valueIsValid( value ):
 
   short = value.strip()
   if short.find( " " ) >= 0:
-    logging.error( " Value '" + value + "' contains space." )
+    logging.info( " Value '" + value + "' contains space." )
     return False
 
-  short = value.strip()
+  #short = value.strip()
   if short.find( "," ) >= 0:
-    logging.error( " Value '" + value + "' contains comma." )
+    logging.info( " Value '" + value + "' contains comma." )
     return False
 
-  short = value.strip()
+  #short = value.strip()
   if short.find( ";" ) >= 0:
-    logging.error( " Value '" + value + "' contains semicolon." )
+    logging.info( " Value '" + value + "' contains semicolon." )
     return False
 
   return True
+
+def valueToValid( value ):
+    output = value
+    output = output.replace( " ", "" )
+    output = output.replace( ",", "" )
+    output = output.replace( ";", "" )
+
+    return output.strip()
+    return 
 
 def getCifLineRanges( fileIn ):
   ranges = []
@@ -449,10 +484,10 @@ def getUUID( uuidDB, className, instanceName, newUuid = "" ):
   """
   # Check the input names:
   if not valueIsValid( className ):
-    logging.error( " Class '" + className + "' is not valid." )
+    logging.error( " Class '" + className + "' is not valid. a5" )
 
   if not valueIsValid( instanceName ):
-    logging.error( " Instance '" + instanceName + "' is not valid." )
+    logging.error( " Instance '" + instanceName + "' is not valid. a6" )
 
   if not isinstance( uuidDB, dict ):
     logging.error( " uuid database must be a dictionary, but got " +
@@ -571,7 +606,7 @@ def writeCsv( filename, array ):
     global writeCsvErrCount
     logging.info( "writeCSV to '" + filename + "'" )
     try:
-        with open( filename, "w", newline = "" ) as f:
+        with open( filename, "w", newline = "", encoding="utf-8" ) as f:
             csvw = csv.writer( f, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL )
             for a in array:
                 csvw.writerow( a )

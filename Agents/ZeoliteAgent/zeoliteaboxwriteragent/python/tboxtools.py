@@ -181,12 +181,23 @@ class TBoxTools:
                                  # self.triples["hasXXX"]["range" ] = []
                                  #
 
-        self.classRel      = {}  # Structure of this  dictionary is
-                                 # self.classRel[shortName]["path"] = full path
-                                 # self.classRel[shortName]["is-a"] = [] all paths
+        #self.classRel      = {}  # Structure of this dictionary is
+        #                         # self.classRel[shortName]["path"] = full path
+        #                         # self.classRel[shortName]["is-a"] = [] all paths
+        #                         # For built-in datatypes for Data Properties 
+        #                         # use low-case without prefix for 'short'
+        #                         # and full path for 'path'.
+
+        self.classRel      = {}  # Structure of this dictionary is
+                                 # self.classRel[fullName]["short"] = class without prefix
+                                 # self.classRel[fullName]["path"] = full path (proper capital letters?)
+                                 # self.classRel[fullName]["is-a"] = [] all paths
+                                 # self.classRel[fullName]["where"] = file and line where this class is defined (string)
+                                 #     where fullName is prefix + className.
                                  # For built-in datatypes for Data Properties 
                                  # use low-case without prefix for 'short'
                                  # and full path for 'path'.
+
         self.classRel["owl:Thing"] = {}
 
         # Global pre-defined classes:
@@ -316,6 +327,8 @@ class TBoxTools:
         pass # TBoxTools.isLineDataProp()
 
     def isKnownClass( self, value, strict = False ):
+        return self.isInClassRel( value )
+
         for c in self.clNames:
             if strict:
                 if str(value).strip() == c.strip():
@@ -468,7 +481,7 @@ class TBoxTools:
 
         # Check whether 'Comment' exists (column 7):
         if self.isEmptyCell(line[7]):
-            logging.error( " Missing Comment for class '" + line[0] + "' " + file_line + \
+            logging.error( " Missing 'Comment' for class '" + line[0] + "' " + file_line + \
                            " in col " + COLUMN_LETTERS[7] + "." )
             errCount += 1
         elif isinstance( line[7], str ):
@@ -477,7 +490,7 @@ class TBoxTools:
                   line[7] + "' " + file_line + " col " + COLUMN_LETTERS[7] + "." )
                 errCount += 1
         else:
-            logging.warning( " Wrong Comment '" + line[7] + "' for class '" + \
+            logging.warning( " Wrong 'Comment' '" + line[7] + "' for class '" + \
                              line[0] + "' " + file_line + \
                              " in col " + COLUMN_LETTERS[7] + "." )
             errCount += 1
@@ -571,7 +584,7 @@ class TBoxTools:
 
         # Check whether 'Comment' exists (column 7):
         if self.isEmptyCell(line[7]):
-            logging.error( " Missing Comment for Obj Property '" + line[0] + \
+            logging.error( " Missing 'Comment' for Obj Property '" + line[0] + \
                            "' " + file_line + " in col " + COLUMN_LETTERS[7] + "." )
             errCount += 1
         elif isinstance( line[7], str ):
@@ -581,7 +594,7 @@ class TBoxTools:
                                  file_line + " col " + COLUMN_LETTERS[7] + "." )
                 errCount += 1
         else:
-            logging.warning( " Wrong Comment '" + line[7] + "' for Obj Property '" + \
+            logging.warning( " Wrong 'Comment' '" + line[7] + "' for Obj Property '" + \
                              line[0] + "' " + file_line + \
                              " in col " + COLUMN_LETTERS[7] + "." )
             errCount += 1
@@ -661,7 +674,7 @@ class TBoxTools:
 
         # Check whether 'Comment' exists (column 7):
         if self.isEmptyCell(line[7]):
-            logging.error( " Missing Comment for Data Property '" + line[0] + "' " + file_line + \
+            logging.error( " Missing 'Comment' for Data Property '" + line[0] + "' " + file_line + \
                            " in col " + COLUMN_LETTERS[7] + "." )
             errCount += 1
 
@@ -671,7 +684,7 @@ class TBoxTools:
                   line[7] + "' " + file_line + " col " + COLUMN_LETTERS[7] + "." )
                 errCount += 1
         else:
-            logging.warning( " Wrong Comment '" + line[7] + "' for Data Property '" + \
+            logging.warning( " Wrong 'Comment' '" + line[7] + "' for Data Property '" + \
                              line[0] + "' " + file_line + \
                              " in col " + COLUMN_LETTERS[7] + "." )
             errCount += 1
@@ -864,20 +877,18 @@ class TBoxTools:
         return errCount
         pass # TBoxTools.extractOntology() 
 
-    def extractClasses( self, line, file_line ):
+    def addClassRel( self, line, file_line ):
+        errCount = 0
 
-        errCount = self.validateClassLine( line, file_line )
-
-        #self.addClass( line )
-        self.classes.append( line )
-        self.clNames.append( str(line[0]).strip() )
-
-        # Recorde the classes and their relations:
+        if line[0] in self.classRel:
+            logging.error( " Over-writing an existing class '" + str(line) + \
+                           "' " + file_line )
         self.classRel[line[0]] = {}
         if is_http( line[0] ):
             path = line[0]
         else:
             path = line[8] + line[0]
+
         self.classRel[line[0]]["path"] = path
         self.classRel[line[0]]["is-a"] = []
         if isinstance(line[3],str):
@@ -887,9 +898,63 @@ class TBoxTools:
             else:
                 logging.error( " Unknown D column '" + line[3] + "' " + line_line )
                 errCount += 1
-        
+
+        # Location where this class is defined:
+        self.classRel[line[0]]["where"] = file_line
+
         return errCount
-        #print( self.classes )
+        pass # TBoxTools.addClassRel() 
+ 
+    def isInClassRel( self, value ):
+        output = False
+        if value in self.classRel:
+            return True
+        for k in self.classRel:
+            if value == self.classRel[k]["path"]:
+                return True
+
+        return output
+        pass # TBoxTools.isInClassRel() 
+
+    def getClassRel( self, value ):
+        """
+        Return a dictionary of the class, to which 'value' belongs to.
+        If multiple classes match 'value' print an error message.
+        """
+        count = 0
+        output = None
+        if value in self.classRel:
+            #print( "value = ", value )
+            count += 1
+            output = self.classRel[value]
+        for k in self.classRel:
+            if value == self.classRel[k]["path"] and k != value:
+                count += 1
+                output = self.classRel[k]
+                #print( "value = ", output["path"]  )
+        if count > 1:
+            logging.error( " Multiple matches of class '" + value + "'." )
+            if value in self.classRel:
+                print( "   > in classRel: ", value )
+            for k in self.classRel:
+                if value == self.classRel[k]["path"]:
+                    print( "   > in its path: ", value, k )
+
+        return output
+        pass # TBoxTools.getClassRel() 
+
+    def extractClasses( self, line, file_line ):
+
+        errCount = self.validateClassLine( line, file_line )
+
+        #self.addClass( line )
+        self.classes.append( line )
+        self.clNames.append( str(line[0]).strip() )
+
+        # Keep all known classes and their relations (parent classes):
+        errCount += self.addClassRel( line, file_line )
+       
+        return errCount
         pass # TBoxTools.extractClasses()
 
     def extractObjProp( self, line, file_line ):
@@ -1051,7 +1116,7 @@ class TBoxTools:
             #                 file_line )
             pass
 
-        # Add ?
+        # Adding ?
         if subj in self.classRel:
             if self.classRel[subj]["path"] not in self.triples[pStr]["domain"]:
                 self.triples[pStr]["domain"].append( self.classRel[subj]["path"] )
@@ -1167,7 +1232,7 @@ class TBoxTools:
 
     def isPredicate( self, pred ):
         short = pred.strip().lower()
-        print( " >>> short = ", short )
+        #print( " >>> short = ", short )
         if short in DATA_PROPS:
             return True
         for k in DATA_PROPS.keys():
@@ -1200,10 +1265,11 @@ class TBoxTools:
         if predicate in self.triples:
             # Do nothing
             pass
-        #elif self.isPredicate( predicate ):
+
+        elif self.isPredicate( predicate ):
         #    self.triples[predicate] = { "range": "xsd:string" }
         #    # Do nothing
-        #    pass
+            pass
         else:
             logging.error( " Predicate '" + predicate + "' is not in TBox " + \
                            file_line )
@@ -1214,11 +1280,20 @@ class TBoxTools:
             return errCount
 
         #print( "Inside checkTriple:", subj, "and", obj )
-        if subj in self.classRel:
-            if self.classRel[subj]["path"] in self.triples[predicate]["domain"]:
+        #if subj in self.classRel:
+        if self.isInClassRel( subj ):
+
+            subjDict = self.getClassRel( subj )
+
+            #if self.classRel[subj]["path"] in self.triples[predicate]["domain"]:
+            if self.isPredicate( predicate ):
+                pass
+            elif subjDict["path"] in self.triples[predicate]["domain"]:
                 # Do nothing
                 pass
-            elif self.anyInList( self.classRel[subj]["is-a"], \
+            #elif self.anyInList( self.classRel[subj]["is-a"], \
+            #                     self.triples[predicate]["domain"] ):
+            elif self.anyInList( subjDict["is-a"], \
                                  self.triples[predicate]["domain"] ):
                 # Do nothing
                 pass
@@ -1228,9 +1303,11 @@ class TBoxTools:
 
                 """
                 print( "     predicate:", predicate )
-                print( "       path   :", self.classRel[subj]["path"] )
+                #print( "       path   :", self.classRel[subj]["path"] )
+                print( "       path   :", subjDict["path"] )
                 print( "       is-a   :" ) #, self.classRel[subj]["is-a"] )
-                for d in self.classRel[subj]["is-a"]:
+                #for d in self.classRel[subj]["is-a"]:
+                for d in subjDict["is-a"]:
                     print( "               ", d )
                 print( "      domain  :" ) #, self.triples[predicate]["domain"] )
                 for d in self.triples[predicate]["domain"]:
@@ -1253,22 +1330,28 @@ class TBoxTools:
             # need more verification. (for capital letter)
             pass
             
-        elif obj in self.classRel:
+        #elif obj in self.classRel:
+        elif self.isInClassRel( obj ):
         #if obj in self.triples[predicate]["range"]:
             #print( " >>>>>> ", obj, type(obj) )
         #    if obj not in self.classRel:
         #        logging.error( "Missing '" + obj + "' in classRel " + file_line )
         #        errCount += 1
 
+            objDict = self.getClassRel( obj )
+
             #else:
             if predicate in DATA_PROPS:
                 # Do nothing
                 pass
 
-            elif self.classRel[obj]["path"] in self.triples[predicate]["range"]:
+            #elif self.classRel[obj]["path"] in self.triples[predicate]["range"]:
+            elif objDict["path"] in self.triples[predicate]["range"]:
                 # Do nothing
                 pass
-            elif self.anyInList( self.classRel[obj]["is-a"], \
+            #elif self.anyInList( self.classRel[obj]["is-a"], \
+            #                     self.triples[predicate]["range"] ):
+            elif self.anyInList( objDict["is-a"], \
                                  self.triples[predicate]["range"] ):
                 # Do nothing
                 pass
@@ -1292,13 +1375,19 @@ class TBoxTools:
         else:
             logging.error( " Object '" + obj + "' is not in the list" + \
                            " of classes " + file_line )
-            #print( "     predicate:", predicate )
-            #print( "     object:   ", obj )
-            #for o in self.triples[predicate]["range"]:
-            #    print( "   in range: ", o )
-            #for rel in self.classRel:
-            #    print( "   in class: ", rel )
+            """
+            print( "     predicate:", predicate )
+            print( "     object:   '" + obj + "'" )
+            for o in self.triples[predicate]["range"]:
+                print( "   in range:   '" + o + "'" )
+            for rel in self.classRel:
+                print( "   in class:   ", rel, " >>>> ", self.classRel[rel] )
+            """
             errCount += 1
+
+        if errCount > 0:
+           #print( "  tbox.checkTriple() warnings:", errCount )
+           pass
 
         return errCount
         pass # TBoxTools.checkTriple()
