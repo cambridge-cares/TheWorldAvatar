@@ -98,10 +98,12 @@ public class TSPRouteGenerator {
                 "        (%target%),"+
                 "        (%target%)"+
                 "    )\n" +
-                "), tsp_seq AS (SELECT nearest_node as id, geom FROM poi_tsp_nearest_node)\n" +
-                "SELECT tsp.*, tsp_seq.geom\n" +
-                "FROM tsp\n" +
-                "LEFT JOIN tsp_seq ON tsp.node = tsp_seq.id";
+                "), tsp_seq AS (    SELECT nearest_node as id, poi_tsp_nearest_node.geom\n" +
+                "    FROM poi_tsp_nearest_node, flood_polygon_single_10cm\n" +
+                "                WHERE ST_Intersects(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom)\n" +
+                "                    OR ST_DISTANCE(poi_tsp_nearest_node.geom, flood_polygon_single_10cm.geom) < 0.005)\n" +
+                "SELECT DISTINCT tsp.seq -1 as seq, tsp.node, tsp.cost, tsp.agg_cost, tsp_seq.geom FROM tsp\n" +
+                "FULL JOIN tsp_seq ON tsp.node = tsp_seq.id ORDER BY seq ASC;";
 
         // Find nearest TSP_node which is the nearest grid
         UpdatedGSVirtualTableEncoder virtualTableTSPRoute = new UpdatedGSVirtualTableEncoder();
