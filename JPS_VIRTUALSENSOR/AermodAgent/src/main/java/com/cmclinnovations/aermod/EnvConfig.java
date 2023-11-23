@@ -18,6 +18,7 @@ public class EnvConfig {
     public static final String BUILDINGS_TABLE = System.getenv("BUILDINGS_TABLE");
     public static final String STATIC_SOURCE_TABLE = System.getenv("STATIC_SOURCE_TABLE");
     public static final String ELEVATION_CONTOURS_TABLE = System.getenv("ELEVATION_CONTOURS_TABLE");
+    public static final String PARALLELISE_EMISSIONS_UPDATE = System.getenv("PARALLELISE_EMISSIONS_UPDATE");
 
     private EnvConfig() {
         throw new IllegalStateException();
