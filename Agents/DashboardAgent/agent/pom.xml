@@ -6,7 +6,7 @@
 
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>dashboard-agent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <!--  Project properties  -->
@@ -95,7 +95,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.20.2</version>
+            <version>1.20.3-grafana-SNAPSHOT</version>
         </dependency>
         <!-- JDBC driver -->
         <dependency>

@@ -23,8 +23,10 @@ RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked m
 # Copy the code
 COPY /agent/src/main ./src/main
 
+# Add an option --update-snapshots and argument to ensure the latest versions of SNAPSHOT dependencies are always used
+ARG CACHEBUST=1
 # Build the war
-RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package -DskipTests
+RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package -DskipTests --update-snapshots
 
 #==================================================================================================
 
@@ -46,7 +48,7 @@ CMD mvn test
 FROM tomcat:9.0.68-jre11-temurin as agent
 
 # Copies all files in config directory to destination
-COPY --from=builder /root/agent/output/dashboard-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/agent/output/dashboard-agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

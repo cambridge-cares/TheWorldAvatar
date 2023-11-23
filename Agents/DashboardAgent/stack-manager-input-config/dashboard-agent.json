@@ -3,7 +3,7 @@
       "Name": "dashboard-agent",
       "TaskTemplate": {
         "ContainerSpec": {
-          "Image": "dashboard-agent:1.0.0",
+          "Image": "dashboard-agent:1.0.0-SNAPSHOT",
           "Configs": [
             {
               "ConfigName": "blazegraph"
