@@ -2,7 +2,7 @@
 Use the stack-data-uploader to upload the `.osm`, Raster data `flood`, `elevation`, `population`.
 
 ### Elevation 
-Kindly retrieve from Shin Zert from CARES. `.tif` file.
+Detailed elevation can be retrieved from CARES. `.tif` file. Otherwise, it can be downloaded from [USGS EROS Archive - Digital Elevation](https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm-1#overview).
 
 ### Grid Primary Site
 Downloaded from [ukpowernetworks](https://ukpowernetworks.opendatasoft.com/explore/dataset/grid-and-primary-sites/information/?disjunctive.sitename&disjunctive.powertransformercount&disjunctive.local_authority&location=14,52.76712,0.42611&basemap=jawg.light). `.csv` file. 
@@ -10,14 +10,14 @@ Downloaded from [ukpowernetworks](https://ukpowernetworks.opendatasoft.com/explo
 ### Flood Data
 Retrived from CMCLInnovations. `.tif` file. 
 
-_NB this data is proprietary and given to us under creative commons license. Need to reference this and be careful not to use in commercial public demonstration_
+_FLood data is proprietary and provided under creative commons license._
 
 ### Population
 Population Raster data is retrieved from [OpenPopGrid](http://openpopgrid.geodata.soton.ac.uk/). `.tif` file. 
 
 Note: Currently, QGIS is used to consume the .asc file, crops desired location and exported in tif file. 
 
-### Raw OSM data
+### Routing
 1) [BBBike.org](https://extract.bbbike.org/) allows you to extract selected region. A file of around 3.5mb in the area around King's Lynn was found optimal. 
 2) [Geofabrik](https://download.geofabrik.de/) allows you to download OSM data via region/country 
 

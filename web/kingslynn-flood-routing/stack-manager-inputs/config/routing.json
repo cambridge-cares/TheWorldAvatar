@@ -2,9 +2,9 @@
     "services": {
         "includes": [
             "visualisation",
+            "isochroneagent",
             "travellingsalesmanagent",
-            "networkanalysisagent",
-            "isochroneagent"
+            "networkanalysisagent"
         ],
         "excludes": [
             ]
