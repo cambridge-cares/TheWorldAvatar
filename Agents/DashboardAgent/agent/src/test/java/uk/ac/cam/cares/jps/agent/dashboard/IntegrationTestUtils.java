@@ -49,7 +49,7 @@ public class IntegrationTestUtils {
     public static final String DASHBOARD_ACCOUNT_USER = "admin";
     public static final String DASHBOARD_ACCOUNT_PASS = "admin";
     public static final String TEST_DASHBOARD_PASSWORD_PATH = "grafana_password.txt";
-    public static final GrafanaEndpointConfig DASHBOARD_ENDPOINT_CONFIG = new GrafanaEndpointConfig("grafana", DOCKER_HOST_NAME, "3068", TEST_DASHBOARD_PASSWORD_PATH);
+    public static final GrafanaEndpointConfig DASHBOARD_ENDPOINT_CONFIG = new GrafanaEndpointConfig("grafana", DOCKER_HOST_NAME, "3068", DASHBOARD_ACCOUNT_USER, TEST_DASHBOARD_PASSWORD_PATH);
     public static final String SPARQL_DELETE = "DELETE WHERE {?s ?p ?o}";
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final String ID_KEY = "id";
