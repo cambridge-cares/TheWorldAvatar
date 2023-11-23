@@ -48,7 +48,7 @@ public class DashboardAgent extends JPSAgent {
         } catch (Exception exception) {
             // This error will only occur if the agent is not running on a stack, which causes an error in Stack Client
             DashboardAgent.VALID = false;
-            LOGGER.error("Agent is not running on a stack and will not be initialised!");
+            LOGGER.error("Agent is not running on a stack and will not be initialised!", exception);
         }
     }
 
