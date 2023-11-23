@@ -4,5 +4,5 @@
 #
 # NOTE: the corresponding method expects an empty GET request
 
-GET http://localhost:5000/compare_cost
-#GET http://167.172.72.42:3840/dh-optimisation-agent/compare_cost
+#GET http://localhost:5000/compare_cost
+GET http://167.172.72.42:3838/dh-optimisation-agent/compare_cost

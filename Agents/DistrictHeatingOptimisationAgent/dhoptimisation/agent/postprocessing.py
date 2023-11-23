@@ -23,7 +23,7 @@ from dhoptimisation.agent.optimisation_tasks import *
 
 
 # Specify relative file path to store optimisation outputs
-OUTPUTS_REPO = '/app/dhoptimisation/resources/optimisation_figures/'
+OUTPUTS_REPO = '/app/dhoptimisation/resources/optimisation_outputs/'
 
 
 def clear_repository(repo_path=OUTPUTS_REPO):
@@ -255,7 +255,7 @@ def evaluate_generation_series(generation_series, generator, gas_props, market_p
     return cost.iloc[:, 0], gas_demand, el_gen
 
 
-def create_optimised_csv_output(optimized_generation, csv_file='optimised_generation.csv'):
+def create_optimised_csv_output(optimized_generation, csv_file='Optimised_generation'):
     """
     Creates a consolidated csv file of all optimised generations for consecutive
     runs in related optimisation intervals, i.e., for all related optimisation runs
@@ -268,17 +268,26 @@ def create_optimised_csv_output(optimized_generation, csv_file='optimised_genera
         csv_file {str} -- file name
     """
     
-    fp = os.path.join(OUTPUTS_REPO, csv_file)
+    # Create filenames for current and continuous outputs
+    # current: optimisation results from current run (looking into the future)
+    current = csv_file + '_' + optimized_generation.index[0].strftime(TIME_FORMAT) + '.csv'
+    current = os.path.join(OUTPUTS_REPO, current)
+    # continuous: first time steps of all consecutive related optimisation runs
+    continuous = csv_file + '_continuous.csv'
+    continuous = os.path.join(OUTPUTS_REPO, continuous)
     
+    # Write current output (overwrite existing file)
+    optimized_generation.sort_index(axis=1).to_csv(current, header=True, index=True)
+    
+    # Write continuous output
     # NOTE: sort columns to ensure correct order of outputs in subsequent runs
-    if not os.path.exists(fp):
+    if not os.path.exists(continuous):
         # Initialise output csv
-        optimized_generation.sort_index(axis=1).head(1).to_csv(fp, 
-                                header=True, index=True)
-        
+        optimized_generation.sort_index(axis=1).head(1).to_csv(continuous, 
+                                header=True, index=True)        
     else:
         # Simply append new time steps as new row
-        optimized_generation.sort_index(axis=1).head(1).to_csv(fp, 
+        optimized_generation.sort_index(axis=1).head(1).to_csv(continuous, 
                                 mode='a', header=False, index=True)
 
 
@@ -361,6 +370,14 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
     ax[2].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%y"))   # formatter
     ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
     ax[2].set_xlim([historic_generation.index[0], historic_generation.index[-1]])
+    # Adjust number of minor ticks as appropriate
+    remove_order = [['03:00', '09:00', '15:00', '21:00'], ['06:00', '18:00'], ['12:00']]
+    i = 0
+    while len(ax[2].xaxis.get_ticklabels(minor=True)) > 10:
+        for l in ax[2].xaxis.get_ticklabels(minor=True):
+            if l._text in remove_order[i]:
+                l.set_visible(False)
+        i += 1
     
     plt.tight_layout()  
     
@@ -434,6 +451,14 @@ def plot_generation_cost(generation_hist, optimized_generation,
     ax[2].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%y"))   # formatter
     ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
     ax[2].set_xlim([generation_hist.index[0], generation_hist.index[-1]])
+    # Adjust number of minor ticks as appropriate
+    remove_order = [['03:00', '09:00', '15:00', '21:00'], ['06:00', '18:00'], ['12:00']]
+    i = 0
+    while len(ax[2].xaxis.get_ticklabels(minor=True)) > 10:
+        for l in ax[2].xaxis.get_ticklabels(minor=True):
+            if l._text in remove_order[i]:
+                l.set_visible(False)
+        i += 1
 
     plt.tight_layout()   
      
@@ -477,6 +502,14 @@ def plot_forecast_quality(historical_ts, forecasted_ts,
     ax[0].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%y"))   # formatter
     ax[0].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
     ax[0].set_xlim([historical_ts.index[0], historical_ts.index[-1]])
+    # Adjust number of minor ticks as appropriate
+    remove_order = [['03:00', '09:00', '15:00', '21:00'], ['06:00', '18:00'], ['12:00']]
+    i = 0
+    while len(ax[0].xaxis.get_ticklabels(minor=True)) > 10:
+        for l in ax[0].xaxis.get_ticklabels(minor=True):
+            if l._text in remove_order[i]:
+                l.set_visible(False)
+        i += 1
     
     # plot histogram of discrepancies
     ax[1].grid('both')
