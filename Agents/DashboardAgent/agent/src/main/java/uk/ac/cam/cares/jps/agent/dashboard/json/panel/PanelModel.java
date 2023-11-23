@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.Gauge;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TemplatePanel;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TimeSeriesChart;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;

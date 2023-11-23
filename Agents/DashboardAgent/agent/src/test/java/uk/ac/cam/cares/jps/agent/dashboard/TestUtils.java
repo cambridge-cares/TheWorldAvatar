@@ -341,4 +341,62 @@ public class TestUtils {
         sampleMap.put(DATABASE_HEAT, DATABASE_HEAT_ID);
         return sampleMap;
     }
+
+    /**
+     * An overloaded method to generate the common template panel json model with no query.
+     *
+     * @return The partial json model in string format.
+     */
+    public static String genExpectedCommonTemplatePanelJson(String title, String description, String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
+        return genExpectedCommonTemplatePanelJson(title, description, metadata, geometryPositions, itemDetails, "");
+    }
+
+    /**
+     * Generates the common template panel json model.
+     *
+     * @return The partial json model in string format.
+     */
+    public static String genExpectedCommonTemplatePanelJson(String title, String description, String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
+        String formattedMeasure = metadata[0].toLowerCase().replaceAll("\\s", "");
+        String formattedItemGroup = metadata[1].toLowerCase().replaceAll("\\s", "");
+        String rawSql = query.isEmpty() ? "SELECT time AS \\\"time\\\", ${" + formattedMeasure + formattedItemGroup + ":csv} FROM \\\"" + metadata[2] + "\\\" WHERE $__timeFilter(time)"
+                : query;
+        StringBuilder results = new StringBuilder();
+        results.append("\"id\": null,")
+                .append("\"title\": \"").append(title).append("\",")
+                .append("\"description\": \"").append(description).append("\",")
+                .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(metadata[3]).append("\"},")
+                .append("\"targets\": [")
+                .append("{\"datasource\":{\"type\":\"postgres\",\"uid\":\"").append(metadata[3]).append("\"}, ")
+                .append("\"editorMode\":\"code\",\"format\":\"table\",\"rawQuery\":true,\"refId\":\"A\",")
+                .append("\"sql\":{\"columns\": [{\"parameters\": [],\"type\":\"function\"}], ")
+                .append("\"groupBy\": [{\"property\":{\"type\":\"string\"},\"type\":\"groupBy\"}],\"limit\":50},")
+                .append("\"rawSql\":\"").append(rawSql).append("\"")
+                .append("}],")
+                .append("\"gridPos\":{\"h\":").append(geometryPositions[0]).append(",")
+                .append("\"w\":").append(geometryPositions[1]).append(",")
+                .append("\"x\":").append(geometryPositions[2]).append(",")
+                .append("\"y\":").append(geometryPositions[3]).append("},")
+                .append(genExpectedTransformationOption(itemDetails));
+        return results.toString();
+    }
+
+    private static String genExpectedTransformationOption(List<String[]> itemDetails) {
+        StringBuilder indexMapper = new StringBuilder();
+        StringBuilder colNameMapper = new StringBuilder();
+        int counter = 1;
+        for (String[] metadata : itemDetails) {
+            if (indexMapper.length() != 0) indexMapper.append(",");
+            if (colNameMapper.length() != 0) colNameMapper.append(",");
+            indexMapper.append("\"").append(metadata[1]).append("\":").append(counter++);
+            colNameMapper.append("\"").append(metadata[1]).append("\":\"").append(metadata[0]).append("\"");
+        }
+        StringBuilder results = new StringBuilder();
+        results.append("\"transformations\": [")
+                .append("{ \"id\": \"organize\",\"options\": {\"excludeByName\": {},")
+                .append("\"indexByName\": {\"time\": 0,").append(indexMapper).append("},")
+                .append("\"renameByName\": {").append(colNameMapper).append("}}}")
+                .append("]");
+        return results.toString();
+    }
 }

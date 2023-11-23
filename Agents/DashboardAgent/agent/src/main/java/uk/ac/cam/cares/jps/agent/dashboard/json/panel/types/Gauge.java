@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.dashboard.json.panel;
+package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author qhouyee
  */
-class Gauge extends TemplatePanel {
+public class Gauge extends TemplatePanel {
     private boolean SHOW_THRESHOLD_MARKERS = false;
     private String COLOR_MODE = "palette-classic";
     private String COLOR_STEPS = "{\"color\":\"red\",\"value\":80}";
@@ -107,7 +107,7 @@ class Gauge extends TemplatePanel {
      * @return The Gauge Chart syntax as a String.
      */
     @Override
-    protected String construct(int height, int width, int xPosition, int yPosition) {
+    public String construct(int height, int width, int xPosition, int yPosition) {
         StringBuilder builder = new StringBuilder();
         builder.append("{").append(super.genCommonJson(height, width, xPosition, yPosition))
                 // Chart type must be set to gauge

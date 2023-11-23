@@ -1,7 +1,8 @@
-package uk.ac.cam.cares.jps.agent.dashboard.json.panel;
+package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GaugeTest {
+public class GaugeTest {
     private static final List<String[]> SAMPLE_METADATA = new ArrayList<>();
     private static final String[] SAMPLE_THRESHOLDS = new String[2];
     private static final String SAMPLE_MEASURE = "ElectricalConsumption";
@@ -145,7 +146,7 @@ class GaugeTest {
             minMax = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("{").append(TemplatePanelTest.genExpectedCommonJsonBase(titleContent, description, metadata, geometryPositions, itemDetails, query))
+        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, metadata, geometryPositions, itemDetails, query))
                 .append(",\"type\": \"gauge\",")
                 .append("\"fieldConfig\":{")
                 .append("\"defaults\":{\"color\":{\"mode\": \"").append(colorMode).append("\"},")

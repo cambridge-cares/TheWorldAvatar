@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.dashboard.json.panel;
+package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author qhouyee
  */
-class TimeSeriesChart extends TemplatePanel {
+public class TimeSeriesChart extends TemplatePanel {
     private String THRESHOLD_STYLE = "off";
     private String THRESHOLD_KEY_VALUE = "";
 
@@ -57,7 +57,7 @@ class TimeSeriesChart extends TemplatePanel {
      * @return The Time Series Chart syntax as a String.
      */
     @Override
-    protected String construct(int height, int width, int xPosition, int yPosition) {
+    public String construct(int height, int width, int xPosition, int yPosition) {
         StringBuilder builder = new StringBuilder();
         builder.append("{").append(super.genCommonJson(height, width, xPosition, yPosition))
                 // Chart type must be set to time series

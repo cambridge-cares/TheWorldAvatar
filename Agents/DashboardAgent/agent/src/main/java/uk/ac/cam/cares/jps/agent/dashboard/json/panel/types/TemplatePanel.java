@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.dashboard.json.panel;
+package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author qhouyee
  */
-class TemplatePanel {
+public abstract class TemplatePanel {
     private final String MEASURE;
     private String TITLE;
     private String DESCRIPTION;
@@ -57,9 +57,10 @@ class TemplatePanel {
     /**
      * Gets the measure of this panel.
      */
-    protected String getMeasure() {return this.MEASURE;}
-    protected String getUnit() {return this.UNIT;}
-    protected void setUnit(String unit) {this.UNIT = unit;}
+    public String getMeasure() {return this.MEASURE;}
+    public String getUnit() {return this.UNIT;}
+    public void setUnit(String unit) {this.UNIT = unit;}
+
     /**
      * Sets the title.
      */
@@ -114,13 +115,9 @@ class TemplatePanel {
     }
 
     /**
-     * A placeholder method to construct the variable syntax required. This method must be overridden to be executed in the implemented classes.
-     *
-     * @throws UnsupportedOperationException when this is not overridden.
+     * An abstract method to construct the variable syntax required. This method must be overridden to be executed in the implemented classes.
      */
-    protected String construct(int height, int width, int xPosition, int yPosition) {
-        throw new UnsupportedOperationException("Construct() method is not supported for TemplatePanel. Please use their implementation classes instead!");
-    }
+    public abstract String construct(int height, int width, int xPosition, int yPosition);
 
     /**
      * Verifies if the mandatory variable exists.
