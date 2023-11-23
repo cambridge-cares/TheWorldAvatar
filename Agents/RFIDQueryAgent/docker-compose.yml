@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   rfid-query-agent:
-    image: rfid-query-agent:1.1.0
+    image: rfid-query-agent:1.2.0
     build: .
     volumes:
       - type: bind

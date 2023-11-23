@@ -3,7 +3,7 @@
         "Name": "rfid-query-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.io/library/rfid-query-agent:1.1.0",
+                "Image": "docker.io/library/rfid-query-agent:1.2.0",
                 "Env": [
                     "CLIENT_PROPERTIES=/app/config/client.properties",
                     "SPECIES_PROPERTIES=/app/config/species.properties",
