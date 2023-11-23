@@ -1,0 +1,44 @@
+{
+	"ServiceSpec": {
+		"Name": "jurong-island-input-agent",
+		"TaskTemplate": {
+			"ContainerSpec": {
+				"Image": "ghcr.io/cambridge-cares/jurong-island-input-agent:1.3",
+				"Env": [
+					"QUERY_ENDPOINT=http://www.theworldavatar.com/blazegraph/namespace/jibusinessunits/sparql",
+					"NUMBER_SOURCES=600",
+					"DENSITY=1.293",
+					"TEMPERATURE=500"
+				],
+				"Configs": [
+					{
+						"ConfigName": "postgis"
+					},
+					{
+						"ConfigName": "blazegraph"
+					},
+					{
+						"ConfigName": "ontop"
+					},
+					{
+						"ConfigName": "geoserver"
+					}
+				],
+				"Secrets": [
+					{
+						"SecretName": "postgis_password"
+					},
+					{
+						"SecretName": "geoserver_password"
+					}
+				]
+			}
+		}
+	},
+	"endpoints": {
+		"aermod-agent": {
+			"url": "http://localhost:8080/JurongIslandInputAgent/",
+			"externalPath": "/jurong-island-input-agent/"
+		}
+	}
+}

@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   python-service:
-    image: docker.cmclinnovations.com/python-service-debug:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/python-service-debug:1.3-dev-aermod-vis-SNAPSHOT
     build:
       context: .
       target: debug
