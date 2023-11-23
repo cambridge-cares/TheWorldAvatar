@@ -47,6 +47,8 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     gt_active = previous_state.gt_active
     gt_benefit = previous_state.gt_benefit
     previous_setup = previous_state.generation_setup
+    logger.info(f'Starting with active GT: {gt_active}')
+    logger.info(f'Starting GT benefit: {gt_benefit}')
 
     # Incorporate GT idle time requirement (i.e., potentially mark GT as unavailable)
     gts = [gt.name for gt in municipal_utility.gas_turbines]

@@ -13,30 +13,119 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
-from dhoptimisation.agent.optimisation_setup import *
+from dhoptimisation.agent.config import *
+from dhoptimisation.kgutils.kgclient import KGClient
+from dhoptimisation.kgutils.tsclient import TSClient
+from dhoptimisation.agent.optimisation_setup import HeatBoiler, GasTurbine, \
+                                                    SourcingContract, MarketPrices, \
+                                                    MunicipalUtility 
 from dhoptimisation.agent.optimisation_tasks import *
 
 
-# Specify relative file path to store plots
-OPTIMISATION_FIGURES_REPO = '/app/dhoptimisation/resources/optimisation_figures/'
+# Specify relative file path to store optimisation outputs
+OUTPUTS_REPO = '/app/dhoptimisation/resources/optimisation_figures/'
 
 
-def clear_repository(repo_path=OPTIMISATION_FIGURES_REPO):
+def clear_repository(repo_path=OUTPUTS_REPO):
     """
-    Delete previous output figures from non-related optimisation runs
+    Delete previous optimisation outputs (figures, consolidated csv) from 
+    non-related optimisation runs
     """
     # Ensure the path is valid
     if not os.path.exists(repo_path):
         raise_error(ValueError, f"The repository '{repo_path}' does not exist.")
 
+    # Output filetypes to delete
+    extensions = ['.png', '.csv']
+    
     # Clear the repository
     try:
         for f in os.listdir(repo_path):
-            if f.endswith(".png"):
+            if any(f.lower().endswith(ext) for ext in extensions):
                 os.remove(os.path.join(repo_path, f))
         logger.info(f"Repository at '{repo_path}' has been cleared.")
     except Exception as ex:
         raise_error(Exception, f"Unable to clear repository - {ex}")
+
+
+def instantiate_generation_cost(times:list, historic_gen:pd.DataFrame, 
+                                optimised_gen: pd.DataFrame, kg_client: KGClient, 
+                                ts_client: TSClient, time_format=TIME_FORMAT):
+    """
+    Instantiate total heat generation/sourcing cost for municipal utility for 
+    both historical and optimised forecast time series
+    
+    Arguments:
+        times {list} -- timestamps to instantiate (i.e., covered by optimisation)
+        historic_gen {pd.DataFrame} -- historical generation and cost DataFrame
+                                       as returned by 'get_historical_generation'
+        optimised_gen {pd.DataFrame} -- extract of optimised generation DataFrame
+                                        as returned by 'generation_optimization'
+        kg_client {KGClient} -- pre-initialised SPARQL client
+        ts_client {TSClient} -- pre-initialised TimeSeries client        
+        time_format {str} -- Python compliant time format to parse time values
+    """
+    
+    # Retrieve potentially already existing cost instances (to be updated)
+    cost = kg_client.get_total_generation_cost()
+    if not cost.get('hist_data_iri'):
+        logger.info('Instantiating new cost outputs ...')
+        # Instantiate new cost instances for historical and optimised forecast
+        data_iris = kg_client.instantiate_generation_cost(cost.get('mu'))
+        # Initialise cost time series
+        ts_client.init_timeseries(dataIRI=data_iris.get('hist_data_iri'), times=times, 
+                                    values=historic_gen.get('Min_cost').values, 
+                                    time_format=time_format, ts_type=DOUBLE)
+        ts_client.init_timeseries(dataIRI=data_iris.get('fc_data_iri'), times=times, 
+                                    values=optimised_gen.get('Min_cost').values, 
+                                    time_format=time_format, ts_type=DOUBLE)
+    else:
+        logger.info('Overwriting previous cost data ...')
+        # Overwrite existing cost data with new (optimised) results
+        ts_client.replace_ts_data(dataIRI=cost.get('hist_data_iri'), times=times, 
+                                    values=historic_gen.get('Min_cost').values)
+        ts_client.replace_ts_data(dataIRI=cost.get('fc_data_iri'), times=times, 
+                                    values=optimised_gen.get('Min_cost').values)
+
+
+def get_historical_generation(providers:list, mu:MunicipalUtility, prices:MarketPrices, 
+                              kg_client: KGClient, ts_client: TSClient,
+                              opti_start_dt: str, opti_end_dt: str, ):
+    """
+    Create a consolidated DataFrame for historical generation amounts and corresponding
+    cost (according to the same evaluation logic as used by the optimisation)
+    
+    Arguments:
+        providers {list} -- list of relevant heat provider/generator objects
+        mu {MunicipalUtility} --municipal utility object as used by optimisation
+        prices {MarketPrices} -- market prices object as used by optimisation
+        kg_client {KGClient} -- pre-initialised SPARQL client
+        ts_client {TSClient} -- pre-initialised TimeSeries client        
+        opti_start_dt {str} -- optimisation start datetime as string
+        opti_end_dt {str} -- optimisation end datetime as string
+        
+    Returns:
+        DataFrame of historical generation time series and associated cost
+    """
+    
+    # Initialise consolidated DataFrame for historical generation
+    logger.info('Create DataFrame of historical generation ...')
+    dataIRI = kg_client.get_historic_qdemand_datairi()
+    generation_hist = ts_client.retrieve_timeseries_as_dataframe(dataIRI, 
+                                    'Q_demand', opti_start_dt, opti_end_dt)
+    for pro in providers:
+        # Add historical heat generation for all providers/generators
+        dataIRI = kg_client.get_historic_generation_datairi(pro.iri)
+        df = ts_client.retrieve_timeseries_as_dataframe(dataIRI, pro.name, opti_start_dt, 
+                                                        opti_end_dt)
+        generation_hist = generation_hist.merge(df, on='time', how='outer')        
+    
+    # Assess historical generation cost
+    logger.info('Assessing historical generation cost ...')
+    cost, _, _ = evaluate_historic_generation(generation_hist, providers, mu.fuel, prices)
+    generation_hist = generation_hist.merge(cost[['Min_cost']], on='time', how='outer')
+    
+    return generation_hist
 
 
 def evaluate_historic_generation(historic_generation, gen_objects, gas_props, market_prices):
@@ -166,6 +255,33 @@ def evaluate_generation_series(generation_series, generator, gas_props, market_p
     return cost.iloc[:, 0], gas_demand, el_gen
 
 
+def create_optimised_csv_output(optimized_generation, csv_file='optimised_generation.csv'):
+    """
+    Creates a consolidated csv file of all optimised generations for consecutive
+    runs in related optimisation intervals, i.e., for all related optimisation runs
+        1) extract the first optimised time step and 
+        2) append it as consecutive row (to resemble MPC-style optimisation)
+    
+    Arguments:
+        optimized_generation {pd.DataFrame} -- extract of optimised generation DataFrame
+                                               as returned by 'generation_optimization'
+        csv_file {str} -- file name
+    """
+    
+    fp = os.path.join(OUTPUTS_REPO, csv_file)
+    
+    # NOTE: sort columns to ensure correct order of outputs in subsequent runs
+    if not os.path.exists(fp):
+        # Initialise output csv
+        optimized_generation.sort_index(axis=1).head(1).to_csv(fp, 
+                                header=True, index=True)
+        
+    else:
+        # Simply append new time steps as new row
+        optimized_generation.sort_index(axis=1).head(1).to_csv(fp, 
+                                mode='a', header=False, index=True)
+
+
 def plot_entire_heat_generation(historic_generation, optimized_generation, el_prices,
                                 fig_name='Generation_comparison', hour_spacing=3):
     """
@@ -250,7 +366,7 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
     
     # Save figure with timestamp in name
     fig_name += '_' + historic_generation.index[0].strftime(TIME_FORMAT) + '.png'
-    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name))
+    plt.savefig(os.path.join(OUTPUTS_REPO, fig_name))
 
 
 def plot_generation_cost(generation_hist, optimized_generation,
@@ -323,7 +439,7 @@ def plot_generation_cost(generation_hist, optimized_generation,
      
     # Save figure with timestamp in name
     fig_name += '_' + generation_hist.index[0].strftime(TIME_FORMAT) + '.png'
-    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name))
+    plt.savefig(os.path.join(OUTPUTS_REPO, fig_name))
 
 
 def plot_forecast_quality(historical_ts, forecasted_ts,
@@ -378,4 +494,4 @@ def plot_forecast_quality(historical_ts, forecasted_ts,
     
     # Save figure with timestamp in name
     fig_name += '_' + historical_ts.index[0].strftime(TIME_FORMAT) + '.png'
-    plt.savefig(os.path.join(OPTIMISATION_FIGURES_REPO, fig_name))
+    plt.savefig(os.path.join(OUTPUTS_REPO, fig_name))

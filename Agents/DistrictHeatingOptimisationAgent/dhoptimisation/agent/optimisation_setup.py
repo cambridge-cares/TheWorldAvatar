@@ -272,7 +272,7 @@ class DistrictHeatingGrid:
         else:
             raise_error(ValueError, "Entry point's 'name' needs to be a string")
     
-    
+
 class PreviousSystemState:
     # The purpose of this class is to provide a link between subsequent optimisation runs:
     # The current design sends each optimisation interval as a separate request to the

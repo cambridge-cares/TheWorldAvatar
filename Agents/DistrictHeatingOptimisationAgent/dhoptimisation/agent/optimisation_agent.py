@@ -195,7 +195,9 @@ class DHOptimisationAgent(DerivationAgent):
         
         # 3) Optimize heat generation modes
         print('Optimising heat generation ...')
-        clear_plots = False
+        clear_outputs = False
+        logger.info(f'Current optimisation start time step: {opti_start_dt}')
+        logger.info(f'Previous optimisation start time step: {self.previous_state.start_dt}')
         # Reset gas turbine etc. states for non-related optimisation runs
         if (datetime.strptime(opti_start_dt, time_format) - timedelta(hours=1)).strftime(time_format) != self.previous_state.start_dt:
             # Otherwise: If the previous optimisation interval covered [t1, t2] and
@@ -204,7 +206,7 @@ class DHOptimisationAgent(DerivationAgent):
             print('Requested optimisation interval not related to previous optimisation. ' +
                   'Resetting system state prior to optimisation ...')
             self.previous_state.reset_system_state()
-            clear_plots = True
+            clear_outputs = True
         # Run generation optimisation for entire optimisation horizon
         optimised, _, _ = generation_optimization(swps, prices, index, self.previous_state)
         print('Heat generation successfully optimised.')
@@ -214,7 +216,7 @@ class DHOptimisationAgent(DerivationAgent):
         times = [datetime.strftime(dt, time_format) for dt in index]
         providers = swps.boilers + swps.gas_turbines + swps.contracts
         
-        print('Instantiating optimisation results ...')
+        print('Instantiating/updating optimisation results ...')
         if not outputs:
             # Instantiate new optimisation outputs for all heat providers/generators
             # in KG and RDB (if not yet existing)
@@ -293,57 +295,29 @@ class DHOptimisationAgent(DerivationAgent):
             if tier:
                 # Assign (potentially updated) price tier as current price
                 self.sparql_client.update_current_heat_unit_price(c.iri, tier)
-        print('Optimisation results successfully instantiated.')
+        print('Optimisation results successfully instantiated/updated.')
         
-        # 5) Compare generation and cost (historical vs. optimised)
-        print('Evaluating optimised generation (composition and cost) ...')
+        print('Instantiating/updating total heat generation cost ...')
         # Extract DataFrame of optimised time series
         cols = [p.name+'_q' for p in providers] + ['Q_demand', 'Min_cost']
         generation_opt = optimised[cols].copy()
         generation_opt.rename(columns=lambda x: x.rstrip('_q'), inplace=True)
+        # Create DataFrame of historical generation and cost
+        generation_hist = get_historical_generation(providers, swps, prices,
+                            self.sparql_client, ts_client, opti_start_dt, opti_end_dt)
+        # Instantiate/update total generation cost
+        instantiate_generation_cost(times, generation_hist, generation_opt,
+                                    self.sparql_client, ts_client)
+        print('Total heat generation cost successfully instantiated/updated.')
         
-        # Initialise consolidated DataFrame for historical generation
-        logger.info('Create DataFrame of historical generation ...')
-        dataIRI = self.sparql_client.get_historic_qdemand_datairi()
-        generation_hist = ts_client.retrieve_timeseries_as_dataframe(dataIRI, 
-                                        'Q_demand', opti_start_dt, opti_end_dt)
-        for pro in providers:
-            # Add historical heat generation for all providers/generators
-            dataIRI = self.sparql_client.get_historic_generation_datairi(pro.iri)
-            df = ts_client.retrieve_timeseries_as_dataframe(dataIRI, pro.name, opti_start_dt, 
-                                                            opti_end_dt)
-            generation_hist = generation_hist.merge(df, on='time', how='outer')        
-        
-        # Assess historical generation cost
-        logger.info('Assessing historical generation cost ...')
-        cost, _, _ = evaluate_historic_generation(generation_hist, providers, swps.fuel, prices)
-        generation_hist = generation_hist.merge(cost[['Min_cost']], on='time', how='outer')
-        
-        # Retrieve potentially already existing cost instances (to be updated)
-        cost = self.sparql_client.get_total_generation_cost()
-        if not cost.get('hist_data_iri'):
-            logger.info('Instantiating new cost outputs ...')
-            # Instantiate new cost instances for historical and optimised forecast
-            data_iris = self.sparql_client.instantiate_generation_cost(cost.get('mu'))
-            # Initialise cost time series
-            ts_client.init_timeseries(dataIRI=data_iris.get('hist_data_iri'), times=times, 
-                                      values=generation_hist.get('Min_cost').values, 
-                                      time_format=time_format, ts_type=DOUBLE)
-            ts_client.init_timeseries(dataIRI=data_iris.get('fc_data_iri'), times=times, 
-                                      values=generation_opt.get('Min_cost').values, 
-                                      time_format=time_format, ts_type=DOUBLE)
-        else:
-            logger.info('Overwriting previous cost data ...')
-            # Overwrite existing cost data with new (optimised) results
-            ts_client.replace_ts_data(dataIRI=cost.get('hist_data_iri'), times=times, 
-                                      values=generation_hist.get('Min_cost').values)
-            ts_client.replace_ts_data(dataIRI=cost.get('fc_data_iri'), times=times, 
-                                      values=generation_opt.get('Min_cost').values)
-        
-        # Create plots
-        if clear_plots:
+        # 5) Compare generation and cost (historical vs. optimised)
+        print('Comparing historical vs. optimised generation (composition and cost) ...')
+        if clear_outputs:
             # Delete previous output figures from non-related optimisation runs
             clear_repository()
+        logger.info('Writing to consolidated output csv ...')
+        create_optimised_csv_output(generation_opt)
+        # Create plots
         self.logger.info('Creating output plots ...')
         # 1) plot comparison of heat generation/sourcing composition
         plot_entire_heat_generation(generation_hist, generation_opt, prices.el_spot)
