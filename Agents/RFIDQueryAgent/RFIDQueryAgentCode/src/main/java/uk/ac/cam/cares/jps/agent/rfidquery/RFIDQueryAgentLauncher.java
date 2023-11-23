@@ -381,11 +381,16 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		}
 
 		String molecularFormula = builder.queryForMolecularFormula(speciesIRI);
-		result.put("Molecular Formula", molecularFormula);
+
+		if(!molecularFormula.contains("Molecular Formula information not available")) {
+			result.put("Molecular Formula", molecularFormula);
+		}
 
 		String molecularWeightValue = builder.queryForMolecularWeightValue(speciesIRI);
 		String molecularWeightUnit = builder.queryForMolecularWeightUnit(speciesIRI);
-		result.put("Molecular Weight", molecularWeightValue + " " + molecularWeightUnit);
+		if(!molecularWeightValue.contains("Molecular Weight information not available") && !molecularWeightUnit.contains("Molecular Weight unit information not available")) {
+			result.put("Molecular Weight", molecularWeightValue + " " + molecularWeightUnit);
+		}
 
 		//query for hazard statement IRIs via ontospecies:hasGHSHazardStatements
 		JSONArray GHSHazardStatements = builder.queryForGHSHazardStatements(speciesIRI);
@@ -394,16 +399,17 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		Map<String, List<String>> map = builder.queryForLabelAndCommentForGHSHazardStatements(GHSHazardStatements);
 
 		JSONObject ghsHazardStatements = new JSONObject();
-		
-		for (int i = 0; i <= map.get("label").size() - 1; i++) {
-			String label = map.get("label").get(i);
-			String comment = map.get("comment").get(i);
-			LOGGER.info("The label from the map is " + label);
-			LOGGER.info("The comment from the map is " + comment);
-			ghsHazardStatements.put(label, comment.substring(0, comment.indexOf("[") - 1));
+		if (map != null) {
+			for (int i = 0; i <= map.get("label").size() - 1; i++) {
+				String label = map.get("label").get(i);
+				String comment = map.get("comment").get(i);
+				LOGGER.info("The label from the map is " + label);
+				LOGGER.info("The comment from the map is " + comment);
+				ghsHazardStatements.put(label, comment.substring(0, comment.indexOf("[") - 1));
+			}
+			result.put("GHS Hazard Statements", ghsHazardStatements);
 		}
-
-		result.put("GHS Hazard Statements", ghsHazardStatements);
+		
 		return result;
 	}
 

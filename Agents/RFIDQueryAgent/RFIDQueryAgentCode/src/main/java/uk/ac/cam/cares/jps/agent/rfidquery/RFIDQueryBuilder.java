@@ -646,7 +646,7 @@ public class RFIDQueryBuilder {
                 result = queryResult.getJSONObject(0).getString("molecularFormulaValue");
             }
             else {
-                throw new JPSRuntimeException(GETMOLECULARFORMULA_ERROR_MSG);
+                result = "Molecular Formula information not available";
             }
         } catch (Exception e) {
             throw new JPSRuntimeException(GETMOLECULARFORMULA_ERROR_MSG, e);
@@ -676,7 +676,7 @@ public class RFIDQueryBuilder {
             if(!queryResult.isEmpty()){
                 result = queryResult.getJSONObject(0).getString("molecularWeightValue");
             } else {
-                throw new JPSRuntimeException(GETMOLECULARFORMULA_ERROR_MSG);
+                result = "Molecular Weight information not available";
             }
          } catch (Exception e) {
             throw new JPSRuntimeException(GETMOLECULARWEIGHT_ERROR_MSG, e);
@@ -708,7 +708,7 @@ public class RFIDQueryBuilder {
             if(!queryResult.isEmpty()){
                 result = queryResult.getJSONObject(0).getString("molecularWeightUnitLabel");
             } else {
-                throw new JPSRuntimeException(GETMOLECULARFORMULA_ERROR_MSG);
+                result = "Molecular Weight unit information not available";
             }
          } catch (Exception e) {
             throw new JPSRuntimeException(GETMOLECULARWEIGHTUNIT_ERROR_MSG, e);
