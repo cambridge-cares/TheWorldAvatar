@@ -1,6 +1,6 @@
 # Kings Lynn Flood Routing Digital Twin Visualisation Framework (TWA-VF)
 This visualization serves as a proof of concept, leveraging knowledge graph technology for: 
-1) Flood routing for vehicles with various water wading depth capability. 
+1) Flood routing for vehicles with various water depth wading capability. 
 2) Isochrone mapping from points of interest, highlighting unreachable area and population.
 3) Travelling Salesman Problem for fastest route to restore flooded power stations. 
 4) Road network sensitivity analysis - before and after flood. 
@@ -15,7 +15,7 @@ The instantiated data is visualised using the TWA Visualisation Framework [TWA-V
 <img src="TSP.png" alt="Mapbox visualisation" width="100%"/>
 
 ## Uploading the data
-Upload data using stack-data-uploader in [here](./stack-data-uploader-inputs/).
+Upload data using [stack-data-uploader](./stack-data-uploader-inputs/).
 
 ## Deployment
 ### Replacing the agent configuration file
