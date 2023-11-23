@@ -167,7 +167,7 @@ def evaluate_generation_series(generation_series, generator, gas_props, market_p
 
 
 def plot_entire_heat_generation(historic_generation, optimized_generation, el_prices,
-                                fig_name='Generation_comparison'):
+                                fig_name='Generation_comparison', hour_spacing=3):
     """
     Creates plot of non-optimized vs. optimized heat generation in three subplots:
         1) heat load and electricity spot price vs. time
@@ -199,12 +199,12 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
     colors = ['tab:blue', 'tab:red', 'tab:orange', 'tab:purple', 'tab:green']
 
     # create figure
-    f, ax = plt.subplots(3, 1, figsize=(16, 9))
+    f, ax = plt.subplots(3, 1, figsize=(16, 9), sharex=True)
     f.suptitle('Total heat generation/sourcing')
 
     # first subplot with heat load and electricity spot price
     color = 'tab:red'
-    ax[0].grid('both', ls='--', lw=0.5)
+    ax[0].grid(True, 'both', ls='--', lw=0.5)
     ax[0].plot(optimized_generation['Q_demand'], '.-', color=color, ms=2.0, lw=1.0)
     ax[0].set_ylim([0, y_max1])  # align y axis between plots
     ax[0].set_yticks(yticks1)
@@ -219,7 +219,7 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
 
     # second subplot with historic heat generation
     plot_data = historic_generation[cols].copy()
-    ax[1].grid('both', ls='--', lw=0.5)
+    ax[1].grid(True, 'both', ls='--', lw=0.5)
     for i in range(len(cols)):
         ax[1].plot(plot_data.iloc[:, i], '.-', color=colors[i], ms=2.0, lw=1.0)
     ax[1].legend(cols, loc='upper right')
@@ -229,20 +229,21 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
 
     # third subplot with optimized heat generation
     plot_data = optimized_generation[cols].copy()
-    ax[2].grid('both', ls='--', lw=0.5)
+    ax[2].grid(True, 'both', ls='--', lw=0.5)
     for i in range(len(cols)):
         ax[2].plot(plot_data.iloc[:, i], '.-', color=colors[i], ms=2.0, lw=1.0)
     ax[2].legend(cols, loc='upper right')
     ax[2].set_ylim([0, y_max2])  # align y axis between plots
     ax[2].set_yticks(yticks2)
     ax[2].set_ylabel('Optimized heat \n generation (MWh/h)')
-    ax[2].set_xlabel('Time')
+    ax[2].set_xlabel('\nTime (dd/mm/yy hh:mm)')
 
     # Formatting the datetime axis
+    hours = list(range(0,24,hour_spacing))
     ax[2].xaxis.set_major_locator(mdates.DayLocator())                  # major locator for days
-    ax[2].xaxis.set_minor_locator(mdates.HourLocator(interval=3))       # minor locator for hours
+    ax[2].xaxis.set_minor_locator(mdates.HourLocator(byhour=hours))     # minor locator for hours
     ax[2].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%y"))   # formatter
-    ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M")) 
+    ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
     ax[2].set_xlim([historic_generation.index[0], historic_generation.index[-1]])
     
     plt.tight_layout()  
@@ -253,7 +254,7 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
 
 
 def plot_generation_cost(generation_hist, optimized_generation,
-                         fig_name='Cost_comparison'):
+                         fig_name='Cost_comparison', hour_spacing=3):
     """
     Creates plot of heat generation induced cost in three subplots:
         1) heat generation distribution
@@ -280,12 +281,12 @@ def plot_generation_cost(generation_hist, optimized_generation,
     colors = ['tab:blue', 'tab:red', 'tab:orange', 'tab:purple', 'tab:green']
 
     # create figure
-    f, ax = plt.subplots(3, figsize=(16, 9))
+    f, ax = plt.subplots(3, figsize=(16, 9), sharex=True)
     f.suptitle('Fully optimized heat generation/sourcing')
 
     # first subplot with heat generation
     plot_data = optimized_generation[cols].copy()
-    ax[0].grid('both', ls='--', lw=0.5)
+    ax[0].grid(True, 'both', ls='--', lw=0.5)
     for i in range(len(cols)):
         ax[0].plot(plot_data.iloc[:, i], '.-', color=colors[i], ms=2.0, lw=1.0)
     ax[0].legend(cols, loc='upper right')
@@ -294,7 +295,7 @@ def plot_generation_cost(generation_hist, optimized_generation,
     ax[0].set_ylabel('Heat generation \n (MWh/h)')
 
     # second subplot with incremental cost lines
-    ax[1].grid('both', ls='--', lw=0.5)
+    ax[1].grid(True, 'both', ls='--', lw=0.5)
     ax[1].plot(generation_hist['Min_cost'], '.-', color='tab:gray', ms=2.0, lw=1.0)
     ax[1].plot(optimized_generation['Min_cost'], '.--', color='tab:red', ms=2.0, lw=1.0)
     legend = ['Actual historic generation', 'Fully optimized heat generation']
@@ -302,19 +303,20 @@ def plot_generation_cost(generation_hist, optimized_generation,
     ax[1].set_ylabel('Incremental \n generation cost (€/h)')
 
     # third subplot with accumulated profit
-    ax[2].grid('both', ls='--', lw=0.5)
+    ax[2].grid(True, 'both', ls='--', lw=0.5)
     ax[2].plot(generation_hist['Min_cost'].cumsum()/1000, '.-', color='tab:gray', ms=2.0, lw=1.0)
     ax[2].plot(optimized_generation['Min_cost'].cumsum()/1000, '.--', color='tab:red', ms=2.0, lw=1.0)
     legend = ['Actual historic generation', 'Fully optimized heat generation']
     ax[2].legend(legend, loc='upper left')
     ax[2].set_ylabel('Cumulative \n generation cost (k€)')
-    ax[2].set_xlabel('Time')
-    
+    ax[2].set_xlabel('\nTime (dd/mm/yy hh:mm)')
+
     # Formatting the datetime axis
+    hours = list(range(0,24,hour_spacing))
     ax[2].xaxis.set_major_locator(mdates.DayLocator())                  # major locator for days
-    ax[2].xaxis.set_minor_locator(mdates.HourLocator(interval=3))       # minor locator for hours
+    ax[2].xaxis.set_minor_locator(mdates.HourLocator(byhour=hours))     # minor locator for hours
     ax[2].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%y"))   # formatter
-    ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M")) 
+    ax[2].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
     ax[2].set_xlim([generation_hist.index[0], generation_hist.index[-1]])
 
     plt.tight_layout()   
@@ -325,7 +327,7 @@ def plot_generation_cost(generation_hist, optimized_generation,
 
 
 def plot_forecast_quality(historical_ts, forecasted_ts,
-                          fig_name='Forecast_analysis'):
+                          fig_name='Forecast_analysis', hour_spacing=3):
     """
     Creates figure with 2 subplots
         1) comparison of time series
@@ -353,10 +355,11 @@ def plot_forecast_quality(historical_ts, forecasted_ts,
     ax[0].legend(['Historical time series', 'Forecast'])
     ax[0].set_title('Time series comparison')
     # Formatting the datetime axis
+    hours = list(range(0,24,hour_spacing))
     ax[0].xaxis.set_major_locator(mdates.DayLocator())                  # major locator for days
-    ax[0].xaxis.set_minor_locator(mdates.HourLocator(interval=3))       # minor locator for hours
+    ax[0].xaxis.set_minor_locator(mdates.HourLocator(byhour=hours))     # minor locator for hours
     ax[0].xaxis.set_major_formatter(mdates.DateFormatter("%d/%m/%y"))   # formatter
-    ax[0].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M")) 
+    ax[0].xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
     ax[0].set_xlim([historical_ts.index[0], historical_ts.index[-1]])
     
     # plot histogram of discrepancies
