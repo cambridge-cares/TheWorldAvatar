@@ -160,12 +160,12 @@
       <version>2.2.8</version>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/com.blazegraph/bigdata-core -->
     <dependency>
       <groupId>com.blazegraph</groupId>
-      <artifactId>bigdata-core</artifactId>
+      <artifactId>bigdata-client</artifactId>
       <version>2.1.4</version>
     </dependency>
+
   </dependencies>
 
   <build>
