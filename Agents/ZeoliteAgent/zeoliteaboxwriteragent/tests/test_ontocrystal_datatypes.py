@@ -423,6 +423,7 @@ class TestOntoVector( unittest.TestCase ):
         # Vector label:
         self.assertEqual( vec1.vectorLabel, "L" )
 
+        self.assertIsInstance( vec1.compDict, dict )
         self.assertEqual( len(vec1.compList), 0 ) # Because assigned to compDict
         self.assertEqual( len(vec1.compDict.keys()), 1 ) # Expect 1 component
 
@@ -447,6 +448,7 @@ class TestOntoVector( unittest.TestCase ):
         self.assertEqual( vec2.unit, "om:angstrom" )
         self.assertEqual( vec2.vectorLabel, None )
 
+        self.assertIsInstance( vec2.compDict, dict )
         self.assertEqual( len(vec2.compList), 0 ) # Because assigned to compDict
         self.assertEqual( len(vec2.compDict.keys()), 2 ) # Expect 1 component
 
@@ -489,7 +491,7 @@ class TestOntoVector( unittest.TestCase ):
                            uuidDB = uuidDB, unit = "om:angstrom", vectorLabel = "L" \
                          )
 
-        vec1.addComponent( label = "x", value = "111.22", error = "1.2", unit = "om:degree" )
+        vec1.addComponent( label = "x", value = "111.22", error = "1.2", unit = "om:degree", index = 3 )
         #vec1.addComponent( label = "y", value = "111.22", unit = "om:angstrom" )
         #vec1.addComponent( label = "xx", value = 111.22, error = 1.2, unit = "om:degree" )
         lines = vec1.getCsvArr( "HotPot", prefix + "hasVec1" )
@@ -617,13 +619,24 @@ class TestOntoVector( unittest.TestCase ):
         self.assertEqual( line[4], "1.2" )
         self.assertEqual( line[5], "rdfs:Literal" )
 
+        il += 1
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        self.assertEqual( line[0], "http://www.theworldavatar.com/kg/ontocrystal/hasComponentIndex" )
+        self.assertEqual( line[1], "Data Property" )
+        self.assertEqual( line[2], comp1 )
+        self.assertEqual( line[3], "" )
+        self.assertEqual( line[4], 3 )
+        self.assertEqual( line[5], "xsd:integer" )
 
         # for value + error + unit assigned:
         # 2 lines : for vector definition
         # 1 line  : for global vector label
         # 1 line  : for global unit
         # 6 lines per component ( 2 + (label,value,error,unit) )
-        self.assertEqual( len(lines), 10 )
+        #+1 for index (optional argument)
+        self.assertEqual( len(lines), 11 )
 
         #tools.writeCsv( "TestOntoCrystal4.csv", lines )
 
@@ -692,6 +705,7 @@ class TestOntoVector( unittest.TestCase ):
 
         #output += vec2.getCsvArr( "HotPot", prefix + "hasVec2" )
 
+        self.assertIsInstance( vec2.compList, list )
         self.assertEqual( len(vec2.compList), 3 )
         self.assertEqual( len(vec2.compErrList), 3 )
         self.assertEqual( len(vec2.compUnitList), 3 )
@@ -739,6 +753,7 @@ class TestOntoVector( unittest.TestCase ):
         # For debugging:
         #tools.writeCsv( "TestOntoCrystal2.csv", lines )
 
+        self.assertIsInstance( vec1.compList, list )
         self.assertEqual( len(vec1.compList), 3 ) # Because assigned to compDict
         self.assertEqual( len(vec1.compDict.keys()), 0 ) # Expect 1 component
 
@@ -959,41 +974,92 @@ class TestOntoMatrix( unittest.TestCase ):
         uuidDB = tools.UuidDB( filename = "test_datatypes.csv" )
 
         #------------------------------------------------
-        mat1 = OntoMatrix( className = "PositionVector", itemName = "pos_mol_C1", \
+        mat1 = OntoMatrix( className = "NewMatrix", itemName = "pos_mol_C1", \
                            tPrefix = "http://tbox/", aPrefix = "http://abox/", \
                            uuidDB = uuidDB, unit = "om:angstrom" #, vectorLabel = "L" \
                          )
-        mat1.addComponentList( label = "xx", 
+        mat1.addComponentList( #label = "xx", 
                                valList = [[111.22,222.33]], \
                                errList = [[  1.2 ,  2.3 ]], unit = "om:degree" )
         #mat1.addComponent( label = "y", value = "111.22", unit = "om:angstrom" )
         #mat1.addComponent( label = "xx", value = 111.44, error = 1.4, unit = "om:degree" )
         #lines = mat1.getCsvArr( "HotPot", prefix + "hasVec1" )
         
-        self.assertEqual( mat1.className, "PositionVector" )
+        self.assertEqual( mat1.className, "NewMatrix" )
         self.assertEqual( mat1.itemName.startswith("pos_mol_C1"), True, msg = mat1.itemName )
         self.assertEqual( mat1.unit, "om:angstrom" )
 
         # is there matrix label???:
         #self.assertEqual( mat1.vectorLabel, "L" )
 
+        self.assertIsInstance( mat1.compList, list )
         self.assertEqual( len(mat1.compList   ), 1 ) # Expect 1 (array 1x2)
         self.assertEqual( len(mat1.compList[0]), 2 ) # Expect 2 (array 1x2)
         self.assertEqual( len(mat1.compDict.keys()), 0 ) # Because assigned to compList
 
-"""
         # Component 1
-        self.assertEqual( "xx" in mat1.compDict, True )
-        self.assertEqual( mat1.compDict["xx"]["value"], "111.22" )
-        self.assertEqual( mat1.compDict["xx"]["error"], "1.2" )
-        self.assertEqual( mat1.compDict["xx"]["unit" ], "om:degree" )
+        self.assertEqual( mat1.compList    [0][0], 111.22 )
+        self.assertEqual( mat1.compErrList [0][0],   1.2  )
+        self.assertEqual( mat1.compUnitList[0][0], "om:degree" )
+
+        # Component 2
+        self.assertEqual( mat1.compList    [0][1], 222.33 )
+        self.assertEqual( mat1.compErrList [0][1],   2.3  )
+        self.assertEqual( mat1.compUnitList[0][1], "om:degree" )
 
         #------------------------------------------------
+        mat2 = OntoMatrix( className = "MeasureMatrix", itemName = "pos_mol_C1", \
+                           tPrefix = "http://tbox/", aPrefix = "http://abox/", \
+                           uuidDB = uuidDB, unit = "om:angstrom" #, vectorLabel = "L" \
+                         )
+        mat2.addComponentList( #label = "xx", 
+                               valList = [[111.22,222.33]], \
+                               errList = [[  1.2 ,  2.3 ]], unit = [["om:degree","om:reciprocalAngstrom"]] )
+        #mat2.addComponent( label = "y", value = "111.22", unit = "om:angstrom" )
+        #mat2.addComponent( label = "xx", value = 111.44, error = 1.4, unit = "om:degree" )
+        #lines = mat2.getCsvArr( "HotPot", prefix + "hasVec1" )
+        
+        self.assertEqual( mat2.className, "MeasureMatrix" )
+        self.assertEqual( mat2.itemName.startswith("pos_mol_C1"), True, msg = mat2.itemName )
+        self.assertEqual( mat2.unit, "om:angstrom" )
+
+        # is there matrix label???:
+        #self.assertEqual( mat2.vectorLabel, "L" )
+
+        self.assertIsInstance( mat2.compList, list )
+        self.assertEqual( len(mat2.compList   ), 1 ) # Expect 1 (array 1x2)
+        self.assertEqual( len(mat2.compList[0]), 2 ) # Expect 2 (array 1x2)
+        self.assertEqual( len(mat2.compDict.keys()), 0 ) # Because assigned to compList
+
+        # Component 1
+        self.assertEqual( mat2.compList    [0][0], 111.22 )
+        self.assertEqual( mat2.compErrList [0][0],   1.2  )
+        self.assertEqual( mat2.compUnitList[0][0], "om:degree" )
+
+        # Component 2
+        self.assertEqual( mat2.compList    [0][1], 222.33 )
+        self.assertEqual( mat2.compErrList [0][1],   2.3  )
+        self.assertEqual( mat2.compUnitList[0][1], "om:reciprocalAngstrom" )
 
         #------------------------------------------------
+        """
+        # This case is here for checking error/warning messages:
+
+        mat3 = OntoMatrix( className = "MeasureMatrix", itemName = "pos_mol_C1", \
+                           tPrefix = "http://tbox/", aPrefix = "http://abox/", \
+                           uuidDB = uuidDB, unit = "om:angstrom" #, vectorLabel = "L" \
+                         )
+
+        mat3.addComponentList( valList = [[111.22,222.33]], \
+                               errList = [[  1.2 ,  2.3 ],[3.4]], \
+                               unit = [["om:degree","om:reciprocalAngstrom"]] )
+        mat3.addComponentList( valList = [[111.22,222.33]], \
+                               errList = [[  1.2 ,  2.3, 3.4]], \
+                               unit = [["om:degree","om:reciprocalAngstrom"]] )
+        """
         #------------------------------------------------
 
-        self.assertEqual( 1, 2, msg="Not implemented test matrix addComponentList" )
+        #self.assertEqual( 1, 2, msg="Not implemented test matrix addComponentList" )
         uuidDB.saveDB()
         pass # TestOntoMatrix.addComponentList()
 
@@ -1009,7 +1075,7 @@ class TestOntoMatrix( unittest.TestCase ):
                          )
 
         mat1.addComponent( label = "xx", value = "111.22", error = "1.2", unit = "om:degree" )
-        #mat1.addComponent( label = "y", value = "111.22", unit = "om:angstrom" )
+        mat1.addComponent( label = "yy", value = "222.33", error = "2.3", unit = "om:cubicAngstrom" )
         #mat1.addComponent( label = "xx", value = 111.44, error = 1.4, unit = "om:degree" )
         #lines = mat1.getCsvArr( "HotPot", prefix + "hasVec1" )
         
@@ -1020,26 +1086,36 @@ class TestOntoMatrix( unittest.TestCase ):
         # is there matrix label???:
         #self.assertEqual( mat1.vectorLabel, "L" )
 
+        self.assertIsInstance( mat1.compDict, dict )
         self.assertEqual( len(mat1.compList), 0 ) # Because assigned to compDict
-        self.assertEqual( len(mat1.compDict.keys()), 1 ) # Expect 1 component
+        self.assertEqual( len(mat1.compDict.keys()), 2 ) # Expect 1 component
 
         # Component 1
         self.assertEqual( "xx" in mat1.compDict, True )
         self.assertEqual( mat1.compDict["xx"]["value"], "111.22" )
-        self.assertEqual( mat1.compDict["xx"]["error"], "1.2" )
+        self.assertEqual( mat1.compDict["xx"]["error"],   "1.2"  )
         self.assertEqual( mat1.compDict["xx"]["unit" ], "om:degree" )
 
+        # Component 2
+        self.assertEqual( "yy" in mat1.compDict, True )
+        self.assertEqual( mat1.compDict["yy"]["value"], "222.33" )
+        self.assertEqual( mat1.compDict["yy"]["error"],   "2.3"  )
+        self.assertEqual( mat1.compDict["yy"]["unit" ], "om:cubicAngstrom" )
+
+
         #------------------------------------------------
 
         #------------------------------------------------
         #------------------------------------------------
 
-        self.assertEqual( 1, 2, msg="Not implemented test matrix addComponentDict" )
+        #self.assertEqual( 1, 2, msg="Not implemented test matrix addComponentDict" )
         uuidDB.saveDB()
         pass # TestOntoMatrix.addComponentDict()
 
 
     def test_getCsvArrList( self ):
+
+        prefix = "http://test/ontology/"
 
         #prefix = "http://test/ontology/"
         uuidDB = tools.UuidDB( filename = "test_datatypes.csv" )
@@ -1050,20 +1126,22 @@ class TestOntoMatrix( unittest.TestCase ):
                          )
 
 
-        lines = mat1.getCsvArr( "HotPot", prefix + "hasVec1" )
+        lines = mat1.getCsvArr( "HotPot", prefix + "hasMat1" )
 
         # For debugging:
- 
-        #tools.writeCsv( "TestOntoCrystal2.csv", lines )
+        #tools.writeCsv( "TestOntoCrystal6.csv", lines )
+
 
         uuidDB.saveDB()
         self.assertEqual( 1, 2, msg="Not implemented test matrix getCsvArrList" )
         pass # TestOntoMatrix.getCsvArrList()
 
+    """
 
     def test_getCsvArrDict( self ):
+        self.assertEqual( 1, 2, msg="Not implemented test matrix getCsvArrDict" )
 
-        #prefix = "http://test/ontology/"
+        prefix = "http://test/ontology/"
         uuidDB = tools.UuidDB( filename = "test_datatypes.csv" )
 
         mat1 = OntoMatrix( className = "PositionVector", itemName = "pos_mol_C1", \
@@ -1072,19 +1150,18 @@ class TestOntoMatrix( unittest.TestCase ):
                          )
 
         mat1.addComponent( label = "xx", value = "111.22", error = "1.2", unit = "om:degree" )
-        lines = mat1.getCsvArr( "HotPot", prefix + "hasVec1" )
+        lines = mat1.getCsvArr( "HotPot", prefix + "hasMat1" )
 
         # For debugging:
+        #tools.writeCsv( "TestOntoCrystal7.csv", lines )
  
-        #tools.writeCsv( "TestOntoCrystal2.csv", lines )
 
         uuidDB.saveDB()
-        self.assertEqual( 1, 2, msg="Not implemented test matrix getCsvArrDict" )
         pass # TestOntoMatrix.getCsvArrDict()
+    """
 
     pass # class TestOntoMatrix
 
-"""
 
 class TestOntoCrystal( unittest.TestCase ):
 
