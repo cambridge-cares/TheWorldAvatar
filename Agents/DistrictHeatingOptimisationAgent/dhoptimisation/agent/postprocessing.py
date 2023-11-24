@@ -271,6 +271,7 @@ def create_optimised_csv_output(optimized_generation, csv_file='Optimised_genera
     # Create filenames for current and continuous outputs
     # current: optimisation results from current run (looking into the future)
     current = csv_file + '_' + optimized_generation.index[0].strftime(TIME_FORMAT) + '.csv'
+    current = current.replace(':', '-')
     current = os.path.join(OUTPUTS_REPO, current)
     # continuous: first time steps of all consecutive related optimisation runs
     continuous = csv_file + '_continuous.csv'
@@ -383,6 +384,7 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
     
     # Save figure with timestamp in name
     fig_name += '_' + historic_generation.index[0].strftime(TIME_FORMAT) + '.png'
+    fig_name = fig_name.replace(':', '-')
     plt.savefig(os.path.join(OUTPUTS_REPO, fig_name))
 
 
@@ -464,6 +466,7 @@ def plot_generation_cost(generation_hist, optimized_generation,
      
     # Save figure with timestamp in name
     fig_name += '_' + generation_hist.index[0].strftime(TIME_FORMAT) + '.png'
+    fig_name = fig_name.replace(':', '-')
     plt.savefig(os.path.join(OUTPUTS_REPO, fig_name))
 
 
@@ -527,4 +530,5 @@ def plot_forecast_quality(historical_ts, forecasted_ts,
     
     # Save figure with timestamp in name
     fig_name += '_' + historical_ts.index[0].strftime(TIME_FORMAT) + '.png'
+    fig_name = fig_name.replace(':', '-')
     plt.savefig(os.path.join(OUTPUTS_REPO, fig_name))
