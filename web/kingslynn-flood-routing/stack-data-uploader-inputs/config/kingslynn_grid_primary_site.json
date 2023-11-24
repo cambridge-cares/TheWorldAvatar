@@ -3,9 +3,6 @@
     "database": "postgres",
     "workspace": "kingslynn",
     "datasetDirectory": "kingslynn",
-    "externalDatasets": [
-        "kingslynn_routing_layers"
-    ],
     "dataSubsets": [
         {
             "type": "tabular",

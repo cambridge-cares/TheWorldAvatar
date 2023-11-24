@@ -3,9 +3,6 @@
     "database": "postgres",
     "workspace": "kingslynn",
     "datasetDirectory": "kingslynn",
-    "externalDatasets": [
-        "kingslynn_flood_road_data"
-    ],
     "dataSubsets": [
         {
             "type": "vector",

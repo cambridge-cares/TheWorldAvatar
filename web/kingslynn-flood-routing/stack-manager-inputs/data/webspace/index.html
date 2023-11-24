@@ -254,8 +254,6 @@
             <ul>
                 <li><a href="#sidePanelGeneral">General</a></li>
                 <li><a href="#sidePanelLinks">Attributions</a></li>
-
-                <li><a href="#sidePanelLinks">Links</a></li>
             </ul>
             <div id="sidePanelGeneral">
                 <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
@@ -263,12 +261,6 @@
                 <div id="footerContainer">
                     <div id="footerContent"></div>
                 </div>
-            </div>
-            <div id="sidePanelLinks">
-                <p>Contains OS data &copy; Crown copyright and database rights 2022 (100025252)<br><br>
-                    Contains public sector information licensed under the Open Government Licence v3.0.<br><br>
-                    This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"
-                </p>
             </div>
             <div id="sidePanelLinks">
                 <p>Contains OS data &copy; Crown copyright and database rights 2022 (100025252)<br><br>
@@ -296,7 +288,6 @@
         var manager = new Manager(MapProvider.MAPBOX);
         window.manager = manager;
 
-        // Read credentials
         // Read credentials
         manager.readCredentials().then(() => {
 
@@ -424,7 +415,7 @@
 
                 sourceMarker.on("dragend", function (e) {
                     console.log('Start Point moved to', e.target.getLngLat());
-                    selectedPoint = e.target.getLngLat();
+                    let selectedPoint = e.target.getLngLat();
                     getVertex(selectedPoint);
 
                     removeLayer();
@@ -454,7 +445,7 @@
 
                 targetMarker.on("dragend", function (e) {
                     console.log('Endpoint moved to', e.target.getLngLat());
-                    selectedPoint = e.target.getLngLat();
+                    let selectedPoint = e.target.getLngLat();
                     getVertex(selectedPoint);
                     removeLayer();
                     let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
