@@ -1,8 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel;
 
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.Gauge;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.LayoutTemplate;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TemplatePanel;
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TimeSeriesChart;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;
@@ -30,10 +29,11 @@ public class PanelModel {
         // Row numbers to compute y positions; Initialise from 0
         this.ROW_NUMBER = 0; // Each row correspond to one item group
         // Generate the syntax for all room-related panels if available
+        // Note to start with room as it has additional thresholds keys
         if (timeSeries.containsKey(StringHelper.ROOM_KEY)) {
             // Room-related panels are designed to be at the top based on their topological hierarchy
             // Generate all the panels and store them into a queue
-            Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(StringHelper.ROOM_KEY, timeSeries.get(StringHelper.ROOM_KEY), databaseConnectionMap);
+            Queue<TemplatePanel[]> panelQueue = LayoutTemplate.genRoomLayoutTemplate(timeSeries.get(StringHelper.ROOM_KEY), databaseConnectionMap);
             separateRoomMeasurePerRow(panelQueue);
             // Remove the room values once it has been processed
             timeSeries.remove(StringHelper.ROOM_KEY);
@@ -42,14 +42,14 @@ public class PanelModel {
         if (timeSeries.containsKey(StringHelper.SYSTEM_KEY)) {
             // Room-related panels are designed to be at the top based on their topological hierarchy
             // Generate all the panels and store them into a queue
-            Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(StringHelper.SYSTEM_KEY, timeSeries.get(StringHelper.SYSTEM_KEY), databaseConnectionMap);
+            Queue<TemplatePanel[]> panelQueue = LayoutTemplate.genSystemsLayoutTemplate(timeSeries.get(StringHelper.SYSTEM_KEY), databaseConnectionMap);
             groupPanelsAsRow(StringHelper.SYSTEM_KEY, panelQueue);
-            // Remove the room values once it has been processed
+            // Remove the systems values once it has been processed
             timeSeries.remove(StringHelper.SYSTEM_KEY);
         }
         // For each item group that is not a room or system
         for (String currentItemGroup : timeSeries.keySet()) {
-            Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(currentItemGroup, timeSeries.get(currentItemGroup), databaseConnectionMap);
+            Queue<TemplatePanel[]> panelQueue = LayoutTemplate.genAssetLayoutTemplate(currentItemGroup, timeSeries.get(currentItemGroup), databaseConnectionMap);
             groupPanelsAsRow(currentItemGroup, panelQueue);
         }
     }
@@ -63,75 +63,6 @@ public class PanelModel {
         return this.PANEL_SYNTAX.toString();
     }
 
-    /**
-     * Generates the various measure panels that can be found in the input item group.
-     *
-     * @param itemGroup             The item group of interest. May be rooms or asset types.
-     * @param itemMeasures          A map containing all measures and their metadata to construct each panel.
-     * @param databaseConnectionMap A map linking each database to its connection ID.
-     * @return A queue storing all measure panels associated with this item group.
-     */
-    private Queue<TemplatePanel[]> genMeasurePanelsForItemGroup(String itemGroup, Map<String, List<String[]>> itemMeasures, Map<String, String> databaseConnectionMap) {
-        // Generate an empty queue of arrays for generating panels (at most three to accommodate screen resolutions)
-        // At the moment, one horizontal row (encapsulated by one array) is designed to contain only at most have 3 panels
-        Queue<TemplatePanel[]> panelQueue = new ArrayDeque<>();
-        TemplatePanel[] panelArr;
-        // For non-rooms, thresholds should be empty
-        Map<String, String[]> thresholdMap = new HashMap<>();
-        // If this item group is rooms and have thresholds available, process them
-        if (itemGroup.equals(StringHelper.ROOM_KEY) && itemMeasures.containsKey(StringHelper.THRESHOLD_KEY)) {
-            // Retrieve the thresholds and process it for generating the charts
-            List<String[]> thresholdList = itemMeasures.get(StringHelper.THRESHOLD_KEY);
-            thresholdMap = processThresholdsToMap(thresholdList);
-            itemMeasures.remove(StringHelper.THRESHOLD_KEY); // remove the threshold after processing
-        }
-        // For each of the measures, create a chart
-        for (String measure : itemMeasures.keySet()) {
-            // Take note to exclude the assets, rooms, and system key as that is not required
-            if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.SYSTEM_KEY)) {
-                // Retrieve the relevant database name and ID from the first item
-                // Assumes that each measure of a specific asset type belongs to only one database
-                String database = itemMeasures.get(measure).get(0)[3];
-                String databaseID = databaseConnectionMap.get(database);
-                // Assume the unit of each measure for each asset type is consistent
-                String unit = itemMeasures.get(measure).get(0)[4];
-                // Retrieves the thresholds if it is available, else, it should return an empty array
-                String[] thresholds = thresholdMap.isEmpty() ? new String[]{} :
-                        thresholdMap.containsKey(measure) ? thresholdMap.get(measure) : new String[]{};
-                // Create the panel objects and add it to the queue
-                Gauge gaugePanel = new Gauge(measure, itemGroup, unit, databaseID, itemMeasures.get(measure), thresholds);
-                TimeSeriesChart tsChart = new TimeSeriesChart(measure, itemGroup, unit, databaseID, itemMeasures.get(measure), thresholds);
-                // If this row is created for the rooms or systems
-                if (itemGroup.equals(StringHelper.ROOM_KEY) || itemGroup.equals(StringHelper.SYSTEM_KEY)) {
-                    // It should have an additional gauge panel displaying the average of all time series
-                    Gauge averageGaugePanel = new Gauge(measure, itemGroup, unit, databaseID, itemMeasures.get(measure), thresholds, true);
-                    panelArr = new TemplatePanel[3]; // Three panels should be included
-                    panelArr[0] = averageGaugePanel;
-                    panelArr[1] = gaugePanel;
-                    panelArr[2] = tsChart;
-                } else {
-                    // For other item groups, we only expect 2 panels
-                    panelArr = new TemplatePanel[]{gaugePanel, tsChart};
-                }
-                panelQueue.offer(panelArr);
-            }
-        }
-        return panelQueue;
-    }
-
-    /**
-     * Process the threshold list into a map so that it is easier to retrieve thresholds from.
-     *
-     * @param thresholdList A list of the threshold metadata.
-     * @return A map in the form of {measure: [min, max]}.
-     */
-    private Map<String, String[]> processThresholdsToMap(List<String[]> thresholdList) {
-        Map<String, String[]> thresholdMap = new HashMap<>();
-        for (String[] threshold : thresholdList) {
-            thresholdMap.put(threshold[0], new String[]{threshold[1], threshold[2]});
-        }
-        return thresholdMap;
-    }
 
     /**
      * When necessary, this method supports the grouping of panels into a row for the dashboard in JSON format.
@@ -220,6 +151,7 @@ public class PanelModel {
                         .append(",")
                         .append(currentPanelArr[2].construct(CHART_HEIGHT, CHART_WIDTH, CHART_WIDTH, rowNumber + 1));
             }
+            rowNumber++;
         }
         return builder;
     }
