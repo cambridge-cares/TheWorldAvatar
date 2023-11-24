@@ -283,7 +283,7 @@ public class RFIDQueryBuilder {
                 LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
                 result = kbClient1.executeQuery().getJSONObject(0).getString("chemicalAmount");
             } else {
-                throw new JPSRuntimeException(GETCHEMICALAMOUNT_ERROR_MSG);
+                result = "This tagged object does not contain any chemicals";
             }
         } catch (Exception e) {
             throw new JPSRuntimeException(GETCHEMICALAMOUNT_ERROR_MSG, e);
