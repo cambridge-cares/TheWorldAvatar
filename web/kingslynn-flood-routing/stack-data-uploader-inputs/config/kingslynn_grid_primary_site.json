@@ -14,5 +14,8 @@
             "table": "grid_primary_site",
             "subdirectory": "grid_primary_site"
         }
+    ],
+    "mappings": [
+        "grid_primary_site.obda"
     ]
 }
