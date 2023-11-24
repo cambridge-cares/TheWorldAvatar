@@ -14,7 +14,7 @@
           <sld:RasterSymbolizer>
             <sld:ColorMap>
               <ColorMapEntry color="#d4fffb" quantity="0" label="shallow" opacity="0.4" />
-              <ColorMapEntry color="#0000FF" quantity="0.5" label="label2" opacity="0.6" />
+              <ColorMapEntry color="#0000FF" quantity="0.5" label="deep" opacity="0.6" />
             </sld:ColorMap>
             <sld:ContrastEnhancement />
           </sld:RasterSymbolizer>

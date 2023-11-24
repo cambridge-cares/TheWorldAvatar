@@ -819,7 +819,7 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "line-color": "#D8E3FF",
+                        "line-color": "#1A1A1A",
                         "line-width": 2,
                         "line-opacity": 0.5
                     }
