@@ -253,10 +253,10 @@ public class CEAAgent extends JPSAgent {
                     for (String measurement : CEAConstants.TIME_SERIES) {
                         ArrayList<String> result = DataRetriever.getDataIRI(uri, measurement, ceaRoute);
                         String attachedIri = AnnualValueHelper.getInfo(result.get(0), measurement, ceaRoute);
-                        String value = AnnualValueHelper.retrieveAnnualValue(attachedIri, measurement, ceaRoute);
+                        String energyType = AnnualValueHelper.getType(result.get(0), ceaRoute);
+                        String value = AnnualValueHelper.retrieveAnnualValue(attachedIri, energyType, ceaRoute);
                         if (!value.isEmpty()) {
                             if (CEAConstants.TIME_SERIES.contains(measurement)) {
-                                value = DataParser.calculateAnnual(TimeSeriesHelper.retrieveData(result.get(0), storeClient, rdbStoreClient, OffsetDateTime.class), result.get(0));
                                 if (measurement.contains("ESupply")) {
                                     // PVT annual electricity supply
                                     measurement = "Annual "+ measurement.split("ESupply")[0] + " Electricity Supply";

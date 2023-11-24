@@ -47,17 +47,7 @@ public class AnnualValueHelper {
             }
             annualValue = Math.round(annualValue*Math.pow(10,2))/Math.pow(10,2);
             String dataIRI = iriMap.get(ts);
-            JSONArray queryResultArray = AccessAgentCaller.queryStore(route, getType(dataIRI).toString());
-            String energyType = "";
-
-            for (int j = 0; j < queryResultArray.length(); j++) {
-                if (queryResultArray.getJSONObject(j).getString("type").contains(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))) {
-                    energyType = queryResultArray.getJSONObject(j).getString("type");
-                    String[] split = energyType.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP));
-                    energyType = "Annual" + split[1];
-                    break;
-                }
-            }
+            String energyType = getType(dataIRI, route);
             String attachedIRI = getInfo(dataIRI, ts, route);
             String measureIRI = checkAnnual(attachedIRI, energyType, route);
 
@@ -132,7 +122,7 @@ public class AnnualValueHelper {
      * @param iri data IRI
      * @return query object that will retrieve the quantity type of iri
      */
-    public static Query getType(String iri) {
+    public static String getType(String iri, String route) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
@@ -144,7 +134,18 @@ public class AnnualValueHelper {
                 .addVar("?type")
                 .addWhere(wb);
 
-        return sb.build();
+        JSONArray queryResultArray = AccessAgentCaller.queryStore(route, sb.build().toString());
+        String energyType = "";
+
+        for (int j = 0; j < queryResultArray.length(); j++) {
+            if (queryResultArray.getJSONObject(j).getString("type").contains(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))) {
+                energyType = queryResultArray.getJSONObject(j).getString("type");
+                String[] split = energyType.split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP));
+                energyType = "Annual" + split[1];
+                break;
+            }
+        }
+        return energyType;
     }
 
     /**
@@ -243,10 +244,10 @@ public class AnnualValueHelper {
 
     /**
      * Retrieves the annual value associated with attachedIri and energyType
-     * @param attachedIri
-     * @param energyType
-     * @param route
-     * @return
+     * @param attachedIri IRI to which the quantity IRI is attached to
+     * @param energyType energy type, electricity or heat
+     * @param route route to attachedIri
+     * @return annual value as string
      */
     public static String retrieveAnnualValue(String attachedIri, String energyType, String route) {
         String measureIri = checkAnnual(attachedIri, energyType, route);
