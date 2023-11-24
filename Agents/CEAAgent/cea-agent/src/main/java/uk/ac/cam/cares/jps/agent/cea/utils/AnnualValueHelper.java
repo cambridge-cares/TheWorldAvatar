@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.cea.utils;
 
-import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
@@ -59,8 +58,7 @@ public class AnnualValueHelper {
                     break;
                 }
             }
-            queryResultArray = AccessAgentCaller.queryStore(route, getInfo(dataIRI, ts).toString());
-            String attachedIRI = queryResultArray.getJSONObject(0).getString("s");
+            String attachedIRI = getInfo(dataIRI, ts, route);
             String measureIRI = checkAnnual(attachedIRI, energyType, route);
 
             if (!measureIRI.isEmpty()) {
@@ -155,7 +153,7 @@ public class AnnualValueHelper {
      * @param energy string stating whether the data IRI is attached to a consumption or supply device
      * @return query object that will retrieve the type of energy attached to iri
      */
-    public static Query getInfo(String iri, String energy) {
+    public static String getInfo(String iri, String energy, String route) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
                 .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
@@ -173,7 +171,7 @@ public class AnnualValueHelper {
                 .addVar("?s")
                 .addWhere(wb);
 
-        return sb.build();
+        return AccessAgentCaller.queryStore(route, sb.build().toString()).getJSONObject(0).getString("s");
     }
 
     /**
@@ -208,22 +206,22 @@ public class AnnualValueHelper {
 
     /**
      * Check if annual value exists
-     * @param iri data IRI
+     * @param attachedIri IRI to which the quantity IRI is attached to
      * @param energyType energy type, electricity or heat
-     * @param route route to iri
+     * @param route route to attachedIri
      * @return IRI to annual value if exists, empty string if not exists
      */
-    public static String checkAnnual(String iri, String energyType, String route) {
+    public static String checkAnnual(String attachedIri, String energyType, String route) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ub", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
                 .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
         if (energyType.contains("Consumption")) {
-            wb.addWhere(NodeFactory.createURI(iri), "ub:consumesEnergy", "?quantity");
+            wb.addWhere(NodeFactory.createURI(attachedIri), "ub:consumesEnergy", "?quantity");
         }
         else {
-            wb.addWhere(NodeFactory.createURI(iri), "ub:producesEnergy", "?quantity");
+            wb.addWhere(NodeFactory.createURI(attachedIri), "ub:producesEnergy", "?quantity");
         }
 
         wb.addWhere("?quantity", "rdf:type", "ub:" + energyType);
@@ -240,6 +238,40 @@ public class AnnualValueHelper {
         }
         else {
             return "";
+        }
+    }
+
+    /**
+     * Retrieves the annual value associated with attachedIri and energyType
+     * @param attachedIri
+     * @param energyType
+     * @param route
+     * @return
+     */
+    public static String retrieveAnnualValue(String attachedIri, String energyType, String route) {
+        String measureIri = checkAnnual(attachedIri, energyType, route);
+
+        if (!measureIri.isEmpty()) {
+            WhereBuilder wb = new WhereBuilder()
+                    .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+
+            wb.addWhere(NodeFactory.createURI(measureIri), "om:hasNumericalValue", "?value");
+
+            SelectBuilder sb = new SelectBuilder()
+                    .addWhere(wb)
+                    .addVar("?value");
+
+            JSONArray queryResultArray = AccessAgentCaller.queryStore(route, sb.build().toString());
+
+            if (!queryResultArray.isEmpty()) {
+                return queryResultArray.getJSONObject(0).getString("value");
+            }
+            else {
+                return "0.0";
+            }
+        }
+        else {
+            return "0.0";
         }
     }
 }

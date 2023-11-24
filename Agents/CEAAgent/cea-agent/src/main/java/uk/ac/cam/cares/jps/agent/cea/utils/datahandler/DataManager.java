@@ -172,7 +172,7 @@ public class DataManager {
         for (String measurement: CEAConstants.SCALARS) {
             String measure = measurement + "_" + UUID.randomUUID() + "/";
             String quantity = measurement + "Quantity_" + UUID.randomUUID() + "/";
-            String facade = measurement.split("SolarSuitableArea")[0] + UUID.randomUUID() + "/";
+            String facade = measurement.split("SolarSuitableArea")[0] + "_" + UUID.randomUUID() + "/";
 
             measure = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + measure;
             quantity = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;

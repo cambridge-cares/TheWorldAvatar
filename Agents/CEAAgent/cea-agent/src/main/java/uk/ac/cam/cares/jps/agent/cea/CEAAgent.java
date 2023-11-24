@@ -5,7 +5,6 @@ import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAMetaData;
 import uk.ac.cam.cares.jps.agent.cea.utils.AnnualValueHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.FileReader;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.*;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -238,13 +237,24 @@ public class CEAAgent extends JPSAgent {
                     }
 
                     JSONObject data = new JSONObject();
-                    List<String> allMeasures = new ArrayList<>();
-                    Stream.of(CEAConstants.TIME_SERIES, CEAConstants.SCALARS).forEach(allMeasures::addAll);
 
-                    for (String measurement: allMeasures) {
-                        ArrayList<String> result = DataRetriever.getDataIRI(uri, measurement, ceaRoute);
+                    // retrieve scalar values
+                    for (String scalar : CEAConstants.SCALARS) {
+                        ArrayList<String> result = DataRetriever.getDataIRI(uri, scalar, ceaRoute);
                         if (!result.isEmpty()) {
-                            String value;
+                            String value = DataRetriever.getNumericalValue(result.get(0), ceaRoute);
+                            if(!(value.equals("0") || value.equals("0.0"))){
+                                value += " " + DataRetriever.getUnit(result.get(1));
+                                data.put(scalar, value);
+                            }
+                        }
+                    }
+
+                    for (String measurement : CEAConstants.TIME_SERIES) {
+                        ArrayList<String> result = DataRetriever.getDataIRI(uri, measurement, ceaRoute);
+                        String attachedIri = AnnualValueHelper.getInfo(result.get(0), measurement, ceaRoute);
+                        String value = AnnualValueHelper.retrieveAnnualValue(attachedIri, measurement, ceaRoute);
+                        if (!value.isEmpty()) {
                             if (CEAConstants.TIME_SERIES.contains(measurement)) {
                                 value = DataParser.calculateAnnual(TimeSeriesHelper.retrieveData(result.get(0), storeClient, rdbStoreClient, OffsetDateTime.class), result.get(0));
                                 if (measurement.contains("ESupply")) {
@@ -269,13 +279,12 @@ public class CEAAgent extends JPSAgent {
                                         measurement = "Annual " + measurement;
                                     }
                                 }
-                            } else {
-                                value = DataRetriever.getNumericalValue(result.get(0), ceaRoute);
-                            }
-                            // Return non-zero values
-                            if(!(value.equals("0") || value.equals("0.0"))){
-                                value += " " + DataRetriever.getUnit(result.get(1));
-                                data.put(measurement, value);
+
+                                // Return non-zero values
+                                if(!(value.equals("0") || value.equals("0.0"))){
+                                    value += " " + DataRetriever.getUnit(result.get(1));
+                                    data.put(measurement, value);
+                                }
                             }
                         }
                     }
