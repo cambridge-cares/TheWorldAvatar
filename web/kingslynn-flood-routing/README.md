@@ -27,6 +27,8 @@ On this same directory run, replace `STACK-NAME` with your stack-manager name.
 ### Spinning up stack-manager
 Copy all relevant [config](stack-manager-inputs/config/) and [data](stack-manager-inputs/data) files into the stack's [input](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs) folder. Spin up the stack-manager.
 
+Modify the bindmounts of the agents [config](stack-manager-inputs/config/) before spining up the stack-manager.
+
 ### Uploading the data
 Upload data following [stack-data-uploader-inputs](stack-data-uploader-inputs) using [stack-data-uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). Relevant files need to be placed in each of the folders, with the source to retrieve detailed in the [README](stack-data-uploader-inputs/data/kingslynn/README.md).
 
