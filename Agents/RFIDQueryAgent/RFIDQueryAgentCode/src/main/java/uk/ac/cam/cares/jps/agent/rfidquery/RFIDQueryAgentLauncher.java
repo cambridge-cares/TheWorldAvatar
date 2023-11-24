@@ -24,7 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 
-@WebServlet(urlPatterns = {"/check, /retrieveData"})
+@WebServlet(urlPatterns = {"/check, /retrieveData, /sendNotification"})
 public class RFIDQueryAgentLauncher extends JPSAgent{
 	/**
      * Logger for reporting info/errors.
@@ -42,17 +42,21 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 	String dbPassword;
 	String sparqlQueryEndpoint;
 	String sparqlUpdateEndpoint;
+	String sparqlUsername;
+	String sparqlPassword;
     
     //latest timeseries value
     double latestTimeSeriesValue;
     
     //keys in the request's JSON Object
-    public static final String KEY_TIMESERIES_CLIENTPROPERTIES = "timeSeriesClientProperties";
-    public static final String KEY_DATAIRIS = "dataIRIs";
-	public static final String KEY_TAGGEDOBJECTIRI = "taggedObjectIRI";
-	public static final String KEY_NUMOFHOURS = "hours";
-	public static final String KEY_SPECIES_PROPERTIES = "speciesProperties";
-	public static final String KEY_CONTAINSPECIES = "containSpecies";
+    private static final String KEY_TIMESERIES_CLIENTPROPERTIES = "timeSeriesClientProperties";
+    private static final String KEY_DATAIRIS = "dataIRIs";
+	private static final String KEY_DATAIRI = "dataIRI";
+	private static final String KEY_LATESTSTATUS = "latestStatus";
+	private static final String KEY_TAGGEDOBJECTIRI = "taggedObjectIRI";
+	private static final String KEY_NUMOFHOURS = "hours";
+	private static final String KEY_SPECIES_PROPERTIES = "speciesProperties";
+	private static final String KEY_CONTAINSPECIES = "containSpecies";
     
     //set kbClient
     RemoteStoreClient kbClient = new RemoteStoreClient();
@@ -69,7 +73,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String LOADCONFIGS_ERROR_MSG = "Could not load configs from the properties file!";
     private static final String GETLATESTSTATUSANDCHECKTHRESHOLD_ERROR_MSG = "Unable to query for latest data and/or check RFID Status Threshold!";
-    private static final String ARGUMENT_MISMATCH_MSG = "Need five arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints 5)whether tagged object contains some chemical (true or false)";
+    private static final String CHECK_ARGUMENT_MISMATCH_MSG = "Need five arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints 5)whether tagged object contains some chemical (true or false)";
+	private static final String SEND_NOTIF_ARGUMENT_MISMATCH_MSG = "Need five arguments in the following order:1) time series client for timeseries data 2)data 3)IRI latest status 4) species sparql endpoints 5)whether tagged object contains some chemical (true or false)";
     private static final String AGENT_ERROR_MSG = "The RFID Query Agent could not be constructed!";
 	private static final String QUERYBUILDER_ERROR_MSG = "The RFID Query Builder could not be constructed!";
 
@@ -119,6 +124,20 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				result = executeRetrieveData(args);
 				break;
 			}
+			case "/sendNotification": {
+				try {
+					String latestStatus = requestParams.getString(KEY_LATESTSTATUS);
+					String timeseriesDataClientProperties = System.getenv(requestParams.getString(KEY_TIMESERIES_CLIENTPROPERTIES));
+        			String dataIRI = requestParams.getString(KEY_DATAIRI);
+					String speciesProperties = System.getenv(requestParams.getString(KEY_SPECIES_PROPERTIES));
+					String containSpecies = requestParams.getString(KEY_CONTAINSPECIES);
+            		args = new String[] {timeseriesDataClientProperties, dataIRI, latestStatus, speciesProperties, containSpecies};
+				} catch (JSONException e) {
+					throw new JSONException("missing input parameters!", e);
+				}
+				result = executeSendNotification(args);
+				break;
+			}
 		}
 		return result;
 	}
@@ -126,8 +145,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 	private JSONObject executeCheck(String[] args) {
 		// Ensure that there are five arguments provided
         if (args.length != 5) {
-            LOGGER.error(ARGUMENT_MISMATCH_MSG);
-            throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
+            LOGGER.error(CHECK_ARGUMENT_MISMATCH_MSG);
+            throw new JPSRuntimeException(CHECK_ARGUMENT_MISMATCH_MSG);
         }
 		// Create the agent
 		RFIDQueryAgent agent;
@@ -147,10 +166,6 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		} catch (IOException e) {
 			throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
 		}
-		 
-		RemoteStoreClient kbClient = new RemoteStoreClient();
-		kbClient.setQueryEndpoint(sparqlQueryEndpoint);
-		kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
 		 
 		RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
 		agent.setRDBClient(rdbStoreClient);
@@ -251,7 +266,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				Map<String, List<String>> map = builder.queryForLabelAndCommentForGHSHazardStatements(GHSHazardStatements);
 				
 				LOGGER.info("Preparing to send email...");
-				agent.sendEmail(dataIRI, objectLabel, speciesLabel, timestamp, map);
+				agent.sendExceedThresholdEmail(dataIRI, objectLabel, speciesLabel, timestamp, map);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 
@@ -278,7 +293,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				LOGGER.info("The label of the tagged object is " + label);
 
 				LOGGER.info("Preparing to send email...");
-				agent.sendEmail(dataIRI, label, null, timestamp, null);
+				agent.sendExceedThresholdEmail(dataIRI, label, null, timestamp, null);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 			}
@@ -306,10 +321,6 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		} catch (IOException e) {
 			throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
 		}
-		 
-		RemoteStoreClient kbClient = new RemoteStoreClient();
-		kbClient.setQueryEndpoint(sparqlQueryEndpoint);
-		kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
 		 
 		RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
 		agent.setRDBClient(rdbStoreClient);
@@ -412,6 +423,124 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		
 		return result;
 	}
+
+	private JSONObject executeSendNotification(String[] args) {
+		// Ensure that there are five arguments provided
+        if (args.length != 5) {
+            LOGGER.error(SEND_NOTIF_ARGUMENT_MISMATCH_MSG);
+            throw new JPSRuntimeException(SEND_NOTIF_ARGUMENT_MISMATCH_MSG);
+        }
+		JSONObject jsonMessage = new JSONObject();
+		// Create the agent
+		RFIDQueryAgent agent;
+		try {
+			agent = new RFIDQueryAgent();
+		} catch (IOException e) {
+			LOGGER.error(AGENT_ERROR_MSG, e);
+			throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
+		}
+		LOGGER.info("Input agent initialized.");
+		String dataIRI = args[1];
+
+		try {
+			loadTSClientConfigs(args[0]);
+		} catch (IOException e) {
+			throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
+		}
+
+		if (args[4].contains("true")){
+			LOGGER.info("Beginning queries...");
+			//Create RFIDQueryBuilder
+			RFIDQueryBuilder builder ;
+			try {
+				builder = new RFIDQueryBuilder(args[0], args[3]);
+			} catch (IOException e) {
+				throw new JPSRuntimeException(QUERYBUILDER_ERROR_MSG,e);
+			}
+
+			//query for tag IRI with state IRI via saref:hasState
+			String tagIRI = builder.queryForTagWithStateIRI(dataIRI);
+			LOGGER.info("The tag IRI retrieved is " + tagIRI);
+
+			//query for tagged object IRI with tag IRI via ontodevice:isAttachedTo
+			String taggedObjectIRI = builder.queryForTaggedObjectWithIsAttachedTo(tagIRI);
+			LOGGER.info("The bottle IRI retrieved is " + taggedObjectIRI);
+
+			//query for bottle label via rdfs:label
+			String objectLabel = builder.queryForTaggedObjectLabel(taggedObjectIRI);
+			LOGGER.info("The label of the tagged object is " + objectLabel);
+
+			//query for chemical amount IRI with bottle IRI via ontolab:isFilledWith
+			String chemicalAmountIRI = builder.queryForChemicalAmountWithIsFilledWith(taggedObjectIRI);
+			LOGGER.info("The chemical amount IRI retrieved is " + chemicalAmountIRI);
+
+			//query for chemical IRI with chemical amount IRI via ontocape_cps_behavior:refersToMaterial
+			String chemicalIRI = builder.queryForChemicalWithRefersToMaterial(chemicalAmountIRI);
+			LOGGER.info("The material IRI retrieved is " + chemicalIRI);
+
+			String speciesIRI;
+			//check whether there are IRIs instantiated via ontocape_material:intrinsicCharacteristics
+			//If so continue the queries to retrieve the chemicalComponent IRI which is equivalent to the species IRI
+			if (builder.queryForChemicalComponent(chemicalIRI) != null){
+				speciesIRI = builder.queryForChemicalComponent(chemicalIRI);
+			} else {
+				//query for phase IRI with chemical IRI via ontocape_material:thermodynamicBehavior
+				String phaseIRI = builder.queryForPhaseWithThermodynamicBehavior(chemicalIRI);
+				LOGGER.info("The phase IRI retrieved is " + phaseIRI);
+
+				//query for phase component IRI with phase IRI via ontocape_system:isComposedOfSubsystem
+				String phaseComponentIRI = builder.queryForPhaseComponentWithIsComposedOfSubsystem(phaseIRI);
+				LOGGER.info("The phase component IRI retrieved is " + phaseComponentIRI);
+
+				//query for species IRI with phase component IRI via ontocape_phase_system:representsOccurenceOf
+				speciesIRI = builder.queryForSpeciesWithRepresentsOccurenceOf(phaseComponentIRI);
+				LOGGER.info("The species IRI retrieved is " + speciesIRI);
+			}
+
+			//query for species label via rdfs:label
+			String speciesLabel = builder.queryForSpeciesLabel(speciesIRI);
+			LOGGER.info("The label of the species is " + speciesLabel);
+
+			//query for hazard statement IRIs via ontospecies:hasGHSHazardStatements
+			JSONArray GHSHazardStatements = builder.queryForGHSHazardStatements(speciesIRI);
+
+			//query for the label and comment of each hazard statement IRI and put them in a hash map
+			Map<String, List<String>> map = builder.queryForLabelAndCommentForGHSHazardStatements(GHSHazardStatements);
+
+			LOGGER.info("Preparing to send email...");
+			agent.sendStatusChangeEmail(dataIRI, objectLabel, speciesLabel, args[2], map);
+				LOGGER.info("Alert Email sent for " + dataIRI);
+				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
+
+			} else {
+				LOGGER.info("Beginning queries...");
+				//Create RFIDQueryBuilder
+				RFIDQueryBuilder builder ;
+				try {
+					builder = new RFIDQueryBuilder(args[0], args[3]);
+				} catch (IOException e) {
+					throw new JPSRuntimeException(QUERYBUILDER_ERROR_MSG, e);
+				}
+				
+				//query for tag IRI with state IRI via saref:hasState
+				String tagIRI = builder.queryForTagWithStateIRI(dataIRI);
+				LOGGER.info("The tag IRI retrieved is " + tagIRI);
+
+				//query for tagged object IRI with tag IRI via ontodevice:isAttachedTo
+				String taggedObjectIRI = builder.queryForTaggedObjectWithIsAttachedTo(tagIRI);
+				LOGGER.info("The bottle IRI retrieved is " + taggedObjectIRI);
+
+				//query for tagged object label via rdfs:label
+				String label = builder.queryForTaggedObjectLabel(taggedObjectIRI);
+				LOGGER.info("The label of the tagged object is " + label);
+
+				LOGGER.info("Preparing to send email...");
+				agent.sendStatusChangeEmail(dataIRI, label, null, args[2], null);
+				LOGGER.info("Alert Email sent for " + dataIRI);
+				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
+			}
+			return jsonMessage;
+		}
 
 
 	/**

@@ -78,7 +78,7 @@ public class RFIDQueryAgent{
     }
 
     /**
-     * Standard constructor for the retrieveData route
+     * Standard constructor for the retrieveData and sendNotification route
      */
     public RFIDQueryAgent() throws IOException {
         LOGGER.info("Created agent for retrieveData route...");
@@ -207,7 +207,7 @@ public class RFIDQueryAgent{
      * @param latestTimeStamp latest timestamp value
      * @param map Hashmap containing the labels and comments for each GHS Hazard Statement
      */
-    public void sendEmail(String tagStatusIRI, String objectLabel, String speciesLabel, String latestTimeStamp, Map<String, List<String>> map) {
+    public void sendExceedThresholdEmail(String tagStatusIRI, String objectLabel, String speciesLabel, String latestTimeStamp, Map<String, List<String>> map) {
         String emailMessage;
         String tldrMessage;
         EmailSender sender = new EmailSender();
@@ -238,6 +238,51 @@ public class RFIDQueryAgent{
         } else if (speciesLabel == null && map == null) {
             try {
                 emailMessage = "The tagged object has been removed for longer than " + numOfHours + " hours since " + latestTimeStamp + ". The object has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ".";
+                sender.sendEmail("Alert!", emailMessage);
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Unable to send out alert email!");
+            }
+        }
+    }
+
+    /**
+     * @param tagStatusIRI tag status IRI
+     * @param objectLabel tagged object label
+     * @param speciesLabel species label
+     * @param latestStatus latest status and timestamp
+     * @param map Hashmap containing the labels and comments for each GHS Hazard Statement
+     */
+    public void sendStatusChangeEmail(String tagStatusIRI, String objectLabel, String speciesLabel, String latestStatus, Map<String, List<String>> map) {
+        String emailMessage;
+        String tldrMessage;
+        EmailSender sender = new EmailSender();
+        if (speciesLabel != null && map != null) {
+            try {
+                tldrMessage = "<b>tl;dr Container with " + speciesLabel + " is currently " + latestStatus +".</b> <br> <br>" ;
+                emailMessage = tldrMessage + "The container has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ". The container is storing a chemical with the label " + speciesLabel + " which has the following GHS hazard statements. <br>";
+                for (int i = 0; i <= map.get("label").size() - 1; i++) {
+                    LOGGER.info("The label from the map is " + map.get("label").get(i));
+                    LOGGER.info("The comment from the map is " + map.get("comment").get(i));
+                    emailMessage = emailMessage.concat(map.get("label").get(i) + ": <i>" + map.get("comment").get(i) + "</i> <br>");
+                }
+                LOGGER.info("The email message is " + emailMessage);
+                sender.sendEmail("Alert!", emailMessage);
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Unable to send out alert email!");
+            }
+        } else if (speciesLabel != null && map == null) {
+            try {
+                tldrMessage = "<b>tl;dr Container with " + speciesLabel + " is currently " + latestStatus +".</b> <br> <br>" ;
+                emailMessage = tldrMessage + "The container has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ".The container is storing a chemical with the label " + speciesLabel + ".";
+
+                LOGGER.info("The email message is " + emailMessage);
+                sender.sendEmail("Alert!", emailMessage);
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Unable to send out alert email!");
+            }
+        } else if (speciesLabel == null && map == null) {
+            try {
+                emailMessage = "The tagged object " + " is currently " + latestStatus +" . The object has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ".";
                 sender.sendEmail("Alert!", emailMessage);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");
