@@ -1,7 +1,11 @@
+"use client";
+
 import { ReactNode } from "react";
+import Link from "next/link";
 import "github-markdown-css/github-markdown.css";
 
 import styles from "./css/static-content-page.module.css";
+import MaterialIconButton from "./icon-button";
 
 // Interface for properties with react nodes
 interface Props {
@@ -18,23 +22,38 @@ interface Props {
  */
 export default function StaticContentPage({ childNodes, childString }: Readonly<Props>) {
     // CSS class names
-    let classNames = ["markdown-body", styles.content].join(" ");
+    let classNames = ["markdown-body", styles.contentInner].join(" ");
+
+    // Return to landing button
+    let returnButton = (
+        <Link href="/" className={styles.button}>
+            <MaterialIconButton
+                iconName="arrow_circle_left"
+            />
+        </Link>
+    );
 
     if(childNodes != null) {
         return (
-            <div className={styles.container}>
-                <div className={classNames}>
-                    {childNodes}
+            <div className={styles.container} key="static-content-page">
+                {returnButton}
+                <div className={styles.contentOuter}>
+                    <div className={classNames}>
+                        {childNodes}
+                    </div>
                 </div>
             </div>
         );
     } else if(childString != null) {
         return (
-            <div className={styles.container}>
-                <div
-                    className={classNames}
-                    dangerouslySetInnerHTML={{__html: childString}}
-                />
+            <div className={styles.container} key="static-content-page">
+                {returnButton}
+                <div className={styles.contentOuter}>
+                    <div
+                        className={classNames}
+                        dangerouslySetInnerHTML={{__html: childString}}
+                    />
+                </div>
             </div>
         );
     }

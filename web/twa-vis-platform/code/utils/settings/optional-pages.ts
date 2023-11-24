@@ -9,7 +9,9 @@ export type OptionalPage = {
     title: string,
     slug: string, 
     description: string,
-    content: string
+    content: string,
+    filename: string,
+    thumbnail?: string
 }
 
 /**
@@ -19,7 +21,7 @@ export type OptionalPage = {
 export class OptionalPages {
 
     // Location of optional pages directory.
-    private static readonly DIRECTORY = "../config/optional-pages";
+    private static readonly DIRECTORY = "../uploads/optional-pages";
 
     /**
      * 
@@ -58,12 +60,18 @@ export class OptionalPages {
                         title: matterResult.data.title,
                         slug: matterResult.data.slug,
                         description: matterResult.data.description,
-                        content: matterResult.content
+                        content: matterResult.content,
+                        filename: fileName,
+                        thumbnail: matterResult.data.thumbnail
                     };
                     OptionalPages.LOADED_PAGES.push(page);
                 }
             });
-            console.debug("Loaded optional pages content.");
+
+            // Sort pages by filename
+            OptionalPages.LOADED_PAGES.sort(OptionalPages.compare);
+            
+            console.info("Loaded optional pages content.");
         } catch(error) {
             console.error("Could not read any optional pages!", error);
         }
@@ -82,6 +90,32 @@ export class OptionalPages {
              if(page.slug === slug) return page;
         }
         return null;
+    }
+
+    /**
+     * Returns all cached optional pages.
+     * 
+     * @returns array of OptionalPage instances.
+     */
+    public static getAllPages(): OptionalPage[] {
+        return [...OptionalPages.LOADED_PAGES];
+    } 
+
+    /**
+     * Compares OptionalPage instances by filename.
+     * 
+     * @param objA object a.
+     * @param objB object b.
+     * @returns comparison result.
+     */
+    private static compare(objA: OptionalPage, objB: OptionalPage ): number {
+        if ( objA.filename < objB.filename ){
+          return -1;
+        }
+        if ( objA.filename > objB.filename ){
+          return 1;
+        }
+        return 0;
     }
 
 }

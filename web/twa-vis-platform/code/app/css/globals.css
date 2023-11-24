@@ -1,0 +1,157 @@
+/**
+    Light theme detected (or no preference set).
+**/
+@media (prefers-color-scheme: light) {
+    :root {
+        /* Background colors */
+        --background-primary:   #f9f9f9;
+        --background-secondary: #efefef;
+        --background-tertiary:  #e5e5e5;
+
+        --background-inverse-primary:   #0d1117;
+        --background-inverse-secondary: #30363d;
+        --background-inverse-tertiary:  #434c57;
+
+        /* Text colors */
+        --text-color-primary: #30363d;
+        --text-color-links: #146a7d;
+        --text-color-links-hover: #20aac9;
+        
+        /* Border colors */
+        --border-primary:   #b6b6bf;
+        --border-secondary: #a5a5b3;
+        --border-tertiary:  #9898af;
+
+        /** Images **/
+        --background-image: url("/img/background-light.svg");
+    }
+}
+
+/**
+    Dark theme detected.
+**/
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Background colors */
+        --background-primary:   #0d1117;
+        --background-secondary: #30363d;
+        --background-tertiary:  #434c57;
+
+        --background-inverse-primary:   #f9f9f9;
+        --background-inverse-secondary: #efefef;
+        --background-inverse-tertiary:  #e5e5e5;
+
+        /* Text colors */
+        --text-color-primary: #dde9ff;
+        --text-color-links: #146a7d;
+        --text-color-links-hover: #20aac9;
+        
+        /* Border colors */
+        --border-primary:   #434b55;
+        --border-secondary: #6c7989;
+        --border-tertiary:  #7f8ea1;
+
+        /** Images **/
+        --background-image: url("/img/background-dark.svg");
+    }
+}
+
+/**
+    Constants for standard HTML elements (across all themes).
+**/
+:root {
+    /** Fonts **/
+    --font-family-primary: "Dosis", sans-serif;
+    --font-size-primary: 14pt;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-primary);
+}
+
+html,
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
+body {
+    background-color: var(--background-primary);
+    color: var(--text-color-primary);
+
+    background-image: var(--background-image);
+    background-position: center;
+    background-size: cover;
+}
+
+a {
+    color: var(--text-color-links);
+    text-decoration: none;
+}
+a:hover {
+    color: var(--text-color-links-hover) !important;
+}
+  
+img {
+    background-color: transparent !important;
+}
+
+
+/**
+    Constants for our own CSS classes (across all themes).
+**/
+.partner-button {
+    width: 50%;
+
+    margin: 10px;
+    padding: 10px;
+    flex-grow: 1;
+
+    border: 2px solid var(--border-primary);
+    background-color: #f9f9f9 !important;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.partner-button:hover {
+    background-color: #e5e5e5 !important;
+}
+.partner-button:after {
+    display: block;
+    padding-bottom: 100%;
+}
+
+#globalContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+#contentContainer {
+    width: 100%;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+* {
+    scrollbar-width: auto;
+    scrollbar-color: var(--background-tertiary) var(--background-secondary);
+}
+*::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+*::-webkit-scrollbar-track {
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid var(--border-secondary);
+}
+*::-webkit-scrollbar-thumb {
+    background-color: var(--border-secondary);
+    border-radius: 10px;
+    background-clip: padding-box;
+}

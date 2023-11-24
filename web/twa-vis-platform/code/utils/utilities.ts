@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Returns the server/client state of the current process.
  * 
