@@ -14,9 +14,6 @@ The instantiated data is visualised using the TWA Visualisation Framework [TWA-V
 
 <img src="TSP.png" alt="Mapbox visualisation" width="100%"/>
 
-## Uploading the data
-Upload data using [stack-data-uploader](./stack-data-uploader-inputs/).
-
 ## Deployment
 ### Replacing the agent configuration file
 On this same directory run, replace `STACK-NAME` with your stack-manager name.
