@@ -386,6 +386,7 @@ def plot_entire_heat_generation(historic_generation, optimized_generation, el_pr
     fig_name += '_' + historic_generation.index[0].strftime(TIME_FORMAT) + '.png'
     fig_name = fig_name.replace(':', '-')
     plt.savefig(os.path.join(OUTPUTS_REPO, fig_name))
+    plt.close()
 
 
 def plot_generation_cost(generation_hist, optimized_generation,
@@ -468,6 +469,7 @@ def plot_generation_cost(generation_hist, optimized_generation,
     fig_name += '_' + generation_hist.index[0].strftime(TIME_FORMAT) + '.png'
     fig_name = fig_name.replace(':', '-')
     plt.savefig(os.path.join(OUTPUTS_REPO, fig_name))
+    plt.close()
 
 
 def plot_forecast_quality(historical_ts, forecasted_ts,
@@ -532,3 +534,4 @@ def plot_forecast_quality(historical_ts, forecasted_ts,
     fig_name += '_' + historical_ts.index[0].strftime(TIME_FORMAT) + '.png'
     fig_name = fig_name.replace(':', '-')
     plt.savefig(os.path.join(OUTPUTS_REPO, fig_name))
+    plt.close()
