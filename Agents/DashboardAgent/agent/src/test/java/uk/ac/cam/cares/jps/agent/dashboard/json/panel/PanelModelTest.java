@@ -158,41 +158,4 @@ public class PanelModelTest {
         }
         return builder.toString();
     }
-
-    private static String genExpectedPanelsSyntax(int rowNumber, String itemType, Map<String, String> databaseConnectionMap, Map<String, List<String[]>> itemMetadata, String[] thresholds) {
-        StringBuilder builder = new StringBuilder();
-        for (String measure : itemMetadata.keySet()) {
-            if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.SYSTEM_KEY)) {
-                if (builder.length() != 0) builder.append(",");
-                String[] metadata = itemMetadata.get(measure).get(0);
-                String[] expectedConfigItems = new String[]{measure, itemType, metadata[2], databaseConnectionMap.get(metadata[3]), metadata[4]};
-                int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber + 1};
-                if (itemType.equals(StringHelper.ROOM_KEY) || itemType.equals(StringHelper.SYSTEM_KEY)) {
-                    // For the overall average Gauge chart
-                    expectedGeometryPosition[1] = 4; // New width
-                    String query = itemType.equals(StringHelper.ROOM_KEY) ? GaugeTest.genAggregateQuery(itemMetadata.get(measure), true) : GaugeTest.genAggregateQuery(itemMetadata.get(measure), false);
-                    builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, itemMetadata.get(measure),
-                                    thresholds, query))
-                            .append(",");
-                    // For the generic Gauge chart
-                    expectedGeometryPosition[1] = 8;  // New width
-                    expectedGeometryPosition[2] = 4;  // New x position
-                    builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, itemMetadata.get(measure), thresholds))
-                            .append(",");
-                    // For the time series chart
-                    expectedGeometryPosition[1] = TestUtils.CHART_WIDTH; // Original Width
-                    expectedGeometryPosition[2] = TestUtils.CHART_WIDTH; // New x position
-                    builder.append(TimeSeriesChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, itemMetadata.get(measure), thresholds));
-                } else {
-                    // For the generic Gauge chart
-                    builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, itemMetadata.get(measure)))
-                            .append(",");
-                    // For the time series chart, only the x position will change
-                    expectedGeometryPosition[2] = TestUtils.CHART_WIDTH;
-                    builder.append(TimeSeriesChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, itemMetadata.get(measure)));
-                }
-            }
-        }
-        return builder.toString();
-    }
 }
