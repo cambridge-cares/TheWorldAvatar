@@ -77,7 +77,6 @@ If you want to spin up this agent as part of a stack, do the following:
 3) Copy the `dh-optimisation-trigger-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config/services` folder of the stack manager
 4) Add the service to a corresponding stack configuration json in `inputs/config`
 5) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
-6) The agent shall become available at `http://<HOST>:<PORT>/dhTriggerAgent/`
 
 For more details see the stack manager README on [specifying custom containers].
 
