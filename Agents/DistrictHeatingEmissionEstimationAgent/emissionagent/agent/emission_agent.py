@@ -63,6 +63,8 @@ class EmissionAgent(DerivationAgent):
             as keys and values as lists of (single) values
         """
         
+        print(f'Validating inputs for derivation {derivationIRI} ...')
+        
         # Create dict between input concepts and return values
         input_iris = {
             OD_SIMULATION_TIME: None,
@@ -118,6 +120,8 @@ class EmissionAgent(DerivationAgent):
         if consumed_gas:
                 input_iris[OHN_CONSUMED_GAS_AMOUNT] = consumed_gas
 
+        print('Inputs successfully validated.')
+
         return input_iris
 
 
@@ -171,11 +175,13 @@ class EmissionAgent(DerivationAgent):
         emissions = []
         for pollutant in self.POLLUTANTS:
             if input_iris.get(OHN_PROVIDED_HEAT_AMOUNT):
+                print(f'Estimating {pollutant} emissions from EfW plant sourcing.')
                 # Estimate emissions from EfW plant sourcing, i.e.,
                 # amount refers to amount of sourced heat
                 emissions.append(calculate_emissions_for_provided_heat(pollutant, 
                                                                        provided_heat=amount))
             else:
+                print(f'Estimating {pollutant} emissions from natural gas burning.')
                 # Estimate emissions from natural gas burning, i.e.,
                 # amount refers to amount of consumed gas (wrt lower calorific value)
                 emissions.append(calculate_emissions_for_consumed_gas(pollutant, 
