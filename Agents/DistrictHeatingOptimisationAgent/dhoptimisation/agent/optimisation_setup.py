@@ -278,28 +278,31 @@ class PreviousSystemState:
     # The current design sends each optimisation interval as a separate request to the
     # agent (i.e., via DIF); hence, this class ensures that relevant outputs from the
     # previous time step are available for the current optimisation run
-    def __init__(self, start_dt=None, gt_active=False, gt_benefit=None, generation_setup=[]):
-        self.start_dt = start_dt                    # datetime string of first timestep of previous
-                                                    # optimisation interval
-        self.gt_active = gt_active                  # Boolean flag whether to start with/without GT
-        self.gt_benefit = gt_benefit                # Cumulative profit from previous GT operation
-        self.generation_setup = generation_setup    # Heat generation setups in preceding time step
+    def __init__(self, start_dt=None, gt_active=False, gt_benefit=None, setup_woGT=[], setup_wGT=[]):
+        self.start_dt = start_dt            # datetime string of first timestep of previous
+                                            # optimisation interval
+        self.gt_active = gt_active          # Boolean flag whether to start with/without GT
+        self.gt_benefit = gt_benefit        # Cumulative profit from previous GT operation
+        self.setup_woGT = setup_woGT        # Heat generation setups in preceding time step
+        self.setup_wGT = setup_wGT
 
 
     def update_system_state(self, new_start_dt, new_gt_active, new_gt_benefit, 
-                            new_generation_setup):
+                            new_setup_woGT, new_setup_wGT):
         # Update operational state and gas turbine conditions
         self.start_dt = new_start_dt
         self.gt_active = new_gt_active
         self.gt_benefit = new_gt_benefit
-        self.generation_setup = new_generation_setup
+        self.setup_woGT = new_setup_woGT
+        self.setup_wGT = new_setup_wGT
             
     def reset_system_state(self):
         # Reset to default optimisation start conditions
         self.start_dt = None
         self.gt_active = False
         self.gt_benefit = None
-        self.generation_setup = []
+        self.setup_woGT = []
+        self.setup_wGT = []
     
     
 ####################     METHODS     ####################

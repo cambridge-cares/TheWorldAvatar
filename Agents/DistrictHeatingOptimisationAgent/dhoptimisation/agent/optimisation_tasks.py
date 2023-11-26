@@ -46,7 +46,8 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     # (i.e., whether GT has been active in previous time step)
     gt_active = previous_state.gt_active
     gt_benefit = previous_state.gt_benefit
-    previous_setup = previous_state.generation_setup
+    previous_setup_woGT = previous_state.setup_woGT
+    previous_setup_wGT = previous_state.setup_wGT
     logger.info(f'Starting with active GT: {gt_active}')
     logger.info(f'Starting GT benefit: {gt_benefit}')
 
@@ -69,16 +70,17 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     # Create profit lines for both heat generation modes
     logger.info('Minimising generation cost for heat generation w/o GT ...')
     wogt = minimize_generation_cost(municipal_utility, sources_mode1, market_prices, 
-                                    datetime_index, preceding_setup=previous_setup)
+                                    datetime_index, preceding_setup=previous_setup_woGT)
     logger.info('Minimising generation cost for heat generation with GT ...')
     wgt = minimize_generation_cost(municipal_utility, sources_mode2, market_prices, 
-                                   datetime_index, preceding_setup=previous_setup)
+                                   datetime_index, preceding_setup=previous_setup_wGT)
 
     # Optimize operating modes
     logger.info('Optimising both operating modes ...')
     opt = optimize_operating_modes(wogt, wgt, gt_active=gt_active, prev_gt_benefit=gt_benefit)
-    # Extract optimised setup for first time step as new previous setup (for subsequent run)
-    new_previous_setup = opt['Active_generator_objects'][0]
+    # Extract optimised setups for first time step as new previous setups (for subsequent run)
+    new_previous_woGT = wogt['Active_generator_objects'][0]
+    new_previous_wGT = wgt['Active_generator_objects'][0]
 
     # Update parameters describing GT state and benefit (max, cumulative) based 
     # on first optimised time step in current interval
@@ -116,7 +118,7 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     logger.info('Updating system state for (potential) subsequent optimisation ...')
     opti_start_dt = datetime_index[0].strftime(TIME_FORMAT)
     previous_state.update_system_state(opti_start_dt, gt_active, gt_benefit,
-                                       new_previous_setup)
+                                       new_previous_woGT, new_previous_wGT)
 
     return opt, wogt, wgt
     
