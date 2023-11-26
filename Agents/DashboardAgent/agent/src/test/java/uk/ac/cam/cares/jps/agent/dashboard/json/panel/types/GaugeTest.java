@@ -132,6 +132,7 @@ public class GaugeTest {
                 : query.contains(")/") ? "A gauge chart displaying the latest average value of " : "A gauge chart displaying the latest cumulative total value of ";
         description += query.isEmpty() ? metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase() :
                 metadata[0].toLowerCase() + " for all " + metadata[1].toLowerCase() + "; Do note that this value is constant at the dashboard level and unaffected by any filters for individual elements";
+        String expectedTransformations = "[" + TransformationOptionsTest.genExpectedOrganizeTransformation(itemDetails, "") + "]";
         boolean showThresholdMarkers = false;
         String colorMode = "palette-classic";
         String colorSteps = "{\"color\":\"red\",\"value\":80}";
@@ -146,7 +147,7 @@ public class GaugeTest {
             minMax = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, metadata, geometryPositions, itemDetails, query))
+        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, query))
                 .append(",\"type\": \"gauge\",")
                 .append("\"fieldConfig\":{")
                 .append("\"defaults\":{\"color\":{\"mode\": \"").append(colorMode).append("\"},")

@@ -251,10 +251,10 @@ public class TestUtils {
     /**
      * Adds sample facility data to the map depending on requirement
      *
-     * @param sampleMap  A map to append this facility info.
-     * @param reqAssets  A boolean indicating if asset info is required.
-     * @param reqRooms   A boolean indicating if room info is required.
-     * @param reqSystems A boolean indicating if system info is required.
+     * @param sampleMap        A map to append this facility info.
+     * @param reqAssets        A boolean indicating if asset info is required.
+     * @param reqRooms         A boolean indicating if room info is required.
+     * @param reqSystems       A boolean indicating if system info is required.
      * @param reqComplexSystem A boolean indicating if a more complex form of system is required.
      * @return The sample facilities map.
      */
@@ -290,7 +290,7 @@ public class TestUtils {
             List<String> home = List.of(SYSTEM_ONE, SUBSYSTEM_ONE);
             if (facilityOne.size() == 0) {
                 facilityOne = home;
-             if (reqComplexSystem)  facilityTwo = home;
+                if (reqComplexSystem) facilityTwo = home;
             } else {
                 facilityOne = Stream.concat(facilityOne.stream(), home.stream())
                         .collect(Collectors.toList());
@@ -347,8 +347,8 @@ public class TestUtils {
      *
      * @return The partial json model in string format.
      */
-    public static String genExpectedCommonTemplatePanelJson(String title, String description, String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
-        return genExpectedCommonTemplatePanelJson(title, description, metadata, geometryPositions, itemDetails, "");
+    public static String genExpectedCommonTemplatePanelJson(String title, String description, String transformations, String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
+        return genExpectedCommonTemplatePanelJson(title, description, transformations, metadata, geometryPositions, itemDetails, "");
     }
 
     /**
@@ -356,7 +356,7 @@ public class TestUtils {
      *
      * @return The partial json model in string format.
      */
-    public static String genExpectedCommonTemplatePanelJson(String title, String description, String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
+    public static String genExpectedCommonTemplatePanelJson(String title, String description, String transformations, String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
         String formattedMeasure = metadata[0].toLowerCase().replaceAll("\\s", "");
         String formattedItemGroup = metadata[1].toLowerCase().replaceAll("\\s", "");
         String rawSql = query.isEmpty() ? "SELECT time AS \\\"time\\\", ${" + formattedMeasure + formattedItemGroup + ":csv} FROM \\\"" + metadata[2] + "\\\" WHERE $__timeFilter(time)"
@@ -377,26 +377,7 @@ public class TestUtils {
                 .append("\"w\":").append(geometryPositions[1]).append(",")
                 .append("\"x\":").append(geometryPositions[2]).append(",")
                 .append("\"y\":").append(geometryPositions[3]).append("},")
-                .append(genExpectedTransformationOption(itemDetails));
-        return results.toString();
-    }
-
-    private static String genExpectedTransformationOption(List<String[]> itemDetails) {
-        StringBuilder indexMapper = new StringBuilder();
-        StringBuilder colNameMapper = new StringBuilder();
-        int counter = 1;
-        for (String[] metadata : itemDetails) {
-            if (indexMapper.length() != 0) indexMapper.append(",");
-            if (colNameMapper.length() != 0) colNameMapper.append(",");
-            indexMapper.append("\"").append(metadata[1]).append("\":").append(counter++);
-            colNameMapper.append("\"").append(metadata[1]).append("\":\"").append(metadata[0]).append("\"");
-        }
-        StringBuilder results = new StringBuilder();
-        results.append("\"transformations\": [")
-                .append("{ \"id\": \"organize\",\"options\": {\"excludeByName\": {},")
-                .append("\"indexByName\": {\"time\": 0,").append(indexMapper).append("},")
-                .append("\"renameByName\": {").append(colNameMapper).append("}}}")
-                .append("]");
+                .append("\"transformations\":").append(transformations);
         return results.toString();
     }
 }

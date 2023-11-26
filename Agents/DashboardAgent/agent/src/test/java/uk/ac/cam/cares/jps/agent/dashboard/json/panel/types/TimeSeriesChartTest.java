@@ -108,12 +108,13 @@ public class TimeSeriesChartTest {
         String titleContent = StringHelper.addSpaceBetweenCapitalWords(metadata[0]) + " of " + StringHelper.addSpaceBetweenCapitalWords(metadata[1]);
         titleContent = metadata[4].equals("null") ? titleContent : titleContent + " [" + metadata[4] + "]";
         String description = "A chart displaying the time series of " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase();
+        String expectedTransformations = "[" + TransformationOptionsTest.genExpectedOrganizeTransformation(itemDetails, "") + "]";
         String thresholdStyle = thresholds.length == 0 ? "off" : "area";
         String thresholdSteps = thresholds.length == 0 ? "" : "\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
                 "{\"color\":\"red\",\"value\":null},{\"color\":\"green\",\"value\":" + thresholds[0] + "}," +
                 "{\"color\":\"red\",\"value\":" + thresholds[1] + "}]},";
         StringBuilder sb = new StringBuilder();
-        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, metadata, geometryPositions, itemDetails))
+        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails))
                 .append(",\"type\": \"timeseries\",")
                 .append("\"fieldConfig\": { ")
                 .append("\"defaults\": {\"color\": {\"mode\": \"palette-classic\"},")
