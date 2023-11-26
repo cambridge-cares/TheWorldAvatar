@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="20dp"
+    android:gravity="center|top"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5pt"
+        android:layout_marginTop="5pt"
+        android:layout_marginRight="5pt"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="103dp"
+                android:layout_height="128dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pslogo"
+                tools:visibility="visible" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/weather"
+                android:layout_width="261dp"
+                android:layout_height="140dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/weather"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="match_parent"
+        android:layout_height="291dp"
+        android:layout_marginLeft="5pt"
+        android:layout_marginTop="25dp"
+        android:layout_marginRight="5pt"
+        android:scaleType="fitCenter"
+        android:src="@drawable/event_cover"
+        tools:srcCompat="@drawable/event_cover"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_marginLeft="5pt"
+        android:layout_marginTop="5pt"
+        android:layout_marginRight="5pt"
+        android:gravity="center|center_horizontal|center_vertical|end"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="495dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center|left"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/locations_btn"
+                android:layout_width="176dp"
+                android:layout_height="80dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/locations"
+                android:stateListAnimator="@null" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="5pt" />
+
+            <ImageButton
+                android:id="@+id/damage_report_btn"
+                android:layout_width="177dp"
+                android:layout_height="77dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/damage_report" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/imageButton3"
+            android:layout_width="177dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/events" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="97dp"
+        android:layout_marginLeft="5pt"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="5pt"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/profile_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="97dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/profile" />
+
+        <Space
+            android:layout_width="5pt"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/news_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="97dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/news" />
+
+        <Space
+            android:layout_width="5pt"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/contact_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="97dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/contacts" />
+    </LinearLayout>
+
+</LinearLayout>
