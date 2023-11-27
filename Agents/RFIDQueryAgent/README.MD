@@ -192,23 +192,17 @@ The chemical container with the following information has been removed for longe
 ```
 
 ### 5.2. Retrieve data route
-To run the agent, a POST request must be sent to `http://IPaddress:portNumber/rfid-query-agent/retrieveData` with a correct JSON Object.
+To run the agent, a GET request must be sent to `http://IPaddress:portNumber/rfid-query-agent/retrieveData`.
 
 The request has this general format:
 ```
-POST http://<IP address>:<portNumber>/rfid-query-agent/retrieveData
-Content-Type: application/json
-{
-    "timeSeriesClientProperties":"CLIENT_PROPERTIES",
-    "taggedObjectIRI":"<tagged_object_iri>",
-    "speciesProperties":"SPECIES_PROPERTIES"
-}
+GET http://<IP address>:<portNumber>/rfid-query-agent/retrieveData?timeSeriesClientProperties=CLIENT_PROPERTIES&speciesProperties=SPECIES_PROPERTIES&taggedObjectIRI=<tagged_object_iri>
 ```
-The JSONObject should contain the tagged object IRI, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you), and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
+The request should contain the tagged object IRI, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you), and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
 
 An example of the request in curl syntax
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"taggedObjectIRI\":\"http://www.theworldavatar.com/kg/lab/ChemicalContainer_4b3f1341-0191-47e4-a3c4-6fb55fa09aa3\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\",\"speciesProperties\":\"SPECIES_PROPERTIES\"}" http://<IP address>:<portNumber>/rfid-query-agent/retrieveData
+curl -X GET http://<IP address>:<portNumber>/rfid-query-agent/retrieveData?timeSeriesClientProperties=CLIENT_PROPERTIES&speciesProperties=SPECIES_PROPERTIES&taggedObjectIRI=http://www.theworldavatar.com/kg/lab/ChemicalContainer_2ac36998-e5cd-4021-b638-7776c394250c
 ```
 
 The agent will attempt to query for the following information:
