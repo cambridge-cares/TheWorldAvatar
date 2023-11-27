@@ -283,11 +283,8 @@ public class RFIDQueryBuilderIntegrationTest {
         Assert.assertEquals("http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_01", IRI);
 
         //invalid bottle IRI
-        try {
-            IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_02");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for chemical amount IRI!", e.getMessage());
-        }
+        IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_02");
+        Assert.assertEquals("This tagged object does not contain any chemicals", IRI);
 
         //remove isFilledWith link between Bottle and ChemicalAmount
         TriplePattern Pattern = bottle.has(isFilledWith, chemicalAmount);
@@ -295,11 +292,8 @@ public class RFIDQueryBuilderIntegrationTest {
         delete.prefix(PREFIX_ONTOLAB);
         kbClient.executeUpdate(delete.getQueryString());
 
-        try {
-            IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for chemical amount IRI!", e.getMessage());
-        }
+        IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
+        Assert.assertEquals("This tagged object does not contain any chemicals", IRI);
     }
     
     @Test

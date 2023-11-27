@@ -37,14 +37,13 @@ public class RFIDQueryAgentLauncherTest {
         testRequestParams.put("hours", "10");
         testRequestParams.put("timeSeriesClientProperties", "TEST_CLIENTPROPERTIES");
         testRequestParams.put("speciesProperties","TEST_CLIENTPROPERTIES");
-        testRequestParams.put("containSpecies","true");
         // Paths to the three different property files
         clientPropertiesFile = clientPropertyFile.getCanonicalPath();
         args = new String[] {clientPropertiesFile, "some_data_iri", "10", "true", clientPropertiesFile};
     }
     
     @Test
-    public void testMainNoArgs() {
+    public void testInitializeAgentNoRequestParams() {
         RFIDQueryAgentLauncher testLauncher = new RFIDQueryAgentLauncher();
         JSONObject empty = new JSONObject();
         try {
@@ -55,6 +54,12 @@ public class RFIDQueryAgentLauncherTest {
         }
         try {
             testLauncher.initializeAgent(empty, "/retrieveData");
+        }
+        catch (JSONException e) {
+            Assert.assertEquals("missing input parameters!", e.getMessage());
+        }
+        try {
+            testLauncher.initializeAgent(empty, "/sendNotification");
         }
         catch (JSONException e) {
             Assert.assertEquals("missing input parameters!", e.getMessage());
