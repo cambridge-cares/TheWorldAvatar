@@ -1,9 +1,15 @@
 # RFID Query Agent
 
-This agent is designed to query for the latest status of the RFID tags (In/Out) and determine whether the tagged object has been "Out" for longer
-than allowed. If the tagged object has been "Out" for longer than allowed, An email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with both the KG and database.
+This agent is able to execute the following routes:
+1) Check route. Query for the latest status of the RFID tags (In/Out) and determine whether the tagged object has been "Out" for longer
+than allowed. If the tagged object has been "Out" for longer than allowed, An email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). The agent is able to intuitively determine whether the tagged object is a chemical container that contains a chemical species and retrieve the information of the chemical species if possible. More information can be found at the [Check route](#check-route) section.
 
-If the tagged object is a chemical container that contains some chemical, the agent will query for the chemical species's label, check whether the species has GHS Hazard Statements and if so, query for the statements. These information will be added to the email content before it is sent to the relevant personnel.
+2) Retrieve data route. Retrieve information relating to a tagged object IRI and return them in the form of a JSONObject. The agent is able to intuitively determine whether the tagged object is a chemical container that contains a chemical species and retrieve the information of the chemical species if possible. More information can be found at the [RetrieveData route](#retrieve-data-route) section.
+
+3) Send notification route. Receive the latest status of a tag, query for all the meta data relevant to the tag and it's tagged object, send out an email containing these information to the relevant personnels via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). More information can be found at the [SendNotification route](#send-notification-route) section.
+
+The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with both the KG and database.
+
 
 ## Usage 
 This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client and remote store client to interact with the KG and database, the KG and database will be required to be set-up beforehand.  
@@ -67,6 +73,8 @@ The time-series client properties file needs to contain all credentials and endp
 - `db.password` the password to access the Postgres database
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
+- `sparql.username` the username needed to access the SPARQL endpoint, can be left empty if no credentials are required
+- `sparql.password` the password needed to access the SPARQL endpoint, can be left empty if no credentials are required
 
 More information can be found in the example property file `client.properties` in the `config` folder.
 
@@ -74,6 +82,8 @@ More information can be found in the example property file `client.properties` i
 The species properties file needs to contain all endpoints to access the SPARQL endpoint of the knowledge graph that contains the chemical species information. It should contain the following keys:
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
+- `sparql.username` the username needed to access the SPARQL endpoint, can be left empty if no credentials are required
+- `sparql.password` the password needed to access the SPARQL endpoint, can be left empty if no credentials are required
 
 More information can be found in the example property file `species.properties` in the `config` folder.
 
@@ -92,35 +102,53 @@ Modify `client.properties` in the `config` folder accordingly.
 
 If the tagged object is a chemical container that contains some chemical, Modify `species.properties` in the `config` folder accordingly. 
 
-Modify the `Dockerfile` found in the same directory as this README. Change `EMAIL_AGENT_URL` according to where your Email Agent instance is located at.
+The agent can be deployed via two ways, a standalone or as part of the stack.
 
 
-To build and run the agent outside of the stack, open up the command prompt in the same directory as this `README`, run
+#### Standalone
+Modify the `Dockerfile` found in the same directory as this README. Change `EMAIL_AGENT_URL` according to where your Email Agent instance is located at. 
+
+Open `docker-compose.yml` and under the volumes section, modify source according to where the `config` folder is located at. 
+
+To build and run the agent as a standalone, open up the command prompt in the same directory as this `README`, run
 ```
 docker-compose up -d
 ```
-The agent is reachable at "rfid-query-agent/retrieve" on localhost port 1021.
+The agent is reachable at "rfid-query-agent/" on localhost port 1021.
 
+#### Stack deployment
 To build and run the agent in the stack, open up the command prompt in the same directory as this `README`, run
 ```
 docker-compose build
 ```
-Copy the rfid-query-agent.json under `stack-manager-input-config` to the services folder under your stack-manager directory (By default it should be TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/) and start up the stack.
-The agent is reachable at "rfid-query-agent/retrieve" on localhost port 3838.
+Open the `rfid-query-agent.json` under `stack-manager-input-config`. Under the Env section, modify EMAIL_AGENT_URL according to where the email agent is located at. Under the Mounts section, modify Source according to where the `config` folder is located at.
 
-#### Run the agent
-To run the agent, a POST request must be sent to http://localhost:portNumber/rfid-query-agent/retrieve with a correct JSON Object.
+Copy `rfid-query-agent.json` to the services folder under your stack-manager directory (By default it should be TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/) and start up the stack.
+
+The agent is reachable at "rfid-query-agent/" on localhost port 3838.
+
+### Run the agent
+The agent can execute three different routes as described below:
+
+#### Check route
+To run the agent, a POST request must be sent to http://IP address:portNumber/rfid-query-agent/check with a correct JSON Object.
+
 The request has this general format:
 ```
-POST http://localhost:portNumber/rfid-query-agent/retrieve
+POST http://<IP address>:<portNumber>/rfid-query-agent/check
 Content-Type: application/json
-{dataIRIs":"<iri_1>,<iri_2>,<iri_3>","hours":"<number of hours the tagged object is allowed to be "out" for>","timeSeriesClientProperties":"CLIENT_PROPERTIES","containSpecies":"<true or false for iri_1>,<true or false for iri_2>,<true or false for iri_3>","speciesProperties":"SPECIES_PROPERTIES"}
+{
+   dataIRIs":"<iri_1>,<iri_2>,<iri_3>",
+   "hours":"<number of hours the tagged object is allowed to be "out" for>",
+   "timeSeriesClientProperties":"CLIENT_PROPERTIES",
+   "speciesProperties":"SPECIES_PROPERTIES"
+}
 ```
-The JSONObject should contain the data IRIs of the RFID tags status where each IRI is separated by a "," , the number of hours that the tagged objects is allowed to be "Out" for, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you), whether each of the tagged object contains a chemical (true or false), and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
+The JSONObject should contain the data IRIs of the RFID tags status where each IRI is separated by a "," , the number of hours that the tagged objects is allowed to be "Out" for, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you) and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
 
 An example of the request in curl syntax
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"dataIRIs\":\"https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0,https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009726_status_9fdfa988-46c3-4402-bbcc-3d712234af6d\",\"hours\":\"6\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\",\"containSpecies\":\"true,true\",\"speciesProperties\":\"SPECIES_PROPERTIES\"}" http://localhost:1021/rfid-query-agent/retrieve
+curl -X POST --header "Content-Type: application/json" -d "{\"dataIRIs\":\"https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0,https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009726_status_9fdfa988-46c3-4402-bbcc-3d712234af6d\",\"hours\":\"6\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\",\"speciesProperties\":\"SPECIES_PROPERTIES\"}" http://<IP address>:<portNumber>/rfid-query-agent/check
 ```
 
 If the agent runs successfully, you should see a returned JSON Object depending on the following scenarios:
@@ -161,4 +189,77 @@ H272: May intensify fire; oxidizer [Danger Oxidizing liquids; Oxidizing solids]
 tl;dr Container with Hydrogen has been removed for longer than 1 hour.
 
 The chemical container with the following information has been removed for longer than 1 hours since 2023-03-08 07:03:19 AM UTC. The container has the label chemical container 01 and tag ID 00000000000000A000009727.The container is storing a chemical with the label Hydrogen.
+```
+
+#### Retrieve data route
+To run the agent, a POST request must be sent to http://IP address:portNumber/rfid-query-agent/retrieveData with a correct JSON Object.
+
+The request has this general format:
+```
+POST http://<IP address>:<portNumber>/rfid-query-agent/retrieveData
+Content-Type: application/json
+{
+    "timeSeriesClientProperties":"CLIENT_PROPERTIES",
+    "taggedObjectIRI":"<tagged_object_iri>",
+    "speciesProperties":"SPECIES_PROPERTIES"
+}
+```
+The JSONObject should contain the tagged object IRI, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you), and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
+
+An example of the request in curl syntax
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"taggedObjectIRI\":\"http://www.theworldavatar.com/kg/lab/ChemicalContainer_4b3f1341-0191-47e4-a3c4-6fb55fa09aa3\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\",\"speciesProperties\":\"SPECIES_PROPERTIES\"}" http://<IP address>:<portNumber>/rfid-query-agent/retrieveData
+```
+
+The agent will attempt to query for the following information:
+1) tagged object label
+2) latest In/Out Status
+3) Chemical species information such as (Molecular weight, molecular formula, GHS hazard statements etc)
+
+A successful request will return a JSONObject similar to the one below:
+```
+{
+    "Bottle Label": "explosive precursor container (potassium nitrate)",
+    "Latest In/Out Status": "Out since 2023-05-24 06:36:30 AM UTC",
+    "Molecular Weight": "101.103 g / mol",
+    "GHS Hazard Statements": {
+        "H319": "Causes serious eye irritation",
+        "H272": "May intensify fire; oxidizer",
+        "H335": "May cause respiratory irritation",
+        "H315": "Causes skin irritation"
+    },
+    "Molecular Formula": "KNO3"
+}
+```
+
+#### Send notification route
+This route is designed to work with the [RFID Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RFIDAgent). To run the agent, a POST request must be sent to http://IP address:portNumber/rfid-query-agent/sendNotification with a correct JSON Object.
+
+The request has this general format:
+```
+POST http://<IP address>:<portNumber>/rfid-query-agent/sendNotification
+Content-Type: application/json
+{
+    "dataIRI":"<data_iri>",
+    "latestStatus":"<a string describing the latest status and corresponding timestamp>",
+    "timeSeriesClientProperties":"CLIENT_PROPERTIES",
+    "speciesProperties":"SPECIES_PROPERTIES"
+}
+```
+
+The JSONObject should contain the tagged object IRI, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you), and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
+
+An example of the request in curl syntax
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"dataIRI\":\"http://www.theworldavatar.com/kb/ontotimeseries/rfid_tag_00000000000000A000009726_status_614a81fc-cdd2-46b8-8f72-c1632c109acb\",\"latestStatus\":\"Out since 2023-05-24 06:36:30 AM SGT\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\",\"speciesProperties\":\"SPECIES_PROPERTIES\"}" http://<IP address>:<portNumber>/rfid-query-agent/sendNotification
+```
+
+The agent will attempt to query for the following information:
+1) tagged object label
+2) latest In/Out Status
+3) Chemical species information such as (GHS hazard statements etc)
+
+A successful request will return a JSONObject similar to the one below:
+```
+{"Result":"Alert Email sent for http://www.theworldavatar.com/kb/ontotimeseries/rfid_tag_00000000000000A000009726_status_614a81fc-cdd2-46b8-8f72-c1632c109acb"}
 ```
