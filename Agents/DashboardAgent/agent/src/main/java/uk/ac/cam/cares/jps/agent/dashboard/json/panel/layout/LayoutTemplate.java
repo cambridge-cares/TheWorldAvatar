@@ -1,9 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout;
 
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.BarChart;
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.Gauge;
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TemplatePanel;
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TimeSeriesChart;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.*;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;
@@ -102,9 +99,9 @@ public class LayoutTemplate {
     }
 
     /**
-     * Generates the layout template for the systems/smart meters and all their associated measures. Two gauge charts and one time series chart
-     * will be generated per measure of systems. The first gauge chart displays an average latest value of all available systems,
-     * whereas the second displays the individual latest values.
+     * Generates the layout template for the systems/smart meters and all their associated measures. One gauge chart, one pie chart, and one bar chart
+     * will be generated per measure of systems. The first gauge chart displays the average latest value of all available systems. The second pie chart
+     * displays the distribution of the systems for that measures. And the last bar chart displays the trends of the measure across systems.
      *
      * @param systemMeasures        A map containing all measures and their metadata to construct the panels for systems.
      * @param databaseConnectionMap A map linking each database to its connection ID.
@@ -124,12 +121,11 @@ public class LayoutTemplate {
                 String databaseID = databaseConnectionMap.get(database);
                 // Assume the unit of each measure for the systems is consistent
                 String unit = systemMeasures.get(measure).get(0)[4];
-                // Generate a gauge panel displaying the average of all time series with no thresholds
+                // Generate related panels
                 Gauge averageGaugePanel = new Gauge(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure), new String[]{}, true);
-                // Generate a gauge and time series chart with no thresholds
-                Gauge gaugePanel = new Gauge(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure), new String[]{});
+                PieChart distributionPanel = new PieChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure));
                 BarChart barChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure));
-                TemplatePanel[] panelArr = new TemplatePanel[]{averageGaugePanel, gaugePanel, barChart};
+                TemplatePanel[] panelArr = new TemplatePanel[]{averageGaugePanel, distributionPanel, barChart};
                 panelQueue.offer(panelArr);
             }
         }

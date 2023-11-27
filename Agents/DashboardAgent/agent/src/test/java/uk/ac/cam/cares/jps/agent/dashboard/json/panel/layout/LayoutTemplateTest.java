@@ -108,9 +108,9 @@ public class LayoutTemplateTest {
             if (jsonResult.length() != 0) jsonResult.append(",");
             TemplatePanel[] panels = results.poll();
             String averageGaugePanelJson = panels[0].construct(TestUtils.CHART_HEIGHT, 4, 0, rowNumber);
-            String gaugePanelJson = panels[1].construct(TestUtils.CHART_HEIGHT, 8, 4, rowNumber);
-            String timeSeriesPanelJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
-            jsonResult.append(averageGaugePanelJson).append(",").append(gaugePanelJson).append(",").append(timeSeriesPanelJson);
+            String pieChartJson = panels[1].construct(TestUtils.CHART_HEIGHT, 8, 4, rowNumber);
+            String barChartJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
+            jsonResult.append(averageGaugePanelJson).append(",").append(pieChartJson).append(",").append(barChartJson);
             rowNumber++;
         }
         // Verify results
@@ -197,10 +197,10 @@ public class LayoutTemplateTest {
                 builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemMeasures.get(measure),
                                 new String[]{}, query))
                         .append(",");
-                // For the generic Gauge chart
+                // For the pie chart
                 expectedGeometryPosition[1] = 8;  // New width
                 expectedGeometryPosition[2] = 4;  // New x position
-                builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemMeasures.get(measure), new String[]{}))
+                builder.append(PieChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemMeasures.get(measure)))
                         .append(",");
                 // For the bar chart
                 expectedGeometryPosition[1] = TestUtils.CHART_WIDTH; // Original Width
