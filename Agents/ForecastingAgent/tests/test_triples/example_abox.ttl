@@ -34,6 +34,9 @@
               om:hasValue :Measure_1 .
 :Measure_1 rdf:type om:Measure ;
            om:hasUnit om:megawattHour .
+           
+:Measure_2 rdf:type om:Measure ;
+           om:hasUnit om:kilowattHour .
 
 :HeatDemand_2 rdf:type dh:HeatDemand ;
               om:hasUnit om:megawattHour .
