@@ -7,7 +7,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/NetworkAnalysisAgent/inputs",
+                        "Source": "../../../../../../Agents/NetworkAnalysisAgent/inputs",
                         "Target": "/inputs"
                     }
                 ],
