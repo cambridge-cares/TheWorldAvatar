@@ -21,8 +21,9 @@
         "title": "Gas-Phase Reaction Mechanisms",
         "description": "Queries related to the mechanisms of gas-phase reactions",
         "questions": [
-            "what are the reactions involved in the mechanism outlined by www.osti.gov/servlets/purl/90098-26Ev73/webviewable/",
             "list all mechanisms that contain O, H, and AR",
+            "what are the reactions involved in the mechanism outlined by www.osti.gov/servlets/purl/90098-26Ev73/webviewable/",
+            "what are the reactions in which O2 reacts to form OH",
             "compare the kinetic models of the reaction H2 + OH <=> H + H2O across all the mechanisms it appears in",
             "compare thermodynamic data of the species O2 across all the mechanisms in which it appears"
         ]
