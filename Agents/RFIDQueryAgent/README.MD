@@ -2,7 +2,7 @@
 
 This agent is able to execute the following routes:
 1) Check route. Query for the latest status of the RFID tags (In/Out) and determine whether the tagged object has been "Out" for longer
-than allowed. If the tagged object has been "Out" for longer than allowed, An email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). The agent is able to intuitively determine whether the tagged object is a chemical container that contains a chemical species and retrieve the information of the chemical species if possible. More information can be found at the [Check route](#check-route) section.
+than allowed. If the tagged object has been "Out" for longer than allowed, an email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). The agent is able to intuitively determine whether the tagged object is a chemical container that contains a chemical species and retrieve the information of the chemical species if possible. More information can be found at the [Check route](#check-route) section.
 
 2) Retrieve data route. Retrieve information relating to a tagged object IRI and return them in the form of a JSONObject. The agent is able to intuitively determine whether the tagged object is a chemical container that contains a chemical species and retrieve the information of the chemical species if possible. More information can be found at the [RetrieveData route](#retrieve-data-route) section.
 
@@ -11,12 +11,12 @@ than allowed. If the tagged object has been "Out" for longer than allowed, An em
 The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with both the KG and database.
 
 
-## Usage 
+## 1. Usage 
 This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client and remote store client to interact with the KG and database, the KG and database will be required to be set-up beforehand.  
 
 The [next section](#requirements) will explain the requirements to run the agent.
 
-### Requirements
+## 2. Requirements
 1) It is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine or need to be accessible from the host machine via a fixed URL. This can be either in the form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
 
 2) It is required to have the [Email Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmailAgent) set up beforehand.
@@ -61,12 +61,12 @@ The [next section](#requirements) will explain the requirements to run the agent
 
 ```
 
-### Property file
+## 3. Property file
 For running the agent, one or two property files is required depending on whether your tagged object is a chemical container:
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
 - One [property file for chemical species](#species-properties) defining how to access the SPARQL endpoints that contains the chemical species information.
 
-#### Time-series client properties
+### 3.1. Time-series client properties
 The time-series client properties file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
 - `db.url` the [JDBC URL](https://www.postgresql.org/docs/7.4/jdbc-use.html) for the Postgres database
 - `db.user` the username to access the Postgres database
@@ -78,7 +78,7 @@ The time-series client properties file needs to contain all credentials and endp
 
 More information can be found in the example property file `client.properties` in the `config` folder.
 
-#### Species properties
+### 3.2. Species properties
 The species properties file needs to contain all endpoints to access the SPARQL endpoint of the knowledge graph that contains the chemical species information. It should contain the following keys:
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
@@ -87,7 +87,7 @@ The species properties file needs to contain all endpoints to access the SPARQL 
 
 More information can be found in the example property file `species.properties` in the `config` folder.
 
-### Building the RFID Query Agent
+## 4. Building the RFID Query Agent
 The RFID Query Agent is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central). You'll need to provide your credentials in single-word text files located like this:
 ```
 ./credentials/
@@ -105,7 +105,7 @@ If the tagged object is a chemical container that contains some chemical, Modify
 The agent can be deployed via two ways, a standalone or as part of the stack.
 
 
-#### Standalone
+### 4.1. Standalone
 Modify the `Dockerfile` found in the same directory as this README. Change `EMAIL_AGENT_URL` according to where your Email Agent instance is located at. 
 
 Open `docker-compose.yml` and under the volumes section, modify source according to where the `config` folder is located at. 
@@ -116,7 +116,7 @@ docker-compose up -d
 ```
 The agent is reachable at "rfid-query-agent/" on localhost port 1021.
 
-#### Stack deployment
+### 4.2. Stack deployment
 To build and run the agent in the stack, open up the command prompt in the same directory as this `README`, run
 ```
 docker-compose build
@@ -127,11 +127,11 @@ Copy `rfid-query-agent.json` to the services folder under your stack-manager dir
 
 The agent is reachable at "rfid-query-agent/" on localhost port 3838.
 
-### Run the agent
+## 5. Run the agent
 The agent can execute three different routes as described below:
 
-#### Check route
-To run the agent, a POST request must be sent to http://IP address:portNumber/rfid-query-agent/check with a correct JSON Object.
+### 5.1. Check route
+To run the agent, a POST request must be sent to `http://IPaddress:portNumber/rfid-query-agent/check` with a correct JSON Object.
 
 The request has this general format:
 ```
@@ -191,8 +191,8 @@ tl;dr Container with Hydrogen has been removed for longer than 1 hour.
 The chemical container with the following information has been removed for longer than 1 hours since 2023-03-08 07:03:19 AM UTC. The container has the label chemical container 01 and tag ID 00000000000000A000009727.The container is storing a chemical with the label Hydrogen.
 ```
 
-#### Retrieve data route
-To run the agent, a POST request must be sent to http://IP address:portNumber/rfid-query-agent/retrieveData with a correct JSON Object.
+### 5.2. Retrieve data route
+To run the agent, a POST request must be sent to `http://IPaddress:portNumber/rfid-query-agent/retrieveData` with a correct JSON Object.
 
 The request has this general format:
 ```
@@ -232,8 +232,8 @@ A successful request will return a JSONObject similar to the one below:
 }
 ```
 
-#### Send notification route
-This route is designed to work with the [RFID Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RFIDAgent). To run the agent, a POST request must be sent to http://IP address:portNumber/rfid-query-agent/sendNotification with a correct JSON Object.
+### 5.3. Send notification route
+This route is designed to work with the [RFID Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RFIDAgent). To run the agent, a POST request must be sent to `http://IPaddress:portNumber/rfid-query-agent/sendNotification` with a correct JSON Object.
 
 The request has this general format:
 ```
