@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.BarChart;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.Gauge;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TemplatePanel;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TimeSeriesChart;
@@ -127,8 +128,8 @@ public class LayoutTemplate {
                 Gauge averageGaugePanel = new Gauge(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure), new String[]{}, true);
                 // Generate a gauge and time series chart with no thresholds
                 Gauge gaugePanel = new Gauge(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure), new String[]{});
-                TimeSeriesChart tsChart = new TimeSeriesChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure), new String[]{});
-                TemplatePanel[] panelArr = new TemplatePanel[]{averageGaugePanel, gaugePanel, tsChart};
+                BarChart barChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure));
+                TemplatePanel[] panelArr = new TemplatePanel[]{averageGaugePanel, gaugePanel, barChart};
                 panelQueue.offer(panelArr);
             }
         }

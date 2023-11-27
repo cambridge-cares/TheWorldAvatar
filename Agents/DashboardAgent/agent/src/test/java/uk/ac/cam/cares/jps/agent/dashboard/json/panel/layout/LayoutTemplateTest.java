@@ -3,9 +3,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.GaugeTest;
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TemplatePanel;
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TimeSeriesChartTest;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.*;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;
@@ -204,10 +202,10 @@ public class LayoutTemplateTest {
                 expectedGeometryPosition[2] = 4;  // New x position
                 builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemMeasures.get(measure), new String[]{}))
                         .append(",");
-                // For the time series chart
+                // For the bar chart
                 expectedGeometryPosition[1] = TestUtils.CHART_WIDTH; // Original Width
                 expectedGeometryPosition[2] = TestUtils.CHART_WIDTH; // New x position
-                builder.append(TimeSeriesChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemMeasures.get(measure), new String[]{}));
+                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemMeasures.get(measure)));
                 rowNumber++;
             }
         }
