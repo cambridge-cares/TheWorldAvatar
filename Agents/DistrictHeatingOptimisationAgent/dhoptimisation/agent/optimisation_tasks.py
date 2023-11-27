@@ -54,6 +54,9 @@ def generation_optimization(municipal_utility, market_prices, datetime_index, pr
     # Incorporate GT idle time requirement (i.e., potentially mark GT as unavailable)
     gts = [gt.name for gt in municipal_utility.gas_turbines]
     for gt in municipal_utility.gas_turbines:
+        # Reset potentially previously amended availability (to ensure that
+        # unrelated optimisation runs, are actually independent of one another)
+        municipal_utility.gas_turbines[gts.index(gt.name)].available[:] = 1
         if (not gt_active) and (gt.get_idle_time() < gt.idle_period):
             # Only for currently not active GT: if current idle time since last active operation is
             # shorter than required idle_period, flag gas turbine as unavailable for remaining time steps

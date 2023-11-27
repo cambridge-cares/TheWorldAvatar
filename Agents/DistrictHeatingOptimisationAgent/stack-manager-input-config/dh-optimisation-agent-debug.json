@@ -10,7 +10,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "/home/caresuser/TWA-git/Agents/DistrictHeatingOptimisationAgent/dhoptimisation",
+                        "Source": "/<PATH TO TWA GIT REPO>/Agents/DistrictHeatingOptimisationAgent/dhoptimisation",
                         "Target": "/app/dhoptimisation"
                     }
                 ],
