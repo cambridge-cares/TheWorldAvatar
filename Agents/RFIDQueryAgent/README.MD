@@ -6,7 +6,7 @@ than allowed. If the tagged object has been "Out" for longer than allowed, an em
 
 2) Retrieve data route. Retrieve information relating to a tagged object IRI and return them in the form of a JSONObject. The agent is able to intuitively determine whether the tagged object is a chemical container that contains a chemical species and retrieve the information of the chemical species if possible. More information can be found at the [Retrieve data route](#52-retrieve-data-route) section.
 
-3) Send notification route. Receive the latest status of a tag, query for all the meta data relevant to the tag and it's tagged object, send out an email containing these information to the relevant personnels via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). More information can be found at the [Send notification route](#53-send-notification-route) section.
+3) Send notification route. Upon receiving the latest status of a tag, the agent will query for all the meta data relevant to the tag and it's tagged object, send out an email containing these information to the relevant personnels via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). More information can be found at the [Send notification route](#53-send-notification-route) section.
 
 The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with both the KG and database.
 
@@ -14,7 +14,7 @@ The agent uses the [time-series client](https://github.com/cambridge-cares/TheWo
 ## 1. Usage 
 This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client and remote store client to interact with the KG and database, the KG and database will be required to be set-up beforehand.  
 
-The [next section](#requirements) will explain the requirements to run the agent.
+The [next section](#2-requirements) will explain the requirements to run the agent.
 
 ## 2. Requirements
 1) It is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine or need to be accessible from the host machine via a fixed URL. This can be either in the form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
@@ -63,8 +63,8 @@ The [next section](#requirements) will explain the requirements to run the agent
 
 ## 3. Property file
 For running the agent, one or two property files is required depending on whether your tagged object is a chemical container:
-- One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
-- One [property file for chemical species](#species-properties) defining how to access the SPARQL endpoints that contains the chemical species information.
+- One [property file for the time-series client](#31-time-series-client-properties) defining how to access the database and SPARQL endpoint.
+- One [property file for chemical species](#32-species-properties) defining how to access the SPARQL endpoints that contains the chemical species information.
 
 ### 3.1. Time-series client properties
 The time-series client properties file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
@@ -121,7 +121,7 @@ To build and run the agent in the stack, open up the command prompt in the same 
 ```
 docker-compose build
 ```
-Open the `rfid-query-agent.json` under `stack-manager-input-config`. Under the Env section, modify EMAIL_AGENT_URL according to where the email agent is located at. Under the Mounts section, modify Source according to where the `config` folder is located at.
+Open the `rfid-query-agent.json` under `stack-manager-input-config`. Under the Env section, modify EMAIL_AGENT_URL according to where your Email Agent instance is located at. Under the Mounts section, modify Source according to where the `config` folder is located at.
 
 Copy `rfid-query-agent.json` to the services folder under your stack-manager directory (By default it should be TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/) and start up the stack.
 
@@ -247,7 +247,7 @@ Content-Type: application/json
 }
 ```
 
-The JSONObject should contain the tagged object IRI, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you), and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
+The JSONObject should contain the data IRI of the RFID tag status, the latest status and corresponding timestamp, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you), and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
 
 An example of the request in curl syntax
 ```
@@ -262,4 +262,15 @@ The agent will attempt to query for the following information:
 A successful request will return a JSONObject similar to the one below:
 ```
 {"Result":"Alert Email sent for http://www.theworldavatar.com/kb/ontotimeseries/rfid_tag_00000000000000A000009726_status_614a81fc-cdd2-46b8-8f72-c1632c109acb"}
+```
+
+The email content sent out will be similar to the one below:
+```
+tl;dr Container with KNO3 is currently Out since 2023-05-24 06:36:30 AM SGT.
+
+The container has the label explosive precursor container (potassium nitrate) and tag ID 00000000000000A000009727. The container is storing a chemical with the label KNO3 which has the following GHS hazard statements.
+H315: Causes skin irritation [Warning Skin corrosion/irritation]
+H319: Causes serious eye irritation [Warning Serious eye damage/eye irritation]
+H335: May cause respiratory irritation [Warning Specific target organ toxicity, single exposure; Respiratory tract irritation]
+H272: May intensify fire; oxidizer [Danger Oxidizing liquids; Oxidizing solids]
 ```

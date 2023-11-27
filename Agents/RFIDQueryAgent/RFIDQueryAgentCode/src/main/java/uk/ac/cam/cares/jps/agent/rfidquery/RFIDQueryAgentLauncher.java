@@ -89,9 +89,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 
 	/**
 	 * Start agent and run the relevant route based on the url
-	 * @param requestParams
-	 * @param originalUrl
-	 * @return
+	 * @param requestParams request parameters
+	 * @param originalUrl url used to determine the route to execute
+	 * @return a JSONObject containing the results
 	 */
     public JSONObject initializeAgent(JSONObject requestParams, String originalUrl) {
 		String[] args;
@@ -140,6 +140,11 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		return result;
 	}
 
+	/**
+	 * Execute check route
+	 * @param args the arguments needed to execute the check route
+	 * @return result of check route
+	 */
 	private JSONObject executeCheck(String[] args) {
 		// Ensure that there are four arguments provided
         if (args.length != 4) {
@@ -277,6 +282,11 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		 return jsonMessage;
 	}
 
+	/**
+	 * Execute retrieve data route
+	 * @param args the arguments needed to execute the retrieve data route
+	 * @return result of retrieve data route
+	 */
 	private JSONObject executeRetrieveData(String[] args) {
 		JSONObject result = new JSONObject();
 		// Create the agent
@@ -403,6 +413,11 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 		return result;
 	}
 
+	/**
+	 * Execute send notification route
+	 * @param args the arguments needed to execute the send notification route
+	 * @return the result of send notification route
+	 */
 	private JSONObject executeSendNotification(String[] args) {
 		// Ensure that there are four arguments provided
         if (args.length != 4) {
