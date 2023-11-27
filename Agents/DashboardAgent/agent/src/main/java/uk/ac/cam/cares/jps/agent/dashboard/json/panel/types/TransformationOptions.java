@@ -39,8 +39,6 @@ public class TransformationOptions {
         StringBuilder fieldColumnIndex = new StringBuilder();
         StringBuilder fieldColumnMapping = new StringBuilder();
         // Process metadata into the required format
-        // Sort the metadata based on their names to ensure the same order across charts
-        Collections.sort(timeSeriesMetadata, Comparator.comparing(metadata -> metadata[0]));
         fieldColumnIndex.append("\"time\": 0"); // Ensure time is added as the first index
         int indexCounter = 1; // Index should start from one and increment by 1
         for (String[] metadata : timeSeriesMetadata) {

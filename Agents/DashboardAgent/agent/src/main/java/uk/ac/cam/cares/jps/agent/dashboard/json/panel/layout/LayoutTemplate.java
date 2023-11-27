@@ -41,9 +41,12 @@ public class LayoutTemplate {
                 String databaseID = databaseConnectionMap.get(database);
                 // Assume the unit of each measure for the systems is consistent
                 String unit = assetMeasures.get(measure).get(0)[4];
+                // Sort the metadata based on their names to ensure the same order across charts
+                List<String[]> assetTimeSeries = assetMeasures.get(measure);
+                Collections.sort(assetTimeSeries, Comparator.comparing(metadata -> metadata[0]));
                 // Generate a gauge and time series chart with no thresholds
-                Gauge gaugePanel = new Gauge(measure, assetType, unit, databaseID, assetMeasures.get(measure), new String[]{});
-                TimeSeriesChart tsChart = new TimeSeriesChart(measure, assetType, unit, databaseID, assetMeasures.get(measure), new String[]{});
+                Gauge gaugePanel = new Gauge(measure, assetType, unit, databaseID, assetTimeSeries, new String[]{});
+                TimeSeriesChart tsChart = new TimeSeriesChart(measure, assetType, unit, databaseID, assetTimeSeries, new String[]{});
                 TemplatePanel[] panelArr = new TemplatePanel[]{gaugePanel, tsChart};
                 panelQueue.offer(panelArr);
             }
@@ -86,11 +89,14 @@ public class LayoutTemplate {
                 // Retrieves the thresholds if it is available, else, it should return an empty array
                 String[] thresholds = thresholdMap.isEmpty() ? new String[]{} :
                         thresholdMap.containsKey(measure) ? thresholdMap.get(measure) : new String[]{};
+                // Sort the metadata based on their names to ensure the same order across charts
+                List<String[]> roomTimeSeries = roomMeasures.get(measure);
+                Collections.sort(roomTimeSeries, Comparator.comparing(metadata -> metadata[0]));
                 // Generate a gauge panel displaying the average of all time series
-                Gauge averageGaugePanel = new Gauge(measure, StringHelper.ROOM_KEY, unit, databaseID, roomMeasures.get(measure), thresholds, true);
+                Gauge averageGaugePanel = new Gauge(measure, StringHelper.ROOM_KEY, unit, databaseID, roomTimeSeries, thresholds, true);
                 // Generate a gauge and time series chart
-                Gauge gaugePanel = new Gauge(measure, StringHelper.ROOM_KEY, unit, databaseID, roomMeasures.get(measure), thresholds);
-                TimeSeriesChart tsChart = new TimeSeriesChart(measure, StringHelper.ROOM_KEY, unit, databaseID, roomMeasures.get(measure), thresholds);
+                Gauge gaugePanel = new Gauge(measure, StringHelper.ROOM_KEY, unit, databaseID, roomTimeSeries, thresholds);
+                TimeSeriesChart tsChart = new TimeSeriesChart(measure, StringHelper.ROOM_KEY, unit, databaseID, roomTimeSeries, thresholds);
                 TemplatePanel[] panelArr = new TemplatePanel[]{averageGaugePanel, gaugePanel, tsChart};
                 panelQueue.offer(panelArr);
             }
@@ -121,10 +127,13 @@ public class LayoutTemplate {
                 String databaseID = databaseConnectionMap.get(database);
                 // Assume the unit of each measure for the systems is consistent
                 String unit = systemMeasures.get(measure).get(0)[4];
+                // Sort the metadata based on their names to ensure the same order across charts
+                List<String[]> systemTimeSeries = systemMeasures.get(measure);
+                Collections.sort(systemTimeSeries, Comparator.comparing(metadata -> metadata[0]));
                 // Generate related panels
-                Gauge averageGaugePanel = new Gauge(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure), new String[]{}, true);
-                PieChart distributionPanel = new PieChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure));
-                BarChart barChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemMeasures.get(measure));
+                Gauge averageGaugePanel = new Gauge(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, new String[]{}, true);
+                PieChart distributionPanel = new PieChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries);
+                BarChart barChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries);
                 TemplatePanel[] panelArr = new TemplatePanel[]{averageGaugePanel, distributionPanel, barChart};
                 panelQueue.offer(panelArr);
             }
