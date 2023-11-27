@@ -80,7 +80,7 @@ class DashboardClientIntegrationTest {
     }
 
     @Test
-    void testInitDashboardWithNoData() {
+    void testInitDashboard_NoData() {
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
@@ -105,7 +105,7 @@ class DashboardClientIntegrationTest {
     }
 
     @Test
-    void testInitDashboardForExistingServiceAccountWithNoData() {
+    void testInitDashboard_ExistingServiceAccountWithNoData() {
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
@@ -131,7 +131,7 @@ class DashboardClientIntegrationTest {
     }
 
     @Test
-    void testInitDashboardWithOneDatabaseConnection() {
+    void testInitDashboard_OneDatabaseConnection() {
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
@@ -159,7 +159,7 @@ class DashboardClientIntegrationTest {
     }
 
     @Test
-    void testInitDashboardForRepeatedDatabaseConnection() {
+    void testInitDashboard_RepeatedDatabaseConnection() {
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
@@ -188,7 +188,34 @@ class DashboardClientIntegrationTest {
     }
 
     @Test
-    void testInitDashboard() {
+    void testInitDashboard_InvalidJsonmodel() {
+        // Insert these triples into the blazegraph
+        SparqlClientTest.insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
+        SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
+        // Create password files
+        IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_POSTGIS_PASSWORD_PATH, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
+        IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_DASHBOARD_PASSWORD_PATH, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
+        try (MockedConstruction<ContainerClient> mockClient = Mockito.mockConstruction(ContainerClient.class, (mock, context) -> {
+            // Ensure all mocks return the test config class for the method to continue
+            Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
+        }); MockedConstruction<GrafanaModel> mockModel = Mockito.mockConstruction(GrafanaModel.class, (mock, context) -> {
+            // Ensure the json model returns an invalid JSON
+            Mockito.when(mock.construct()).thenReturn("INVALID JSON");
+        })) {
+            StackClient stackClient = new StackClient();
+            DashboardClient client = new DashboardClient(stackClient);
+            // Execute method and ensure the right error is thrown
+            IllegalArgumentException resultingError = assertThrows(IllegalArgumentException.class, () ->
+                    client.initDashboard()
+            );
+            assertEquals("Bad request data! The json model is not compliant with Grafana standards!", resultingError.getMessage());
+        }
+    }
+
+    @Test
+    void testInitDashboard_Success() {
         // Insert these triples into the blazegraph
         SparqlClientTest.insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
         SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);

@@ -35,13 +35,25 @@ class AgentCommunicationClientIntegrationTest {
     }
 
     @Test
-    void testVerifySuccessfulRequest_Fail() {
+    void testVerifySuccessfulRequest_OtherHttpFailure() {
         String errorMessage = "Request failed";
         // Set up a mock response
         HttpResponse errorResponse = Mockito.mock(HttpResponse.class);
         Mockito.when(errorResponse.statusCode()).thenReturn(404);
         // Verify that a JPSRuntimeException is thrown when the response status code is not 200
         assertThrows(JPSRuntimeException.class, () ->
+                AgentCommunicationClient.verifySuccessfulRequest(errorResponse, errorMessage)
+        );
+    }
+
+    @Test
+    void testVerifySuccessfulRequest_400ErrorFail() {
+        String errorMessage = "Request failed";
+        // Set up a mock response
+        HttpResponse errorResponse = Mockito.mock(HttpResponse.class);
+        Mockito.when(errorResponse.statusCode()).thenReturn(400);
+        // Verify that the following exception is thrown when the response status code is 400
+        assertThrows(IllegalArgumentException.class, () ->
                 AgentCommunicationClient.verifySuccessfulRequest(errorResponse, errorMessage)
         );
     }

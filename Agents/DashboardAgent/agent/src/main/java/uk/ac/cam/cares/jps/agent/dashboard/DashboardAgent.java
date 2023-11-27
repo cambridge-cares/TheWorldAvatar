@@ -85,7 +85,7 @@ public class DashboardAgent extends JPSAgent {
                     jsonMessage = resetRoute();
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    jsonMessage.put("Error", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
             case "status":
@@ -93,7 +93,7 @@ public class DashboardAgent extends JPSAgent {
                     jsonMessage = statusRoute();
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    jsonMessage.put("Error", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
             case "setup":
@@ -101,12 +101,12 @@ public class DashboardAgent extends JPSAgent {
                     jsonMessage = setupRoute();
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    jsonMessage.put("Error", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
             default:
                 LOGGER.fatal(UNDEFINED_ROUTE_ERROR_MSG + route);
-                jsonMessage.put("Result", UNDEFINED_ROUTE_ERROR_MSG + route);
+                jsonMessage.put("Error", UNDEFINED_ROUTE_ERROR_MSG + route);
         }
         // Total agent run time in nanoseconds
         long duration = System.nanoTime() - startTime;
@@ -141,7 +141,7 @@ public class DashboardAgent extends JPSAgent {
         if (DashboardAgent.VALID) {
             response.put("Result", "Agent is ready to receive requests.");
         } else {
-            response.put("Result", "Agent could not be initialised! Please ensure it is running on a stack!");
+            response.put("Error", "Agent could not be initialised! Please ensure it is running on a stack!");
         }
         return response;
     }
@@ -155,12 +155,18 @@ public class DashboardAgent extends JPSAgent {
         JSONObject response = new JSONObject();
         if (DashboardAgent.VALID) {
             LOGGER.info("Setting up client to interact with dashboard...");
-            DashboardClient client = new DashboardClient(SERVICES);
-            client.initDashboard();
+            try {
+                DashboardClient client = new DashboardClient(SERVICES);
+                client.initDashboard();
+            } catch (Exception e) {
+                LOGGER.fatal("Dashboard could not be set up! " + e.getMessage());
+                response.put("Error", "Dashboard could not be set up! " + e.getMessage());
+                return response;
+            }
             LOGGER.info("Dashboard has been successfully set up!");
             response.put("Result", "Dashboard has been successfully set up!");
         } else {
-            response.put("Result", "Agent could not be initialised! Please check logs for more information...");
+            response.put("Error", "Agent could not be initialised! Please check logs for more information...");
         }
         return response;
     }
@@ -176,7 +182,7 @@ public class DashboardAgent extends JPSAgent {
             SERVICES = new StackClient();
             response.put("Result", "Agent has been successfully reset!");
         } else {
-            response.put("Result", "Agent could not be initialised! Please check logs for more information...");
+            response.put("Error", "Agent could not be initialised! Please check logs for more information...");
         }
         return response;
     }

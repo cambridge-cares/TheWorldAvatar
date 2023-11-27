@@ -32,7 +32,10 @@ public class AgentCommunicationClient {
      * @param errorMessage Error message to display if unsuccessful.
      */
     public static void verifySuccessfulRequest(HttpResponse response, String errorMessage) {
-        if (response.statusCode() != 200) {
+        if (response.statusCode() == 400) {
+            LOGGER.fatal(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        } else if (response.statusCode() != 200) {
             LOGGER.fatal(errorMessage);
             throw new JPSRuntimeException(errorMessage);
         }

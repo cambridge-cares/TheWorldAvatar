@@ -33,6 +33,7 @@ public class DashboardClient {
     private static final String DASHBOARD_CREATION_ROUTE = "/api/dashboards/db";
     private static final String DASHBOARD_UNAVAILABLE_ERROR = "Dashboard container has not been set up within the stack. Please set it up first!";
     private static final String FAILED_REQUEST_ERROR = "Unable to send request! See response for more details: ";
+    private static final String INVALID_DATA_ERROR = "Bad request data! The json model is not compliant with Grafana standards!";
 
     /**
      * Standard Constructor.
@@ -175,7 +176,12 @@ public class DashboardClient {
         LOGGER.debug("Sending request to create dashboard...");
         // Create a new dashboard based on the JSON model using a POST request with security token
         HttpResponse response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
-        AgentCommunicationClient.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + response.body());
+        try {
+            AgentCommunicationClient.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + response.body());
+        } catch (IllegalArgumentException e) {
+            LOGGER.fatal(INVALID_DATA_ERROR);
+            throw new IllegalArgumentException(INVALID_DATA_ERROR);
+        }
         // Retrieve the connection ID generated for the database connection and link it to the database
         JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
         return responseBody.get("uid").getAsString();

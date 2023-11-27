@@ -38,7 +38,7 @@ class DashboardAgentTest {
         requestParams.add(KEY_METHOD, GET_METHOD);
         requestParams.add(KEY_ROUTE, JSON_BASE_ROUTE);
         JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
-        assertEquals("Invalid route! Requested route does not exist for : ", response.getString("Result"));
+        assertEquals("Invalid route! Requested route does not exist for : ", response.getString("Error"));
     }
 
     @Test
@@ -60,7 +60,7 @@ class DashboardAgentTest {
         requestParams.add(KEY_METHOD, POST_METHOD);
         requestParams.add(KEY_ROUTE, RESET_ROUTE);
         JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
-        assertEquals("Invalid request type! Route reset can only accept GET request.", response.getString("Result"));
+        assertEquals("Invalid request type! Route reset can only accept GET request.", response.getString("Error"));
     }
 
     @Test
@@ -78,7 +78,7 @@ class DashboardAgentTest {
         requestParams.add(KEY_METHOD, POST_METHOD);
         requestParams.add(KEY_ROUTE, STATUS_ROUTE);
         JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
-        assertEquals("Invalid request type! Route status can only accept GET request.", response.getString("Result"));
+        assertEquals("Invalid request type! Route status can only accept GET request.", response.getString("Error"));
     }
 
     @Test
@@ -102,12 +102,34 @@ class DashboardAgentTest {
     }
 
     @Test
+    void testProcessRequestParameters_SetupRouteInvalidGrafanaJson() throws IOException {
+        // Set up params
+        JsonObject requestParams = new JsonObject();
+        requestParams.add(KEY_METHOD, GET_METHOD);
+        requestParams.add(KEY_ROUTE, SETUP_ROUTE);
+        File config = TestUtils.genSampleCredFile(true, IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
+        String expectedError = "Bad request data! The json model is not compliant with Grafana standards!";
+        try (MockedConstruction<DashboardClient> mockDashboardClient = Mockito.mockConstruction(DashboardClient.class,
+                // Throw an exception
+                (mock, context) -> {
+                    Mockito.when(mock.initDashboard()).thenThrow(new IllegalArgumentException(expectedError));
+                })) {
+            // Execute method
+            JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
+            // Verify that the error was received and put into the response
+            assertEquals("Dashboard could not be set up! " + expectedError, response.getString("Error"));
+        } finally {
+            config.delete();
+        }
+    }
+
+    @Test
     void testProcessRequestParameters_SetupRouteViaInvalidPOST() {
         // Set up request parameters
         JsonObject requestParams = new JsonObject();
         requestParams.add(KEY_METHOD, POST_METHOD);
         requestParams.add(KEY_ROUTE, SETUP_ROUTE);
         JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
-        assertEquals("Invalid request type! Route setup can only accept GET request.", response.getString("Result"));
+        assertEquals("Invalid request type! Route setup can only accept GET request.", response.getString("Error"));
     }
 }
