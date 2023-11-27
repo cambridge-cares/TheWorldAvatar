@@ -36,9 +36,9 @@ public class TestUtils {
     public static final String ROOM_ONE = "Kitchen";
     public static final String ROOM_TWO = "Bedroom";
     public static final String ELEC_UNIT = "kwh";
-    public static final String COLUMN_ELEC_ROOM_ONE = "column12";
+    public static final String COLUMN_ELEC_ROOM_ONE = "column14";
     public static final String COLUMN_HEAT_ROOM_ONE = "column13";
-    public static final String COLUMN_ELEC_ROOM_TWO = "column14";
+    public static final String COLUMN_ELEC_ROOM_TWO = "column12";
     public static final String COLUMN_HEAT_ROOM_TWO = "column15";
     public static final String MIN_HEAT_THRESHOLD = "1.0";
     public static final String MAX_HEAT_THRESHOLD = "2.0";

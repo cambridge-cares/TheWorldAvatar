@@ -129,7 +129,7 @@ public class LayoutTemplate {
                 String unit = systemMeasures.get(measure).get(0)[4];
                 // Sort the metadata based on their names to ensure the same order across charts
                 List<String[]> systemTimeSeries = systemMeasures.get(measure);
-                Collections.sort(systemTimeSeries, Comparator.comparing(metadata -> metadata[0]));
+                Collections.sort(systemTimeSeries, Comparator.comparing(metadata -> metadata[1]));
                 // Generate related panels
                 Gauge averageGaugePanel = new Gauge(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, new String[]{}, true);
                 PieChart distributionPanel = new PieChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries);

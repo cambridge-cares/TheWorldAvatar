@@ -191,21 +191,23 @@ public class LayoutTemplateTest {
                 String[] metadata = systemMeasures.get(measure).get(0);
                 String[] expectedConfigItems = new String[]{measure, StringHelper.SYSTEM_KEY, metadata[2], databaseConnectionMap.get(metadata[3]), metadata[4]};
                 int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber};
+                List<String[]> systemTimeSeries = systemMeasures.get(measure);
+                Collections.sort(systemTimeSeries, Comparator.comparing(data -> data[1]));
                 // For the overall average Gauge chart
                 expectedGeometryPosition[1] = 4; // New width
                 String query = GaugeTest.genAggregateQuery(systemMeasures.get(measure), false);
-                builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemMeasures.get(measure),
+                builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries,
                                 new String[]{}, query))
                         .append(",");
                 // For the pie chart
                 expectedGeometryPosition[1] = 8;  // New width
                 expectedGeometryPosition[2] = 4;  // New x position
-                builder.append(PieChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemMeasures.get(measure)))
+                builder.append(PieChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries))
                         .append(",");
                 // For the bar chart
                 expectedGeometryPosition[1] = TestUtils.CHART_WIDTH; // Original Width
                 expectedGeometryPosition[2] = TestUtils.CHART_WIDTH; // New x position
-                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemMeasures.get(measure)));
+                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries));
                 rowNumber++;
             }
         }
