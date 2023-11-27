@@ -81,7 +81,8 @@ public class BarChart extends TemplatePanel {
                 .append("},") // End of custom parts
                 // Thresholds
                 .append("\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
-                        "{\"color\":\"green\",\"value\":null},{\"color\":\"red\",\"value\":80},}]},)")
+                        "{\"color\":\"green\",\"value\":null},{\"color\":\"red\",\"value\":80}")
+                .append("]},")
                 .append("\"mappings\": []")
                 .append("},") // End of defaults
                 .append("\"overrides\": []")

@@ -110,7 +110,8 @@ public class BarChartTest {
                 .append("\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"off\"}")
                 .append("},") // End of custom parts
                 .append("\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
-                        "{\"color\":\"green\",\"value\":null},{\"color\":\"red\",\"value\":80},}]},)")
+                        "{\"color\":\"green\",\"value\":null},{\"color\":\"red\",\"value\":80}")
+                .append("]},")
                 .append("\"mappings\": []")
                 .append("},")
                 .append("\"overrides\": []")
