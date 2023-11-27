@@ -228,7 +228,7 @@ public class RFIDQueryAgent{
         } else if (speciesLabel != null && map == null) {
             try {
                 tldrMessage = "<b>tl;dr Container with " + speciesLabel + " has been removed for longer than " + numOfHours + " hour.</b> <br> <br>" ;
-                emailMessage = tldrMessage + "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since " + latestTimeStamp + ". The container has the label <b>" + objectLabel + "</b> and tag ID <b>" + tagStatusIRI.split("_")[2] + "</b>. The container is storing a chemical with the label <b>" + speciesLabel + "</b>.";
+                emailMessage = tldrMessage + "The chemical container with the following information has been removed for longer than <b>" + numOfHours + " hours since " + latestTimeStamp + "</b>. The container has the label <b>" + objectLabel + "</b> and tag ID <b>" + tagStatusIRI.split("_")[2] + "</b>. The container is storing a chemical with the label <b>" + speciesLabel + "</b>.";
 
                 LOGGER.info("The email message is " + emailMessage);
                 sender.sendEmail("Alert!", emailMessage);
@@ -237,7 +237,7 @@ public class RFIDQueryAgent{
             }
         } else if (speciesLabel == null && map == null) {
             try {
-                emailMessage = "<b>The tagged object has been removed for longer than " + numOfHours + " hours since " + latestTimeStamp + ".</b> <br> <br> The object has the label <b>" + objectLabel + "</b> and tag ID <b>" + tagStatusIRI.split("_")[2] + "</b>.";
+                emailMessage = "The tagged object has been removed for longer than <b>" + numOfHours + " hours since " + latestTimeStamp + "</b>. The object has the label <b>" + objectLabel + "</b> and tag ID <b>" + tagStatusIRI.split("_")[2] + "</b>.";
                 sender.sendEmail("Alert!", emailMessage);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");
@@ -282,7 +282,7 @@ public class RFIDQueryAgent{
             }
         } else if (speciesLabel == null && map == null) {
             try {
-                emailMessage = "The tagged object " + " is currently <b>" + latestStatus +" .</b> <br> <br> The object has the label <b>" + objectLabel + "</b> and tag ID <b>" + tagStatusIRI.split("_")[2] + "</b>.";
+                emailMessage = "The tagged object " + " is currently <b>" + latestStatus +" .</b> The object has the label <b>" + objectLabel + "</b> and tag ID <b>" + tagStatusIRI.split("_")[2] + "</b>.";
                 sender.sendEmail("Alert!", emailMessage);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");

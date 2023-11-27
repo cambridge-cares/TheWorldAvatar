@@ -256,8 +256,7 @@ curl -X POST --header "Content-Type: application/json" -d "{\"dataIRI\":\"http:/
 
 The agent will attempt to query for the following information:
 1) tagged object label
-2) latest In/Out Status
-3) Chemical species information such as (GHS hazard statements etc)
+2) Chemical species information such as (label, GHS hazard statements etc)
 
 A successful request will return a JSONObject similar to the one below:
 ```
