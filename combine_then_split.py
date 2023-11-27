@@ -9,25 +9,22 @@ from typing import List
 import pandas as pd
 
 
-def sanitize(texts: List[str]):
-    def _sanitize(text: str):
-        ptr = 0
-        while ptr < len(text):
-            if text.startswith("<entity>", ptr):
-                ptr_end = text.find("</entity>", ptr)
-                entity = text[ptr + len("<entity>") : ptr_end]
-                text = text[:ptr] + entity + text[ptr_end + len("</entity>") :]
-                ptr += len(entity)
-            elif text[ptr] == "[":
-                ptr_end = text.find("]", ptr)
-                literal = text[ptr + 1 : ptr_end]
-                text = text[:ptr] + literal + text[ptr_end + 1 :]
-                ptr += len(literal)
-            else:
-                ptr += 1
-        return text
-
-    return [_sanitize(text) for text in texts]
+def sanitize(text: str):
+    ptr = 0
+    while ptr < len(text):
+        if text.startswith("<entity>", ptr):
+            ptr_end = text.find("</entity>", ptr)
+            entity = text[ptr + len("<entity>") : ptr_end]
+            text = text[:ptr] + entity + text[ptr_end + len("</entity>") :]
+            ptr += len(entity)
+        elif text[ptr] == "[":
+            ptr_end = text.find("]", ptr)
+            literal = text[ptr + 1 : ptr_end]
+            text = text[:ptr] + literal + text[ptr_end + 1 :]
+            ptr += len(literal)
+        else:
+            ptr += 1
+    return text
 
 
 def main():
@@ -42,7 +39,6 @@ def main():
     df["sampling_pool"] = df.apply(
         lambda row: [row["verbalization"]] + row["paraphrases"], axis=1
     )
-    df["sampling_pool"] = df["sampling_pool"].apply(sanitize)
 
     with open(args.filepath_examples, "r") as f:
         data = json.load(f)
@@ -54,7 +50,7 @@ def main():
                 continue
             row = df.loc[datum["id"]]
             datum["paraphrases"] = row["paraphrases"]
-            datum["question"] = random.choice(row["sampling_pool"])
+            datum["question"] = sanitize(random.choice(row["sampling_pool"]))
             data_out.append(datum)
         except Exception as e:
             print(datum)
@@ -71,7 +67,7 @@ def main():
     }
 
     os.makedirs(args.dirpath_out, exist_ok=True)
-    
+
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")
     for split, _ids in ids.items():
         split_data = [x for x in data_out if x["id"] in _ids]
