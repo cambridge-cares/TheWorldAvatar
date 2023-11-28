@@ -64,13 +64,17 @@ class OCCAsker:
             query_graph.add_edge("MolecularComputation", node, label=predicate)
 
         verbn_attrs = [random.choice(OCC_RESULT_LABELS[x]) for x in attrs]
-        verbalization = "what is the {attrs} of {species}".format(
+        template = "What is the {attrs} of {species}"
+        verbalization = template.format(
             attrs=" and ".join(verbn_attrs), species=verbalization
         )
 
         if len(verbn_comp_params) > 0:
-            verbalization += " calculated at {plural} {comp_params}".format(
-                plural=random.choice(PLURAL_ADJS),
+            template = random.choice([
+                " across all {comp_params}",
+                ", specifying the {comp_params} at which the calculations are performed"
+            ])
+            verbalization += template.format(
                 comp_params=" and ".join(verbn_comp_params),
             )
 
