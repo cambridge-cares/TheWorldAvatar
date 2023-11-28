@@ -1,7 +1,7 @@
 import copy
 import random
 
-from constants.ontospecies_keys import (
+from constants.ontospecies import (
     ABSTRACT_IDENTIFIER_KEY,
     ABSTRACT_PROPERTY_KEY,
     CHEMCLASS_KEY,

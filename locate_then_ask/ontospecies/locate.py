@@ -14,7 +14,7 @@ from constants.functions import (
     LESS_THAN_EQUAL,
     OUTSIDE,
 )
-from constants.ontospecies_keys import CHEMCLASS_KEY, KEY2LABELS, USE_KEY
+from constants.ontospecies import CHEMCLASS_KEY, KEY2LABELS, USE_KEY
 from locate_then_ask.ontospecies.entity_store import OSEntityStore
 from locate_then_ask.query_graph import QueryGraph, get_objs, get_preds
 from locate_then_ask.utils import get_gt, get_lt

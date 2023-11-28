@@ -1,6 +1,6 @@
 from collections import defaultdict
 from typing import Dict, List
-from constants.ontospecies_keys import IDENTIFIER_KEYS, PROPERTY_KEYS
+from constants.ontospecies import IDENTIFIER_KEYS, PROPERTY_KEYS
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontospecies.model import OSProperty, OSSpecies
 

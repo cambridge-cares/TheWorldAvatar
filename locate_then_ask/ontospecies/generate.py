@@ -7,7 +7,7 @@ import time
 import networkx as nx
 from tqdm import tqdm
 
-from constants.ontospecies_keys import SPECIES_ATTRIBUTE_KEYS
+from constants.ontospecies import SPECIES_ATTRIBUTE_KEYS
 from locate_then_ask.ontospecies.ask import AskDatum, OSAsker
 from locate_then_ask.ontospecies.locate import OSSpeciesLocator
 from locate_then_ask.query_graph import QueryGraph
