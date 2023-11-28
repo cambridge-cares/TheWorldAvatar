@@ -36,6 +36,7 @@ public class BMSQueryAgentIntegrationTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private BMSQueryAgentLauncher launcher;
     private BMSQueryAgent agent;
     private static CloseableHttpClient httpClient;
 
@@ -53,6 +54,7 @@ public class BMSQueryAgentIntegrationTest {
         httpClient = HttpClients.createDefault();
         createNewNameSpace();
 
+<<<<<<< HEAD
         RemoteStoreClient labRsClient = new RemoteStoreClient();
         labRsClient.setQueryEndpoint(getNamespaceUrl("lab"));
 
@@ -61,6 +63,13 @@ public class BMSQueryAgentIntegrationTest {
 
         agent = new BMSQueryAgent();
         agent.setRSClient(labRsClient, officeRsClient);
+=======
+        launcher = new BMSQueryAgentLauncher();
+
+        RemoteStoreClient rsClient = new RemoteStoreClient(getBlazegraphEndPoint(), getBlazegraphEndPoint());
+        agent = new BMSQueryAgent();
+        agent.setRSClient(rsClient, Arrays.asList(getNamespaceUrl("bms"), getNamespaceUrl("lab")));
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
 
 //        postNewData("lab", "");
     }

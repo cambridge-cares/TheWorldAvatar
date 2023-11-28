@@ -3,6 +3,7 @@ version: "3.9"
 services:
   ifc2ontobim:
     container_name: ifc2ontobim-agent
+<<<<<<< HEAD
     image: ifc2ontobim-agent:1.2.1
     build:
       context: .
@@ -32,3 +33,11 @@ services:
 networks:
   agent_network:
     driver: bridge
+=======
+    image: ifc2ontobim-agent:1.1.0
+    build: .
+    ports:
+      - "3025:8080"
+    volumes:
+        - ./data:/usr/local/tomcat/data
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)

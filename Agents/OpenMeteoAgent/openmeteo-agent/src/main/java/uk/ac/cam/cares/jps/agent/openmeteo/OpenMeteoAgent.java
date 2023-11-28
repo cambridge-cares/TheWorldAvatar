@@ -31,7 +31,10 @@ import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -86,7 +89,6 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String ONTOEMS_WINDDIRECTION = "WindDirection";
     private static final String API_WINDSPEED_UNIT = "windspeed_unit=ms";
     private static final String API_ELEVATION = "elevation";
-    private static final String API_OFFSET = "utc_offset_seconds";
 
     private String ontoemsURI;
     private String ontotimeseriesURI;
@@ -144,14 +146,14 @@ public class OpenMeteoAgent extends JPSAgent {
                 longitude = Double.parseDouble(requestParams.getString(KEY_LON));
                 JSONObject response = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
 
-                Integer offset = response.getInt(API_OFFSET);
+                String timezone = response.getString(API_TIMEZONE);
 
                 JSONObject weatherData = response.getJSONObject(API_HOURLY);
                 JSONObject weatherUnit = response.getJSONObject(API_HOURLY_UNITS);
 
                 elevation = response.getDouble(API_ELEVATION);
 
-                List<OffsetDateTime> timesList = getTimesList(weatherData, API_TIME, offset);
+                List<OffsetDateTime> timesList = getTimesList(weatherData, API_TIME, timezone);
                 Map<String, List<Object>> parsedData = parseWeatherData(weatherData, weatherUnit);
 
                 String stationIRI = getStation(latitude, longitude, route);
@@ -594,18 +596,18 @@ public class OpenMeteoAgent extends JPSAgent {
      * Parses the times in data into a list of OffsetDateTime
      * @param data JSONObject containing the weather data
      * @param key key to getting the times
-     * @param offset timezone of the weather station
+     * @param timezone timezone of the weather station
      * @return the times parsed into a list of OffsetDateTime
      */
-    private List<OffsetDateTime> getTimesList(JSONObject data, String key, Integer offset) {
+    private List<OffsetDateTime> getTimesList(JSONObject data, String key, String timezone) {
         JSONArray array = data.getJSONArray(key);
 
-        ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(offset);
+        ZoneId zoneID = ZoneId.of(timezone);
 
         List<OffsetDateTime> timesList = new ArrayList<>();
 
         for (int i = 0; i < array.length(); i++){
-            timesList.add(LocalDateTime.parse(array.getString(i)).atOffset(zoneOffset));
+            timesList.add(LocalDateTime.parse(array.getString(i)).atZone(zoneID).toOffsetDateTime());
         }
 
         return  timesList;

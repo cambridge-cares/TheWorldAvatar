@@ -3,15 +3,14 @@
     "Name": "bms-query-agent",
     "TaskTemplate": {
       "ContainerSpec": {
+<<<<<<< HEAD
         "Image": "ghcr.io/cambridge-cares/bms-query-agent:1.3.0",
+=======
+        "Image": "docker.io/library/bms-query-agent:1.0.0",
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
         "Configs": [
           {
             "ConfigName": "blazegraph"
-          }
-        ],
-        "Secrets": [
-          {
-            "SecretName": "blazegraph_password"
           }
         ]
       }

@@ -1,0 +1,47 @@
+{
+	"SimulationType": "MOOonly",
+	"Algorithms": [{
+			"name": "algorithm1",
+<<<<<<< HEAD:Agents/MoDSSimpleAgent/examples/MOOonly.json
+			"type": "GenSurrogateAlg",
+			"surrogateToLoad": "example-surrogate"
+		},
+		{
+			"name": "algorithm2",
+=======
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):Agents/MoDSSimpleAgent/example_MOOonly_input.json
+			"type": "MOO",
+			"maxNumberOfResults": 10,
+			"surrogateToLoad": "mods-sim-6476504040189009585",
+			"variables": [{
+					"name": "var1",
+					"type": "input"
+				}, {
+					"name": "var2",
+					"type": "input"
+				}, {
+					"name": "var3",
+					"type": "input"
+				}, {
+					"name": "var4",
+					"type": "output",
+					"objective": "Maximise",
+					"minimum": 0.5,
+					"weight": 0.5
+				}, {
+					"name": "var5",
+					"type": "output",
+					"objective": "Minimise",
+					"maximum": 1.5,
+					"weight": 0.1
+				}, {
+					"name": "var6",
+					"type": "output",
+					"objective": "Maximise",
+					"minimum": 2.5,
+					"weight": 0.7
+				}
+			]
+		}
+	]
+}

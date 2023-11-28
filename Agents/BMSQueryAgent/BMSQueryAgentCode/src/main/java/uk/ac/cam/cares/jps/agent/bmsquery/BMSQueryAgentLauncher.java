@@ -129,6 +129,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
 
     /**
      * Initialize agent and its remotestore client with EndpointConfig which get other agents' config from docker stack
+     * @return
      */
     private BMSQueryAgent initializeAgent() {
         BMSQueryAgent agent = createBMSQueryAgent();
@@ -146,8 +147,15 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         RemoteStoreClient rsClient = new RemoteStoreClient();
         rsClient.setUser(endpointConfig.getKguser());
         rsClient.setPassword(endpointConfig.getKgpassword());
+<<<<<<< HEAD
         rsClient.setQueryEndpoint(endpointConfig.getKgurl());
         return rsClient;
+=======
+        agent.setRSClient(rsClient, endpointConfig.getKgurls());
+
+        LOGGER.info("Input agent object initialized.");
+        return agent;
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
     }
 
     /**

@@ -10,19 +10,10 @@ class MapHandler_Cesium extends MapHandler {
     public static DATA_SOURCES = {};
 
     /**
-     * Handles generation and control of clipping planes.
-     */
-    private clipHandler: ClipHandler;
-
-    /**
      * Constructor.
      */
     constructor(manager: Manager) {
         super(manager);
-        this.clipHandler = new ClipHandler();
-
-        let layers = CesiumUtils.getLayersWithClipping(Manager.DATA_STORE);
-        this.clipHandler.setLayers(layers);
     }
 
     /**
@@ -32,6 +23,16 @@ class MapHandler_Cesium extends MapHandler {
         MapHandler.MAP_OPTIONS = mapOptions;
 
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
+<<<<<<< HEAD:web/twa-vis-framework/library/src/ts/cesium/cesium_handler.ts
+=======
+
+            // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
+            var tileURL = getDefaultImagery();
+            if(tileURL.endsWith("access_token=")) {
+                tileURL = tileURL + MapHandler.MAP_API;
+            }
+
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/library/src/ts/cesium/cesium_handler.ts
             // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
             MapHandler.MAP = new Cesium.Viewer('map', {
                 timeline: false,
@@ -59,15 +60,19 @@ class MapHandler_Cesium extends MapHandler {
                         new Cesium.NearFarScalar(1000.0, Math.abs(value), 2000.0, 1.0);
             }
 
-            // Include terrain in Z-index rendering (otherwise we'll be able to see other entities through it).
+            // Include terrain in Z-index rendering (otherwise we'll be able
+            // to see other entities through it).
             MapHandler.MAP.scene.globe.depthTestAgainstTerrain = true
 
+<<<<<<< HEAD:web/twa-vis-framework/library/src/ts/cesium/cesium_handler.ts
             // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
             var tileURL = getDefaultImagery();
             if(tileURL.endsWith("access_token=")) {
                 tileURL += MapHandler.MAP_API;
             } 
 
+=======
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/library/src/ts/cesium/cesium_handler.ts
             // Remove any existing imagery providers and add our own
             MapHandler.MAP.imageryLayers.removeAll(true);
             let imageryProvider = new Cesium.UrlTemplateImageryProvider({
@@ -107,11 +112,6 @@ class MapHandler_Cesium extends MapHandler {
 
             // Enable terrain elevations (if set)
             this.addTerrain();
-
-            // Build clipping controls
-            let layersWithClipping = CesiumUtils.getLayersWithClipping(Manager.DATA_STORE);
-            this.clipHandler.setLayers(layersWithClipping);
-            this.clipHandler.addControls();
 
         } else {
             MapHandler.MAP.camera.setView({
@@ -180,8 +180,12 @@ class MapHandler_Cesium extends MapHandler {
                         });
                     }
                 } else {
-                    // Unknown data type
-                    return;
+                    console.log("here");
+                    let content = feature["content"];
+                    let tile = content["tile"];
+
+                    console.log("TILE");
+                    console.log(tile);
                 }
                 
                 self.manager.showFeature(feature, properties);
@@ -427,32 +431,19 @@ class MapHandler_Cesium extends MapHandler {
      * @param source JSON definition of source data. 
      * @param layerID ID of layer upon the map.
      */
-    private async addTileset(source: Object, layer: DataLayer) {
+    private addTileset(source: Object, layer: DataLayer) {
         // Check the position (if set)
-        let position = Cesium.Matrix4.IDENTITY;
-        if("position" in source) {
-            let setting = source["position"];
-            let centerCartesian = Cesium.Cartesian3.fromDegrees(setting[0], setting[1], setting[2]);
+        let position = source["position"];
+        if(position !== null && position !== undefined) {
+            let centerCartesian = Cesium.Cartesian3.fromDegrees(position[0], position[1], position[2]);
             position = Cesium.Transforms.eastNorthUpToFixedFrame(centerCartesian);
         }
 
-        // Check the scale (if set)
-        if("scale" in source) {
-            let setting = source["scale"];
-
-            Cesium.Matrix4.setScale(
-                position,
-                new Cesium.Cartesian3(1, 1, setting),
-                position
-            );
-        }
-
         // Check the rotation (if set)
-        if("rotation" in source) {
-            let setting = source["rotation"];
-
+        let rotation = source["rotation"];
+        if(rotation != null && rotation !== undefined && position != null) {
             // Create a heading-pitch-roll object
-            let hpr = new Cesium.HeadingPitchRoll(setting[2], setting[1], setting[0]);
+            let hpr = new Cesium.HeadingPitchRoll(rotation[2], rotation[1], rotation[0]);
 
             // Create a rotation matrix
             let rotationMatrix = Cesium.Matrix3.fromHeadingPitchRoll(hpr, new Cesium.Matrix3());
@@ -463,6 +454,7 @@ class MapHandler_Cesium extends MapHandler {
 
         // Define tileset options
         let options = {
+<<<<<<< HEAD:web/twa-vis-framework/library/src/ts/cesium/cesium_handler.ts
             modelMatrix: position,
             show: layer.getVisibility()
         };
@@ -496,7 +488,19 @@ class MapHandler_Cesium extends MapHandler {
             console.log("Cesium style has been added.");
         }
 
+=======
+            url: source["uri"],
+            show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
+        };
+
+        if(position !== null && position !== undefined) {
+            options["modelMatrix"] = position;
+        }
+
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/library/src/ts/cesium/cesium_handler.ts
         // Add the tileset to the map
+        let tileset = new Cesium.Cesium3DTileset(options);
+        tileset["layerID"] = layer.id;
         MapHandler.MAP.scene.primitives.add(tileset);
         console.info("Added 3D tileset source to map with layer ID: "+ layer.id);
 
@@ -505,9 +509,6 @@ class MapHandler_Cesium extends MapHandler {
             MapHandler_Cesium.DATA_SOURCES[layer.id] = [];
         }
         MapHandler_Cesium.DATA_SOURCES[layer.id].push(tileset);
-
-        // Return the loaded tileset
-        return tileset;
     }
 
     /**

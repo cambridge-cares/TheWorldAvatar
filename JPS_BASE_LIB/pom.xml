@@ -10,7 +10,11 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
+<<<<<<< HEAD
     <version>1.41.0</version>
+=======
+    <version>1.37.0</version>
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
 
     <!-- Project Properties -->
     <properties>

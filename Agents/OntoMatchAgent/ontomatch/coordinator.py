@@ -30,13 +30,9 @@ class Agent():
 
             if src_addr.endswith('pkl'):
                 src_graph_handle = src_addr
-            elif src_addr.endswith('csv'):
-                src_graph_handle = src_addr
             else:
                 _, src_graph_handle = self.call_agent_knowledge_enrichment(src_addr, add_knowledge, http)
             if tgt_addr.endswith('pkl'):
-                tgt_graph_handle = tgt_addr
-            elif tgt_addr.endswith('csv'):
                 tgt_graph_handle = tgt_addr
             else:
                 _, tgt_graph_handle = self.call_agent_knowledge_enrichment(tgt_addr, add_knowledge, http)
@@ -62,7 +58,7 @@ class Agent():
             logging.fatal(full_traceback)
             raise
 
-    def call_agent_knowledge_enrichment(self, addr:str, add_knowledge:bool, http:bool=False) -> tuple:
+    def call_agent_knowledge_enrichment(self, addr:str, add_knowledge:bool, http:bool=False) -> tuple[str, str]:
         logging.info('calling ontomatch.knowledge.enrichment.Agent, addr=%s, add_knowledge=%s, http=%s',
                 addr, add_knowledge, http)
         if http:
@@ -130,10 +126,10 @@ class Agent():
             raise Exception
 
 
-def start(config_dev=None, use_config_name_as_log_name=False):
+def start(config_dev=None):
 
     starttime = time.time()
-    params, config_file = ontomatch.utils.util.init(config_dev, use_config_name_as_log_name)
+    params, config_file = ontomatch.utils.util.init(config_dev)
     http = params['pre_processing'].get('http')
 
     if http:
@@ -156,8 +152,8 @@ def start(config_dev=None, use_config_name_as_log_name=False):
         config_handle = ontomatch.utils.util.call_agent_blackboard_for_writing(config_file, params_str, http=False)
         Agent().start(config_handle, http=False)
 
-    timediff = time.time()-starttime
-    logging.info('elapsed time in seconds=%s', timediff)
+    timenow = time.time()-starttime
+    logging.info('elapsed time in seconds=%s', timenow)
 
 if __name__ == '__main__':
-    start(use_config_name_as_log_name=True)
+    start()

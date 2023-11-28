@@ -1,5 +1,10 @@
+<<<<<<< HEAD:web/twa-vis-framework/library/src/ts/cesium/cesium_utils.ts
 /**
  * Utilities specific to CesiumJS implementations.
+=======
+ /**
+ * Utilities specific to Mapbox implementations
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/library/src/ts/cesium/cesium_utils.ts
  */
 class CesiumUtils {
     
@@ -252,12 +257,10 @@ class CesiumUtils {
             throw "Callback function is required!";
         }
 
-        // Get (up to 2) features at the mouse position
-        let features = MapHandler.MAP.scene.drillPick(
-            (!event.position) ? event.endPosition : event.position,
-            2
-        );
+        // Get the feature at the click point
+        const feature = MapHandler.MAP.scene.pick((!event.position) ? event.endPosition : event.position);
 
+<<<<<<< HEAD:web/twa-vis-framework/library/src/ts/cesium/cesium_utils.ts
         // Find the first feature that isn't a clipping plane
         let feature = null;
         if(features != null) {
@@ -273,7 +276,10 @@ class CesiumUtils {
         }
 
         // Probably a WMS feature, need to get info differently
+=======
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/library/src/ts/cesium/cesium_utils.ts
         if(feature === null || feature === undefined) {
+            // Probably a WMS feature, need to get info differently
             var pickRay = MapHandler.MAP.camera.getPickRay((!event.position) ? event.endPosition : event.position);
             var featuresPromise = MapHandler.MAP.imageryLayers.pickImageryLayerFeatures(pickRay, MapHandler.MAP.scene);
 
@@ -444,6 +450,7 @@ class CesiumUtils {
         Cesium.Cartesian3.multiplyByScalar(offset, range, offset);
         return offset;
     }
+<<<<<<< HEAD:web/twa-vis-framework/library/src/ts/cesium/cesium_utils.ts
 
     /**
      * Returns lst of layer ID that support clipping planes.
@@ -503,3 +510,6 @@ class CesiumUtils {
     }
 }
 // End of class.
+=======
+}
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/library/src/ts/cesium/cesium_utils.ts

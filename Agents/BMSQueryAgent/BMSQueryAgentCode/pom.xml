@@ -7,7 +7,11 @@
 
   <groupId>uk.ac.cam.cares.jps.agent.bmsquery</groupId>
   <artifactId>bms-query-agent</artifactId>
+<<<<<<< HEAD
   <version>1.3.0</version>
+=======
+  <version>1.0.0</version>
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
   <packaging>war</packaging>
 
   <properties>

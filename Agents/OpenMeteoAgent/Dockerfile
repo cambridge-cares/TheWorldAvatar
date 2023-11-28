@@ -22,7 +22,11 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
+<<<<<<< HEAD
 COPY --from=builder /root/openmeteo-agent/output/openmeteo-agent##2.0.0.war $CATALINA_HOME/webapps/
+=======
+COPY --from=builder /root/openmeteo_agent/output/openmeteo_agent##1.1.0.war $CATALINA_HOME/webapps/
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

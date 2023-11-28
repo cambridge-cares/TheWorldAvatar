@@ -31,8 +31,13 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 public class BMSQueryAgent {
 
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgent.class);
+<<<<<<< HEAD
     RemoteStoreClient labRsClient;
     RemoteStoreClient officeRsClient;
+=======
+    RemoteStoreClient rsClient;
+    List<String> kgUrls;
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
 
     private final String BOT_STR = "https://w3id.org/bot#";
     private final Prefix P_BOT = SparqlBuilder.prefix("bot", iri(BOT_STR));
@@ -42,12 +47,21 @@ public class BMSQueryAgent {
 
     /**
      * Setter for RemoteStoreClient and Knowledge graph namespace urls
+<<<<<<< HEAD
      * @param labRsClient RemoteStoreClient instance for lab namespace
      * @param officeRsClient RemoteStoreClient instance for office namespace
      */
     public void setRSClient(RemoteStoreClient labRsClient, RemoteStoreClient officeRsClient) {
         this.labRsClient = labRsClient;
         this.officeRsClient = officeRsClient;
+=======
+     * @param rsClient RemoteStoreClient instance
+     * @param kgUrls Knowledge graph namespace urls
+     */
+    public void setRSClient(RemoteStoreClient rsClient, List<String> kgUrls) {
+        this.rsClient = rsClient;
+        this.kgUrls = kgUrls;
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
     }
 
     /**
@@ -136,7 +150,21 @@ public class BMSQueryAgent {
                         GraphPatterns.optional(getAllFacilitiesInBuildings, getFacilitiesTypes, getFacilitiesNames,
                                 GraphPatterns.optional(getAllRoomsInFacilities, getRoomsNames))
                 );
+<<<<<<< HEAD
         return query.getQueryString();
+=======
+
+        JSONArray jsonResult;
+        try {
+            LOGGER.info("Sending federated request...");
+            jsonResult = rsClient.executeFederatedQuery(kgUrls, query.getQueryString());
+        } catch (Exception e) {
+            LOGGER.error("Fail to run federated query to get everything in buildings");
+            throw new JPSRuntimeException("Unable to get everything in buildings");
+        }
+
+        return parseTableToJSONObj(jsonResult);
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
     }
 
     /**
@@ -201,11 +229,15 @@ public class BMSQueryAgent {
 
         JSONArray jsonResult;
         try {
-            LOGGER.info("Sending request with query: ");
+            LOGGER.info("Sending federated request with query: ");
             LOGGER.info(query.getQueryString());
+<<<<<<< HEAD
             jsonResult = labRsClient.executeQuery(query.getQueryString());
+=======
+            jsonResult = rsClient.executeFederatedQuery(kgUrls, query.getQueryString());
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
         } catch (Exception e) {
-            LOGGER.error("Fail to run query to get equipment in the room: " + roomStr);
+            LOGGER.error("Fail to run federated query to get equipment in the room: " + roomStr);
             throw new JPSRuntimeException("Unable to get equipment in the room: " + roomStr);
         }
 

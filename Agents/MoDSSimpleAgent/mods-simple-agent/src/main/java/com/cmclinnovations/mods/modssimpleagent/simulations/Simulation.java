@@ -3,9 +3,12 @@ package com.cmclinnovations.mods.modssimpleagent.simulations;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+=======
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +38,12 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaDataRow;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
+<<<<<<< HEAD
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLabels;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityResult;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
+=======
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
 import com.cmclinnovations.mods.modssimpleagent.utils.SimulationLoader;
@@ -58,6 +64,11 @@ public abstract class Simulation {
 
     public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
 
+<<<<<<< HEAD
+=======
+    public static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("savedsurrogates");
+
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
     public static final String SAMPLING_ALGORITHM_FILE_NAME = "SamplingAlg_data";
 
@@ -86,8 +97,12 @@ public abstract class Simulation {
             simulationLoader.loadSurrogate(request.getSurrogateToLoad());
         }
 
+<<<<<<< HEAD
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend);
         SimulationSaver simulationSaver = new SimulationSaver(modsBackend, inputMetaData);
+=======
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend, request.getAlgorithms().get(0));
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
 
         return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData, simulationSaver,
                 simulationLoader);
@@ -102,20 +117,50 @@ public abstract class Simulation {
         BackendInputFile inputFile = new BackendInputFile(
                 modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
 
+<<<<<<< HEAD
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend);
         SimulationSaver simulationSaver = new SimulationSaver(modsBackend, inputMetaData);
         SimulationLoader simulationLoader = new SimulationLoader(modsBackend);
 
         return SimulationFactory.createSimulation(originalRequest, inputFile, modsBackend, inputMetaData,
                 simulationSaver, simulationLoader);
+=======
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend,
+                originalRequest.getAlgorithms().get(0));
+
+        return createSimulation(originalRequest, inputFile, modsBackend, inputMetaData);
+    }
+
+    private static Simulation createSimulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
+            InputMetaData inputMetaData)
+            throws IOException {
+
+        String simulationType = request.getSimulationType();
+        switch (simulationType) {
+            case "MOO":
+                return new MOO(request, inputFile, modsBackend, inputMetaData);
+            case "HDMR":
+                return new HDMR(request, inputFile, modsBackend, inputMetaData);
+            case "MOOonly":
+                return new MOOonly(request, inputFile, modsBackend, inputMetaData);
+            case "Evaluate":
+                return new Evaluate(request, inputFile, modsBackend, inputMetaData);
+            default:
+                throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
+        }
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
     }
 
     private static File getRequestFilePath(MoDSBackend modsBackend) {
         return modsBackend.getSimDir().resolve(REQUEST_FILE_NAME).toFile();
     }
 
+<<<<<<< HEAD
     protected Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
             InputMetaData inputMetaData, SimulationSaver simulationSaver, SimulationLoader simulationLoader) {
+=======
+    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) {
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
         this.request = request;
         this.inputFile = inputFile;
         this.modsBackend = modsBackend;
@@ -204,7 +249,8 @@ public abstract class Simulation {
     }
 
     protected Algorithm getAlgorithmOfType(String algType) {
-        return getRequest().getAlgorithmOfType(algType);
+        return getRequest().getAlgorithms().stream().filter(alg -> alg.getType().equals(algType)).findFirst()
+                .orElseThrow();
     }
 
     public String getFullCaseName(String caseGroupName, String caseName) {
@@ -320,18 +366,121 @@ public abstract class Simulation {
         t.start();
     }
 
+<<<<<<< HEAD
     public Request getResponse() {
         return getDefaultResponse();
     }
 
     public Request getDefaultResponse() {
         return new Request(getJobID(), request.simulationType());
+=======
+    public void save() {
+        request.getAlgorithms().stream()
+                .filter(algorithm -> algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate())
+                .forEach(algorithm -> {
+                    Path saveDirectory = getSaveDirectory();
+                    Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+
+                    try {
+                        copyDirectory(surrogateDirectory, saveDirectory);
+                        inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
+                    } catch (FileGenerationException ex) {
+                        throw new ResponseStatusException(
+                                HttpStatus.NO_CONTENT,
+                                "Algorithm '" + algorithm.getName() + "' from job '" + getModsBackend().getJobID()
+                                        + "' failed to save.",
+                                ex);
+                    }
+
+                    LOGGER.info("Algorithm '{}' from job '{}' saved at '{}'.", algorithm.getName(),
+                            getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
+                });
+    }
+
+    public static Path getSurrogateDirectory(MoDSBackend modsBackend) {
+        return modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+    }
+
+    private Path getSaveDirectory() {
+        return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
+                .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+    }
+
+    public static void load(Request request, MoDSBackend modsBackend) {
+        request.getAlgorithms().stream()
+                .filter(algorithm -> algorithm.getSurrogateToLoad() != null)
+                .forEach(algorithm -> {
+                    try {
+                        Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+                        Path loadDirectory = getLoadDirectory(algorithm);
+
+                        if (!Files.exists(loadDirectory)) {
+                            throw new IOException("File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+                        }
+
+                        copyDirectory(loadDirectory, surrogateDirectory);
+
+                        LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+                            surrogateDirectory.toAbsolutePath());
+
+                    } catch (IOException ex) {
+                        throw new ResponseStatusException(
+                                HttpStatus.NO_CONTENT,
+                                "Algorithm '" + algorithm.getName() + "' from job '" + modsBackend.getJobID()
+                                        + "' failed to load.",
+                                ex);
+                    }
+                });
+    }
+
+    private static Path getLoadDirectory(Algorithm algorithm) {
+        return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
+                .resolve(algorithm.getSurrogateToLoad()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+    }
+
+    private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
+        if (!Files.exists(destinationDirectory)) {
+            try {
+                Files.createDirectories(destinationDirectory);
+            } catch (IOException ex) {
+                throw new FileGenerationException(
+                        "Failed to create destination directory '" + destinationDirectory.toAbsolutePath() + "'.", ex);
+            }
+        }
+
+        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
+
+            stream.filter(Files::isRegularFile).forEach(source -> {
+                Path destination = destinationDirectory
+                        .resolve(source.toString().substring(sourceDirectory.toString().length() + 1));
+                try {
+                    Files.copy(source, destination);
+                } catch (IOException ex) {
+                    throw new ResponseStatusException(
+                            HttpStatus.NO_CONTENT,
+                            "Failed to copy '"
+                                    + destinationDirectory + "` to `" + sourceDirectory + "'.",
+                            ex);
+                }
+            });
+        } catch (IOException ex) {
+            throw new FileGenerationException("Failed to walk source directory '" + sourceDirectory + "'.", ex);
+        }
+    }
+
+    public final Request getResponse() {
+        Request response = new Request();
+        response.setJobID(getJobID());
+        response.setSimulationType(request.getSimulationType());
+        return response;
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
     }
 
     public Request getResults() {
         return getResponse();
     }
 
+<<<<<<< HEAD
     protected List<SensitivityResult> getSensitivity() {
 
         String simDir = getModsBackend().getSimDir().toString();
@@ -379,6 +528,8 @@ public abstract class Simulation {
         return sensitivities;
     }
 
+=======
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
     public InputMetaData getInputMetaData() {
         return inputMetaData;
     }

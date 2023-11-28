@@ -15,9 +15,14 @@ import com.cmclinnovations.mods.modssimpleagent.utils.SimulationSaver;
 
 class HDMR extends Simulation {
 
+<<<<<<< HEAD
     public HDMR(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData,
             SimulationSaver simulationSaver, SimulationLoader simulationLoader) {
         super(request, inputFile, modsBackend, inputMetaData, simulationSaver, simulationLoader);
+=======
+    public HDMR(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) throws IOException {
+        super(request, inputFile, modsBackend, inputMetaData);
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
     }
 
     @Override

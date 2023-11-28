@@ -25,7 +25,11 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
+<<<<<<< HEAD:Agents/HeatEmissionAgent/Dockerfile
 COPY --from=builder /root/HeatEmissionAgent/output/heatemissionagent##2.0.0.war $CATALINA_HOME/webapps/
+=======
+COPY --from=builder /root/HeatEmissionAgentGeoJson/output/heatemissionagentgeojson##1.0.0.war $CATALINA_HOME/webapps/
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):Agents/HeatEmissionAgentGeoJson/Dockerfile
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

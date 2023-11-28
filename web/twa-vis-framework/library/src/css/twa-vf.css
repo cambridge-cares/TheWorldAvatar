@@ -1310,6 +1310,7 @@ label[for="select-feature"] {
     right: 5px !important;
     left: revert;
     bottom: revert;
+<<<<<<< HEAD:web/twa-vis-framework/library/src/css/twa-vf.css
 }
 
 #sliderParent {
@@ -1469,4 +1470,6 @@ label[for="select-feature"] {
     max-width: 360px;
     padding: 20px;
     object-fit: cover
+=======
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/library/src/css/dtvf.css
 }

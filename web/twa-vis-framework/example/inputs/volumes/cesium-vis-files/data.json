@@ -5,20 +5,7 @@
         {
             "id": "3d-tiles-source",
             "type": "tiles",
-            "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.min.json"
-        },
-        {
-            "id": "clip-example-one",
-            "type": "tiles",
-            "uri": "https://kg.cmclinnovations.com/cdn/buildings/clip-example/tileset.json",
-            "position": [-74.01515, 40.70276, 0]
-        },
-        {
-            "id": "clip-example-two",
-            "type": "tiles",
-            "uri": "https://kg.cmclinnovations.com/cdn/buildings/dragon/tileset.json",
-            "position": [-74.01521, 40.703300, 5],
-            "rotation": [0, 0, 315]
+            "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.json"
         },
         {
             "id": "sample-2d-data",
@@ -33,6 +20,7 @@
         {
             "id": "3d-tiles-layer",
 			"name": "Buildings of New York", 
+<<<<<<< HEAD:web/twa-vis-framework/example/inputs/volumes/cesium-vis-files/data.json
             "source": "3d-tiles-source",
             "style": {
                 "show": "${feature['BIN']} !== '1085792'",
@@ -81,6 +69,9 @@
                 "max": 10,
                 "start": 5
             }    
+=======
+            "source": "3d-tiles-source"    
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/example-cesium-vis/webspace/data.json
         },
         {
             "id": "sample-2d-layer",

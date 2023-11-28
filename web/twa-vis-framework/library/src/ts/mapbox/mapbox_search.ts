@@ -7,7 +7,7 @@ class SearchHandler_Mapbox extends SearchHandler {
     /**
      * Any filters previously used on layers, stored by layer ID.
      */
-    private static OLD_FILTERS = {};
+    private previousFilters = {};
 
     /**
      * Caches mapbox sources so that clustering can be renabled.
@@ -62,6 +62,7 @@ class SearchHandler_Mapbox extends SearchHandler {
         MapHandler.MAP.setStyle(style);
     }
 
+<<<<<<< HEAD:web/twa-vis-framework/library/src/ts/mapbox/mapbox_search.ts
     public cacheExisting() {
         let layers = MapHandler.MAP.getStyle().layers;
 
@@ -82,22 +83,19 @@ class SearchHandler_Mapbox extends SearchHandler {
             SearchHandler_Mapbox.OLD_FILTERS[id] = oldFilter;
         }
     }
+=======
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/library/src/ts/mapbox/mapbox_search.ts
     /**
      * Execute the filter with the input search term.
      * 
      * @param searchTerm search term
      */
-    public runSearch(searchTerm, type) {
-        if(searchTerm.length === 0) {
-            // Revert to previously cached filters
-            Object.entries(SearchHandler_Mapbox.OLD_FILTERS).forEach(([layerID, filter]) => {
-                MapHandler.MAP.setFilter(layerID, filter);
-            });
-            return;
-        }
-        
+    public runSearch(searchTerm: string | number | boolean) {
+        // Cancel previous search
+        this.cancelSearch();
         let layers = MapHandler.MAP.getStyle().layers;
 
+<<<<<<< HEAD:web/twa-vis-framework/library/src/ts/mapbox/mapbox_search.ts
         for(const layer of layers) {
             // Skip if a layer not provided by the TWA-VF
             let meta = layer["metadata"];
@@ -109,11 +107,22 @@ class SearchHandler_Mapbox extends SearchHandler {
             let id = layer["id"];
             if(id.endsWith("_cluster")) continue;
 
+=======
+        for(let i = 0; i < layers.length; i++) {
+            // Skip if a layer not provided by the DTVF
+            let meta = layers[i]["metadata"];
+            if(meta === null || meta === undefined) continue;
+            let attr = meta["attribution"];
+            if(attr === null || attr === undefined || attr !== "CMCL Innovations") continue;
+            
+            let id = layers[i]["id"];
+            let oldFilter = MapHandler.MAP.getFilter(id)
+        
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main):web/digital-twin-vis-framework/library/src/ts/mapbox/mapbox_search.ts
             // Apply new filter
-            let oldFilter = SearchHandler_Mapbox.OLD_FILTERS[id];
-            let filter = this.createFilter(oldFilter, searchTerm, type);
-
+            let filter = this.createFilter(oldFilter, searchTerm);
             if(filter !== null && filter !== undefined) {
+                this.previousFilters[id] = oldFilter;
                 MapHandler.MAP.setFilter(id, filter);
             }
         }
@@ -123,25 +132,21 @@ class SearchHandler_Mapbox extends SearchHandler {
      * Clear the filter.
      */
     public cancelSearch() {
-        if(SearchHandler_Mapbox.OLD_FILTERS == null) return;
+        if(this.previousFilters == null) return;
 
         // Revert to previously cached filters
-        Object.entries(SearchHandler_Mapbox.OLD_FILTERS).forEach(([layerID, filter]) => {
+        Object.entries(this.previousFilters).forEach(([layerID, filter]) => {
             MapHandler.MAP.setFilter(layerID, filter);
         });
 
         // Clear cached filters
-        SearchHandler_Mapbox.OLD_FILTERS = {};
-
-        // Clear search term
-        let input = document.getElementById("finderField") as HTMLInputElement;
-        input.value = "";
+        this.previousFilters = {};
     }
 
     /**
      * Create the filter object based on the current search settings.
      */
-    private createFilter(oldFilter, searchTerm, type): Object {
+    private createFilter(oldFilter, searchTerm): Object {
         let propName = this.property["property"];
 
         // Filter object
@@ -151,7 +156,7 @@ class SearchHandler_Mapbox extends SearchHandler {
         let rangeSelect = document.getElementById("finderRangeSelect") as HTMLInputElement;
 
          // Build filter based on type and range
-        if(type === "boolean") {
+        if(typeof searchTerm === "boolean") {
             // Is a boolean
             switch(rangeSelect.value) {
                 case "true": {
@@ -171,7 +176,7 @@ class SearchHandler_Mapbox extends SearchHandler {
                 }
                 break;
             }
-        } else if(type === "number") {
+        } else if(!isNaN(searchTerm)) {
             // Is a number
             switch(rangeSelect.value) {
                 case "equals": {
@@ -200,7 +205,7 @@ class SearchHandler_Mapbox extends SearchHandler {
                 break;
             }
 
-        } else if(type === "string") {
+        } else if(String(searchTerm)) {
             // Is a string
             searchTerm = searchTerm.toLowerCase();
 

@@ -44,7 +44,11 @@
 "matching":{
 	"name": "instancematching.InstanceMatcherWithAutoCalibration",
 	"model_specific": {
-		"delta": 0.025
+		"perfect": false,
+		"symmetric": true,
+		"delta": 0.025,
+		"purge_alpha": 0.5,
+		"purge_majority": 0.5
 	}
 },
 "post_processing":{

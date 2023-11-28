@@ -2,7 +2,11 @@ version: "3.8"
 
 services:
   bms-query-agent:
+<<<<<<< HEAD
     image: ghcr.io/cambridge-cares/bms-query-agent:1.3.0
+=======
+    image: bms-query-agent:1.0.0
+>>>>>>> parent of 4fae184ea3 (Merge branch 'main' of https://github.com/cambridge-cares/TheWorldAvatar into main)
     build: .
     configs:
       - blazegraph

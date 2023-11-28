@@ -15,10 +15,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public class Data implements IDataTable {
 
     @JsonValue
-    private final List<DataColumn> columns;
+    private List<DataColumn> columns;
 
     @JsonIgnore
-    private List<DoubleSummaryStatistics> stats;
+    List<DoubleSummaryStatistics> stats;
 
     @JsonCreator
     public Data(List<DataColumn> columns) {
@@ -28,6 +28,10 @@ public class Data implements IDataTable {
     @Override
     public List<DataColumn> getColumns() {
         return columns;
+    }
+
+    public void setColumns(List<DataColumn> columns) {
+        this.columns = columns;
     }
 
     @Override
