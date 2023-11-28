@@ -1,27 +1,20 @@
+from enum import Enum
 import random
 from typing import Tuple
 
 
-LESS_THAN = "<"
-GREATER_THAN = ">"
-LESS_THAN_EQUAL = "<="
-GREATER_THAN_EQUAL = ">="
-EQUAL = "="
-AROUND = "around"
-INSIDE = "in"
-OUTSIDE = "outside"
+class NumOp(Enum):
+    LESS_THAN = "<"
+    GREATER_THAN = ">"
+    LESS_THAN_EQUAL = "<="
+    GREATER_THAN_EQUAL = ">="
+    EQUAL = "="
+    AROUND = "around"
+    INSIDE_RANGE = "in"
+    OUTSIDE_RANGE = "outside"
 
-COMPARATIVES = [
-    LESS_THAN,
-    GREATER_THAN,
-    LESS_THAN_EQUAL,
-    GREATER_THAN_EQUAL,
-    EQUAL,
-    AROUND,
-    INSIDE,
-    OUTSIDE
-]
-
+class StrOp(Enum):
+    VALUES = "values"
 
 def lt_maker(x: float):
     return (
@@ -76,12 +69,12 @@ def outside_maker(x: Tuple[float, float]):
 
 
 COMPARATIVE_COND_MAKER = {
-    LESS_THAN: lt_maker,
-    GREATER_THAN: gt_maker,
-    LESS_THAN_EQUAL: le_maker,
-    GREATER_THAN_EQUAL: ge_maker,
-    EQUAL: eq_maker,
-    AROUND: around_maker,
-    INSIDE: inside_maker,
-    OUTSIDE: outside_maker,
+    NumOp.LESS_THAN: lt_maker,
+    NumOp.GREATER_THAN: gt_maker,
+    NumOp.LESS_THAN_EQUAL: le_maker,
+    NumOp.GREATER_THAN_EQUAL: ge_maker,
+    NumOp.EQUAL: eq_maker,
+    NumOp.AROUND: around_maker,
+    NumOp.INSIDE_RANGE: inside_maker,
+    NumOp.OUTSIDE_RANGE: outside_maker,
 }

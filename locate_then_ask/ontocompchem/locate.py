@@ -1,5 +1,6 @@
 import random
 from typing import List
+from constants.functions import StrOp
 
 from locate_then_ask.ontocompchem.entity_store import OCCEntityStore
 from locate_then_ask.ontocompchem.model import OCCMolecularComputation, OCCSpecies
@@ -49,9 +50,20 @@ class OCCLocator:
             literal_num = len(
                 [n for n in query_graph.nodes() if n.startswith("Literal")]
             )
-            node = "Literal_" + str(literal_num)
-            query_graph.add_node(node, label=lots_sampled, template_node=True, literal=True)
-            query_graph.add_edge("MolecularComputation", node, label="occ:hasMethodology/occ:hasLevelOfTheory/rdfs:label")
+            query_graph.add_nodes_from([
+                ("LevelOfTheoryLabel", dict(label="LevelOfTheoryLabel", literal=True)),
+                ("LevelOfTheoryLabelFunc", dict(                
+                    operator=StrOp.VALUES,
+                    operand=lots_sampled,
+                    label="VALUES\n" + str(lots_sampled),
+                    func=True,
+                    template_node=True
+                ))
+            ])
+            query_graph.add_edges_from([
+                ("MolecularComputation", "LevelOfTheoryLabel", dict(label="occ:hasMethodology/occ:hasLevelOfTheory/rdfs:label")), 
+                ("LevelOfTheoryLabel", "LevelOfTheoryLabelFunc", dict(label="func"))
+            ])
 
             verbn_template = random.choice(["at the {LOT} level", "at the {LOT} level of theory"])
             verbn_lot = verbn_template.format(LOT=" or ".join(["[{label}]".format(label=x) for x in lots_sampled]))
@@ -64,19 +76,26 @@ class OCCLocator:
             num = random.sample(population=[1, 2, 3], counts=[9, 3, 1], k=1)[0]
             bss_sampled = random.sample(bss, k=min(num, len(bss)))
             
-            literal_num = len(
-                [n for n in query_graph.nodes() if n.startswith("Literal")]
-            )
-            node = "Literal_" + str(literal_num)
-            query_graph.add_node(node, label=bss_sampled, template_node=True, literal=True)
-            query_graph.add_edge("MolecularComputation", node, label="occ:hasMethodology/occ:hasBasisSet/rdfs:label")
+            query_graph.add_nodes_from([
+                ("BasisSetLabel", dict(label="BasisSetLabel", literal=True)), 
+                ("BasisSetLabelFunc", dict(
+                    operator=StrOp.VALUES,
+                    operand=bss_sampled,
+                    label="VALUES\n" + str(bss_sampled),
+                    func=True,
+                    template_node=True                ))
+            ])
+            query_graph.add_edges_from([
+                ("MolecularComputation", "BasisSetLabel", dict(label="occ:hasMethodology/occ:hasBasisSet/rdfs:label")),
+                ("BasisSetLabel", "BasisSetLabelFunc", dict(label="func"))
+            ])
 
-            verbn_template = "using the {label} basis set"
-            verbn_bs = verbn_template.format(label=" or ".join(bss_sampled))
+            verbn_template = "using the {BS} basis set"
+            verbn_bs = verbn_template.format(BS=" or ".join(["[{label}]".format(label=x) for x in bss_sampled]))
         else:
             verbn_bs = None
 
-        if verbn_lot is not None and verbn_bs is not None:
+        if verbn_lot is not None or verbn_bs is not None:
             verbalization += " calculated"
         if verbn_lot is not None:
             verbalization += " " + verbn_lot

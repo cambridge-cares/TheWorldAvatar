@@ -1,12 +1,11 @@
-from abc import ABC, abstractmethod
 from typing import List
 import networkx as nx
-from constants.functions import AROUND, EQUAL, GREATER_THAN, GREATER_THAN_EQUAL, INSIDE, LESS_THAN, LESS_THAN_EQUAL, OUTSIDE
+from constants.functions import NumOp, StrOp
 
-from locate_then_ask.query_graph import QueryGraph, get_objs
+from locate_then_ask.query_graph import QueryGraph
 
 
-class Graph2Sparql(ABC):
+class Graph2Sparql:
     def __init__(self, predicates_to_entities_linked_by_rdfslabel: List[str] = []):
         self.predicates_to_entities_linked_by_rdfslabel = (
             predicates_to_entities_linked_by_rdfslabel
@@ -25,29 +24,29 @@ class Graph2Sparql(ABC):
         else:
             return "?" + n
 
-    def _make_numerical_filter_pattern(self, query_graph: QueryGraph, s: str, o: str):
+    def _make_numerical_operator_pattern(self, query_graph: QueryGraph, s: str, o: str):
         operand_left = "?" + s
         operator = query_graph.nodes[o]["operator"]
         operand_right = query_graph.nodes[o]["operand"]
 
         if operator in [
-            LESS_THAN,
-            GREATER_THAN,
-            LESS_THAN_EQUAL,
-            GREATER_THAN_EQUAL,
-            EQUAL,
+            NumOp.LESS_THAN,
+            NumOp.GREATER_THAN,
+            NumOp.LESS_THAN_EQUAL,
+            NumOp.GREATER_THAN_EQUAL,
+            NumOp.EQUAL,
         ]:
             return "FILTER ( {left} {op} {right} )".format(
                 left=operand_left, op=operator, right=operand_right
             )
-        elif operator == INSIDE:
+        elif operator == NumOp.INSIDE_RANGE:
             assert isinstance(operand_right, tuple)
             assert len(operand_right) == 2
             low, high = operand_right
             return "FILTER ( {left} > {low} && {left} < {high} )".format(
                 left=operand_left, low=low, high=high
             )
-        elif operator == AROUND:
+        elif operator == NumOp.AROUND:
             if operand_right < 0:
                 return "FILTER ( {left} > {right}*1.1 && {left} < {right}*0.9 )".format(
                     left=operand_left, right=operand_right
@@ -60,7 +59,7 @@ class Graph2Sparql(ABC):
                 return "FILTER ( {left} > -0.1 && {left} < 0.1 )".format(
                     left=operand_left
                 )
-        elif operator == OUTSIDE:
+        elif operator == NumOp.OUTSIDE_RANGE:
             assert isinstance(operand_right, tuple)
             assert len(operand_right) == 2
             low, high = operand_right
@@ -68,18 +67,35 @@ class Graph2Sparql(ABC):
                 left=operand_left, low=low, high=high
             )
         else:
-            raise ValueError("Unrecognized operator: " + operator)
+            raise ValueError("Unrecognized numerical operator: " + operator)
+
+    def _make_string_operator_pattern(self, query_graph: QueryGraph, s: str, o: str):
+        operand_left = "?" + s
+        operator = query_graph.nodes[o]["operator"]
+        values = query_graph.nodes[o]["operand"]
+        if operator == StrOp.VALUES:
+            return "VALUES {left} {{ {values} }}".format(
+                left=operand_left,
+                values=" ".join(['"{val}"'.format(val=x) for x in values]),
+            )
+        else:
+            raise ValueError("Unrecognized string operator: " + operator)
 
     def make_graph_pattern(self, query_graph: QueryGraph, s: str, o: str):
         s_sparql = self._resolve_node_to_sparql(query_graph, s)
         p = query_graph.edges[s, o]["label"]
 
         if p == "func":
-            return self._make_numerical_filter_pattern(query_graph, s, o)
-        
+            operator = query_graph.nodes[o]["operator"]
+            if isinstance(operator, NumOp):
+                return self._make_numerical_operator_pattern(query_graph, s, o)
+            elif isinstance(operator, StrOp):
+                return self._make_string_operator_pattern(query_graph, s, o)
+            else:
+                raise ValueError("Unexpected operator: " + str(operator))
         if (
-            query_graph.nodes[o].get("template_node") and
-            p in self.predicates_to_entities_linked_by_rdfslabel
+            query_graph.nodes[o].get("template_node")
+            and p in self.predicates_to_entities_linked_by_rdfslabel
         ):
             p_sparql = p + "/rdfs:label"
             o_sparql = '"{label}"'.format(label=query_graph.nodes[o]["label"])
@@ -89,9 +105,10 @@ class Graph2Sparql(ABC):
 
         return "{s} {p} {o} .".format(s=s_sparql, p=p_sparql, o=o_sparql)
 
-    @abstractmethod
-    def make_patterns_for_topic_entity_linking(self, query_graph: QueryGraph, topic_node: str) -> List[str]:
-        pass
+    def make_patterns_for_topic_entity_linking(
+        self, query_graph: QueryGraph, topic_node: str
+    ) -> List[str]:
+        return []
 
     def make_where_clause(self, query_graph: QueryGraph):
         topic_node = next(
@@ -102,7 +119,9 @@ class Graph2Sparql(ABC):
 
         graph_patterns = []
         if query_graph.nodes[topic_node].get("template_node"):
-            graph_patterns.extend(self.make_patterns_for_topic_entity_linking(query_graph, topic_node))
+            graph_patterns.extend(
+                self.make_patterns_for_topic_entity_linking(query_graph, topic_node)
+            )
 
         for s, o in nx.edge_dfs(query_graph, topic_node):
             graph_patterns.append(self.make_graph_pattern(query_graph, s, o))
@@ -122,7 +141,7 @@ class Graph2Sparql(ABC):
             if query_graph.nodes[n].get("ask_count"):
                 return "(COUNT(?{n}) AS ?{n}Count)".format(n=n)
             return "?" + n
-             
+
         return "SELECT " + " ".join([resolve_proj(n) for n in question_nodes])
 
     def convert(self, query_graph: QueryGraph):

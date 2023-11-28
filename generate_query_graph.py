@@ -4,9 +4,9 @@ from typing import Dict, Iterable, List, Optional
 
 from SPARQLWrapper import JSON, POST, SPARQLWrapper
 import networkx as nx
+from constants.functions import NumOp
 from constants.namespaces import QUERY_PREFIXES
 from constants.predicates import RDF_TYPE, RDFS_LITERAL
-from constants.functions import COMPARATIVES
 
 from utils import Utils
 
@@ -66,7 +66,7 @@ class QueryGraphGenerator:
                 if n not in self.numcls2prop:
                     G.nodes[n]["template_node"] = True
                 elif RDFS_LITERAL not in G.neighbors(n):
-                    comparative = random.choice(COMPARATIVES)
+                    comparative = random.choice([x.value for x in NumOp])
 
                     var = self.cls2var(n)
                     val_node = var + "Val"
