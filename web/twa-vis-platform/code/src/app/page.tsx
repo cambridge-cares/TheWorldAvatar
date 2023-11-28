@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
-import LandingPage from "../components/landing-page";
-import UISettings from "@/utils/settings/ui-settings";
-import { OptionalPages } from "@/utils/settings/optional-pages";
+import LandingPage from "ui/landing-page";
+import UISettings from "io/config/ui-settings";
+import { OptionalPages } from "io/config/optional-pages";
 
 /**
  * Set page metadata.
@@ -29,10 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
  * 
  * @returns JSX for default (home) page.
  */
-export default function Home() {
+export default function App() {
     if(UISettings.getModuleSettings().landing) {
         // Enabled, load components for that here
-        return LandingPage();
+        return <LandingPage/>
         
     } else {
         // Disabled, load straight into map here

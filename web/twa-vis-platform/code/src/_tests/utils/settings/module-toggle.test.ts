@@ -1,6 +1,6 @@
 import path from "path";
-import { IllegalArgumentError } from "@/utils/errors";
-import { ModuleToggle } from "@/utils/settings/module-toggle";
+import { IllegalArgumentError } from "../utils/errors";
+import { ModuleToggle } from "../utils/settings/module-toggle";
 
 // Test data directory.
 const DATA_DIR = "./__tests__/__data__/";

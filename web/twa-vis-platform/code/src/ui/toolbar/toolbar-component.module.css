@@ -28,6 +28,6 @@
     color: var(--border-secondary);
 }
 
-.toolbarButton .active {
-    color: var(--text-color-links);
+.active {
+    color: var(--text-color-links) !important;
 }

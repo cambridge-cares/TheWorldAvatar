@@ -3,9 +3,9 @@
 import React from "react";
 import SVG from 'react-inlinesvg';
 
-import { ToolbarComponent} from "./toolbar-component";
+import ToolbarComponent from "./toolbar-component";
 import styles from "./toolbar.module.css";
-import { IllegalArgumentError } from "@/utils/errors";
+import { IllegalArgumentError } from "../../utils/errors";
 
 // Type definition for toolbar properties
 export type ToolbarProps = {
@@ -15,11 +15,19 @@ export type ToolbarProps = {
     toolbarLogo: string
 }
 
+type ToolbarState = {
+    activeTab: string
+}
+
 /**
  * Represents the top level toolbar, that loads a number of 
  * custom toolbar components.
  */
-export default class Toolbar extends React.Component<ToolbarProps> {
+export default class Toolbar extends React.Component<ToolbarProps, ToolbarState> {
+
+    state: ToolbarState = {
+        activeTab: "LANDING"
+    }
 
     /**
      * Array of registered buttons for display.
@@ -76,6 +84,12 @@ export default class Toolbar extends React.Component<ToolbarProps> {
             }));
         }
     }
+
+    // setActiveTab = (name: string) => {
+    //     this.setState({
+    //         activeTab: name
+    //     });
+    // }
 
     /**
      * 
@@ -134,7 +148,12 @@ export default class Toolbar extends React.Component<ToolbarProps> {
         let toolbarSVG = this.props.toolbarLogo.toString();
 
         let children = this.components.map((component) => (
-            React.cloneElement(component.render(), {key: component.props.name})
+            React.createElement(ToolbarComponent, {
+                ...component.props,
+                key: component.props.name,
+                // active: this.state.activeTab === component.props.name,
+                // callback: this.setActiveTab
+            }, null)
         ));
 
         return (

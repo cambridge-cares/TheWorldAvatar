@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Developing the platform
 
-## Getting Started
+This directory contains all of the source code, configuration files, and build-time resources required to compile and package the TWA Visualisation Platform.
 
-First, run the development server:
+The TWA Visualisation Platform takes the form of a [Next.js](https://nextjs.org/) project. Next.js is a framework that sits atop the [React.js library](https://react.dev/); on top of the component-based UI offering from React, Next.js adds support for server-side code, custom routing, and update data fetching routines.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Project structure
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The project structure should match the recommended Next.js project structure, utilising the optional `src` directory. More details can be found on the Next.js website, but a brief rundown is presented below.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* `public/`: Contains static, build-time resources (icons, fonts etc.)
+* `src/`: Application source code (primarily Typescript classes)
+   * `_tests/`: Jest based unit tests
+   * `app`: App router directory, contains publically discoverable pages
+   * `io`: Logic classes for input/output handling
+   * `ui`: Custom UI components
+   * `utils`: Common utilities
+* `next.config.js`: Configuration module for Next.js projects
+* `next-env.d.ts`: Exports Next.js types for the Typescript compiler
+* `package.json`: Node project confifuration file (also contains configuration for Jest and ESLint)
+* `server.js`: Starts a custom HTTP server that allows hosting of additional static-resource directories
+* `tsconfig.json`: Configuratio for the Typescript compiler
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Requirements
 
-## Learn More
+Before attempting local development with the platform, the below software needs to be installed and configured. Note that it is recommended that development takes place locally (rather than within WSL or in a Docker container), as the fast-refresh functionality encounters issues if file changes do not take place directly on the host OS.
 
-To learn more about Next.js, take a look at the following resources:
+* Git
+* Docker
+* VSCode (recommended, other IDEs are available)
+* Node.js & npm
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+In addition to the above software requirements, it is also recommended that developers bring themselves up to date with the basics of the core technologies being utilised. The most critical of these for basic understanding of the code are listed below.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+* Typescript
+* React
+* Next.js
 
-## Deploy on Vercel
+## Installation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Installation on the host machine can be carried out from the `code` directory by running the `npm install` command. This will read the `package.json` file and install all required modules within a new `node_modules` directory (that should not be committed); this process may take several minutes.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Execution
+
+Once installed, the project can be run in development mode by using the `npm run dev` command, again from within the `code` directory. 
+
+Running the code in development mode will additionally add watches to source code files, automatically triggering the server to refresh/rerender pages when changes are made (this is known as "hot-loading").
+
+Once running, the front-page of the application should be available at [http://localhost:3000](http://localhost:3000).

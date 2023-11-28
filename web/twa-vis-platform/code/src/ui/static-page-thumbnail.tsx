@@ -4,7 +4,7 @@ import { Tooltip } from "@mui/material";
 import Link from "next/link";
 
 import styles from "./css/static-page-thumbnail.module.css";
-import { OptionalPage } from "@/utils/settings/optional-pages";
+import { OptionalPage } from "../io/config/optional-pages";
 
 // Interface for incoming parameters
 interface Props {

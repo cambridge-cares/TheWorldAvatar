@@ -2,10 +2,10 @@ import path from "path";
 import fs from "fs";
 
 import "./css/globals.css"
-import StartupLogging from "@/utils/startup-logging";
-import UISettings from "@/utils/settings/ui-settings";
-import { OptionalPages } from "@/utils/settings/optional-pages";
-import Toolbar from "@/components/toolbar/toolbar";
+import StartupLogging from "io/startup-logging";
+import UISettings from "io/config/ui-settings";
+import { OptionalPages } from "io/config/optional-pages";
+import Toolbar from "ui/toolbar/toolbar";
 
 /**
  * Performs initialisation when the platform is

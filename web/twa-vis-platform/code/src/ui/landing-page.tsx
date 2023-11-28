@@ -1,11 +1,11 @@
-import "github-markdown-css/github-markdown.css";
-import { Tooltip } from "@mui/material";
-import Link from "next/link";
-
 import styles from "./css/landing.module.css";
+import "github-markdown-css/github-markdown.css";
 
-import { OptionalPage, OptionalPages } from "@/utils/settings/optional-pages";
-import StaticPageThumbnail from "@/components/static-page-thumbnail";
+import Link from "next/link";
+import { Tooltip } from "@mui/material";
+
+import StaticPageThumbnail from "ui/static-page-thumbnail";
+import { OptionalPage, OptionalPages } from "io/config/optional-pages";
 
 // Utilities to render markdown into HTML
 const markdowner = require("markdown-it")({

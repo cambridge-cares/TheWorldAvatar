@@ -1,6 +1,7 @@
-import Toolbar from "@/components/toolbar/toolbar";
+"use client";
+
 import styles from "./map.module.css";
-import UISettings from "@/utils/settings/ui-settings";
+import Map from "react-map-gl";
 
 /**
  * Dynamically load and render content from an optional metadata file
@@ -13,8 +14,13 @@ import UISettings from "@/utils/settings/ui-settings";
 export default async function MapContainer() {
     return (
         <>
-            <div className={styles.mapContainer}/>
-
+            <div className={styles.mapContainer}>
+                <Map
+                    mapboxAccessToken="pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA"
+                    mapStyle="mapbox://styles/mapbox/streets-v11"
+                />
+            </div>
+            
             <div className={styles.componentContainer}>
 
                 <div className={styles.upperContainer}>

@@ -1,10 +1,10 @@
 /**
  * This script starts a custom server that allows us to add additional
- * routes for serving static files that are provided at deploy time (i.e.
- * via a Docker volume).
+ * routes for serving static files that are provided at deploy time
+ * (i.e. via a Docker volume).
  * 
- * By default, NextJS only allows static content in it's "public" directory,
- * which expects its contents at build time.
+ * By default, NextJS only allows static content in it's "public" 
+ * directory, which expects its contents at build time.
  */
 const express = require('express');
 const next = require('next');
@@ -34,6 +34,6 @@ app.prepare().then(() => {
     // Do a little logging after starting
     server.listen(port, (err) => {
         if (err) throw err;
-        console.log(`Running on port ${port}, dev mode is: ${dev}`);
+        console.log(`Running on port ${port}, development mode is: ${dev}`);
     });
 });

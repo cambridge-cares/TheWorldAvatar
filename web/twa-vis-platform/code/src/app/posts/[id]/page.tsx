@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
-import StaticContentPage from "@/components/static-content-page";
-import { OptionalPage, OptionalPages } from "@/utils/settings/optional-pages";
+import StaticContentPage from "ui/static-content-page";
+import { OptionalPage, OptionalPages } from "io/config/optional-pages";
 
 // Type definition for incoming page parameters
 type Properties = {
