@@ -62,6 +62,8 @@ public class IsochroneAgentTest {
 
         JSONObject input = new JSONObject();
         input.put("function", "");
+        input.put("timethreshold", "");
+        input.put("timeinterval", "");
 
         JSONObject result = agent.processRequestParameters(input, setRequest);
         try {
@@ -81,8 +83,6 @@ public class IsochroneAgentTest {
         Properties prop = new Properties();
         prop.load(input);
         assertEquals("test",prop.getProperty("db.name"));
-        assertEquals(15,prop.getProperty("timeThreshold"));
-        assertEquals(15,prop.getProperty("timeInterval"));
         assertEquals(0.0002,prop.getProperty("segmentization_length"));
         assertEquals("", prop.getProperty("kgEndpoint"));
 
@@ -108,17 +108,23 @@ public class IsochroneAgentTest {
                 });
 
         agent = new IsochroneAgent();
-        String content = "db.name=test\nsegmentization_length=0.0002 \ntimeThreshold=15\ntimeInterval=5\nkgEndpoint=\npopulationTables=population, population_test, population_women";
+        String content = "db.name=test\nsegmentization_length=0.0002 \nkgEndpoint=\npopulationTables=population, population_test, population_women";
 
         //Create Mockclasses
         InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
         MockedStatic<FileReader> fileReaderMock = mockStatic(FileReader.class);
         fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
-        MockedConstruction<RouteSegmentization> routeSegmentizationMock = mockConstruction(RouteSegmentization.class);
+        MockedConstruction<RouteSegmentization> routeSegmentizationMock = mockConstruction(RouteSegmentization.class,
+                (mock, context) -> {
+                    //Table does not exists
+                    doReturn(false).when(mock).doesTableExist(any(RemoteRDBStoreClient.class));
+                });
         MockedConstruction<IsochroneGenerator> isochroneGeneratorMock = mockConstruction(IsochroneGenerator.class);
         MockedConstruction<PopulationMapper> populationMapperMock = mockConstruction(PopulationMapper.class);
         MockedConstruction<GeoServerClient> geoserverClientMock = mockConstruction(GeoServerClient.class);
         MockedConstruction<OntopClient> ontopClientMock = mockConstruction(OntopClient.class);
+
+
 
             try (fileReaderMock;
             endpointConfigMock;
@@ -129,6 +135,8 @@ public class IsochroneAgentTest {
 
         JSONObject input = new JSONObject();
         input.put("function", "15MSC");
+        input.put("timethreshold", "15");
+        input.put("timeinterval", "2");
         agent.processRequestParameters(input);
         verify(endpointConfigMock.constructed().get(0), times(1)).getDbUrl(anyString());
         verify(endpointConfigMock.constructed().get(0), times(1)).getDbUser();
