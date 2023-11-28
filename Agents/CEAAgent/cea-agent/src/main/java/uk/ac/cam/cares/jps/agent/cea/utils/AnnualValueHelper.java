@@ -120,7 +120,7 @@ public class AnnualValueHelper {
     /**
      * Return a query that will retrieve the quantity type of iri
      * @param iri data IRI
-     * @return query object that will retrieve the quantity type of iri
+     * @return query string that will retrieve the quantity type of iri
      */
     public static String getType(String iri, String route) {
         WhereBuilder wb = new WhereBuilder()
@@ -152,7 +152,7 @@ public class AnnualValueHelper {
      * Returns a query that will retrieve the type of energy, i.e. heat or electricity, attached to iri
      * @param iri data IRI
      * @param energy string stating whether the data IRI is attached to a consumption or supply device
-     * @return query object that will retrieve the type of energy attached to iri
+     * @return query string that will retrieve the type of energy attached to iri
      */
     public static String getInfo(String iri, String energy, String route) {
         WhereBuilder wb = new WhereBuilder()

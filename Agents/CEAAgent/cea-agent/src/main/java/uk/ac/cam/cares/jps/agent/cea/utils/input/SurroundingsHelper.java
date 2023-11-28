@@ -22,7 +22,7 @@ public class SurroundingsHelper {
     /**
      * Retrieves the surrounding buildings
      * @param endpoint SPARQL endpoint
-     * @return the surrounding buildings as an ArrayList of CEAInputData
+     * @return the surrounding buildings as a list of CEAGeometryData
      */
     public static List<CEAGeometryData> getSurroundings(ArrayList<CEABuildingData> ceaBuildingDataList, ArrayList<String> buildingIRIs, String endpoint) {
         try {
@@ -56,7 +56,7 @@ public class SurroundingsHelper {
 
             String boundingBox = boundingBoxGeometry.toText();
 
-            Query query = getBuildingsWithinBoundsQuery(boundingBox, crs);
+            Query query = getBuildingsWithinBoundsQuery(boundingBox);
 
             RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
 
@@ -83,10 +83,9 @@ public class SurroundingsHelper {
     /**
      * Builds a SPARQL geospatial query for city object id of buildings whose envelope are within lowerBounds and upperBounds
      * @param boundingBox WKT string that define the boundary of surroundings query
-     * @param crs CRS of boundingBox
-     * @return returns a query string
+     * @return returns a query object for the geospatial query
      */
-    private static Query getBuildingsWithinBoundsQuery(String boundingBox, String crs) throws ParseException {
+    private static Query getBuildingsWithinBoundsQuery(String boundingBox) throws ParseException {
         boundingBox = "\"" + boundingBox + "\"^^geo:wktLiteral";
 
         WhereBuilder wb = new WhereBuilder()

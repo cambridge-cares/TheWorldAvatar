@@ -5,7 +5,6 @@ import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.NodeFactory;
@@ -18,8 +17,8 @@ import java.util.stream.Stream;
 
 public class DataManager {
     /**
-     * Checks building linked to ontoCityGML is initialised in KG and is a gml:Building instance
-     * @param uriString city object id
+     * Checks if uriString is initialised in KG and is a gml:Building instance
+     * @param uriString building IRI
      * @param route route to pass to access agent
      * @return building
      */
@@ -42,7 +41,7 @@ public class DataManager {
     }
 
     /**
-     * Initialises building in KG with buildingUri as the gml:Building IRI, and link to ontoCityGMLRepresentation
+     * Initialises building in KG with buildingUri as the gml:Building IRI
      * @param buildingUri building IRI from other endpoints if exist
      * @param route route to pass to access agent
      */
@@ -65,12 +64,12 @@ public class DataManager {
     }
 
     /**
-     * Checks if energy profile data already exist in KG and get IRIs if they do
-     * @param building building uri in energy profile graph
-     * @param tsIris map of time series iris to data types
-     * @param scalarIris map of iris in kg to data type
+     * Checks if CEA output data already exist in KG and get IRIs if they do
+     * @param building building IRI
+     * @param tsIris map of time series IRIs to data types
+     * @param scalarIris map of IRIs in KG to data type
      * @param route route to pass to access agent
-     * @return if time series are initialised
+     * @return if CEA output data  are initialised
      */
     public static Boolean checkDataInitialised(String building, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route) {
         ArrayList<String> result;
@@ -93,12 +92,12 @@ public class DataManager {
     }
 
     /**
-     * Initialises energy profile data in KG
-     * @param uriCounter keep track of uris
+     * Initialises CEA output data in KG
+     * @param uriCounter keep track of URIs
      * @param scalars map of scalar measurements
-     * @param buildingUri building uri
-     * @param tsIris map of time series iris to data types
-     * @param scalarIris map of iris in kg to data types
+     * @param buildingUri building IRI
+     * @param tsIris map of time series IRIs to data types
+     * @param scalarIris map of IRIs in KG to data types
      * @param route route to pass to access agent
      */
     public static void initialiseData(Integer uriCounter, LinkedHashMap<String, List<Double>> scalars, String buildingUri, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route) {
@@ -333,9 +332,9 @@ public class DataManager {
     /**
      * Updates numerical value of scalars in KG
      * @param scalars map of scalar measurements
-     * @param scalarIris map of iris in kg to data types
+     * @param scalarIris map of IRIs in KG to data types
      * @param route route to pass to access agent
-     * @param uriCounter keep track of uris
+     * @param uriCounter keep track of URIs
      */
     public static void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<Double>> scalars, Integer uriCounter) {
         for (String measurement: CEAConstants.SCALARS) {
@@ -363,8 +362,8 @@ public class DataManager {
     /**
      * Creates updates for building facades
      * @param builder update builder
-     * @param building building iri
-     * @param facade facade iri
+     * @param building building IRI
+     * @param facade facade IRI
      * @param facadeType type of facade
      */
     public static void createFacadeUpdate(WhereBuilder builder, String building, String facade, String facadeType) {
@@ -375,10 +374,10 @@ public class DataManager {
     /**
      * Creates update for energy consumption
      * @param builder update builder
-     * @param consumer iri of building/device
+     * @param consumer IRI of building/device
      * @param consumptionType type in ontology
-     * @param quantity om:Quantity iri
-     * @param measure om:Measure iri
+     * @param quantity om:Quantity IRI
+     * @param measure om:Measure IRI
      */
     public static void createConsumptionUpdate(WhereBuilder builder, String consumer, String consumptionType, String quantity, String measure){
         builder.addWhere(NodeFactory.createURI(quantity), "rdf:type", consumptionType)
@@ -394,11 +393,11 @@ public class DataManager {
     /**
      * Creates update for solar energy generators supply
      * @param builder update builder
-     * @param facade facade iri
-     * @param solarGenerator solar energy generator iri
+     * @param facade facade IRI
+     * @param solarGenerator solar energy generator IRI
      * @param solarGeneratorType type of solar energy generator
-     * @param quantity om:Quantity iri
-     * @param measure om:Measure iri
+     * @param quantity om:Quantity IRI
+     * @param measure om:Measure IRI
      */
     public static void createSolarGeneratorSupplyUpdate(WhereBuilder builder, String facade, String solarGenerator, String solarGeneratorType, String quantity, String measure, String energySupply){
         builder.addWhere(NodeFactory.createURI(facade), "ontoubemmp:hasTheoreticalEnergyProduction", NodeFactory.createURI(solarGenerator))
@@ -416,9 +415,9 @@ public class DataManager {
     /**
      * Creates update for solar suitable areas
      * @param builder update builder
-     * @param facade obs:facade iri
-     * @param quantity om:Quantity iri
-     * @param measure om:Measure iri
+     * @param facade obs:Facade IRI
+     * @param quantity om:Quantity IRI
+     * @param measure om:Measure IRI
      * @param value numerical value
      */
     public static void createSolarSuitableAreaUpdate(WhereBuilder builder, String facade, String quantity, String measure, Double value) {

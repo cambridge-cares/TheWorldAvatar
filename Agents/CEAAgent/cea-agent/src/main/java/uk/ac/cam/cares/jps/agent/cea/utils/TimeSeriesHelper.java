@@ -103,7 +103,7 @@ public class TimeSeriesHelper {
      * Checks whether a time series exists by checking whether any of the IRIs that should be attached to
      * the time series is not initialised in the central RDB lookup table using the time series client.
      * @param iris The IRIs that should be attached to the same time series provided as list of strings.
-     * @return True if all IRIs have a time series attached, false otherwise.
+     * @return true if all IRIs have a time series attached, false otherwise.
      */
     private boolean timeSeriesExist(List<String> iris) {
         // If any of the IRIs does not have a time series the time series does not exist

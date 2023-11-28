@@ -1,8 +1,8 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.datahandler;
 
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -14,11 +14,11 @@ import java.util.ArrayList;
 
 public class DataRetriever {
     /**
-     * Retrieves iris from KG for the data type requested
-     * @param building uri of building in energyprofile graph
+     * Retrieves IRIs from KG for the data type requested
+     * @param building building IRI
      * @param value type of data from CEAConstants.TIME_SERIES or CEAConstants.SCALARS
      * @param route route to pass to access agent
-     * @return list of iris
+     * @return list of data IRIs
      */
     public static ArrayList<String> getDataIRI(String building, String value, String route) {
         ArrayList<String> result = new ArrayList<>();
@@ -191,9 +191,9 @@ public class DataRetriever {
 
     /**
      * Gets numerical value of specified measurement
-     * @param measureUri Uri of the measurement with numerical value in KG
+     * @param measureUri URI of the measurement with numerical value in KG
      * @param route route to pass to access agent
-     * @return list of iris
+     * @return list of IRIs
      */
     public static String getNumericalValue(String measureUri, String route) {
         String result = "";
@@ -217,8 +217,8 @@ public class DataRetriever {
     }
 
     /**
-     * Returns readable unit from ontology iri
-     * @param ontologyUnit unit iri in ontology
+     * Returns readable unit from ontology IRI
+     * @param ontologyUnit unit IRI in ontology
      * @return unit as a String
      */
     public static String getUnit(String ontologyUnit) {
@@ -233,7 +233,7 @@ public class DataRetriever {
     }
 
     /**
-     * Add where for Building Consumption
+     * Add where for building consumption
      * @param builder update builder
      * @param type energy type in ontology
      */
@@ -245,7 +245,7 @@ public class DataRetriever {
     }
 
     /**
-     * Add where for Device Supply
+     * Add where for device supply
      * @param builder update builder
      * @param generatorType type of generator
      * @param energyType type of energy supply
@@ -263,9 +263,9 @@ public class DataRetriever {
     }
 
     /**
-     * Add where for Device Area
+     * Add where for device area
      * @param builder update builder
-     * @param building iri of building
+     * @param building building IRI
      * @param facadeType type of facade
      */
     public static void addSupplyDeviceAreaWhere(WhereBuilder builder, String building, String facadeType) {

@@ -431,7 +431,7 @@ public class CEAAgent extends JPSAgent {
     }
 
     /**
-     * Runs CEATask on CEAInputData and returns CEAOutputData
+     * Runs CEATask on CEAInputData, which will send request to the update endpoint with the extracted CEAOutputData after running CEA simulations
      * @param buildingData input data on building footprint, height, usage, surrounding and weather
      * @param uris list of input uris
      * @param threadNumber int tracking thread that is running

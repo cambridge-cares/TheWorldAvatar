@@ -21,7 +21,7 @@ public class BuildingUsageHelper
 {
     /**
      * Retrieves the usages of a building and each usage's corresponding weight, and returns the usages and their weight as a map
-     * @param uriString city object id
+     * @param uriString building IRI
      * @param endpoint SPARQL endpoint
      * @return the usages and their corresponding weighting
      */
@@ -91,7 +91,7 @@ public class BuildingUsageHelper
 
     /**
      * Builds a SPARQL query for a specific URI to retrieve the building usages and the building usage share with OntoBuiltEnv concepts
-     * @param uriString city object id
+     * @param uriString building IRI
      * @return returns a query string
      */
     private static Query getBuildingUsagesQuery(String uriString) {

@@ -10,9 +10,9 @@ import java.util.List;
 public class DataParser {
     /**
      * Parses input JSONObject into a list of strings
-     * @param dataJSON - request body in JSON format
-     * @param key - requested data
-     * @return List of data
+     * @param dataJSON request body in JSON format
+     * @param key requested data
+     * @return a list of data
      */
     public static List<Double> getList (JSONObject dataJSON, String key) {
         JSONArray array = (JSONArray) dataJSON.get(key);
@@ -25,9 +25,9 @@ public class DataParser {
 
     /**
      * Parses input JSONObject into a list of time series data
-     * @param dataJSON - request body in JSON format
-     * @param key - requested data
-     * @return List of data
+     * @param dataJSON request body in JSON format
+     * @param key requested data
+     * @return a list of time series data
      */
     public static List<Double> getTimeSeriesList (JSONObject dataJSON, String key, Integer index) {
         List<Double> timeSeriesList = new ArrayList<>();
@@ -44,10 +44,10 @@ public class DataParser {
     }
 
     /**
-     * Parses input JSONObject into a list of times
-     * @param dataJSON - request body in JSON format
-     * @param key - requested data
-     * @return List of times
+     * Parses input JSONObject into a list of timestamps
+     * @param dataJSON  request body in JSON format
+     * @param key requested data
+     * @return a list of timestamps
      */
     public static List<OffsetDateTime> getTimesList (JSONObject dataJSON, String key) {
         JSONArray array = (JSONArray) dataJSON.get(key);

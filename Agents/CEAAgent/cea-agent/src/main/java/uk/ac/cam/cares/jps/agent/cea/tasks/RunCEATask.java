@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.cea.tasks;
 
-import org.locationtech.jts.geom.Geometry;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAMetaData;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -14,6 +13,7 @@ import org.apache.http.HttpException;
 import org.apache.http.protocol.HTTP;
 import com.google.gson.Gson;
 
+import org.locationtech.jts.geom.Geometry;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;

@@ -1,26 +1,22 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
-import com.cmclinnovations.stack.clients.core.StackClient;
-import org.apache.jena.arq.querybuilder.AskBuilder;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.apache.jena.query.Query;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import org.json.JSONArray;
 
+import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class GeometryQueryHelper {
     private String ontopUrl = "http://stackNAME-ontop:8080/sparql";
@@ -40,9 +36,9 @@ public class GeometryQueryHelper {
     }
 
     /**
-     * Builds a SPARQL query for a specific URI to retrieve the building height for data with ocgml:measuredHeight attribute
-     * @param uriString city object id
-     * @return returns a query string
+     * Retrieves building height for building IRI uriString
+     * @param uriString building IRI
+     * @return returns building height as a string
      */
     public static String getBuildingHeight(String uriString, String endpoint) {
         try {
@@ -73,6 +69,14 @@ public class GeometryQueryHelper {
         }
     }
 
+    /**
+     * Retrieves building footprint for building IRI uriString
+     * @param uriString building IRI
+     * @param endpoint endpoint to retrieve uriString
+     * @param height building height associated with uriString
+     * @param flag flag to indicate whether to call GeometryHandler.extractFootprint
+     * @return building footprint as CEAGeometryData
+     */
     public static CEAGeometryData getLod0Footprint(String uriString, String endpoint, String height, Boolean flag) {
         try {
             RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
@@ -139,6 +143,11 @@ public class GeometryQueryHelper {
         }
     }
 
+    /**
+     * Check whether the CRS of the geometries in endpoint is CRS84
+     * @param endpoint endpoint storing building geometries
+     * @return true if CRS in endpoint is CRS84, false otherwise
+     */
     public static boolean checkCRS84(String endpoint) {
         try {
             RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);

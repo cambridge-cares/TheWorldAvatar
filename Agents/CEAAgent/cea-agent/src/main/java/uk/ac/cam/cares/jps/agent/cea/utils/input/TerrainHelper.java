@@ -28,9 +28,9 @@ public class TerrainHelper {
     }
 
     /**
-     * Gets terrain data for city object
-     * @param uriString city object id
-     * @param endpoint endpoint to city object geometry data
+     * Gets terrain data for building
+     * @param uriString building IRI
+     * @param endpoint endpoint to building geometry data
      * @param table PostGIS table name
      * @return terrain data as byte[]
      */

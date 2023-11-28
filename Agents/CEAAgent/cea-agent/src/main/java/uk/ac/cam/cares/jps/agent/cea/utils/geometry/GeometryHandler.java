@@ -1,8 +1,9 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
-import org.cts.crs.CRSException;
-import org.json.JSONArray;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 
+import org.cts.crs.CRSException;
 import org.cts.CRSFactory;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.cts.units.Unit;
@@ -17,9 +18,8 @@ import org.locationtech.jts.geom.util.GeometryFixer;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +45,7 @@ public class GeometryHandler {
      * @param geom geometry object
      * @param sourceCRS source CRS of geometry with EPSG prefix
      * @param distance buffer distance
+     * @return buffered geometry object
      */
     public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance)  {
         if (distance == 0) {
@@ -80,10 +81,10 @@ public class GeometryHandler {
     }
 
     /**
-     * Inflates a polygon
-     * @param geom polygon geometry
+     * Inflates a geometry object
+     * @param geom geometry object
      * @param distance buffer distance
-     * @return inflated polygon
+     * @return inflated geometry object
      */
     public static Geometry buffer(Geometry geom, Double distance) {
         BufferParameters bufferParameters = new BufferParameters();
@@ -95,7 +96,7 @@ public class GeometryHandler {
     }
 
     /**
-     * Transforms a geometry from sourceCRS to targetCRS
+     * Transforms a geometry object from sourceCRS to targetCRS
      * @param geometry geometry object
      * @param sourceCRS source CRS of geometry with EPSG prefix
      * @param targetCRS target CRS for geometry transformation with EPSG prefix
@@ -179,7 +180,7 @@ public class GeometryHandler {
      * @param surfaceArray JSONArray of building surface geometries as WKT strings
      * @param originalCRS CRS of surfaceArray as String
      * @param height building height
-     * @return list of geomtry objects representing the building footprint
+     * @return list of geometry objects representing the building footprint
      */
     public static List<Geometry> extractFootprint(JSONArray surfaceArray, String originalCRS, Double height) {
         double distance = 0.0;
