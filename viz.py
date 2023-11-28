@@ -1,12 +1,13 @@
 import networkx as nx
 
-from utils import Utils
+from utils.ontology import UtilsOntology
+
 
 
 def plotGraph(G: nx.MultiDiGraph, filepath: str = "graph.svg"):
-    G = nx.relabel_nodes(G, mapping={n: Utils.shorten_iri(n) for n in G.nodes()})
+    G = nx.relabel_nodes(G, mapping={n: UtilsOntology.shorten_iri(n) for n in G.nodes()})
     labels = {
-        e: Utils.shorten_iri(prop) for e, prop in nx.get_edge_attributes(G, "label").items()
+        e: UtilsOntology.shorten_iri(prop) for e, prop in nx.get_edge_attributes(G, "label").items()
     }
     nx.set_edge_attributes(G, labels, "label")
 

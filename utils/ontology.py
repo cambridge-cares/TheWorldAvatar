@@ -5,7 +5,7 @@ from constants.namespaces import NAMESPACE2PREFIX
 from constants.predicates import RDFS_SUBCLASSOF
 
 
-class Utils:
+class UtilsOntology:
     @classmethod
     def shorten_iri(cls, iri: str):
         for ns, p in NAMESPACE2PREFIX.items():

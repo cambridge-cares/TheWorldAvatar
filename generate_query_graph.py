@@ -9,6 +9,7 @@ from constants.namespaces import QUERY_PREFIXES
 from constants.predicates import RDF_TYPE, RDFS_LITERAL
 
 from utils import Utils
+from utils.ontology import UtilsOntology
 
 
 class QueryGraphGenerator:
@@ -20,8 +21,8 @@ class QueryGraphGenerator:
         questionnode_blacklist: List[str] = [],
         kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
     ):
-        G = Utils.flatten_subclassof(ontology)
-        G = Utils.remove_egdes_by_label(G, labels=prop_blacklist)
+        G = UtilsOntology.flatten_subclassof(ontology)
+        G = UtilsOntology.remove_egdes_by_label(G, labels=prop_blacklist)
         self.ontology = G
         self.numcls2prop = numcls2prop
         self.questionnode_blacklist = questionnode_blacklist
@@ -95,7 +96,7 @@ class QueryGraphGenerator:
         return self.sparql_client.queryAndConvert()
 
     def cls2var(self, cls: str):
-        cls = Utils.shortenIri(cls)
+        cls = Utils.shorten_iri(cls)
         return f"{cls.split(':', maxsplit=1)[-1]}"
 
     def make_sparql(
@@ -116,7 +117,7 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
         """Makes the SPARQL query that grounds all nodes in query_template"""
         triples = list()
         for h, t, prop in query_template.edges(data="label"):
-            h, t, prop = (Utils.shortenIri(x) for x in (h, t, prop))
+            h, t, prop = (Utils.shorten_iri(x) for x in (h, t, prop))
             h_var, t_var = (self.cls2var(x) for x in (h, t))
             triples.append(f"?{h_var} {prop} ?{t_var} .")
             if h != "rdfs:Literal":
@@ -159,16 +160,16 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
                 if n.startswith("http"):
                     return f"<{n}>"
                 return (
-                    f'"{n}"^^{Utils.shortenIri(query_graph.nodes[n].get("datatype"))}'
+                    f'"{n}"^^{Utils.shorten_iri(query_graph.nodes[n].get("datatype"))}'
                 )
             if n.startswith("http"):  # is a class
-                return Utils.shortenIri(n)
+                return Utils.shorten_iri(n)
             return "?" + n
 
         triples = list()
         for h, t, prop in query_graph.edges(data="label"):
             h, t = (get_sparql_entity(x) for x in (h, t))
-            prop = Utils.shortenIri(prop)
+            prop = Utils.shorten_iri(prop)
             if t != "rdfs:Literal":
                 triples.append(f"{h} {prop} {t} .")
 
@@ -184,7 +185,7 @@ SELECT DISTINCT {select_vars} WHERE {{{triples}
         )
 
     def get_hashable_kg_response(self, graph: nx.DiGraph):
-        return Utils.hash_kg_response(self.query_kg(self.graph2sparql(graph)))
+        return UtilsOntology.hash_kg_response(self.query_kg(self.graph2sparql(graph)))
 
     def minimize_query_graph(self, query_graph: Optional[nx.DiGraph]):
         if query_graph is None:
