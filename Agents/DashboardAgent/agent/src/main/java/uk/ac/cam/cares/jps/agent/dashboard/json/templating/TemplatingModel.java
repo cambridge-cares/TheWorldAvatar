@@ -13,6 +13,8 @@ import java.util.stream.Stream;
  */
 public class TemplatingModel {
     private final StringBuilder VARIABLES_SYNTAX = new StringBuilder();
+    private static final String TIME_INTERVAL_FILTER_DESCRIPTION = "A filter to display the time interval requested by the user in the trend related charts.";
+    private static final String FACILITY_FILTER_DESCRIPTION = "A filter at the facility level to view the specified facilities and their associated measures.";
 
     /**
      * Constructor that process customisable options for the templating variable in Grafana's JSON model.
@@ -23,9 +25,12 @@ public class TemplatingModel {
     public TemplatingModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
         // Initialise a queue to store these template variables
         Queue<TemplateVariable> variableQueue = new ArrayDeque<>();
-        // If there are values, retrieve the first connection ID, as the postgres variables in Grafana requires a connection ID to function
-        // But for processing facility items, any ID will do and does not matter
-        if (!timeSeries.isEmpty()) genFacilityItemFilters(timeSeries, databaseConnectionMap.values().iterator().next());
+        if (!timeSeries.isEmpty()) {
+            genTrendFilter();
+            // If there are values, retrieve the first connection ID, as the postgres variables in Grafana requires a connection ID to function
+            // But for processing facility items, any ID will do and does not matter
+            genFacilityItemFilters(timeSeries, databaseConnectionMap.values().iterator().next());
+        }
         // For each asset type or rooms available
         for (String item : timeSeries.keySet()) {
             // Retrieve the map of measures to their time series metadata
@@ -65,6 +70,15 @@ public class TemplatingModel {
     }
 
     /**
+     * Generate the filter for daily, weekly, or monthly intervals that the trends-related chart should display.
+     */
+    private void genTrendFilter() {
+        String[] temporalIntervals = new String[]{"Daily over past week", "Daily over past month", "Weekly over past month", "Monthly over past year"};
+        CustomVariable intervalFilterOptions = new CustomVariable(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 0, false);
+        addVariable(intervalFilterOptions);
+    }
+
+    /**
      * Generate the facility and item type filters for the dashboard.
      *
      * @param timeSeries   A map of all assets and rooms mapped to their time series.
@@ -76,7 +90,7 @@ public class TemplatingModel {
         timeSeries.remove(StringHelper.FACILITY_KEY);
         // Create a new custom variable for all facilities
         // Retrieve all keys for the mappings and transformed it into an array for the input
-        CustomVariable facilityFilterOptions = new CustomVariable("Facilities", facilityMapping.keySet().toArray(String[]::new), 0);
+        CustomVariable facilityFilterOptions = new CustomVariable("Facilities", FACILITY_FILTER_DESCRIPTION , facilityMapping.keySet().toArray(String[]::new), 0);
         addVariable(facilityFilterOptions);
 
         // The next goal is to create a map for item type - either an asset type or room, that is mapped to their facility and individual elements

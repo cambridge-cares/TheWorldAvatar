@@ -12,6 +12,7 @@ public class StringHelper {
     public static String SYSTEM_KEY = "systems";
     public static String THRESHOLD_KEY = "threshold";
     public static String SERVICE_ACCOUNT_NAME = "grafana";
+    public static String INTERVAL_VARIABLE_NAME = "Time Interval";
 
     /**
      * Formats the SPARQL variable name for a SPARQL query syntax. Note that a space will be appended beforehand.

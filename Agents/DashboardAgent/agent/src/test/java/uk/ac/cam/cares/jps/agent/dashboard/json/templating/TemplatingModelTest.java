@@ -18,6 +18,8 @@ public class TemplatingModelTest {
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ASSETS;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_ROOMS;
     private static Map<String, Map<String, List<String[]>>> SAMPLE_SYSTEMS;
+    private static final String TIME_INTERVAL_FILTER_DESCRIPTION = "A filter to display the time interval requested by the user in the trend related charts.";
+    private static final String FACILITY_FILTER_DESCRIPTION = "A filter at the facility level to view the specified facilities and their associated measures.";
 
     @BeforeAll
     static void genSampleData() {
@@ -65,8 +67,10 @@ public class TemplatingModelTest {
         StringBuilder tempBuilder = new StringBuilder();
         builder.append("{\"enable\": true,\"list\": [");
         // Only generate these variables if there are values
-        if (!organisationMapping.isEmpty())
+        if (!organisationMapping.isEmpty()) {
+            genTrendFilter(tempBuilder);
             genFacilityItemTypeVariables(tempBuilder, organisationMapping, databaseConnectionMap.values().iterator().next());
+        }
         for (String itemType : organisationMapping.keySet()) {
             Map<String, List<String[]>> itemMeasures = organisationMapping.get(itemType);
             for (String measure : itemMeasures.keySet()) {
@@ -83,12 +87,18 @@ public class TemplatingModelTest {
         return builder.toString();
     }
 
+    private static void genTrendFilter(StringBuilder tempBuilder) {
+        String[] temporalIntervals = new String[]{"Daily over past week", "Daily over past month", "Weekly over past month", "Monthly over past year"};
+        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 0, false))
+                .append(",");
+    }
+
     private static void genFacilityItemTypeVariables(StringBuilder tempBuilder, Map<String, Map<String, List<String[]>>> organisationMapping, String connectionId) {
         Map<String, List<String[]>> facilityMapping = organisationMapping.get(StringHelper.FACILITY_KEY);
         // Remove the facility key as it is no longer required
         organisationMapping.remove(StringHelper.FACILITY_KEY);
         // Generate a custom variable for all facilities
-        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax("Facilities", facilityMapping.keySet().toArray(String[]::new), 0, true));
+        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax("Facilities", FACILITY_FILTER_DESCRIPTION, facilityMapping.keySet().toArray(String[]::new), 0, true));
 
         // Generates a mapping in Format {assetType: {facility1:[asset1, asset2], facility2:[asset3,asset4]}}
         Map<String, Map<String, List<String>>> typeFacilityItemMapping = new HashMap<>();

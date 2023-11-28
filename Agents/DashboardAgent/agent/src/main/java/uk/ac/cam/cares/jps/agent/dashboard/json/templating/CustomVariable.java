@@ -17,29 +17,31 @@ class CustomVariable extends TemplateVariable {
     private final StringBuilder QUERY_SYNTAX = new StringBuilder();
 
     /**
-     * Basic Constructor that provides customised settings.
+     * A Constructor that provides customised settings and defaults to true for the selectAllOption.
      *
      * @param name                   The name of the assets or rooms to create for this variable.
+     * @param description            The description of this variable
      * @param values                 An array of values to be included into the query component. Tentatively, this is a value of all available asset types, rooms or individual assets within one type.
      * @param dashboardDisplayOption The display options for the variable on the dashboard by Grafana. 0 - Display both label and values; 1 - Display only value; 2 - Display nothing.
      */
-    protected CustomVariable(String name, String[] values, Integer dashboardDisplayOption) {
-       this(name, values, dashboardDisplayOption, true);
+    protected CustomVariable(String name, String description, String[] values, Integer dashboardDisplayOption) {
+       this(name, description, values, dashboardDisplayOption, true);
     }
 
     /**
      * Basic Constructor that provides customised settings.
      *
      * @param name                   The name of the assets or rooms to create for this variable.
+     * @param description            The description of this variable
      * @param values                 An array of values to be included into the query component. Tentatively, this is a value of all available asset types, rooms or individual assets within one type.
      * @param dashboardDisplayOption The display options for the variable on the dashboard by Grafana. 0 - Display both label and values; 1 - Display only value; 2 - Display nothing.
      * @param selectAllOption        A boolean to indicate if the "All" option should be enabled in Grafana.
      */
-    protected CustomVariable(String name, String[] values, Integer dashboardDisplayOption, boolean selectAllOption) {
+    protected CustomVariable(String name, String description, String[] values, Integer dashboardDisplayOption, boolean selectAllOption) {
         // Construct the super class
         super(name, dashboardDisplayOption, selectAllOption);
         this.LABEL = StringHelper.addSpaceBetweenCapitalWords(name);
-        this.DESCRIPTION = "A filter at the facility level to view the specified facilities and their associated measures.";
+        this.DESCRIPTION = description;
         // A boolean to indicate if the option is the default selected
         boolean isDefaultOption = true;
         TextValueOption option;
@@ -57,10 +59,10 @@ class CustomVariable extends TemplateVariable {
             this.QUERY_SYNTAX.append(value);
             // Append the individual option for these values
             option = new TextValueOption(isDefaultOption, value, value);
-            // Requires a comma before as the first option is All selected
-            this.VARIABLE_SELECTION_OPTIONS.append(",").append(option.construct());
-            // Set it to false once it has been appended
-            if (isDefaultOption) isDefaultOption = false;
+            if (isDefaultOption) {isDefaultOption = false;}
+            // Add a comma as this is not the first item
+            else { this.VARIABLE_SELECTION_OPTIONS.append(",");}
+            this.VARIABLE_SELECTION_OPTIONS.append(option.construct());
         }
     }
 
