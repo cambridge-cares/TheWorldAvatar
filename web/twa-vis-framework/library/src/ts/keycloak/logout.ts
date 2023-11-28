@@ -1,4 +1,4 @@
-class keycloakLogoutButton {
+class KeycloakLogoutButton {
 
   private domainName: string;
   private realmName: string;
@@ -26,7 +26,7 @@ class keycloakLogoutButton {
 }
   
 
-const logoutButtonInstance = new keycloakLogoutButton('idm-credo.hartree.app', 'MFATest');
+const logoutButtonInstance = new KeycloakLogoutButton('idm-credo.hartree.app', 'MFATest');
 
 
 // Below should to be in the keycloak main.js. This keeps refreshing the token. 
