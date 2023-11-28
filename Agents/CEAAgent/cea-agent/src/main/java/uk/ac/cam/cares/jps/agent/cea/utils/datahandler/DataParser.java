@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.datahandler;
 
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -58,22 +57,5 @@ public class DataParser {
             list.add(odt);
         }
         return list;
-    }
-
-    /**
-     * Calculates annual value by summing all data in column in time series and rounding to 2dp
-     * @param timeSeries time series data
-     * @param dataIri iri in time series database
-     * @return annualValue as a String
-     */
-    public static String calculateAnnual(TimeSeries<OffsetDateTime> timeSeries, String dataIri) {
-        List<Double> values = timeSeries.getValuesAsDouble(dataIri);
-        Double annualValue = 0.;
-        for(Double value : values){
-            annualValue += value;
-        }
-        annualValue = Math.round(annualValue*Math.pow(10,2))/Math.pow(10,2);
-        return annualValue.toString();
-
     }
 }
