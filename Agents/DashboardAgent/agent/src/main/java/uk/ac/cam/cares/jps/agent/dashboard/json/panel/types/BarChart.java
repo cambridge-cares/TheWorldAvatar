@@ -51,7 +51,7 @@ public class BarChart extends TemplatePanel {
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past month' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Weekly over past month' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Monthly over past year' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 year'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
-                .append(" END")
+                .append(" END ")
                 // Arrange results starting from the latest interval and go backwards
                 .append("ORDER BY CASE")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past week' THEN (EXTRACT(DOW FROM time)-EXTRACT(DOW FROM TO_TIMESTAMP(${__to}/1000))+6)%7")
