@@ -1,0 +1,33 @@
+{
+    "database": "postgres",
+	"skip": false,
+    "workspace": "dispersion",
+    "datasetDirectory": "pirmasens_final_citygml",
+    "dataSubsets": [
+        {
+            "type": "CityDB",
+            "subdirectory": "subdir",
+            "skip": false,
+            "importOptions": {
+                "sridIn": "32633"
+            },
+            "name": "building-pirmasens_gsl",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "mapbox_layer",
+                    "sql": "@/inputs/config/mapbox-footprint.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometry",
+                        "type": "Polygon",
+                        "srid": 32633
+                    }
+                },
+                "defaultStyle": "polygon"
+            }
+        }
+    ],
+    "mappings": [
+        "citydb.obda"
+    ]
+}

@@ -1,26 +1,75 @@
-Prerequisites
-1) Make a copy of DispersionVis/indexTemplate.html and set its file name to be 'index.html'. Set Mapbox user and API key in DispersionVis/index.html
-2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for chemical plants instead of ships, 
-it is still necessary to define one ship in a .json file in this folder. In this case, the ship should be placed outside the region for which AERMOD will be run, which is specified in WKT format in the POST request to the DispersionInteractor class. The longitude of each coordinate must be specified before the latitude.  
-
-3) Set openweather API key in stack-manager/inputs/config/services/weather-agent.json, see ../Agents/WeatherAgent folder for more details
-
+## Prerequisites
+1) Create 4 secrets file in `./stack-manager/inputs/secrets` with appropriate values in the files
+    - geoserver_password
+    - postgis_password
+    - mapbox_api_key
+    - mapbox_username
+2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for static point sources only, this is not required. 
+3) Set openweather API key in stack-manager/inputs/config/services/weather-agent.json, the API key needs to have OneCall enabled (credit card required, you can set the call limit below the limit before it starts charging).
 4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
+5) Elevation data (optional):
+AERMOD agent will try to query elevation data from a table named `elevation` in the default database. AERMOD agent can query the data stored in any SRID, but the table needs to contain data in one SRID only, hence it's recommended to convert any elevation data to a uniform SRID, e.g. 4326. An example is provided in `stack-data-uploader/inputs/config/elevation.json`. Note that this config file is written for data in SRID=32632 and it needs to be changed according to your source data. The raw data files should be stored in `stack-data-uploader/inputs/data/elevation`, any format supported by gdal should work, see https://gdal.org/drivers/raster/index.html for more info.
+6) Buildings data (optional for ships, compulsory for static point source use cases):
+An example config file is given in `stack-data-uploader/inputs/config/building-pirmasens.json`, corresponding raw data should be populated in `stack-data-uploader/inputs/data/pirmasens_final_citygml`
 
-5) If running AERMOD for static point sources, it is required to upload the elevation data to a single table in the stack postgresql database. The elevation data for the user-specified region will be queried from this table and used to run the AERMOD terrain pre-processor, AERMAP, which calculates the critical hill height scale for each receptor. 
+## Static point source instantiation
+An example of a static point source that emits NOx. It is compulsory to have density, mass flowrate and temperature, the units for these values must be in kg/m3, kg/s, and Kelvin respectively. The static point source needs to point to a building via `disp:hasOntoCityGMLCityObject` and needs to be present in ontop via the mapping `./stack-data-uploader/inputs/data/pirmasens_final_citygml/citydb.obda`.
+```
+@prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix disp:	    <https://www.theworldavatar.com/kg/ontodispersion/> .
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix om:         <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
 
-Elevation data can be downloaded from https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm as a series of .tif files each of which covers a region that spans 1 degree in latitude and longitude. It is required to register for a free account before downloading the files.
+disp:staticPointSource1 rdf:type disp:StaticPointSource ;
+                        disp:hasOntoCityGMLCityObject <https://www.theworldavatar.com/kg/Building/023a7cee-e39f-4961-91a2-14a5c5b16eee> ;
+						disp:emits disp:noxEmission .
 
-Uploading of elevation data can be done using the stack data uploader. The downloaded .tif files should be placed in a subfolder within the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/data/elevation/ directory. The elevation.json configuration file in the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/config/ can be modified if necessary. It is also possible to include an elevation.sld file in this directory location to customize the GeoServer style used to upload the data. See https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader for more details. The name of the POSTGIS table where the elevation data is stored needs to be specified as the value of the environment variable "ELEVATION_TABLE" in the stack-manager/inputs/config/aermod-agent.json and aermod-agent-debug.json files. 
+disp:noxEmission rdf:type disp:Emission ;
+                 disp:hasPollutantID disp:noxPolId ;
+				 om:hasQuantity disp:noxDensity ;
+				 om:hasQuantity disp:noxMassFlow ;
+				 om:hasQuantity disp:noxTemperature .
 
+disp:noxPolId rdf:type disp:NOx .
 
+disp:noxDensity rdf:type om:Density ;
+                om:hasValue disp:noxDensityMeasure .
+disp:noxDensityMeasure rdf:type om:Measure ;
+                       om:hasNumericalValue 123 ;
+					   om:hasUnit om:kilogramPerCubicmetre .
+					   
+disp:noxMassFlow rdf:type om:MassFlow ;
+                 om:hasValue disp:noxMassFlowMeasure .
+disp:noxMassFlowMeasure rdf:type om:Measure ;
+                        om:hasNumericalValue 123 ;
+						om:hasUnit om:kilogramPerSecond-Time .
+						
+disp:noxTemperature rdf:type om:Temperature ;
+                    om:hasValue disp:tempMeasure .
+disp:tempMeasure rdf:type om:Measure ;
+                 om:hasNumericalValue 123 ;
+				 om:hasUnit om:Kelvin .
+```
 
-Stack needs to be up and running:
-1) execute
+An instance can emit multiple pollutants, the class of pollutant ID needs to be one of the following:
+- <https://www.theworldavatar.com/kg/ontodispersion/NOx>
+- <https://www.theworldavatar.com/kg/ontodispersion/uHC>
+- <https://www.theworldavatar.com/kg/ontodispersion/CO>
+- <https://www.theworldavatar.com/kg/ontodispersion/SO2>
+- <https://www.theworldavatar.com/kg/ontodispersion/PM10>
+- <https://www.theworldavatar.com/kg/ontodispersion/PM2.5>
+- <https://www.theworldavatar.com/kg/ontodispersion/CO2>
+
+## Important for visualisation if not deployed locally
+Modify the `STACK_URL` parameter in `./stack-manager/inputs/config/services/dispersion-interactor.json` to the URL where the stack is deployed, this is used to construct the WMS endpoints and the URL for feature info agent queries.
+
+## Start up the stack
+
+To start up the stack, execute
 ```
 ./startup.sh
 ```
-
 in this folder to spin up pull docker images, spin up containers (using stack manager) and copy files into container volumes.
 
 Make sure you have access to the CMCL Docker registry. You can test your access by runing 
@@ -29,42 +78,26 @@ Make sure you have access to the CMCL Docker registry. You can test your access 
     ```
 If you are not already logged in then, when prompted, enter the username and password you were given.
 
-2) If running AERMOD for static point sources, save the json configuration file and .tif elevation data files in the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/ folder as described above. Execute 
+## HTTP requests 
+A number of examples are prepared in the `HTTP requests` folder. Note that you need to install the humao.rest-client extension in VS code to run these files.
 
+## Example 
+### With ships 
+This workflow calls the ShipInputAgent to add 1 timestep worth of data before triggering an update for AERMOD.
+1) Make sure ShipInputAgent/data is populated with data.
+2) Initialise a simulation, e.g. `HTTP requests/initialisation/plymouth.http`, you should receive a response in the form of 
 ```
-./stack.sh start ship-stack
+{"derivation": "http://derivation_1"}
 ```
-from within this folder to upload the elevation data to POSTGIS.
+record this derivation IRI.
+3) To trigger an AERMOD simulation, execute `HTTP requests/trigger update/GenerateDataWithShips.http`, be sure to replace the derivation IRI in the request from the response from the previous step.
 
-3) Start the docker containers for the input agents responsible for instantiating emissions data. Send the requests to these agents to instantiate the relevant triples.
+### Without ships (only static point source)
+1) Initialise a simulation, e.g. `HTTP requests/initialisation/pirmasens1.http`, record derivation IRI in the response.
+2) Make sure there is at least one static point source instantiated before triggering an AERMOD simulation and the representative building object is also present.
+3) Execute `HTTP requests/trigger update/GenerateDataWithoutShips.http`, be sure to enter derivation IRI in the request.
 
-## Work example
+## Visualisation
+Visualisation can be viewed at http://localhost:3838/visualisation (replace localhost if deployed elsewhere). Note that if buildings data is present in ontop, the visualisation may take a while to load because the first query takes time. 
 
-1) Initialise scope by:
-```
-curl -X POST "http://localhost:3838/dispersion-interactor/InitialiseSimulation?ewkt=SRID=4326;POLYGON((-4.282264034358564%2050.26375198971232,-4.001705368451314%2050.26650880607838,-4.005497340234552%2050.44635115729881,-4.287117430213462%2050.44357678715814,-4.282264034358564%2050.26375198971232))&nx=400&ny=400"
-```
 
-This request should return the IRI of the derivation, record this. Check the README of DispersionInteractor for more details.
-
-By providing an optional parameter, "citiesnamespace", AermodAgent will query buildings data from the provided namespace listed in http://www.theworldavatar.com:83/citieskg/#namespaces, e.g.
-```
-curl -X POST "http://localhost:3838/dispersion-interactor/InitialiseSimulation?ewkt=SRID=4326;POLYGON((7.58%2049.2,7.58%2049.236,7.61%2049.236,7.61%2049.2,7.58%2049.2))&nx=30&ny=30&citiesnamespace=pirmasensEPSG32633"
-```
-
-2) Trigger ship input agent and update simulation time (input to dispersion derivation)
-```
-curl -X POST http://localhost:3838/dispersion-interactor/UpdateShipsAndSimulationTime
-```
-
-3) Finally trigger update for the dispersion derivation
-```
-curl -X POST "http://localhost:3838/dispersion-interactor/TriggerUpdateDispersion?derivation=PLACE_DERIVATION_IRI_HERE"
-```
-
-4) Visualisation can be accessed on the browser at
-```
-http://localhost:3838/dispersion-vis
-
-```
-The updated version of the agent also displays the legend for the contour plot in the sidebar. It may be necessary to open an incognito browser window to view it. 

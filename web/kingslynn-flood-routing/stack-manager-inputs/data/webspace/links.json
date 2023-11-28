@@ -1,0 +1,33 @@
+{
+    "intro": "The list below provides an overview of uses resources and their respective links for further information:<BR>",
+    "links": [
+        {
+            "text": "Ordnance Survey OpenMap - Local",
+            "url": "https://osdatahub.os.uk/downloads/open/OpenMapLocal"
+        },
+        {
+            "text": "Digimap",
+            "url": "https://digimap.edina.ac.uk/os"
+        },
+        {
+            "text": "His Majesty's Land Registry Open Data",
+            "url": "https://landregistry.data.gov.uk/"
+        },
+        {
+            "text": "Environment Agency Real Time flood-monitoring API",
+            "url": "https://environment.data.gov.uk/flood-monitoring/doc/reference"
+        },        
+        {
+            "text": "MetOffice DataPoint API",
+            "url": "https://www.metoffice.gov.uk/services/data/datapoint/api-reference"
+        },
+        {
+            "text": "UK-AIR Sensor Observation Service",
+            "url": "https://uk-air.defra.gov.uk/data/about_sos"
+        },
+        {
+            "text": "Flood Data generated as part of the Climate Resilience Demonstrator (CReDo) project and published under the creative commons licence agreement",
+            "url": "https://creativecommons.org/licenses/by/4.0/"
+        }
+    ]
+}
