@@ -1,5 +1,7 @@
 import itertools
 
+from constants.nl import PLURAL_ADJS
+
 
 PROPERTY_KEYS = [
     "AtomChiralCount",
@@ -162,7 +164,6 @@ IDENTIFIER_LABELS = {
 USE_LABELS = ["use", "application", "role"]
 CHEMCLASS_LABELS = ["chemical class", "chemical classification"]
 
-PLURAL_ADJS = ["many", "different", "various"]
 ABSTRACT_PROPERTY_LABELS = [
     " ".join(x)
     for x in itertools.product(PLURAL_ADJS, ["properties"])

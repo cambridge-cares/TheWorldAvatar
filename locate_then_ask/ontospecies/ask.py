@@ -118,7 +118,11 @@ class OSAsker:
             key_label = random.choice(KEY2LABELS[key])
 
             query_sparql = self.graph2sparql.convert(query_graph)
-            verbalization = "For {E}, what are its {K}".format(
+            template = random.choice([
+                "For {E}, what are its {K}",
+                "What are the {K} of {E}"
+            ])
+            verbalization = template.format(
                 E=verbalization, K=key_label
             )
 
