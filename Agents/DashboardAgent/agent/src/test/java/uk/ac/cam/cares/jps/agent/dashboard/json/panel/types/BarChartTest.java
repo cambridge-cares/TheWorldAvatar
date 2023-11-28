@@ -95,7 +95,7 @@ public class BarChartTest {
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past month' THEN to_char(time,'DD')")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Weekly over past month' THEN 'Week '|| to_char(time,'W Mon-YY')")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Monthly over past year' THEN to_char(time,'Mon-YY')")
-                .append(" END AS \"interval\",${")
+                .append(" END AS \\\"interval\\\",${")
                 .append(StringHelper.formatVariableName(metadata[0])).append(StringHelper.formatVariableName(metadata[1])).append(":csv} ")
                 .append("FROM \\\"").append(metadata[2]).append("\\\" ")
                 .append("WHERE CASE")

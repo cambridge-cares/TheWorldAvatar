@@ -41,7 +41,7 @@ public class BarChart extends TemplatePanel {
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past month' THEN to_char(time,'DD')")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Weekly over past month' THEN 'Week '|| to_char(time,'W Mon-YY')")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Monthly over past year' THEN to_char(time,'Mon-YY')")
-                .append(" END AS \"interval\",${")
+                .append(" END AS \\\"interval\\\",${")
                 // Custom csv parameter must be lower case with no spacing ie: measurenameitemgroup
                 .append(StringHelper.formatVariableName(measure)).append(StringHelper.formatVariableName(itemGroup)).append(":csv} ")
                 .append("FROM \\\"").append(tableName).append("\\\" ")
