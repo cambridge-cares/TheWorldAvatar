@@ -9,6 +9,8 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
  * @author qhouyee
  */
 class TemplateVariable {
+    private String DEFAULT_SELECTED_TEXT;
+    private String DEFAULT_SELECTED_VALUE;
     private final String NAME;
     private final String DASHBOARD_DISPLAY_OPTION;
     private final boolean IS_MULTI_OPTION;
@@ -28,6 +30,8 @@ class TemplateVariable {
         this.DASHBOARD_DISPLAY_OPTION = dashboardDisplayOption.toString();
         this.IS_MULTI_OPTION = isMultiValue;
         this.INCLUDE_ALL_OPTION = includeAllOption;
+        this.DEFAULT_SELECTED_TEXT = "All";
+        this.DEFAULT_SELECTED_VALUE = "$__all";
     }
 
 
@@ -42,8 +46,8 @@ class TemplateVariable {
                 // Default selection should be all
                 .append("\"current\": {")
                 .append("\"selected\": false,")
-                .append("\"text\": [\"All\"],")
-                .append("\"value\": [\"$__all\"]")
+                .append("\"text\": [\"").append(this.DEFAULT_SELECTED_TEXT).append("\"],")
+                .append("\"value\": [\"").append(this.DEFAULT_SELECTED_VALUE).append("\"]")
                 .append("},")
                 // Variable name
                 .append("\"name\": \"").append(this.NAME).append("\",")
@@ -55,6 +59,14 @@ class TemplateVariable {
                 .append("\"hide\": ").append(this.DASHBOARD_DISPLAY_OPTION).append(",")
                 .append("\"skipUrlSync\": false,");
         return builder;
+    }
+
+    /**
+     * Sets the default selected text and value.
+     */
+    protected void setDefaultSelectedTextValue(String defaultValue) {
+        this.DEFAULT_SELECTED_TEXT = defaultValue;
+        this.DEFAULT_SELECTED_VALUE = defaultValue;
     }
 
     /**

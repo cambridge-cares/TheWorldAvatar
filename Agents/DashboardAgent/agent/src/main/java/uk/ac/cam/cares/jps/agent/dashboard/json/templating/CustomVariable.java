@@ -60,7 +60,10 @@ class CustomVariable extends TemplateVariable {
             this.QUERY_SYNTAX.append(value);
             // Append the individual option for these values
             option = new TextValueOption(isDefaultOption, value, value);
-            if (isDefaultOption) {isDefaultOption = false;}
+            if (isDefaultOption) {
+                super.setDefaultSelectedTextValue(value);
+                isDefaultOption = false;
+            }
             // Add a comma as this is not the first item
             else {this.VARIABLE_SELECTION_OPTIONS.append(",");}
             this.VARIABLE_SELECTION_OPTIONS.append(option.construct());

@@ -52,31 +52,44 @@ class CustomVariableTest {
     }
 
     public static StringBuilder genExpectedCustomVariableSyntax(String varName, String description, String[] assets, Integer dashboardDisplayOption, boolean isMultiValue, boolean includeAllOption) {
+        String jsonBase;
+        String selectedAllOption;
+        String filterOptions;
+        if (includeAllOption) {
+            selectedAllOption = "{\"selected\": true,\"text\": \"All\",\"value\": \"$__all\"},";
+            String[] filterOptionsResult = genFilterOptionsForArrays(assets, false);
+            jsonBase = TemplateVariableTest.genExpectedCommonJsonBase(StringHelper.formatVariableName(varName), filterOptionsResult[1], dashboardDisplayOption, isMultiValue, includeAllOption);
+            filterOptions = filterOptionsResult[0];
+        } else {
+            String[] filterOptionsResult = genFilterOptionsForArrays(assets, true);
+            jsonBase = TemplateVariableTest.genExpectedCommonJsonBase(StringHelper.formatVariableName(varName), filterOptionsResult[1], dashboardDisplayOption, isMultiValue, includeAllOption);
+            selectedAllOption = "";
+            filterOptions = filterOptionsResult[0];
+        }
         StringBuilder results = new StringBuilder();
-        results.append(TemplateVariableTest.genExpectedCommonJsonBase(StringHelper.formatVariableName(varName), dashboardDisplayOption, isMultiValue, includeAllOption))
+        results.append(jsonBase)
                 .append("\"label\": \"").append(varName).append("\",")
                 .append("\"description\": \"").append(description).append("\",")
-                .append("\"options\": [");
-        boolean isDefault = true;
-        if (includeAllOption) {
-            results.append("{\"selected\": true,\"text\": \"All\",\"value\": \"$__all\"},");
-            isDefault = false;
-        }
-        results.append(genFilterOptionsForArrays(assets, isDefault))
+                .append("\"options\": [").append(selectedAllOption)
+                .append(filterOptions)
                 .append("],\"query\": \"").append(genSimpleQueryForArrays(assets))
                 .append("\",\"queryValue\": \"\",\"type\": \"custom\"}");
         return results;
     }
 
-    private static StringBuilder genFilterOptionsForArrays(String[] facilities, boolean isDefault) {
+    private static String[] genFilterOptionsForArrays(String[] facilities, boolean isDefault) {
+        StringBuilder defaultValue = new StringBuilder();
         StringBuilder results = new StringBuilder();
         for (String facility : facilities) {
             // Append comma before if it is not the only value
             if (results.length() != 0) results.append(",");
             results.append("{\"selected\": ").append(isDefault).append(",\"text\": \"").append(facility).append("\",\"value\": \"").append(facility).append("\"}");
-            if (isDefault) isDefault = false;
+            if (isDefault) {
+                isDefault = false;
+                defaultValue.append(facility);
+            }
         }
-        return results;
+        return new String[]{results.toString(), defaultValue.toString()};
     }
 
     private static StringBuilder genSimpleQueryForArrays(String[] facilities) {

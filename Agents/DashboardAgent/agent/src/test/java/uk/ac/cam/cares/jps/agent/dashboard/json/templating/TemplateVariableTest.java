@@ -10,13 +10,26 @@ class TemplateVariableTest {
     private static final Integer DASHBOARD_DISPLAY_OPTION = 0;
 
     @Test
+    void testSetDefaultSelectionTextValue() {
+        // Setup
+        String sampleText = "default";
+        // Construct the object
+        TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true, true);
+        // Execute the method
+        variable.setDefaultSelectedTextValue(sampleText);
+        StringBuilder result = variable.genCommonJson();
+        // Test outputs
+        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, sampleText, DASHBOARD_DISPLAY_OPTION, true, true), result.toString());
+    }
+
+    @Test
     void testGenCommonJson_AllTrueBooleans() {
         // Construct the object
         TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true, true);
         // Execute the method
         StringBuilder result = variable.genCommonJson();
         // Test outputs
-        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true, true), result.toString());
+        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, "", DASHBOARD_DISPLAY_OPTION, true, true), result.toString());
     }
 
     @Test
@@ -26,7 +39,7 @@ class TemplateVariableTest {
         // Execute the method
         StringBuilder result = variable.genCommonJson();
         // Test outputs
-        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, false, false), result.toString());
+        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, "", DASHBOARD_DISPLAY_OPTION, false, false), result.toString());
     }
 
     @Test
@@ -39,9 +52,16 @@ class TemplateVariableTest {
         assertEquals("Construct() method is not supported for TemplateVariable. Please use their implementation classes instead!", thrownError.getMessage());
     }
 
-    protected static String genExpectedCommonJsonBase(String varName, Integer dashboardDisplayOption, boolean isMultiValue, boolean includeAllOption) {
+    protected static String genExpectedCommonJsonBase(String varName, String defaultVal, Integer dashboardDisplayOption, boolean isMultiValue, boolean includeAllOption) {
+        String defaultSelectedText = "All";
+        String defaultSelectedValue = "$__all";
+        if (!defaultVal.isEmpty()) {
+            defaultSelectedText = defaultVal;
+            defaultSelectedValue = defaultVal;
+        }
         StringBuilder results = new StringBuilder();
-        results.append("{\"current\": {\"selected\": false,\"text\": [\"All\"],\"value\": [\"$__all\"]},\"name\": \"")
+        results.append("{\"current\": {\"selected\": false,\"text\": [\"").append(defaultSelectedText)
+                .append("\"],\"value\": [\"").append(defaultSelectedValue).append("\"]},\"name\": \"")
                 .append(varName).append("\",\"includeAll\": ").append(includeAllOption).append(",\"multi\":").append(isMultiValue).append(",\"hide\": ").append(dashboardDisplayOption)
                 .append(",\"skipUrlSync\": false,");
         return results.toString();
