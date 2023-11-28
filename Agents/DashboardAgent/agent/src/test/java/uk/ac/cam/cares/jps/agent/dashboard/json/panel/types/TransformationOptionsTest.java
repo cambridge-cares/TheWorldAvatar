@@ -79,7 +79,7 @@ class TransformationOptionsTest {
         // Generate the expected output
         StringBuilder results = new StringBuilder();
         results.append("{\"id\":\"groupBy\",\"options\":{\"fields\":{")
-                .append("\"Day\":{\"aggregations\":[],\"operation\":\"groupby\"},").append(fieldAggregations)
+                .append("\"interval\":{\"aggregations\":[],\"operation\":\"groupby\"},").append(fieldAggregations)
                 .append("}}}");
         return results.toString();
     }

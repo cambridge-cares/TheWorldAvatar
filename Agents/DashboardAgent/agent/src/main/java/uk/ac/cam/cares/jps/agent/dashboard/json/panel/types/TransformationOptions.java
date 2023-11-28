@@ -81,7 +81,9 @@ public class TransformationOptions {
         }
         // Prepare the parsed format
         transformationBuilder.append("{\"id\":\"groupBy\",\"options\":{\"fields\":{")
-                .append("\"Day\":{\"aggregations\":[],\"operation\":\"groupby\"},").append(fieldAggregations)
+                // Group by the interval variable
+                .append("\"interval\":{\"aggregations\":[],\"operation\":\"groupby\"},")
+                .append(fieldAggregations)
                 .append("}}}");
         this.TRANSFORMATION_OPTIONS.add(transformationBuilder.toString());
     }

@@ -34,15 +34,31 @@ public class BarChart extends TemplatePanel {
         String description = "A bar chart displaying the trends for " + measure.toLowerCase() + " over a specific period";
         super.setDescription(description);
         String tableName = timeSeriesMetadata.get(0)[2];
-        // Set a query for daily measure amount for the past seven days
-        StringBuilder query = new StringBuilder().append("SELECT to_char(time, 'DD-Mon-YY') as \\\"Day\\\", ${")
+        String timeIntervalVariableName = StringHelper.formatVariableName(StringHelper.INTERVAL_VARIABLE_NAME);
+        // Set a query for the specified time interval
+        StringBuilder query = new StringBuilder().append("SELECT CASE")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past week' THEN to_char(time,'DD-Mon-YY')")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past month' THEN to_char(time,'DD')")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Weekly over past month' THEN 'Week '|| to_char(time,'W Mon-YY')")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Monthly over past year' THEN to_char(time,'Mon-YY')")
+                .append(" END AS \"interval\",${")
                 // Custom csv parameter must be lower case with no spacing ie: measurenameitemgroup
                 .append(StringHelper.formatVariableName(measure)).append(StringHelper.formatVariableName(itemGroup)).append(":csv} ")
                 .append("FROM \\\"").append(tableName).append("\\\" ")
-                // Time period from last 6 days to the specified time in Grafana
-                .append("WHERE time BETWEEN TO_TIMESTAMP(${__to}/1000) - interval '6 day' AND TO_TIMESTAMP(${__to}/1000) ")
-                // Arrange the results from the latest day
-                .append("ORDER BY (EXTRACT(DOW FROM time)- EXTRACT(DOW FROM TO_TIMESTAMP(${__to}/1000)) + 6) % 7;");
+                // Time interval according to template variable
+                .append("WHERE CASE")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past week' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'6 day' AND TO_TIMESTAMP(${__to}/1000)")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past month' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Weekly over past month' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Monthly over past year' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 year'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
+                .append(" END")
+                // Arrange results starting from the latest interval and go backwards
+                .append("ORDER BY CASE")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past week' THEN (EXTRACT(DOW FROM time)-EXTRACT(DOW FROM TO_TIMESTAMP(${__to}/1000))+6)%7")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past month' THEN (EXTRACT(DOY FROM time)-EXTRACT(DOY FROM TO_TIMESTAMP(${__to}/1000))+365)%366")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Weekly over past month' THEN (EXTRACT(WEEK FROM time)-EXTRACT(WEEK FROM TO_TIMESTAMP(${__to}/1000))+51)%52")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Monthly over past year' THEN (EXTRACT(MONTH FROM time)-EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))+11)%12")
+                .append(" END;");
         super.setQuery(query);
         // Apply an aggregate transformation before renaming the fields
         super.TRANSFORMATIONS.addGroupByTransformation("range", timeSeriesMetadata);
