@@ -88,7 +88,7 @@ public class TemplatingModelTest {
         // Remove the facility key as it is no longer required
         organisationMapping.remove(StringHelper.FACILITY_KEY);
         // Generate a custom variable for all facilities
-        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax("Facilities", facilityMapping.keySet().toArray(String[]::new), 0));
+        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax("Facilities", facilityMapping.keySet().toArray(String[]::new), 0, true));
 
         // Generates a mapping in Format {assetType: {facility1:[asset1, asset2], facility2:[asset3,asset4]}}
         Map<String, Map<String, List<String>>> typeFacilityItemMapping = new HashMap<>();

@@ -10,18 +10,18 @@ class CustomVariableTest {
     private static final Integer DASHBOARD_DISPLAY_OPTION = 0;
 
     @Test
-    void testConstruct() {
+    void testConstruct_DefaultConstructor() {
         // Construct the object through the standard constructor
         CustomVariable variable = new CustomVariable(EXPECTED_TYPE_NAME, FACILITIES, DASHBOARD_DISPLAY_OPTION);
         // Execute the method
         String result = variable.construct();
         // Test outputs
-        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, FACILITIES, DASHBOARD_DISPLAY_OPTION).toString(), result);
+        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, FACILITIES, DASHBOARD_DISPLAY_OPTION, true).toString(), result);
     }
 
-    public static StringBuilder genExpectedCustomVariableSyntax(String varName, String[] assets, Integer dashboardDisplayOption) {
+    public static StringBuilder genExpectedCustomVariableSyntax(String varName, String[] assets, Integer dashboardDisplayOption, boolean includeAllOption) {
         StringBuilder results = new StringBuilder();
-        results.append(TemplateVariableTest.genExpectedCommonJsonBase(varName.toLowerCase(), dashboardDisplayOption))
+        results.append(TemplateVariableTest.genExpectedCommonJsonBase(varName.toLowerCase(), dashboardDisplayOption, includeAllOption))
                 .append("\"label\": \"").append(varName).append("\",")
                 .append("\"description\": \"A filter at the facility level to view the specified facilities and their associated measures.\",")
                 .append("\"options\": [{\"selected\": true,\"text\": \"All\",\"value\": \"$__all\"},").append(genFilterOptionsForArrays(assets))

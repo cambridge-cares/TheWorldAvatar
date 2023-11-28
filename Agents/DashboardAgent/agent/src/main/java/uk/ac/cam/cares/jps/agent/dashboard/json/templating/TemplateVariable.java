@@ -11,17 +11,20 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 class TemplateVariable {
     private final String NAME;
     private final String DASHBOARD_DISPLAY_OPTION;
+    private final boolean INCLUDE_ALL_OPTION;
 
     /**
      * Standard Constructor.
      *
      * @param name                   The name of the assets to create for this variable.
      * @param dashboardDisplayOption The display options for the variable on the dashboard by Grafana. 0 - Display both label and values; 1 - Display only value; 2 - Display nothing.
+     * @param includeAllOption       A boolean to indicate if the "All" option should be enabled in Grafana.
      */
-    protected TemplateVariable(String name, Integer dashboardDisplayOption) {
+    protected TemplateVariable(String name, Integer dashboardDisplayOption, boolean includeAllOption) {
         // Transform name into lower cases and remove all white spaces
         this.NAME = StringHelper.formatVariableName(name);
         this.DASHBOARD_DISPLAY_OPTION = dashboardDisplayOption.toString();
+        this.INCLUDE_ALL_OPTION = includeAllOption;
     }
 
 
@@ -42,7 +45,7 @@ class TemplateVariable {
                 // Variable name
                 .append("\"name\": \"").append(this.NAME).append("\",")
                 // Include option to select all values
-                .append("\"includeAll\": true,")
+                .append("\"includeAll\": ").append(INCLUDE_ALL_OPTION).append(",")
                 // Allow multiple value selection eg Value 1 and 2 can be selected but not Value 3
                 .append("\"multi\": true,")
                 // The display option for this variable
