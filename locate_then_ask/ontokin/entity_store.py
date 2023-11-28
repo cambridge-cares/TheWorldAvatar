@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Type, Union
 from constants.namespaces import OKIN, OS
 from locate_then_ask.kg_client import KgClient
 from locate_then_ask.ontokin.model import (
@@ -16,7 +16,7 @@ class OKEntityStore:
     ):
         self.kg_client = KgClient(kg_endpoint, **kwargs)
         self.iri2cls: Dict[
-            str, Union[OKSpecies, OKGasPhaseReaction, OKMechanism]
+            str, Union[Type[OKSpecies], Type[OKGasPhaseReaction], Type[OKMechanism]]
         ] = dict()
         self.iri2entity: Dict[
             str, Union[OKSpecies, OKGasPhaseReaction, OKMechanism]
