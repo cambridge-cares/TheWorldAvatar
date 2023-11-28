@@ -27,7 +27,7 @@ class PostgresVariable extends TemplateVariable {
      */
     public PostgresVariable(String itemType, Map<String, List<String>> facilityItemMapping, String databaseId) {
         // Ensure that this variable can be viewed on the dashboard
-        super(itemType, 0, true);
+        super(itemType, 0, true, true);
         // Add label for the type
         this.LABEL = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" :
                 itemType.equals(StringHelper.SYSTEM_KEY) ? "Smart Meter" : StringHelper.addSpaceBetweenCapitalWords(itemType);
@@ -59,7 +59,7 @@ class PostgresVariable extends TemplateVariable {
      */
     public PostgresVariable(String measure, String item, String databaseId, List<String[]> assetMeasures) {
         // Variable name will be a combination of measure name and item type to make it unique
-        super(measure + item, 2, true);
+        super(measure + item, 2, true, true);
         // Empty label as the label will not be displayed
         this.LABEL = "";
         // Description should follow the measure name and item type

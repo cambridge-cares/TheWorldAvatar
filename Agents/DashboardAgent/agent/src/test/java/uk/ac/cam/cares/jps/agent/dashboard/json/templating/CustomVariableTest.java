@@ -18,32 +18,42 @@ class CustomVariableTest {
         // Execute the method
         String result = variable.construct();
         // Test outputs
-        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, true).toString(), result);
+        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, true, true).toString(), result);
     }
 
     @Test
     void testConstruct_IncludeAllOption() {
         // Construct the object through the standard constructor
-        CustomVariable variable = new CustomVariable(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, true);
+        CustomVariable variable = new CustomVariable(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, true, true);
         // Execute the method
         String result = variable.construct();
         // Test outputs
-        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, true).toString(), result);
+        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, true, true).toString(), result);
     }
 
     @Test
     void testConstruct_ExcludeAllOption() {
         // Construct the object through the standard constructor
-        CustomVariable variable = new CustomVariable(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, false);
+        CustomVariable variable = new CustomVariable(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, false, false);
         // Execute the method
         String result = variable.construct();
         // Test outputs
-        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, false).toString(), result);
+        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, false, false).toString(), result);
     }
 
-    public static StringBuilder genExpectedCustomVariableSyntax(String varName, String description, String[] assets, Integer dashboardDisplayOption, boolean includeAllOption) {
+    @Test
+    void testConstruct_IsMultiValueButDoNotSelectAll() {
+        // Construct the object through the standard constructor
+        CustomVariable variable = new CustomVariable(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, true, false);
+        // Execute the method
+        String result = variable.construct();
+        // Test outputs
+        assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, true, false).toString(), result);
+    }
+
+    public static StringBuilder genExpectedCustomVariableSyntax(String varName, String description, String[] assets, Integer dashboardDisplayOption, boolean isMultiValue, boolean includeAllOption) {
         StringBuilder results = new StringBuilder();
-        results.append(TemplateVariableTest.genExpectedCommonJsonBase(StringHelper.formatVariableName(varName), dashboardDisplayOption, includeAllOption))
+        results.append(TemplateVariableTest.genExpectedCommonJsonBase(StringHelper.formatVariableName(varName), dashboardDisplayOption, isMultiValue, includeAllOption))
                 .append("\"label\": \"").append(varName).append("\",")
                 .append("\"description\": \"").append(description).append("\",")
                 .append("\"options\": [");

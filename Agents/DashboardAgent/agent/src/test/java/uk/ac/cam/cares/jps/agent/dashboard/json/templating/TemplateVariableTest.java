@@ -10,39 +10,39 @@ class TemplateVariableTest {
     private static final Integer DASHBOARD_DISPLAY_OPTION = 0;
 
     @Test
-    void testGenCommonJson_IncludeAllOption() {
+    void testGenCommonJson_AllTrueBooleans() {
         // Construct the object
-        TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true);
+        TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true, true);
         // Execute the method
         StringBuilder result = variable.genCommonJson();
         // Test outputs
-        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true), result.toString());
+        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true, true), result.toString());
     }
 
     @Test
-    void testGenCommonJson_ExcludeAllOption() {
+    void testGenCommonJson_AllFalseBooleans() {
         // Construct the object
-        TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, false);
+        TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, false, false);
         // Execute the method
         StringBuilder result = variable.genCommonJson();
         // Test outputs
-        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, false), result.toString());
+        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, false, false), result.toString());
     }
 
     @Test
     void testConstruct_InvalidThrow() {
         // Construct the object
-        TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true);
+        TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true, true);
         // Execute the method and ensure the right error is thrown
         UnsupportedOperationException thrownError = assertThrows(UnsupportedOperationException.class, () -> variable.construct());
         // Test if error message thrown is accurate
         assertEquals("Construct() method is not supported for TemplateVariable. Please use their implementation classes instead!", thrownError.getMessage());
     }
 
-    protected static String genExpectedCommonJsonBase(String varName, Integer dashboardDisplayOption, boolean includeAllOption) {
+    protected static String genExpectedCommonJsonBase(String varName, Integer dashboardDisplayOption, boolean isMultiValue, boolean includeAllOption) {
         StringBuilder results = new StringBuilder();
         results.append("{\"current\": {\"selected\": false,\"text\": [\"All\"],\"value\": [\"$__all\"]},\"name\": \"")
-                .append(varName).append("\",\"includeAll\": ").append(includeAllOption).append(",\"multi\": true,\"hide\": ").append(dashboardDisplayOption)
+                .append(varName).append("\",\"includeAll\": ").append(includeAllOption).append(",\"multi\":").append(isMultiValue).append(",\"hide\": ").append(dashboardDisplayOption)
                 .append(",\"skipUrlSync\": false,");
         return results.toString();
     }

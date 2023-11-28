@@ -89,7 +89,7 @@ public class TemplatingModelTest {
 
     private static void genTrendFilter(StringBuilder tempBuilder) {
         String[] temporalIntervals = new String[]{"Daily over past week", "Daily over past month", "Weekly over past month", "Monthly over past year"};
-        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 0, false))
+        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 0, false, false))
                 .append(",");
     }
 
@@ -98,7 +98,7 @@ public class TemplatingModelTest {
         // Remove the facility key as it is no longer required
         organisationMapping.remove(StringHelper.FACILITY_KEY);
         // Generate a custom variable for all facilities
-        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax("Facilities", FACILITY_FILTER_DESCRIPTION, facilityMapping.keySet().toArray(String[]::new), 0, true));
+        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax("Facilities", FACILITY_FILTER_DESCRIPTION, facilityMapping.keySet().toArray(String[]::new), 0, true, true));
 
         // Generates a mapping in Format {assetType: {facility1:[asset1, asset2], facility2:[asset3,asset4]}}
         Map<String, Map<String, List<String>>> typeFacilityItemMapping = new HashMap<>();

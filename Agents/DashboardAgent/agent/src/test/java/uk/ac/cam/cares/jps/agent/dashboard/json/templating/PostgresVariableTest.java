@@ -105,7 +105,7 @@ class PostgresVariableTest {
 
     private static String genExpectedPostgresVarSyntax(String title, String label, String description, String databaseID, String query, int displayOption) {
         StringBuilder results = new StringBuilder();
-        results.append(TemplateVariableTest.genExpectedCommonJsonBase(title, displayOption, true))
+        results.append(TemplateVariableTest.genExpectedCommonJsonBase(title, displayOption, true, true))
                 .append("\"label\": \"").append(label).append("\",")
                 .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(databaseID).append("\"},")
                 .append("\"description\": \"").append(description).append("\",")

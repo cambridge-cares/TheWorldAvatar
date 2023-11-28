@@ -74,7 +74,8 @@ public class TemplatingModel {
      */
     private void genTrendFilter() {
         String[] temporalIntervals = new String[]{"Daily over past week", "Daily over past month", "Weekly over past month", "Monthly over past year"};
-        CustomVariable intervalFilterOptions = new CustomVariable(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 0, false);
+        CustomVariable intervalFilterOptions = new CustomVariable(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION,
+                temporalIntervals, 0, false, false);
         addVariable(intervalFilterOptions);
     }
 
@@ -90,7 +91,7 @@ public class TemplatingModel {
         timeSeries.remove(StringHelper.FACILITY_KEY);
         // Create a new custom variable for all facilities
         // Retrieve all keys for the mappings and transformed it into an array for the input
-        CustomVariable facilityFilterOptions = new CustomVariable("Facilities", FACILITY_FILTER_DESCRIPTION , facilityMapping.keySet().toArray(String[]::new), 0);
+        CustomVariable facilityFilterOptions = new CustomVariable("Facilities", FACILITY_FILTER_DESCRIPTION, facilityMapping.keySet().toArray(String[]::new), 0);
         addVariable(facilityFilterOptions);
 
         // The next goal is to create a map for item type - either an asset type or room, that is mapped to their facility and individual elements
