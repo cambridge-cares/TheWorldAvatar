@@ -1,19 +1,18 @@
 import json
 import os
-from pathlib import Path
 import random
 import time
 
 import networkx as nx
 from tqdm import tqdm
+from constants.fs import ROOTDIR
 
 from constants.ontospecies import SPECIES_ATTRIBUTE_KEYS
-from locate_then_ask.ontospecies.ask import AskDatum, OSAsker
+from locate_then_ask.ontospecies.ask import OSAsker
 from locate_then_ask.ontospecies.locate import OSSpeciesLocator
 from locate_then_ask.query_graph import QueryGraph
 
 
-ROOTDIR = Path(os.getcwd())
 SEED_SPECIES_NUM = 2000
 SEED_SPECIES_FILEPATH = "data/seed_entities/ontospecies.txt"
 
@@ -56,7 +55,7 @@ LIMIT {num}"""
     def retrieve_seed_species(self):
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_FILEPATH)
 
-        if not os.path.isfile(os.path.join(filepath)):
+        if not os.path.isfile(filepath):
             print("No seed species found. Retrieving seed species...")
             species = self.query_seed_species()
             with open(filepath, "w") as f:
@@ -72,9 +71,8 @@ LIMIT {num}"""
         self.locator = OSSpeciesLocator()
         self.asker = OSAsker()
 
-        seed_species = self.retrieve_seed_species()
-        random.shuffle(seed_species)
-        self.seed_species = seed_species
+        self.seed_species = self.retrieve_seed_species()
+        random.shuffle(self.seed_species)
 
     def locate(self, locate_strategy: str, species_id: int):
         if locate_strategy == "entity_name":

@@ -1,13 +1,13 @@
 import argparse
 import json
 import os
-from pathlib import Path
 import random
 import time
 from typing import Optional
 
 import networkx as nx
 from tqdm import tqdm
+from constants.fs import ROOTDIR
 from locate_then_ask.ontokin.entity_store import OKEntityStore
 
 from locate_then_ask.ontokin.mechanism import OKMechanismExampleMaker
@@ -16,7 +16,6 @@ from locate_then_ask.ontokin.species import OKSpeciesExampleMaker
 from locate_then_ask.ontokin.model import OKGasPhaseReaction, OKMechanism, OKSpecies
 
 
-ROOTDIR = Path(os.getcwd())
 SEED_SPECIES_NUM = 2000
 SEED_SPECIES_FILEPATH = "data/seed_entities/ontokin.txt"
 
@@ -71,18 +70,18 @@ LIMIT 100"""
 
     @classmethod
     def retrieve_seed_entities(
-        self,
+        cls,
         endpoint: Optional[str],
         user: Optional[str] = None,
         pw: Optional[str] = None,
     ):
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_FILEPATH)
 
-        if not os.path.isfile(os.path.join(filepath)):
+        if not os.path.isfile(filepath):
             assert (
                 endpoint is not None
             ), "No cache of seed entities found, please input endpoint url to query for seed entities."
-            entities = self.query_seed_entities(endpoint, user, pw)
+            entities = cls.query_seed_entities(endpoint, user, pw)
             with open(filepath, "w") as f:
                 f.write("\n".join(entities))
 
