@@ -5,7 +5,7 @@ SET
 -- copy all surfaces with geometry that should be identified (belong to building, but not footprint/roofprint/solid) and identified them into a temporary table
 DROP TABLE IF EXISTS "public"."true_surface_CityDB";
 
-CREATE TABLE "public"."true_surface_CityDB" AS (
+CREATE TABLE "public"."true_surface_CityDB_1" AS (
     SELECT
         "id",
         "gmlid",
@@ -13,17 +13,9 @@ CREATE TABLE "public"."true_surface_CityDB" AS (
         "parent_id",
         "root_id",
         "cityobject_id",
-        CASE
-            WHEN public.ST_3DArea(public.ST_MakeValid(geometry)) != 0
-            AND public.ST_Orientation(geometry) = 1
-            AND public.ST_Area(geometry) / public.ST_3DArea(public.ST_MakeValid(geometry)) > {critAreaRatio} THEN 35
-            ELSE CASE
-                WHEN public.ST_3DArea(public.ST_MakeValid(geometry)) != 0
-                AND public.ST_Orientation(geometry) = -1
-                AND public.ST_Area(geometry) / public.ST_3DArea(public.ST_MakeValid(geometry)) > {critAreaRatio} THEN 33
-                ELSE 34
-            END
-        END AS "class"
+        public.ST_Orientation(geometry) AS "orientation",
+        public.ST_Area(geometry) AS "a2d",
+        public.ST_3DArea(public.ST_MakeValid(geometry)) AS "a3d"
     FROM
         "surface_geometry"
     WHERE
@@ -53,6 +45,34 @@ CREATE TABLE "public"."true_surface_CityDB" AS (
             )
         )
 );
+
+CREATE TABLE "public"."true_surface_CityDB" AS (
+    SELECT
+        "id",
+        "gmlid",
+        "envelope",
+        "parent_id",
+        "root_id",
+        "cityobject_id",
+        CASE
+            WHEN "a3d" != 0
+            AND "orientation" = 1
+            AND "a2d" / "a3d" > {critAreaRatio} THEN 35
+            ELSE CASE
+                WHEN "a3d" != 0
+                AND "orientation" = -1
+                AND "a2d" / "a3d" > {critAreaRatio} THEN 33
+                ELSE 34
+            END
+        END AS "class"
+    FROM
+        "public"."true_surface_CityDB_1"
+);
+
+ALTER TABLE
+    "public"."true_surface_CityDB"
+ADD
+    PRIMARY KEY (id);
 
 -- remove their parent and root from building
 UPDATE
@@ -341,5 +361,7 @@ FROM
                     ) AS "zr" ON "zg"."building_id" = "zr"."building_id"
             ) AS "zz"
     ) AS "condition";
+
+DROP TABLE IF EXISTS "public"."true_surface_CityDB_1";
 
 DROP TABLE IF EXISTS "public"."true_surface_CityDB";
