@@ -25,12 +25,24 @@ public class PieChart extends TemplatePanel {
         // Sets the unit for retrieval
         super.setUnit(unit);
         // Title is: Latest Measure Distribution [Unit]
-        String titleContent = "Latest " + StringHelper.addSpaceBetweenCapitalWords(measure) + " Distribution";
+        String titleContent = "Latest " + StringHelper.addSpaceBetweenCapitalWords(measure) + " distribution";
         titleContent = unit.equals("null") ? titleContent : titleContent + " [" + unit + "]"; // Unit is optional
         super.setTitle(titleContent);
         // Description should follow the measure name and item group
         String description = "A pie chart displaying the latest distribution for " + measure.toLowerCase() + " of " + itemGroup;
         super.setDescription(description);
+        // Assumes that each measure of a specific item group belongs to only 1 table
+        String tableName = timeSeriesMetadata.get(0)[2];
+        StringBuilder queryBuilder = new StringBuilder();
+        StringBuilder dataCols = new StringBuilder();
+        for (String[] metadata : timeSeriesMetadata) {
+            // Only append a comma sign at the start if it is not the first column
+            if (dataCols.length() != 0) dataCols.append(",");
+            dataCols.append("\\\"").append(metadata[1]).append("\\\"");
+        }
+        queryBuilder.append("SELECT time AS \\\"time\\\",").append(dataCols).append(" ")
+                .append("FROM \\\"").append(tableName).append("\\\" WHERE $__timeFilter(time)");
+        super.setQuery(queryBuilder);
     }
 
     /**

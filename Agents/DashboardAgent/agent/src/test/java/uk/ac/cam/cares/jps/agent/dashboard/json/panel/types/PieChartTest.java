@@ -80,13 +80,24 @@ public class PieChartTest {
     }
 
     public static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
-        String titleContent = "Latest " + StringHelper.addSpaceBetweenCapitalWords(metadata[0]) + " Distribution";
+        String titleContent = "Latest " + StringHelper.addSpaceBetweenCapitalWords(metadata[0]) + " distribution";
         titleContent = metadata[4].equals("null") ? titleContent : titleContent + " [" + metadata[4] + "]";
         // Similar to above
         String description = "A pie chart displaying the latest distribution for " + metadata[0].toLowerCase() + " of " + metadata[1].toLowerCase();
         String expectedTransformations = "[" + TransformationOptionsTest.genExpectedOrganizeTransformation(itemDetails, "") + "]";
+        // For generating the query
+        StringBuilder queryBuilder = new StringBuilder();
+        StringBuilder dataCols = new StringBuilder();
+        String tableName = itemDetails.get(0)[2];
+        for (String[] data : itemDetails) {
+            if (dataCols.length() != 0) dataCols.append(",");
+            dataCols.append("\\\"").append(data[1]).append("\\\"");
+        }
+        queryBuilder.append("SELECT time AS \\\"time\\\",").append(dataCols).append(" ")
+                .append("FROM \\\"").append(tableName).append("\\\" WHERE $__timeFilter(time)");
+        // Construct the expected syntax
         StringBuilder sb = new StringBuilder();
-        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, ""))
+        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, queryBuilder.toString()))
                 .append(",\"type\":\"piechart\",")
                 .append("\"pluginVersion\":\"10.0.3\",")
                 .append("\"fieldConfig\": {")
