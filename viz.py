@@ -4,9 +4,9 @@ from utils import Utils
 
 
 def plotGraph(G: nx.MultiDiGraph, filepath: str = "graph.svg"):
-    G = nx.relabel_nodes(G, mapping={n: Utils.shortenIri(n) for n in G.nodes()})
+    G = nx.relabel_nodes(G, mapping={n: Utils.shorten_iri(n) for n in G.nodes()})
     labels = {
-        e: Utils.shortenIri(prop) for e, prop in nx.get_edge_attributes(G, "label").items()
+        e: Utils.shorten_iri(prop) for e, prop in nx.get_edge_attributes(G, "label").items()
     }
     nx.set_edge_attributes(G, labels, "label")
 

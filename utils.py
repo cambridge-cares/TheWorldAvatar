@@ -7,7 +7,7 @@ from constants.predicates import RDFS_SUBCLASSOF
 
 class Utils:
     @classmethod
-    def shortenIri(cls, iri: str):
+    def shorten_iri(cls, iri: str):
         for ns, p in NAMESPACE2PREFIX.items():
             if iri.startswith(ns):
                 return f"{p}:{iri[len(ns):]}"
