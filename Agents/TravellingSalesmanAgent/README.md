@@ -66,7 +66,7 @@ The agent is reachable at the `/runtsp` endpoint.
 
 #### Input specification
 
-1) `function` - The use case scenario to run the isochrones.
+1) `function` - The use case scenario to run the travelling salesman problem.
 
 #### Urban Resilience Planning (UR)
 
