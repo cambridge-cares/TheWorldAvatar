@@ -115,8 +115,24 @@ class OCCSparqlCompact2VerboseConverter:
         graph_patterns = list(sparql_compact.graph_patterns)
         graph_patterns.reverse()
 
-        select_vars_verbose = list(sparql_compact.select_clause.vars)
+        select_vars_verbose = ["?BasisSetLabel", "?LevelOfTheoryLabel"] + list(sparql_compact.select_clause.vars)
         graph_patterns_verbose = []
+
+        basisset_pattern = TriplePattern.from_triple(
+            "?MolecularComputation",
+            "occ:hasMethodology/occ:hasBasisSet/rdfs:label",
+            "?BasisSetLabel"
+        )
+        if basisset_pattern not in graph_patterns:
+            graph_patterns_verbose.append(basisset_pattern)
+        
+        leveloftheory_pattern = TriplePattern.from_triple(
+            "?MolecularComputation",
+            "occ:hasMethodology/occ:hasLevelOfTheory/rdfs:label",
+            "?LevelOfTheoryLabel"
+        )
+        if leveloftheory_pattern not in graph_patterns:
+            graph_patterns_verbose.append(leveloftheory_pattern)
 
         while len(graph_patterns) > 0:
             pattern = graph_patterns.pop()
