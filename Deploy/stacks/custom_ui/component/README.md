@@ -6,6 +6,7 @@ This directory contains the source code and compilation builds to create custom 
 Basic knowledge on CSS and Typescript
 
 ### 1.2 Typescript Development
+#### 1.2.1 Dynamic Component
 In the `src` directory, developers can find the core `DynamicComponent` class in the `/ts/dynamic_component.ts`. It is intended not to modify this class. Instead, please develop your application-specific component by extending this class. Once completed, create a separate subdirectory and place this new component into that subdirectory. A sample example is found at `./src/ts/datasheet/asset_display_component.ts`. 
 
 By default, the DynamicComponent generates the following HTML elements:
@@ -28,6 +29,13 @@ A helper method to create a new HTML element with your required type, id or clas
 A helper method to create a new Div element with your required id or classes for changing its display.
 
 Once ready, please place your component into a distinct subdirectory. This should be similar to `./src/ts/datasheet/asset_display_component.ts`. 
+
+#### 1.2.2 Supplementary Components
+There are also supplementary components to support the different applications available in the `shared` subdirectory:
+
+1) `Loader`: A loader element that is fixed to the center of the screen. Can be hidden or shown with the respective methods.
+
+2) `Overlay`: An overlay element that will darken the entire screen when active. Can be hidden or shown with the respective methods.
 
 ### 1.3 Styling
 Developers can edit the core styling for their needs in `src/css/component.css`. For styling custom components, please add the new classes and ids in the css file before compiling.

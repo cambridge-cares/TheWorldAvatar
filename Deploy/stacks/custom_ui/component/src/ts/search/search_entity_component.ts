@@ -25,6 +25,8 @@ interface ConfigurationOptions {
 class SeachEntityComponent extends DynamicComponent {
   private options: ConfigurationOptions;
   private numerical_placeholder_message: string = "Type a number";
+  private loader: Loader;
+  private overlay: Overlay;
 
   /**
    * Create a new HTML element to support the application requirements.
@@ -36,6 +38,10 @@ class SeachEntityComponent extends DynamicComponent {
     super(title);
     this.options = options;
     this.initContainerAttributes();
+    this.loader = new Loader();
+    this.overlay = new Overlay();
+    this.loader.render(this.container);
+    this.overlay.render(this.container);
     let parentElement: HTMLElement = this.container_content;
     // Create a dropdown component for zone types
     new SelectDropdownComponent("Zone Type", this.options.stackUrl, options.plotNamespace).render(parentElement);
@@ -88,6 +94,9 @@ class SeachEntityComponent extends DynamicComponent {
   private handleSubmit(mapboxMapHandler: any, layerId: string, textComponentArray: SearchTextInputComponent[]): void {
     // Reset the filters
     mapboxMapHandler.setFilter(layerId, null);
+    // Show the loader and overlay in this order
+    this.overlay.show();
+    this.loader.show();
     // Retrieve the options for the zone type search parameter
     let zoneTypes: string = this.retrieveSelectedOptions(this.container_content.firstElementChild);
     // Retrieve the option for site area search parameter
@@ -97,7 +106,7 @@ class SeachEntityComponent extends DynamicComponent {
       subs: `{"area":"${siteArea}", "zonetype":"${zoneTypes}"}`,
       namespace: this.options.plotNamespace
     };
-
+    let _self = this;
     // Send the GET request
     $.ajax({
       url: `${this.options.stackUrl}/filter-agent/filter`,
@@ -116,8 +125,11 @@ class SeachEntityComponent extends DynamicComponent {
           let zoneFilterExpression: [string, string[], [string, string[]]] = ["in", ['get', 'iri'], ['literal', plotResults]];
           mapboxMapHandler.setFilter(layerId, zoneFilterExpression);
         }
+        // Hide the loader and overlay in this order
+        _self.loader.hide();
+        _self.overlay.hide();
       },
-      error: function (error) {
+      error: (error) => {
         // Handle any errors here
         console.error("Error:", error);
       }
