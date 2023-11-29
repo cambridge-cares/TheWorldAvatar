@@ -20,7 +20,7 @@ class OKGraph2Sparql(Graph2Sparql):
     def make_graph_pattern(self, query_graph: QueryGraph, s: str, o: str):
         if query_graph.nodes[o].get("template_node"):
             p = query_graph.edges[s, o]["label"]
-            if p in ["ocape:hasReactant", "ocape:hasProduct", "okin:hasGasPhase/^okin:belongsToPhase"]:
+            if p in ["ocape:hasReactant", "ocape:hasProduct", "(ocape:hasReactant|ocape:hasProduct)", "okin:hasGasPhase/^okin:belongsToPhase"]:
                 assert query_graph.nodes[o]["rdf_type"] == "os:Species", query_graph.nodes[o]["rdf_type"]
                 p_sparql = p + "/skos:altLabel"
             elif p == "okin:hasReaction":

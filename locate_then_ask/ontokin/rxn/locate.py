@@ -85,6 +85,70 @@ class OKReactionLocator:
         )
         return query_graph, "chemical reaction"
 
+    def _locate_by_species(self, query_graph: QueryGraph, entity: OKSpecies, type: str):
+        if type == "reactant":
+            predicate = "ocape:hasReactant"
+            template = "has reactant [{label}]"
+        elif type == "product":
+            predicate = "ocape:hasProduct"
+            template = "has product [{label}]"
+        elif type == "either":
+            predicate = "(ocape:hasReactant|ocape:hasProduct)"
+            template = "{V} [{{label}}]".format(
+                V=random.choice(["has", "features", "includes", "is participated by"])
+            )
+        else:
+            raise ValueError("Unexpected species type wrt chemical reactions: " + type)
+
+        node = "Species_" + str(
+            sum(n.startswith("Species_") for n in query_graph.nodes())
+        )
+
+        query_graph.add_node(
+            node,
+            iri=entity.iri,
+            rdf_type="os:Species",
+            label=entity.label,
+            template_node=True,
+        )
+        query_graph.add_edge("Reaction", node, label=predicate)
+        verbalization = template.format(label=entity.label)
+        return query_graph, verbalization
+
+    def _locate_by_mechanism(
+        self, query_graph: QueryGraph, sampled_entity: OKMechanism
+    ):
+        mechanism_node = "Mechanism"
+        literal_node = "Literal_" + str(
+            sum(n.startswith("Literal_") for n in query_graph.nodes())
+        )
+        query_graph.add_nodes_from(
+            [
+                (
+                    mechanism_node,
+                    dict(iri=sampled_entity.iri, rdf_type="okin:ReactionMechanism"),
+                ),
+                (
+                    literal_node,
+                    dict(label=sampled_entity.doi, literal=True, template_node=True),
+                ),
+            ]
+        )
+        query_graph.add_edges_from(
+            [
+                ("Reaction", mechanism_node, dict(label="^okin:hasReaction")),
+                (
+                    mechanism_node,
+                    literal_node,
+                    dict(label="okin:hasProvenance/op:hasDOI"),
+                ),
+            ]
+        )
+        verbalization = "is involved in the mechanism found in [{DOI}]".format(
+            DOI=sampled_entity.doi
+        )
+        return query_graph, verbalization
+
     def _locate_concept_and_relation(self, query_graph: QueryGraph):
         query_graph = copy.deepcopy(query_graph)
         topic_node = next(
@@ -96,24 +160,16 @@ class OKReactionLocator:
         entity = self.store.get(entity_iri)
         assert isinstance(entity, OKGasPhaseReaction)
 
-        sampled_reactant_nodes = get_objs(
-            query_graph, subj="Reaction", predicate="ocape:hasReactant"
-        )
-        sampled_reactant_iris = [
-            query_graph.nodes[n]["iri"] for n in sampled_reactant_nodes
+        sampled_species_iris = [
+            query_graph.nodes[n]["iri"]
+            for n in query_graph.nodes()
+            if n.startswith("Species_")
         ]
         unsampled_reactant_iris = [
-            x for x in entity.reactant_iris if x not in sampled_reactant_iris
-        ]
-
-        sampled_product_nodes = get_objs(
-            query_graph, subj="Reaction", predicate="ocape:hasProduct"
-        )
-        sampled_product_iris = [
-            query_graph.nodes[n]["iri"] for n in sampled_product_nodes
+            x for x in entity.reactant_iris if x not in sampled_species_iris
         ]
         unsampled_product_iris = [
-            x for x in entity.product_iris if x not in sampled_product_iris
+            x for x in entity.product_iris if x not in sampled_species_iris
         ]
 
         sampling_frame = unsampled_reactant_iris + unsampled_product_iris
@@ -134,60 +190,23 @@ class OKReactionLocator:
         sampled_entity = self.store.get(sampled_iri)
         if sampled_iri in unsampled_reactant_iris:
             assert isinstance(sampled_entity, OKSpecies)
-            reactant_node = "Reactant_" + str(len(sampled_reactant_nodes))
-            query_graph.add_node(
-                reactant_node,
-                iri=sampled_entity.iri,
-                rdf_type="os:Species",
-                label=sampled_entity.label,
-                template_node=True,
+            query_graph, verbalization = self._locate_by_species(
+                query_graph,
+                entity=sampled_entity,
+                type=random.choice(["reactant", "either"]),
             )
-            query_graph.add_edge("Reaction", reactant_node, label="ocape:hasReactant")
-            verbalization = "has reactant [{label}]".format(label=sampled_entity.label)
         elif sampled_iri in unsampled_product_iris:
             assert isinstance(sampled_entity, OKSpecies)
-            product_node = "Product_" + str(len(sampled_product_nodes))
-            query_graph.add_node(
-                product_node,
-                iri=sampled_entity.iri,
-                rdf_type="os:Species",
-                label=sampled_entity.label,
-                template_node=True,
+            query_graph, verbalization = self._locate_by_species(
+                query_graph,
+                entity=sampled_entity,
+                type=random.choice(["product", "either"]),
             )
-            query_graph.add_edge("Reaction", product_node, label="ocape:hasProduct")
-            verbalization = "has product [{label}]".format(label=sampled_entity.label)
         else:
             assert isinstance(sampled_entity, OKMechanism)
-            mechanism_node = "Mechanism"
-            literal_node = "Literal_" + str(sum(n.startswith("Literal_") for n in query_graph.nodes()))
-            query_graph.add_nodes_from(
-                [
-                    (
-                        mechanism_node,
-                        dict(iri=sampled_entity.iri, rdf_type="okin:ReactionMechanism"),
-                    ),
-                    (
-                        literal_node,
-                        dict(
-                            label=sampled_entity.doi, literal=True, template_node=True
-                        ),
-                    ),
-                ]
+            query_graph, verbalization = self._locate_by_mechanism(
+                query_graph, sampled_entity
             )
-            query_graph.add_edges_from(
-                [
-                    ("Reaction", mechanism_node, dict(label="^okin:hasReaction")),
-                    (
-                        mechanism_node,
-                        literal_node,
-                        dict(label="okin:hasProvenance/op:hasDOI"),
-                    ),
-                ]
-            )
-            verbalization = "is involved in the mechanism found in [{DOI}]".format(
-                DOI=sampled_entity.doi
-            )
-
         return query_graph, verbalization
 
     def locate_concept_and_relation_multi(self, entity_iri: str, cond_num: int):
