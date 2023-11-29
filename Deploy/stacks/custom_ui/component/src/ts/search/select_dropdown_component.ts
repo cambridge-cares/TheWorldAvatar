@@ -16,7 +16,7 @@ class SelectDropdownComponent {
     // Create a new container item
     this.container = createDiv({ classes: ["line-padding"] });
     // Create a button that can be clicked to reveal the list of dropdown options
-    let dropdownButtonElement: HTMLElement = createHTMLElement("button");
+    let dropdownButtonElement: HTMLElement = createHTMLElement("button", { classes: ["control-button"] });
     dropdownButtonElement.textContent = "Select " + parameterName;
     // Add a dropdown option list for zone types
     this.dropdown_options_container = createDiv({ classes: ["dropdown-box"] });

@@ -50,7 +50,7 @@ class SeachEntityComponent extends DynamicComponent {
     let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Plot Area [m2]", this.numerical_placeholder_message, this.INVALID_INPUT_MESSAGE);
     siteAreaTextInput.render(parentElement);
     // Create a submit button
-    let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement('button');
+    let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement("button", { classes: ["control-button"] });
     submitButton.textContent = "Submit";
     submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, this.options.layerId, [siteAreaTextInput]));
     parentElement.appendChild(submitButton);

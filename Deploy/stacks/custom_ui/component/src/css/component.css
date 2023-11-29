@@ -37,6 +37,7 @@
     -o-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
     -ms-transform: rotate(360deg);
@@ -54,6 +55,7 @@
     -o-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
     -ms-transform: rotate(360deg);
@@ -71,6 +73,7 @@
     -o-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
     -ms-transform: rotate(360deg);
@@ -88,6 +91,7 @@
     -o-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
     -ms-transform: rotate(360deg);
@@ -105,6 +109,7 @@
     -o-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
     -ms-transform: rotate(360deg);
@@ -122,6 +127,7 @@
     -o-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
     -ms-transform: rotate(360deg);
@@ -139,6 +145,7 @@
     -o-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
     -ms-transform: rotate(360deg);
@@ -156,6 +163,7 @@
     -o-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
     -ms-transform: rotate(360deg);
@@ -182,14 +190,14 @@
 }
 
 
-#loaderContainer{
+#loaderContainer {
   position: absolute;
   top: 45vh;
   left: 45vw;
   z-index: 1001;
 }
 
-#loader{
+#loader {
   position: relative;
   height: 100px;
   width: 100px;
@@ -202,7 +210,7 @@
   -webkit-animation: rotate-loading 1.5s linear 0s infinite normal;
 }
 
-#loaderText{
+#loaderText {
   position: absolute;
   top: 0;
   width: 100px;
@@ -217,9 +225,30 @@
   -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
 }
 
+.control-button {
+  padding: .25rem .5rem;
+  background-color: #FFFFFF;
+  border: 0;
+  border-radius: .25rem;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  font-size: 0.75rem;
+  color: #111827;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.control-button:hover {
+  background-color: #ccc;
+  box-shadow: none;
+}
+
 .line-item {
   display: flex;
   margin: 4px 0;
+  font-size: 0.75rem;
 }
 
 .line-padding {
