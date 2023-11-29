@@ -4,6 +4,7 @@ from .data_processing.constants import T5_PREFIX_DOMAINCLS, T5_PREFIX_NL2SPARQL
 from .data_processing.nl import preprocess_nl
 from .data_processing.ontokin.postprocess import OKPostProcessor
 from .data_processing.ontospecies.postprocess import OSPostProcessor
+from .data_processing.ontocompchem.postprocess import OCCPostProcessor
 from .data_processing.postprocess import PostProcessor
 from .data_processing.sparql import postprocess_sparql
 from .sparql import SparqlQuery
@@ -14,7 +15,9 @@ class MultiDomainTranslator:
     def __init__(self):
         self.model = Seq2SeqClient()
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
-            ontospecies=OSPostProcessor(), ontokin=OKPostProcessor()
+            ontospecies=OSPostProcessor(),
+            ontokin=OKPostProcessor(),
+            ontocompchem=OCCPostProcessor(),
         )
 
     def nl2sparql(self, question: str):

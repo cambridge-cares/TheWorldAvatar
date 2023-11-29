@@ -73,10 +73,8 @@ class OSPredicateCorrector:
 
     def correct(self, predicate: str):
         if (
-            not predicate.startswith("?has")
-            or not predicate.startswith("os:has")
-            or predicate in self.VALID_PREDICATES
-        ):
+            not predicate.startswith("?has") and not predicate.startswith("os:has")
+        ) or predicate in self.VALID_PREDICATES:
             return predicate
 
         key = predicate.split("/", maxsplit=1)[0].rsplit("has", maxsplit=1)[-1]

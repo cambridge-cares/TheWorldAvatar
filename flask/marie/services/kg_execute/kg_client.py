@@ -10,7 +10,8 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX ocape: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
 PREFIX oprvn: <http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>"""
+PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl#>"""
 
     def __init__(
         self,

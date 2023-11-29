@@ -27,5 +27,18 @@
             "compare the kinetic models of the reaction H2 + OH <=> H + H2O across all the mechanisms it appears in",
             "compare thermodynamic data of O2 across all the mechanisms in which it appears"
         ]
+    },
+    {
+        "title": "Quantum Chemistry Computations",
+        "description": "Queries related to quantum chemistry computations",
+        "questions": [
+            "what is the optimized geometry of O2 at the UB3LYP level of theory?",
+            "can you provide the molecular structure of H2 calculated using RB3LYP level of theory?",
+            "compare zero-point energy when using CC-pVTZ vs CC-pVQZ basis set for Ar?",
+            "what is the calculated energy of H2O, specify the basis set",
+            "can you provide the HOMO and LUMO energies for N2 at the RB3LYP level?",
+            "what are the rotational constants for H2O at the RB3LYP level?",
+            "what's the energy of O2 at the UB3LYP level of theory?"
+        ]
     }
 ]
