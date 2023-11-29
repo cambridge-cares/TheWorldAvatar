@@ -54,10 +54,12 @@ class SparqlQuery(SparqlBase):
 
     @classmethod
     def _extract_values_clause(cls, graph_patterns_str: str):
-        """VALUES ?Species { {literal} {literal} ... }"""
+        """VALUES ?var { {literal} {literal} ... }"""
         graph_patterns_str = graph_patterns_str[len("VALUES") :].strip()
-        assert graph_patterns_str.startswith("?Species"), graph_patterns_str
-        graph_patterns_str = graph_patterns_str[len("?Species") :].strip()
+        assert graph_patterns_str.startswith("?"), graph_patterns_str
+        var, graph_patterns_str = graph_patterns_str.split(maxsplit=1)
+        
+        graph_patterns_str = graph_patterns_str.strip()
         assert graph_patterns_str.startswith("{"), graph_patterns_str
         graph_patterns_str = graph_patterns_str[1:].strip()
 
@@ -78,7 +80,7 @@ class SparqlQuery(SparqlBase):
             while ptr < len(graph_patterns_str) and graph_patterns_str[ptr].isspace():
                 ptr += 1
 
-        values_clause = ValuesClause("?Species", literals)
+        values_clause = ValuesClause(var, literals)
         graph_patterns_str = graph_patterns_str[ptr + 1 :]
 
         return graph_patterns_str, values_clause

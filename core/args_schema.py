@@ -12,11 +12,6 @@ class ModelArguments:
         default="hf",
         metadata={"help": "`hf` (Hugging Face), `ort` (ONNX Runtime)."},
     )
-    # quantization hyperparams
-    bits: Optional[int] = field(
-        default=None, metadata={"help": "How many bits to use."}
-    )
-
 
 @dataclass
 class DatasetArguments:

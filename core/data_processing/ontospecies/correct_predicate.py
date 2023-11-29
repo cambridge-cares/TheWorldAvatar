@@ -60,10 +60,8 @@ class OSPredicateCorrector:
 
     def correct(self, predicate: str):
         if (
-            not predicate.startswith("?has")
-            or not predicate.startswith("os:has")
-            or predicate in self.VALID_PREDICATES
-        ):
+            not predicate.startswith("?has") and not predicate.startswith("os:has")
+        ) or predicate in self.VALID_PREDICATES:
             return predicate
 
         key = predicate.split("/", maxsplit=1)[0].rsplit("has", maxsplit=1)[-1]
@@ -80,7 +78,7 @@ class OSPredicateCorrector:
                 return "os:has{key}/os:value".format(key=closest_key)
             else:
                 return "os:has" + closest_key
-        else: # self.USE_CHEMCLASS_KEYS:
+        else:  # self.USE_CHEMCLASS_KEYS:
             if "/" in predicate:
                 return "os:has{key}/rdfs:label".format(key=closest_key)
             else:

@@ -3,6 +3,7 @@ from typing import Dict
 from core.args_schema import ModelArguments
 from core.data_processing.constants import T5_PREFIX_DOMAINCLS, T5_PREFIX_NL2SPARQL
 from core.data_processing.nl import preprocess_nl
+from core.data_processing.ontocompchem.postprocess import OCCPostProcessor
 from core.data_processing.ontokin.postprocess import OKPostProcessor
 from core.data_processing.ontospecies.postprocess import OSPostProcessor
 from core.data_processing.postprocess import PostProcessor
@@ -19,7 +20,9 @@ class MultiDomainTranslator:
     ):
         self.model = ModelWrapper(model_args, max_new_tokens=max_new_tokens)
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
-            ontospecies=OSPostProcessor(), ontokin=OKPostProcessor()
+            ontospecies=OSPostProcessor(),
+            ontokin=OKPostProcessor(),
+            ontocompchem=OCCPostProcessor(),
         )
 
     def nl2sparql(self, question: str):
