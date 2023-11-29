@@ -251,6 +251,10 @@
   font-size: 0.75rem;
 }
 
+.evenly-space-container {
+  justify-content: space-evenly;
+}
+
 .line-padding {
   padding-bottom: 0.4rem;
 }

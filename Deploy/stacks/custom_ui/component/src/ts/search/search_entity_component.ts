@@ -49,11 +49,19 @@ class SeachEntityComponent extends DynamicComponent {
     // Create a text input component for site area
     let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Plot Area [m2]", this.numerical_placeholder_message, this.INVALID_INPUT_MESSAGE);
     siteAreaTextInput.render(parentElement);
+    // Create a container for the action buttons
+    let buttonContainer: HTMLElement = createDiv({ classes: ["line-item", "evenly-space-container"] });
     // Create a submit button
     let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement("button", { classes: ["control-button"] });
     submitButton.textContent = "Submit";
     submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, this.options.layerId, [siteAreaTextInput]));
-    parentElement.appendChild(submitButton);
+    buttonContainer.appendChild(submitButton);
+    // Create a clear all button
+    let clearButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement("button", { classes: ["control-button"] });
+    clearButton.textContent = "Clear inputs";
+    clearButton.addEventListener("click", () => this.handleClear());
+    buttonContainer.appendChild(clearButton);
+    parentElement.appendChild(buttonContainer);
   };
 
   /**
@@ -205,4 +213,27 @@ class SeachEntityComponent extends DynamicComponent {
     }
     return [currentMinVal, currentMaxVal]
   };
+
+  /**
+   * An event handler for clearing the user inputs.
+   * This method will parse the results into a string format suitable for the Filter agent.
+   * @param {Element} dropDownContainer - The container element with the input elements to extract data from.
+   * @returns {void}
+  */
+  private handleClear(): void {
+    // Select the dropdown container and uncheck all checked boxes
+    let dropdownElement: Element = this.container_content.firstElementChild;
+    let checkboxes: NodeList = dropdownElement.querySelectorAll("input[type=\"checkbox\"]:checked");
+    checkboxes.forEach((checkbox: HTMLInputElement) => {
+      checkbox.checked = false;
+    });
+
+    // Select the text input elements and reset them
+    let textInputElement: Element = dropdownElement.nextElementSibling;
+    let inputValues: NodeList = textInputElement.querySelectorAll("input[type=\"text\"]");
+    inputValues.forEach((inputValue) => {
+      (inputValue as HTMLInputElement).value = "";
+    });
+  };
+
 };
