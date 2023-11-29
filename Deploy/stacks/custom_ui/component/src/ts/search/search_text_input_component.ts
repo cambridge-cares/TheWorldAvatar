@@ -3,7 +3,8 @@
 */
 class SearchTextInputComponent {
   private readonly container: HTMLDivElement;
-  private readonly text_input_element: HTMLInputElement;
+  private readonly min_text_input_element: HTMLInputElement;
+  private readonly max_text_input_element: HTMLInputElement;
   private readonly error_message_element: HTMLDivElement;
 
   /**
@@ -18,14 +19,33 @@ class SearchTextInputComponent {
     // Create a name display for the search parameter
     let searchParameterName: HTMLElement = createDiv();
     searchParameterName.textContent = parameterName;
+
+    // Create a minimum container with a label and input
+    let minContainer: HTMLElement = createDiv({ classes: ["line-item"] });
+    let minLabel: HTMLElement = createDiv();
+    minLabel.innerHTML = "Min:&emsp;"
     // Create a text input element to allow users to type their requirements
-    this.text_input_element = <HTMLInputElement>createHTMLElement("input");
-    this.text_input_element.type = "text";
-    this.text_input_element.placeholder = placeholderText;
-    this.text_input_element.value = "";
+    this.min_text_input_element = <HTMLInputElement>createHTMLElement("input");
+    this.min_text_input_element.type = "text";
+    this.min_text_input_element.placeholder = placeholderText;
+    this.min_text_input_element.value = "";
+
+    // Create a maximum container with a label and input
+    let maxContainer: HTMLElement = createDiv({ classes: ["line-item"] });
+    let maxLabel: HTMLElement = createDiv();
+    maxLabel.innerHTML = "Max:&emsp;"
+    this.max_text_input_element = <HTMLInputElement>createHTMLElement("input");
+    this.max_text_input_element.type = "text";
+    this.max_text_input_element.placeholder = placeholderText;
+    this.max_text_input_element.value = "";
     // Append the new elements to the containers
+    minContainer.appendChild(minLabel);
+    minContainer.appendChild(this.min_text_input_element);
+    maxContainer.appendChild(maxLabel);
+    maxContainer.appendChild(this.max_text_input_element);
     this.container.appendChild(searchParameterName);
-    this.container.appendChild(this.text_input_element);
+    this.container.appendChild(minContainer);
+    this.container.appendChild(maxContainer);
     // If there is an error message, create the error element
     if (errorMessage.length > 0) {
       this.error_message_element = createErrorMessageElement(errorMessage);
@@ -34,10 +54,10 @@ class SearchTextInputComponent {
   };
 
   /**
-   * Retrieves the current value.
+   * Retrieves the current min and max value as an array.
   */
-  public getCurrentValue(): string {
-    return this.text_input_element.value;
+  public getCurrentValues(): string[] {
+    return [this.min_text_input_element.value, this.max_text_input_element.value];
   };
 
   /**

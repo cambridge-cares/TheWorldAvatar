@@ -100,10 +100,10 @@ class SeachEntityComponent extends DynamicComponent {
     // Retrieve the options for the zone type search parameter
     let zoneTypes: string = this.retrieveSelectedOptions(this.container_content.firstElementChild);
     // Retrieve the option for site area search parameter
-    let siteArea: string = this.retrieveTextInput(textComponentArray[0], true);
+    let areaInputs: string[] = this.retrieveMinMaxInput(textComponentArray[0], true);
     // Define the request parameters
     let params: { subs: string, namespace: string } = {
-      subs: `{"area":"${siteArea}", "zonetype":"${zoneTypes}"}`,
+      subs: `{"minarea":"${areaInputs[0]}", "maxarea":"${areaInputs[1]}", "zonetype":"${zoneTypes}"}`,
       namespace: this.options.plotNamespace
     };
     let _self = this;
@@ -165,25 +165,35 @@ class SeachEntityComponent extends DynamicComponent {
   };
 
   /**
-   * Retrieve the current text input from the component.
-   * @param {SearchTextInputComponent} component - The component to extract current value.
+   * Retrieve the current min and max inputs from the component.
+   * @param {SearchTextInputComponent} component - The component to extract current values.
    * @param {boolean} isNumerical - A boolean indicating whether only numerical values are accepted.
-   * @returns {string} the current text.
+   * @returns {string[]} the current min and max values in this order.
   */
-  private retrieveTextInput(component: SearchTextInputComponent, isNumerical: boolean): string {
-    let currentText: string = component.getCurrentValue();
+  private retrieveMinMaxInput(component: SearchTextInputComponent, isNumerical: boolean): string[] {
+    let currentTexts: string[] = component.getCurrentValues();
+    let currentMinVal: string = currentTexts[0];
+    let currentMaxVal: string = currentTexts[1];
+    // If both values are empty, return an array of empty strings with single quotes
+    // These single quotes will end the filter condition earlier in the filter agent to improve query performance
+    if (currentMinVal === "" && currentMaxVal === "") {
+      return ["''", "''"];
+      // If there is only an empty min value, the min value should default to 0
+    } else if (currentMinVal === "") {
+      currentMinVal = "0";
+      // If there is only an empty max value, the max value should default to a very large number
+    } else if (currentMaxVal === "") {
+      currentMaxVal = "1000000000";
+    }
+
     // Use regex to verify only digits are inside
-    let isANumber: boolean = /^\d+$/.test(currentText);
-    // If the current text is an empty string, return an empty string with single quotes
-    if (currentText === "") {
-      currentText = "''";
-      // When the text input must be a number and the user input is not
-    } else if (isNumerical && !isANumber) {
-      // Set the text to null for meeting the filter agent requirements
-      currentText = "''";
+    let isANumber: boolean = /^\d+$/.test(currentMinVal[0]) && /^\d+$/.test(currentMaxVal[1]);
+    // When the text input must be a number and the user input is not
+    if (isNumerical && !isANumber) {
       // Invoke the error message
       component.invokeError();
+      return ["''", "''"];
     }
-    return currentText;
+    return [currentMinVal, currentMaxVal]
   };
 };
