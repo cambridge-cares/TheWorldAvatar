@@ -47,6 +47,9 @@ PROPERTY_KEYS = [
     "VaporDensity",
     "VaporPressure",
     "Viscosity",
+    "HeatCapacity",
+    "StandardEnthalpy",
+    "StandardEntropy"
 ]
 
 IDENTIFIER_KEYS = [
