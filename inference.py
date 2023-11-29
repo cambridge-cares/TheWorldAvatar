@@ -6,7 +6,7 @@ import transformers
 from tqdm import tqdm
 
 from core.args_schema import DatasetArguments, InferenceArguments, ModelArguments
-from core.translate.multi_domain import  MultiDomainTranslator
+from core.translate.multi_domain import MultiDomainTranslator
 from core.translate.single_domain import SingleDomainTranslator
 
 
