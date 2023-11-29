@@ -29,9 +29,9 @@ def sanitize(text: str):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--filepath-examples", type=str, required=True)
-    parser.add_argument("--filepath-paraphrases", type=str, required=True)
-    parser.add_argument("--dirpath-out", type=str, required=True)
+    parser.add_argument("--filepath_examples", type=str, required=True)
+    parser.add_argument("--filepath_paraphrases", type=str, required=True)
+    parser.add_argument("--dirpath_out", type=str, required=True)
     args = parser.parse_args()
 
     df = pd.read_csv(args.filepath_paraphrases, index_col="id")
