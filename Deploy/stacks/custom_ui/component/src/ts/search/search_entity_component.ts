@@ -27,6 +27,7 @@ class SeachEntityComponent extends DynamicComponent {
   private numerical_placeholder_message: string = "Type a number";
   private loader: Loader;
   private overlay: Overlay;
+  private INVALID_INPUT_MESSAGE: string = "Invalid input. Please enter a numerical value.";
 
   /**
    * Create a new HTML element to support the application requirements.
@@ -46,7 +47,7 @@ class SeachEntityComponent extends DynamicComponent {
     // Create a dropdown component for zone types
     new SelectDropdownComponent("Zone Type", this.options.stackUrl, options.plotNamespace).render(parentElement);
     // Create a text input component for site area
-    let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Plot Area [m2]", this.numerical_placeholder_message, "Invalid input. Please enter a numerical value.");
+    let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Plot Area [m2]", this.numerical_placeholder_message, this.INVALID_INPUT_MESSAGE);
     siteAreaTextInput.render(parentElement);
     // Create a submit button
     let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement('button');
@@ -94,46 +95,55 @@ class SeachEntityComponent extends DynamicComponent {
   private handleSubmit(mapboxMapHandler: any, layerId: string, textComponentArray: SearchTextInputComponent[]): void {
     // Reset the filters
     mapboxMapHandler.setFilter(layerId, null);
-    // Show the loader and overlay in this order
-    this.overlay.show();
-    this.loader.show();
     // Retrieve the options for the zone type search parameter
     let zoneTypes: string = this.retrieveSelectedOptions(this.container_content.firstElementChild);
-    // Retrieve the option for site area search parameter
-    let areaInputs: string[] = this.retrieveMinMaxInput(textComponentArray[0], true);
-    // Define the request parameters
-    let params: { subs: string, namespace: string } = {
-      subs: `{"minarea":"${areaInputs[0]}", "maxarea":"${areaInputs[1]}", "zonetype":"${zoneTypes}"}`,
-      namespace: this.options.plotNamespace
-    };
-    let _self = this;
-    // Send the GET request
-    $.ajax({
-      url: `${this.options.stackUrl}/filter-agent/filter`,
-      type: "GET",
-      data: params,
-      success: function (response) {
-        // Retrieved response should be in the form of ["result1", "result2"]
-        // Parse each value as an array item
-        let plotResults: string[] = response.slice(1, -1)  // Remove the brackets '[' and ']'
-          .split(', ');
-        // If there are plots to filter, set the expression and filter for the specified layer
-        // Note that the condition is to detect whether the first object is not an empty string.
-        // The filter agent returns an empty string if no plot(s) of interest is found, so checking the length is not viable
-        if (plotResults[0].length > 0) {
-          // Filter expression
-          let zoneFilterExpression: [string, string[], [string, string[]]] = ["in", ['get', 'iri'], ['literal', plotResults]];
-          mapboxMapHandler.setFilter(layerId, zoneFilterExpression);
+    try {
+      // Retrieve the option for site area search parameter
+      let areaInputs: string[] = this.retrieveMinMaxInput(textComponentArray[0], true);
+      // Show the loader and overlay in this order
+      this.overlay.show();
+      this.loader.show();
+      // Define the request parameters
+      let params: { subs: string, namespace: string } = {
+        subs: `{"minarea":"${areaInputs[0]}", "maxarea":"${areaInputs[1]}", "zonetype":"${zoneTypes}"}`,
+        namespace: this.options.plotNamespace
+      };
+      // Create a variable for this object context so that the fields are still accesible in ajax
+      let _self = this;
+      // Send the GET request
+      $.ajax({
+        url: `${this.options.stackUrl}/filter-agent/filter`,
+        type: "GET",
+        data: params,
+        success: function (response) {
+          // Retrieved response should be in the form of ["result1", "result2"]
+          // Parse each value as an array item
+          let plotResults: string[] = response.slice(1, -1)  // Remove the brackets '[' and ']'
+            .split(', ');
+          // If there are plots to filter, set the expression and filter for the specified layer
+          // Note that the condition is to detect whether the first object is not an empty string.
+          // The filter agent returns an empty string if no plot(s) of interest is found, so checking the length is not viable
+          if (plotResults[0].length > 0) {
+            // Filter expression
+            let zoneFilterExpression: [string, string[], [string, string[]]] = ["in", ['get', 'iri'], ['literal', plotResults]];
+            mapboxMapHandler.setFilter(layerId, zoneFilterExpression);
+          }
+          // Hide the loader and overlay in this order
+          _self.loader.hide();
+          _self.overlay.hide();
+        },
+        error: (error) => {
+          // Handle any errors here
+          console.error("Error:", error);
         }
-        // Hide the loader and overlay in this order
-        _self.loader.hide();
-        _self.overlay.hide();
-      },
-      error: (error) => {
-        // Handle any errors here
-        console.error("Error:", error);
+      });
+    } catch (error) {
+      // Do not do anything if the error message is expected
+      if (error.message != this.INVALID_INPUT_MESSAGE) {
+        // If it is unexpected, throw it to the user
+        throw error;
       }
-    });
+    }
   };
 
   /**
@@ -192,7 +202,6 @@ class SeachEntityComponent extends DynamicComponent {
     if (isNumerical && !isANumber) {
       // Invoke the error message
       component.invokeError();
-      return ["''", "''"];
     }
     return [currentMinVal, currentMaxVal]
   };

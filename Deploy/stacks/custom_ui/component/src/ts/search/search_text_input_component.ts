@@ -66,11 +66,12 @@ class SearchTextInputComponent {
   public invokeError(): void {
     // Show the error message
     this.error_message_element.style.display = "block";
-    console.log("Invalid Input: " + this.error_message_element.textContent);
+    console.log(this.error_message_element.textContent);
     // Set a timeout to remove the error message after 5 seconds
     setTimeout(() => {
       this.error_message_element.style.display = "none";
     }, 5000); // 5000 milliseconds = 5 seconds
+    throw new Error(this.error_message_element.textContent)
   };
 
   /**
