@@ -123,7 +123,8 @@ class OSSparqlCompact2VerboseConverter:
 
             key = predicate[len("os:has") :]
             assert key in PROPERTY_KEYS
-            assert obj == "?" + key
+            # do not check for obj == "?" + key, because it could be that the predicated has been corrected
+            # assert obj == "?" + key
 
             return self._make_species_hasproperty_patterns(key)
         except AssertionError:
