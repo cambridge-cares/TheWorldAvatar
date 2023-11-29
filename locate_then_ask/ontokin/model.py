@@ -6,7 +6,7 @@ from typing import Tuple
 class OKMechanism:
     # okin:ReactionMechanism
     iri: str
-    doi: str  # okin:hasProvenance/oprvn:hasDOI
+    doi: str  # okin:hasProvenance/op:hasDOI
     species_iris: Tuple[str, ...] = field(default_factory=tuple)  # okin:hasGasPhase/^okin:belongsToPhase
     reaction_iris: Tuple[str, ...] = field(default_factory=tuple)  # okin:hasReaction
 

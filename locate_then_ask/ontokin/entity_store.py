@@ -90,10 +90,10 @@ class OKEntityStore:
 
     def retrieve_mechanism_doi(self, entity_iri: str):
         query_template = """PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
-PREFIX oprvn: <http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#>
+PREFIX op: <http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#>
 
 SELECT DISTINCT * WHERE {{
-    <{IRI}> okin:hasProvenance/oprvn:hasDOI ?DOI .
+    <{IRI}> okin:hasProvenance/op:hasDOI ?DOI .
 }}
 LIMIT 1"""
         query = query_template.format(IRI=entity_iri)

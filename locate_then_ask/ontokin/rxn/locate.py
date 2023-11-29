@@ -64,7 +64,7 @@ class OKReactionLocator:
                     (
                         mechanism_node,
                         literal_node,
-                        dict(label="okin:hasProvenance/oprvn:hasDOI"),
+                        dict(label="okin:hasProvenance/op:hasDOI"),
                     ),
                 ]
             )
@@ -180,7 +180,7 @@ class OKReactionLocator:
                     (
                         mechanism_node,
                         literal_node,
-                        dict(label="okin:hasProvenance/oprvn:hasDOI"),
+                        dict(label="okin:hasProvenance/op:hasDOI"),
                     ),
                 ]
             )
