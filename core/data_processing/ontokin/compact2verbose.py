@@ -50,7 +50,7 @@ class OKSparqlCompact2VerboseConverter:
             return (
                 isinstance(pattern, TriplePattern)
                 and pattern.subj == "?Mechanism"
-                and any(pred == "okin:hasProvenance/oprvn:hasDOI" for pred, _ in pattern.tails)
+                and any(pred == "okin:hasProvenance/op:hasDOI" for pred, _ in pattern.tails)
             )
 
         if topic_entity_type == "Species":
@@ -120,7 +120,7 @@ class OKSparqlCompact2VerboseConverter:
                             subj="?Mechanism",
                             tails=[
                                 ("a", "okin:ReactionMechanism"),
-                                ("okin:hasProvenance/oprvn:hasDOI", "?DOI"),
+                                ("okin:hasProvenance/op:hasDOI", "?DOI"),
                             ],
                         )
                     )
