@@ -3,6 +3,9 @@ package com.cmclinnovations.stack.clients.core.datasets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cmclinnovations.stack.clients.citydb.CityDBClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
@@ -14,6 +17,8 @@ import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTab
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 public class CityDB extends GeoServerDataSubset {
+
+    private static final Logger logger = LoggerFactory.getLogger(CityDB.class);
 
     @JsonProperty
     private final ImpExpOptions importOptions = new ImpExpOptions();
@@ -57,7 +62,11 @@ public class CityDB extends GeoServerDataSubset {
 
         super.loadInternal(parent);
 
+        logger.info("Exporting data...");
+
         writeOutPrevious(database);
+
+        logger.info("Creating 3D tiles...");
 
         createLayer(database);
 
@@ -84,9 +93,12 @@ public class CityDB extends GeoServerDataSubset {
 
         usePreviousIRIs &= Files.exists(previousFile);
         if (usePreviousIRIs) {
+            logger.info("Loading previous data...");
             CityDBClient.getInstance().uploadFileToPostGIS(previousFile.toString(), database, importOptions,
                     lineage, baseIRI, append);
         }
+
+        logger.info("Uploading data...");
 
         CityDBClient.getInstance()
                 .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, baseIRI,
@@ -95,14 +107,20 @@ public class CityDB extends GeoServerDataSubset {
 
     protected void augmentData(String database) {
         if (discoverThematicSurface) {
+            logger.info("Discovering thematic surface...");
             CityDBClient.getInstance().discoverThematicSurface(database, critAreaRatio);
         }
+        logger.info("Adding building height...");
         CityDBClient.getInstance().addBuildingHeight(database);
+        logger.info("Adding building footprint...");
         CityDBClient.getInstance().addFootprint(database);
     }
 
     @Override
     public void createLayers(String workspaceName, String database) {
+
+        logger.info("Publishing to geoserver...");
+
         GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
         if (null != virtualTable) {
             virtualTable.setSql(handleFileValues(virtualTable.getSql()));
