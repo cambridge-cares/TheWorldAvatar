@@ -30,8 +30,8 @@ class OKReactionAsker:
         query_graph.nodes["Reaction"]["ask_count"] = True
 
         if verbalization.startswith("the"):
-            verbalization = verbalization[len("the"): ].strip()
-            
+            verbalization = verbalization[len("the") :].strip()
+
         verbalization = "How many " + verbalization
         query_sparql = self.graph2sparql.convert(query_graph)
 
@@ -50,11 +50,21 @@ class OKReactionAsker:
 
         template = random.choice(
             [
-                "For {E}, what is its kinetic model",
-                "What is the kinetic model of {E}",
+                "For {E}, what is its {ATTR}",
+                "What is the {ATTR} of {E}",
             ]
         )
-        verbalization = template.format(E=verbalization)
+        verbalization = template.format(
+            E=verbalization,
+            ATTR=random.choice(
+                [
+                    "kinetic model",
+                    "kinetic model parameters",
+                    "rate constants",
+                    "rate constant parameters",
+                ]
+            ),
+        )
 
         if "Mechanism" in query_graph.nodes():
             query_graph.add_edge("KineticModel", "Mechanism", label="okin:definedIn")
