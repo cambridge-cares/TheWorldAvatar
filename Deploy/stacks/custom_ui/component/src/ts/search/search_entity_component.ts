@@ -49,12 +49,15 @@ class SeachEntityComponent extends DynamicComponent {
     // Create a text input component for site area
     let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Plot Area [m2]", this.numerical_placeholder_message, this.INVALID_INPUT_MESSAGE);
     siteAreaTextInput.render(parentElement);
+    // Create a text input component for GFA
+    let gfaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Gross Floor Area [m2]", this.numerical_placeholder_message, this.INVALID_INPUT_MESSAGE);
+    gfaTextInput.render(parentElement);
     // Create a container for the action buttons
     let buttonContainer: HTMLElement = createDiv({ classes: ["line-item", "evenly-space-container"] });
     // Create a submit button
     let submitButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement("button", { classes: ["control-button"] });
     submitButton.textContent = "Submit";
-    submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, this.options.layerId, [siteAreaTextInput]));
+    submitButton.addEventListener("click", () => this.handleSubmit(mapboxMapHandler, this.options.layerId, [siteAreaTextInput, gfaTextInput]));
     buttonContainer.appendChild(submitButton);
     // Create a clear all button
     let clearButton: HTMLButtonElement = <HTMLButtonElement>createHTMLElement("button", { classes: ["control-button"] });
@@ -108,12 +111,14 @@ class SeachEntityComponent extends DynamicComponent {
     try {
       // Retrieve the option for site area search parameter
       let areaInputs: string[] = this.retrieveMinMaxInput(textComponentArray[0], true);
+      let gfaInputs: string[] = this.retrieveMinMaxInput(textComponentArray[1], true);
       // Show the loader and overlay in this order
       this.overlay.show();
       this.loader.show();
       // Define the request parameters
       let params: { subs: string, namespace: string } = {
-        subs: `{"minarea":"${areaInputs[0]}", "maxarea":"${areaInputs[1]}", "zonetype":"${zoneTypes}"}`,
+        subs: `{"minarea":"${areaInputs[0]}", "maxarea":"${areaInputs[1]}", 
+        "mingfa":"${gfaInputs[0]}", "maxgfa":"${gfaInputs[1]}", "zonetype":"${zoneTypes}"}`,
         namespace: this.options.plotNamespace
       };
       // Create a variable for this object context so that the fields are still accesible in ajax
@@ -216,8 +221,6 @@ class SeachEntityComponent extends DynamicComponent {
 
   /**
    * An event handler for clearing the user inputs.
-   * This method will parse the results into a string format suitable for the Filter agent.
-   * @param {Element} dropDownContainer - The container element with the input elements to extract data from.
    * @returns {void}
   */
   private handleClear(): void {
@@ -229,11 +232,21 @@ class SeachEntityComponent extends DynamicComponent {
     });
 
     // Select the text input elements and reset them
-    let textInputElement: Element = dropdownElement.nextElementSibling;
+    let areaTextInputElement: Element = dropdownElement.nextElementSibling;
+    this.clearTextInputs(areaTextInputElement);
+    let gfaTextInputElement: Element = areaTextInputElement.nextElementSibling;
+    this.clearTextInputs(gfaTextInputElement);
+  };
+
+  /**
+   * An event handler to clear text inputs.
+   * @param {Element} textInputElement - The text input element to clear inputs.
+   * @returns {void}
+  */
+  private clearTextInputs(textInputElement: Element): void {
     let inputValues: NodeList = textInputElement.querySelectorAll("input[type=\"text\"]");
     inputValues.forEach((inputValue) => {
       (inputValue as HTMLInputElement).value = "";
     });
   };
-
 };
