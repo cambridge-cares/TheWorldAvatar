@@ -67,7 +67,7 @@ function displaySparqlQueryPostProcessed(sparql_query) {
 
 function displayResults(data) {
     if (!data) {
-        displayError("The predicted SPARQL query is malformed and cannot be executed against the OntoSpecies knowledge graph.")
+        displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
         return
     }
     let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"

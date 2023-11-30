@@ -47,12 +47,13 @@ def ask():
     app.logger.info("Translation result: " + str(translation_result))
 
     domain = translation_result["domain"]
-    sparql_query_verbose = translation_result["sparql"]["verbose"].strip()
+    sparql_query_verbose = translation_result["sparql"]["verbose"]
 
     app.logger.info("Sending sparql query to KG server...")
     start_kg = time.time()
     if sparql_query_verbose:
         try:
+            sparql_query_verbose = sparql_query_verbose.strip()
             data = kg_executor.query(domain=domain, query=sparql_query_verbose)
         except Exception as e:
             app.logger.exception(e)
