@@ -255,6 +255,10 @@
   justify-content: space-evenly;
 }
 
+.space-around-container {
+  justify-content:space-around;
+}
+
 .line-padding {
   padding-bottom: 0.4rem;
 }

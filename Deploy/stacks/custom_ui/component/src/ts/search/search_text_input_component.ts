@@ -21,23 +21,17 @@ class SearchTextInputComponent {
     searchParameterName.textContent = parameterName;
 
     // Create a minimum container with a label and input
-    let minContainer: HTMLElement = createDiv({ classes: ["line-item"] });
+    let minContainer: HTMLElement = createDiv({ classes: ["line-item", "space-around-container"] });
     let minLabel: HTMLElement = createDiv();
-    minLabel.innerHTML = "Min:&emsp;"
+    minLabel.innerHTML = "Min:"
     // Create a text input element to allow users to type their requirements
-    this.min_text_input_element = <HTMLInputElement>createHTMLElement("input");
-    this.min_text_input_element.type = "text";
-    this.min_text_input_element.placeholder = placeholderText;
-    this.min_text_input_element.value = "";
+    this.min_text_input_element = this.genInputElement(placeholderText);
 
     // Create a maximum container with a label and input
-    let maxContainer: HTMLElement = createDiv({ classes: ["line-item"] });
+    let maxContainer: HTMLElement = createDiv({ classes: ["line-item", "space-around-container"] });
     let maxLabel: HTMLElement = createDiv();
-    maxLabel.innerHTML = "Max:&emsp;"
-    this.max_text_input_element = <HTMLInputElement>createHTMLElement("input");
-    this.max_text_input_element.type = "text";
-    this.max_text_input_element.placeholder = placeholderText;
-    this.max_text_input_element.value = "";
+    maxLabel.innerHTML = "Max:"
+    this.max_text_input_element = this.genInputElement(placeholderText);
     // Append the new elements to the containers
     minContainer.appendChild(minLabel);
     minContainer.appendChild(this.min_text_input_element);
@@ -80,5 +74,19 @@ class SearchTextInputComponent {
   */
   public render(parentElement: HTMLElement): void {
     parentElement.appendChild(this.container);
+  };
+
+  /**
+   * Generate an input element with the specified placeholder text.
+   * @param {string} placeholderText - The placeholder text when user has not made any inputs.
+   * @returns {HTMLInputElement} the new input element.
+  */
+  public genInputElement(placeholderText: string): HTMLInputElement {
+    let inputElement = <HTMLInputElement>createHTMLElement("input");
+    inputElement.type = "text";
+    inputElement.placeholder = placeholderText;
+    inputElement.value = "";
+    inputElement.style.width = "8rem";
+    return inputElement;
   };
 };
