@@ -2,12 +2,13 @@
 
 This `District Heating Optimisation Agent` can be used to (recurringly) optimise the total heat generation cost for a district heating (DH) system comprised of multiple gas boilers, a gas turbine, and external sourcing from an energy-from-waste (EfW) plant. The implemented optimisation logic is based on the previous SWPS project and detailed in [preprint 275]; however, this implementation leverages the [Derived Information Framework]'s (DIF) `DerivationWithTimeSeries` concept for synchronous derivations. The required input instances for an optimisation are described in the [required derivation markup](#13-required-derivation-markup) section below. The agent is designed to be deployed as a Docker container and can be deployed either as standalone version or as part of a larger Docker stack.
 
-The overall use case relies on both the [OntoHeatNet (Miro board)] and [OntoTimeSeries (Miro board)] ontology and uses [chained derivations] to connect the optimisation inputs and outputs with further agents, e.g., for required heat demand and grid temperature forecasts. Further details about [stack deployment] can be found in the (private) Pirmasens repository.
+The overall use case relies on both the [OntoHeatNet] and [OntoTimeSeries] ontology and uses [chained derivations] to connect the optimisation inputs and outputs with further agents, e.g., for required heat demand and grid temperature forecasts. Further details about [stack deployment] can be found in the (private) Pirmasens repository.
 
 &nbsp;
 # 1. Setup
 
 This section specifies the minimum requirements to build and deploy the Docker image. 
+
 
 ## 1.1 Agent Settings
 
@@ -49,17 +50,21 @@ Please note:
 - When deployed via the Stack manager, the `STACK_NAME` environment variable is set automatically and can be omitted in the config file
 - `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` are both required inputs even for stack deployment (due to default derivation agent config); however, as the actual values for initialising the DH Optimisation Agent are retrieved via the Stack Clients, they can be left blank.
 
+
 ## 1.2 Miscellaneous
 
 **Only relevant** if you intend to build (and publish) the Docker image: Ensure access to Github container registry, as
 - the required `stack-clients-*.jar` resource to be added to [py4jps] during building the Docker image is retrieved from the published Stack-Clients docker image
 - a `publish_docker_image.sh` convenience script is provided to build and publish the agent image to the [Github container registry]. To publish a new image, your github user name and [personal access token] (which must have a `scope` that [allows you to publish and install packages]) needs to be provided. 
 
+
 ## 1.3 Required Derivation Markup
 
-Before any optimisation can be created (and instantiated), all required inputs need to be properly instantiated. This includes:
+Before any optimisation can be created (and instantiated), all required inputs need to be properly instantiated in the KG. This includes the following 6 instances:
 - 1 `time:Interval`: the interval to optimise (i.e., defining start and end time of the optimisation to be created, both bounds inclusive)
 - 5 `ts:Forecast`s : time series dataIRIs for the forecasted `ohn:HeatDemand` and 4 `om:Temperature`s, denoting flow and return temperatures at the EfW and municipal heating plant, respectively (the mapping between the provided forecast IRIs and their respective meaning is done internally inside the agent based on associated rdf type and triple patterns)
+
+While the instantiation of the input instances itself is use case specific and beyond the scope of this agent, the instantiation of the required markup is described in the [using the agent](#21-generation-optimisation) section below. Furthermore, an end-to-end example (incl. instantiating all required inputs followed by subsequent optimisation) is provided in the district heating [stack deployment] project in the (private) Pirmasens repository.
 
 Used namespaces:
 ```xml
@@ -70,13 +75,48 @@ ohn   : https://www.theworldavatar.com/kg/ontoheatnetwork/
 ```
 
 &nbsp;
-# 2. Agent Operation
+# 2. Using the Agent
 
 The agent is implemented as [derivation agent] using `DerivationWithTimeSeries`. Please note: 1) derivations with time series are currently restricted to synchronous derivations, i.e., derivations which get computed immediately upon request and 2) derivations with time series do not return any specific output triples, as all updates to the time series are expected to be conducted within the agent logic. Initial derivation output triples will only be generated when creating new derivation using `createSyncDerivationForNewInfo`.
 
+
 ## 2.1 Generation Optimisation
 
-The implemented optimisation logic is described in detail in [preprint 275]. Upon successful optimisation, the following results are written back into the KG according to the [OntoHeatNet (Miro board)] ontology:
+The implemented optimisation logic is described in detail in [preprint 275]. To create a new optimisation/or update an existing optimisation derivation, please follow the example below. Please note that the agent needs to be available and registered within the KG beforehand (done automatically on agent startup if specified in the docker-compose/stack-manager config file). The required derivation inputs need to be instantiated according to the [OntoHeatNet] ontology; for a successful derivation design, please see the [chained derivations markup] example.
+
+```bash
+# Define IRIs/URL to use
+agent_iri = <ONTOAGENT_SERVICE_IRI of target optimisation agent instance>
+derivation_instance_base_url = <base url to be used when creating derivation instance>
+
+# Create derivation client
+from pyderivationagent import PyDerivationClient
+from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATIONWITHTIMESERIES
+deriv_client = PyDerivationClient(derivation_instance_base_url, 
+                                  sparql_query_endpoint, sparql_query_endpoint)
+
+# Define set of input instances for new optimisation derivation
+derivation_input_set = [
+    <IRI of time:Interval instance>, 
+    <IRI of ts:Forecast instance of ohn:HeatDemands>, 
+    <IRI of ts:Forecast instance of "flow temperature" at EfW plant>
+    <IRI of ts:Forecast instance of "return temperature" at EfW plant>
+    <IRI of ts:Forecast instance of "flow temperature" at municipal heating plant>
+    <IRI of ts:Forecast instance of "return temperature" at municipal heating plant>
+]
+
+# Create new optimisation derivation: mark up derivation inputs and 
+# immediately compute and instantiate optimisation results (as forecasts)
+derivation = deriv_client.createSyncDerivationForNewInfo(agent_iri, 
+                          derivation_input_set, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
+derivation_iri = derivation.getIri()
+
+# Update existing optimisation derivation
+deriv_client.unifiedUpdateDerivation(derivation_iri)
+```
+
+
+Upon successful optimisation, the following results are written back into the KG according to the [OntoHeatNet] ontology:
 - `ohn:ProvidedHeatAmount`: heat amount sourced from the EfW plant
 - `ohn:GeneratedHeatAmount`: heat amount provided by a certain heat generator, i.e., conventional gas boiler or co-gen gas turbine (instantiated for each heat generator)
 - `ohn:ConsumedGasAmount`: gas amount consumed by a certain heat generator to provide the required amount of heat (instantiated for each heat generator)
@@ -92,11 +132,12 @@ The agent is designed to handle each optimisation request individually, i.e., in
 
 ## 2.2 Optimisation Evaluation
 
-The agent also provides an HTTP endpoint to evaluate the total cost of the optimised vs. historical heat generation. It returns the cumulative generation cost over the entire optimisation interval as well as total and daily potential savings from the optimisation. It is triggered by receiving an empty HTTP `GET` request at the `/compare_cost` route. An example [cost comparison request] is provided.
+The agent also provides a separate HTTP endpoint to evaluate the total cost of the optimised vs. historical heat generation. It returns the cumulative generation cost over the entire optimisation interval as well as total and daily potential savings from the optimisation. It is triggered by receiving an empty HTTP `GET` request at the `/compare_cost` route. An example [cost comparison request] is provided.
 
 
 &nbsp;
-# 3. Using the Agent
+# 3. Deploying the Agent
+
 
 ## 3.1 Building the Agent
 
@@ -108,6 +149,7 @@ docker compose -f docker-compose.yml build
 # Publish the Docker image to the Github container registry
 docker image push ghcr.io/cambridge-cares/<image tag>:<version>
 ```
+
 
 ## 3.2 Deploying the Agent
 
@@ -126,7 +168,6 @@ Deploy the dockerised agent by running the following command from the same locat
 # Deploy the Docker image locally
 docker compose -f docker-compose.yml up
 ```
-
 
 ### **Stack Deployment**
 
@@ -169,8 +210,9 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2023
 [derivation agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
 [preprint 275]: https://como.ceb.cam.ac.uk/preprints/275/
 [chained derivations]: https://lucid.app/publicSegments/view/a00b553e-d9d1-4845-97b7-f480e980898e/image.png
-[OntoTimeSeries (Miro board)]: https://miro.com/app/board/uXjVPFaO5As=/
-[OntoHeatNet (Miro board)]: https://miro.com/app/board/uXjVOhnB9_4=/
+[chained derivations markup]: https://lucid.app/publicSegments/view/de4041e1-aee2-44d9-82ca-fffca25f5133/image.png
+[OntoTimeSeries]: https://miro.com/app/board/uXjVPFaO5As=/
+[OntoHeatNet]: https://miro.com/app/board/uXjVOhnB9_4=/
 [stack deployment]: https://github.com/cambridge-cares/pirmasens/tree/main/districtheating_stack
 
 <!-- files -->
