@@ -206,7 +206,7 @@ class SeachEntityComponent extends DynamicComponent {
       currentMinVal = "0";
       // If there is only an empty max value, the max value should default to a very large number
     } else if (currentMaxVal === "") {
-      currentMaxVal = "1000000000";
+      currentMaxVal = "9999999999";
     }
 
     // Use regex to verify only digits are inside
