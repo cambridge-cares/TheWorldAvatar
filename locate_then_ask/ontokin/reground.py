@@ -42,7 +42,9 @@ GROUP BY ?eqn
 ORDER BY DESC(?deg) 
 LIMIT 100"""
     response_bindings = kg_client.query(query)["results"]["bindings"]
-    return [x["eqn"]["value"] for x in response_bindings]
+    eqns =  [x["eqn"]["value"] for x in response_bindings]
+    eqns = [x.replace("[=]", random.choice(["<=>", "="])) for x in eqns]
+    return eqns
 
 
 def query_doi_for_regrounding():
@@ -92,7 +94,13 @@ def reground(entities_for_regrounding: Dict[str, List[str]], datum: dict):
             node["label_regrounded"] = label_regrounded
             label2regrounded[node["label"]] = label_regrounded
 
-    question = random.choice([datum["verbalization"]] + datum["paraphrases"])
+    if len(label2regrounded) == 0:
+        return datum
+    
+    assert "[" in datum["verbalization"] and ']' in datum["verbalization"]
+    sampling_frame = [datum["verbalization"]] + [x for x in datum["paraphrases"] if '[' in x and ']' in x]
+
+    question = random.choice(sampling_frame)
     sparql = datum["query"]["sparql"]
 
     for label, regrounded in label2regrounded.items():

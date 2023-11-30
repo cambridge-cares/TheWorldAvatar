@@ -4,7 +4,6 @@ import json
 import os
 import random
 import time
-from typing import List
 
 import pandas as pd
 
