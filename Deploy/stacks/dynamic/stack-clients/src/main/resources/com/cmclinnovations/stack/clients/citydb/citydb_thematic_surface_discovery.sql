@@ -2,72 +2,74 @@ SET
     search_path TO public,
     citydb;
 
+SET
+    session_replication_role = replica;
+
 -- copy all surfaces with geometry that should be identified (belong to building, but not footprint/roofprint/solid) and identified them into a temporary table
 DROP TABLE IF EXISTS "public"."true_surface_CityDB";
 
-CREATE TABLE "public"."true_surface_CityDB_1" AS (
-    SELECT
-        "id",
-        "gmlid",
-        box2envelope(Box3D("geometry")) AS "envelope",
-        "parent_id",
-        "root_id",
-        "cityobject_id",
-        public.ST_Orientation(geometry) AS "orientation",
-        public.ST_Area(geometry) AS "a2d",
-        public.ST_3DArea(public.ST_MakeValid(geometry)) AS "a3d"
-    FROM
-        "surface_geometry"
-    WHERE
-        "geometry" IS NOT NULL
-        AND "cityobject_id" IN (
+CREATE SEQUENCE true_surface_seq;
+
+SELECT
+    setval(
+        'true_surface_seq',
+(
             SELECT
-                "id"
+                MAX(id)
             FROM
-                "building"
+                "cityobject"
         )
+    );
+
+ CREATE TABLE "public"."true_surface_CityDB" AS (
+    SELECT
+        0 AS rownum,
+        sg."id",
+        sg."gmlid",
+        NULL AS "envelope",
+        sg."parent_id",
+        sg."root_id",
+        sg."cityobject_id",
+        sg."geometry",
+        public.ST_Orientation(sg.geometry) AS "orientation",
+        public.ST_Area(sg.geometry) AS "a2d",
+        public.ST_3DArea(public.ST_MakeValid(sg.geometry)) AS "a3d",
+        0 AS "class"
+    FROM
+        "surface_geometry" AS sg
+        JOIN "building" AS b ON sg."cityobject_id" = b."id"
+    WHERE
+        sg."geometry" IS NOT NULL
         AND (
-            (
-                "root_id" IN (
-                    SELECT
-                        "lod2_multi_surface_id"
-                    FROM
-                        "building"
-                )
-            )
-            OR (
-                "root_id" IN (
-                    SELECT
-                        "lod3_multi_surface_id"
-                    FROM
-                        "building"
-                )
-            )
+            sg."root_id" = b."lod2_multi_surface_id"
+            OR sg."root_id" = b."lod3_multi_surface_id"
         )
 );
 
-CREATE TABLE "public"."true_surface_CityDB" AS (
-    SELECT
-        "id",
-        "gmlid",
-        "envelope",
-        "parent_id",
-        "root_id",
-        "cityobject_id",
-        CASE
+UPDATE
+    "public"."true_surface_CityDB"
+SET
+    "envelope" = box2envelope(Box3D("geometry"));
+
+UPDATE
+    "public"."true_surface_CityDB"
+SET
+    "rownum" = nextval('true_surface_seq');
+
+UPDATE
+    "public"."true_surface_CityDB"
+SET
+    "class" = CASE
+        WHEN "a3d" != 0
+        AND "orientation" = 1
+        AND "a2d" / "a3d" > {critAreaRatio} THEN 35
+        ELSE CASE
             WHEN "a3d" != 0
-            AND "orientation" = 1
-            AND "a2d" / "a3d" > {critAreaRatio} THEN 35
-            ELSE CASE
-                WHEN "a3d" != 0
-                AND "orientation" = -1
-                AND "a2d" / "a3d" > {critAreaRatio} THEN 33
-                ELSE 34
-            END
-        END AS "class"
-    FROM
-        "public"."true_surface_CityDB_1"
-);
+            AND "orientation" = -1
+            AND "a2d" / "a3d" > {critAreaRatio} THEN 33
+            ELSE 34
+        END
+    END;
 
 ALTER TABLE
     "public"."true_surface_CityDB"
@@ -75,6 +77,7 @@ ADD
     PRIMARY KEY (id);
 
 -- remove their parent and root from building
+
 UPDATE
     "citydb"."building"
 SET
@@ -120,6 +123,7 @@ WHERE
     );
 
 -- unlink with parent and root in surface_geometry
+
 UPDATE
     "citydb"."surface_geometry"
 SET
@@ -131,6 +135,7 @@ WHERE
     "citydb"."surface_geometry"."id" = "public"."true_surface_CityDB"."id";
 
 -- their parent, and root are no longer needed
+
 DELETE FROM
     "citydb"."surface_geometry"
 WHERE
@@ -152,66 +157,41 @@ WHERE
     );
 
 -- create city objects, update cityobject_id of existing surface geometries
-WITH "true_surface_with_row_number" AS (
-    SELECT
-        row_number() OVER (),
-        "id",
-        "class",
-        "gmlid" AS "surface_gmlid",
-        "envelope" AS "surface_envelope",
-        "cityobject_id" AS "bid"
-    FROM
-        "public"."true_surface_CityDB"
-),
-"co" AS (
-    INSERT INTO
-        "citydb"."cityobject" (
-            "objectclass_id",
-            "gmlid",
-            "envelope",
-            "creation_date",
-            "last_modification_date",
-            "updating_person",
-            "lineage"
-        ) (
-            SELECT
-                "class",
-                "surface_gmlid" || '_cityobject',
-                "surface_envelope",
-                CURRENT_TIMESTAMP,
-                CURRENT_TIMESTAMP,
-                user,
-                "cityobject"."lineage"
-            FROM
-                "true_surface_with_row_number"
-                JOIN "cityobject" ON "true_surface_with_row_number"."bid" = "cityobject"."id"
-        ) RETURNING "gmlid",
-        "id" AS "coid"
-),
-"id_to_coid" AS (
-    SELECT
-        "true_surface_with_row_number"."id",
-        "t2"."coid"
-    FROM
-        "true_surface_with_row_number"
-        JOIN (
-            SELECT
-                row_number() OVER (),
-                *
-            FROM
-                "co"
-        ) AS "t2" USING (row_number)
-)
+
+INSERT INTO
+    "citydb"."cityobject" (
+        "objectclass_id",
+        "gmlid",
+        "envelope",
+        "creation_date",
+        "last_modification_date",
+        "updating_person",
+        "lineage"
+    ) (
+        SELECT
+            "class",
+            "true_surface_CityDB"."gmlid" || '_cityobject',
+            "true_surface_CityDB"."envelope",
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            user,
+            "cityobject"."lineage"
+        FROM
+            "true_surface_CityDB"
+            JOIN "cityobject" ON "true_surface_CityDB"."cityobject_id" = "cityobject"."id"
+    );
+
 UPDATE
     "surface_geometry"
 SET
-    "cityobject_id" = "id_to_coid"."coid"
+    "cityobject_id" = "true_surface_CityDB"."rownum"
 FROM
-    "id_to_coid"
+    "true_surface_CityDB"
 WHERE
-    "surface_geometry"."id" = "id_to_coid"."id";
+    "surface_geometry"."id" = "true_surface_CityDB"."id";
 
 -- create parents in surface_geometry (has no geometry)
+
 INSERT INTO
     "citydb"."surface_geometry" (
         "gmlid",
@@ -240,46 +220,45 @@ INSERT INTO
     );
 
 -- let children know their parents
-WITH "intermediate" AS (
-    SELECT
-        *
-    FROM
-        "surface_geometry"
-    WHERE
-        "geometry" IS NULL
-),
-"actual" AS (
-    SELECT
-        *
-    FROM
-        "surface_geometry"
-    WHERE
-        "geometry" IS NOT NULL
-),
-"intermediate_actual" AS (
-    SELECT
-        "cityobject_id",
-        "actual"."id" AS "actual_id",
-        "intermediate"."id" AS "intermediate_id"
-    FROM
-        "intermediate"
-        JOIN "actual" using ("cityobject_id")
-)
+
 UPDATE
-    "surface_geometry"
+    "surface_geometry" AS sg
 SET
-    "parent_id" = "intermediate_id",
-    "root_id" = "intermediate_id"
+    "parent_id" = ia."intermediate_id",
+    "root_id" = ia."intermediate_id"
 FROM
-    "intermediate_actual"
+    (
+        SELECT
+            "cityobject_id",
+            "a"."id" AS "actual_id",
+            "i"."id" AS "intermediate_id"
+        FROM
+            (
+                SELECT
+                    *
+                FROM
+                    "surface_geometry"
+                WHERE
+                    "geometry" IS NULL
+            ) AS i
+            JOIN (
+                SELECT
+                    *
+                FROM
+                    "surface_geometry"
+                WHERE
+                    "geometry" IS NOT NULL
+            ) AS a USING ("cityobject_id")
+    ) AS ia
 WHERE
-    "surface_geometry"."id" = "intermediate_actual"."actual_id"
+    sg."id" = ia."actual_id"
     AND (
-        ("surface_geometry"."parent_id" IS NULL)
-        OR ("surface_geometry"."root_id" IS NULL)
+        (sg."parent_id" IS NULL)
+        OR (sg."root_id" IS NULL)
     );
 
 -- make parents self-aware
+
 UPDATE
     "surface_geometry"
 SET
@@ -288,6 +267,7 @@ WHERE
     "root_id" IS NULL;
 
 -- update thematic surface
+
 INSERT INTO
     "thematic_surface" (
         "id",
@@ -305,8 +285,11 @@ INSERT INTO
             JOIN "surface_geometry" ON "surface_geometry"."id" = "true_surface_CityDB"."id"
     );
 
+DROP TABLE IF EXISTS "public"."true_surface_CityDB";
+
 -- check if the average lowest point of roof surfaces is above the average highest point of ground surfaces
 -- if this is not satisfied by half of the buildings, then swap grounds and roofs around
+
 UPDATE
     "thematic_surface"
 SET
@@ -362,6 +345,5 @@ FROM
             ) AS "zz"
     ) AS "condition";
 
-DROP TABLE IF EXISTS "public"."true_surface_CityDB_1";
-
-DROP TABLE IF EXISTS "public"."true_surface_CityDB";
+SET
+    session_replication_role = DEFAULT;
