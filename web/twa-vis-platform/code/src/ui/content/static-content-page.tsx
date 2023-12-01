@@ -4,8 +4,8 @@ import { ReactNode } from "react";
 import Link from "next/link";
 import "github-markdown-css/github-markdown.css";
 
-import styles from "./css/static-content-page.module.css";
-import MaterialIconButton from "./icon-button";
+import styles from "./static-content-page.module.css";
+import MaterialIconButton from "ui/buttons/icon-button";
 
 // Interface for properties with react nodes
 interface Props {

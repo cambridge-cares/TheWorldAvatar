@@ -34,8 +34,8 @@ export default class UISettings {
     */
     public static readSettings(file?: string) {
         if(UISettings.SETTINGS == null) {
-            let configFile = path.join(process.cwd(), file ?? this.DEFAULT_FILE);
-            let contents = JSON.parse(fs.readFileSync(configFile, "utf8"));
+            const configFile = path.join(process.cwd(), file ?? this.DEFAULT_FILE);
+            const contents = JSON.parse(fs.readFileSync(configFile, "utf8"));
             UISettings.SETTINGS = contents;
 
             console.info("UI settings have been read and cached.");
@@ -46,17 +46,8 @@ export default class UISettings {
      * 
      * @returns 
      */
-    public static getModuleSettings() {
+    public static getSettings() {
         UISettings.readSettings();
-        return UISettings.SETTINGS?.modules;
-    }
-
-    /**
-     * 
-     * @returns 
-     */
-     public static getBrandingSettings() {
-        UISettings.readSettings();
-        return UISettings.SETTINGS?.branding;
-    }
+        return UISettings.SETTINGS;
+    }   
 }

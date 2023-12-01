@@ -9,7 +9,8 @@
 	],
 	"settings": {
 		"jest.disabledWorkspaceFolders": [
-			"config"
+			"config",
+			"uploads"
 		],
 		"cSpell.words": [
 			"markdowner"

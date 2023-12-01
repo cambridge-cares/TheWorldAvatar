@@ -1,3 +1,4 @@
+import styles from "./analytics.module.css";
 
 /**
  * Dynamically load and render content from an optional metadata file
@@ -9,6 +10,10 @@
  */
 export default async function DashContainer() {
     return (
-        <div />
+        <div className={styles.dashContainer}>
+
+            <h1>Grafana dashboard will be embedded here.</h1>
+
+        </div>
     )
 }

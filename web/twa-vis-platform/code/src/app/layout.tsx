@@ -1,11 +1,14 @@
-import path from "path";
-import fs from "fs";
 
-import "./css/globals.css"
-import StartupLogging from "io/startup-logging";
+import "ui/css/globals.css"
+
+import fs from "fs";
+import path from "path";
+import React from "react";
+
 import UISettings from "io/config/ui-settings";
+import StartupLogging from "io/startup-logging";
 import { OptionalPages } from "io/config/optional-pages";
-import Toolbar from "ui/toolbar/toolbar";
+import GlobalContainer from "../ui/global-container";
 
 /**
  * Performs initialisation when the platform is
@@ -29,11 +32,10 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
     initialise();
     
     // Check if the style-overrides.css file is available
-    let styleOverrides = hasCSSOverrides();
+    const styleOverrides = hasCSSOverrides();
 
     // Get settings to pass to Toolbar
-    let moduleSettings = UISettings.getModuleSettings();
-    let brandingSettings = UISettings.getBrandingSettings();
+    const uiSettings = UISettings.getSettings();
     
     // Root element containing all children.
     return (
@@ -48,20 +50,10 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
             </head>
             <body>
                 <StartupLogging/>
-
-                <div id="globalContainer">
-                    {/* Slim toolbar component */}
-                    <Toolbar
-                        landing={moduleSettings.landing}
-                        help={moduleSettings.help}
-                        dashboard={moduleSettings.dashboard}
-                        toolbarLogo={brandingSettings.toolbarLogo.toString()}
-                    />
-
-                    <div id="contentContainer">
-                        {children}
-                    </div>
-                </div>
+            
+                <GlobalContainer settings={uiSettings}>
+                    {children}
+                </GlobalContainer>
             </body>
         </html>
     );
@@ -72,6 +64,6 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
  * the hosted "uploads" directory.
  */
 function hasCSSOverrides() {
-    let url = path.join(process.cwd(), "../uploads/style-overrides.css");
+    const url = path.join(process.cwd(), "../uploads/style-overrides.css");
     return fs.existsSync(url);
 }

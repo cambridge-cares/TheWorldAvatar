@@ -10,11 +10,13 @@
     min-height: 50px;
     height: 50px;
     background-color: var(--background-primary);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
     border-style: solid;
     border-width: 0px 0px 1px 0px;
-    border-color: var(--background-tertiary);
-    box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+    border-color: var(--border-primary);
+    
+    z-index: 999;
 }
 
 .spacer {
@@ -35,10 +37,6 @@
     height: 100%;
     fill: var(--border-tertiary);
 }
-
-/* .toolbar :global .toolbarLogo path {
-    fill: var(--border-tertiary);
-} */
 
 
 

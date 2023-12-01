@@ -155,3 +155,7 @@ img {
     border-radius: 10px;
     background-clip: padding-box;
 }
+
+.MuiTabs-indicator {
+    display: none !important;
+}

@@ -1,0 +1,7 @@
+.ribbonPanel {
+    width: 100%;
+    height: 100px;
+
+    display: flex !important;
+    flex-direction: row;
+}

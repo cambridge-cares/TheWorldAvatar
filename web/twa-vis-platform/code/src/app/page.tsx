@@ -1,6 +1,7 @@
+import React from "react";
 import { Metadata } from "next";
 
-import LandingPage from "ui/landing-page";
+import LandingPage from "ui/pages/landing";
 import UISettings from "io/config/ui-settings";
 import { OptionalPages } from "io/config/optional-pages";
 
@@ -10,8 +11,10 @@ import { OptionalPages } from "io/config/optional-pages";
  * @returns metadata promise.
  */
 export async function generateMetadata(): Promise<Metadata> {
-    if(UISettings.getModuleSettings().landing) {
-        let landingPage = OptionalPages.getPage("landing");
+    const moduleSettings = UISettings.getSettings().modules;
+
+    if(moduleSettings.landing) {
+        const landingPage = OptionalPages.getPage("landing");
         return {
             title: landingPage.title
         }
@@ -30,7 +33,9 @@ export async function generateMetadata(): Promise<Metadata> {
  * @returns JSX for default (home) page.
  */
 export default function App() {
-    if(UISettings.getModuleSettings().landing) {
+    const moduleSettings = UISettings.getSettings().modules;
+    
+    if(moduleSettings.landing) {
         // Enabled, load components for that here
         return <LandingPage/>
         

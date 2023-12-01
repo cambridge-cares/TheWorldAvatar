@@ -1,10 +1,12 @@
 "use client";
 
+import styles from "./toolbar.module.css";
+
 import React from "react";
 import SVG from 'react-inlinesvg';
+import { Link } from "@mui/material";
 
 import ToolbarComponent from "./toolbar-component";
-import styles from "./toolbar.module.css";
 import { IllegalArgumentError } from "../../utils/errors";
 
 // Type definition for toolbar properties
@@ -71,7 +73,7 @@ export default class Toolbar extends React.Component<ToolbarProps, ToolbarState>
             name: "MAP",
             tooltip: "Geospatial view.",
             icon: "public",
-            url: "/map"
+            url: "/visualisation"
         }));
 
         // Go to dashboard
@@ -85,18 +87,12 @@ export default class Toolbar extends React.Component<ToolbarProps, ToolbarState>
         }
     }
 
-    // setActiveTab = (name: string) => {
-    //     this.setState({
-    //         activeTab: name
-    //     });
-    // }
-
     /**
      * 
      * @param component 
      */
     public addComponent(component: ToolbarComponent) {
-        let collision = this.getComponent(component.props.name);
+        const collision = this.getComponent(component.props.name);
         if(collision != null) {
             throw new IllegalArgumentError("Already contains a component with this name.");
         }
@@ -145,9 +141,9 @@ export default class Toolbar extends React.Component<ToolbarProps, ToolbarState>
      * @returns JSX for toolbar element.
      */
     public render() {
-        let toolbarSVG = this.props.toolbarLogo.toString();
+        const toolbarSVG = this.props.toolbarLogo.toString();
 
-        let children = this.components.map((component) => (
+        const children = this.components.map((component) => (
             React.createElement(ToolbarComponent, {
                 ...component.props,
                 key: component.props.name,
@@ -157,12 +153,21 @@ export default class Toolbar extends React.Component<ToolbarProps, ToolbarState>
         ));
 
         return (
-            <div id="toolbar" className={styles.toolbar}>
-                <div className="toolbarLogo">
-                    <SVG
-                        src={toolbarSVG}
-                    />
-                </div>
+            <div
+                id="toolbar"
+                className={styles.toolbar}
+                onContextMenu={(e) => {
+                    e.preventDefault();
+                }}>
+                
+                <Link href="/">
+                    <div className="toolbarLogo">
+                        <SVG
+                            src={toolbarSVG}
+                        />
+                    </div>
+                </Link>
+
                 <div className={styles.spacer}/>
                 {children}
             </div>

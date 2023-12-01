@@ -1,7 +1,9 @@
 "use client";
 
+import React from 'react';
+
 import Icon from '@mui/material/Icon';
-import styles from "./css/icon-button.module.css";
+import styles from "./icon-button.module.css";
 
 // Interface for properties
 interface Props {
@@ -13,9 +15,9 @@ interface Props {
  * 
  * @param param0 
  */
-export default function MaterialIconButton({ iconName, callback }: Readonly<Props>) {
+export default function MaterialIconButton({ iconName, callback }: Props) {
     // CSS classes for icons
-    let classNames = ["material-symbols-outlined", styles.iconButton].join(" ");
+    const classNames = ["material-symbols-outlined", styles.iconButton].join(" ");
 
     return (
         <div className={styles.iconButtonContainer}>

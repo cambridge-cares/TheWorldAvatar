@@ -1,13 +1,15 @@
-import styles from "./css/landing.module.css";
+import styles from "./landing.module.css";
 import "github-markdown-css/github-markdown.css";
 
+import React from "react";
 import Link from "next/link";
 import { Tooltip } from "@mui/material";
 
-import StaticPageThumbnail from "ui/static-page-thumbnail";
+import StaticPageThumbnail from "ui/content/static-page-thumbnail";
 import { OptionalPage, OptionalPages } from "io/config/optional-pages";
 
 // Utilities to render markdown into HTML
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const markdowner = require("markdown-it")({
     html: true,
     typographer: true,
@@ -24,26 +26,26 @@ const markdowner = require("markdown-it")({
  */
 export default function LandingPage() {
     // CSS class names
-    let introClasses = ["markdown-body", styles.introInner].join(" ");
+    const introClasses = ["markdown-body", styles.introInner].join(" ");
 
     // Get landing page introduction content
-    let introContent = getIntroductionContent();
+    const introContent = getIntroductionContent();
 
     // Get thumbnails for static content pages
-    let thumbnails = getThumbnails();
+    const thumbnails = getThumbnails();
 
-    let mapButton = buildButton(
+    const mapButton = buildButton(
         "Geospatial map",
         "Explore assets, connections, and failures visually.",
         "/img/icons/map.svg",
-        "/map"
+        "/visualisation"
     );
 
-    let dashButton = buildButton(
+    const dashButton = buildButton(
         "Analytics dashboard",
         "Investigate all data across all scenarios.",
         "/img/icons/dash.svg",
-        "/dashboard"
+        "/analytics"
     );
 
     return (
@@ -71,7 +73,7 @@ export default function LandingPage() {
 }
 
 function buildButton(title: string, description: string, icon: string, url: string): React.ReactElement {
-    let tooltipText = "Open the '" + title + "' page.";
+    const tooltipText = "Open the '" + title + "' page.";
 
     return (
         <Tooltip title={tooltipText} enterDelay={1000} leaveDelay={100}>
@@ -99,7 +101,7 @@ function buildButton(title: string, description: string, icon: string, url: stri
  * @returns Introduction HTML content.
  */
 function getIntroductionContent(): string {
-    let page: OptionalPage = OptionalPages.getPage("landing");
+    const page: OptionalPage = OptionalPages.getPage("landing");
     return markdowner.render(page.content);
 }
 
@@ -117,9 +119,9 @@ function getThumbnails(): React.ReactElement[] {
     pages = pages.filter(page => page.slug !== "landing");
 
     // Create thumbnail components for each page
-    let components: React.ReactElement[] = [];
+    const components: React.ReactElement[] = [];
     pages.forEach(page => {
-        let thumbnail = (
+        const thumbnail = (
             <StaticPageThumbnail
                 page={page}
             />

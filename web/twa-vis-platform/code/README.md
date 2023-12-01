@@ -15,9 +15,10 @@ The project structure should match the recommended Next.js project structure, ut
    * `io`: Logic classes for input/output handling
    * `ui`: Custom UI components
    * `utils`: Common utilities
+* `.eslintrc.js`: Configuration for ESLint
 * `next.config.js`: Configuration module for Next.js projects
 * `next-env.d.ts`: Exports Next.js types for the Typescript compiler
-* `package.json`: Node project confifuration file (also contains configuration for Jest and ESLint)
+* `package.json`: Node project confifuration file (also contains configuration for Jest)
 * `server.js`: Starts a custom HTTP server that allows hosting of additional static-resource directories
 * `tsconfig.json`: Configuratio for the Typescript compiler
 
