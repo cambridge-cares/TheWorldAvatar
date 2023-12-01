@@ -10,18 +10,9 @@ DROP TABLE IF EXISTS "public"."true_surface_CityDB";
 
 CREATE SEQUENCE true_surface_seq;
 
-SELECT
-    setval(
-        'true_surface_seq',
-(
-            SELECT
-                MAX(id)
-            FROM
-                "cityobject"
-        )
-    );
+ALTER SEQUENCE true_surface_seq RESTART WITH {seqStart};
 
- CREATE TABLE "public"."true_surface_CityDB" AS (
+CREATE TABLE "public"."true_surface_CityDB" AS (
     SELECT
         0 AS rownum,
         sg."id",
@@ -77,7 +68,6 @@ ADD
     PRIMARY KEY (id);
 
 -- remove their parent and root from building
-
 UPDATE
     "citydb"."building"
 SET
@@ -123,7 +113,6 @@ WHERE
     );
 
 -- unlink with parent and root in surface_geometry
-
 UPDATE
     "citydb"."surface_geometry"
 SET
@@ -135,7 +124,6 @@ WHERE
     "citydb"."surface_geometry"."id" = "public"."true_surface_CityDB"."id";
 
 -- their parent, and root are no longer needed
-
 DELETE FROM
     "citydb"."surface_geometry"
 WHERE
@@ -157,7 +145,6 @@ WHERE
     );
 
 -- create city objects, update cityobject_id of existing surface geometries
-
 INSERT INTO
     "citydb"."cityobject" (
         "objectclass_id",
@@ -191,7 +178,6 @@ WHERE
     "surface_geometry"."id" = "true_surface_CityDB"."id";
 
 -- create parents in surface_geometry (has no geometry)
-
 INSERT INTO
     "citydb"."surface_geometry" (
         "gmlid",
@@ -220,7 +206,6 @@ INSERT INTO
     );
 
 -- let children know their parents
-
 UPDATE
     "surface_geometry" AS sg
 SET
@@ -258,7 +243,6 @@ WHERE
     );
 
 -- make parents self-aware
-
 UPDATE
     "surface_geometry"
 SET
@@ -267,7 +251,6 @@ WHERE
     "root_id" IS NULL;
 
 -- update thematic surface
-
 INSERT INTO
     "thematic_surface" (
         "id",
@@ -287,9 +270,10 @@ INSERT INTO
 
 DROP TABLE IF EXISTS "public"."true_surface_CityDB";
 
+DROP SEQUENCE true_surface_seq;
+
 -- check if the average lowest point of roof surfaces is above the average highest point of ground surfaces
 -- if this is not satisfied by half of the buildings, then swap grounds and roofs around
-
 UPDATE
     "thematic_surface"
 SET

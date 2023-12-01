@@ -293,13 +293,26 @@ public class CityDBClient extends ContainerClient {
     }
 
     public void discoverThematicSurface(String database, double critAreaRatio) {
+        int seqStart = getMaxCityObjID(database)+1;
         String sqlFilename = "citydb_thematic_surface_discovery.sql";
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
-            String sqlQuery = new String(is.readAllBytes()).replace("{critAreaRatio}", String.valueOf(critAreaRatio));
+            String sqlQuery = new String(is.readAllBytes()).replace("{critAreaRatio}", String.valueOf(critAreaRatio)).replace("{seqStart}", String.valueOf(seqStart));
             PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
         }
+    }
+
+    private int getMaxCityObjID(String database) {
+        String sqlFilename = "citydb_get_cityobject_max_id.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes());
+            JSONArray result = PostGISClient.getInstance().getRemoteStoreClient(database).executeQuery(sqlQuery);
+            return result.getJSONObject(0).getInt("max_id");
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+
     }
 
     public void addFootprint(String database) {
