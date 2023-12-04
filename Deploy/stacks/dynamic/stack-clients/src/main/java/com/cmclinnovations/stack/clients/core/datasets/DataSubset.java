@@ -41,7 +41,7 @@ public abstract class DataSubset {
     }
 
     public Path getSubdirectory() {
-        return (null != subdirectory) ? subdirectory : Path.of("");
+        return subdirectory; 
     }
 
     public boolean isSkip() {

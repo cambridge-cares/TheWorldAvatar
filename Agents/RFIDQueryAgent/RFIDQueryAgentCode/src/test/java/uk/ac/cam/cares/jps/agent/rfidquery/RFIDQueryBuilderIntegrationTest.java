@@ -16,8 +16,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.util.*;
 
@@ -84,7 +83,7 @@ public class RFIDQueryBuilderIntegrationTest {
     private static final Prefix PREFIX_SAREF = SparqlBuilder.prefix("saref", iri(SAREF_NS));
     
 	/**
-     * Relationships
+     * Object Properties
      */ 
 	private static final Iri isAttachedTo = PREFIX_ONTODEVICE.iri("isAttachedTo");
 	private static final Iri isFilledWith = PREFIX_ONTOLAB.iri("isFilledWith");
@@ -92,12 +91,21 @@ public class RFIDQueryBuilderIntegrationTest {
 	private static final Iri thermodynamicBehavior = PREFIX_ONTOCAPE_MATERIAL.iri("thermodynamicBehavior");
     private static final Iri isComposedOfSubsystem = PREFIX_ONTOCAPE_SYSTEM.iri("isComposedOfSubsystem");
     private static final Iri representsOccurenceOf = PREFIX_ONTOCAPE_PHASE_SYSTEM.iri("representsOccurenceOf");
-    private static final Iri label = PREFIX_RDFS.iri("label");
     private static final Iri hasState = PREFIX_SAREF.iri("hasState");
     private static final Iri hasGHSHazardStatement = PREFIX_ONTOSPECIES.iri("hasGHSHazardStatements");
-    private static final Iri comment = PREFIX_RDFS.iri("comment");
     private static final Iri intrinsicCharacteristics = PREFIX_ONTOCAPE_MATERIAL.iri("intrinsicCharacteristics");
     private static final Iri containsDirectly = PREFIX_ONTOCAPE_SYSTEM.iri("containsDirectly");
+    private static final Iri hasMolecularFormula = PREFIX_ONTOSPECIES.iri("hasMolecularFormula");
+    private static final Iri hasMolecularWeight = PREFIX_ONTOSPECIES.iri("hasMolecularWeight");
+    private static final Iri unit = PREFIX_ONTOSPECIES.iri("unit");
+
+    /**
+     * Data Properties
+     */
+    private static final Iri label = PREFIX_RDFS.iri("label");
+    private static final Iri comment = PREFIX_RDFS.iri("comment");
+    private static final Iri value = PREFIX_ONTOSPECIES.iri("value");
+
     /**
      * Classes
      */
@@ -119,6 +127,9 @@ public class RFIDQueryBuilderIntegrationTest {
     private static final Iri GHSHazardStatement1 = iri("http://www.theworldavatar.com/kg/ontospecies/GHSHazardStatements_61ecccfe-2f04-44ac-a209-d6dc23e2dbe2");
     private static final Iri GHSHazardStatement2 = iri("http://www.theworldavatar.com/kg/ontospecies/GHSHazardStatements_b02dc3ca-0fba-4c7e-bf30-636918b6ca49");
     private static final Iri substance = iri("http://www.theworldavatar.com/kb/ontolab/substance_01");
+    private static final Iri molecularFormula = iri("http://www.theworldavatar.com/kb/ontolab/molecularFormula_01");
+    private static final Iri molecularWeight = iri("http://www.theworldavatar.com/kb/ontolab/molecularWeight_01");
+    private static final Iri molecularWeightUnit = iri("http://www.theworldavatar.com/kb/ontolab/molecularWeightUnit_01");
 
     @Before
     public void IntializeMockBlazeGraphAndBuilderAndAddMockTriples() throws IOException {
@@ -157,8 +168,8 @@ public class RFIDQueryBuilderIntegrationTest {
         TriplePattern updatePattern7 = phase.has(isComposedOfSubsystem, phaseComponent);
         TriplePattern updatePattern8 = phaseComponent.has(representsOccurenceOf, species);
         TriplePattern updatePattern9 = species.has(label, "test");
-        TriplePattern updatePattern10 = species.has(hasGHSHazardStatement, GHSHazardStatement1);
-        TriplePattern updatePattern11 = species.has(hasGHSHazardStatement, GHSHazardStatement2);
+        TriplePattern updatePattern10 = species.has(hasGHSHazardStatement, GHSHazardStatement1).andHas(hasMolecularFormula, molecularFormula);
+        TriplePattern updatePattern11 = species.has(hasGHSHazardStatement, GHSHazardStatement2).andHas(hasMolecularWeight, molecularWeight);
         TriplePattern updatePattern12 = GHSHazardStatement1.has(label, "testing1");
         TriplePattern updatePattern13 = GHSHazardStatement1.has(comment, "some hazard warning 1");
         TriplePattern updatePattern14 = GHSHazardStatement2.has(label, "testing2");
@@ -166,7 +177,11 @@ public class RFIDQueryBuilderIntegrationTest {
         TriplePattern updatePattern16 = bottle.has(label, "chemical container 1");
         TriplePattern updatePattern17 = phase.isA(singlePhase);
         TriplePattern updatePattern18 = substance.isA(chemicalComponent);
-        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9, updatePattern10, updatePattern11, updatePattern12, updatePattern13, updatePattern14, updatePattern15, updatePattern16, updatePattern17, updatePattern18);
+        TriplePattern updatePattern19 = molecularFormula.has(value, "ClH2NaO5");
+        TriplePattern updatePattern20 = molecularWeight.has(value, "140.45").andHas(unit, molecularWeightUnit);
+        TriplePattern updatePattern21 = molecularWeightUnit.has(label, "g / mol");
+
+        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9, updatePattern10, updatePattern11, updatePattern12, updatePattern13, updatePattern14, updatePattern15, updatePattern16, updatePattern17, updatePattern18,updatePattern19, updatePattern20, updatePattern21);
         insert.prefix(PREFIX_ONTOCAPE_CPS_SUBSTANCE, PREFIX_ONTOCAPE_CPS_BEHAVIOR, PREFIX_ONTOCAPE_MATERIAL, PREFIX_ONTOCAPE_PHASE_SYSTEM, PREFIX_ONTOCAPE_SYSTEM, PREFIX_ONTODEVICE, PREFIX_RDFS, PREFIX_ONTOLAB, PREFIX_ONTOSPECIES, PREFIX_SAREF);
         kbClient.executeUpdate(insert.getQueryString());
     }
@@ -212,7 +227,7 @@ public class RFIDQueryBuilderIntegrationTest {
         try {
             IRI = builder.queryForTaggedObjectWithIsAttachedTo("http://www.theworldavatar.com/kb/ontodevice/tag_02");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for bottle IRI!", e.getMessage());
+            Assert.assertEquals("Unable to query for tagged object IRI!", e.getMessage());
         }
 
         //remove isAttachedTo between tag and bottle
@@ -224,13 +239,13 @@ public class RFIDQueryBuilderIntegrationTest {
         try {
             IRI = builder.queryForTaggedObjectWithIsAttachedTo("http://www.theworldavatar.com/kb/ontodevice/tag_01");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for tag IRI!", e.getMessage());
+            Assert.assertEquals("Unable to query for tagged object IRI!", e.getMessage());
         }
     }
 
     @Test
-    public void queryForChemicalComponentWithIntrinsicCharacteristicsSuccessAndFail() throws IOException {
-        String IRI = builder.queryForChemicalComponentWithIntrinsicCharacteristics("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
+    public void queryForChemicalComponentSuccessAndFail() throws IOException {
+        String IRI = builder.queryForChemicalComponent("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
         Assert.assertEquals("http://www.theworldavatar.com/kb/ontolab/substance_01", IRI);
 
         //remove intrinsicCharacteristics between chemical and substance
@@ -238,7 +253,7 @@ public class RFIDQueryBuilderIntegrationTest {
         DeleteDataQuery delete = Queries.DELETE_DATA(pattern);
         delete.prefix(PREFIX_ONTOCAPE_MATERIAL);
         kbClient.executeUpdate(delete.getQueryString());
-        IRI = builder.queryForChemicalComponentWithIntrinsicCharacteristics("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
+        IRI = builder.queryForChemicalComponent("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
         Assert.assertEquals(null, IRI);
 
         //remove rdf:type OntoCAPE_CPS_Substance: ChemicalComponent from substance
@@ -257,7 +272,7 @@ public class RFIDQueryBuilderIntegrationTest {
         insert.prefix(PREFIX_ONTOCAPE_MATERIAL ,PREFIX_ONTOCAPE_CPS_SUBSTANCE, PREFIX_ONTOCAPE_SYSTEM);
         kbClient.executeUpdate(insert.getQueryString());
 
-        IRI = builder.queryForChemicalComponentWithIntrinsicCharacteristics("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
+        IRI = builder.queryForChemicalComponent("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
         Assert.assertEquals("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060", IRI);
 
     }
@@ -268,11 +283,8 @@ public class RFIDQueryBuilderIntegrationTest {
         Assert.assertEquals("http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_01", IRI);
 
         //invalid bottle IRI
-        try {
-            IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_02");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for chemical amount IRI!", e.getMessage());
-        }
+        IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_02");
+        Assert.assertEquals("This tagged object does not contain any chemicals", IRI);
 
         //remove isFilledWith link between Bottle and ChemicalAmount
         TriplePattern Pattern = bottle.has(isFilledWith, chemicalAmount);
@@ -280,11 +292,8 @@ public class RFIDQueryBuilderIntegrationTest {
         delete.prefix(PREFIX_ONTOLAB);
         kbClient.executeUpdate(delete.getQueryString());
 
-        try {
-            IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for chemical amount IRI!", e.getMessage());
-        }
+        IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
+        Assert.assertEquals("This tagged object does not contain any chemicals", IRI);
     }
     
     @Test
@@ -308,7 +317,7 @@ public class RFIDQueryBuilderIntegrationTest {
         try {
             IRI = builder.queryForChemicalWithRefersToMaterial("http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_01");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for material IRI!", e.getMessage());
+            Assert.assertEquals("Unable to query for chemical IRI!", e.getMessage());
         }
     }
 
@@ -491,6 +500,66 @@ public class RFIDQueryBuilderIntegrationTest {
             Assert.assertEquals("Unable to query for GHS Hazard Statements labels and comments!", e.getMessage());
         }
     }
+
+    @Test
+    public void queryForMolecularFormulaSuccessAndFail() throws IOException {
+        String a = null;
+        a = builder.queryForMolecularFormula("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        Assert.assertEquals("ClH2NaO5", a);
+
+
+        a = builder.queryForMolecularFormula("testing");
+        Assert.assertEquals("Molecular Formula information not available", a);
+
+        //remove label link between tagged object and String values
+        TriplePattern Pattern = molecularFormula.has(value, "ClH2NaO5");
+        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
+        delete.prefix(PREFIX_ONTOSPECIES);
+        kbClient.executeUpdate(delete.getQueryString());
+        a = builder.queryForMolecularFormula(species.toString());
+        Assert.assertEquals("Molecular Formula information not available", a);
+    }
+
+    @Test
+    public void queryForMolecularWeightValueSuccessAndFail() throws IOException {
+        String a = null;
+        a = builder.queryForMolecularWeightValue("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        Assert.assertEquals("140.45", a);
+
+        //invalid IRI
+        a = builder.queryForMolecularWeightValue("testing");
+        Assert.assertEquals("Molecular Weight information not available", a);
+
+        //remove label link between tagged object and String values
+        TriplePattern Pattern = molecularWeight.has(value, "140.45");
+        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
+        delete.prefix(PREFIX_ONTOSPECIES);
+        kbClient.executeUpdate(delete.getQueryString());
+
+        a = builder.queryForMolecularWeightValue(species.toString());
+        Assert.assertEquals("Molecular Weight information not available", a);
+    }
+
+    @Test
+    public void queryForMolecularWeightUnitSuccessAndFail() throws IOException {
+        String a = null;
+        a = builder.queryForMolecularWeightUnit("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        Assert.assertEquals("g / mol", a);
+
+        //invalid IRI
+        a = builder.queryForMolecularWeightUnit("testing");
+        Assert.assertEquals("Molecular Weight unit information not available", a);
+
+        //remove label link between tagged object and String values
+        TriplePattern Pattern = molecularWeight.has(value, "140.45");
+        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
+        delete.prefix(PREFIX_ONTOSPECIES);
+        kbClient.executeUpdate(delete.getQueryString());
+
+        a = builder.queryForMolecularWeightUnit(species.toString());
+        Assert.assertEquals("Molecular Weight unit information not available", a);
+    }
+
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
         // Overwrite potentially existing properties file

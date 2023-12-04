@@ -1,9 +1,8 @@
 # District Heating Emission Estimation Agent
 
-This `Emission Agent` converts `ConsumedGasAmount`s and `ProvidedHeatAmount`s (as instantiated by the District Heating Optimisation Agent according to [OntoHeatNetwork]) into associated `Emission` instances according to [OntoDispersion]. The estimation and instantiation of associated emissions is required to simulate emission dispersion using `Aermod Agent`; however, the assessment of emissions is 1) currently limited to NO<sub>2</sub>, PM<sub>10</sub> , and PM<sub>2.5</sub> and 2) solely based on emission factors found in the literature instead of a detailed combustion model.
+This `Emission Agent` converts `ConsumedGasAmount`s and `ProvidedHeatAmount`s (as instantiated by the District Heating Optimisation Agent according to [OntoHeatNetwork]) into associated `Emission` instances according to [OntoDispersion]. The estimation and instantiation of associated emissions is required to simulate emission dispersion using Aermod later; however, the assessment of emissions is 1) currently limited to NO<sub>x</sub>, PM<sub>10</sub> , and PM<sub>2.5</sub> and 2) solely based on emission factors found in the literature instead of a detailed combustion model.
 
 The agent is implemented using the [Derived Information Framework] to ensure proper data provenance. The required input instances to derive emissions are described in the [required derivation markup](#13-required-derivation-markup) section below. The agent is designed to be deployed as a Docker container and can be deployed either as standalone version or as part of a larger Docker stack.
-
 
 &nbsp;
 # 1. Setup
@@ -47,13 +46,9 @@ FILE_SERVER_PASSWORD
 
 ## 1.2 Miscellaneous
 
-**Only relevant** if you intend to build (and publish) the Docker image:
-
-- Ensure access to CMCL Docker registry: 
-    The required `stack-clients-*.jar` resource to be added to [py4jps] during building the Docker image is retrieved from the Stack-Clients docker image published on `docker.cmclinnovations.com`. Hence, access to the CMCL Docker registry is required from the machine building the agent image. For more information regarding the registry, see the [CMCL Docker registry wiki page].
-
-- Ensure access to Github container registry:
-    A `publish_docker_image.sh` convenience script is provided to build and publish the agent image to the [Github container registry]. To publish a new image, your github user name and [personal access token] (which must have a `scope` that [allows you to publish and install packages]) needs to be provided. 
+**Only relevant** if you intend to build (and publish) the Docker image: Ensure access to Github container registry as:
+- The required `stack-clients-*.jar` resource to be added to [py4jps] during building the Docker image is retrieved from the published Stack-Clients docker image
+- A `publish_docker_image.sh` convenience script is provided to build and publish the agent image to the [Github container registry]. To publish a new image, your github user name and [personal access token] (which must have a `scope` that [allows you to publish and install packages]) needs to be provided. 
 
 
 ## 1.3 Required Derivation Markup
@@ -73,9 +68,10 @@ The estimation logic is rather rudimentary, but sufficient to demonstrate the ov
 
 1) Extract time series for marked up `dh:ProvidedHeatAmount` or `dh:ConsumedGasAmount`(s) from KG
 2) Summarise `dh:ConsumedGasAmount`(s) values per time step (to account for multiple boilers and GT emitting emissions through same chimney)
-3) Extract values for target time step
+3) Extract values for target `disp:SimulationTime`
 4) Estimate emissions using emission factors from literature
-    - Current focus on NO<sub>2</sub>, PM<sub>10</sub> , and PM<sub>2.5</sub> only
+    - Current focus on NO<sub>x</sub>, PM<sub>10</sub> , and PM<sub>2.5</sub> only 
+    (as NO<sub>2</sub> is currently not supported by Aermod, NO<sub>x</sub> is used interchangibly instead)
     - Treat flue gas stream as hot air (using flue gas temperatures from literature)
 
 
@@ -93,15 +89,13 @@ docker compose -f docker-compose.yml build
 docker image push ghcr.io/cambridge-cares/<image tag>:<version>
 ```
 
-Time out issues have been observed when building the image. If this happens, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`.
-
 ## 3.2 Deploying the Agent
 
 It is recommended to pull the published Docker image from [Github container registry] for sole deployment (i.e., in case no modifications to the agent are needed):
 
 ```bash
 # Pull published (production) image
-docker pull ghcr.io/cambridge-cares/dh-emission-agent:1.0.0
+docker pull ghcr.io/cambridge-cares/dh-emission-agent:1.1.0
 ```
 
 ###  **Standalone Deployment**
@@ -132,8 +126,13 @@ To debug the agent within the stack, follow these steps (a similar approach shou
 1) Overwrite command specified in Dockerfile by providing `tail -f /dev/null` `Command` in stack-manager config file (this keeps the container alive indefinitely while doing nothing). An amended `dh-emission-agent-debug` config is provided in the [stack-manager-input-config] folder.
 2) Start stack-manager as usual
 3) Right click on running agent container -> select "Attach Visual Studio Code"
-4) Install required VSCode extensions inside the container
-5) Start local debugging session inside container by running `entry_point.py` in debug mode; if HTTP requests from outside do not reach the container, send requests locally from inside the container as workaround
+4) Install required VSCode extensions inside the container (i.e., Python)
+5) Start local debugging session inside container by running `entry_point.py` in debug mode
+6) Follow instructions in [debug script] to create a new emission derivation in debug mode
+
+**Please note**:
+- This approach also works for already running agent containers; however, the port number in `entry_point.py` needs to be changed before starting a second agent instance for debugging
+- After debugging, the instantiated agent URL needs to be reset to the original in case the non-debug agent instance is required again
 
 
 &nbsp;
@@ -178,5 +177,6 @@ Markus Hofmeister (mh807@cam.ac.uk), August 2023
 <!-- files -->
 [example triples]: ./tests/test_triples/example_abox.ttl
 [docker compose file]: ./docker-compose.yml
-[stack manager input config file]: ./stack-manager-input-config/emission-agent.json
+[debug script]: ./emissionagent/debug_script.py
 [stack-manager-input-config]: ./stack-manager-input-config
+[stack manager input config file]: ./stack-manager-input-config/dh-emission-agent.json

@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.agent.cea.tasks;
 
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAMetaData;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
 
 import kong.unirest.HttpResponse;
@@ -11,6 +13,7 @@ import org.apache.http.HttpException;
 import org.apache.http.protocol.HTTP;
 import com.google.gson.Gson;
 
+import org.locationtech.jts.geom.Geometry;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -22,19 +25,19 @@ import java.util.*;
 import java.lang.Process;
 
 public class RunCEATask implements Runnable {
-    private final ArrayList<CEAInputData> inputs;
+    private final ArrayList<CEABuildingData> inputs;
     private final ArrayList<String> uris;
     private final URI endpointUri;
     private final int threadNumber;
     private final String crs;
-    private final byte[] terrain;
+    private final CEAMetaData metaData;
     private Double weather_lat;
     private Double weather_lon;
     private Double weather_elevation;
     private Double weather_offset;
     public static final String CTYPE_JSON = "application/json";
     private Boolean stop = false;
-    private Boolean noSurroundings = false;
+    private Boolean noSurroundings = true;
     private Boolean noWeather = true;
     private Boolean noTerrain = true;
     private static final String DATA_FILE = "datafile.txt";
@@ -52,16 +55,17 @@ public class RunCEATask implements Runnable {
     private static final String WORKFLOW_YML2 = "workflow2_pvt_tube.yml";
     private static final String CREATE_WORKFLOW_SCRIPT = "create_cea_workflow.py";
     private static final String FS = System.getProperty("file.separator");
-    private Map<String, ArrayList<String>> solarSupply = new HashMap<>();
+    private static final String PROJECT_NAME = "testProject";
+    private static final String SCENARIO_NAME = "testScenario";
+    private static final String CEA_OUTPUT_DATA_DIRECTORY = PROJECT_NAME + FS + SCENARIO_NAME + FS + "outputs" + FS + "data";
 
-    public RunCEATask(ArrayList<CEAInputData> buildingData, URI endpointUri, ArrayList<String> uris, int thread, String crs, byte[] terrain) {
+    public RunCEATask(ArrayList<CEABuildingData> buildingData, CEAMetaData ceaMetaData, URI endpointUri, ArrayList<String> uris, int thread, String crs) {
         this.inputs = buildingData;
         this.endpointUri = endpointUri;
         this.uris = uris;
         this.threadNumber = thread;
         this.crs = crs;
-        this.terrain = terrain;
-        setSolarSupply();
+        this.metaData = ceaMetaData;
     }
 
     public void stop() {
@@ -96,277 +100,13 @@ public class RunCEATask implements Runnable {
      * Recursively deletes contents of a directory
      * @param file given directory
      */
-    public void deleteDirectoryContents(File file)
-    {
+    public void deleteDirectoryContents(File file) {
         for (File subFile : file.listFiles()) {
             // if it is a subfolder recursively call function to empty it
             if (subFile.isDirectory()) {
                 deleteDirectoryContents(subFile);
             }
             subFile.delete();
-        }
-    }
-
-    /**
-     * Extracts areas from excel files and add to output data, then delete excel files
-     * @param tmpDir temporary directory path
-     * @param result output data
-     * @return output data
-     */
-    public CEAOutputData extractArea(String tmpDir, CEAOutputData result) {
-        String line = "";
-        String splitBy = ",";
-        String solarDir = tmpDir + FS + "testProject" + FS + "testScenario" + FS + "outputs" + FS + "data" + FS + "potentials" + FS + "solar" + FS;
-        boolean flag = false;
-
-        try{
-            for (String generatorType : solarSupply.keySet()) {
-                String generator = generatorType;
-
-                if (generatorType.contains("PVT")) {generator = "PVT";}
-                
-                //parsing a CSV file into BufferedReader class constructor
-                FileReader solar = new FileReader(solarDir + generatorType + "_total_buildings.csv");
-                BufferedReader solarFile = new BufferedReader(solar);
-                ArrayList<String[]> solarColumns = new ArrayList<>();
-
-                while ((line = solarFile.readLine()) != null)   //returns a Boolean value
-                {
-                    String[] rows = line.split(splitBy);    // use comma as separator
-                    solarColumns.add(rows);
-                }
-
-                for (int n = 0; n < solarColumns.get(0).length; n++) {
-                    if (solarColumns.get(0)[n].equals(generator + "_roofs_top_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.RoofSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    } else if (solarColumns.get(0)[n].equals(generator + "_walls_south_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.SouthWallSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    } else if (solarColumns.get(0)[n].equals(generator + "_walls_north_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.NorthWallSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    } else if (solarColumns.get(0)[n].equals(generator + "_walls_east_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.EastWallSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    } else if (solarColumns.get(0)[n].equals(generator + "_walls_west_m2")) {
-                        for (int m = 1; m < solarColumns.size(); m++) {
-                            result.WestWallSolarSuitableArea.add(solarColumns.get(m)[n]);
-                        }
-                        flag = true;
-                    }
-                }
-
-                solarFile.close();
-                solar.close();
-
-                if (flag) {break;}
-            }
-        } catch (IOException e) {
-            File file = new File(tmpDir);
-            deleteDirectoryContents(file);
-            file.delete();
-            e.printStackTrace();
-            throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
-        }
-
-        result.targetUrl=endpointUri.toString();
-        result.iris=uris;
-        File file = new File(tmpDir);
-        deleteDirectoryContents(file);
-        file.delete();
-
-        return result;
-    }
-
-    /**
-     * Extracts time series data from excel files and add to output data
-     * @param tmpDir temporary directory path
-     * @return output data
-     */
-    public CEAOutputData extractTimeSeriesOutputs(String tmpDir) {
-        String line = "";
-        String splitBy = ",";
-        String projectDir = tmpDir+FS+"testProject";
-        CEAOutputData result = new CEAOutputData();
-        boolean getTimes = true;
-
-        try{
-            for(int i=0; i<inputs.size(); i++){
-                FileReader demand;
-                if(i<10){
-                    demand = new FileReader(projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"demand"+FS+"B00"+i+".csv");
-                }
-                else if(i<100){
-                    demand = new FileReader(projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"demand"+FS+"B0"+i+".csv");
-                }
-                else{
-                    demand = new FileReader(projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"demand"+FS+"B"+i+".csv");
-                }
-                BufferedReader demand_file = new BufferedReader(demand);
-                ArrayList<String[]> demand_columns = new ArrayList<>();
-                ArrayList<String> grid_results = new ArrayList<>();
-                ArrayList<String> heating_results = new ArrayList<>();
-                ArrayList<String> cooling_results = new ArrayList<>();
-                ArrayList<String> electricity_results = new ArrayList<>();
-
-                while ((line = demand_file.readLine()) != null)   //returns a Boolean value
-                {
-                    String[] rows = line.split(splitBy);    // use comma as separator
-                    demand_columns.add(rows);
-                }
-                for(int n=0; n<demand_columns.get(0).length; n++) {
-                    if (demand_columns.get(0)[n].equals("GRID_kWh")) {
-                        for (int m = 1; m < demand_columns.size(); m++) {
-                            grid_results.add(demand_columns.get(m)[n]);
-                        }
-                    } else if (demand_columns.get(0)[n].equals("QH_sys_kWh")) {
-                        for (int m = 1; m < demand_columns.size(); m++) {
-                            heating_results.add(demand_columns.get(m)[n]);
-                        }
-                    } else if (demand_columns.get(0)[n].equals("QC_sys_kWh")) {
-                        for (int m = 1; m < demand_columns.size(); m++) {
-                            cooling_results.add(demand_columns.get(m)[n]);
-                        }
-                    } else if (demand_columns.get(0)[n].equals("E_sys_kWh")) {
-                        for (int m = 1; m < demand_columns.size(); m++) {
-                            electricity_results.add(demand_columns.get(m)[n]);
-                        }
-                    }
-                }
-                demand_file.close();
-                demand.close();
-
-                String solar;
-
-                if(i<10){
-                    solar = projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar"+FS+"B00"+i;
-                }
-                else if(i<100){
-                    solar = projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar"+FS+"B0"+i;
-                }
-                else{
-                    solar = projectDir+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar"+FS+"B"+i;
-                }
-
-                for (Map.Entry<String, ArrayList<String>> entry: solarSupply.entrySet()){
-                    result = extractSolarSupply(result, entry.getKey(), entry.getValue(), splitBy, solar + "_" + entry.getKey() + ".csv", tmpDir, getTimes);
-                    getTimes = false;
-                }
-
-                result.GridConsumption.add(grid_results);
-                result.ElectricityConsumption.add(electricity_results);
-                result.HeatingConsumption.add(heating_results);
-                result.CoolingConsumption.add(cooling_results);
-            }
-        } catch ( IOException e) {
-            File file = new File(tmpDir);
-            deleteDirectoryContents(file);
-            file.delete();
-            e.printStackTrace();
-            throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
-        }
-        return result;
-    }
-
-    /**
-     * Extracts potential energy data of solar energy generators
-     * @param result CEAOutputData to store the CEA outputs
-     * @param generatorType type of solar energy generator
-     * @param supplyTypes types of potential energy that generatorType can generate
-     * @param dataSeparator separator of the CEA output csv files
-     * @param solarFile file name of the csv storing the output data for generatorType
-     * @param tmpDir root directory of CEA files
-     * @param getTimes whether to extract timestamps
-     * @return CEAOutputData with the potential energy data of solar energy generators
-     */
-    public CEAOutputData extractSolarSupply(CEAOutputData result, String generatorType, List<String> supplyTypes, String dataSeparator, String solarFile, String tmpDir, Boolean getTimes) {
-        String line;
-        String supply;
-        String generator = generatorType;
-        List<String> timestamps = new ArrayList();
-
-        if (generatorType.contains("PVT")) {generator = "PVT";}
-        
-        try {
-            FileReader solar = new FileReader(solarFile);
-
-            BufferedReader solar_file = new BufferedReader(solar);
-            ArrayList<String[]> solar_columns = new ArrayList<>();
-
-            while ((line = solar_file.readLine()) != null)   //returns a Boolean value
-            {
-                String[] rows = line.split(dataSeparator);    // use comma as separator
-                solar_columns.add(rows);
-            }
-
-            for (int i = 0; i < supplyTypes.size(); i++) {
-                ArrayList<String> roof_results = new ArrayList<>();
-                ArrayList<String> wall_south_results = new ArrayList<>();
-                ArrayList<String> wall_north_results = new ArrayList<>();
-                ArrayList<String> wall_east_results = new ArrayList<>();
-                ArrayList<String> wall_west_results = new ArrayList<>();
-
-                supply = supplyTypes.get(i);
-
-                for (int n = 0; n < solar_columns.get(0).length; n++) {
-                    if (getTimes && solar_columns.get(0)[n].equals("Date")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            timestamps.add(solar_columns.get(m)[n].replaceAll("\\s", "T"));
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_roofs_top_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            roof_results.add(solar_columns.get(m)[n]);
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_walls_south_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            wall_south_results.add(solar_columns.get(m)[n]);
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_walls_north_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            wall_north_results.add(solar_columns.get(m)[n]);
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_walls_west_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            wall_west_results.add(solar_columns.get(m)[n]);
-                        }
-                    } else if (solar_columns.get(0)[n].equals(generator + "_walls_east_" + supply + "_kWh")) {
-                        for (int m = 1; m < solar_columns.size(); m++) {
-                            wall_east_results.add(solar_columns.get(m)[n]);
-                        }
-                    }
-                }
-
-                result = addSolarSupply(result, generatorType, "roof", supply, roof_results);
-                result = addSolarSupply(result, generatorType, "wall_north", supply, wall_north_results);
-                result = addSolarSupply(result, generatorType, "wall_south", supply, wall_south_results);
-                result = addSolarSupply(result, generatorType, "wall_west", supply, wall_west_results);
-                result = addSolarSupply(result, generatorType, "wall_east", supply, wall_east_results);
-
-                if (getTimes) {
-                    result.times = timestamps;
-                }
-            }
-
-            solar_file.close();
-            solar.close();
-
-            return result;
-        }
-        catch ( IOException e) {
-            File file = new File(tmpDir);
-            deleteDirectoryContents(file);
-            file.delete();
-            e.printStackTrace();
-            throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
         }
     }
 
@@ -395,55 +135,30 @@ public class RunCEATask implements Runnable {
     }
 
     /**
-     * Converts input data (except for surrounding) to CEA into text file to be read by the Python scripts
+     * Writes building geometry and usage data to text file to be read by the Python scripts
      * @param dataInputs ArrayList of the CEA input data
      * @param directory_path directory path
-     * @param file_path path to store data file, excluding surrounding data
-     * @param surrounding_path path to store surrounding data file
-     * @param weather_path path to store weather data file
+     * @param file_path path to store data file
      */
-    private void dataToFile(ArrayList<CEAInputData> dataInputs, String directory_path, String file_path, String surrounding_path, String weatherTimes_path, String weather_path) {
+    private void parseBuildingData(ArrayList<CEABuildingData> dataInputs, String directory_path, String file_path) {
         // parse input data to JSON
         String dataString = "[";
-        String weatherTimes = "";
-        String weatherData = "";
-        ArrayList<CEAInputData> surroundings = new ArrayList<>();
 
         for (int i = 0; i < dataInputs.size(); i++) {
-            if (!(dataInputs.get(i).getSurrounding() == null)) {surroundings.addAll(dataInputs.get(i).getSurrounding());}
-            if (noWeather && !(dataInputs.get(i).getWeather() == null) && !(dataInputs.get(i).getWeatherTimes() == null)) {
-                noWeather = false;
-                List<OffsetDateTime> times = dataInputs.get(i).getWeatherTimes();
-                List<Map<String, Integer>> timeMap = new ArrayList<>();
-
-                for (int j = 0; j < times.size(); j++){
-                    OffsetDateTime offsetDateTime = times.get(j);
-                    Map<String, Integer> map = new HashMap<>();
-                    map.put("year", offsetDateTime.getYear());
-                    map.put("month", offsetDateTime.getMonthValue());
-                    map.put("day", offsetDateTime.getDayOfMonth());
-                    map.put("hour", offsetDateTime.getHour());
-                    map.put("minute", offsetDateTime.getMinute());
-                    timeMap.add(map);
-                }
-
-                weatherTimes += new Gson().toJson(timeMap);
-                weatherData += new Gson().toJson(dataInputs.get(i).getWeather());
-                weather_lat = dataInputs.get(i).getWeatherMetaData().get(0);
-                weather_lon = dataInputs.get(i).getWeatherMetaData().get(1);
-                weather_elevation = dataInputs.get(i).getWeatherMetaData().get(2);
-                weather_offset = dataInputs.get(i).getWeatherMetaData().get(3);
-            }
             Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("geometry", dataInputs.get(i).getGeometry());
-            tempMap.put("height", dataInputs.get(i).getHeight());
+            tempMap.put("geometry", geometriesToStrings(dataInputs.get(i).getGeometry().getFootprint()));
+            tempMap.put("height", dataInputs.get(i).getGeometry().getHeight());
             tempMap.put("usage", dataInputs.get(i).getUsage());
+            tempMap.put("id", i);
             dataString += new Gson().toJson(tempMap);
-            if(i!=dataInputs.size()-1) dataString += ", ";
+            if (i != dataInputs.size() - 1) {
+                dataString += ", ";
+            }
         }
-        dataString+="]";
+        dataString += "]";
 
         File dir = new File(directory_path);
+
         if (!dir.exists() && !dir.mkdirs()) {
             throw new JPSRuntimeException(new FileNotFoundException(directory_path));
         }
@@ -456,12 +171,100 @@ public class RunCEATask implements Runnable {
         } catch (IOException e) {
             throw new JPSRuntimeException(e);
         }
+    }
 
-        if (!noWeather) {
+    /**
+     * Parses geometry objects to WKT strings and return the strings as a list
+     * @param geometries list of geometry objects
+     * @return list of WKT strings of the geometry objects in geometries
+     */
+    private List<String> geometriesToStrings(List<Geometry> geometries) {
+        List<String> result = new ArrayList<>();
+
+        for (Geometry geometry : geometries) {
+            result.add(geometry.toString());
+        }
+
+        return result;
+    }
+
+    /**
+     * Writes surrounding data into text file to be read by create_shapefile.py for shapefile creation
+     * @param surroundings list of CEAGeometryData of the surrounding buildings
+     * @param directory_path directory path
+     * @param file_path path to store data file
+     */
+    private void parseSurroundings(List<CEAGeometryData> surroundings, String directory_path, String file_path) {
+        //Parse input data to JSON
+        String dataString = "[";
+
+        if (surroundings != null) {
+            noSurroundings = false;
+
+            for (int i = 0; i < surroundings.size(); i++) {
+                Map<String, Object> tempMap = new HashMap<>();
+                tempMap.put("geometry", geometriesToStrings(surroundings.get(i).getFootprint()));
+                tempMap.put("height", surroundings.get(i).getHeight());
+                dataString += new Gson().toJson(tempMap);
+                if (i != surroundings.size() - 1) {
+                    dataString += ", ";
+                }
+            }
+
+            dataString += "]";
+
+            File dir = new File(directory_path);
+
+            if (!dir.exists() && !dir.mkdirs()) {
+                throw new JPSRuntimeException(new FileNotFoundException(directory_path));
+            }
+
+            try {
+                BufferedWriter f_writer = new BufferedWriter(new FileWriter(file_path));
+                f_writer.write(dataString);
+                f_writer.close();
+            } catch (IOException e) {
+                throw new JPSRuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Writes weather data into text file to be read by create_weatherfile.py for EPW file creation
+     * @param weatherTimes timestamps of weather data
+     * @param weather weather data
+     * @param weatherMetaData weather meta data
+     * @param weatherTimes_path path to store
+     * @param weather_path path to store weather data files
+     */
+    private void parseWeather(List<OffsetDateTime> weatherTimes, Map<String, List<Double>> weather, List<Double> weatherMetaData, String weatherTimes_path, String weather_path) {
+        if (weatherTimes != null) {
+            List<Map<String, Integer>> timeMap = new ArrayList<>();
+
+            noWeather = false;
+
+            for (int i = 0; i < weatherTimes.size(); i++) {
+                OffsetDateTime offsetDateTime = weatherTimes.get(i);
+                Map<String, Integer> map = new HashMap<>();
+                map.put("year", offsetDateTime.getYear());
+                map.put("month", offsetDateTime.getMonthValue());
+                map.put("day", offsetDateTime.getDayOfMonth());
+                map.put("hour", offsetDateTime.getHour());
+                map.put("minute", offsetDateTime.getMinute());
+                timeMap.add(map);
+            }
+
+            String times = new Gson().toJson(timeMap);
+            String weatherData = new Gson().toJson(weather);
+            weather_lat = weatherMetaData.get(0);
+            weather_lon = weatherMetaData.get(1);
+            weather_elevation = weatherMetaData.get(2);
+            weather_offset = weatherMetaData.get(3);
+
             // write timestamps of weather data to weatherTimes_path
             try {
                 BufferedWriter f_writer = new BufferedWriter(new FileWriter(weatherTimes_path));
-                f_writer.write(weatherTimes);
+                f_writer.write(times);
                 f_writer.close();
             } catch (IOException e) {
                 throw new JPSRuntimeException(e);
@@ -476,47 +279,6 @@ public class RunCEATask implements Runnable {
                 throw new JPSRuntimeException(e);
             }
         }
-
-        // if there is surrounding data, call dataToFile to store surrounding data as a temporary text file
-        if (surroundings.isEmpty()){
-            noSurroundings = true;
-        }
-        else{
-            dataToFile(surroundings, directory_path, surrounding_path);
-        }
-    }
-
-    /**
-     * Converts surrounding data into text file to be read by the Python scripts
-     * @param dataInputs ArrayList of the CEA input data
-     * @param directory_path directory path
-     * @param file_path path to store data file, excluding surrounding data
-     */
-    private void dataToFile(ArrayList<CEAInputData> dataInputs, String directory_path, String file_path) {
-        //Parse input data to JSON
-        String dataString = "[";
-
-        for (int i = 0; i < dataInputs.size(); i++) {
-            Map<String, String> tempMap = new HashMap<>();
-            tempMap.put("geometry", dataInputs.get(i).getGeometry());
-            tempMap.put("height", dataInputs.get(i).getHeight());
-            dataString += new Gson().toJson(tempMap);
-            if(i!=dataInputs.size()-1) dataString += ", ";
-        }
-        dataString+="]";
-
-        File dir = new File(directory_path);
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new JPSRuntimeException(new FileNotFoundException(directory_path));
-        }
-
-        try {
-            BufferedWriter f_writer = new BufferedWriter(new FileWriter(file_path));
-            f_writer.write(dataString);
-            f_writer.close();
-        } catch (IOException e) {
-            throw new JPSRuntimeException(e);
-        }
     }
 
     /**
@@ -525,138 +287,17 @@ public class RunCEATask implements Runnable {
      * @param path path of the TIF file to write to
      */
     private void bytesToTIFF(byte[] rasterData, String path) {
-        try{
-            Path filePath = Path.of(path);
-            Files.write(filePath, rasterData);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
-        }
-    }
+        if (rasterData != null) {
+            noTerrain = false;
 
-    /**
-     * Add time series data on solar energy generator potential energy to CEAOutputData
-     * @param result CEAOutputData to store the CEA outputs
-     * @param generatorType type of solar energy generator
-     * @param generatorLocation location of the solar energy generator
-     * @param supplyType type of potential energy of data
-     * @param data time series data of the potential energy for the solar energy generator
-     * @return CEAOutputData with the specified potential energy added
-     */
-    public CEAOutputData addSolarSupply(CEAOutputData result, String generatorType, String generatorLocation, String supplyType, ArrayList<String> data) {
-        if (generatorType.equals("PVT_FP")) {
-            if (supplyType.equals("E")) {
-                if (generatorLocation.contains("roof")) {
-                    result.PVTPlateRoofESupply.add(data);
-                } else if (generatorLocation.contains("north")) {
-                    result.PVTPlateWallNorthESupply.add(data);
-                } else if (generatorLocation.contains("south")) {
-                    result.PVTPlateWallSouthESupply.add(data);
-                } else if (generatorLocation.contains("west")) {
-                    result.PVTPlateWallWestESupply.add(data);
-                } else if (generatorLocation.contains("east")) {
-                    result.PVTPlateWallEastESupply.add(data);
-                }
-            } else if (supplyType.equals("Q")) {
-                if (generatorLocation.contains("roof")) {
-                    result.PVTPlateRoofQSupply.add(data);
-                } else if (generatorLocation.contains("north")) {
-                    result.PVTPlateWallNorthQSupply.add(data);
-                } else if (generatorLocation.contains("south")) {
-                    result.PVTPlateWallSouthQSupply.add(data);
-                } else if (generatorLocation.contains("west")) {
-                    result.PVTPlateWallWestQSupply.add(data);
-                } else if (generatorLocation.contains("east")) {
-                    result.PVTPlateWallEastQSupply.add(data);
-                }
-            }
-        } else if (generatorType.equals("PVT_ET")) {
-            if (supplyType.equals("E")) {
-                if (generatorLocation.contains("roof")) {
-                    result.PVTTubeRoofESupply.add(data);
-                } else if (generatorLocation.contains("north")) {
-                    result.PVTTubeWallNorthESupply.add(data);
-                } else if (generatorLocation.contains("south")) {
-                    result.PVTTubeWallSouthESupply.add(data);
-                } else if (generatorLocation.contains("west")) {
-                    result.PVTTubeWallWestESupply.add(data);
-                } else if (generatorLocation.contains("east")) {
-                    result.PVTTubeWallEastESupply.add(data);
-                }
-            } else if (supplyType.equals("Q")) {
-                if (generatorLocation.contains("roof")) {
-                    result.PVTTubeRoofQSupply.add(data);
-                } else if (generatorLocation.contains("north")) {
-                    result.PVTTubeWallNorthQSupply.add(data);
-                } else if (generatorLocation.contains("south")) {
-                    result.PVTTubeWallSouthQSupply.add(data);
-                } else if (generatorLocation.contains("west")) {
-                    result.PVTTubeWallWestQSupply.add(data);
-                } else if (generatorLocation.contains("east")) {
-                    result.PVTTubeWallEastQSupply.add(data);
-                }
-            }
-        } else if (generatorType.equals("PV")) {
-            if (generatorLocation.contains("roof")) {
-                result.PVRoofSupply.add(data);
-            } else if (generatorLocation.contains("north")) {
-                result.PVWallNorthSupply.add(data);
-            } else if (generatorLocation.contains("south")) {
-                result.PVWallSouthSupply.add(data);
-            } else if (generatorLocation.contains("west")) {
-                result.PVWallWestSupply.add(data);
-            } else if (generatorLocation.contains("east")) {
-                result.PVWallEastSupply.add(data);
-            }
-        } else if (generatorType.equals("SC_FP")) {
-            if (generatorLocation.contains("roof")) {
-                result.ThermalPlateRoofSupply.add(data);
-            } else if (generatorLocation.contains("north")) {
-                result.ThermalPlateWallNorthSupply.add(data);
-            } else if (generatorLocation.contains("south")) {
-                result.ThermalPlateWallSouthSupply.add(data);
-            } else if (generatorLocation.contains("west")) {
-                result.ThermalPlateWallWestSupply.add(data);
-            } else if (generatorLocation.contains("east")) {
-                result.ThermalPlateWallEastSupply.add(data);
-            }
-        } else if (generatorType.equals("SC_ET")) {
-            if (generatorLocation.contains("roof")) {
-                result.ThermalTubeRoofSupply.add(data);
-            } else if (generatorLocation.contains("north")) {
-                result.ThermalTubeWallNorthSupply.add(data);
-            } else if (generatorLocation.contains("south")) {
-                result.ThermalTubeWallSouthSupply.add(data);
-            } else if (generatorLocation.contains("west")) {
-                result.ThermalTubeWallWestSupply.add(data);
-            } else if (generatorLocation.contains("east")) {
-                result.ThermalTubeWallEastSupply.add(data);
+            try {
+                Path filePath = Path.of(path);
+                Files.write(filePath, rasterData);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new JPSRuntimeException(e);
             }
         }
-
-        return result;
-    }
-
-    /**
-     * Sets solarSupply with the keys being the type of solar energy generator, and the values being the type of energy that the generator can generate
-     */
-    private void setSolarSupply() {
-        ArrayList<String> EQ = new ArrayList<>();
-        ArrayList<String> E = new ArrayList<>();
-        ArrayList<String> Q = new ArrayList<>();
-
-        EQ.add("E");
-        EQ.add("Q");
-        E.add("E");
-        Q.add("Q");
-
-        solarSupply.put("PV", E);
-        solarSupply.put("PVT_FP", EQ);
-        solarSupply.put("PVT_ET", EQ);
-        solarSupply.put("SC_FP", Q);
-        solarSupply.put("SC_ET", Q);
     }
 
     /**
@@ -710,12 +351,14 @@ public class RunCEATask implements Runnable {
                 String weatherData_path = strTmp + FS + WEATHERDATA_FILE;
                 String tempTerrain_path = strTmp + FS + TEMPTERRAIN_FILE;
 
-                dataToFile(this.inputs, strTmp, data_path, surroundings_path, weatherTimes_path, weatherData_path);
-
-                if (this.terrain != null) {
-                    bytesToTIFF(this.terrain, tempTerrain_path);
-                    noTerrain = false;
-                }
+                // write building geometry and usage data to temporary text file
+                parseBuildingData(this.inputs, strTmp, data_path);
+                // write surrounding buildings' geometry data to temporary text file
+                parseSurroundings(this.metaData.getSurrounding(), strTmp, surroundings_path);
+                // write weather data to temporary text file
+                parseWeather(this.metaData.getWeatherTimes(), this.metaData.getWeather(), this.metaData.getWeatherMetaData(), weatherTimes_path, weatherData_path);
+                // convert terrain bytes data to TIFF
+                bytesToTIFF(this.metaData.getTerrain(), tempTerrain_path);
 
                 String surroundingsFlag = noSurroundings ? "1" : "0";
                 String weatherFlag = noWeather ? "1" : "0";
@@ -766,7 +409,7 @@ public class RunCEATask implements Runnable {
                         args6.add("cmd.exe");
                         args6.add("/C");
                         f_path = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(WEATHER_SCRIPT)).toURI()).getAbsolutePath();
-                        String defaultEPW_path = strTmp + FS + "testProject" + FS + "testScenario" + FS + "inputs" + FS + "weather" + FS + "weather.epw";
+                        String defaultEPW_path = strTmp + FS + PROJECT_NAME + FS + SCENARIO_NAME + FS + "inputs" + FS + "weather" + FS + "weather.epw";
                         args6.add("conda activate cea && python " + f_path + " " + weatherTimes_path + " " + weatherData_path + " " + weather_lat + " " + weather_lon + " " + weather_elevation + " " + weather_offset  + " " + strTmp + " " + "weather.epw" + " " + defaultEPW_path);
                     }
                     
@@ -811,7 +454,7 @@ public class RunCEATask implements Runnable {
                     String typologyfile = FS + "target" + FS + "classes" + FS + TYPOLOGY_SCRIPT;
                     String weatherfile = FS + "target" + FS + "classes" + FS + WEATHER_SCRIPT;
                     String terrainScript = FS + "target" + FS + "classes" + FS + TERRAIN_SCRIPT;
-                    String defaultEPW = strTmp + FS + "testProject" + FS + "testScenario" + FS + "inputs" + FS + "weather" + FS + "weather.epw";
+                    String defaultEPW = strTmp + FS + PROJECT_NAME + FS + SCENARIO_NAME + FS + "inputs" + FS + "weather" + FS + "weather.epw";
                     String createWorkflowFile = FS + "target" + FS + "classes" + FS + CREATE_WORKFLOW_SCRIPT;
                     String workflowFile = FS + "target" + FS + "classes" + FS +  WORKFLOW_YML;
                     String workflowFile1 = FS + "target" + FS + "classes" + FS + WORKFLOW_YML1;
@@ -885,7 +528,7 @@ public class RunCEATask implements Runnable {
                     runProcess(args6);
 
                     // delete the temporary CEA files that were used to create weather file
-                    File file = new File(strTmp + FS + "testProject");
+                    File file = new File(strTmp + FS + PROJECT_NAME);
                     deleteDirectoryContents(file);
                     file.delete();
                 }
@@ -898,7 +541,7 @@ public class RunCEATask implements Runnable {
                 runProcess(args8);
 
                 // rename PVT output files to PVT plate
-                renamePVT(strTmp+FS+"testProject"+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar", "FP");
+                renamePVT(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY + FS + "potentials" + FS + "solar", "FP");
 
                 // create workflow process for PVT tube collectors
                 runProcess(args9);
@@ -906,14 +549,26 @@ public class RunCEATask implements Runnable {
                 runProcess(args10);
 
                 // rename PVT output files to PVT tube
-                renamePVT(strTmp+FS+"testProject"+FS+"testScenario"+FS+"outputs"+FS+"data"+FS+"potentials"+FS+"solar", "ET");
+                renamePVT(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY + FS + "potentials" + FS + "solar", "ET");
 
-                CEAOutputData result = extractTimeSeriesOutputs(strTmp);
-                returnOutputs(extractArea(strTmp,result));
-            } catch ( NullPointerException | URISyntaxException e) {
+                try {
+                    CEAOutputData result = CEAOutputHandler.extractCEAOutputs(strTmp + FS + CEA_OUTPUT_DATA_DIRECTORY, this.uris);
+                    System.out.println("CEA ran successfully.");
+                    returnOutputs(result);
+                }
+                catch (IOException e) {
+                    File file = new File(strTmp);
+                    deleteDirectoryContents(file);
+                    file.delete();
+                    e.printStackTrace();
+                    throw new JPSRuntimeException("There are no CEA outputs, CEA encountered an error");
+                }
+            }
+            catch ( NullPointerException | URISyntaxException e) {
                 e.printStackTrace();
                 throw new JPSRuntimeException(e);
-            } finally {
+            }
+            finally {
                 stop();
             }
         }

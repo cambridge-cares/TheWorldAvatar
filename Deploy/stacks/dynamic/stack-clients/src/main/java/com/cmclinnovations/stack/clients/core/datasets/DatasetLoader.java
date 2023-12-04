@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
-import org.jgrapht.traverse.DepthFirstIterator;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
@@ -81,7 +80,7 @@ public class DatasetLoader {
     private static void addToGraph(Map<String, Dataset> allDatasets, DirectedAcyclicGraph<Dataset, DefaultEdge> graph,
             Dataset current) {
         if (graph.addVertex(current)) {
-            current.getExternalDatasets().forEach(datasetName -> {
+            current.getExternalDatasetsString().forEach(datasetName -> {
                 Dataset child = allDatasets.get(datasetName);
                 if (null == child) {
                     throw new RuntimeException("Failed to find external dataset '"

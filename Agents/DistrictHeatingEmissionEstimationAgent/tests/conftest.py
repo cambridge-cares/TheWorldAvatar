@@ -127,12 +127,12 @@ DERIVATION_INPUTS_2 = [SIMULATION_TIME_1, POINT_SOURCE_1,
 temp_efw = 220 + 273.15
 density_efw = round(CP.PropsSI('D', 'T', temp_efw, 'P', 101325, 'Air'), 6)
 EXPECTED_OUTPUTS_1 = {
-    OD_NO2: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.012386}, 
+    OD_NOX: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.012386}, 
     OD_PM2_5: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000367}, 
     OD_PM10: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000409}
 }
 EXPECTED_OUTPUTS_2 = {
-    OD_NO2: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.024772}, 
+    OD_NOX: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.024772}, 
     OD_PM2_5: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000733}, 
     OD_PM10: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000818}
 }
@@ -140,12 +140,12 @@ EXPECTED_OUTPUTS_2 = {
 temp_hkw = 200 + 273.15
 density_hkw = round(CP.PropsSI('D', 'T', temp_hkw, 'P', 101325, 'Air'), 6)
 EXPECTED_OUTPUTS_3 = {
-    OD_NO2: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.001384}, 
+    OD_NOX: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.001384}, 
     OD_PM2_5: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 3.7e-05}, 
     OD_PM10: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 4.6e-05}
 }
 EXPECTED_OUTPUTS_4 = {
-    OD_NO2: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.002769}, 
+    OD_NOX: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.002769}, 
     OD_PM2_5: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 7.5e-05}, 
     OD_PM10: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 9.3e-05}
 }

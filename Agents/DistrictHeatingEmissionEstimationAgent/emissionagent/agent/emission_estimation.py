@@ -7,6 +7,7 @@
 # calculate emissions from consumed gas and provided heat
 
 import pandas as pd
+from datetime import datetime
 import CoolProp.CoolProp as CP
 
 from py4jps import agentlogging
@@ -29,19 +30,25 @@ PRESSURE = 101325.0     # Assume atmospheric pressure of 1atm (in Pa)
 # Emission factors (kg/MWh)
 EFW_FACTORS = {
     # in kg/MWh heat sourced
-    OD_NO2: 4.01351, 
+    # NOTE: NO2 is currently not supported by Aermod; hence, NOx is used instead
+    #OD_NO2: 4.01351, 
+    OD_NOX: 4.01351, 
     OD_PM10: 0.13260,
     OD_PM2_5: 0.11883
 }
 DH_FACTORS = {
     # in kg/MWh (lower calorific value) gas burned
-    OD_NO2: 0.22429, 
+    # NOTE: NO2 is currently not supported by Aermod; hence, NOx is used instead
+    #OD_NO2: 0.22429, 
+    OD_NOX: 0.22429, 
     OD_PM10: 0.00753,
     OD_PM2_5: 0.00605 
 }
 
 # Default rounding behaviour
 ROUNDING = 6
+# Time format (for logging/console output)
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 #
 # ESTIMATION METHODS
@@ -83,8 +90,14 @@ def extract_relevant_gas_or_heat_amount(ts_client, kg_client, derivationIRI:str,
 
     # Extract time series value for SimulationTime
     unix_time = kg_client.get_unix_timestamps(simulation_time_iri)
-    try:
+    try:        
         amount = df[df['unix'] == unix_time]['sum'].values[0]
+        # Provide some console output
+        t = datetime.utcfromtimestamp(unix_time).strftime(TIME_FORMAT)
+        print(f'Emission estimation input values for current simulation time: {t}')
+        df_time_step = df[df['unix'] == unix_time]
+        for col in df_time_step:
+            print(f"{col}: {df_time_step[col].values}")
     except IndexError:
         msg = f'Derivation {derivationIRI}: SimulationTime unix value {unix_time} not found in time series data. '
         msg += f'Time series data unix range: [ {df["unix"].min()} , {df["unix"].max()} ]'
@@ -132,6 +145,7 @@ def calculate_emissions_for_consumed_gas(pollutant_iri:str, consumed_gas:float) 
         'density': round(rho, 6),
         'massflow': round(mass_flow, 6)
     }
+    logger.info(f'Estimated gas burning emissions: {emission}')
 
     return emission
 
@@ -172,5 +186,6 @@ def calculate_emissions_for_provided_heat(pollutant_iri:str, provided_heat:float
         'density': round(rho, 6),
         'massflow': round(mass_flow, 6)
     }
+    logger.info(f'Estimated EfW emissions: {emission}')
 
     return emission
