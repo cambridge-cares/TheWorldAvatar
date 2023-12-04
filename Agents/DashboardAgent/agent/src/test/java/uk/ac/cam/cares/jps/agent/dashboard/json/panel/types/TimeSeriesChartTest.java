@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.ArrayList;
@@ -127,7 +128,8 @@ public class TimeSeriesChartTest {
                 .append("\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"" + thresholdStyle + "\"}")
                 .append("},")
                 .append(thresholdSteps)
-                .append("\"mappings\": []")
+                .append("\"mappings\": [],")
+                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(metadata[4])).append("\"")
                 .append("},")
                 .append("\"overrides\": []")
                 .append("},")

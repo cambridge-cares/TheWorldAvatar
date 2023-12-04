@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.ArrayList;
@@ -103,7 +104,8 @@ public class PieChartTest {
                 .append("\"fieldConfig\": {")
                 .append("\"defaults\": {\"color\": {\"mode\": \"palette-classic\"},")
                 .append("\"custom\":{").append("\"hideFrom\":{\"legend\":false,\"tooltip\":false,\"viz\":false}").append("},")
-                .append("\"mappings\": []")
+                .append("\"mappings\": [],")
+                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(metadata[4])).append("\"")
                 .append("},")
                 .append("\"overrides\": []")
                 .append("},")

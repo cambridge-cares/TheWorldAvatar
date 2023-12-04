@@ -5,8 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.LayoutTemplateTest;
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.GaugeTest;
-import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TimeSeriesChartTest;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;

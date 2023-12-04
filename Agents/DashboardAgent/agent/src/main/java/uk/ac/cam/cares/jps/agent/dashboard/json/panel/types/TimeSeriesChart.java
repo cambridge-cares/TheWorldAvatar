@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 
@@ -76,7 +77,8 @@ public class TimeSeriesChart extends TemplatePanel {
                 .append("\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"" + this.THRESHOLD_STYLE + "\"}")
                 .append("},") // End of custom parts
                 .append(this.THRESHOLD_KEY_VALUE)
-                .append("\"mappings\": []")
+                .append("\"mappings\": [],")
+                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
                 .append("},") // End of defaults
                 .append("\"overrides\": []")
                 .append("},") // End of field configuration

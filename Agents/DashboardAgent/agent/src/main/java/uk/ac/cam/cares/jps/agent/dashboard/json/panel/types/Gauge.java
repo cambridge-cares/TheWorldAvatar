@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.List;
@@ -119,7 +120,8 @@ public class Gauge extends TemplatePanel {
                 .append("\"thresholds\":{\"mode\": \"absolute\",")
                 .append("\"steps\": [{\"color\":\"red\",\"value\":null},").append(this.COLOR_STEPS).append("]},")
                 .append(this.MIN_MAX_VALS)
-                .append("\"mappings\": []")
+                .append("\"mappings\": [],")
+                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
                 .append("},") // End of defaults
                 .append("\"overrides\": []")
                 .append("},") // End of field configuration

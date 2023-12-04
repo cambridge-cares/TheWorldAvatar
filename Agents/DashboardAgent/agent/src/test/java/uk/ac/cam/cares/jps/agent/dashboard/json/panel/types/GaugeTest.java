@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class GaugeTest {
     private static final List<String[]> SAMPLE_METADATA = new ArrayList<>();
     private static final String[] SAMPLE_THRESHOLDS = new String[2];
     private static final String SAMPLE_MEASURE = "ElectricalConsumption";
-    private static final String SAMPLE_UNIT = "kwh";
+    private static final String SAMPLE_UNIT = "kWh";
     private static final String SAMPLE_ITEM_GROUP = "Fridge";
     private static final String SAMPLE_DATABASE_ID = "eaus17";
     private static final String SAMPLE_FIRST_ASSET_NAME = "asset one";
@@ -41,7 +42,7 @@ public class GaugeTest {
     @Test
     void testConstructor() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Execute the method
         Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, SAMPLE_THRESHOLDS, true);
@@ -53,7 +54,7 @@ public class GaugeTest {
     @Test
     void testConstructorNoThresholds() {
         // Generate expected inputs
-        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, "null"};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Execute the method
         Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{}, true);
@@ -154,7 +155,8 @@ public class GaugeTest {
                 .append("\"thresholds\":{\"mode\": \"absolute\",")
                 .append("\"steps\": [{\"color\":\"red\",\"value\":null},").append(colorSteps).append("]},")
                 .append(minMax)
-                .append("\"mappings\": []")
+                .append("\"mappings\": [],")
+                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(metadata[4])).append("\"")
                 .append("},")
                 .append("\"overrides\": []")
                 .append("},")

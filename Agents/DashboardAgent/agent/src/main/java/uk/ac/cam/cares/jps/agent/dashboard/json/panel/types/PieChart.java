@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.List;
@@ -68,7 +69,8 @@ public class PieChart extends TemplatePanel {
                 // Custom parts of field configurations
                 .append("\"custom\":{").append("\"hideFrom\":{\"legend\":false,\"tooltip\":false,\"viz\":false}")
                 .append("},") // End of custom parts
-                .append("\"mappings\": []")
+                .append("\"mappings\": [],")
+                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
                 .append("},") // End of defaults
                 .append("\"overrides\": []")
                 .append("},") // End of field configuration

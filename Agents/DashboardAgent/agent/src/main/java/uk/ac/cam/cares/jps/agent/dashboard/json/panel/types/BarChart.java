@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.List;
@@ -99,7 +100,8 @@ public class BarChart extends TemplatePanel {
                 .append("\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
                         "{\"color\":\"green\",\"value\":null},{\"color\":\"red\",\"value\":80}")
                 .append("]},")
-                .append("\"mappings\": []")
+                .append("\"mappings\": [],")
+                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
                 .append("},") // End of defaults
                 .append("\"overrides\": []")
                 .append("},") // End of field configuration
