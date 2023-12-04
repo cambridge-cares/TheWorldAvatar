@@ -47,6 +47,9 @@ public final class OntopService extends ContainerService {
 
         configDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
 
+        endpointConfig = new OntopEndpointConfig(
+                containerName, getHostName(), DEFAULT_PORT, "", null);
+
     }
 
     @Override
@@ -94,8 +97,6 @@ public final class OntopService extends ContainerService {
 
     @Override
     protected void createEndpoints() {
-        EndpointConfig endpointConfig = new OntopEndpointConfig(
-                containerName, getHostName(), DEFAULT_PORT, "", null);
         writeEndpointConfig(endpointConfig);
     }
 
