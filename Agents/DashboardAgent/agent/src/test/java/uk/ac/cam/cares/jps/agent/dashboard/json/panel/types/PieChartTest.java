@@ -86,19 +86,9 @@ public class PieChartTest {
         // Similar to above
         String description = "A pie chart displaying the latest distribution for " + metadata[0].toLowerCase() + " of " + metadata[1].toLowerCase();
         String expectedTransformations = "[" + TransformationOptionsTest.genExpectedOrganizeTransformation(itemDetails, "") + "]";
-        // For generating the query
-        StringBuilder queryBuilder = new StringBuilder();
-        StringBuilder dataCols = new StringBuilder();
-        String tableName = itemDetails.get(0)[2];
-        for (String[] data : itemDetails) {
-            if (dataCols.length() != 0) dataCols.append(",");
-            dataCols.append("\\\"").append(data[1]).append("\\\"");
-        }
-        queryBuilder.append("SELECT time AS \\\"time\\\",").append(dataCols).append(" ")
-                .append("FROM \\\"").append(tableName).append("\\\" WHERE $__timeFilter(time)");
         // Construct the expected syntax
         StringBuilder sb = new StringBuilder();
-        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, queryBuilder.toString()))
+        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, ""))
                 .append(",\"type\":\"piechart\",")
                 .append("\"pluginVersion\":\"10.0.3\",")
                 .append("\"fieldConfig\": {")
