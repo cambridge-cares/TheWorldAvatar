@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
@@ -27,7 +28,7 @@ public final class GeoServerService extends ContainerService {
 
     private static final String ADMIN_USERNAME = "admin";
     private static final String DEFAULT_ADMIN_PASSWORD_FILE = "/run/secrets/geoserver_password";
-    
+
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     // Convert username:password to Base64 String.
     private static final String DEFAULT_AUTHORIZATION = Base64.getEncoder()
@@ -67,7 +68,12 @@ public final class GeoServerService extends ContainerService {
             updatePassword();
         }
 
-        createComplexCommand("chown", "-R", "tomcat:tomcat", GeoServerClient.SERVING_DIRECTORY.toString()).withUser("root").exec();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        createComplexCommand("chown", "-R", "tomcat:tomcat", GeoServerClient.SERVING_DIRECTORY.toString())
+                .withUser("root")
+                .withOutputStream(outputStream)
+                .withErrorStream(outputStream)
+                .exec();
     }
 
     private Builder createBaseSettingsRequestBuilder() {
@@ -139,7 +145,8 @@ public final class GeoServerService extends ContainerService {
         // through the reverse-proxy.
         settings.withObject("/global/settings")
                 .put("proxyBaseUrl", "${X-Forwarded-Proto}:\\/\\/${X-Forwarded-Host}\\/geoserver")
-                .put("useHeadersProxyURL", true);
+                .put("useHeadersProxyURL", true)
+                .put("numDecimals", 6);
 
         HttpRequest settingsPutRequest = settingsRequestBuilder
                 .PUT(BodyPublishers.ofString(settings.toString()))

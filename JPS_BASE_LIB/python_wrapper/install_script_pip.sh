@@ -70,7 +70,7 @@ function create_env {
 			echo "    ERROR: Failed to create virtual environment."
 			echo "-----------------------------------------"
             read -n 1 -s -r -p "Press any key to continue"
-			exit -1
+			exit 1
 		fi
 		echo ""
 }
@@ -108,7 +108,7 @@ function install_project {
     	echo "    ERROR: installation failed."
     	echo "-----------------------------------------"
         read -n 1 -s -r -p "Press any key to continue"
-        exit -1
+        exit 2
     fi
 
 }
@@ -118,7 +118,7 @@ if [[ $# = 0 ]]
 then
    usage
 fi
-while [[ $# > 0 ]]
+while [[ $# -gt 0 ]]
 do
 key="$1"
 case $key in

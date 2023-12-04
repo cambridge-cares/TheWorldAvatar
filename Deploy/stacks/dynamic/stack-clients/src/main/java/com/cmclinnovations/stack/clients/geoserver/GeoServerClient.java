@@ -38,7 +38,7 @@ public class GeoServerClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static GeoServerClient instance = null;
-    
+
     public static final Path SERVING_DIRECTORY = Path.of("/opt/geoserver_data/www");
     private static final Path STATIC_DATA_DIRECTORY = SERVING_DIRECTORY.resolve("static_data");
     private static final Path ICONS_DIRECTORY = SERVING_DIRECTORY.resolve("icons");
@@ -177,14 +177,16 @@ public class GeoServerClient extends ContainerClient {
 
     public void createPostGISLayer(String workspaceName, String database, String layerName,
             GeoServerVectorSettings geoServerSettings) {
+        String storeName = database;
+
+        createPostGISDataStore(workspaceName, storeName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
+
         // Need to include the "Util.DEFAULT_QUIET_ON_NOT_FOUND" argument because the
         // 2-arg version of "existsLayer" incorrectly calls the 3-arg version of the
         // "existsLayerGroup" method.
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            createPostGISDataStore(workspaceName, layerName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
-
             GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
             fte.setProjectionPolicy(ProjectionPolicy.NONE);
             fte.addKeyword("KEYWORD");
@@ -193,12 +195,13 @@ public class GeoServerClient extends ContainerClient {
 
             GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
             if (null != virtualTable) {
+                virtualTable.setName(layerName + "_" + virtualTable.getName());
                 fte.setNativeName(virtualTable.getName());
                 fte.setMetadataVirtualTable(virtualTable);
             }
 
             if (manager.getPublisher().publishDBLayer(workspaceName,
-                    layerName,
+                    storeName,
                     fte, geoServerSettings)) {
                 logger.info("GeoServer database layer '{}' created.", layerName);
             } else {

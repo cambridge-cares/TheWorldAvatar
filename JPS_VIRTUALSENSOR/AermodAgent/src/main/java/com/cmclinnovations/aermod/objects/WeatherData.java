@@ -29,10 +29,12 @@ public class WeatherData {
     }
 
     public long getTemperatureInFahrenheit() {
-        if (temperature < 0) {
-            throw new RuntimeException("Temperatures below zero degree Celsius are not supported yet");
+        long tempFahrenheit = Math.round((temperature * 1.8) + 32);
+        // there are only 3 spaces for temperature
+        if (tempFahrenheit < -100) {
+            throw new RuntimeException("Calculated temperature is less than -100: " + tempFahrenheit);
         }
-        return Math.round((temperature * 1.8) + 32);
+        return tempFahrenheit;
     }
 
     public long getWindSpeedInKnots() {

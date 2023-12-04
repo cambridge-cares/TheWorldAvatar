@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  vision-agent:
+    image: ghcr.io/cambridge-cares/vision-agent:1.0.0
+    ports:
+      - "9048:9048"
+    environment:
+      - FLASK_ENV=production
+    volumes:
+      - ./visionagent/resources:/app/visionagent/resources

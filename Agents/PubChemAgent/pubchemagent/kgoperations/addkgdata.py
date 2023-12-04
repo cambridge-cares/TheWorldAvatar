@@ -6,6 +6,9 @@ import re
 from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
 from pubchemagent.utils.url_configs import ONTOSPECIES_URL, ONTOKIN_URL, UNIT_URL
 
+if UPDATE_ENDPOINT is None:
+    from pubchemagent.utils.url_configs import UPDATE_ENDPOINT 
+
 # a sample data addition function
 def insert_ontospecies(typeIRI, type, uuid, data):
     prev_key = ''

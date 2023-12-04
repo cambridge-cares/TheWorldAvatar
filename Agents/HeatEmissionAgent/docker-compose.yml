@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  heat-agent:
+    image: heatemissionagent:2.0.0
+    build: .
+    container_name: heatemissionagent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - "8084:8080"
