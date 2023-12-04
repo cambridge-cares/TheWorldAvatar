@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.TemporalInterval;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;
@@ -73,7 +74,7 @@ public class TemplatingModel {
      * Generate the filter for daily, weekly, or monthly intervals that the trends-related chart should display.
      */
     private void genTrendFilter() {
-        String[] temporalIntervals = new String[]{"Daily over last week", "Daily over last month", "Weekly over last month", "Monthly"};
+        String[] temporalIntervals = new String[]{TemporalInterval.DAILY_OVER_WEEK, TemporalInterval.DAILY_OVER_MONTH, TemporalInterval.WEEKLY_OVER_MONTH, TemporalInterval.MONTHLY};
         CustomVariable intervalFilterOptions = new CustomVariable(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION,
                 temporalIntervals, 0, false, false);
         addVariable(intervalFilterOptions);

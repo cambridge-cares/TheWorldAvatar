@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.TemporalInterval;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public class TemplatingModelTest {
     }
 
     private static void genTrendFilter(StringBuilder tempBuilder) {
-        String[] temporalIntervals = new String[]{"Daily over last week", "Daily over last month", "Weekly over last month", "Monthly"};
+        String[] temporalIntervals = new String[]{TemporalInterval.DAILY_OVER_WEEK, TemporalInterval.DAILY_OVER_MONTH, TemporalInterval.WEEKLY_OVER_MONTH, TemporalInterval.MONTHLY};
         tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 0, false, false))
                 .append(",");
     }

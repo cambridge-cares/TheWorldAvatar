@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.TemporalInterval;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
@@ -92,25 +93,25 @@ public class BarChartTest {
                 TransformationOptionsTest.genExpectedOrganizeTransformation(itemDetails, " (range)") + "]";
         String timeIntervalVariableName = StringHelper.formatVariableName(StringHelper.INTERVAL_VARIABLE_NAME);
         StringBuilder query = new StringBuilder().append("SELECT CASE")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past week' THEN to_char(time,'DD-Mon-YY')")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past month' THEN to_char(time,'DD')")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Weekly over past month' THEN 'Week '|| to_char(time,'W Mon-YY')")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Monthly over past year' THEN to_char(time,'Mon-YY')")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_WEEK).append("' THEN to_char(time,'DD-Mon-YY')")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_MONTH).append("' THEN to_char(time,'DD')")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.WEEKLY_OVER_MONTH).append("' THEN 'Week '|| to_char(time,'W Mon-YY')")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.MONTHLY).append("' THEN to_char(time,'Mon-YY')")
                 .append(" END AS \\\"interval\\\",${")
                 .append(StringHelper.formatVariableName(metadata[0])).append(StringHelper.formatVariableName(metadata[1])).append(":csv} ")
                 .append("FROM \\\"").append(metadata[2]).append("\\\" ")
                 .append("WHERE CASE")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past week' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'6 day' AND TO_TIMESTAMP(${__to}/1000)")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past month' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Weekly over past month' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Monthly over past year' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 year'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_WEEK).append("' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'6 day' AND TO_TIMESTAMP(${__to}/1000)")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_MONTH).append("' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.WEEKLY_OVER_MONTH).append("' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.MONTHLY).append("' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 year'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
                 .append(" END ")
                 // Arrange results starting from the latest interval and go backwards
                 .append("ORDER BY CASE")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past week' THEN (EXTRACT(DOW FROM time)-EXTRACT(DOW FROM TO_TIMESTAMP(${__to}/1000))+6)%7")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Daily over past month' THEN (EXTRACT(DOY FROM time)-EXTRACT(DOY FROM TO_TIMESTAMP(${__to}/1000))+365)%366")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Weekly over past month' THEN (EXTRACT(WEEK FROM time)-EXTRACT(WEEK FROM TO_TIMESTAMP(${__to}/1000))+51)%52")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='Monthly over past year' THEN (EXTRACT(MONTH FROM time)-EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))+11)%12")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_WEEK).append("' THEN (EXTRACT(DOW FROM time)-EXTRACT(DOW FROM TO_TIMESTAMP(${__to}/1000))+6)%7")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_MONTH).append("' THEN (EXTRACT(DOY FROM time)-EXTRACT(DOY FROM TO_TIMESTAMP(${__to}/1000))+365)%366")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.WEEKLY_OVER_MONTH).append("' THEN (EXTRACT(WEEK FROM time)-EXTRACT(WEEK FROM TO_TIMESTAMP(${__to}/1000))+51)%52")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.MONTHLY).append("' THEN (EXTRACT(MONTH FROM time)-EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))+11)%12")
                 .append(" END;");
         StringBuilder sb = new StringBuilder();
         sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, query.toString()))
