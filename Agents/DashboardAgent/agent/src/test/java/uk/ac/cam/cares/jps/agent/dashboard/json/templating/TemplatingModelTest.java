@@ -88,7 +88,7 @@ public class TemplatingModelTest {
     }
 
     private static void genTrendFilter(StringBuilder tempBuilder) {
-        String[] temporalIntervals = new String[]{"Daily over past week", "Daily over past month", "Weekly over past month", "Monthly over past year"};
+        String[] temporalIntervals = new String[]{"Daily over last week", "Daily over last month", "Weekly over last month", "Monthly"};
         tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 0, false, false))
                 .append(",");
     }

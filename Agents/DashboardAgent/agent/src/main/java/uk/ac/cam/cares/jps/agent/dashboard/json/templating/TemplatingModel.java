@@ -73,7 +73,7 @@ public class TemplatingModel {
      * Generate the filter for daily, weekly, or monthly intervals that the trends-related chart should display.
      */
     private void genTrendFilter() {
-        String[] temporalIntervals = new String[]{"Daily over past week", "Daily over past month", "Weekly over past month", "Monthly over past year"};
+        String[] temporalIntervals = new String[]{"Daily over last week", "Daily over last month", "Weekly over last month", "Monthly"};
         CustomVariable intervalFilterOptions = new CustomVariable(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION,
                 temporalIntervals, 0, false, false);
         addVariable(intervalFilterOptions);
