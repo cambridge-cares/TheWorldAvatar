@@ -39,7 +39,8 @@ This agent requires the following tools, which **MUST** run on the same stack. P
   - A name must be appended to all buildings, facilities, rooms, assets, sensors, and measures/dataIRIs through the `Instance rdfs:label "name"^^xsd:string` triple.
   - All sensor measures are attached according to the [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) ontology.
   - Units can be included into the dashboard through the `MeasureInstance om:hasUnit UnitInstance. UnitInstance om:symbol "symbols"^^xsd:string.` triples but are **OPTIONAL**.
-  - Only temperature and relative humidity can be currently retrieved for any room measures. Do note to include a min and max threshold triples for the facility holding these rooms. 
+  - Only temperature and relative humidity can be currently retrieved for any room measures. Do note to include a min and max threshold triples for the facility holding these rooms.
+- ABox samples are documented [here](#3-data-model-requirements).
 
 #### 1.2 Docker Deployment
 **TEST ENVIRONMENT**
@@ -77,8 +78,7 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 ```
 
 #### 2.3 GET ROUTE: `~url~/dashboard-agent/setup`
-This route will communicate with the stack's dashboard container to set up a live analytical dashboard. At the moment, this agent will set up dashboards for the following:
-1) **Facility level** - Room- and asset-related time series are included.
+This route will communicate with the stack's dashboard container to set up a live analytical dashboard.
 
 To execute this route, please send a GET request without any parameters. A sample request for curl syntax (in one line) is as follows:
 ```
@@ -87,4 +87,136 @@ curl localhost:3838/dashboard-agent/setup
 If the agent ran successfully, a JSON Object would be returned as follows.
 ```
 {"Result":["Dashboard has been successfully set up!"], "Runtime": time}
+```
+
+### 3. Data model requirements
+This agent can retrieve the measures and their time series associated with a facility from the knowledge graph. Please ensure that the measure and time series triples conform to [TWA's time series standards](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-cities-ontologies/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and the standard `OM` model as illustrated in Figure 1.
+
+*Figure 1. Standard Time Series Measure ABox*
+```mermaid
+    erDiagram 
+    "Quantity_Instance" ||--o{ "Measure_Instance" : "om:hasValue"
+    "Measure_Instance" ||--o{ "Timeseries_Instance" : "ontotimeseries:hasTimeSeries"
+    "Measure_Instance" {rdfs-label MeasureName}
+    "Measure_Instance" ||--o{ "Unit_Instance" : "om:hasUnit"
+    "Unit_Instance" {om-symbol UnitSymbol}
+```
+
+The legend for the prefix-namespace is available below.
+
+**Legend**
+Prefix | Namespace
+--- | ---
+[bot](https://w3c-lbd-cg.github.io/bot/) | `https://w3id.org/bot#`
+[ontoam](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoassetmanagement) | `https://www.theworldavatar.com/kg/ontoassetmanagement/`
+[ontobim](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobim) | `https://www.theworldavatar.com/kg/ontobim/`
+[ontodevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) | `https://www.theworldavatar.com/kg/ontodevice/`
+[ontotechsystem](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotechnicalsystem) | `https://www.theworldavatar.com/kg/ontotechnicalsystem/`
+[ontotimeseries](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries) | `https://www.theworldavatar.com/kg/ontotimeseries/`
+[ontoubemmp](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoubemmp) | `https://www.theworldavatar.com/kg/ontoubemmp/`
+[om](https://github.com/HajoRijgersberg/OM) | `http://www.ontology-of-units-of-measure.org/resource/om-2/`
+[omgCD](https://www.omg.org/spec/COMMONS/Designators) | `https://www.omg.org/spec/Commons/Designators/`
+[saref](https://saref.etsi.org/core/) | `https://saref.etsi.org/core/`
+[ssn](https://www.w3.org/TR/vocab-ssn/) | `http://www.w3.org/ns/ssn/systems/`
+
+#### 3.1 Facility data model
+The core model in *Figure 2* must be available to support the retrieval of time series measures within a facility at the asset, room, and system level.
+
+*Figure 2. Core Facility ABox*
+```mermaid
+    erDiagram 
+    "Building_Instance" ||--o{ "bot:Building" : "rdf:type"
+    "Building_Instance" ||--o{ "Facility_Instance" : "ontobim:hasFacility"
+    "Facility_Instance" {rdfs-label FacilityName}
+    "Facility_Instance" ||--o{ "Room_Instance" : "ontobim:hasRoom"
+    "Room_Instance" ||--o{ "ontobim:Room" : "rdf:type"
+    "Facility_Instance" ||--o{ "Organisation_Instance" : "ontoam:isManagedBy"
+    "Organisation_Instance" ||--o{ "OrgName_Instance" : "omgCD:hasName"
+    "OrgName_Instance" {rdfs-label OrganisationName}
+```
+
+##### 3.1.1 Asset data model
+This agent retrieves measures for sensors and other devices within the facility. The permitted ontologies are included in Figures 3 and 4. Figure 3 shows the different structure and relationships that can be retrieved from the knowledge graph. Whereas Figure 4 shows how nested devices can be retrieved.
+
+*Figure 3. Snippet of possible device ABox*
+```mermaid
+    erDiagram 
+    "Room_Instance" ||--o{ "Sensor_Instance" : "bot:containsElement"
+    "Sensor_Instance" ||--o{ "Quantity_Instance" : "ontodevice:measures"
+    "Sensor_Instance" {
+      rdf-type SensorType
+      rdfs-label SensorName
+    }
+    
+    "Room_Instance" ||--o{ "Element_Instance" : "bot:containsElement"
+    "Element_Instance" ||--o{ "Subelement_Instance" : "saref:consistsOf"
+    "Subelement_Sensor_Instance" ||--o{ "Subelement_Instance" : "ontodevice:isAttachedTo"
+    "Subelement_Sensor_Instance" ||--o{ "Subelement_Quantity_Instance" : "ontodevice:measures"
+    "Element_Instance" {
+      rdf-type ElementType
+      rdfs-label ElementName
+      }
+
+    "Room_Instance" ||--o{ "Device_Instance" : "bot:containsElement"
+    "Device_Instance" ||--o{ "OperatingRange_Instance" : "ontodevice:hasOperatingRange"
+    "OperatingRange_Instance" ||--o{ "OperatingProperty_Instance" : "ssn:hasOperatingProperty"
+    "OperatingProperty_Instance" ||--o{ "OperatingQuantity_Instance" : "ontodevice:hasQuantity"
+    "Device_Instance" {
+      rdf-type DeviceType
+      rdfs-label DeviceName
+      }
+```
+
+*Figure 4. Snippet of nested sensor ABox*
+```mermaid
+    erDiagram 
+    "Room_Instance" ||--o{ "Element_Instance" : "bot:containsElement"
+    "Element_Instance" ||--o{ "Sensor_Instance" : "ontodevice:sendsSignalTo"
+    "Sensor_Instance" ||--o{ "Quantity_Instance" : "ontodevice:measures"
+    "Sensor_Instance" ||--o{ "Measure_Instance" : "ontodevice:observes"
+    "Element_Instance" {
+      rdf-type ElementType
+      rdfs-label ElementName
+    }
+    "Sensor_Instance" ||--o{ "Second_Sensor_Instance" : "saref:consistsOf"
+    "Second_Sensor_Instance" ||--o{ "Sec_Quantity_Instance" : "ontodevice:measures"
+    "Second_Sensor_Instance" ||--o{ "Third_Sensor_Instance" : "ontodevice:sendsSignalTo"
+    "Third_Sensor_Instance" ||--o{ "Sec_Measure_Instance" : "ontodevice:observes"
+    "Third_Sensor_Instance" ||--o{ "Forth_Sensor_Instance" : "saref:consistsOf"
+    "Forth_Sensor_Instance" ||--o{ "Third_Quantity_Instance" : "ontodevice:measures"
+```
+
+##### 3.1.2 Room data model
+At the moment, this agent can only retrieve humidity and temperature measures for rooms within the facility. The required ontology is included in Figure 5.
+
+*Figure 5. Snippet of a room ABox*
+```mermaid
+    erDiagram 
+    "Room_Instance" {ontobim-hasIfcRepresentation--rdfs-label RoomName}
+    "Room_Instance" ||--o{ "Relative_Humidity_Quantity_Instance" : "ontodevice:hasRelativeHumidity"
+    "Room_Instance" ||--o{ "Temperature_Quantity_Instance" : "ontodevice:hasTemperature"
+    "Facility_Instance" ||--o{ "Room_Instance" : "ontobim:hasRoom"    
+    "Facility_Instance" ||--o{ "MinThreshold_Instance" : "ontodevice:hasMinThreshold"
+    "Facility_Instance" ||--o{ "MaxThreshold_Instance" : "ontodevice:hasMaxThreshold"
+    "MinThreshold_Instance" ||--o{ "ontodevice:Threshold" : "rdf:type"
+    "MaxThreshold_Instance" ||--o{ "ontodevice:Threshold" : "rdf:type"
+    "ontodevice:Threshold" ||--o{ "Quantity_Instance" : "ontodevice:hasQuantity"
+    "Quantity_Instance" ||--o{ "Measure_Instance" : "om:hasValue"
+    "Measure_Instance" {om-hasNumericalValue ThresholdValue}
+```
+
+##### 3.1.3 System data model
+At the moment, this agent can only retrieve energy-related consumption measures for the systems and its subsystems within the facility. The required ontology is included in Figure 6.
+
+*Figure 6. Snippet of a system ABox*
+```mermaid
+    erDiagram
+    "Facility_Instance" ||--o{ "System_Instance" : "ontotechsystem:containsSystem"
+    "System_Instance" {rdfs-label SystemName}
+    "System_Instance" ||--o{ "EnergyQuantity_Instance" : "ontoubemmp:consumesEnergy"
+
+    "Facility_Second_Instance" ||--o{ "System_Second_Instance" : "ontotechsystem:containsSystem"
+    "System_Second_Instance" ||--o{ "Subsystem_Instance" : "ontotechsystem:composedOf"
+    "Subsystem_Instance" {rdfs-label SystemName}
+    "Subsystem_Instance" ||--o{ "EnergyQuantity_Instance" : "ontoubemmp:consumesEnergy"
 ```
