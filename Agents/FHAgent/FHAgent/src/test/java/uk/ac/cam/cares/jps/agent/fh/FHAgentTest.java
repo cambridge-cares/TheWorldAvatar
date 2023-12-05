@@ -97,10 +97,6 @@ public class FHAgentTest {
         "tally.min = 0",
         "decrease.factor = 0.15",
         "increase.factor = 0.5",
-        "data_bridge.url = localhost:3838/data-bridge-agent/timeseries",
-        "data_bridge.JDBC_end =",
-        "data_bridge.kg_end =",
-        "use_stack = false",
         "derivation.baseurl = http://derivationexample.com/triplestore/repository/"
         }));
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
@@ -670,10 +666,6 @@ public class FHAgentTest {
         "tally.min = 0",
         "decrease.factor = 0.15",
         "increase.factor = 0.5",
-        "data_bridge.url = localhost:3838/data-bridge-agent/timeseries",
-        "data_bridge.JDBC_end = http://www.testJDBC.com",
-        "data_bridge.kg_end = http://www.definitelyNotBlazegraph.com",
-        "use_stack = false",
         "derivation.baseurl = http://derivationexample.com/triplestore/repository/"
         }));
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
@@ -700,8 +692,6 @@ public class FHAgentTest {
         JSONObject testValPair = new JSONObject();
         testValPair.put(testIRI, testValues);
         expected.put("values", testValPair);
-        expected.put("database", "http://www.testJDBC.com");
-        expected.put("namespace", "http://www.definitelyNotBlazegraph.com");
 
         Long actualTime = 1234560000000L;
         JSONObject input = new JSONObject();
