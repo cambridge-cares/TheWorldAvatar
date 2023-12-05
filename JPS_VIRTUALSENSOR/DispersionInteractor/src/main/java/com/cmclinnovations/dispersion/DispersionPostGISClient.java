@@ -54,7 +54,8 @@ public class DispersionPostGISClient {
         String sqlTemplate = "CREATE TABLE %s (" +
                 "iri character varying," +
                 "geom geometry," +
-                "geom_iri character varying)";
+                "main_uuid character varying," +
+                "geom_uuid character varying)";
 
         String sql = String.format(sqlTemplate, tableName);
         try (Statement stmt = conn.createStatement()) {
@@ -101,8 +102,26 @@ public class DispersionPostGISClient {
         return scopeExists;
     }
 
-    boolean sensorExists(Point target, Connection conn) {
+    String getScopeIri(Polygon polygon, Connection conn) {
+        String scopeIri = null;
+        String sql = String.format("SELECT iri FROM %s WHERE ST_Equals(geom, ST_GeomFromText('%s'))",
+                Config.SCOPE_TABLE_NAME, polygon.toString());
 
+        try (Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            // there should not be any duplicates
+            while (result.next()) {
+                scopeIri = result.getString("iri");
+            }
+        } catch (SQLException e) {
+            LOGGER.error("SQL state: {}", e.getSQLState());
+            LOGGER.error(e.getMessage());
+        }
+
+        return scopeIri;
+    }
+
+    boolean sensorExists(Point target, Connection conn) {
         if (!tableExists(Config.SENSORS_TABLE_NAME, conn))
             return false;
 
@@ -125,9 +144,11 @@ public class DispersionPostGISClient {
     String addScope(Polygon polygon, Connection conn) {
         String scopeIri = null;
         try {
-            scopeIri = QueryClient.PREFIX + UUID.randomUUID();
-            String geomIri = QueryClient.PREFIX + UUID.randomUUID();
-            InsertValuesStepN<?> insertStep = getContext(conn).insertInto(table).values(scopeIri, polygon, geomIri);
+            String scopeUuid = UUID.randomUUID().toString();
+            scopeIri = QueryClient.PREFIX + scopeUuid;
+            String geomUuid = UUID.randomUUID().toString();
+            InsertValuesStepN<?> insertStep = getContext(conn).insertInto(table).values(scopeIri, polygon, scopeUuid,
+                    geomUuid);
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(insertStep.toString());
             }

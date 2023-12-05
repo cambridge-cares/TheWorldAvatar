@@ -3,11 +3,12 @@ package uk.ac.cam.cares.jps.base.slurm.job;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.io.Files;
 
@@ -50,27 +51,19 @@ public class Workspace {
 		return createWorkspaceName(workspaceParentPath, agentClass);
 	}
 	
-	private static File createWorkspaceName(String workspaceParentPath, String agentClass){
+	private static File createWorkspaceName(String workspaceParentPath, String agentClass) {
 		String workspaceName = agentClass.concat("_").concat("" + System.nanoTime());
-		File workspace = new File(workspaceParentPath.concat(File.separator).concat(workspaceName));
-		if(workspace.mkdir()){
+		File workspace = Paths.get(workspaceParentPath, workspaceName).toFile();
+		if (workspace.mkdir()) {
 			return workspace;
 		}
 		return null;
 	}
 	
-	private boolean isWorkspaceAvailable(String workspaceParentPath, String agentClass){
-		File dir = new File(workspaceParentPath);
-		if(dir!=null && dir.isDirectory()){
-			return isWorkspaceAvailable(dir, agentClass);
-		}
-		return false;
-	}
-	
-	protected boolean isWorkspaceAvailable(File dir, String agentClass){
-		for(File file:dir.listFiles()){
-			if(file.isDirectory()){
-				if(file.getName().toLowerCase().startsWith(agentClass.toLowerCase())){
+	protected boolean isWorkspaceAvailable(File dir, String agentClass) {
+		for (File file : dir.listFiles()) {
+			if (file.isDirectory()) {
+				if (file.getName().toLowerCase().startsWith(agentClass.toLowerCase())) {
 					return true;
 				}
 			}

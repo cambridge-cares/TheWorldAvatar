@@ -1,0 +1,27 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX iso:    <https://www.theworldavatar.com/kg/ontoisochrone/>
+PREFIX ex: <https://example.org/>
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+
+
+SELECT DISTINCT ?poi_iri ?poi_type ?geometry
+WHERE {
+    {
+        # OntopQuery to retrieve
+        SERVICE [ONTOP] {
+                SELECT DISTINCT *
+                WHERE {
+
+                ?toilet a obe:Toilet.
+                ?toilet geo:asWKT ?wkt .
+
+                }
+            }
+        }
+    # Binding variable names as requested
+    BIND(?toilet AS ?poi_iri)
+    BIND(obe:Toilet AS ?poi_type)
+    BIND(?wkt AS ?geometry)
+}

@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.fumehood;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -24,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.*;
 
-@WebServlet(urlPatterns = {"/status", "/retrieve"})
+@WebServlet(urlPatterns = {"/status", "/retrieve", "/latestsash"})
 public class FHSashAndOccupancyAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(FHSashAndOccupancyAgent.class);
 
@@ -37,6 +38,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     public static final String LOADTSCLIENTCONFIG_ERROR_MSG = "Unable to load timeseries client configs!";
     public static final String QUERYSTORE_CONSTRUCTION_ERROR_MSG = "Unable to construct QueryStore!";
     public static final String GETLATESTDATA_ERROR_MSG = "Unable to get latest timeseries data for the following IRI: ";
+    public static final String NO_DEVICE_IRI = "No device IRI is provided.";
     private static final String GETFHANDWFHDEVICES_ERROR_MSG = "Unable to query for fumehood and/or walkin-fumehood devices and their labels!";
     private static final String WAIT_ERROR_MSG = "An error has occurred while waiting!";
 
@@ -107,18 +109,22 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
             msg = runAgent();
         }
 
+        if (url.contains("latestsash")) {
+            try {
+                String deviceIri = requestParams.getString("deviceIri");
+                // invalid deviceIRI will cause query of SashOpeningIRI to failed and is handled in getSashOpeningTsData()
+                // msg will contain the error message, and the request will have respond code 200
+                msg = getLatestSash(deviceIri);
+            } catch (JSONException e) {
+                throw new JPSRuntimeException(NO_DEVICE_IRI);
+            }
+        }
+
         return msg;
         
     }
 
-    /**
-     * Initialise agent
-     * @return successful initialisation message
-     */
-    private JSONObject runAgent() {
-        QueryStore queryStore;
-        Map<String, List<String>> map = new HashMap<>();
-
+    private QueryStore setupQueryStore() {
         try {
             loadTSClientConfigs(System.getenv("CLIENTPROPERTIES_01"),System.getenv("CLIENTPROPERTIES_02"));
         } catch (IOException e) {
@@ -126,10 +132,19 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         }
 
         try {
-            queryStore = new QueryStore(sparqlUpdateEndpoint, sparqlQueryEndpoint, bgUsername, bgPassword);
+            return new QueryStore(sparqlUpdateEndpoint, sparqlQueryEndpoint, bgUsername, bgPassword);
         } catch (IOException e) {
             throw new JPSRuntimeException(QUERYSTORE_CONSTRUCTION_ERROR_MSG);
         }
+    }
+
+    /**
+     * Initialise agent
+     * @return successful initialisation message
+     */
+    private JSONObject runAgent() {
+        QueryStore queryStore = setupQueryStore();
+        Map<String, List<String>> map = new HashMap<>();
 
         try {
         map = queryStore.queryForFHandWFHDevices();
@@ -410,6 +425,33 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         }
         LOGGER.info("Check is " + check);
         return check;
+    }
+
+    /**
+     * Get the latest sash value and the time stamp
+     * @param deviceIri the IRI of FH/WFH
+     * @return the latest sash value and the time stamp
+     */
+    private JSONObject getLatestSash(String deviceIri) {
+        QueryStore queryStore = setupQueryStore();
+
+        Map<String, List<String>> map = new HashMap<>();
+        map.put("FHandWFH", Collections.singletonList(deviceIri));
+
+        String sashOpeningIri = queryStore.queryForSashOpening(deviceIri);
+        map.put("SashOpeningIRIs", Collections.singletonList(sashOpeningIri));
+
+        setTsClientAndRDBClient(dbUsernameForSashOpening, dbPasswordForSashOpening, dbUrlForSashOpening, bgUsername, bgPassword, sparqlUpdateEndpoint, sparqlQueryEndpoint);
+        map = getSashOpeningTsData(map);
+
+        LOGGER.info(map.get("FHandWFH").toString());
+        LOGGER.info(map.get("SashOpeningIRIs").toString());
+        LOGGER.info(map.get("SashOpeningTsData").toString());
+
+        JSONObject result = new JSONObject();
+        result.put("sash", map.get("SashOpeningTsData").get(0));
+        result.put("time", map.get("SashOpeningTimeStamps").get(0));
+        return result;
     }
 
 }
