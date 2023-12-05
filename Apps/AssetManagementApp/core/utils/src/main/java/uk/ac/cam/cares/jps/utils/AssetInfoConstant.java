@@ -7,7 +7,7 @@ import java.util.List;
 public class AssetInfoConstant {
     // BASIC INFO KEYS
     static public final String BASIC_SECTION_TITLE = "Basic";
-    static public final String REFERENCE_LABEL = "Reference Label";
+    static public final String REFERENCE_LABEL = "Name/Description";
     static public final String TYPE = "Type";
     static public final String ASSIGNED_TO = "Assigned to";
     static public final String IRI = "IRI";
@@ -32,7 +32,7 @@ public class AssetInfoConstant {
     // ITEM KEYS
     static public final String ITEM_SECTION_TITLE = "Item";
     static public final String PURCHASE_PRICE = "Purchase Price";
-    static public final String ITEM_DESCRIPTION = "Item Description";
+    static public final String ITEM_DESCRIPTION = "Comments";
     static public final String SERVICE_CATEGORY = "Service Category";
     static public final String SERVICE_CODE = "Service Code";
 
