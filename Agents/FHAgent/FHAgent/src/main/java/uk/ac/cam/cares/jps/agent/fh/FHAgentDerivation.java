@@ -37,6 +37,7 @@ public class FHAgentDerivation {
     public String derivationInstanceBaseURL;
     //SPARQL enpoints (query, update)
     private String[] endPoint;
+    private String sparqlUser, sparqlPass;
     //Init eror messate
     private final String ERROR_INIT = "Error on initialising derivation instantiation. ";
 
@@ -67,9 +68,14 @@ public class FHAgentDerivation {
         try{
             readBaseIRI(agentPropFile);
             readSparqlEndpoint(clientPropFile);
+            readSparqlCredentials(clientPropFile);
             retrieveIRIMapping(agentPropFile, iriMappingFile, outputToIRIMap);
 
             storeClient = new RemoteStoreClient(endPoint[0], endPoint[1]);
+            if (!sparqlUser.isBlank() && !sparqlPass.isBlank()){
+                storeClient.setUser(sparqlUser);
+                storeClient.setPassword(sparqlPass);
+            }
             derivClient = new DerivationClient(storeClient, derivationInstanceBaseURL);
 
         }
@@ -113,7 +119,26 @@ public class FHAgentDerivation {
                 endPoint = new String[]{prop.getProperty("sparql.query.endpoint"), prop.getProperty("sparql.update.endpoint")};
             }
             catch (Exception e) {
-            	throw new IOException ("Error parsing derivation base URL from properties file.");
+            	throw new IOException ("Error parsing KG endpoint URL from properties file.");
+            }
+        }
+    }
+
+    /*
+     * Read SPARQL endpoint from the client.properties file
+     */
+    private void readSparqlCredentials(String propertiesFile) throws IOException{
+        try (InputStream input = new FileInputStream(propertiesFile)) {
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+            try {
+                // Read the mappings folder from the properties file
+                sparqlUser = prop.getProperty("sparql.user");
+                sparqlPass = prop.getProperty("sparql.pass");
+            }
+            catch (Exception e) {
+            	throw new IOException ("Error parsing KG credentials from properties file.");
             }
         }
     }

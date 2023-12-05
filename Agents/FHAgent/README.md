@@ -69,6 +69,8 @@ Contains parameter for timeseries client and knowledge graph endpoints.
 - `db.password` the password to access the Postgres database
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
+- `sparql.user` Username to be used when accessing the knowledge graph. Optional. 
+- `sparql.pass` Password to be used when accessing the knowledge graph. Optional.
 
 #### iriMapping.txt
  This file contains the IRI mapping for all raw and derived variable. This file will automatically be generated if not found and all the IRI will be created on call and hence, this file is not included in the repository. The format for the mapping is the following: 
