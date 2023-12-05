@@ -243,6 +243,37 @@ class DashboardClientIntegrationTest {
         }
     }
 
+    @Test
+    void testInitDashboard_OverwriteSuccess() {
+        // Insert these triples into the blazegraph
+        SparqlClientTest.insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
+        SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
+        // Create password files
+        IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_POSTGIS_PASSWORD_PATH, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
+        IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_DASHBOARD_PASSWORD_PATH, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
+        try (MockedConstruction<ContainerClient> mockClient = Mockito.mockConstruction(ContainerClient.class, (mock, context) -> {
+            // Ensure all mocks return the test config class for the method to continue
+            Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(IntegrationTestUtils.POSTGIS_ENDPOINT_CONFIG);
+            Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
+        })) {
+            StackClient stackClient = new StackClient();
+            DashboardClient client = new DashboardClient(stackClient);
+            // Execute method twice so that there is a pre-existing dashboard that should just be overwritten
+            client.initDashboard();
+            Queue<String> dashboardUids = client.initDashboard();
+            while (!dashboardUids.isEmpty()) {
+                String uid = dashboardUids.poll();
+                try {
+                    Map<String, Object> jsonModel = (Map<String, Object>) IntegrationTestUtils.retrieveDashboard(uid, IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
+                    verifyDashboardContents(jsonModel);
+                } finally {
+                    IntegrationTestUtils.deleteDashboard(uid);
+                }
+            }
+        }
+    }
+
     private static void verifyDashboardContents(Map<String, Object> jsonModel) {
         // Verify the number of panels generated
         List<Map<String, Object>> rows = (List<Map<String, Object>>) jsonModel.get("panels");

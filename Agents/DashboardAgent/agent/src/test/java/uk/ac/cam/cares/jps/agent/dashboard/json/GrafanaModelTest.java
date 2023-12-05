@@ -73,15 +73,29 @@ class GrafanaModelTest {
         assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false, true)), sampleModel.construct());
     }
 
-    private static String genExpectedResults(String title, Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
-        return genExpectedResults(null, "null", title, "20s", "Initialised dashboard", databaseConnectionMap, timeSeries);
+    @Test
+    void testSetExistingIds() {
+        // Set up
+        int sampleId = 5;
+        String sampleUid = "h18jrna";
+        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false, true));
+        // Execute method
+        sampleModel.setExistingIds(sampleId, sampleUid);
+        // Verify results
+        assertEquals(genExpectedResults(String.valueOf(sampleId), sampleUid, SAMPLE_TITLE, "20s", "Initialised dashboard", SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false, true), true), sampleModel.construct());
     }
 
-    private static String genExpectedResults(String dashboardID, String dashboardUID, String title, String refreshRate, String comment, Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
+
+    private static String genExpectedResults(String title, Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
+        return genExpectedResults(null, "null", title, "20s", "Initialised dashboard", databaseConnectionMap, timeSeries, false);
+    }
+
+    private static String genExpectedResults(String dashboardID, String dashboardUID, String title, String refreshRate, String comment, Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries, boolean overwrite) {
+        dashboardUID = dashboardUID.equals("null") ? dashboardUID : "\"" + dashboardUID + "\"";
         StringBuilder builder = new StringBuilder();
         builder.append("{\"dashboard\": {")
                 // generate new id and uid using null
-                .append("\"id\": ").append(dashboardID).append(",")
+                .append("\"id\":").append(dashboardID).append(",")
                 .append("\"uid\":").append(dashboardUID).append(",")
                 // The dashboard title
                 .append("\"title\": \"").append(title).append("\",")
@@ -98,7 +112,7 @@ class GrafanaModelTest {
                 .append("},")
                 // Comments for each update/ version
                 .append("\"message\": \"").append(comment).append("\",")
-                .append("\"overwrite\": false}");
+                .append("\"overwrite\": ").append(overwrite).append("}");
         return builder.toString();
     }
 }

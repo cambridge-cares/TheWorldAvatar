@@ -31,6 +31,7 @@ public class DashboardClient {
     private static final String SERVICE_ACCOUNT_SEARCH_SUB_ROUTE = "/search";
     private static final String DATA_SOURCE_ROUTE = "/api/datasources";
     private static final String DASHBOARD_CREATION_ROUTE = "/api/dashboards/db";
+    private static final String DASHBOARD_SEARCH_ROUTE = "/api/search?folderIds=0&query=&starred=false";
     private static final String DASHBOARD_UNAVAILABLE_ERROR = "Dashboard container has not been set up within the stack. Please set it up first!";
     private static final String FAILED_REQUEST_ERROR = "Unable to send request! See response for more details: ";
     private static final String INVALID_DATA_ERROR = "Bad request data! The json model is not compliant with Grafana standards!";
@@ -168,7 +169,9 @@ public class DashboardClient {
         LOGGER.debug("Generating JSON model syntax...");
         String jsonSyntax;
         try {
-            jsonSyntax = new GrafanaModel(title, this.DATABASE_CONNECTION_MAP, timeSeries).construct();
+            GrafanaModel dataModel = new GrafanaModel(title, this.DATABASE_CONNECTION_MAP, timeSeries);
+            dataModel = this.overwriteExistingModel(title, dataModel);
+            jsonSyntax = dataModel.construct();
         } catch (Exception e) {
             LOGGER.fatal("Failed to construct grafana model syntax. See error message for more details: " + e.getMessage());
             throw new JPSRuntimeException("Failed to construct grafana model syntax. See error message for more details: " + e.getMessage());
@@ -176,14 +179,37 @@ public class DashboardClient {
         LOGGER.debug("Sending request to create dashboard...");
         // Create a new dashboard based on the JSON model using a POST request with security token
         HttpResponse response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
+        JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
         try {
-            AgentCommunicationClient.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + response.body());
+            AgentCommunicationClient.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + responseBody);
         } catch (IllegalArgumentException e) {
             LOGGER.fatal(INVALID_DATA_ERROR);
             throw new IllegalArgumentException(INVALID_DATA_ERROR);
         }
         // Retrieve the connection ID generated for the database connection and link it to the database
-        JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
         return responseBody.get("uid").getAsString();
+    }
+
+    /**
+     * Overwrite the existing dashboard with a different model syntax if required. This method will be ignored if there are no dashboards with the same title.
+     *
+     * @param title     The title of the data model.
+     * @param dataModel The Grafana data model containing the dashboard format.
+     */
+    private GrafanaModel overwriteExistingModel(String title, GrafanaModel dataModel) {
+        String searchRoute = this.SERVICE_CLIENT.getDashboardUrl() + DASHBOARD_SEARCH_ROUTE;
+        HttpResponse response = AgentCommunicationClient.sendGetRequest(searchRoute, this.SERVICE_ACCOUNT_TOKEN);
+        JsonArray dashboards = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonArray();
+        for (JsonElement dashboard : dashboards) {
+            JsonObject dashboardData = dashboard.getAsJsonObject();
+            // Only overwrite the existing model if the dashboard title already exists
+            if (dashboardData.get("title").getAsString().equals(title)) {
+                int id = dashboardData.get("id").getAsInt();
+                String uid = dashboardData.get("uid").getAsString();
+                dataModel.setExistingIds(id, uid);
+                break;
+            }
+        }
+        return dataModel;
     }
 }
