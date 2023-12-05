@@ -72,22 +72,7 @@ public class FHAgent{
      * Mapping between raw and derived variable
      */
     public JSONObject derivationMapping = new JSONObject();
-    /*
-     * Data bridge agent URL
-     */
-    public static String dataBridgeURL;
-    /*
-     * Stack JDBC target URL
-     */
-    public static String dataBridgeJDBC;
-    /*
-     * Stack kg endpoint URL
-     */
-    public static String dataBridgeKG;
-    /*
-     * Bool for whether to use the Stack or not
-     */
-    public Boolean useStack;
+
     /**
      * Log messages
      */
@@ -163,25 +148,6 @@ public class FHAgent{
             catch(Exception e){
                 throw new JPSRuntimeException("Error parsing tally threshold in properties file:" + e);
             }
-
-            try{
-                dataBridgeURL = prop.getProperty("data_bridge.url");
-                dataBridgeJDBC = prop.getProperty("data_bridge.JDBC_end");
-                dataBridgeKG = prop.getProperty("data_bridge.kg_end");
-            }
-
-            catch(Exception e){
-                throw new JPSRuntimeException("Error parsing DataBridgeAgent URL in properties file:" + e);
-            }
-
-            try{
-                useStack = Boolean.parseBoolean(prop.getProperty("use_stack"));
-            }
-
-            catch(Exception e){
-                throw new JPSRuntimeException("Error parsing use Stack key in properties file:" + e);
-            }
-            
         }
         catch (Exception e) {
             throw new JPSRuntimeException("Failed to init FHAgent", e);
@@ -210,29 +176,6 @@ public class FHAgent{
             }
         }
         return keyToIRIMap;
-    }
-
-    /**
-     * Sends a POST request with requested parameters to the specified url.
-     * @param jsonParams Request parameters.
-     */
-    protected static void sendPostRequest(String jsonParams) {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = null;
-        try {
-            request = HttpRequest.newBuilder()
-                    .header("Content-Type", "application/json")
-                    .uri(URI.create(dataBridgeURL))
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonParams))
-                    .timeout(Duration.ofSeconds(3600))
-                    .build();
-            // Await response before continue executing the rest of the code
-            client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            throw new JPSRuntimeException(e.getMessage() + " If connection is refused, the url is likely invalid!");
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Thread has been interrupted!" + e.getMessage());
-        }
     }
 
 
@@ -332,12 +275,7 @@ public class FHAgent{
      * @param keys List of variable keyname in Thingsboard server
      */
     public void updateData(JSONObject Distance, List<String> keys)throws IllegalArgumentException {
-        if (useStack) {
-            sendToDataBridge(Distance, keys);
-        }
-        else {
             localUpdateData(Distance, keys);
-        }
     }
 
     /*
@@ -812,27 +750,7 @@ public class FHAgent{
         result.put("values", values);
         result.put("timestamp", timestamps);
 
-        //Optional stack JDBC and KG endpoint URL
-        if(!dataBridgeJDBC.equals("")){
-            result.put("database", dataBridgeJDBC);
-        }
-        if(!dataBridgeKG.equals("")){
-            result.put("namespace", dataBridgeKG);
-        }
-
         return result;
-    }
-
-
-    public void sendToDataBridge (JSONObject Distance, List<String> keys) {
-        for(String key: keys) {
-            JSONObject latestOccState = TallyDist(Distance, key);
-            LOGGER.debug("latestOccState for key " + key + ":" + latestOccState);
-            JSONObject result = createJSONRequest(latestOccState, "INSTANTANEOUS");
-            String resultString = result.toString();
-            sendPostRequest(resultString);
-        }
-
     }
 
 }
