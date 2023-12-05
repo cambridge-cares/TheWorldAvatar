@@ -49,7 +49,7 @@ CurrentSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that mea
 MassFlowSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the mass flow rate of gas or liquid.,https://www.theworldavatar.com/kg/ontodevice/,Mass flow sensor
 Fridge,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is usually used for the preservation of items like food via temperature regulation.,https://www.theworldavatar.com/kg/ontodevice/,Fridge
 Oven,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used for heating up items like food using a heating element.,https://www.theworldavatar.com/kg/ontodevice/,Oven
-IceMaker,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used to create ice  by freezing water.,https://www.theworldavatar.com/kg/ontodevice/,Ice Maker
+IceMaker,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used to create ice  by freezing water.,https://www.theworldavatar.com/kg/ontodevice/,Ice maker
 Dehumidifier,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that reduces the humidity of the surrounding atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Dehumidifier
 WaterChiller,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used to reduce water temperature.,https://www.theworldavatar.com/kg/ontodevice/,Water chiller
 PaperShredder,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device used to destroy paper document via cutting the document to small pieces.,https://www.theworldavatar.com/kg/ontodevice/,Paper Shredder
@@ -57,7 +57,7 @@ WaterDispenser,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that
 VaccuumCleaner,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that cleans a surface by creating a vaccuum to suck up dirt.,https://www.theworldavatar.com/kg/ontodevice/,Vaccuum cleaner
 Accessory,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that is an added component to another device.,https://www.theworldavatar.com/kg/ontodevice/,Accessory
 Antenna,Class,Accessory,IS-A,,,,A device that is used to transmit or receive signal via electromagnetic radiation.,https://www.theworldavatar.com/kg/ontodevice/,Antenna
-ComputerPart,Class,Accessory,IS-A,,,,A device that is part of or can be added to a computer.,https://www.theworldavatar.com/kg/ontodevice/,Computer Part
+ComputerPart,Class,Accessory,IS-A,,,,A device that is part of or can be added to a computer.,https://www.theworldavatar.com/kg/ontodevice/,Computer part
 CPU,Class,ComputerPart,IS-A,,,,A device that is responsible for the logical or arithmatic operation in a computer.,https://www.theworldavatar.com/kg/ontodevice/,CPU
 EthernetCard,Class,ComputerPart,IS-A,,,,A device that acts as a network interface betweena a computer and the internet via cable,https://www.theworldavatar.com/kg/ontodevice/,Ethernet card
 Monitor,Class,ComputerPart,IS-A,,,,A device that acts as a display of a computer.,https://www.theworldavatar.com/kg/ontodevice/,Monitor
@@ -66,16 +66,16 @@ RAM,Class,ComputerPart,IS-A,,,,A device that provides non-permanent memory durin
 Dock,Class,ComputerPart,IS-A,,,,A device that simplifies a computers cable peripheral interface.,https://www.theworldavatar.com/kg/ontodevice/,Dock
 Printer,Class,ComputerPart,IS-A,,,,A device that prints data or documents to a paper.,https://www.theworldavatar.com/kg/ontodevice/,Printer
 SSD,Class,ComputerPart,IS-A,,,,A device that provies permanent memory on a computer.,https://www.theworldavatar.com/kg/ontodevice/,SSD
-PCCooler,Class,ComputerPart,IS-A,,,,A device that lowers the operating temperature of a computer during operation.,https://www.theworldavatar.com/kg/ontodevice/,PC Cooler
+PCCooler,Class,ComputerPart,IS-A,,,,A device that lowers the operating temperature of a computer during operation.,https://www.theworldavatar.com/kg/ontodevice/,PC cooler
 Screen,Class,ComputerPart,IS-A,,,,A device on which a computer interface is projected onto.,https://www.theworldavatar.com/kg/ontodevice/,Screen
 Projector,Class,ComputerPart,IS-A,,,,A device tht projects an image to a screen,https://www.theworldavatar.com/kg/ontodevice/,Projector
-Speaker,Class,ComputerPart,IS-A,,,,A device that converts electrical signal from  acomputer to soundwaves.,https://www.theworldavatar.com/kg/ontodevice/,Speaker
+Speaker,Class,ComputerPart,IS-A,,,,A device that converts electrical signal from  a computer to soundwaves.,https://www.theworldavatar.com/kg/ontodevice/,Speaker
 Scanner,Class,ComputerPart,IS-A,,,,A device that  scans paper-based documents to a digital format,https://www.theworldavatar.com/kg/ontodevice/,Scanner
 Dongle,Class,ComputerPart,IS-A,,,,"A small piece of computer hardware that connects to a port on another device to provide it with additional functionality, or enable a pass-through to such a device that adds functionality.",https://www.theworldavatar.com/kg/ontodevice/,Dongle
 ServerChassis,Class,ComputerPart,IS-A,,,,A device where servers are mounted on.,https://www.theworldavatar.com/kg/ontodevice/,Server chassis
 NetworkVideoRecorder,Class,ComputerPart,IS-A,,,,A device that converts video recording in a camera network to a computer-storable format,https://www.theworldavatar.com/kg/ontodevice/,Network video recorder
-NetworkDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that allows communication within a computer network,https://www.theworldavatar.com/kg/ontodevice/,Network devices
-Router,Class,NetworkDevice,IS-A,,,,A device that forwards data packets in a coputer network.,https://www.theworldavatar.com/kg/ontodevice/,Router
+NetworkDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that allows communication within a computer network,https://www.theworldavatar.com/kg/ontodevice/,Network device
+Router,Class,NetworkDevice,IS-A,,,,A device that forwards data packets in a computer network.,https://www.theworldavatar.com/kg/ontodevice/,Router
 NetworkSwitch,Class,NetworkDevice,IS-A,,,,A device that forwards and receive data from a computer network to a single specific device.,https://www.theworldavatar.com/kg/ontodevice/,Network switch
 Controller,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that controls a certain variable of its environment.,https://www.theworldavatar.com/kg/ontodevice/,Controller
 FlowController,Class,Controller,IS-A,,,,A device that manages the amount of gas or liquid flowing through.,https://www.theworldavatar.com/kg/ontodevice/,Flow controller
@@ -83,7 +83,7 @@ MassFlowController,Class,FlowController,IS-A,,,,A device that manages the mass o
 Valve,Class,FlowController,IS-A,,,,A device that manages the amount of gas or liquid flowing through via changing the area the material can pass through.,https://www.theworldavatar.com/kg/ontodevice/,Valve
 SelectorValve,Class,Valve,IS-A,,,,A valve that selects what gas or liquid pass through.,https://www.theworldavatar.com/kg/ontodevice/,Selector valve
 FurnaceController,Class,Controller,IS-A,,,,A device that manages the operations of a furnace.,https://www.theworldavatar.com/kg/ontodevice/,Furnace controller
-IlluminationController,Class,Controller,IS-A,,,,A device that manages the level of light a device produces.,https://www.theworldavatar.com/kg/ontodevice/,Illuminance controller
+IlluminationController,Class,Controller,IS-A,,,,A device that manages the level of light a device produces.,https://www.theworldavatar.com/kg/ontodevice/,Illumination controller
 MotorController,Class,Controller,IS-A,,,,A device that manages the operation of motors.,https://www.theworldavatar.com/kg/ontodevice/,Motor controller
 PressureContoller,Class,Controller,IS-A,,,,A device that manages the gas or liquid pressure of other apparatus.,https://www.theworldavatar.com/kg/ontodevice/,Pressure controller
 TemperatureController,Class,Controller,IS-A,,,,A device that manages the temperature of the surrounding environment.,https://www.theworldavatar.com/kg/ontodevice/,Temperature controller
