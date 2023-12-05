@@ -47,7 +47,7 @@ def main():
     new_precursors_dir_2 = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\new_precursors\\double\\'
     bs_smarts_dict = read_bs_smarts(bs_smarts_csv)
     bs_smarts_dict_2 = read_bs_smarts_2(bs_smarts_csv_2)
-
+    print("SMARTS Operation")
     if not os.path.exists(new_precursors_dir):
         os.makedirs(new_precursors_dir)
 

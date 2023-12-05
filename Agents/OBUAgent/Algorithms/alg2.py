@@ -109,7 +109,6 @@ def create_doubles_unpaired(values_list, precursor_file_path):
     for bs in values_list:
         bs1 = bs[0]
         bs2 = bs[1]
-        print(f'bs1 = {bs1}, bs2 = {bs2}')
         if bs1 not in doubles_unpaired:
             doubles_unpaired[bs1] = set()
         if bs2 not in doubles_unpaired:
