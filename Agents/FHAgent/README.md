@@ -26,10 +26,7 @@ The occupancy result will then be calculated and instantiated.
 The agent will be packaged to a .war file for the deployment. As the agent will instantiate timeseries data and derivation instances, a connection to a POSTgresql database and a knowledge graph is required.
 
 ### Using the stack
-The agent can function with and without using the stack. The option for this is available in the `agent.properties` file.
-Setting the `use_stack` properties to `true` will send the data to the data bridge agent via the url specified in the `data_bridge.url` property.
-
-If used without the stack, the JDBC URL and SPARQL endpoint provided in the `client.properties` file will be used as the Postgres DB and triple store.
+The agent can function with and without using the stack. A config file is provided in `./stack-manager-input-config-service/`
 
 ### Requirements
 It is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine 
@@ -44,11 +41,7 @@ The agent requires 3 configuration file to configure, with an optional IRI map t
 #### agent.properties
 Contains config for the agent operations such as calculations and instantiations.
 
-- `thinsboard.mappingfolder` : Path to the folder containing IRI mapping for timeseries instantiation. Each timeseries IRI is contained in a single file.
-- `data_bridge.url` : URL to the data bridge agent
-- `data_bridge.JDBC_end` : Endpoint URL of the stack's JDBC target URL. Optional, leave empty if using the data bridge agent's default endpoint
-- `data_bridge.kg_end` : Endpoint URL of the stack's target SPARQL endpoint. Optional, leave empty if using the data bridge agent's default endpoint
-- `use_stack` : Boolean whether the agent is using the stack or not
+- `thingsboard.mappingfolder` : Path to the folder containing IRI mapping for timeseries instantiation. Each timeseries IRI is contained in a single file.
 - `derivation.mapping` : Maps the raw varables to the derived variables. The raw variable name must be the same with the TB variable keyname. The format is the following: `raw1:deriv1, raw2:deriv2, raw3:deriv1, ...`
 - `threshold.tally` : The distance threshold for the tally system
 - `tally.limit` : The tally threshold for the occupancy calculation system
