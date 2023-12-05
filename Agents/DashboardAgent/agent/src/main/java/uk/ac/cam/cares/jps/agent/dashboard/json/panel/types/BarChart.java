@@ -40,7 +40,7 @@ public class BarChart extends TemplatePanel {
         // Set a query for the specified time interval
         StringBuilder query = new StringBuilder().append("SELECT CASE")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_WEEK).append("' THEN to_char(time,'DD-Mon-YY')")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_MONTH).append("' THEN to_char(time,'DD')")
+                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_MONTH).append("' THEN to_char(time,'DD-Mon')")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.WEEKLY_OVER_MONTH).append("' THEN 'Week '|| to_char(time,'W Mon-YY')")
                 .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.MONTHLY).append("' THEN to_char(time,'Mon-YY')")
                 .append(" END AS \\\"interval\\\",${")
@@ -113,9 +113,9 @@ public class BarChart extends TemplatePanel {
                 // Tooltip options
                 .append("\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"},")
                 // Bar chart options
-                .append("\"barRadius\":0,\"barWidth\":0.97,\"fullHighlight\":false,\"groupWidth\":0.7,")
+                .append("\"barRadius\":0,\"barWidth\":0.8,\"fullHighlight\":false,\"groupWidth\":0.7,")
                 .append("\"orientation\":\"auto\",\"showValue\":\"never\",\"stacking\":\"normal\",")
-                .append("\"xTickLabelRotation\":0,\"xTickLabelSpacing\":0")
+                .append("\"xTickLabelRotation\":0,\"xTickLabelSpacing\":100")
                 .append("}") // end of options
                 .append("}");
         return builder.toString();
