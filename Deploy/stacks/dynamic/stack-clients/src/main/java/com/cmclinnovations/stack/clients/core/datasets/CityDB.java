@@ -106,6 +106,10 @@ public class CityDB extends GeoServerDataSubset {
     }
 
     protected void augmentData(String database) {
+        
+        logger.info("Setting tables to unlogged for better write performance...");
+        CityDBClient.getInstance().unlogTable(database);
+
         if (discoverThematicSurface) {
             logger.info("Discovering thematic surface...");
             CityDBClient.getInstance().discoverThematicSurface(database, critAreaRatio);
@@ -114,6 +118,9 @@ public class CityDB extends GeoServerDataSubset {
         CityDBClient.getInstance().addBuildingHeight(database);
         logger.info("Adding building footprint...");
         CityDBClient.getInstance().addFootprint(database);
+
+        logger.info("Setting tables to logged...");
+        CityDBClient.getInstance().relogTable(database);
     }
 
     @Override
