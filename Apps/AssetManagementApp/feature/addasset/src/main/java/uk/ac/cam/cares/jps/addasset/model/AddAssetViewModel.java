@@ -46,7 +46,7 @@ public class AddAssetViewModel extends ViewModel {
 
     // use field keys to define each field view's appearance and behaviour
     private final List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, BUILDING);
-    private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, SERVICE_CODE, SERVICE_CATEGORY);
+    private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, SERVICE_CODE, SERVICE_CATEGORY);
     private final List<String> locationFieldKeys = Arrays.asList(BUILDING, FACILITY, ROOM, WORKSPACE, STORED_IN);
     private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_FILE, MANUAL_FILE);
     private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, FACILITY, ROOM, WORKSPACE, STORED_IN);
