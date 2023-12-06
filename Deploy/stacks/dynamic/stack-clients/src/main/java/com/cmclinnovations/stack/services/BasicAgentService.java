@@ -13,8 +13,8 @@ public class BasicAgentService extends ContainerService {
 
     private Map<String, BasicEndpointConfig> endpointConfigMap;
 
-    public BasicAgentService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public BasicAgentService(String stackName, ServiceConfig config) {
+        super(stackName, config);
 
         endpointConfigMap = new HashMap<>();
 

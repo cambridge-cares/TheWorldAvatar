@@ -146,6 +146,30 @@ def get_all_properties_with_postcode() -> str:
     return query
 
 
+def get_all_admin_districts_with_price_indices() -> str:
+    # Retrieve instantiated administrative districts (i.e. local authorities) 
+    # including their ONS equivalent instance and (potentially) instantiated
+    # property price indices
+
+    query = f"""
+        SELECT ?local_authority ?ons_district ?ukhpi
+        WHERE {{
+        ?local_authority <{RDF_TYPE}> <{OBE_ADMIN_DISTRICT}> ;
+                         <{OWL_SAME_AS}> ?ons_district . 
+        OPTIONAL {{ ?local_authority ^<{OBE_REPRESENTATIVE_FOR}> ?ukhpi . 
+                    ?ukhpi <{RDF_TYPE}> <{OBE_PROPERTY_PRICE_INDEX}> . }} 
+        }}
+    """
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+
+    return query
+
+
+#
+# SPARQL UPDATES
+#
 def update_transaction_record(property_iri:None, address_iri:None, tx_iri:None, 
                               new_tx_iri:None, price:None, date:None, 
                               ppd_address_iri:None) -> str:
@@ -198,18 +222,12 @@ def update_transaction_record(property_iri:None, address_iri:None, tx_iri:None,
     return query
 
 
-def get_all_admin_districts_with_price_indices() -> str:
-    # Retrieve instantiated administrative districts (i.e. local authorities) 
-    # including their ONS equivalent instance and (potentially) instantiated
-    # property price indices
-
+def instantiate_property_price_index(district_iri, ppi_iri):
+    # Instantiate property price index for a given administrative district
     query = f"""
-        SELECT ?local_authority ?ons_district ?ukhpi
-        WHERE {{
-        ?local_authority <{RDF_TYPE}> <{OBE_ADMIN_DISTRICT}> ;
-                         <{OWL_SAME_AS}> ?ons_district . 
-        OPTIONAL {{ ?local_authority ^<{OBE_REPRESENTATIVE_FOR}> ?ukhpi . 
-                    ?ukhpi <{RDF_TYPE}> <{OBE_PROPERTY_PRICE_INDEX}> . }} 
+        INSERT DATA {{
+            <{ppi_iri}> <{RDF_TYPE}> <{OBE_PROPERTY_PRICE_INDEX}> . 
+            <{ppi_iri}> <{OBE_REPRESENTATIVE_FOR}> <{district_iri}> . 
         }}
     """
 
@@ -219,12 +237,41 @@ def get_all_admin_districts_with_price_indices() -> str:
     return query
 
 
-def instantiate_property_price_index(district_iri, ppi_iri):
-    # Instantiate property price index for a given administrative district
+def delete_potential_transaction_duplicates() -> str:
+    # This SPARQL update deletes all potential transaction duplicates associated
+    # with a property (to avoid issues with the Property Value Estimation Agent)
+    # Structure is as follows:
+    # 1. Retrieve all properties with more than one tx (most inner subquery)
+    # 2. Retrieve one arbitrary tx per property to keep
+    # 3. Retrieve all incoming and outgoing triples of the other txs
+    # 4. Delete all those triples
+
     query = f"""
-        INSERT DATA {{
-            <{ppi_iri}> <{RDF_TYPE}> <{OBE_PROPERTY_PRICE_INDEX}> . 
-            <{ppi_iri}> <{OBE_REPRESENTATIVE_FOR}> <{district_iri}> . 
+        DELETE {{
+            ?s ?p1 ?tx . 
+            ?tx ?p2 ?o . 
+        }}
+        WHERE {{
+            ?property <{OBE_HAS_LATEST_TRANSACTION}> ?tx .
+            FILTER(?tx != ?tx_to_keep)
+            ?s ?p1 ?tx . 
+            OPTIONAL {{ ?tx ?p2 ?o }}
+            {{
+            SELECT distinct ?property (SAMPLE(?tx) as ?tx_to_keep)
+            WHERE {{
+                ?property <{OBE_HAS_LATEST_TRANSACTION}> ?tx 
+                {{
+                SELECT ?property (count(?tx) as ?count)
+                WHERE {{
+                    ?property <{RDF_TYPE}>/<{RDFS_SUBCLASS}>* <{OBE_PROPERTY}> ;
+                              <{OBE_HAS_LATEST_TRANSACTION}> ?tx .
+                }}
+                GROUP BY ?property
+                HAVING(?count > 1)
+                }}
+            }}
+            GROUP BY ?property
+            }}
         }}
     """
 

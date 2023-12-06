@@ -1,8 +1,13 @@
 package com.cmclinnovations.stack.clients.postgis;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
@@ -12,7 +17,11 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class PostGISClient extends ContainerClient implements ClientWithEndpoint {
 
-    private final PostGISEndpointConfig postgreSQLEndpoint;
+    public static final String DEFAULT_SCHEMA_NAME = "public";
+
+    private static final Logger logger = LoggerFactory.getLogger(PostGISClient.class);
+
+    protected final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static PostGISClient instance = null;
 
@@ -23,7 +32,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         return instance;
     }
 
-    private PostGISClient() {
+    protected PostGISClient() {
         postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
     }
 
@@ -39,7 +48,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
     public void createDatabase(String databaseName) {
         try (Connection conn = getDefaultConnection();
                 Statement stmt = conn.createStatement()) {
-            String sql = "CREATE DATABASE " + databaseName + " WITH TEMPLATE = template_postgis";
+            String sql = "CREATE DATABASE \"" + databaseName + "\" WITH TEMPLATE = template_postgis";
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             if ("42P04".equals(ex.getSQLState())) {
@@ -49,12 +58,26 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                         + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL("postgres") + "'.", ex);
             }
         }
+        createDefaultExtensions(databaseName);
+    }
+
+    private void createDefaultExtensions(String databaseName) {
+        try (Connection conn = getRemoteStoreClient(databaseName).getConnection();
+                Statement stmt = conn.createStatement()) {
+            String sql = "CREATE EXTENSION IF NOT EXISTS postgis; "
+                    + "CREATE EXTENSION IF NOT EXISTS postgis_topology; "
+                    + "CREATE EXTENSION IF NOT EXISTS fuzzystrmatch; ";
+            stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to create extensions in database '" + databaseName
+                    + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL("postgres") + "'.", ex);
+        }
     }
 
     public void removeDatabase(String databaseName) {
         try (Connection conn = getDefaultConnection();
                 Statement stmt = conn.createStatement()) {
-            String sql = "DROP DATABASE " + databaseName;
+            String sql = "DROP DATABASE \"" + databaseName + "\"";
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             if ("3D000".equals(ex.getSQLState())) {
@@ -75,4 +98,14 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 postgreSQLEndpoint.getUsername(),
                 postgreSQLEndpoint.getPassword());
     }
+
+    public void resetSchema(String database) {
+        try (InputStream is = PostGISClient.class.getResourceAsStream("postgis_reset_schema.sql")) {
+            String sqlQuery = new String(is.readAllBytes()).replace("{database}", database);
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file 'postgis_reset_schema.sql'.", ex);
+        }
+    }
+
 }

@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='propertyvalueestimation',
-    version='1.1.0',
+    version='1.2.0',
     author='Markus Hofmeister',
     author_email='mh807@cam.ac.uk',
     license='MIT',

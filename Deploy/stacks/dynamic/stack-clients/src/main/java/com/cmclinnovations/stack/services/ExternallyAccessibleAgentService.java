@@ -11,8 +11,8 @@ public class ExternallyAccessibleAgentService extends ContainerService {
 
     public static final String TYPE = "externally-accessible-agent";
 
-    public ExternallyAccessibleAgentService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public ExternallyAccessibleAgentService(String stackName, ServiceConfig config) {
+        super(stackName, config);
     }
 
     @Override

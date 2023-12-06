@@ -21,6 +21,7 @@ from propertyvalueestimation.datamodel.data import TIME_FORMAT_LONG, TIME_FORMAT
 from propertyvalueestimation.errorhandling.exceptions import TSException
 from propertyvalueestimation.kg_operations.kgclient import KGClient
 from propertyvalueestimation.kg_operations.tsclient import TSClient
+from propertyvalueestimation.utils.stackclients import PostGISClient, GeoserverClient
 
 
 class PropertyValueEstimationAgent(DerivationAgent):
@@ -31,6 +32,10 @@ class PropertyValueEstimationAgent(DerivationAgent):
 
         # Initialise the Sparql_client (with defaults specified in environment variables)
         self.sparql_client = self.get_sparql_client(KGClient)
+
+        # Initialise relevant Stack Clients with default parameters
+        self.postgis_client = PostGISClient()
+        self.geoserver_client = GeoserverClient()
         
 
     def agent_input_concepts(self) -> list:
@@ -209,7 +214,7 @@ class PropertyValueEstimationAgent(DerivationAgent):
                                                 property_value_iri=market_value_iri, 
                                                 property_value=market_value)
         else:
-            if not res['property_iri']:
+            if not res.get('property_iri'):
                 res = self.sparql_client.get_property_iri(tx_iri=transaction_iri, 
                                                           floor_area_iri=floor_area_iri)
             # In case PropertyValueEstimate cannot be assessed, instantiate AmountOfMoney
@@ -219,6 +224,22 @@ class PropertyValueEstimationAgent(DerivationAgent):
             g = self.sparql_client.instantiate_unavailable_property_value(graph=g,
                                                 property_iri=res['property_iri'],
                                                 property_value_iri=market_value_iri)
+
+        # Ensure latest property market values are reflected in PostGIS
+        # Check if table exists, if not create it
+        if not self.postgis_client.check_table_exists():
+            self.logger.info('Creating PostGIS table ...')
+            self.postgis_client.create_table()
+            # Create GeoServer workspace and virtual table layer
+            self.logger.info('Creating GeoServer layer ...')
+            self.geoserver_client.create_workspace()
+            self.geoserver_client.create_postgis_layer()
+
+        # Upload latest market value estimate to PostGIS (will be NULL if not computable)
+        # (overwrites previous value if available, otherwise creates new row)
+        self.logger.info('Uploading property values to PostGIS ...')
+        self.postgis_client.upload_property_value(building_iri=res['property_iri'],
+                                                  value_estimate=market_value)
 
         # Return graph with SPARQL update
         return g

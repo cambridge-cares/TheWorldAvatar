@@ -51,10 +51,8 @@ public class PodmanService extends DockerService {
 
     public static final String TYPE = "podman";
 
-    public PodmanService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
-
-        addStackSecrets();
+    public PodmanService(String stackName, ServiceConfig config) {
+        super(stackName, config);
     }
 
     @Override
@@ -68,11 +66,9 @@ public class PodmanService extends DockerService {
     }
 
     @Override
-    protected void initialise(String stackName) {
+    public void initialise() {
 
-        // addStackConfigs();
-
-        createNetwork(stackName);
+        addStackSecrets();
     }
 
     @Override
@@ -292,8 +288,11 @@ public class PodmanService extends DockerService {
             containerSpecGenerator.setLabels(containerSpec.getLabels());
 
             try {
-                ContainerCreateResponse containerCreateResponse = new ContainersApi(getClient().getPodmanClient())
+                ContainersApi containersApi = new ContainersApi(getClient().getPodmanClient());
+                ContainerCreateResponse containerCreateResponse = containersApi
                         .containerCreateLibpod(containerSpecGenerator);
+
+                containersApi.containerStartLibpod(containerName, null);
 
                 return getContainerIfCreated(service.getContainerName());
             } catch (ApiException ex) {

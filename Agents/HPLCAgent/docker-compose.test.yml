@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   hplc_agent:
-    image: ghcr.io/cambridge-cares/hplc_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/hplc_agent:1.2.0-SNAPSHOT
     container_name: hplc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
@@ -26,7 +26,7 @@ services:
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     container_name: "blazegraph_hplc_test"
     ports:
       - 48082:8080
@@ -38,7 +38,7 @@ services:
 
   # File server
   fileserver:
-    image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/fileserver:1.1.0
     container_name: "fileserver_hplc_test"
     ports:
       - 48086:8080

@@ -11,9 +11,10 @@
 #
 # ----------------------------------------------------------------------------------
 from . import mockutils
-from .mockutils import env_configs_mock, stack_configs_mock
+from .mockutils import env_configs_mock, stack_configs_mock, stackclients_mock
 import sys
 
 sys.modules["propertyvalueestimation.utils"] = mockutils
 sys.modules['propertyvalueestimation.utils.env_configs'] = env_configs_mock
 sys.modules['propertyvalueestimation.utils.stack_configs'] = stack_configs_mock
+sys.modules['propertyvalueestimation.utils.stackclients'] = stackclients_mock

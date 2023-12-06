@@ -10,6 +10,18 @@ version: "3.8"
 
 services:
 
+  # Visualisation for DOME project
+  dome-vis:
+    image: docker.cmclinnovations.com/dome-vis:1.0.0-SNAPSHOT
+    build:
+      context: "../../../web/dome-project"
+      dockerfile: "./docker/Dockerfile"
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "HTTPD hosted MapBox visualisation for the DOME project."
+        hash: "${HASH}"
+        
   # Flood Map
   flood-map:
     image: docker.cmclinnovations.com/flood-vis-${MODE}:1.0.0-SNAPSHOT

@@ -20,7 +20,9 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATABASE, NAMESPACE, LAYERNAME, GEOSERVER_WORKSPACE, BUILDINGS_TABLE
+    global DATABASE, NAMESPACE, LAYERNAME, GEOSERVER_WORKSPACE, BUILDINGS_TABLE,\
+           AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI, AVERAGE_SQUARE_METRE_PRICE_AGENT_URL,\
+           PROPERTY_VALUE_ESTIMATION_AGENT_IRI, PROPERTY_VALUE_ESTIMATION_AGENT_URL
 
     # Retrieve PostgreSQL/PostGIS database name
     DATABASE = os.getenv('DATABASE')
@@ -71,6 +73,24 @@ def retrieve_settings():
     if BUILDINGS_TABLE == '':
         logger.error('No "BUILDINGS_TABLE" value has been provided in environment variables.')
         raise ValueError('No "BUILDINGS_TABLE" value has been provided in environment variables.')
+    
+    # Retrieve derivation agent settings
+    AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI = os.getenv('AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI')
+    if AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI is None or AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI == '':
+        logger.error('No "AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI" could be retrieved from environment variables.')
+        raise ValueError('No "AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI" could be retrieved from environment variables.')
+    AVERAGE_SQUARE_METRE_PRICE_AGENT_URL = os.getenv('AVERAGE_SQUARE_METRE_PRICE_AGENT_URL')
+    if AVERAGE_SQUARE_METRE_PRICE_AGENT_URL is None or AVERAGE_SQUARE_METRE_PRICE_AGENT_URL == '':
+        logger.error('No "AVERAGE_SQUARE_METRE_PRICE_AGENT_URL" could be retrieved from environment variables.')
+        raise ValueError('No "AVERAGE_SQUARE_METRE_PRICE_AGENT_URL" could be retrieved from environment variables.')
+    PROPERTY_VALUE_ESTIMATION_AGENT_IRI = os.getenv('PROPERTY_VALUE_ESTIMATION_AGENT_IRI')
+    if PROPERTY_VALUE_ESTIMATION_AGENT_IRI is None or PROPERTY_VALUE_ESTIMATION_AGENT_IRI == '':
+        logger.error('No "PROPERTY_VALUE_ESTIMATION_AGENT_IRI" could be retrieved from environment variables.')
+        raise ValueError('No "PROPERTY_VALUE_ESTIMATION_AGENT_IRI" could be retrieved from environment variables.')
+    PROPERTY_VALUE_ESTIMATION_AGENT_URL = os.getenv('PROPERTY_VALUE_ESTIMATION_AGENT_URL')
+    if PROPERTY_VALUE_ESTIMATION_AGENT_URL is None or PROPERTY_VALUE_ESTIMATION_AGENT_URL == '':
+        logger.error('No "PROPERTY_VALUE_ESTIMATION_AGENT_URL" could be retrieved from environment variables.')
+        raise ValueError('No "PROPERTY_VALUE_ESTIMATION_AGENT_URL" could be retrieved from environment variables.')
 
 
 # Run when module is imported

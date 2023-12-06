@@ -2,7 +2,7 @@
 This container holds all the python functions that can be called from other containers via a REST interface.
 
 # Get emissions from speed load map
-Send GET request to http://${STACK_NAME}_python-service:5000/getEmissions with the following parameters
+Send GET request to http://localhost:3838/python-service/getEmissions with the following parameters
 - speed
   - Value of speed in rpm
 - torque
@@ -25,7 +25,7 @@ This returns a JSON object with three key parts
 This route is called by the EmissionsAgent.
 
 # Postprocess AERMOD results into GeoJSON
-Send GET request to http://${STACK_NAME}_python-service:5000/getAermodGeoJSON with the parameters
+Send GET request to http://localhost:3838/python-service/getAermodGeoJSON with the parameters
 - dispersionMatrix
     - URL to download AERMOD output file (stored in FileServer)
 - srid

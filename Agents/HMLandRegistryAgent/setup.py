@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='landregistry',
-    version='1.0.0',
+    version='1.1.0',
     author='Markus Hofmeister',
     author_email='mh807@cam.ac.uk',
     license='MIT',
@@ -14,9 +14,10 @@ setup(
     include_package_data=True,
     install_requires= [
         'apscheduler==3.10.1',
-        'flask==2.2.3',
+        'flask==2.1.0',
         'JayDeBeApi==1.2.3',
         'pandas==1.5.3',
+        'pyderivationagent==1.4.4',
         'py4jps==1.0.34', 
         'requests==2.28.2',
         'fuzzywuzzy==0.18.0',

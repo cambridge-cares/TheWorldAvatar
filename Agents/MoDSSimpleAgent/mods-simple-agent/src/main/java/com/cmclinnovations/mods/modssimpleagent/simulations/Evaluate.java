@@ -1,6 +1,5 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
-import com.cmclinnovations.mods.api.Options;
 import com.cmclinnovations.mods.api.MoDSAPI.DataType;
+import com.cmclinnovations.mods.api.Options;
 import com.cmclinnovations.mods.modssimpleagent.BackendInputFile;
 import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationException;
 import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
@@ -18,13 +17,15 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
+import com.cmclinnovations.mods.modssimpleagent.utils.SimulationLoader;
+import com.cmclinnovations.mods.modssimpleagent.utils.SimulationSaver;
 import com.google.common.collect.Streams;
 
 class Evaluate extends Simulation {
 
-    public Evaluate(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData)
-            throws IOException {
-        super(request, inputFile, modsBackend, inputMetaData);
+    public Evaluate(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData,
+            SimulationSaver simulationSaver, SimulationLoader simulationLoader) {
+        super(request, inputFile, modsBackend, inputMetaData, simulationSaver, simulationLoader);
     }
 
     @Override
@@ -63,9 +64,6 @@ class Evaluate extends Simulation {
                 Streams.zip(outputVarNames.stream(), points.stream(), DataColumn::new)
                         .collect(Collectors.toList()));
 
-        Request results = super.getResults();
-        results.setOutputs(outputValues);
-
-        return results;
+        return super.getResults().toBuilder().outputs(outputValues).build();
     }
 }

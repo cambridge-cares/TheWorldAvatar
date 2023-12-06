@@ -10,6 +10,7 @@
 from typing import Any, Dict, List
 
 from agent.datamodel import *
+from agent.utils.env_configs import FLOOD_ASSESSMENT_AGENT_IRI
 
 from pyderivationagent import PySparqlClient
 from pyderivationagent import PyDerivationClient
@@ -53,6 +54,8 @@ def retrieve_affected_property_info(sparql_client: PySparqlClient, affected_prop
                 OPTIONAL {{ ?property <{OBE_HASMARKETVALUE}> ?mv. }}
             }}"""
 
+    # Remove empty enclosing brackets (only present in case of empty property list)
+    query = query.replace('<>', '')
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
     logger.info(f"Query to retrieve property info: {query}")

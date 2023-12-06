@@ -20,6 +20,9 @@
 		},
 		{
 			"path": "../../../JPS_BASE_LIB"
+		},
+		{
+			"path": "third-party/postgis"
 		}
 	],
 	"settings": {
@@ -33,6 +36,7 @@
 			"crome",
 			"cropmap",
 			"datasubset",
+			"DTVF",
 			"EPSG",
 			"freelist",
 			"gdal",
@@ -40,12 +44,14 @@
 			"gdbtable",
 			"gdbtablx",
 			"Geodatabase",
+			"geoserver",
 			"geotiff",
 			"GEOTIFFS",
 			"LINESTRING",
 			"MULTILINESTRING",
 			"Multimap",
 			"OBDA",
+			"ontop",
 			"pgsql",
 			"POSTGIS",
 			"Shapefile",

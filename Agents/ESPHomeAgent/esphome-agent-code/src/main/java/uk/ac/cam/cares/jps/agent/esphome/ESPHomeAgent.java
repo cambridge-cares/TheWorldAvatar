@@ -18,12 +18,6 @@ import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,6 +68,12 @@ public class ESPHomeAgent extends JPSAgent{
     //JSONObjects
     JSONObject message;
     JSONObject result;
+
+	//ESPHomeAPI
+	ESPHomeAPI esphomeApi;
+
+	//QueryBuilder
+	QueryBuilder queryBuilder;
     
     /**
      * Error messages
@@ -86,7 +86,7 @@ public class ESPHomeAgent extends JPSAgent{
     private static final String GETTIMESERIESIRI_ERROR_MSG = "Unable to query for timeseries IRI from this data IRI!";
     private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order:1) time series client for timeseries data 2) time series client for esphome status 3)esphome API properties";
     private static final String ESPHOMEAPI_ERROR_MSG = "Could not construct ESPHomeAPI needed to send POST requests to the ESPHome web server.";
-    
+    private static final String QUERYBUILDER_ERROR_MSG = "Could not construct query builder needed to construct and send queries to the knowledge graph.";
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
     	JSONObject jsonMessage = new JSONObject();
@@ -165,27 +165,6 @@ public class ESPHomeAgent extends JPSAgent{
 		} catch (IOException | JPSRuntimeException e) {
 			throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
 		}
-    	//set timeseriesClient to only query from the kb
-    	tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, null, dbUser, dbPassword);
-    	//query for timeseries IRI linked to data IRI
-    	try {
-    		timeseriesIRI = tsClient.getTimeSeriesIRI(dataIRI);
-		if (timeseriesIRI == null) {
-				throw new JPSRuntimeException(GETTIMESERIESIRI_ERROR_MSG);
-			}
-    	} catch (JSONException e) {
-			throw new JPSRuntimeException(GETTIMESERIESIRI_ERROR_MSG);
-		}
-    	//query for db URL linked to timeseries IRI
-		try {
-    	dbUrl = tsClient.getDbUrl(timeseriesIRI);
-    	if (dbUrl == null) {
-			throw new JPSRuntimeException(GETDBURL_ERROR_MSG);
-		}
-		} catch (JSONException e) {
-			throw new JPSRuntimeException(GETDBURL_ERROR_MSG);
-		}
-    	
     	//set tsClient to query for latest timeseries data
     	try {
     		tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, dbUrl, dbUser, dbPassword);
@@ -207,7 +186,6 @@ public class ESPHomeAgent extends JPSAgent{
     	latestTimeSeriesValue = dataValuesAsDouble.get(dataValuesAsDouble.size() - 1);
     	LOGGER.info("The latest timeseries value is " + latestTimeSeriesValue);
     	
-    	ESPHomeAPI esphomeApi;
     	String status;
     	
     	try {
@@ -217,27 +195,6 @@ public class ESPHomeAgent extends JPSAgent{
 		} catch (IOException | JPSRuntimeException e) {
 			throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
 		}
-    	//set timeseriesClient to only query from the kb
-    	tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, null, dbUser, dbPassword);
-    	//query for timeseries IRI linked to data IRI
-    	try {
-    		timeseriesIRI = tsClient.getTimeSeriesIRI(dataIRI);
-		if (timeseriesIRI == null) {
-				throw new JPSRuntimeException(GETTIMESERIESIRI_ERROR_MSG);
-			}
-    	} catch (JSONException e) {
-			throw new JPSRuntimeException(GETTIMESERIESIRI_ERROR_MSG);
-		}
-    	//query for db URL linked to timeseries IRI
-		try {
-    	dbUrl = tsClient.getDbUrl(timeseriesIRI);
-    	if (dbUrl == null) {
-			throw new JPSRuntimeException(GETDBURL_ERROR_MSG);
-		}
-		} catch (JSONException e) {
-			throw new JPSRuntimeException(GETDBURL_ERROR_MSG);
-		}
-    	
     	//set tsClient to query for latest timeseries data
     	try {
     		tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, dbUrl, dbUser, dbPassword);
@@ -258,6 +215,23 @@ public class ESPHomeAgent extends JPSAgent{
     	dataValuesAsString = timeseries.getValuesAsString(dataIRI);
     	status = dataValuesAsString.get(0);
     	LOGGER.info("The current status of the component is " + status);
+
+		//query for threshold from KG based on ontodevice
+		double esphomeThreshold;
+
+		
+		try {
+		queryBuilder = new QueryBuilder();
+		} catch (Exception e) {
+			throw new JPSRuntimeException(QUERYBUILDER_ERROR_MSG, e);
+		}
+
+		String queryResult = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForDeviceWithStateIRI(dataIRI)).getJSONObject(0).getString("device");
+		queryResult = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForSetpointWithHasSetpoint(queryResult)).getJSONObject(0).getString("setpoint");
+		queryResult = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForQuantityWithHasQuantity(queryResult)).getJSONObject(0).getString("quantity");
+		queryResult = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForMeasureWithHasValue(queryResult)).getJSONObject(0).getString("measure");
+		esphomeThreshold = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForNumericalValueWithHasNumericalValue(queryResult)).getJSONObject(0).getDouble("numericalValue");
+
     	//set ESPHome API with properties from ESPHome API properties file
 		try {
 			esphomeApi = new ESPHomeAPI(args[2]);
@@ -266,7 +240,7 @@ public class ESPHomeAgent extends JPSAgent{
 		}
 		//determine whether to turn the component on or off
     	try {
-		result = esphomeApi.esphomeSwitchControl(latestTimeSeriesValue, status);
+		result = esphomeApi.esphomeSwitchControl(latestTimeSeriesValue, status, esphomeThreshold);
 		LOGGER.info("A request has been successfully sent to the ESPHome web server.");
 		result.accumulate("message","A request has been successfully sent to the ESPHome web server.");
 		} catch (JPSRuntimeException e) {
@@ -301,6 +275,11 @@ public class ESPHomeAgent extends JPSAgent{
                 this.dbPassword = prop.getProperty("db.password");
             } else {
                 throw new IOException("Properties file is missing \"db.password=<db_password>\"");
+            }
+			if (prop.containsKey("db.url")) {
+                this.dbUrl = prop.getProperty("db.url");
+            } else {
+                throw new IOException("Properties file is missing \"db.url=<db_url>\"");
             }
             if (prop.containsKey("sparql.query.endpoint")) {
 	        	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));

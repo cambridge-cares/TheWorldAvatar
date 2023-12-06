@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  sewage-network-agent:
+    image: sewage-network-agent:1.0.0
+    build: .
+    container_name: sewage-network-agent
+    pull_policy: if_not_present
+    ports:
+      - "1080:8080"

@@ -11,19 +11,19 @@
 @prefix OntoCAPEPha:    <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> .
 @prefix OntoCAPEUpp:    <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
 @prefix ontospecies:    <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .
-@prefix ontovapourtec:    <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#> .
-@prefix ontohplc:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
-@prefix ontobpr:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
-@prefix ontolab:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#> .
-@prefix :                <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/> .
-@prefix dummylab:       <http://example.com/blazegraph/namespace/testlab/dummy_lab/> .
+@prefix OntoVapourtec:    <https://www.theworldavatar.com/kg/ontovapourtec/> .
+@prefix ontohplc:        <https://www.theworldavatar.com/kg/ontohplc/> .
+@prefix ontobpr:        <https://www.theworldavatar.com/kg/ontobpr/> .
+@prefix OntoLab:        <https://www.theworldavatar.com/kg/ontolab/> .
+@prefix :                <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/> .
+@prefix dummylab:       <https://example.com/blazegraph/namespace/testlab/dummy_lab/> .
 
 @prefix exp1:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
 @prefix exp2:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/> .
 @prefix exp3:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_3/> .
 @prefix exp4:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_4/> .
 @prefix exp5:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/> .
-@prefix ontorxn:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
+@prefix ontorxn:        <https://www.theworldavatar.com/kg/ontoreaction/> .
 @prefix ChemRxn:        <https://www.example.com/triplestore/ontorxn/ChemRxn_1/> .
 @prefix SinglePhase:    <https://www.example.com/triplestore/ontorxn/SinglePhase/> .
 
@@ -57,7 +57,7 @@
 ## First set of equipment ##
 ############################
 :AutomatedRxnPlatform_1
-    a ontolab:LabEquipment;
+    a OntoLab:LabEquipment;
     saref:consistsOf :VapourtecRS400_1;
     saref:consistsOf :HPLC_1;
 .
@@ -69,16 +69,15 @@
 .
 
 :VapourtecRS400_1
-    a ontovapourtec:VapourtecRS400;
+    a OntoVapourtec:VapourtecRS400;
     saref:consistsOf :VapourtecR4_1;
     saref:consistsOf :AutoSampler_1;
-    saref:hasState ontovapourtec:RunningReaction;
+    saref:hasState OntoVapourtec:RunningReaction;
 .
 
 :VapourtecR4_1
-    a ontovapourtec:VapourtecR4Reactor;
-    ontovapourtec:hasReactorVolume :VapourtecR4_1_ReactorVolume;
-    ontolab:isSpecifiedBy :ReactorSettings_1;
+    a OntoVapourtec:VapourtecR4Reactor;
+    OntoVapourtec:hasReactorVolume :VapourtecR4_1_ReactorVolume;
 .
 
 :VapourtecR4_1_ReactorVolume
@@ -93,38 +92,37 @@
 .
 
 :ReactorSettings_1
-    a ontovapourtec:ReactorSettings;
-    ontolab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70>;
+    a OntoVapourtec:ReactorSettings;
+    OntoLab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70>;
+    OntoLab:specifies :VapourtecR4_1;
 .
 
 :AutoSampler_1
-    a ontovapourtec:AutoSampler;
-    ontovapourtec:hasSite :Site_1_1;
+    a OntoVapourtec:AutoSampler;
+    OntoVapourtec:hasSite :Site_1_1;
 .
 
 :Site_1_1
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "1"^^xsd:string;
-    ontovapourtec:holds :Vial_1_1;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "1"^^xsd:string;
+    OntoVapourtec:holds :Vial_1_1;
 .
 
 :Vial_1_1
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_1_1;
-    ontovapourtec:isFilledWith :ChemicalSolution_1_1;
+    a OntoLab:Vial;
+    OntoLab:isFilledWith :ChemicalAmount_1_1;
 .
 
-:ChemicalSolution_1_1
-    a ontolab:ChemicalSolution;
-    ontovapourtec:fills :Vial_1_1;
-    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
+:ChemicalAmount_1_1
+    a OntoLab:ChemicalAmount;
+    # OntoLab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .
 
 #############################
 ## Second set of equipment ##
 #############################
 :AutomatedRxnPlatform_2
-    a ontolab:LabEquipment;
+    a OntoLab:LabEquipment;
     saref:consistsOf :VapourtecRS400_2;
     saref:consistsOf :HPLC_2;
 .
@@ -136,16 +134,15 @@
 .
 
 :VapourtecRS400_2
-    a ontovapourtec:VapourtecRS400;
+    a OntoVapourtec:VapourtecRS400;
     saref:consistsOf :VapourtecR4_2;
     saref:consistsOf :AutoSampler_2;
-    saref:hasState ontovapourtec:RunningReaction;
+    saref:hasState OntoVapourtec:RunningReaction;
 .
 
 :VapourtecR4_2
-    a ontovapourtec:VapourtecR4Reactor;
-    ontovapourtec:hasReactorVolume :VapourtecR4_2_ReactorVolume;
-    ontolab:isSpecifiedBy :ReactorSettings_2;
+    a OntoVapourtec:VapourtecR4Reactor;
+    OntoVapourtec:hasReactorVolume :VapourtecR4_2_ReactorVolume;
 .
 
 :VapourtecR4_2_ReactorVolume
@@ -160,29 +157,28 @@
 .
 
 :ReactorSettings_2
-    a ontovapourtec:ReactorSettings;
-    ontolab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8>;
+    a OntoVapourtec:ReactorSettings;
+    OntoLab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8>;
+    OntoLab:specifies :VapourtecR4_2;
 .
 
 :AutoSampler_2
-    a ontovapourtec:AutoSampler;
-    ontovapourtec:hasSite :Site_2_1;
+    a OntoVapourtec:AutoSampler;
+    OntoVapourtec:hasSite :Site_2_1;
 .
 
 :Site_2_1
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "1"^^xsd:string;
-    ontovapourtec:holds :Vial_2_1;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "1"^^xsd:string;
+    OntoVapourtec:holds :Vial_2_1;
 .
 
 :Vial_2_1
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_2_1;
-    ontovapourtec:isFilledWith :ChemicalSolution_2_1;
+    a OntoLab:Vial;
+    OntoLab:isFilledWith :ChemicalAmount_2_1;
 .
 
-:ChemicalSolution_2_1
-    a ontolab:ChemicalSolution;
-    ontovapourtec:fills :Vial_2_1;
-    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
+:ChemicalAmount_2_1
+    a OntoLab:ChemicalAmount;
+    # OntoLab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .

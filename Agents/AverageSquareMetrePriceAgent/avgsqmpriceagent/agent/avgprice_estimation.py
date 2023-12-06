@@ -161,7 +161,13 @@ class AvgSqmPriceAgent(DerivationAgent):
         # In case less than `threshold` transactions are provided/available 
         # for current postcode, include transactions from nearby postcodes
         if len(tx_records) < self.threshold:
-            tx_records = self.get_transactions_from_nearest_postcodes(postcode_iri, self.threshold)
+            try:
+                tx_records = self.get_transactions_from_nearest_postcodes(postcode_iri, self.threshold)
+            except Exception as ex:
+                # If exception occurs while trying to retrieve additional transactions,
+                # continue with empty transaction list to instantiate non-computed average price
+                self.logger.error('Error retrieving/unwrapping transactions for nearest postcodes from ONS: {}'.format(ex))
+                tx_records = []
 
         if tx_records:
             # 1) Retrieve representative UK House Price Index and parse as Series (i.e. unwrap Java data types)
@@ -252,6 +258,9 @@ class AvgSqmPriceAgent(DerivationAgent):
         # Set postcode as index and ensure float coordinate values
         df.set_index('pc', inplace=True)
         df = df.astype(float)
+        # Remove (potentially) duplicated postcodes (It has been observed that ONS SPARQL
+        # endpoint returns duplicates for some postcodes, causing issues with distance calculation)
+        df.drop_duplicates(inplace=True)
 
         # Set target postcode as reference point for distance calculation
         pref = df.loc[postcode_str]

@@ -2,14 +2,19 @@
 
 // ppi_iri: IRI of instantiated property price index
 //          (without trailing '<' and '>')
+// months: Number of most recent months for which to scale data
 // scaler: Scaling factor by which to scale instantiated property price data
 //         (0.0 ... 1.0)
+// request_update: Boolean indicating whether to request update of derivation instances
+//                 (default: false)
 
 POST http://165.232.172.16:5008/landregistry/scale_ppi
 Content-Type: application/json
 
 { "query": {
-      "ppi_iri": "https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex_0179cd66-c96a-4fe1-b25a-c4ce118f44eb",
-      "scaler": 0.95
+      "ppi_iri": "https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex_efca8bef-6ac9-43c0-9d6b-9048677d3dc1",
+      "months": 1,
+      "scaler": 2.0,
+      "request_update": true
     }
 }

@@ -38,7 +38,10 @@ PREFIXES = {
         'om': 'http://www.ontology-of-units-of-measure.org/resource/om-2/',
         'saref': 'https://saref.etsi.org/core/',
         'geo': 'https://www.w3.org/2003/01/geo/wgs84_pos#',
-        's3n': 'https://w3id.org/s3n/'
+        's3n': 'https://w3id.org/s3n/',
+        'powsys': 'http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#',
+        'powreal': 'http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#',
+        'ontocape': 'http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#'
 }
 
 

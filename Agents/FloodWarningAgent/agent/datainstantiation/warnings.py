@@ -15,6 +15,7 @@ from agent.datainstantiation.ea_data import retrieve_current_warnings, \
 from agent.datainstantiation.ons_data import retrieve_ons_county
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
+from agent.utils.env_configs import FLOOD_ASSESSMENT_AGENT_IRI
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.utils.stackclients import GdalClient, GeoserverClient, \
                                      OntopClient, PostGISClient, \
@@ -76,8 +77,8 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
 
         # 2) Retrieve instantiated flood warnings and flood areas from KG
         logger.info("Retrieving instantiated flood warnings and areas from KG ...")
-        areas_kg = get_instantiated_flood_areas(kgclient=kg_client)  
-        warnings_kg = get_instantiated_flood_warnings(kgclient=kg_client)      
+        areas_kg = get_instantiated_flood_areas(kgclient=kg_client)
+        warnings_kg = get_instantiated_flood_warnings(kgclient=kg_client)
         logger.info("Instantiated warnings and areas retrieved.")
 
         # 3) Extract flood warnings and flood areas ...
@@ -95,35 +96,68 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
         # ... to be deleted (i.e. not active anymore)
         warnings_to_delete = [w for w in warnings_kg if w not in warning_uris]
 
+        # Ensure that independent steps are all executed, irrespective of errors
+        # in other steps; only raise exception at the end
+        exception_list = []
+
         # 4) Instantiate missing flood areas and warnings
-        if warnings_to_instantiate or areas_to_instantiate:
-            print('Instantiating flood warnings and areas ...')
-            instantiated_areas, instantiated_warnings = \
-                instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
-                                                     warnings_to_instantiate, current_warnings, 
-                                                     kgclient=kg_client, 
-                                                     derivation_client=derivation_client)
-            print('Instantiation finished.')
+        try:
+            if warnings_to_instantiate or areas_to_instantiate:
+                print('Instantiating flood warnings and areas ...')
+                instantiated_areas, instantiated_warnings = \
+                    instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
+                                                        warnings_to_instantiate, current_warnings, 
+                                                        kgclient=kg_client, 
+                                                        derivation_client=derivation_client)
+                print('Instantiation finished.')
+        except Exception as e:
+            exception_list.append(f"Instantiation of new flood warnings failed: {str(e)}")
 
         # 5) Update outdated flood warnings
-        if warnings_to_update:
-            print('Updating flood warnings ...')
-            updated_warnings = \
-                update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
-                                                   kgclient=kg_client,
-                                                   derivation_client=derivation_client)
-            print('Updating finished.')
+        try:
+            if warnings_to_update:
+                print('Updating flood warnings ...')
+                updated_warnings = \
+                    update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
+                                                    kgclient=kg_client,
+                                                    derivation_client=derivation_client)
+                print('Updating finished.')
+        except Exception as e:
+            exception_list.append(f"Update of instantiated flood warnings failed: {str(e)}")
 
         # 6) Delete inactive flood warnings
-        if warnings_to_delete:
-            print('Deleting inactive flood warnings ...')
-            deleted_warnings, drop_times_iris = \
-                delete_instantiated_flood_warnings(warnings_to_delete, kgclient=kg_client)
-            print('Deleting finished.')
+        try:
+            if warnings_to_delete:
+                print('Deleting inactive flood warnings ...')
+                deleted_warnings, drop_times_iris = \
+                    delete_instantiated_flood_warnings(warnings_to_delete, kgclient=kg_client)
+                print('Deleting finished.')
 
-            # Derivation markup:
-            # Drop timestamps of deleted flood warnings & derivation instances
-            derivation_client.dropTimestampsOf(drop_times_iris)
+                # Derivation markup:
+                # Drop timestamps of deleted flood warnings & derivation instances
+                derivation_client.dropTimestampsOf(drop_times_iris)
+        except Exception as e:
+            exception_list.append(f"Deletion of obsolete flood warnings failed: {str(e)}")
+        
+        # It has been observed that some floodwarnings do not disappear from the
+        # visualisation, although corresponding warnings are successfully deleted
+        # within KG. The exact root cause of this could not be identified, as this
+        # behaviour could not be reproduced in a controlled environment.
+        # NOTE: This is a workaround to deactivate corresponding flood areas in 
+        #       PostGIS in order to remove them from the visualisation
+        postgis_client = PostGISClient()
+        areas_active_postgis = postgis_client.get_active_floodareas()
+        areas_wo_warning_kg = get_instantiated_flood_areas(kgclient=kg_client, 
+                                                           without_warning=True)
+        # Deactivate all flood areas without associated warning in KG
+        areas_to_deactivate = [a for a in areas_active_postgis if a in areas_wo_warning_kg]
+        postgis_client.set_flood_area_activity(activity=False, area_uri=areas_to_deactivate)
+
+        # Raise an exception if any of the steps failed
+        if exception_list:
+            msg = 'One or more processing steps failed: \n'
+            msg += '\n'.join(exception_list)
+            raise Exception(msg)
 
         # Print update summary 
         print(f'Instantiated areas: {instantiated_areas}')
@@ -551,13 +585,15 @@ def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
 
 
 def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
-                                 kgclient=None) -> dict:
+                                 kgclient=None, without_warning=False) -> dict:
     """
     Retrieve all instantiated flood areas with associated 'hasLocation' Location IRIs
 
     Arguments:
         query_endpoint - SPARQL endpoint from which to retrieve data
         kgclient - pre-initialized KG client with endpoints
+        without_warning (bool): Whether to retrieve only flood areas without 
+                                current warnings (default: False, i.e. retrieve all)
 
     Returns:
         areas (dict): Dictionary with flood area IRIs as keys and associated 
@@ -570,7 +606,7 @@ def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
                                   update_endpoint=query_endpoint)
     
     # Retrieve instantiated flood warnings
-    query = get_all_flood_areas()
+    query = get_all_flood_areas(without_warning)
     res = kgclient.performQuery(query)
 
     # Unwrap results

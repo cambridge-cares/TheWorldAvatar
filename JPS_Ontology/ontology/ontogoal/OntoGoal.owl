@@ -9,9 +9,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontogoal/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 February 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for goal-based agent operation.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.3</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -95,11 +95,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/hasNextStep">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/DesignOfExperiment"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/RxnExpExecution"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Step"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/PostProcessing"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/RxnExpExecution"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Step"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between two sequential steps within a plan.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
@@ -244,6 +240,12 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontogoal/DesignOfExperiment">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Step"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontogoal/hasNextStep"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontogoal/RxnExpExecution"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A step represents the design of experiment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:Class>
@@ -365,6 +367,12 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontogoal/RxnExpExecution">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Step"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontogoal/hasNextStep"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontogoal/PostProcessing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A step represents the reaction experiment execution.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:Class>
@@ -386,12 +394,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontogoal/Step">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontogoal/hasNextStep"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Step"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontogoal/canBePerformedBy"/>

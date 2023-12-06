@@ -2,6 +2,10 @@
 TBOX_URL = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl'
 # alternative: 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
 
+###--- Derivation Markup ---###
+DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
+
+
 ###--- Common Base URLs ---###
 # External ontologies
 DABGEO = 'http://www.purl.org/oema/infrastructure/'
@@ -12,7 +16,7 @@ OWL = 'http://www.w3.org/2002/07/owl#'
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 SKOS = 'http://www.w3.org/2004/02/skos/core#'
-TIME = 'https://www.w3.org/2006/time#'
+TIME = 'http://www.w3.org/2006/time#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
 # Office for National Statistics
 ONS1 = 'http://statistics.data.gov.uk/def/statistical-geography#'
@@ -50,6 +54,9 @@ OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
 OBE_HAS_OCGML_REPRESENTATION = OBE + 'hasOntoCityGMLRepresentation'
 OBE_HAS_GROUND_ELEVATION = OBE + 'hasGroundElevation'
+OBE_AVERAGE_SM_PRICE = OBE + 'AveragePricePerSqm'
+OBE_HAS_TOTAL_FLOORAREA = OBE + 'hasTotalFloorArea'
+OBE_HASMARKETVALUE = OBE + 'hasMarketValue'
 # LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
 LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
 LRPPI_PROPERTY_ADDRESS = LRPPI + 'propertyAddress'

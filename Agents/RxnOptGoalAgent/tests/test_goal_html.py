@@ -46,7 +46,7 @@ def test_handle_rxn_opt_goal_request_LOCAL(
                     }}"""
             )
             rxn_exp_beliefs = [x['rxn_exp'] for x in rxn_exp_beliefs_res]
-            assert len(rxn_exp_beliefs) == 1
+            assert len(rxn_exp_beliefs) == 0
 
             # Check that the GoalSet is valid
             goal_set_query_res = rog_agent.sparql_client.performQuery(

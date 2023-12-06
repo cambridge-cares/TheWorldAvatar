@@ -3,11 +3,11 @@
 @prefix xsd:             <http://www.w3.org/2001/XMLSchema#> .
 @prefix saref:             <https://saref.etsi.org/core/> .
 @prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
-@prefix ontorxn:         <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
-@prefix ontogoal:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#> .
-@prefix :                <http://www.example.com/triplestore/ontogoal/rxnopt/> .
+@prefix ontorxn:         <https://www.theworldavatar.com/kg/ontoreaction/> .
+@prefix ontogoal:        <https://www.theworldavatar.com/kg/ontogoal/> .
+@prefix :                <https://www.example.com/triplestore/ontogoal/rxnopt/> .
 
-@prefix rxnopt:          <http://www.theworldavatar.com/resource/plans/RxnOpt/> .
+@prefix rxnopt:          <https://www.theworldavatar.com/kg/plans/RxnOpt/> .
 
 :GoalSet_1
     a ontogoal:GoalSet;
@@ -58,7 +58,7 @@
 
 :Desired_Quantity_Measure_2
     a om:Measure;
-    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "0.01"^^xsd:double;
 .
 
