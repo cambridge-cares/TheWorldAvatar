@@ -185,19 +185,28 @@ public class GDALClient extends ContainerClient {
                     executeSimpleCommand(gdalContainerId, "chmod", "-R", "777", directoryPath.toString());
                     createdDirectories.add(directoryPath);
                 }
-
-                String execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
-                        "-if", inputFormat,
-                        // https://gdal.org/drivers/raster/cog.html#raster-cog
-                        "-of", "COG",
-                        filePath,
-                        outputPath))
-                        .withOutputStream(outputStream)
-                        .withErrorStream(errorStream)
-                        .withEnvVars(options.getEnv())
-                        .withEvaluationTimeout(300)
-                        .exec();
-
+                String execId;
+                if ("NETCDF".equals(inputFormat)) {
+                    execId = createComplexCommand(gdalContainerId, "cp",
+                            filePath,
+                            outputPath)
+                            .withOutputStream(outputStream)
+                            .withErrorStream(errorStream)
+                            .withEvaluationTimeout(300)
+                            .exec();
+                } else {
+                    execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
+                            "-if", inputFormat,
+                            // https://gdal.org/drivers/raster/cog.html#raster-cog
+                            "-of", "COG",
+                            filePath,
+                            outputPath))
+                            .withOutputStream(outputStream)
+                            .withErrorStream(errorStream)
+                            .withEnvVars(options.getEnv())
+                            .withEvaluationTimeout(300)
+                            .exec();
+                }
                 handleErrors(errorStream, execId, logger);
             }
         }
