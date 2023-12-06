@@ -1,9 +1,11 @@
 import csv
+import os
+dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
-bs_file_path =          r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\BS.csv'
-reaction_file_path =    r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\Reactions.csv'
-precursors_file_path =  r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\Precursor.csv'
-output_file =           r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\Alg2_Output.csv'
+bs_file_path = os.path.join(dir_path, 'Data', 'InputData', 'BS.csv')
+reaction_file_path = os.path.join(dir_path, 'Data', 'InputData', 'Reactions.csv')
+precursors_file_path = os.path.join(dir_path, 'Data', 'InputData', 'Precursor.csv')
+output_file = os.path.join(dir_path, 'Data', 'OutputData', 'Alg2_Output.csv')
 
 def read_bs_data(bs_file_path):
     with open(bs_file_path, 'r') as f:

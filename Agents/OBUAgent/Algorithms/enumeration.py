@@ -1,12 +1,16 @@
 import csv
+import os
+dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 # Define file paths
-input_file = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\Precursor.csv'
-output_alg1 = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\Alg1_Output.csv'
-output_alg2 = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\Alg2_Output.csv'
-output_union = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\UnionAlg1_2_Output.csv'
-enumeration_output = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\Enumeration.csv'
-temp_dir = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\temp\\'
+input_file = os.path.join(dir_path, 'Data', 'InputData', 'Precursor.csv')
+output_alg1 = os.path.join(dir_path, 'Data', 'OutputData', 'Alg1_Output.csv')
+output_alg2 = os.path.join(dir_path, 'Data', 'OutputData', 'Alg2_Output.csv')
+output_union = os.path.join(dir_path, 'Data', 'OutputData', 'UnionAlg1_2_Output.csv')
+enumeration_output = os.path.join(dir_path, 'Data', 'OutputData', 'Enumeration.csv')
+temp_dir = os.path.join(dir_path, 'Data', 'OutputData', 'temp')
+if not os.path.exists(temp_dir):
+    os.mkdir(temp_dir)
 
 # Function to count the occurrences of each binding site in the input file
 def count_values(file_path):
@@ -74,7 +78,7 @@ def merge_counts(base_path, alg1_path, alg2_path, union_path, output_union):
 
 
 # Create a temporary file path for the merged Alg1 and Alg2 CSV files
-merged_alg1_2 = temp_dir + 'merged_alg1_2.csv'
+merged_alg1_2 = os.path.join(temp_dir, 'merged_alg1_2.csv')
 
 # Merge Alg1 and Alg2 output files
 merge_csv_files(output_alg1, output_alg2, merged_alg1_2)
@@ -90,10 +94,16 @@ alg2_count = count_values(output_alg2)
 union_dict = count_values(output_union)
 
 # Save the count dictionaries as CSV files
-dict_to_csv(base_count, temp_dir + 'base_enum.csv')
-dict_to_csv(alg1_count, temp_dir + 'alg1_enum.csv')
-dict_to_csv(alg2_count, temp_dir + 'alg2_enum.csv')
-dict_to_csv(union_dict, temp_dir + 'union_enum.csv')
+dict_to_csv(base_count, os.path.join(temp_dir, 'base_enum.csv'))
+dict_to_csv(alg1_count, os.path.join(temp_dir, 'alg1_enum.csv'))
+dict_to_csv(alg2_count, os.path.join(temp_dir, 'alg2_enum.csv'))
+dict_to_csv(union_dict, os.path.join(temp_dir, 'union_enum.csv'))
 
 # Merge the count CSV files into a single enumeration output file
-merge_counts(temp_dir + 'base_enum.csv', temp_dir + 'alg1_enum.csv', temp_dir + 'alg2_enum.csv', temp_dir + 'union_enum.csv', enumeration_output)
+merge_counts(
+    os.path.join(temp_dir + 'base_enum.csv'),
+    os.path.join(temp_dir + 'alg1_enum.csv'),
+    os.path.join(temp_dir + 'alg2_enum.csv'),
+    os.path.join(temp_dir + 'union_enum.csv'),
+    enumeration_output
+)

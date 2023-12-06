@@ -1,7 +1,9 @@
 import csv
+import os
+dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
-input_file = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\Precursor.csv'
-expanded_output_file = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\Alg1_Output.csv'
+input_file = os.path.join(dir_path, 'Data', 'InputData', 'Precursor.csv')
+expanded_output_file = os.path.join(dir_path, 'Data', 'OutputData', 'Alg1_Output.csv')
 
 # Function to create a nested dictionary from the input csv file that contains binding sites and cores describing precursors
 

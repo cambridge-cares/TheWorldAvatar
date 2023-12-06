@@ -1,4 +1,3 @@
-
 import os
 import csv
 from rdkit import Chem
@@ -38,13 +37,14 @@ def substitute_dummy_atoms(input_mol, bs_smarts):
         return None
 
 def main():
-    output_csv = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\UnionAlg1_2_Output.csv'
-    bs_smarts_csv = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\BS_SMARTS.csv'
-    bs_smarts_csv_2 = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\BS_SMARTS2.csv'
-    cores_mol_dir = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\cores_mol\\'
-    cores_mol_dir_2 = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\cores_mol\\double\\'
-    new_precursors_dir = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\new_precursors\\'
-    new_precursors_dir_2 = r'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\new_precursors\\double\\'
+    dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    output_csv = os.path.join(dir_path, 'Data', 'OutputData', 'UnionAlg1_2_Output.csv')
+    bs_smarts_csv = os.path.join(dir_path, 'Data', 'InputData', 'BS_SMARTS.csv')
+    bs_smarts_csv_2 = os.path.join(dir_path, 'Data', 'InputData', 'BS_SMARTS2.csv')
+    cores_mol_dir = os.path.join(dir_path, 'Data', 'InputData', 'cores_mol')
+    cores_mol_dir_2 = os.path.join(dir_path, 'Data', 'InputData', 'cores_mol', 'double')
+    new_precursors_dir = os.path.join(dir_path, 'Data', 'OutputData', 'new_precursors')
+    new_precursors_dir_2 = os.path.join(dir_path, 'Data', 'OutputData', 'new_precursors', 'double')
     bs_smarts_dict = read_bs_smarts(bs_smarts_csv)
     bs_smarts_dict_2 = read_bs_smarts_2(bs_smarts_csv_2)
     print("SMARTS Operation")

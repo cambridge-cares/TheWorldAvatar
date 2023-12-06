@@ -2,22 +2,25 @@ from Algorithms import alg1, alg2, enumeration, create_precursors
 from rdkit import RDLogger
 RDLogger.DisableLog('rdApp.*')
 
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
 # Define file paths
-INPUT_PATH = 'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\InputData\\'
-OUTPUT_PATH = 'C:\\TheWorldAvatar\\Agents\\OBUAgent\\Data\\OutputData\\'
-TEMP_PATH = OUTPUT_PATH + 'temp\\'
-PRECURSOR_FILE = INPUT_PATH + 'Precursor.csv'
-REACTION_FILE = INPUT_PATH + 'Reactions.csv'
-BS_FILE = INPUT_PATH + 'BS.csv'
-ALG1_OUTPUT_FILE = OUTPUT_PATH + 'Alg1_Output.csv'
-ALG2_OUTPUT_FILE = OUTPUT_PATH + 'Alg2_Output.csv'
-ALG1U2_OUTPUT_FILE = OUTPUT_PATH + 'UnionAlg1_2_Output.csv'
-ENUM_OUTPUT_FILE = OUTPUT_PATH + 'Enumeration.csv'
-BASE_ENUM_FILE = TEMP_PATH + 'base_enum.csv'
-ALG1_ENUM_FILE = TEMP_PATH + 'alg1_enum.csv'
-ALG2_ENUM_FILE = TEMP_PATH + 'alg2_enum.csv'
-UNION_ENUM_FILE = TEMP_PATH + 'union_enum.csv'
-MERGED_ALG1_2_FILE = TEMP_PATH + 'merged_alg1_2.csv'
+INPUT_PATH = os.path.join(dir_path, 'Data', 'InputData')
+OUTPUT_PATH = os.path.join(dir_path, 'Data', 'OutputData')
+TEMP_PATH = os.path.join(OUTPUT_PATH, 'temp')
+PRECURSOR_FILE = os.path.join(INPUT_PATH, 'Precursor.csv')
+REACTION_FILE = os.path.join(INPUT_PATH, 'Reactions.csv')
+BS_FILE = os.path.join(INPUT_PATH, 'BS.csv')
+ALG1_OUTPUT_FILE = os.path.join(OUTPUT_PATH, 'Alg1_Output.csv')
+ALG2_OUTPUT_FILE = os.path.join(OUTPUT_PATH, 'Alg2_Output.csv')
+ALG1U2_OUTPUT_FILE = os.path.join(OUTPUT_PATH, 'UnionAlg1_2_Output.csv')
+ENUM_OUTPUT_FILE = os.path.join(OUTPUT_PATH, 'Enumeration.csv')
+BASE_ENUM_FILE = os.path.join(TEMP_PATH, 'base_enum.csv')
+ALG1_ENUM_FILE = os.path.join(TEMP_PATH, 'alg1_enum.csv')
+ALG2_ENUM_FILE = os.path.join(TEMP_PATH, 'alg2_enum.csv')
+UNION_ENUM_FILE = os.path.join(TEMP_PATH, 'union_enum.csv')
+MERGED_ALG1_2_FILE = os.path.join(TEMP_PATH, 'merged_alg1_2.csv')
 
 # Run Algorithm 1
 result_list = alg1.create_nested_dict(PRECURSOR_FILE)
