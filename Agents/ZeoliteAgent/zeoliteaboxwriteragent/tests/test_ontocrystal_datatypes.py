@@ -1117,19 +1117,136 @@ class TestOntoMatrix( unittest.TestCase ):
 
         prefix = "http://test/ontology/"
 
-        #prefix = "http://test/ontology/"
         uuidDB = tools.UuidDB( filename = "test_datatypes.csv" )
 
-        mat1 = OntoMatrix( className = "PositionVector", itemName = "pos_mol_C1", \
+        mat1 = OntoMatrix( className = "TestMatrix", itemName = "mat_v1", \
                            tPrefix = "http://tbox/", aPrefix = "http://abox/", \
                            uuidDB = uuidDB, unit = "om:angstrom" #, vectorLabel = "L" \
                          )
 
+        mat1.addComponentList( #label = "xx", 
+                               valList = [[111.22,222.33]], \
+                               errList = [[  1.2 ,  2.3 ]], unit = [["om:degree","om:reciprocalAngstrom"]] )
 
         lines = mat1.getCsvArr( "HotPot", prefix + "hasMat1" )
 
         # For debugging:
         #tools.writeCsv( "TestOntoCrystal6.csv", lines )
+
+        self.assertIsInstance( mat1.compList, list )
+        self.assertEqual( len(mat1.compList   ), 1 ) # Because assigned 2 components
+        self.assertEqual( len(mat1.compList[0]), 2 ) # Because assigned 2 components
+        self.assertEqual( len(mat1.compDict.keys()), 0 ) # Expect 1 component
+
+        # Defintion of the entity of the class
+        il = 0
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        vec = line[0] # The new entity of class Vector (prefix + name + UUID)
+        self.assertEqual( line[0].startswith( "http://abox/pos_mol_C5_"), True, msg = line[0] )
+        self.assertEqual( line[1], "Instance" )
+        self.assertEqual( line[2], "http://tbox/RadiusVector" )
+        self.assertEqual( line[3], "" )
+        self.assertEqual( line[4], "" )
+        self.assertEqual( line[5], "" )
+
+        # Relation between the new entity and the subject
+        il += 1
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        self.assertEqual( line[0], "HotPot" )
+        self.assertEqual( line[1], "Instance" )
+        self.assertEqual( line[2].startswith( "http://abox/pos_mol_C5_"), True, msg=line[2] )
+        self.assertEqual( line[2], vec )
+        self.assertEqual( line[3], prefix + "hasVecList" )
+        self.assertEqual( line[4], "" )
+        self.assertEqual( line[5], "" )
+
+        # Global unit vector:
+        il += 1
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        self.assertEqual( line[0], vec )
+        self.assertEqual( line[1], "Instance" )
+        self.assertEqual( line[2], "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
+        self.assertEqual( line[3], "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit" )
+        self.assertEqual( line[4], "" )
+        self.assertEqual( line[5], "" )
+        
+        # Component 1:
+        il += 1
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        comp1 = line[0]
+        self.assertEqual( line[0].startswith( "http://abox/pos_mol_C5_comp_1_"), True, msg = line[0] )
+        self.assertEqual( line[1], "Instance" )
+        self.assertEqual( line[2], "http://www.theworldavatar.com/kg/ontocrystal/VectorComponent" )
+        self.assertEqual( line[3], "" )
+        self.assertEqual( line[4], "" )
+        self.assertEqual( line[5], "" )
+
+        il += 1
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        self.assertEqual( line[0], vec, msg = line[0] )
+        self.assertEqual( line[1], "Instance" )
+        self.assertEqual( line[2], comp1 )
+        self.assertEqual( line[3], "http://www.theworldavatar.com/kg/ontocrystal/hasVectorComponent" )
+        self.assertEqual( line[4], "" )
+        self.assertEqual( line[5], "" )
+
+        il += 1
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        self.assertEqual( line[0], comp1 )
+        self.assertEqual( line[1], "Instance" )
+        self.assertEqual( line[2], "http://www.ontology-of-units-of-measure.org/resource/om-2/degree" )
+        self.assertEqual( line[3], "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit" )
+        self.assertEqual( line[4], "" )
+        self.assertEqual( line[4], "" )
+
+        il += 1
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        self.assertEqual( line[0], "http://www.theworldavatar.com/kg/ontocrystal/hasComponentIndex" )
+        self.assertEqual( line[1], "Data Property" )
+        self.assertEqual( line[2], comp1 )
+        self.assertEqual( line[3], "" )
+        self.assertEqual( line[4], 1 )
+        self.assertEqual( line[5], "xsd:integer" )
+
+        il += 1
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        self.assertEqual( line[0], "http://www.theworldavatar.com/kg/ontocrystal/hasComponentValue" )
+        self.assertEqual( line[1], "Data Property" )
+        self.assertEqual( line[2], comp1 )
+        self.assertEqual( line[3], "" )
+        self.assertEqual( line[4], 6.1 )
+        self.assertEqual( line[5], "rdfs:Literal" )
+
+        il += 1
+        line = lines[il]
+        for i in range(6):
+            self.assertEqual( str(line[i]).strip(), str(line[i]) )
+        self.assertEqual( line[0], "http://www.theworldavatar.com/kg/ontocrystal/hasComponentUncertainty" )
+        self.assertEqual( line[1], "Data Property" )
+        self.assertEqual( line[2], comp1 )
+        self.assertEqual( line[3], "" )
+        self.assertEqual( line[4], 0.3 )
+        self.assertEqual( line[5], "rdfs:Literal" )
+
+        # Component 2: 
+        # TODO
+
 
 
         uuidDB.saveDB()

@@ -84,6 +84,9 @@ from pymatgen.core.structure import Structure, Lattice
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 import pymatgen
 
+#import ontozeolite
+
+
 def splitStr( value ):
     """
     Function splits a string of a form "12.345(6)" into two strings: "12.345" and "0.006".
@@ -769,13 +772,25 @@ class OntoVector:
         pass # OntoVector.addComponentList()
 
   def addComponent( self, label, value = "", unit = "", error = "", index = None ):
+        """
+        Adding a component to a vector.
+        For a vector made of a list see function addComponentList().
+
+        TODO label and index. Only one of them is required..
+
+        label - required argument. It defines the component subscript.
+        index - optional argument. 
+        value - optional argument. The value of this component.
+        error - Optional. The component's error-bar (uncertainty). It has the same unit.
+        unit  - Optional. An instance defined in ontology OM-2. 
+                Accepted values either full path, or only the instance name.
+                The OM-2 prefix will be appended in getCsvArr().
+        """
 
         errCount = 0
 
         if not isinstance( self.compDict, dict ):
             self.compDict = {}
-        #if None == self.compErrDict and error != "":
-        #    self.compErrDict = {}
 
         if isinstance( label, str ):
             if "" == label:
@@ -808,13 +823,7 @@ class OntoVector:
             self.compDict[label]["unit" ] = str(unit)
         if None != index:
             self.compDict[label]["index"] = index
-    
-        #if error != "":
-        #  self.compErrDict[label] = {}
-        #  self.compErrDict[label]["value"] = value
-        #  if unit != "":
-        #    self.compErrDict[label]["unit"]  = unit
-
+   
         return errCount
         pass # OntoVector.addComponent()
 
@@ -963,13 +972,8 @@ class OntoVector:
     self.uuid,self.uuid4 = self.uuidDB.addUUID( self.tPrefix + self.className, \
                                                 self.aPrefix + self.itemName )
 
-    #self.uuid,self.uuid4 = self.uuidDB.addUUID( 
-    #                       self.tPrefix + self.value["class"], 
-    #                       self.aPrefix + self.value["name" ] )
-    #self.uuid = tools.getUUID( self.uuidDB, self.tPrefix + self.value["class"], self.aPrefix + self.value["name"] )
     output.append( [ self.uuid, "Instance", 
                      self.tPrefix + self.className, "", "", "" ] )
-                     #self.tPrefix + self.value["class"], "", "", "" ] )
     output.append( [   subject, "Instance", self.uuid, predicate, "", "" ] )
 
     # Global unit of the vector:
@@ -983,22 +987,13 @@ class OntoVector:
     if None != self.compList:
         output += self._getCsvValueList( )
 
-    # Redundant now:
-    #if None != self.compErrList:
-    #  output += self._getCsvErrorList( )
-    #if "unit" in self.value.keys():
-      #output += omSetUnit( self.uuid, self.value["unit"] )
-
     if None != self.compDict:
         output += self._getCsvValueDict()
-
-    #if None != self.compErrDict:
-      #output += self._getCsvErrorDict()
 
     return output
 
     '''
-    # Verification of the class and its components:
+    # Old version: Verification of the class and its components:
     if self.value["class"] in [ "Vector" ]:
       # Classes derived from the basic 'Vector':
       if "error" in keys:
@@ -1034,408 +1029,106 @@ class OntoVector:
 
     elif "MillerIndices" == self.value["class"]:
       pass
-    #elif "Vector" == self.value["class"]: 
-    #   REDUNDANT, this cannot happen
-    #  pass
-      """
-    elif "UnitCellLengths" == myClass: 
-      pass
-    elif "UnitCellAngles"  == myClass: 
-      # Do nothing
-      pass
-    elif "VectorWithUncertainty" == myClass:
-      # Do nothing
-      pass
-    elif "UnitCellLatticeVector" == myClass:
-      # Do nothing
-      pass
-      """
-
     else:
       logging.error( " Unknown vector class '" + self.value["class"] + "' "
                       "for vector '" + self.value["name"] + "'." )
       pass
 
-    if   isinstance( self.value["comp"], dict):
-      print( ">> Old branch of component in getCsvArr() as dict" )
-
-      comp_keys = self.value["comp"].keys()  # comp_keys means 'KEYS of the COMPonents'.
-      for ck in comp_keys:
-        #print( ck )
-
-        uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", self.value["name"] + "_comp_" + ck )
-
-        #uuid_comp = tools.getUUID( self.uuidDB, "VectorComponent", self.value["name"] + "_comp_" + ck  )
-        output.append( [ uuid_comp, "Instance", "VectorComponent", "", "", "" ] )
-
-        output.append( [ self.uuid, "Instance", uuid_comp,  
-                         self.crystOntoPrefix + "hasVectorComponent", "", "" ] )
-
-        output.append( [ self.ontoPrefix + "hasComponentLabel", "Data Property", 
-                         uuid_comp, "", ck, "string" ] )
-
-        output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
-                         uuid_comp, "", self.value["comp"][ck]["value"], "rdfs:Literal" ] )
- 
-        if "unit" in list(self.value["comp"][ck].keys()): # and "Unknown" != self.value["comp"][ck]["unit"]:
-          output += omSetUnit( uuid_comp, self.value["comp"]["unit"] )
-
-          #unit = self.value["comp"][ck]["unit"]
-          #if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
-          #  logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
-          #                   self.value["name"] + "'. " + 
-          #                   "Expecting an instance of OM-2 ontology class Unit, but got '" +
-          #                   self.value["comp"][ck]["unit"] )
-
-          #output.append( [ uuid_comp, "Instance", unit,
-          #               "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-          #                "", "" ] )
-          #print( unit )
-          #if "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" == unit.strip():
-          #  output.append( [ "rdfs:label", "Data Property",
-          #                   unit, "", "angstrom", "xsd:string" ] )
-            #omSetUnit( uuid_comp, "angstrom" ):
-            
- 
-        if "error" in list(self.value["comp"][ck].keys()):
-          if None == self.uuid_error:
-            logging.info( " Creating a new instance for uuid_error for vector '" + self.value["name"] + "' " )
-
-            self.uuid_error,_ = self.uuidDB.addUUID(  self.ontoPrefix + "Vector", self.value["name"] + "_error" )
-            #self.uuid_error = tools.getUUID( self.uuidDB, self.ontoPrefix + "Vector", self.value["name"] + "_error" )
-            output.append( [ self.uuid_error, "Instance", self.ontoPrefix + "Vector", "", "", "" ] )
- 
-            output.append( [ self.uuid, "Instance", self.uuid_error,  
-                             self.ontoPrefix + "hasUncertaintyVector", "", "" ] )
- 
-          uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", self.value["name"] + "_err_" + ck )
-         # uuid_comp = tools.getUUID( self.uuidDB, "VectorComponent", self.value["name"] + "_err_" + ck  )
-          output.append( [ uuid_comp, "Instance", "VectorComponent", "", "", "" ] )
-
-          output.append( [ self.uuid_error, "Instance", uuid_comp,  
-                           self.crystOntoPrefix + "hasVectorComponent", "", "" ] )
-
-          output.append( [ self.ontoPrefix + "hasComponentLabel", "Data Property", 
-                           uuid_comp, "", ck, "string" ] )
-
-          output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
-                           uuid_comp, "", self.value["comp"][ck]["error"], "rdfs:Literal" ] )
- 
-          #print( "eeewwwwwwwwweeeeeeeeeeee" )
-          # FIXME here there is a mess between the units.
-          if "errorunit" in list(self.value["comp"][ck].keys()):
-            unit = self.value["comp"][ck]["errorunit"]
-          elif "unit" in list(self.value["comp"][ck].keys()):
-            unit = self.value["comp"][ck]["unit"]
-          else:
-            unit = ""
-
-          if "" != unit: 
-            output += omSetUnit( uuid_comp, unit )
-            #if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
-            #  logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
-            #                 self.value["name"] + "'. " + 
-            #                 "Expecting an instance of OM-2 ontology class Unit." )
-
-            #output.append( [ uuid_comp, "Instance", unit,
-            #               "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-            #                "", "" ] )
-
-            #print( unit )
-            #if "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" == unit.strip():
-            #  output.append( [ "rdfs:label", "Data Property",
-            #                 unit, "", "angstrom", "xsd:string" ] )
-
-    elif isinstance( self.value["comp"], list):
-      #print( ">>>>>>>>>>>>>>>>", " starting getCsvArr()", self.value["name"] )
-      #output.append( [ "starting getCsvArr() list", "",""] )
-      #comp_keys = self.value["comp"].keys()  # comp_keys means 'KEYS of the COMPonents'.
-      #for ck in comp_keys:
-      for ck in self.value["comp"]:
-        if   "label" in ck.keys():
-          compStr = ck["label"]
-        elif "index" in ck.keys():
-          compStr = str(ck["index"])
-        else:
-          logging.error( " Component '" + str(ck) + "' does not have neither" +
-                         " label nor index in '" + self.value["name"] + "'." )
-
-        uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", self.value["name"] + "_comp_" + compStr )
-        #uuid_comp = tools.getUUID( self.uuidDB, "VectorComponent", 
-        #                           self.value["name"] + "_comp_" + compStr )
-
-        output.append( [ uuid_comp, "Instance", "VectorComponent", "", "", "" ] )
-
-        output.append( [ self.uuid, "Instance", uuid_comp,  
-                         self.ontoPrefix + "hasVectorComponent", "", "" ] )
-
-        if "label" in ck.keys():
-          output.append( [ self.ontoPrefix + "hasComponentLabel", "Data Property", 
-                           uuid_comp, "", ck["label"], "xsd:string" ] )
-        if "index" in ck.keys():
-          output.append( [ self.ontoPrefix + "hasComponentIndex", "Data Property", 
-                           uuid_comp, "", ck["index"], "xsd:integer" ] )
-
-        output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
-                         uuid_comp, "", ck["value"], "rdfs:Literal" ] )
-                         #uuid_comp, "", self.value["comp"][ck]["value"], "rdfs:Literal" ] )
- 
-        #if "unit" in list(self.value["comp"][ck].keys()): # and "Unknown" != self.value["comp"][ck]["unit"]:
-        if "unit" in ck.keys(): # and "Unknown" != self.value["comp"][ck]["unit"]:
-          unit = ck["unit"]
-          #if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
-          #  logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
-          #                   self.value["name"] + "'. " + 
-          #                   "Expecting an instance of OM-2 ontology class Unit, but got '" +
-          #                   ck["unit"] )
-
-          #output.append( [ uuid_comp, "Instance", unit,
-          #               "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-          #                "", "" ] )
-          output += omSetUnit( uuid_comp, unit )
-          #print( unit )
-          # FIXME
-          #if "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" == unit.strip():
-          #  output.append( [ "rdfs:label", "Data Property",
-          #                   unit, "", "angstrom", "xsd:string" ] )
-     
-          #if "http://www.ontology-of-units-of-measure.org/resource/om-2/degree" == unit.strip():
-          #    output.append( [ "rdfs:label", "Data Property",
-          #                   unit, "", "degree", "xsd:string" ] )
-      
-          #if "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom" == unit.strip():
-          #    output.append( [ "rdfs:label", "Data Property",
-          #                   unit, "", "reciprocalAngstrom", "xsd:string" ] )
- 
-          #if "http://www.ontology-of-units-of-measure.org/resource/om-2/cubicAngstrom" == unit.strip():
-          #    output.append( [ "rdfs:label", "Data Property",
-          #                   unit, "", "cubicAngstrom", "xsd:string" ] )
- 
-          #if "http://www.ontology-of-units-of-measure.org/resource/om-2/dimensionOne" == unit.strip():
-          #    output.append( [ "rdfs:label", "Data Property",
-          #                   unit, "", "dimensionOne", "xsd:string" ] )       
- 
-        #if "error" in list(self.value["comp"][ck].keys()):
-        if "error" in ck.keys():
-          if None == self.uuid_error:
-            logging.info( " Creating a new instance for uuid_error for vector '" + self.value["name"] + "' " )
-
-            self.uuid_error,_ = self.uuidDB.addUUID( "VectorComponent", self.value["name"] + "_error" )
-            #self.uuid_error = tools.getUUID( self.uuidDB, self.ontoPrefix + "Vector", self.value["name"] + "_error" )
-            output.append( [ self.uuid_error, "Instance", self.ontoPrefix + "Vector", "", "", "" ] )
- 
-            output.append( [ self.uuid, "Instance", self.uuid_error,  
-                             self.ontoPrefix + "hasUncertaintyVector", "", "" ] )
- 
-          if   "label" in ck.keys():
-            compStr = ck["label"]
-          elif "index" in ck.keys():
-            compStr = str(ck["index"])
-          else:
-            logging.error( " Component '" + str(ck) + "' does not have neither" +
-                           " label nor index in '" + self.value["name"] + "'." )
-
-          uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", self.value["name"] + "_error_" + compStr )
-          #uuid_comp = tools.getUUID( self.uuidDB, "VectorComponent", self.value["name"] + "_error_" + compStr  )
-          output.append( [ uuid_comp, "Instance", "VectorComponent", "", "", "" ] )
-
-          output.append( [ self.uuid_error, "Instance", uuid_comp,  
-                           self.ontoPrefix + "hasVectorComponent", "", "" ] )
-
-          if "label" in ck.keys():
-            output.append( [ self.ontoPrefix + "hasComponentLabel", "Data Property", 
-                             uuid_comp, "", ck["label"], "xsd:string" ] )
-          if "index" in ck.keys():
-            output.append( [ self.ontoPrefix + "hasComponentIndex", "Data Property", 
-                             uuid_comp, "", ck["index"], "xsd:integer" ] )
-
-          output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
-                           uuid_comp, "", ck["error"], "rdfs:Literal" ] )
- 
-          #print( "eeewwwwwwwwweeeeeeeeeeee" )
-          # FIXME here there is a mess between the units.
-          if "errorunit" in ck.keys():
-            unit = ck["errorunit"]
-          elif "unit" in ck.keys():
-            unit = ck["unit"]
-          else:
-            unit = ""
-
-          if "" != unit: 
-            output += omSetUnit( uuid_comp, unit )
-            #if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
-            #  logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
-            #                 self.value["name"] + "'. " + 
-            #                 "Expecting an instance of OM-2 ontology class Unit." )
-
-            #output.append( [ uuid_comp, "Instance", unit,
-            #               "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-            #                "", "" ] )
-
-            #print( unit )
-            #if "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" == unit.strip():
-            #  output.append( [ "rdfs:label", "Data Property",
-            #                 unit, "", "angstrom", "xsd:string" ] )
-     
-            #if "http://www.ontology-of-units-of-measure.org/resource/om-2/degree" == unit.strip():
-            #  output.append( [ "rdfs:label", "Data Property",
-            #                 unit, "", "degree", "xsd:string" ] )
-      
-            #if "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom" == unit.strip():
-            #  output.append( [ "rdfs:label", "Data Property",
-            #                 unit, "", "reciprocalAngstrom", "xsd:string" ] )
- 
-            #if "http://www.ontology-of-units-of-measure.org/resource/om-2/cubicAngstrom" == unit.strip():
-            #  output.append( [ "rdfs:label", "Data Property",
-            #                 unit, "", "cubicAngstrom", "xsd:string" ] )
- 
-            #if "http://www.ontology-of-units-of-measure.org/resource/om-2/dimensionOne" == unit.strip():
-            #  output.append( [ "rdfs:label", "Data Property",
-            #                 unit, "", "dimensionOne", "xsd:string" ] )
-
-    else:
-      logging.error( " Unknown type of vector['comp'] = '" + str(type(self.value["comp"])) + 
-                     "' in vector '" + self.value["name"] + "' reter." )
-
-    if "unit" in keys:
-#"http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom"
-      unit = self.value["unit"]
-      output += omSetUnit( self.uuid, unit )
-      #if not unit.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
-      #  logging.warning( " Possibly wrong unit '" + unit + "' in vector '" + 
-      #                   self.value["name"] + "'. " + 
-      #                   "Expecting an instance of OM-2 ontology class Unit, but got '" +
-      #                   self.value["unit"] + "'" 
-      #                   )
-
-      #output.append( [ self.uuid, "Instance", unit,
-      #               "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-      #                "", "" ] )
-
-      #print( unit )
-      #if "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" == unit.strip():
-      #        output.append( [ "rdfs:label", "Data Property",
-      #                       unit, "", "angstrom", "xsd:string" ] )
- 
-    #output.append( ["Ended getCsvArr()" , "", "" ] )
-    #print( "==============================" )
     return output
     '''
     pass # OntoVector.getCsvArr()
 
   def _getCsvValueList( self ):
-    output = []
+        output = []
 
-    for iv,v in enumerate(self.compList):
-        if None == v:
-            logging.error( "Invalid value '" + str(v) + "' in '" + self.value["name"] + "'." )
-            continue
+        for iv,v in enumerate(self.compList):
+            if None == v:
+                logging.error( "Invalid value '" + str(v) + "' in '" + self.value["name"] + "'." )
+                continue
 
-        uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", 
-                                           self.itemName + "_comp_" + str(iv+1), 
-                                           newUuid = self.uuid4 )
+            uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", 
+                                               self.itemName + "_comp_" + str(iv+1), 
+                                               newUuid = self.uuid4 )
 
-        output.append( [ self.aPrefix + uuid_comp, "Instance", 
-                         self.ontoPrefix + "VectorComponent", "", "", "" ] )
+            output.append( [ self.aPrefix + uuid_comp, "Instance", 
+                             self.ontoPrefix + "VectorComponent", "", "", "" ] )
 
-        output.append( [ self.uuid, "Instance", self.aPrefix + uuid_comp,  
-                         self.ontoPrefix + "hasVectorComponent", "", "" ] )
+            output.append( [ self.uuid, "Instance", self.aPrefix + uuid_comp,  
+                             self.ontoPrefix + "hasVectorComponent", "", "" ] )
 
-        if None != self.compUnitList:
-              u = self.compUnitList[iv]
-              if None != u:
-                    output += omSetUnit( self.aPrefix + uuid_comp, u )
+            if None != self.compUnitList:
+                  u = self.compUnitList[iv]
+                  if None != u:
+                        output += omSetUnit( self.aPrefix + uuid_comp, u )
 
-              #output.append( [ self.ontoPrefix + "hasComponentUncertainty", "Data Property", 
-              #                 self.aPrefix + uuid_comp, "", e, "rdfs:Literal" ] )
-
-        output.append( [ self.ontoPrefix + "hasComponentIndex", "Data Property", 
-                         self.aPrefix + uuid_comp, "", (iv + 1), "xsd:integer" ] )
-
-        output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
-                         self.aPrefix + uuid_comp, "", v, "rdfs:Literal" ] )
-
-        if None != self.compErrList:
-            e = self.compErrList[iv]
-            if None != e:
-                output.append( [ self.ontoPrefix + "hasComponentUncertainty", "Data Property", 
-                                 self.aPrefix + uuid_comp, "", e, "rdfs:Literal" ] )
-
-        """
-          if "label" in ck.keys():
-          if "index" in ck.keys():
             output.append( [ self.ontoPrefix + "hasComponentIndex", "Data Property", 
-                             uuid_comp, "", ck["index"], "xsd:integer" ] )
+                             self.aPrefix + uuid_comp, "", (iv + 1), "xsd:integer" ] )
 
-          output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
-                           uuid_comp, "", ck["error"], "rdfs:Literal" ] )
-        """ 
+            output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", 
+                             self.aPrefix + uuid_comp, "", v, "rdfs:Literal" ] )
 
-        pass
+            if None != self.compErrList:
+                e = self.compErrList[iv]
+                if None != e:
+                    output.append( [ self.ontoPrefix + "hasComponentUncertainty", "Data Property", 
+                                     self.aPrefix + uuid_comp, "", e, "rdfs:Literal" ] )
 
-    return output
-    pass # OntoVector._getCsvValueList()
+            pass
+
+        return output
+        pass # OntoVector._getCsvValueList()
 
 
   def _getCsvValueDict( self ):
-    output = []
-
-    for ik,k in enumerate(self.compDict.keys()):
-        if None == k:
-            logging.error( "Invalid value '" + str(k) + "' in '" + self.itemName + "'." )
-            continue
-
-        uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", 
-                                           self.itemName + "_comp_" + k,
-                                           newUuid = self.uuid4 )
-
-        output.append( [ self.aPrefix + uuid_comp, "Instance", 
-                         crystOntoPrefix + "VectorComponent", "", "", "" ] )
-
-        output.append( [ self.uuid, "Instance", self.aPrefix + uuid_comp,  
-                         crystOntoPrefix + "hasVectorComponent", "", "" ] )
-
-      #output.append( [ self.ontoPrefix + "hasComponentIndex", "Data Property", 
-      #                 self.aPrefix + uuid_comp, "", (iv + 1), "xsd:integer" ] )
-
-        if "unit" in self.compDict[k]:
-            u = self.compDict[k]["unit"]
-            if None != u:
-                output += omSetUnit( self.aPrefix + uuid_comp, u )
-
-        if "label" in self.compDict[k]:
-            output.append( [ self.ontoPrefix + "hasComponentLabel", \
-                             "Data Property", self.aPrefix + uuid_comp, \
-                             "", self.compDict[k]["label"], "xsd:string" ] )
-
-        if "value" in self.compDict[k]:
-            output.append( [ self.ontoPrefix + "hasComponentValue", \
-                             "Data Property", self.aPrefix + uuid_comp, \
-                             "", self.compDict[k]["value"], "rdfs:Literal" ] )
-
-        if "error" in self.compDict[k]:
-            output.append( [ self.ontoPrefix + "hasComponentUncertainty", \
-                             "Data Property", self.aPrefix + uuid_comp, "", \
-                             self.compDict[k]["error"], "rdfs:Literal" ] )
-
-
-        if "index" in self.compDict[k]:
-            output.append( [ self.ontoPrefix + "hasComponentIndex", \
-                             "Data Property", self.aPrefix + uuid_comp, "", \
-                             self.compDict[k]["index"], "xsd:integer" ] )
-
-    return output
-    pass # OntoVector._getCsvValueDict()
-
-  """
-  def _getCsvErrorDict( self):
         output = []
-        logging.error( " Not implemetned _getCsvErrDict" )
+
+        for ik,k in enumerate(self.compDict.keys()):
+            if None == k:
+                logging.error( "Invalid value '" + str(k) + "' in '" + self.itemName + "'." )
+                continue
+
+            uuid_comp,_ = self.uuidDB.addUUID( "VectorComponent", 
+                                               self.itemName + "_comp_" + k,
+                                               newUuid = self.uuid4 )
+
+            output.append( [ self.aPrefix + uuid_comp, "Instance", 
+                             crystOntoPrefix + "VectorComponent", "", "", "" ] )
+
+            output.append( [ self.uuid, "Instance", self.aPrefix + uuid_comp,  
+                             crystOntoPrefix + "hasVectorComponent", "", "" ] )
+
+            if "unit" in self.compDict[k]:
+                u = self.compDict[k]["unit"]
+                if None != u:
+                    output += omSetUnit( self.aPrefix + uuid_comp, u )
+
+            if "label" in self.compDict[k]:
+                output.append( [ self.ontoPrefix + "hasComponentLabel", \
+                                 "Data Property", self.aPrefix + uuid_comp, \
+                                 "", self.compDict[k]["label"], "xsd:string" ] )
+
+            if "value" in self.compDict[k]:
+                output.append( [ self.ontoPrefix + "hasComponentValue", \
+                                 "Data Property", self.aPrefix + uuid_comp, \
+                                 "", self.compDict[k]["value"], "rdfs:Literal" ] )
+
+            if "error" in self.compDict[k]:
+                output.append( [ self.ontoPrefix + "hasComponentUncertainty", \
+                                 "Data Property", self.aPrefix + uuid_comp, "", \
+                                 self.compDict[k]["error"], "rdfs:Literal" ] )
+
+
+            if "index" in self.compDict[k]:
+                output.append( [ self.ontoPrefix + "hasComponentIndex", \
+                                 "Data Property", self.aPrefix + uuid_comp, "", \
+                                 self.compDict[k]["index"], "xsd:integer" ] )
+           #output.append( [ self.ontoPrefix + "hasComponentIndex", "Data Property", 
+           #                 self.aPrefix + uuid_comp, "", (iv + 1), "xsd:integer" ] )
+
+
 
         return output
-        pass # OntoVector._getCsvErrorDict()
-
-  """
+        pass # OntoVector._getCsvValueDict()
 
   pass # class OntoVector
 
@@ -1448,7 +1141,6 @@ class OntoMatrix:
     def __init__( self, className, itemName, uuidDB  = None,  \
                   tPrefix = None,     aPrefix = None,  \
                   unit    = None ):
-
 
         """
         if is_http( predicate ):
@@ -1626,23 +1318,7 @@ class OntoMatrix:
             logging.error( " In OntoVector.addComponentList() expect str or list," + \
                            " got '" + str(type(unit)) + "' for unit." )
 
-
-        """
-        for l in unit:
-            if isinstance( l, str ):
-                self.compErrList.append( list(l) )
-            elif isinstance( l, list ):
-                self.compErrList.append( list(l) )
-            else:
-                logging.error( " In OntoVector.addComponentList() expect" + \
-                               " a list of list, got '" + str(type(l)) + \
-                               "' for error." )
-
-
-        """
-
-        #if not isinstance( valList, list ):
-        #    logging.error( " Expecting a list" )
+        #-----------------------------------
 
         pass # OntoMatrix.addComponentList()
 
@@ -1658,16 +1334,12 @@ class OntoMatrix:
                              " to have 'has'." ) 
         output = []
 
-        logging.error( " Not implemented OntoMatrix.getCsvArr" )
-
-    # Vector for Unit Cell length parameters (a,b,c):
         self.uuid,self.uuid4 = self.uuidDB.addUUID( 
                                self.tPrefix + self.className, 
                                self.aPrefix + self.itemName )
-                               #self.uuid = tools.getUUID( self.uuidDB, self.tPrefix + self.value["class"], self.aPrefix + self.value["name"] )
+
         output.append( [ self.uuid, "Instance", 
                          self.tPrefix + self.className, "", "", "" ] )
-                         #self.tPrefix + self.value["class"], "", "", "" ] )
         output.append( [ subject, "Instance", self.uuid, predicate, "", "" ] )
 
         # Global unit of the vector:
@@ -1677,6 +1349,9 @@ class OntoMatrix:
         #if None != self.vectorLabel:
         #    output.append( [ self.ontoPrefix + "hasVectorLabel", "Data Property", 
         #    self.uuid, "", self.vectorLabel, "xsd:string" ] )
+
+
+        logging.error( " Not implemented OntoMatrix.getCsvArr ttttttt" )
 
         if None != self.compList:
             output += self._getCsvValueList( )
@@ -1689,14 +1364,54 @@ class OntoMatrix:
 
     def _getCsvValueList( self ):
         output = []
+        #logging.error( "Not implemented Matrix._getCsvValueList() ttt3" )
+
+        for ir,row in enumerate(self.compList):
+            for ic,val in enumerate( row ):
+                if None == val:
+                    logging.error( "Invalid value '" + str(val) + "' in '" + self.itemName + "'." )
+                    continue
+
+                uuid_comp,_ = self.uuidDB.addUUID( "MatrixComponent", \
+                              self.itemName + "_comp_" + str(ir+1) + "_" + str(ic+1), \
+                              newUuid = self.uuid4 )
+
+                output.append( [ self.aPrefix + uuid_comp, "Instance", \
+                                 self.ontoPrefix + "MatrixComponent", "", "", "" ] )
+
+                output.append( [ self.uuid, "Instance", self.aPrefix + uuid_comp, \
+                                 self.ontoPrefix + "hasMatrixComponent", "", "" ] )
+
+                if None != self.compUnitList:
+                    u = self.compUnitList[ir][ic]
+                    if None != u:
+                        output += omSetUnit( self.aPrefix + uuid_comp, u )
+
+                output.append( [ self.ontoPrefix + "hasRowIndex", "Data Property", 
+                                 self.aPrefix + uuid_comp, "", (ir + 1), "xsd:integer" ] )
+
+                output.append( [ self.ontoPrefix + "hasColumnIndex", "Data Property", 
+                                 self.aPrefix + uuid_comp, "", (ic + 1), "xsd:integer" ] )
+
+                output.append( [ self.ontoPrefix + "hasComponentValue", "Data Property", \
+                                 self.aPrefix + uuid_comp, "", v, "rdfs:Literal" ] )
+
+                if None != self.compErrList:
+                    e = self.compErrList[ir][ic]
+                    if None != e:
+                        output.append( [ self.ontoPrefix + "hasComponentUncertainty", \
+                                         "Data Property", self.aPrefix + uuid_comp, \
+                                         "", e, "rdfs:Literal" ] )
+
         return output
-        pass # OntoVector._getCsvValueList() 
+        pass # OntoMatrix._getCsvValueList() 
 
     def _getCsvValueDict( self ):
         output = []   
+        logging.error( "Not implemented Matrix._getCsvValueDict() ttt4" )
 
         return output
-        pass # OntoVector._getCsvValueDict()
+        pass # OntoMatrix._getCsvValueDict()
     """
     """
 
@@ -3092,365 +2807,369 @@ class CsvMaker:
         pass # CsvMaker.arrInit()
 
   def arrTransform( self, subject, predicate, zeoname ):
-    """
-    subject   - Is the full hame of instance of class CrystalInformation, 
-                which contains this CoordinateTransformation class.
-    predicate - Is the Object Property linking the Subject and the current CoordinateTransformation.
-                Typically is should be equal to "hasCoordinateTransformation".
-    """
+        """
+        subject   - Is the full hame of instance of class CrystalInformation, 
+                    which contains this CoordinateTransformation class.
+        predicate - Is the Object Property linking the Subject and the current CoordinateTransformation.
+                    Typically is should be equal to "hasCoordinateTransformation".
+        """
 
-    if subject.find( "CrystalInformation" ) < 0:
-      logging.warning( " Subject in arrCoordinateTransformation() is '" + subject + "'," +
-                       " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
+        if subject.find( "CrystalInformation" ) < 0:
+            logging.warning( " Subject in arrCoordinateTransformation() is '" + subject + "'," +
+                             " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
 
-    if "hasCoordinateTransformation" != predicate:
-      logging.warning( " Predicate in arrTransform() is '" + predicate + "'," +
-                       " but expecting '" + "hasCoordinateTransformation" + "'." ) 
+        if "hasCoordinateTransformation" != predicate:
+            logging.warning( " Predicate in arrTransform() is '" + predicate + "'," +
+                             " but expecting '" + "hasCoordinateTransformation" + "'." ) 
 
 
-    #print( "arrTransform started1 )
-    TWOPI = 2 * math.pi
-    DIRS = "xyz"
+        #print( "arrTransform started1 )
+        TWOPI = 2 * math.pi
+        DIRS = "xyz"
 
-    output = []
+        output = []
 
-    structure = self.cifPyMatGen.struct
-    #path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
+        structure = self.cifPyMatGen.struct
+        #path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
 
-    #dataIn = tools.readCsv( path )
-    #if not os.path.isfile( path ):
-    #  logging.error( "File not found '" + path + "'." )
-    #  return
+        #dataIn = tools.readCsv( path )
+        #if not os.path.isfile( path ):
+        #  logging.error( "File not found '" + path + "'." )
+        #  return
 
-    #structure = Structure.from_file( path )
-    #uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
-    #uuid_cif = tools.getUUID( self.uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
+        #structure = Structure.from_file( path )
+        #uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
+        #uuid_cif = tools.getUUID( self.uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
 
-    #uuid_cif_core_trans,_ = self.uuidDB.addUUID( "CoordinateTransformation", 
-    #                                   "CoordinateCIFCoreTransform_" + zeoname )
-    uuid_cif_core_trans = tools.getUUID( self.uuidDB.uuidDB, "CoordinateTransformation", 
-                                         "CoordinateCIFCoreTransform_" + zeoname )
-    output.append( [ uuid_cif_core_trans, "Instance", "CoordinateTransformation", "", "", "" ] )
-    output.append( [ subject, "Instance", uuid_cif_core_trans, predicate, "", "" ] )
+        #uuid_cif_core_trans,_ = self.uuidDB.addUUID( "CoordinateTransformation", 
+        #                                   "CoordinateCIFCoreTransform_" + zeoname )
+        uuid_cif_core_trans = tools.getUUID( self.uuidDB.uuidDB, "CoordinateTransformation", 
+                                             "CoordinateCIFCoreTransform_" + zeoname )
+        output.append( [ uuid_cif_core_trans, "Instance", "CoordinateTransformation", "", "", "" ] )
+        output.append( [ subject, "Instance", uuid_cif_core_trans, predicate, "", "" ] )
 
-    ################# Fractional to Cartesian ########################
-    uuid_m_frac_to_cart = tools.getUUID( self.uuidDB.uuidDB, "TransformationMatrix", 
-                          zeoname + "_TransfMatrixToCart" )
-    output.append( [ uuid_m_frac_to_cart, "Instance", 
-                           "TransformationMatrix", "", "", "" ] )
-                           #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
-    output.append( [ uuid_cif_core_trans, "Instance", uuid_m_frac_to_cart,  
-                     self.crystOntoPrefix + "hasTransformationMatrixToCartesian", "", "" ] )
+        ################# Fractional to Cartesian ########################
+        uuid_m_frac_to_cart = tools.getUUID( self.uuidDB.uuidDB, "TransformationMatrix", 
+                              zeoname + "_TransfMatrixToCart" )
+        output.append( [ uuid_m_frac_to_cart, "Instance", 
+                               "TransformationMatrix", "", "", "" ] )
+                               #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+        output.append( [ uuid_cif_core_trans, "Instance", uuid_m_frac_to_cart,  
+                         self.crystOntoPrefix + "hasTransformationMatrixToCartesian", "", "" ] )
 
-    output.append( [ uuid_m_frac_to_cart, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
+        output.append( [ uuid_m_frac_to_cart, "Instance", 
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                          "", "" ] )
 
-    for iy in range(3):
+        for iy in range(3):
+            for ix in range(3):
+                uuid_m_comp = tools.getUUID( self.uuidDB.uuidDB, "MatrixComponent", 
+                            "MatrixComponentToCartesian"+str(ix)+str(iy)+"_" + zeoname )
+                output.append( [ uuid_m_comp, "Instance", 
+                               "MatrixComponent", "", "", "" ] )
+                               #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+                output.append( [ uuid_m_frac_to_cart, "Instance", uuid_m_comp,  
+                         self.crystOntoPrefix + "hasMatrixComponent", "", "" ] )
+
+                output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
+                                 uuid_m_comp, "", DIRS[ix]+DIRS[iy], "string" ] )
+
+                output.append( [ self.crystOntoPrefix + "hasRowIndex", "Data Property", 
+                                 uuid_m_comp, "", iy, "xsd:integer" ] )
+
+                output.append( [ self.crystOntoPrefix + "hasColumnIndex", "Data Property", 
+                                 uuid_m_comp, "", ix, "xsd:integer" ] )
+
+                output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
+                                 uuid_m_comp, "", 
+                                 round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
+
+        uuid_v_frac_to_cart = tools.getUUID( self.uuidDB.uuidDB, "Vector", 
+                              zeoname + "_TransfVectorToCart" )
+        output.append( [ uuid_v_frac_to_cart, "Instance", 
+                           "PositionVector", "", "", "" ] )
+        output.append( [ uuid_cif_core_trans, "Instance", uuid_v_frac_to_cart,  
+                         self.crystOntoPrefix + "hasTransformationVectorToCartesian", "", "" ] )
+
+        output.append( [ uuid_v_frac_to_cart, "Instance", 
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                          "", "" ] )
+
         for ix in range(3):
-            uuid_m_comp = tools.getUUID( self.uuidDB.uuidDB, "MatrixComponent", 
-                        "MatrixComponentToCartesian"+str(ix)+str(iy)+"_" + zeoname )
-            output.append( [ uuid_m_comp, "Instance", 
-                           "MatrixComponent", "", "", "" ] )
-                           #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
-            output.append( [ uuid_m_frac_to_cart, "Instance", uuid_m_comp,  
-                     self.crystOntoPrefix + "hasMatrixComponent", "", "" ] )
+            uuid_v_comp = tools.getUUID( self.uuidDB.uuidDB, "VectorComponent", 
+                        "VectorComponentToCartesian" + str(ix) + "_" + zeoname )
+            output.append( [ uuid_v_comp, "Instance", 
+                           "VectorComponent", "", "", "" ] )
+                           #"CIFCoreTransformationVectorToCartesian", "", "", "" ] )
+            output.append( [ uuid_v_frac_to_cart, "Instance", uuid_v_comp,  
+                             self.crystOntoPrefix + "hasVectorComponent", "", "" ] )
 
             output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
-                             uuid_m_comp, "", DIRS[ix]+DIRS[iy], "string" ] )
+                             uuid_v_comp, "", DIRS[ix], "string" ] )
 
-            output.append( [ self.crystOntoPrefix + "hasRowIndex", "Data Property", 
-                             uuid_m_comp, "", iy, "xsd:integer" ] )
-
-            output.append( [ self.crystOntoPrefix + "hasColumnIndex", "Data Property", 
-                             uuid_m_comp, "", ix, "xsd:integer" ] )
+            output.append( [ self.crystOntoPrefix + "hasComponentIndex", "Data Property", 
+                             uuid_v_comp, "", ix, "xsd:integer" ] )
 
             output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
-                             uuid_m_comp, "", 
-                             round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
-
-    uuid_v_frac_to_cart = tools.getUUID( self.uuidDB.uuidDB, "Vector", 
-                          zeoname + "_TransfVectorToCart" )
-    output.append( [ uuid_v_frac_to_cart, "Instance", 
-                           "PositionVector", "", "", "" ] )
-    output.append( [ uuid_cif_core_trans, "Instance", uuid_v_frac_to_cart,  
-                     self.crystOntoPrefix + "hasTransformationVectorToCartesian", "", "" ] )
-
-    output.append( [ uuid_v_frac_to_cart, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    for ix in range(3):
-        uuid_v_comp = tools.getUUID( self.uuidDB.uuidDB, "VectorComponent", 
-                    "VectorComponentToCartesian" + str(ix) + "_" + zeoname )
-        output.append( [ uuid_v_comp, "Instance", 
-                       "VectorComponent", "", "", "" ] )
-                       #"CIFCoreTransformationVectorToCartesian", "", "", "" ] )
-        output.append( [ uuid_v_frac_to_cart, "Instance", uuid_v_comp,  
-                         self.crystOntoPrefix + "hasVectorComponent", "", "" ] )
-
-        output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
-                         uuid_v_comp, "", DIRS[ix], "string" ] )
-
-        output.append( [ self.crystOntoPrefix + "hasComponentIndex", "Data Property", 
-                         uuid_v_comp, "", ix, "xsd:integer" ] )
-
-        output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
-                         uuid_v_comp, "", 
-                         0.0, "decimal" ] )
+                             uuid_v_comp, "", 
+                             0.0, "decimal" ] )
 
 
-    ################# Cartesian to Fractional ########################
-    uuid_m_cart_to_frac = tools.getUUID( self.uuidDB.uuidDB, "TransformationMatrix", 
-                          zeoname + "TransfMatrixToFrac")
-    output.append( [ uuid_m_cart_to_frac, "Instance", 
-                           "TransformationMatrix", "", "", "" ] )
-                           #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
-    output.append( [ uuid_cif_core_trans, "Instance", uuid_m_cart_to_frac,  
-                     self.crystOntoPrefix + "hasTransformationMatrixToFractional", "", "" ] )
+        ################# Cartesian to Fractional ########################
+        uuid_m_cart_to_frac = tools.getUUID( self.uuidDB.uuidDB, "TransformationMatrix", 
+                              zeoname + "TransfMatrixToFrac")
+        output.append( [ uuid_m_cart_to_frac, "Instance", 
+                               "TransformationMatrix", "", "", "" ] )
+                               #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+        output.append( [ uuid_cif_core_trans, "Instance", uuid_m_cart_to_frac,  
+                         self.crystOntoPrefix + "hasTransformationMatrixToFractional", "", "" ] )
 
-    output.append( [ uuid_m_cart_to_frac, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
+        output.append( [ uuid_m_cart_to_frac, "Instance", 
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                          "", "" ] )
 
-    for iy in range(3):
+        for iy in range(3):
+            for ix in range(3):
+                uuid_m_comp = tools.getUUID( self.uuidDB.uuidDB, "MatrixComponent", 
+                            "MatrixComponentToFractional"+str(ix)+str(iy)+"_" + zeoname )
+                output.append( [ uuid_m_comp, "Instance", 
+                               "MatrixComponent", "", "", "" ] )
+                               #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+                output.append( [ uuid_m_cart_to_frac, "Instance", uuid_m_comp,  
+                         self.crystOntoPrefix + "hasMatrixComponent", "", "" ] )
+
+                output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
+                                 uuid_m_comp, "", DIRS[ix]+DIRS[iy], "string" ] )
+
+                output.append( [ self.crystOntoPrefix + "hasRowIndex", "Data Property", 
+                                 uuid_m_comp, "", iy, "xsd:integer" ] )
+
+                output.append( [ self.crystOntoPrefix + "hasColumnIndex", "Data Property", 
+                                 uuid_m_comp, "", ix, "xsd:integer" ] )
+
+                output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
+                                 uuid_m_comp, "", 
+                                 round(structure.lattice.reciprocal_lattice.matrix[iy][ix]/TWOPI, 12), "decimal" ] )
+
+        uuid_v_cart_to_frac = tools.getUUID( self.uuidDB.uuidDB, "PositionVector", 
+                              zeoname + "_TransfVectorToFrac" )
+        output.append( [ uuid_v_cart_to_frac, "Instance", 
+                               "PositionVector", "", "", "" ] )
+                               #"CIFCoreTransformationVectorToFractional", "", "", "" ] )
+
+        output.append( [ uuid_cif_core_trans, "Instance", uuid_v_cart_to_frac,  
+                         self.crystOntoPrefix + "hasTransformationVectorToFractional", "", "" ] )
+
+        output.append( [ uuid_v_cart_to_frac, "Instance", 
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+                         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                          "", "" ] )
+
         for ix in range(3):
-            uuid_m_comp = tools.getUUID( self.uuidDB.uuidDB, "MatrixComponent", 
-                        "MatrixComponentToFractional"+str(ix)+str(iy)+"_" + zeoname )
-            output.append( [ uuid_m_comp, "Instance", 
-                           "MatrixComponent", "", "", "" ] )
-                           #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
-            output.append( [ uuid_m_cart_to_frac, "Instance", uuid_m_comp,  
-                     self.crystOntoPrefix + "hasMatrixComponent", "", "" ] )
+            uuid_v_comp = tools.getUUID( self.uuidDB.uuidDB, "VectorComponent", 
+                        "VectorComponentToFractional" + str(ix) + "_" + zeoname )
+            output.append( [ uuid_v_comp, "Instance", 
+                           "VectorComponent", "", "", "" ] )
+                           #"CIFCoreTransformationVectorToCartesian", "", "", "" ] )
+            output.append( [ uuid_v_cart_to_frac, "Instance", uuid_v_comp,  
+                             self.crystOntoPrefix + "hasVectorComponent", "", "" ] )
 
             output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
-                             uuid_m_comp, "", DIRS[ix]+DIRS[iy], "string" ] )
+                             uuid_v_comp, "", DIRS[ix], "string" ] )
 
-            output.append( [ self.crystOntoPrefix + "hasRowIndex", "Data Property", 
-                             uuid_m_comp, "", iy, "xsd:integer" ] )
-
-            output.append( [ self.crystOntoPrefix + "hasColumnIndex", "Data Property", 
-                             uuid_m_comp, "", ix, "xsd:integer" ] )
+            output.append( [ self.crystOntoPrefix + "hasComponentIndex", "Data Property", 
+                             uuid_v_comp, "", ix, "xsd:integer" ] )
 
             output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
-                             uuid_m_comp, "", 
-                             round(structure.lattice.reciprocal_lattice.matrix[iy][ix]/TWOPI, 12), "decimal" ] )
+                             uuid_v_comp, "", 
+                             0.0, "decimal" ] )
 
-    uuid_v_cart_to_frac = tools.getUUID( self.uuidDB.uuidDB, "PositionVector", 
-                          zeoname + "_TransfVectorToFrac" )
-    output.append( [ uuid_v_cart_to_frac, "Instance", 
-                           "PositionVector", "", "", "" ] )
-                           #"CIFCoreTransformationVectorToFractional", "", "", "" ] )
-
-    output.append( [ uuid_cif_core_trans, "Instance", uuid_v_cart_to_frac,  
-                     self.crystOntoPrefix + "hasTransformationVectorToFractional", "", "" ] )
-
-    output.append( [ uuid_v_cart_to_frac, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-    for ix in range(3):
-        uuid_v_comp = tools.getUUID( self.uuidDB.uuidDB, "VectorComponent", 
-                    "VectorComponentToFractional" + str(ix) + "_" + zeoname )
-        output.append( [ uuid_v_comp, "Instance", 
-                       "VectorComponent", "", "", "" ] )
-                       #"CIFCoreTransformationVectorToCartesian", "", "", "" ] )
-        output.append( [ uuid_v_cart_to_frac, "Instance", uuid_v_comp,  
-                         self.crystOntoPrefix + "hasVectorComponent", "", "" ] )
-
-        output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
-                         uuid_v_comp, "", DIRS[ix], "string" ] )
-
-        output.append( [ self.crystOntoPrefix + "hasComponentIndex", "Data Property", 
-                         uuid_v_comp, "", ix, "xsd:integer" ] )
-
-        output.append( [ self.crystOntoPrefix + "hasComponentValue", "Data Property", 
-                         uuid_v_comp, "", 
-                         0.0, "decimal" ] )
-
-    return output
-    pass # CsvMaker.arrTransform()
+        return output
+        pass # CsvMaker.arrTransform()
  
   def arrAtomSite( self, subject, predicate, zeoname ):
-    """
-    subject   - Is the full hame of instance of class CrystalInformation, 
-                which contains this UnitCell class.
-    predicate - Is the Object Property linking the Subject and the current UnitCell.
-                Typically is should be equal to "hasUnitCell".
-    """
+        """
+        subject   - Is the full hame of instance of class CrystalInformation, 
+                    which contains this UnitCell class.
+        predicate - Is the Object Property linking the Subject and the current UnitCell.
+                    Typically is should be equal to "hasUnitCell".
+        """
 
-    if subject.find( "CrystalInformation" ) < 0:
-      logging.warning( " Subject in arrAtomSite() is '" + subject + "'," +
-                       " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
+        if subject.find( "CrystalInformation" ) < 0:
+            logging.warning( " Subject in arrAtomSite() is '" + subject + "'," +
+                             " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
 
-    if predicate.find( "hasAtomicStructure" ) < 0:
-      logging.warning( " Predicate in arrAtomSite() is '" + predicate + "'," +
-                       " but expecting '" + "hasAtomicStructure" + "'." ) 
+        if predicate.find( "hasAtomicStructure" ) < 0:
+            logging.warning( " Predicate in arrAtomSite() is '" + predicate + "'," +
+                             " but expecting '" + "hasAtomicStructure" + "'." ) 
 
-    #logging.warning( "arrAtomSite() is not implemented yet" )
+        #logging.warning( "arrAtomSite() is not implemented yet" )
 
-    output = []
+        output = []
 
-    uuid_atomic = tools.getUUID( self.uuidDB.uuidDB, "AtomicStructure", "AtomicStructure_" + zeoname )
+        uuid_atomic = tools.getUUID( self.uuidDB.uuidDB, "AtomicStructure", "AtomicStructure_" + zeoname )
 
-    output.append( [ uuid_atomic, "Instance", "AtomicStructure", "", "", "" ] )
-    output.append( [ subject,     "Instance", uuid_atomic, predicate, "", "" ] )
+        output.append( [ uuid_atomic, "Instance", "AtomicStructure", "", "", "" ] )
+        output.append( [ subject,     "Instance", uuid_atomic, predicate, "", "" ] )
 
-    for ia, atom in enumerate(self.cifOutput.listAtomAll):
-      output += atom.getArrAtom( uuid_atomic, self.crystOntoPrefix + "hasAtomSite", 
-                                 label = str(ia) )
-      pass
+        for ia, atom in enumerate(self.cifOutput.listAtomAll):
+            output += atom.getArrAtom( uuid_atomic, self.crystOntoPrefix + "hasAtomSite", \
+                                       label = str(ia) )
+            pass
 
-    return output
-    pass # CsvMaker.arrAtomSite()
+        return output
+        pass # CsvMaker.arrAtomSite()
 
 
   """ Redundant??
   """
   def loadUnitCellPyMatGen( self, zeoname ):
-    TWOPI = 2 * math.pi
+        TWOPI = 2 * math.pi
 
-    # TODO to add get_crystal_system(), get_space_group_number(), 
-    #      https://pymatgen.org/pymatgen.symmetry.html
+        # TODO to add get_crystal_system(), get_space_group_number(), 
+        #      https://pymatgen.org/pymatgen.symmetry.html
 
-    #uuidDB = tools.loadUUID( )
-    #uuidDB = self.uuidDB
+        #uuidDB = tools.loadUUID( )
+        #uuidDB = self.uuidDB
 
-    path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
+        path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
 
-    #print( "Using a test case 913885.cif for the UnitCell class" )
-    #path = os.path.join( "test", "913885.cif" ) 
-    #dataIn = tools.readCsv( path )
-    if not os.path.isfile( path ):
-        logging.error( "File not found '" + path + "'." )
-        return
+        #print( "Using a test case 913885.cif for the UnitCell class" )
+        #path = os.path.join( "test", "913885.cif" ) 
+        #dataIn = tools.readCsv( path )
+        if not os.path.isfile( path ):
+            logging.error( "File not found '" + path + "'." )
+            return
 
-    structure = Structure.from_file( path )
+        structure = Structure.from_file( path )
 
-    #print( zeoname )
-    #print( "  ", structure.lattice ) # These are 3 unit cell vectors 
-    #print( "  ", structure.lattice.gamma ) # angles, similarly a,b,c
-    #print( "  ", structure.lattice.volume ) # volume
-    #print( "  ", structure.lattice.reciprocal_lattice.a ) # reciprocal parameters
-    #print( "  ", structure.lattice.reciprocal_lattice.matrix[0][0] ) # reciprocal parameters
-    #print( "  ", structure.lattice.reciprocal_lattice.matrix ) # reciprocal parameters
-    #print( "  ", structure.lattice.matrix ) # reciprocal parameters
-    #print( TWOPI * numpy.linalg.inv( structure.lattice.matrix ) )
+        #print( zeoname )
+        #print( "  ", structure.lattice ) # These are 3 unit cell vectors 
+        #print( "  ", structure.lattice.gamma ) # angles, similarly a,b,c
+        #print( "  ", structure.lattice.volume ) # volume
+        #print( "  ", structure.lattice.reciprocal_lattice.a ) # reciprocal parameters
+        #print( "  ", structure.lattice.reciprocal_lattice.matrix[0][0] ) # reciprocal parameters
+        #print( "  ", structure.lattice.reciprocal_lattice.matrix ) # reciprocal parameters
+        #print( "  ", structure.lattice.matrix ) # reciprocal parameters
+        #print( TWOPI * numpy.linalg.inv( structure.lattice.matrix ) )
 
-    ###########################################
-    ###########################################
+        ###########################################
+        ###########################################
   
-    pass # CsvMaker.loadUnitCellPyMat()
-
+        pass # CsvMaker.loadUnitCellPyMat()
 
   def arrUnitCell( self, subject, predicate, zeoname ):
+        """
+        subject   - Is the full hame of instance of class CrystalInformation, 
+                    which contains this UnitCell class.
+        predicate - Is the Object Property linking the Subject and the current UnitCell.
+                    Typically is should be equal to "hasUnitCell".
+        """
  
-    """
-    subject   - Is the full hame of instance of class CrystalInformation, 
-                which contains this UnitCell class.
-    predicate - Is the Object Property linking the Subject and the current UnitCell.
-                Typically is should be equal to "hasUnitCell".
-    """
-    if subject.find( "CrystalInformation" ) < 0:
-      logging.warning( " Subject in arrUnitCell() is '" + subject + "'," +
-                       " expecting the name to contain '" + "CrystalInfromation" + "'." ) 
+        if subject.find( "CrystalInformation" ) < 0:
+            logging.warning( " Subject in arrUnitCell() is '" + subject + \
+                             "'," + " expecting the name to contain '" + \
+                             "CrystalInfromation" + "'." ) 
 
-    if predicate.find( "hasUnitCell" ) < 0:
-      logging.warning( " Predicate in arrUnitCell() is '" + predicate + "'," +
-                       " but expecting '" + "hasUnitCell" + "'." ) 
+        if predicate.find( "hasUnitCell" ) < 0:
+            logging.warning( " Predicate in arrUnitCell() is '" + predicate + \
+                             "'," + " but expecting '" + "hasUnitCell" + "'." )
 
-    output = []
+        output = []
 
-    uuid_cif_uc = tools.getUUID( self.uuidDB.uuidDB, "UnitCell", "UnitCell_" + zeoname )
-    output.append( [ uuid_cif_uc, "Instance", "UnitCell", "", "", "" ] )
+        uuid_cif_uc = tools.getUUID( self.uuidDB.uuidDB, "UnitCell", "UnitCell_" + zeoname )
+        output.append( [ uuid_cif_uc, "Instance", "UnitCell", "", "", "" ] )
 
-    output.append( [ subject, "Instance", uuid_cif_uc, predicate, "", "" ] )
+        output.append( [ subject, "Instance", uuid_cif_uc, predicate, "", "" ] )
 
-    if not None == self.cifOutput.unitCellLengths:
-      output +=    self.cifOutput.unitCellLengths.getCsvArr( uuid_cif_uc, 
-                   self.crystOntoPrefix + "hasUnitCellLengths" ) 
-    else:
-      logging.warning( "Missing unit cell lengths for", self.uuid )
-      pass
+        if not None == self.cifOutput.unitCellLengths:
+            output +=  self.cifOutput.unitCellLengths.getCsvArr( uuid_cif_uc, 
+                       self.crystOntoPrefix + "hasUnitCellLengths" ) 
+        else:
+            logging.warning( "Missing unit cell lengths for", self.uuid )
+            pass
 
-    if not None == self.cifOutput.unitCellAngles:
-      output +=    self.cifOutput.unitCellAngles.getCsvArr(  uuid_cif_uc, 
-                   self.crystOntoPrefix + "hasUnitCellAngles" ) 
+        if not None == self.cifOutput.unitCellAngles:
+            output +=  self.cifOutput.unitCellAngles.getCsvArr(  uuid_cif_uc, 
+                       self.crystOntoPrefix + "hasUnitCellAngles" ) 
 
-    if not None == self.cifOutput.unitCellRecipLengths:
-      output +=    self.cifOutput.unitCellRecipLengths.getCsvArr( uuid_cif_uc, 
-                   self.crystOntoPrefix + "hasReciprocalUnitCellLengths" )
+        if not None == self.cifOutput.unitCellRecipLengths:
+            output +=  self.cifOutput.unitCellRecipLengths.getCsvArr( uuid_cif_uc, 
+                       self.crystOntoPrefix + "hasReciprocalUnitCellLengths" )
 
-    if not None == self.cifOutput.unitCellRecipAngles:
-      output +=    self.cifOutput.unitCellRecipAngles.getCsvArr( uuid_cif_uc, 
-                   self.crystOntoPrefix + "hasReciprocalUnitCellAngles" )
+        if not None == self.cifOutput.unitCellRecipAngles:
+            output +=  self.cifOutput.unitCellRecipAngles.getCsvArr( uuid_cif_uc, 
+                       self.crystOntoPrefix + "hasReciprocalUnitCellAngles" )
 
-    #output += self.cifOutput.unitCellVolume.getCsvArr( uuid_cif_uc, 
-    #          self.crystOntoPrefix + "hasUnitCellVolume" )
+        #output += self.cifOutput.unitCellVolume.getCsvArr( uuid_cif_uc, 
+        #          self.crystOntoPrefix + "hasUnitCellVolume" )
  
-    if not None == self.cifOutput.unitCellVolume:
-      output +=    self.cifOutput.unitCellVolume.getCsvArr( uuid_cif_uc, 
-                   self.crystOntoPrefix + "hasUnitCellVolume" )
-    else:
-      logging.warning( "Missing volume for", uuid_cif_uc )
-      pass
+        if not None == self.cifOutput.unitCellVolume:
+            output +=  self.cifOutput.unitCellVolume.getCsvArr( uuid_cif_uc, 
+                       self.crystOntoPrefix + "hasUnitCellVolume" )
+        else:
+            logging.warning( "Missing volume for", uuid_cif_uc )
+            pass
 
-    #################################################
-    # Vector to keep three Unit Cell vectors (a,b,c):
-    uuid_uc_vec_abc = tools.getUUID( self.uuidDB.uuidDB, "UnitCellVectorSet", "UnitCellVectorSet_" + zeoname )
-    output.append( [ uuid_uc_vec_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
+        #################################################
+        # Vector to keep three Unit Cell vectors (a,b,c):
+        uuid_uc_vec_abc = tools.getUUID( self.uuidDB.uuidDB, "UnitCellVectorSet", "UnitCellVectorSet_" + zeoname )
+        output.append( [ uuid_uc_vec_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
 
-    output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_abc,  
-                     self.crystOntoPrefix + "hasUnitCellVectorSet", "", "" ] )
+        output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_abc,  
+                         self.crystOntoPrefix + "hasUnitCellVectorSet", "", "" ] )
 
-    output += self.cifOutput.unitCellVectorA.getCsvArr( uuid_uc_vec_abc, self.crystOntoPrefix + "hasUnitCellVector" )
-    output += self.cifOutput.unitCellVectorB.getCsvArr( uuid_uc_vec_abc, self.crystOntoPrefix + "hasUnitCellVector" )
-    output += self.cifOutput.unitCellVectorC.getCsvArr( uuid_uc_vec_abc, self.crystOntoPrefix + "hasUnitCellVector" )
+        output += self.cifOutput.unitCellVectorA.getCsvArr( uuid_uc_vec_abc, \
+                                 self.crystOntoPrefix + "hasUnitCellVector" )
+        output += self.cifOutput.unitCellVectorB.getCsvArr( uuid_uc_vec_abc, \
+                                 self.crystOntoPrefix + "hasUnitCellVector" )
+        output += self.cifOutput.unitCellVectorC.getCsvArr( uuid_uc_vec_abc, \
+                                 self.crystOntoPrefix + "hasUnitCellVector" )
 
-    # Vector to keep three Reciprocal Unit Cell vectors (a,b,c):
-    uuid_uc_r_vec_abc = tools.getUUID( self.uuidDB.uuidDB, "UnitCellVectorSet", "ReciprocalUnitCellVectorSet_" + zeoname )
-    output.append( [ uuid_uc_r_vec_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
+        # Vector to keep three Reciprocal Unit Cell vectors (a,b,c):
+        uuid_uc_r_vec_abc = tools.getUUID( self.uuidDB.uuidDB, "UnitCellVectorSet", \
+                                           "ReciprocalUnitCellVectorSet_" + zeoname )
+        output.append( [ uuid_uc_r_vec_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
 
-    output.append( [ uuid_cif_uc, "Instance", uuid_uc_r_vec_abc,  
-                     self.crystOntoPrefix + "hasReciprocalUnitCellVectorSet", "", "" ] )
+        output.append( [ uuid_cif_uc, "Instance", uuid_uc_r_vec_abc,  
+                         self.crystOntoPrefix + "hasReciprocalUnitCellVectorSet", "", "" ] )
 
-    output += self.cifOutput.unitCellRecipVectorA.getCsvArr( uuid_uc_r_vec_abc, 
-              self.crystOntoPrefix + "hasUnitCellVector" )
-    output += self.cifOutput.unitCellRecipVectorB.getCsvArr( uuid_uc_r_vec_abc, 
-              self.crystOntoPrefix + "hasUnitCellVector" )
-    output += self.cifOutput.unitCellRecipVectorC.getCsvArr( uuid_uc_r_vec_abc, 
-              self.crystOntoPrefix + "hasUnitCellVector" )
+        output += self.cifOutput.unitCellRecipVectorA.getCsvArr( uuid_uc_r_vec_abc, \
+                  self.crystOntoPrefix + "hasUnitCellVector" )
+        output += self.cifOutput.unitCellRecipVectorB.getCsvArr( uuid_uc_r_vec_abc, \
+                  self.crystOntoPrefix + "hasUnitCellVector" )
+        output += self.cifOutput.unitCellRecipVectorC.getCsvArr( uuid_uc_r_vec_abc, \
+                  self.crystOntoPrefix + "hasUnitCellVector" )
 
-    if self.cifOutput.symmLatticeSystem != None:
-      #output += self.cifOutput.symmLatticeSystem.getArr( uuid_uc_r_vec_abc, 
-      #          self.crystOntoPrefix + "hasLatticeSystem" )
-      output.append( [ self.crystOntoPrefix + "hasLatticeSystem", 
+        if self.cifOutput.symmLatticeSystem != None:
+            #output += self.cifOutput.symmLatticeSystem.getArr( uuid_uc_r_vec_abc, 
+            #          self.crystOntoPrefix + "hasLatticeSystem" )
+            output.append( [ self.crystOntoPrefix + "hasLatticeSystem", 
                            "Data Property", uuid_cif_uc, "", 
                            self.cifOutput.symmLatticeSystem, "string" ] )
-    else:
-      logging.warning( " Missing hasLatticeSystem value" )
+        else:
+            logging.warning( " Missing hasLatticeSystem value" )
 
-    if self.cifOutput.symmITNumber != None:
-      #output += self.cifOutput.symmITNumber.getArr( uuid_uc_r_vec_abc, 
-      #          self.crystOntoPrefix + "hasSymmetryNumber" )
+        if self.cifOutput.symmITNumber != None:
+            #output += self.cifOutput.symmITNumber.getArr( uuid_uc_r_vec_abc, 
+            #          self.crystOntoPrefix + "hasSymmetryNumber" )
 
-      output.append( [ self.crystOntoPrefix + "hasSymmetryNumber", 
-                           "Data Property", uuid_cif_uc, "", 
-                           self.cifOutput.symmITNumber, "integer" ] )
-    else:
-      logging.warning( " Missing hasSymmetryNumber value" )
+            output.append( [ self.crystOntoPrefix + "hasSymmetryNumber", 
+                                 "Data Property", uuid_cif_uc, "", 
+                                 self.cifOutput.symmITNumber, "integer" ] )
+        else:
+            logging.warning( " Missing hasSymmetryNumber value" )
 
 
-    # The symmetry information of the unit cell.
-    # TODO to add get_crystal_system(), get_space_group_number(), 
-    #      https://pymatgen.org/pymatgen.symmetry.html
+        # The symmetry information of the unit cell.
+        # TODO to add get_crystal_system(), get_space_group_number(), 
+        #      https://pymatgen.org/pymatgen.symmetry.html
 
-    return output
-    pass # CsvMaker.arrUnitCell()
+        return output
+        pass # CsvMaker.arrUnitCell()
 
   def arrUnitCellOld( self, subject, predicate, zeoname ):
  
@@ -3549,12 +3268,12 @@ class CsvMaker:
     """
 
     if subject.find( "TiledStructure" ) < 0:
-      logging.warning( " Subject in arrTiles() is '" + subject + "'," +
-                       " expecting the name to contain '" + "TiledStructure" + "'." ) 
+        logging.warning( " Subject in arrTiles() is '" + subject + "'," +
+                         " expecting the name to contain '" + "TiledStructure" + "'." ) 
 
     if predicate.find( "hasTiledStructure" ) < 0:
-      logging.warning( " Predicate in arrTiles() is '" + predicate + "'," +
-                       " but expecting '" + "hasTiledStructure" + "'." ) 
+        logging.warning( " Predicate in arrTiles() is '" + predicate + "'," +
+                         " but expecting '" + "hasTiledStructure" + "'." ) 
 
     output = []
 
@@ -3563,8 +3282,8 @@ class CsvMaker:
 
     data = tilesignature.getDataByCode( dataIn, zeoname )
     if None == data:
-      logging.warning( " No data available for tile '" + zeoname + "'." )
-      return None
+        logging.warning( " No data available for tile '" + zeoname + "'." )
+        return None
 
     #uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
 
@@ -3647,8 +3366,8 @@ class CsvMaker:
       uuid_tile_num = tools.getUUID( self.uuidDB.uuidDB, "TileNumber", "TileNumber_" + zeoname + "_cage" + str(ic+1) )
 
       if ic >= len(codeN):
-        logging.error( "Too big ic in tile signature, skipping it... FIXME" )
-        continue
+          logging.error( "Too big ic in tile signature, skipping it... FIXME" )
+          continue
 
       output.append( [ uuid_tile, "Instance", "Tile", 
                        "", "", "" ] )
@@ -3742,149 +3461,149 @@ class CsvMaker:
     pass # CsvMaker.arrTiles()
 
   def getTransitivity( self, strValue ):
-    if not isinstance( strValue, str ):
-        logging.error( " input must be string" )
-        return None
+        if not isinstance( strValue, str ):
+            logging.error( " input must be string" )
+            return None
 
-    short = strValue.strip()
-    if short[0] != "[" or short[-1] != "]":
-        logging.error( " Transitivity must be in [] brackets" )
+        short = strValue.strip()
+        if short[0] != "[" or short[-1] != "]":
+            logging.error( " Transitivity must be in [] brackets" )
 
-    trans = [None]*4
-    i = 1   # position of character in the string
-    #it = 0  # iterator for transitivity vector. 0 to 3.
-    for it in range( 4 ):
-        if short[i] != "(":
-            trans[it] = short[i]
-            i += 1
-        else:
-            i += 1
-            trans[it] = ""
-            while short[i] != ")":
-                trans[it] += short[i]
+        trans = [None]*4
+        i = 1   # position of character in the string
+        #it = 0  # iterator for transitivity vector. 0 to 3.
+        for it in range( 4 ):
+            if short[i] != "(":
+                trans[it] = short[i]
                 i += 1
             else:
-                i += 1 # To skip the ")" bracket
-        #it += 1
-        #print( "it = ", it, ":", trans, ", i =", i )
-    #print( trans )
-    return trans
-    pass # CsvMaker.getTransitivity()
+                i += 1
+                trans[it] = ""
+                while short[i] != ")":
+                    trans[it] += short[i]
+                    i += 1
+                else:
+                    i += 1 # To skip the ")" bracket
+            #it += 1
+            #print( "it = ", it, ":", trans, ", i =", i )
+        #print( trans )
+        return trans
+        pass # CsvMaker.getTransitivity()
 
   def arrSpectrum( self, subject, predicate, zeoname ):
-    """
-    subject   - 
-    predicate - 
-    """
-    if subject.find("CrystalInformation") < 0:
-        logging.warning( " XRDSpectrum expects a subject 'CrystalInformation'," + \
-                         " but got '" + subject + "'." )
-    if predicate.find("hasXRDSpectrum") < 0:
-        logging.warning( " Spectrum expects a predicate 'hasXRDSpectrum'," + \
-                         " but got '" + predicate + "'." )
+        """
+        subject   - 
+        predicate - 
+        """
+        if subject.find("CrystalInformation") < 0:
+            logging.warning( " XRDSpectrum expects a subject 'CrystalInformation'," + \
+                             " but got '" + subject + "'." )
+        if predicate.find("hasXRDSpectrum") < 0:
+            logging.warning( " Spectrum expects a predicate 'hasXRDSpectrum'," + \
+                             " but got '" + predicate + "'." )
  
-    output = []
+        output = []
 
-    xrdFile = "xrd-ed5.csv"
-    xrdData = tools.readCsv( xrdFile )
-    #print( xrdData[:2] )
+        xrdFile = "xrd-ed5.csv"
+        xrdData = tools.readCsv( xrdFile )
+        #print( xrdData[:2] )
 
-    nSpectra = 0
-    xrdHead = xrdData[0]
-    xrdData = xrdData[1:]
-    for xrd in xrdData:
+        nSpectra = 0
+        xrdHead = xrdData[0]
+        xrdData = xrdData[1:]
+        for xrd in xrdData:
 
-        #print( "Framework:", xrd[2] )
-        if zeoname == xrd[2]:
-            nSpectra += 1
+            #print( "Framework:", xrd[2] )
+            if zeoname == xrd[2]:
+                nSpectra += 1
 
-            uuid_xrd = tools.getUUID( self.uuidDB.uuidDB, "XRDSpectrum", \
-                      "XRDSpectrum" + str(nSpectra) +"_" + zeoname)
-            output.append( [ uuid_xrd, "Instance", "XRDSpectrum", "", "", "" ] )
+                uuid_xrd = tools.getUUID( self.uuidDB.uuidDB, "XRDSpectrum", \
+                          "XRDSpectrum" + str(nSpectra) +"_" + zeoname)
+                output.append( [ uuid_xrd, "Instance", "XRDSpectrum", "", "", "" ] )
 
-            output.append( [ subject, "Instance", uuid_xrd, predicate, "", "" ] )
+                output.append( [ subject, "Instance", uuid_xrd, predicate, "", "" ] )
 
 
-            #print( zeoname, "=====>", xrd[5] )
-            output += self.loadXRDPeaks( uuid_xrd, \
-                                self.crystOntoPrefix + "hasCharacteristicPeak", \
-                                zeoname + str(nSpectra), xrd[5] )
+                #print( zeoname, "=====>", xrd[5] )
+                output += self.loadXRDPeaks( uuid_xrd, \
+                                    self.crystOntoPrefix + "hasCharacteristicPeak", \
+                                    zeoname + str(nSpectra), xrd[5] )
 
-            if xrd[6] != "" and xrd[6] != None:
-                print( "TODO Add DOI " )
+                if xrd[6] != "" and xrd[6] != None:
+                    print( "TODO Add DOI " )
 
-            break
-    #if z in xrdData:
+                break
+        #if z in xrdData:
 
-    return output
-    pass # CsvMaker.arrSpectrum()
+        return output
+        pass # CsvMaker.arrSpectrum()
 
   def loadXRDPeaks( self, subject, predicate, zeoname, filename ):
-    """
-    See also
-    https://stackoverflow.com/questions/28173128/find-local-maximum-of-data-files-in-gnuplot/56606820#56606820
-    
-    """
-    if subject.find("XRDSpectrum") < 0:
-      logging.warning( " CharacteristicPeak expects a subject 'XRDSpectrum', " + \
-                       "but got '" + subject + "'." )
-    if predicate.find("hasCharacteristicPeak") < 0:
-      logging.warning( " Spectrum expects a predicate 'CharacteristicPeak', " + \
-                       "but got '" + predicate + "'." )
+        """
+        See also
+        https://stackoverflow.com/questions/28173128/find-local-maximum-of-data-files-in-gnuplot/56606820#56606820
+        """
+        if subject.find("XRDSpectrum") < 0:
+            logging.warning( " CharacteristicPeak expects a subject 'XRDSpectrum', " + \
+                             "but got '" + subject + "'." )
+        if predicate.find("hasCharacteristicPeak") < 0:
+            logging.warning( " Spectrum expects a predicate 'CharacteristicPeak', " + \
+                             "but got '" + predicate + "'." )
    
-    output = []
+        output = []
     
-    if not os.path.isfile( filename ):
-      logging.error( "Missing XRD peaks file '" + filename + "' for "+ zeoname )
-      return output
+        if not os.path.isfile( filename ):
+            logging.error( "Missing XRD peaks file '" + filename + "' for "+ zeoname )
+            return output
     
-    f = open( filename, "r" )
-    for il,line in enumerate(f):
-      words = line.strip().split()
-      #print( il, "=>", line.strip(), "=>", words )
+        f = open( filename, "r" )
+        for il,line in enumerate(f):
+            words = line.strip().split()
+            #print( il, "=>", line.strip(), "=>", words )
 
-      uuid_peak = tools.getUUID( self.uuidDB.uuidDB, "CharacteristicPeak", 
-                  "CharacteristicPeak_" + zeoname + "_peak_" + str(il+1) )
-      output.append( [ uuid_peak, "Instance", "CharacteristicPeak", "", "", "" ] )
+            uuid_peak = tools.getUUID( self.uuidDB.uuidDB, "CharacteristicPeak", 
+                        "CharacteristicPeak_" + zeoname + "_peak_" + str(il+1) )
+            output.append( [ uuid_peak, "Instance", "CharacteristicPeak", "", "", "" ] )
 
-      output.append( [ subject, "Instance", uuid_peak, predicate, "", "" ] )
+            output.append( [ subject, "Instance", uuid_peak, predicate, "", "" ] )
 
-      output.append( [ self.crystOntoPrefix + "hasRelativeIntensity", 
-                      "Data Property", uuid_peak, "", words[6], "decimal" ] )
+            output.append( [ self.crystOntoPrefix + "hasRelativeIntensity", 
+                          "Data Property", uuid_peak, "", words[6], "decimal" ] )
 
-      output.append( [ self.crystOntoPrefix + "isSimulated", "Data Property", 
-                         uuid_peak, "", True, "boolean" ] )
+            output.append( [ self.crystOntoPrefix + "isSimulated", "Data Property", 
+                             uuid_peak, "", True, "boolean" ] )
 
-      miller = OntoVector( 
+            miller = OntoVector( 
                            className = "MillerIndices", 
                            itemName  = "MillerIndices_" + zeoname + "_peak_" + str(il+1),
                            #myName  = "MillerIndices_" + zeoname + "_peak_" + str(il+1),
                            uuidDB = self.uuidDB, 
                            unit      = "om:dimensionOne" )
-       #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
+           #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
 
-      miller.addComponent( label = "h", value = str(words[0]) )
-      miller.addComponent( label = "k", value = str(words[1]) )
-      miller.addComponent( label = "l", value = str(words[2]) )
-      output += miller.getCsvArr( uuid_peak, self.crystOntoPrefix + "hasMillerIndices" )
+            miller.addComponent( label = "h", value = str(words[0]) )
+            miller.addComponent( label = "k", value = str(words[1]) )
+            miller.addComponent( label = "l", value = str(words[2]) )
+            output += miller.getCsvArr( uuid_peak, self.crystOntoPrefix + "hasMillerIndices" )
 
-      #uuid_peak = tools.getUUID( self.uuidDB, "CharacteristicPeak", 
-      #            "CharacteristicPeak_" + zeoname + "_peak_" + str(il+1) )
-      #output.append( [ uuid_peak, "Instance", "CharacteristicPeak", "", "", "" ] )
-      #output.append( [ subject, "Instance", uuid_peak, predicate, "", "" ] )
+            #uuid_peak = tools.getUUID( self.uuidDB, "CharacteristicPeak", 
+            #            "CharacteristicPeak_" + zeoname + "_peak_" + str(il+1) )
+            #output.append( [ uuid_peak, "Instance", "CharacteristicPeak", "", "", "" ] )
+            #output.append( [ subject, "Instance", uuid_peak, predicate, "", "" ] )
 
-      output.append( [ self.crystOntoPrefix + "hasTwoThetaPosition", "Data Property", 
-                         uuid_peak, "", words[3], "decimal" ] )
+            output.append( [ self.crystOntoPrefix + "hasTwoThetaPosition", "Data Property", 
+                             uuid_peak, "", words[3], "decimal" ] )
 
 
-      #output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
-      #                   uuid_peak, "", self.value["label"], "string" ] )
+            #output.append( [ self.crystOntoPrefix + "hasComponentLabel", "Data Property", 
+            #                   uuid_peak, "", self.value["label"], "string" ] )
 
-      pass
+            pass
 
-   
-    return output
-    pass # CsvMaker.loadXRDPeaks()
+        f.close()
+
+        return output
+        pass # CsvMaker.loadXRDPeaks()
 
   # TODO delete this function from this class:
   def splitErrorBarLoop( self, line, headers, file_line ):
@@ -3991,82 +3710,82 @@ class CsvMaker:
 
   # TODO delete this function from here:
   def splitStr( self, value ):
-    """
-    Function splits a string of a form "12.345(6)" into two strings: "12.345" and "0.006".
-    """
+        """
+        Function splits a string of a form "12.345(6)" into two strings: "12.345" and "0.006".
+        """
 
-    pos1 = value.find( "(" )
-    pos2 = value.find( ")" )
-    vOut = value[:pos1] + value[pos2+1:]
-    eOut = value[pos1+1:pos2]
+        pos1 = value.find( "(" )
+        pos2 = value.find( ")" )
+        vOut = value[:pos1] + value[pos2+1:]
+        eOut = value[pos1+1:pos2]
 
-    ''' This sometimes return value like 0.007000000001, last digit round effect
-    n = len(eOut )
-    vOut = vOut
-    v = 0
-    factor = ""
-    for ix, x in enumerate(vOut):
-      if ix == len(vOut) - 1:
-        factor += "1"
-      elif "." == x:
-        factor += "."
-      else:
-        factor += "0"
-    eOut = str( float(factor) * float(eOut) )
-    '''
+        ''' This sometimes return value like 0.007000000001, last digit round effect
+        n = len(eOut )
+        vOut = vOut
+        v = 0
+        factor = ""
+        for ix, x in enumerate(vOut):
+          if ix == len(vOut) - 1:
+            factor += "1"
+          elif "." == x:
+            factor += "."
+          else:
+            factor += "0"
+        eOut = str( float(factor) * float(eOut) )
+        '''
 
-    #iv = len(vOut) - 1
-    #ie = len(eOut) - 1
-    ie = 1
-    factor = []
-    for ix,x in enumerate(vOut[::-1]):
-        if "." == x:
-            factor.insert( 0, "." )
-        elif ie <= len( eOut ):
-            factor.insert( 0, eOut[-ie] )
-            ie += 1
+        #iv = len(vOut) - 1
+        #ie = len(eOut) - 1
+        ie = 1
+        factor = []
+        for ix,x in enumerate(vOut[::-1]):
+            if "." == x:
+                factor.insert( 0, "." )
+            elif ie <= len( eOut ):
+                factor.insert( 0, eOut[-ie] )
+                ie += 1
+            else:
+                factor.insert( 0, "0" )
+                ie += 1
+
+        #print( factor )
+        factor = "".join( factor )
+        if factor.find( "." ) < 0:
+            eOut = str( int(factor) )
         else:
-            factor.insert( 0, "0" )
-            ie += 1
-
-    #print( factor )
-    factor = "".join( factor )
-    if factor.find( "." ) < 0:
-        eOut = str( int(factor) )
-    else:
-        eOut = str( float(factor) )
-    #for i in range( len( eOut ) ):
-      #vOut[-i-1] = eOut[-i-1]
-    return vOut, eOut
-    pass # CsvMaker.splitStr()
+            eOut = str( float(factor) )
+        #for i in range( len( eOut ) ):
+          #vOut[-i-1] = eOut[-i-1]
+        return vOut, eOut
+        pass # CsvMaker.splitStr()
 
   def splitErrorBar( self, value, file_line ):
-    # TODO delete this function from here.
+        # TODO delete this function from here.
 
-    #print( "Starting splitErrorBar() ================== " )
-    vOut = value 
-    eOut = ""
+        #print( "Starting splitErrorBar() ================== " )
+        vOut = value 
+        eOut = ""
 
-    if not isinstance( value, str ):
-        logging.error( " Impossible error: not a string " + str(line) + " " + \
-                       file_line )
-        return vOut,eOut
+        if not isinstance( value, str ):
+            logging.error( " Impossible error: not a string " + str(line) + " " + \
+                           file_line )
+            return vOut,eOut
 
-    pos1 = value.find( "(" )
-    pos2 = value.find( ")" )
-    if pos1 < 0 and pos2 < 0:
-        #logging.info( " Brackets are not detected. " + file_line )
-        pass
-    elif pos1 >= 0 and pos2 >= 0 and pos1 < pos2:
-        #print( "pos1 = ", pos1, " pos2 = ", pos2 )
-        vOut,eOut = self.splitStr(value) 
-    else:
-        logging.error( " Something is wrong with brackets: '" + line + \
-                       "' . " + file_line )
+        pos1 = value.find( "(" )
+        pos2 = value.find( ")" )
+        if pos1 < 0 and pos2 < 0:
+            #logging.info( " Brackets are not detected. " + file_line )
+            pass
+        elif pos1 >= 0 and pos2 >= 0 and pos1 < pos2:
+            #print( "pos1 = ", pos1, " pos2 = ", pos2 )
+            vOut,eOut = self.splitStr(value) 
+        else:
+            logging.error( " Something is wrong with brackets: '" + line + \
+                           "' . " + file_line )
 
-    #print( "value, vOut, eOut =", value, vOut, eOut )
-    return vOut, eOut
-    pass # CsvMaker.splitErrorBar()
+        #print( "value, vOut, eOut =", value, vOut, eOut )
+        return vOut, eOut
+        pass # CsvMaker.splitErrorBar()
 
   #def getCifLineRanges( self, fileIn ):
   #    return [ 0, 100, 400 ]
@@ -4119,32 +3838,33 @@ class CsvMaker:
         return filesOut
         pass # CsvMaker.cleanCif()
 
-  def readWithUncertainties( self, fileIn, cifName, lineFr = None, lineTo = None, 
+  def readWithUncertainties( self, fileIn, cifName, \
+                             lineFr = None, lineTo = None, \
                              fileOut = "", save = False ):
-    """
-    This function can do three different operations:
-    1) read fileIn and count the number of brackets (i.e. the uncertainties)
-       The argument fileOut = "" or not specified.
-    2) Save a modified file whith uncertanties removed, so that the file
-       can be used for reading by standard libraries.
-       Specify the fileOut a path.
-    3) Read both value and uncertainty and assign to the internal variables,
-       which later can be saved into an ABox formal (.csv).
-       Flag save = True (default save = False)
+        """
+        This function can do three different operations:
+        1) read fileIn and count the number of brackets (i.e. the uncertainties)
+           The argument fileOut = "" or not specified.
+        2) Save a modified file whith uncertanties removed, so that the file
+           can be used for reading by standard libraries.
+           Specify the fileOut a path.
+        3) Read both value and uncertainty and assign to the internal variables,
+           which later can be saved into an ABox formal (.csv).
+           Flag save = True (default save = False)
 
-      Parameters:
-      fileIn  - the input CIF file to be read,
-      cifName - is the unique identifier for the cif to be stored in abox
-      lineFr  - 
-      lineTo  - 
-      fileOut - output file to save data with uncertainties removed,
-      save    - boolean flag, whether to save the data to internal variables.
-      Return: 
-      In all 3 cases function returns the number of detected uncertainties.
-      In case of error the function returns negative value.
-    """
+          Parameters:
+          fileIn  - the input CIF file to be read,
+          cifName - is the unique identifier for the cif to be stored in abox
+          lineFr  - 
+          lineTo  - 
+          fileOut - output file to save data with uncertainties removed,
+          save    - boolean flag, whether to save the data to internal variables.
+          Return: 
+          In all 3 cases function returns the number of detected uncertainties.
+          In case of error the function returns negative value.
+        """
 
-    self.entriesWithUncertainties = [ "_cell_length_a", "_cell_length_b", "_cell_length_c", 
+        self.entriesWithUncertainties = [ "_cell_length_a", "_cell_length_b", "_cell_length_c", 
                   "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma",
                   "_cell_volume", "_cell_measurement_temperature",
                   "_diffrn_ambient_temperature",
@@ -4157,288 +3877,293 @@ class CsvMaker:
                   "_refine_ls_extinction_coef"
                   ]
 
-    if not os.path.isfile( fileIn ):
-        logging.error( " Input file '" + fileIn + "' does not exist in cleanCif()." )
-        return -1
+        if not os.path.isfile( fileIn ):
+            logging.error( " Input file '" + fileIn + "' does not exist in cleanCif()." )
+            return -1
 
-    fIn = open( fileIn )
+        fIn = open( fileIn )
     
-    if len(fileOut) > 0:
-        fOut = open( fileOut, "w", encoding="utf8" )
+        if len(fileOut) > 0:
+            fOut = open( fileOut, "w", encoding="utf8" )
 
-    inLoop = False
-    countBrackets = 0
+        inLoop = False
+        countBrackets = 0
 
-    for il, line in enumerate(fIn):
-      file_line = "In file '" + fileIn + "' line " + str(il+1)
-      #print( file_line )
+        for il, line in enumerate(fIn):
+            file_line = "In file '" + fileIn + "' line " + str(il+1)
+              #print( file_line )
 
-      if il >= 20:
-          logging.debug( " Break after 75 lines for testing. " + file_line )
-          #break
-          pass
+            if il >= 20:
+                logging.debug( " Break after 75 lines for testing. " + file_line )
+                #break
+                pass
 
-      pos1 = line.find( "#" )
-      pos2 = line.find( ";" )
-      if   0 == pos1:
-          logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
-          #short = line[ :pos] + "\n"
-          if len(fileOut) > 0:
-              fOut.write( line )
-          continue
+            pos1 = line.find( "#" )
+            pos2 = line.find( ";" )
+            if   0 == pos1:
+                logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
+                #short = line[ :pos] + "\n"
+                if len(fileOut) > 0:
+                    fOut.write( line )
+                continue
 
-      elif 0 == pos2:
-          logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
-          #short = line[ :pos] + "\n"
-          if len(fileOut) > 0:
-              fOut.write( line )
-          continue
+            elif 0 == pos2:
+                logging.info( " Found a comment in string '" + line.strip() + "'. " + file_line )
+                #short = line[ :pos] + "\n"
+                if len(fileOut) > 0:
+                    fOut.write( line )
+                continue
 
-      elif pos1 > 0 or pos2 > 0:
-          logging.warning( " Comment starts not from beginning of the line: '" + \
-                         line.strip() + "' " + file_line + "."  \
-                         #+ " This is not supported by readWithUncertainties()." 
-                         )
-          if len(fileOut) > 0:
-              fOut.write( line )
-          continue
+            elif pos1 > 0 or pos2 > 0:
+                logging.warning( " Comment starts not from beginning of the line: '" + \
+                               line.strip() + "' " + file_line + "."  \
+                               #+ " This is not supported by readWithUncertainties()." 
+                               )
+                if len(fileOut) > 0:
+                    fOut.write( line )
+                continue
 
-      #words = line.strip().split()
-      words = tools.strSplit( line )
-      #print( "on line", il, "words:", words )
+            #words = line.strip().split()
+            words = tools.strSplit( line )
+            #print( "on line", il, "words:", words )
       
-      if len(words) == 0:
-          #logging.info( " Empty string " + file_line )
-          if len(fileOut) > 0:
-              fOut.write( line )
-          inLoop = False
-          continue
-          pass
+            if len(words) == 0:
+                #logging.info( " Empty string " + file_line )
+                if len(fileOut) > 0:
+                    fOut.write( line )
+                inLoop = False
+                continue
+                pass
 
-      elif "loop_" == words[0].strip():
-          #logging.info( " Found a 'loop_' option" )
-          inLoop = True
-          inLoopHead = True
-          inLoopBody = False
-          self.loopHeaders = []
-          if len(fileOut) > 0:
-              #fOut.write( "added 'loop_': " + line )
-              fOut.write( line )
-          continue
+            elif "loop_" == words[0].strip():
+                #logging.info( " Found a 'loop_' option" )
+                inLoop = True
+                inLoopHead = True
+                inLoopBody = False
+                self.loopHeaders = []
+                if len(fileOut) > 0:
+                    #fOut.write( "added 'loop_': " + line )
+                    fOut.write( line )
+                continue
 
-      elif inLoop:
-        #logging.info( " In inLoop option" )
-        #print( "Inside the loop" )
+            elif inLoop:
+                #logging.info( " In inLoop option" )
+                #print( "Inside the loop" )
         
-        if inLoopHead:
-          #print( "Inside the loop head" )
-          if "_" == words[0][0]:
-              self.loopHeaders.append( words[0].strip() )
-              if len(fileOut) > 0:
-                  fOut.write( line )
-          else:
-              inLoopHead = False
-              inLoopBody = True
+                if inLoopHead:
+                    #print( "Inside the loop head" )
+                    if "_" == words[0][0]:
+                        self.loopHeaders.append( words[0].strip() )
+                        if len(fileOut) > 0:
+                            fOut.write( line )
+                    else:
+                        inLoopHead = False
+                        inLoopBody = True
 
-        if inLoopBody:
-          if "_" == words[0][0]:
-              inLoop = False
-              #logging.info( " inLoop is set to False" )
-              if len(fileOut) > 0:
-                  fOut.write( line )
-              #self.loopHeaders = []
+                if inLoopBody:
+                    if "_" == words[0][0]:
+                        inLoop = False
+                        #logging.info( " inLoop is set to False" )
+                        if len(fileOut) > 0:
+                            fOut.write( line )
+                        #self.loopHeaders = []
             
-          else:
-              lineNew, nbrac = self.splitErrorBarLoop( line, self.loopHeaders, file_line )
-              countBrackets += nbrac
-              #print( "after stplitErrorBarLoop():", lineNew, nbrac )
-              if len(fileOut) > 0:
-                  fOut.write( lineNew )
-              continue
-              pass
+                    else:
+                        lineNew, nbrac = self.splitErrorBarLoop( line, self.loopHeaders, file_line )
+                        countBrackets += nbrac
+                        #print( "after stplitErrorBarLoop():", lineNew, nbrac )
+                        if len(fileOut) > 0:
+                            fOut.write( lineNew )
+                        continue
+                        pass
 
-          pass
+                    pass
 
         #print( "headers =", self.loopHeaders )
 
-      elif len(words) > 2:
-          #logging.info( " Length of string = " + str(len(words)) + " " + file_line )
-          if len(fileOut) > 0:
-              fOut.write( line )
-          pass
-
-      elif "_" == words[0][0]:
-        #print( "Checking property", words[0], "is it in list of known?", words[0] in self.entriesWithUncertainties ) 
-        if False == inLoop:
-            if len(words) == 1:
-                #logging.info( " Only 1 entry in '" + line.strip() + "' " + file_line + ". I skip this case." )
-                if len(fileOut) > 0:
-                    fOut.write( line )
-                continue
             elif len(words) > 2:
-                #logging.info( " More than 2 entries in '" + line.strip() + "' " + file_line + ". I skip this case." )
+                #logging.info( " Length of string = " + str(len(words)) + " " + file_line )
                 if len(fileOut) > 0:
                     fOut.write( line )
-                continue
+                pass
+
+            elif "_" == words[0][0]:
+                #print( "Checking property", words[0], "is it in list of known?", words[0] in self.entriesWithUncertainties ) 
+                if False == inLoop:
+                    if len(words) == 1:
+                        #logging.info( " Only 1 entry in '" + line.strip() + "' " + file_line + ". I skip this case." )
+                        if len(fileOut) > 0:
+                            fOut.write( line )
+                        continue
+                    elif len(words) > 2:
+                        #logging.info( " More than 2 entries in '" + line.strip() + "' " + file_line + ". I skip this case." )
+                        if len(fileOut) > 0:
+                            fOut.write( line )
+                        continue
             
-            elif words[0] in self.entriesWithUncertainties:
-                logging.info( " Found one of the entries:" + words[0]  )
-                vOut, eOut = self.splitErrorBar( words[1], file_line )
-                if "" != eOut:
-                    countBrackets += 1
-                    self.setValueAndError( cifName, words[0], vOut, eOut )
+                    elif words[0] in self.entriesWithUncertainties:
+                        logging.info( " Found one of the entries:" + words[0]  )
+                        vOut, eOut = self.splitErrorBar( words[1], file_line )
+                        if "" != eOut:
+                            countBrackets += 1
+                            self.setValueAndError( cifName, words[0], vOut, eOut )
 
-                pos = line.find( words[1] )
+                        pos = line.find( words[1] )
 
-                newLine = line.replace( words[1], vOut )
-                if len(fileOut) > 0:
-                    fOut.write( newLine )
-                    #fOut.write( line[:pos] + vOut + "\n" )
-                continue
+                        newLine = line.replace( words[1], vOut )
+                        if len(fileOut) > 0:
+                            fOut.write( newLine )
+                            #fOut.write( line[:pos] + vOut + "\n" )
+                        continue
 
-            elif words[0] in self.cifStandard:
+                    elif words[0] in self.cifStandard:
+                        if len(fileOut) > 0:
+                            fOut.write( line )
+                    else:
+                        logging.warning( " Unknown situation. Line = '" + line.strip() + 
+                                           "'. " + file_line + "." )
+                        if len(fileOut) > 0:
+                            fOut.write( line )
+                else:
+                    if len(fileOut) > 0:
+                        fOut.write( line )
+
+            elif len(words) == 2:
+                #logging.warning( " Length of string = " + str(len(words)) + " " + file_line )
                 if len(fileOut) > 0:
                     fOut.write( line )
+                pass
+
             else:
-                logging.warning( " Unknown situation. Line = '" + line.strip() + 
-                                   "'. " + file_line + "." )
+                #logging.warning( " default else option." )
                 if len(fileOut) > 0:
                     fOut.write( line )
-        else:
-            if len(fileOut) > 0:
-                fOut.write( line )
+                pass
 
-      elif len(words) == 2:
-          #logging.warning( " Length of string = " + str(len(words)) + " " + file_line )
-          if len(fileOut) > 0:
-              fOut.write( line )
-          pass
+        fIn.close()
+        if len(fileOut) > 0:
+            fOut.close()
 
-      else:
-          #logging.warning( " default else option." )
-          if len(fileOut) > 0:
-              fOut.write( line )
-          pass
+        #print( "Number of brackets =", countBrackets )
+        return countBrackets
+        pass # CsvMaker.readWithUncertainties()
 
-    fIn.close()
-    if len(fileOut) > 0:
-        fOut.close()
 
-    #print( "Number of brackets =", countBrackets )
-    return countBrackets
-    pass # CsvMaker.readWithUncertainties()
+  def getCsvArrFromCif( self, filePath ):
+        output = []
 
+
+        return output
+        pass # CsvMaker.getCsvArrFromCif()
 
   def makeCsvs( self ):
-    errCount = 0
+        errCount = 0
 
-    self.prepare()
-    #self.zeoList = self.zeoList[0:1]
+        self.prepare()
+        #self.zeoList = self.zeoList[0:1]
 
-    t_start = datetime.datetime.now()
-    for iz, z in enumerate(self.zeoList):
-      #print( "In zeolist z =", z )
-      arr  = self.arrInit( "zeolite" )  # The header (ontology description)
+        t_start = datetime.datetime.now()
+        for iz, z in enumerate(self.zeoList):
+            #print( "In zeolist z =", z )
+            arr  = self.arrInit( "zeolite" )  # The header (ontology description)
 
-      path = os.path.join( "CIF", zeolist.zeoCodeToCode3(z).upper() + ".cif")
+            path = os.path.join( "CIF", zeolist.zeoCodeToCode3(z).upper() + ".cif")
 
-      # First load data to (struct in cifPyMatGen and unitCellLengths in cifValAndErr)
-      # QQQQQQ
-      self.loadPyMatGen(  path, z )
-      self.loadValAndErr( path, z )
-
-      # Second evaluate data (create all arrays and internal data):
-      # QQQQQQ
-      self.evalPyMatGen ()
-      self.evalValAndErr()
-
-      # Third choose which to save from which crystal information:
-      #print(" ==> ", self.cifValAndErr.unitCellLengths )
-      # QQQQQQ
-      self.mergeCrystInfo()
-      #self.cifOutput = self.cifValAndErr
-      #print(" -->  ", self.cifOutput.unitCellLengths )
-
-      #self.loadCifZeolite( z ) 
-      #self.evalCifData()
-
-     
-      uuid_zeolite = tools.getUUID( self.uuidDB.uuidDB, "ZeoliteFramework", "Zeolite_" + z )
-      arr.append( [ uuid_zeolite, "Instance", "ZeoliteFramework", "", "", "" ] )
+    
+            uuid_zeolite = tools.getUUID( self.uuidDB.uuidDB, "ZeoliteFramework", "Zeolite_" + z )
+            arr.append( [ uuid_zeolite, "Instance", "ZeoliteFramework", "", "", "" ] )
  
-      arr.append( [ self.zeoOntoPrefix + "hasZeoliteCode", "Data Property", 
-                    uuid_zeolite, "", z.strip(' "'), "string" ] )
+            arr.append( [ self.zeoOntoPrefix + "hasZeoliteCode", "Data Property", 
+                          uuid_zeolite, "", z.strip(' "'), "string" ] )
 
 
-      uuid_cif = tools.getUUID( self.uuidDB.uuidDB, "CrystalInformation", "ZeoliteCIF_" + z )
-      arr.append( [ uuid_cif, "Instance", "CrystalInformation", "", "", "" ] )
+            uuid_cif = tools.getUUID( self.uuidDB.uuidDB, "CrystalInformation", "ZeoliteCIF_" + z )
+            arr.append( [ uuid_cif, "Instance", "CrystalInformation", "", "", "" ] )
+ 
+            """
+
+            # Define relation between the class instances:
+            #output.append( [ subject, "Instance", uuid_cif,  
+            arr.append( [ uuid_zeolite, "Instance", uuid_cif,  
+                          self.crystOntoPrefix + "hasCrystalInformation", "", "" ] )
+
+
+            #self.loadUnitCellPyMatGen( zeoname )
+
+            #arr += self.arrInitZeolite( uuid_zeolite )
+
+            tmp = self.arrUnitCell( uuid_cif, self.crystOntoPrefix + "hasUnitCell", z )
+            if None == tmp:
+                logging.warning( " Missing Unit Cell information!" )
+            else:
+                arr += tmp
+
+            tmp = self.arrTransform( uuid_cif, self.crystOntoPrefix + "hasCoordinateTransformation", z )
+            if None == tmp:
+                logging.warning( " Missing Transformation information!" )
+            else:
+                arr += tmp
+
+            tmp = self.arrAtomSite( uuid_cif, self.crystOntoPrefix + "hasAtomicStructure", z )
+            if None == tmp:
+                logging.warning( " Missing Atom Site information!" )
+            else:
+                arr += tmp
+
+            tmp = self.arrTiles( uuid_cif, self.crystOntoPrefix + "hasTiledStructure", z )
+            if None == tmp:
+                logging.warning( " Missing Tiled Structure information!" )
+            else:
+                arr += tmp
+
+            tmp = self.arrSpectrum( uuid_cif, self.crystOntoPrefix + "hasXRDSpectrum", z )
+            if None == tmp:
+                logging.warning( " Missing Spectrum information!" )
+            else:
+                arr += tmp
+            # FIXME
+            """
+
+
+            #zeoData = ontozeolite.OntoZeolite( itemName = z, className = "Zeolite", 
+            #                                 uuidDB = self.uuidDB )
+            #zeoData.loadZeolites( "FIXME" )
+
+            arr.append( [ self.zeoOntoPrefix + "hasZeoliteCode", "Data Property", 
+                          uuid_zeolite, "", z.strip(' "'), "string" ] )
+
+            #tmp = zeoData.getCsvArr( uuid_cif, self.crystOntoPrefix + "has???" )
+
+            #if None == tmp:
+            #    logging.warning( " Missing zeolite information!" )
+            #else:
+            #    arr += tmp
  
 
-    # Define relation between the class instances:
-    #output.append( [ subject, "Instance", uuid_cif,  
-      arr.append( [ uuid_zeolite, "Instance", uuid_cif,  
-                    self.crystOntoPrefix + "hasCrystalInformation", "", "" ] )
+            #print( "arr =", arr )
+            #csvWrite( arr )
+            path = os.path.join( self.outputDir, z + ".csv" )
+            tools.writeCsv( path, arr )
 
+            if iz > 0 and iz % 10 == 0:
+                self.finalize()
+                t_finish = datetime.datetime.now()
+                t_delta = t_finish - t_start
+                t_delta = t_delta.total_seconds()
+                print( "Finished", iz, "compounds. Saved uuidDB in", round(t_delta,1), "sec." )
+                #print( t_finish - t_start )
 
-      #self.loadUnitCellPyMatGen( zeoname )
+            #errCount += 1
+            #logging.warning( "Not implemented creating zeolite csv" )
+            pass
 
-      #arr += self.arrInitZeolite( uuid_zeolite )
+        self.finalize() # << Important! Saves the current list of the UUIDs
 
-      tmp = self.arrUnitCell( uuid_cif, self.crystOntoPrefix + "hasUnitCell", z )
-      if None == tmp:
-          logging.warning( " Missing Unit Cell information!" )
-      else:
-          arr += tmp
+        logging.warning( "Detected " + str(errCount) + " errors" )
+        #if errCount > 0:
+        #  logging.warning( "Detected " + str(errCount) + " errors" )
 
-      tmp = self.arrTransform( uuid_cif, self.crystOntoPrefix + "hasCoordinateTransformation", z )
-      if None == tmp:
-          logging.warning( " Missing Transformation information!" )
-      else:
-          arr += tmp
-
-      tmp = self.arrAtomSite( uuid_cif, self.crystOntoPrefix + "hasAtomicStructure", z )
-      if None == tmp:
-          logging.warning( " Missing Atom Site information!" )
-      else:
-          arr += tmp
-
-      tmp = self.arrTiles( uuid_cif, self.crystOntoPrefix + "hasTiledStructure", z )
-      if None == tmp:
-          logging.warning( " Missing Tiled Structure information!" )
-      else:
-          arr += tmp
-
-      tmp = self.arrSpectrum( uuid_cif, self.crystOntoPrefix + "hasXRDSpectrum", z )
-      if None == tmp:
-          logging.warning( " Missing Spectrum information!" )
-      else:
-          arr += tmp
-      # FIXME
-
-      #print( "arr =", arr )
-      #csvWrite( arr )
-      path = os.path.join( self.outputDir, z + ".csv" )
-      tools.writeCsv( path, arr )
-
-      if iz > 0 and iz % 10 == 0:
-          self.finalize()
-          t_finish = datetime.datetime.now()
-          t_delta = t_finish - t_start
-          t_delta = t_delta.total_seconds()
-          print( "Finished", iz, "compounds. Saved uuidDB in", round(t_delta,1), "sec." )
-          #print( t_finish - t_start )
-
-      #errCount += 1
-      #logging.warning( "Not implemented creating zeolite csv" )
-      pass
-
-    self.finalize() # << Important! Saves the current list of the UUIDs
-
-    logging.warning( "Detected " + str(errCount) + " errors" )
-    #if errCount > 0:
-    #  logging.warning( "Detected " + str(errCount) + " errors" )
-
-    pass # CsvMaker.makeCsvs()
+        pass # CsvMaker.makeCsvs()
 
   pass # class CsvMaker
 
