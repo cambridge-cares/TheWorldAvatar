@@ -95,6 +95,12 @@ class SubunitBuilder:
             target_atom = "C"     
         elif bs_type == "ter-C":
             target_atom = "C"   
+        elif bs_type == "CO2R":
+            target_atom = "C"      
+        elif bs_type == "MDOH":
+            target_atom = "O"    
+        elif bs_type == "MDCOCl":
+            target_atom = "C"
         else:
             logging.warning("Unsupported bs_type")
             #print("Unsupported bs_type")
