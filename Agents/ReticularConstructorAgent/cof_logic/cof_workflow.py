@@ -147,17 +147,34 @@ class COFProcessor:
         supplementary_sbu = None
         precursor_values = {}
 
-        list_1_assembly_models = ['ctn-[(4-tetrahedral)x3(L:3-planar)x4]n', 'hcb-[(3-planar)x1(L:3-planar)x1]n',
-                                'dia-[(4-tetrahedral)x1(L:2-linear)x2]n', 'sql-[(4-planar)x1(L:2-linear)x2]n'] 
+        lfr_set_1 = ['LFR-20']
         
-        list_2_assembly_models = ['sql-[(4-planar)x1(4-planar)x1(L:2-linear)x4]n','hcb-[(3-planar)x2(2-linear)x3(L:2-linear)x6]n'] 
-                    
+        list_1_assembly_models = ['ctn-[(4-tetrahedral)x3(L:3-planar)x4]n',
+                                'hcb-[(3-planar)x1(L:3-planar)x1]n',
+                                'dia-[(4-tetrahedral)x1(L:2-linear)x2]n',
+                                'sql-[(4-planar)x1(L:2-linear)x2]n'
+                                ] 
+        
+        list_2_assembly_models = ['sql-[(4-planar)x1(4-planar)x1(L:2-linear)x4]n','hcb-[(3-planar)x2(2-linear)x3(L:2-linear)x6]n',
+                                  'hcb-[(3-pyramidal)x2(2-linear)x3(L:2-linear)x6]n','kgm-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n'] 
+        
+        lfr_set_2 = ['LFR-10']
+        list_3_assembly_models = ['hcb-[(3-planar)x1(3-planar)x1(L:2-linear)x3]n']                   
+        
         if assembly_model in list_1_assembly_models:
             sbu_names = [linkage]
-            supplementary_sbu = 'dum_dum'
-            sbu_names.append(supplementary_sbu)
-        
-                          
+            if linkage not in lfr_set_1:    
+                supplementary_sbu = 'dum_dum'
+                sbu_names.append(supplementary_sbu)
+            else:
+                pass
+
+        if assembly_model in list_3_assembly_models:
+            if linkage in lfr_set_2:    
+                sbu_names = [linkage]
+            else:
+                pass
+                              
         if precursor_1 is not None:
             matched_row = self.precursors_inp[self.precursors_inp['Precursor'] == precursor_1]
             for _, m_row in matched_row.iterrows():
@@ -173,19 +190,20 @@ class COFProcessor:
                 values = {key: m_row[key] for key in ['GBU', 'bindingSite', 'bsIndex', 'Dentation']}
                 precursor_values['Precursor_2'] = values
 
-        if assembly_model in list_2_assembly_models:
+        if assembly_model in list_2_assembly_models:  
+            subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
+            subunit_result = subunit_operations.process()  # Assuming process() returns a string
+            # Replace the first element in sbu_names with the result
+            sbu_names[0] = subunit_result
             #supplementary_sbu = 'dum_dum'
             #sbu_names.append(supplementary_sbu)
             # Create an instance of SubunitOperations and get the result
-            subunit_operations = SubunitOperations(sbu_names[1], linkage, precursor_values['Precursor_1']['bindingSite'])
-            subunit_result = subunit_operations.process()  # Assuming process() returns a string
 
-            # Replace the first element in sbu_names with the result
-            sbu_names[1] = subunit_result
-        #print('---------LOOK HERE----------')
-        #print(sbu_names)
-        #print(precursor_values)
-        #print('---------LOOK HERE----------')
+        print('---------LOOK HERE----------')
+        print(sbu_names)
+        print(precursor_values)
+        print('---------LOOK HERE----------')
+        
         return sbu_names, precursor_values
 
     def process_cof(self, cof_nr, sbu_names, topology_name, output_path, output_ext, precursor_values):
@@ -211,6 +229,7 @@ class COFProcessor:
         logging.info(f'Geometry of COF {cof_nr} successfully Generated')
 
         extxyz_file_path = f"{output_file_path}.extxyz"
+        inp_file_path = f"{output_file_path}.inp"
         if self.is_2D_COF(extxyz_file_path):
             logging.info(f'STACKING OF COF {cof_nr} in AA and AB')
             #cof_stacker = COFStacker(None) 

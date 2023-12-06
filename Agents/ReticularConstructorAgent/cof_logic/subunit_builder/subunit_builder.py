@@ -87,18 +87,27 @@ class SubunitBuilder:
             target_atom = "N"
         elif bs_type == "MDCO":
             target_atom = "C"
+        elif bs_type == "NHOH":
+            target_atom = "N"
+        elif bs_type == "C3X3CH3":
+            target_atom = "C"
+        elif bs_type == "CCN":
+            target_atom = "C"     
+        elif bs_type == "ter-C":
+            target_atom = "C"   
         else:
             logging.warning("Unsupported bs_type")
             #print("Unsupported bs_type")
             return
-        
+
         with open(json_file_path, 'r') as file:
             lfr_atoms = json.load(file)
         
         target_atom_uuid = None
         x_atom_uuid_to_remove = None
         x_outer_uuid = None
-    
+        found_target_atom = False
+
         for uuid, atom_data in lfr_atoms.items():
             if atom_data['atom'] == 'X':
                 for bond in atom_data.get('bond', []):
@@ -107,42 +116,46 @@ class SubunitBuilder:
                         next_atom_data = lfr_atoms[to_atom_uuid]
                         # Check for target atom
                         if next_atom_data['atom'] == target_atom:
-                            logging.info(f"Found {target_atom} atom at position {to_atom_uuid}")
-                            x_atom_uuid_to_remove = uuid
-                            target_atom_uuid = to_atom_uuid
-                            break
+                            if not found_target_atom:
+                                logging.info(f"Found {target_atom} atom at position {to_atom_uuid}")
+                                x_atom_uuid_to_remove = uuid
+                                target_atom_uuid = to_atom_uuid
+                                found_target_atom = True
+                            elif not x_outer_uuid:
+                                x_outer_uuid = uuid
                         # Check for any atom other than the target atom
-                        elif next_atom_data['atom'] != target_atom:
+                        elif not x_outer_uuid:
                             x_outer_uuid = uuid
 
         if x_atom_uuid_to_remove and target_atom_uuid:
             # First, substitute properties without changing UUIDs
-            lfr_atoms = self.substitute_atom_properties(lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid)
-            
+            lfr_atoms = self.substitute_atom_properties(lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid)   
             # Next, update all bonds referencing the target atom UUID
-            self.update_atom_bonds(lfr_atoms, target_atom_uuid, ref_atom_uuid)
-            
+            self.update_atom_bonds(lfr_atoms, target_atom_uuid, ref_atom_uuid)        
             # Now, assign the target atom's data to the reference UUID
             lfr_atoms[ref_atom_uuid] = lfr_atoms.pop(target_atom_uuid)
-
             # Remove 'X' atom
-            del lfr_atoms[x_atom_uuid_to_remove]
-            
+            del lfr_atoms[x_atom_uuid_to_remove]          
             # Remove corresponding bond in target atom
             # Remove corresponding bond in target atom
             bonds = lfr_atoms[ref_atom_uuid].get('bond', [])
             lfr_atoms[ref_atom_uuid]['bond'] = [bond for bond in bonds if bond['to_atom'] != x_atom_uuid_to_remove]
-
             #bonds = lfr_atoms[target_atom_uuid].get('bond', [])
             #lfr_atoms[target_atom_uuid]['bond'] = [bond for bond in bonds if bond['to_atom'] != x_atom_uuid_to_remove]
 
+ 
+            # [existing code to update lfr_atoms]
+
             with open(json_file_path, 'w') as file:
                 json.dump(lfr_atoms, file, indent=2)
+
             logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
             logging.info("Removed 'X' atom and updated bonds in target atom.")
-            #print(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
-            #print("Removed 'X' atom and updated bonds in target atom.")
+        else:
+            logging.warning("Required atoms not found.")
+            # Handle the case where the necessary atoms are not found
 
+  
     def calculate_midpoint(self, atoms):
         coordinates = np.array([(atom['coordinate_x'], atom['coordinate_y'], atom['coordinate_z']) for atom in atoms.values() if atom['atom'] == 'X'])
         if coordinates.size == 0:
