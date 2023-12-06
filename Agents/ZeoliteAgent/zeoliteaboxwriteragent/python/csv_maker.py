@@ -4049,10 +4049,13 @@ class CsvMaker:
         pass # CsvMaker.readWithUncertainties()
 
 
-  def getCsvArrFromCif( self, filePath ):
+  def getCsvArrFromCif( self, filePath, subject, predicate = "hasCrystalInformation" ):
         output = []
 
+        # Load CIF data:
 
+        # Output:
+        
         return output
         pass # CsvMaker.getCsvArrFromCif()
 
@@ -4068,19 +4071,37 @@ class CsvMaker:
             arr  = self.arrInit( "zeolite" )  # The header (ontology description)
 
             path = os.path.join( "CIF", zeolist.zeoCodeToCode3(z).upper() + ".cif")
-
     
+            # First load data to (struct in cifPyMatGen and unitCellLengths in cifValAndErr)
+            # QQQQQQ
+            self.loadPyMatGen(  path, z )
+            self.loadValAndErr( path, z )
+
+            # Second evaluate data (create all arrays and internal data):
+            # QQQQQQ
+            self.evalPyMatGen ()
+            self.evalValAndErr()
+
+            # Third choose which to save from which crystal information:
+            #print(" ==> ", self.cifValAndErr.unitCellLengths )
+            # QQQQQQ
+            self.mergeCrystInfo()
+            #self.cifOutput = self.cifValAndErr
+            #print(" -->  ", self.cifOutput.unitCellLengths )
+
+            #self.loadCifZeolite( z ) 
+            #self.evalCifData()
+
+
             uuid_zeolite = tools.getUUID( self.uuidDB.uuidDB, "ZeoliteFramework", "Zeolite_" + z )
             arr.append( [ uuid_zeolite, "Instance", "ZeoliteFramework", "", "", "" ] )
  
             arr.append( [ self.zeoOntoPrefix + "hasZeoliteCode", "Data Property", 
                           uuid_zeolite, "", z.strip(' "'), "string" ] )
 
-
             uuid_cif = tools.getUUID( self.uuidDB.uuidDB, "CrystalInformation", "ZeoliteCIF_" + z )
             arr.append( [ uuid_cif, "Instance", "CrystalInformation", "", "", "" ] )
  
-            """
 
             # Define relation between the class instances:
             #output.append( [ subject, "Instance", uuid_cif,  
@@ -4122,6 +4143,7 @@ class CsvMaker:
             else:
                 arr += tmp
             # FIXME
+            """
             """
 
 
