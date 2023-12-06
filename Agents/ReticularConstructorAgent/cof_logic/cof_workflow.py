@@ -159,7 +159,9 @@ class COFProcessor:
                                   'hcb-[(3-pyramidal)x2(2-linear)x3(L:2-linear)x6]n','kgm-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n'] 
         
         lfr_set_2 = ['LFR-10']
+        lfr_set_3 = ['LFR-6']
         list_3_assembly_models = ['hcb-[(3-planar)x1(3-planar)x1(L:2-linear)x3]n']                   
+        
         
         if assembly_model in list_1_assembly_models:
             sbu_names = [linkage]
@@ -190,14 +192,17 @@ class COFProcessor:
                 values = {key: m_row[key] for key in ['GBU', 'bindingSite', 'bsIndex', 'Dentation']}
                 precursor_values['Precursor_2'] = values
 
-        if assembly_model in list_2_assembly_models:  
-            subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
-            subunit_result = subunit_operations.process()  # Assuming process() returns a string
-            # Replace the first element in sbu_names with the result
-            sbu_names[0] = subunit_result
-            #supplementary_sbu = 'dum_dum'
-            #sbu_names.append(supplementary_sbu)
-            # Create an instance of SubunitOperations and get the result
+        if assembly_model in list_2_assembly_models:
+            if linkage in lfr_set_3:
+                pass
+            else:
+                subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
+                subunit_result = subunit_operations.process()  # Assuming process() returns a string
+                # Replace the first element in sbu_names with the result
+                sbu_names[0] = subunit_result
+                #supplementary_sbu = 'dum_dum'
+                #sbu_names.append(supplementary_sbu)
+                # Create an instance of SubunitOperations and get the result
 
         print('---------LOOK HERE----------')
         print(sbu_names)
