@@ -7,6 +7,16 @@ services:
     shm_size: 256m
     ports:
       - 8000:8000
+  chatbot:
+    image: ghcr.io/abetlen/llama-cpp-python:latest
+    volumes:
+      - type: bind
+        source: chatbot/models
+        target: /models
+    env_file:
+      - chatbot-variables.env
+    ports:
+      - 8001:8000
   flask:
     build:
       context: flask

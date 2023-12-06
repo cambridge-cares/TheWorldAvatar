@@ -1,8 +1,7 @@
 Flask
-tritonclient
-tritonclient[http]
 SPARQLWrapper
+tritonclient[http]
+openai
 unit_parse
 Pint
-numpy
 Levenshtein

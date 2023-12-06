@@ -32,6 +32,6 @@
     cursor: pointer;
 }
 
-#sparql-query-predicted, #sparql-query-postprocessed {
+#sparql-query-predicted, #sparql-query-postprocessed, #chatbot-response {
     white-space: pre-wrap;
 }

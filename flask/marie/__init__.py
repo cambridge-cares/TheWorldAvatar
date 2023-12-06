@@ -3,7 +3,9 @@ import logging
 import os
 import time
 from importlib.resources import files
-from flask import Flask, render_template, request
+
+from flask import Flask, Response, render_template, request, stream_with_context
+from openai import OpenAI
 
 from marie.services import KgExecutor, MultiDomainTranslator, sanitize_quantities
 
@@ -16,11 +18,16 @@ app = Flask(__name__)
 translator = MultiDomainTranslator()
 kg_executor = KgExecutor()
 
+CHATBOT_ENDPOINT = os.getenv("CHATBOT_ENDPOINT", "http://localhost:8001/v1")
+print("Connecting to chatbot at endpoint:", CHATBOT_ENDPOINT)
+chatbot_client = OpenAI(base_url=CHATBOT_ENDPOINT, api_key="placeholder")
+
 
 if __name__ != "__main__":
-    gunicorn_logger = logging.getLogger("gunicorn.error")
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
+    app.logger.setLevel(logging.DEBUG)
+    # gunicorn_logger = logging.getLogger("gunicorn.error")
+    # app.logger.handlers = gunicorn_logger.handlers
+    # app.logger.setLevel(gunicorn_logger.level)
 
 
 @app.route("/", methods=["GET"])
@@ -30,6 +37,8 @@ def home():
 
 @app.route("/", methods=["POST"])
 def ask():
+    app.logger.info("Request received to translation endpoint")
+
     data = request.get_json()
     question = data.get("question")
     app.logger.info("Question received: " + str(question))
@@ -69,12 +78,48 @@ def ask():
         domain=translation_result["domain"],
         sparql=dict(
             predicted=translation_result["sparql"]["decoded"],
-            postprocessed=sparql_query_verbose
+            postprocessed=sparql_query_verbose,
         ),
         data=data,
         translation_latency=end_trans - start_trans,
         kg_latency=end_kg - start_kg,
     )
+
+
+@app.route("/chatbot", methods=["POST"])
+def stream_chatbot_response():
+    app.logger.info("Request received to chatbot endpoint")
+
+    request_data = request.get_json()
+    question = request_data.get("question")
+    data = request_data.get("data")
+    app.logger.info("Question: " + question)
+    app.logger.info("Data: " + data)
+
+    prompt_template = "## Query:\n{query}\n\n### Data:\n{data}"
+    response_stream = chatbot_client.chat.completions.create(
+        model="llama-2-7b-chat.Q4_K_M.gguf",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a chatbot that concisely responds to user queries.",
+            },
+            {
+                "role": "user",
+                "content": prompt_template.format(query=question, data=data),
+            },
+        ],
+        temperature=0,
+        stream=True,
+    )
+
+    def generate():
+        for chunk in response_stream:
+            content = chunk.choices[0].delta.content
+            if content is not None:
+                yield 'data: {data}\n\n'.format(data=json.dumps({"content": content}))
+
+    return generate(), {"Content-Type": "text/event-stream"}
 
 
 if __name__ == "__main__":

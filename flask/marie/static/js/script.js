@@ -1,5 +1,13 @@
 /* 
 ------------------------------
+Constants
+------------------------------
+*/
+
+TWA_ABOX_IRI_PREFIX = "http://www.theworldavatar.com/kb/"
+
+/* 
+------------------------------
 Custom classes
 ------------------------------
 */
@@ -36,6 +44,7 @@ function hideElems() {
     document.getElementById("error-container").style.display = "none"
     document.getElementById("results").style.display = "none"
     document.getElementById("toggle-iri").style.display = "none"
+    document.getElementById("chatbot-response").style.display = "none"
 }
 
 function displayDomainPredicted(domain) {
@@ -65,7 +74,7 @@ function displaySparqlQueryPostProcessed(sparql_query) {
     document.getElementById('sparql-query-postprocessed-container').style.display = "block";
 }
 
-function displayResults(data) {
+function displayKgResults(data) {
     if (!data) {
         displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
         return
@@ -107,6 +116,55 @@ function displayResults(data) {
 
     isShowingIRI = true
     toggleIRIColumns()
+}
+
+function invokeChatbot(question, data) {
+    if (!data) {
+        return
+    }
+
+    const elem = document.getElementById("chatbot-response")
+    elem.innerText = ""
+    elem.style.display = "block"
+
+    const bindings = data["results"]["bindings"].map(binding => Object.keys(binding).reduce((obj, k) => {
+        if (!binding[k]["value"].startsWith(TWA_ABOX_IRI_PREFIX)) {
+            obj[k] = binding[k]["value"]
+        }
+        return obj
+    }, {}))
+
+    fetch("/chatbot", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ question, data: JSON.stringify(bindings) })
+    }).then((response) => {
+        const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+        // read() returns a promise that resolves when a value has been received
+        reader.read().then(function pump({ done, value }) {
+            if (done) {
+            // Do something with last chunk of data then exit reader
+            return;
+            }
+            // Otherwise do something here to process current chunk
+            value = value.trim()
+            if (value.startsWith("data: ")) {
+                value = value.substring("data: ".length)
+            }
+            datum = JSON.parse(value)
+            
+            elem.innerHTML += datum["content"]
+            if (/\s/.test(elem.innerHTML.charAt(0))) {
+                elem.innerHTML = elem.innerHTML.trimStart()
+            }
+
+            // Read some more, and call this function again
+            return reader.read().then(pump);
+        });
+    })
 }
 
 function displayError(message) {
@@ -168,7 +226,8 @@ function askQuestion() {
         displaySparqlQueryPredicted(json["sparql"]["predicted"])
         if (json["sparql"]["postprocessed"]) {
             displaySparqlQueryPostProcessed(json["sparql"]["postprocessed"])
-            displayResults(json["data"])
+            displayKgResults(json["data"])
+            invokeChatbot(question, json["data"])
         } else {
             displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
         }
@@ -197,7 +256,7 @@ function toggleIRIColumns() {
     isShowingIRI = !isShowingIRI
     const rowData = table.row(0).data()
     const IRIcolIdx = rowData.reduce((arr, val, idx) => {
-        if (val.startsWith("http://www.theworldavatar.com/kb/")) {
+        if (val.startsWith(TWA_ABOX_IRI_PREFIX)) {
             arr.push(idx)
         }
         return arr
