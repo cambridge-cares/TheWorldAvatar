@@ -35,6 +35,7 @@ def merge_csv_files(file1_path, file2_path, output_union):
     with open(file1_path, 'r') as f1, open(file2_path, 'r') as f2:
         reader1, reader2 = csv.DictReader(f1), csv.DictReader(f2)
         headers = reader1.fieldnames + [col for col in reader2.fieldnames if col not in reader1.fieldnames]
+        # | requires python > 3.9 to work properly
         rows = [row1 | {col: '' for col in reader2.fieldnames if col not in reader1.fieldnames} for row1 in reader1] + \
                [row2 | {col: '' for col in reader1.fieldnames if col not in reader2.fieldnames} for row2 in reader2]
     with open(output_union, 'w', newline='') as f_out:

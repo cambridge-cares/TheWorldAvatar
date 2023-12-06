@@ -4,6 +4,19 @@
 
 This repository is dedicated to providing a collection of algorithms specifically designed for exploring precursor spaces in the context of covalent organic frameworks (COFs). These algorithms aim to efficiently analyze and process the relationships between COF precursors and their associated properties, facilitating deeper insights and understanding of the underlying structures and patterns in the development of advanced COF materials.
 
+## Virtual Environment Setup
+It is highly recommended to develop and use this agent in a [virtual environment](https://docs.python.org/3/tutorial/venv.html). The following steps can be taken to build a virtual environment:
+
+`(Linux)`
+```sh
+$ python3.9 -m venv <venv_name>
+$ source <venv_name>/bin/activate
+(<venv_name>) $
+```
+
+The above commands will create and activate the virtual environment `<venv_name>` in the current directory.
+> NOTE: Python 3.9 is used to make sure the agent is working as expected.
+
 ## Usage and Applications
 
 The algorithms in this repository can be used for a wide range of applications related to covalent organic frameworks, including but not limited to:
