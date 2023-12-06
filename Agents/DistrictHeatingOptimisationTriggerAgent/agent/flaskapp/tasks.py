@@ -77,13 +77,13 @@ def upload_triples(sparql_client):
     """
     
     # Import triples from 'resources' folder upon app startup
-    logger.info("Importing triples from 'resources/triples' folder...")
+    logger.info("Importing triples from 'resources/triples' folder ...")
     sparql_client.initialise_namespace('./resources/triples')
     logger.info("Successfully imported triples.")
     
     # Add covariate relationships to uploaded forecasting model instances
     # TODO: Add covariate relationships for grid temperatures if necessary
-    logger.info("Adding covariate relationships to relevant forecasting models...")
+    logger.info("Adding covariate relationships to relevant forecasting models ...")
     if sparql_client.check_if_triple_exist(fc_model_heat_demand, RDF_TYPE, TS_FORECASTINGMODEL):
         # Get ambient air temperature and public holiday covariate IRIs
         # NOTE: assumes exactly one instance of each type in the KG, i.e.,

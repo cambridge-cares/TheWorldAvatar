@@ -5,7 +5,6 @@ import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.NodeFactory;
@@ -17,25 +16,19 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class DataManager {
-    private OntologyURIHelper ontologyUriHelper;
-
-    public DataManager(OntologyURIHelper uriHelper) {
-        this.ontologyUriHelper = uriHelper;
-    }
-
     /**
-     * Checks building linked to ontoCityGML is initialised in KG and is a gml:Building instance
-     * @param uriString city object id
+     * Checks if uriString is initialised in KG and is a gml:Building instance
+     * @param uriString building IRI
      * @param route route to pass to access agent
      * @return building
      */
-    public boolean checkBuildingInitialised(String uriString, String route) {
+    public static boolean checkBuildingInitialised(String uriString, String route) {
         WhereBuilder wb = new WhereBuilder();
         AskBuilder ab = new AskBuilder();
 
-        wb.addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
-                .addPrefix("gml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.gml))
+        wb.addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("ontoBuiltEnv", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
+                .addPrefix("gml", OntologyURIHelper.getOntologyUri(OntologyURIHelper.gml))
                 .addWhere("?building", "rdf:type", "gml:Building");
 
         ab.addWhere(wb);
@@ -48,18 +41,18 @@ public class DataManager {
     }
 
     /**
-     * Initialises building in KG with buildingUri as the gml:Building IRI, and link to ontoCityGMLRepresentation
+     * Initialises building in KG with buildingUri as the gml:Building IRI
      * @param buildingUri building IRI from other endpoints if exist
      * @param route route to pass to access agent
      */
-    public void initialiseBuilding(String buildingUri, String route) {
+    public static void initialiseBuilding(String buildingUri, String route) {
         UpdateBuilder ub = new UpdateBuilder();
 
         WhereBuilder wb =
                 new WhereBuilder()
-                        .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
-                        .addPrefix("owl", ontologyUriHelper.getOntologyUri(OntologyURIHelper.owl))
-                        .addPrefix("gml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.gml))
+                        .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                        .addPrefix("owl", OntologyURIHelper.getOntologyUri(OntologyURIHelper.owl))
+                        .addPrefix("gml", OntologyURIHelper.getOntologyUri(OntologyURIHelper.gml))
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "gml:Building")
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "owl:NamedIndividual");
 
@@ -71,22 +64,20 @@ public class DataManager {
     }
 
     /**
-     * Checks if energy profile data already exist in KG and get IRIs if they do
-     * @param building building uri in energy profile graph
-     * @param tsIris map of time series iris to data types
-     * @param scalarIris map of iris in kg to data type
+     * Checks if CEA output data already exist in KG and get IRIs if they do
+     * @param building building IRI
+     * @param tsIris map of time series IRIs to data types
+     * @param scalarIris map of IRIs in KG to data type
      * @param route route to pass to access agent
-     * @return if time series are initialised
+     * @return if CEA output data  are initialised
      */
-    public Boolean checkDataInitialised(String building, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route) {
-        DataRetriever dataRetriever = new DataRetriever(ontologyUriHelper);
-
+    public static Boolean checkDataInitialised(String building, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route) {
         ArrayList<String> result;
         List<String> allMeasures = new ArrayList<>();
         Stream.of(CEAConstants.TIME_SERIES, CEAConstants.SCALARS).forEach(allMeasures::addAll);
 
         for (String measurement: allMeasures) {
-            result = dataRetriever.getDataIRI(building, measurement, route);
+            result = DataRetriever.getDataIRI(building, measurement, route);
             if (!result.isEmpty()) {
                 if (CEAConstants.TIME_SERIES.contains(measurement)) {
                     tsIris.put(measurement, result.get(0));
@@ -101,22 +92,22 @@ public class DataManager {
     }
 
     /**
-     * Initialises energy profile data in KG
-     * @param uriCounter keep track of uris
+     * Initialises CEA output data in KG
+     * @param uriCounter keep track of URIs
      * @param scalars map of scalar measurements
-     * @param buildingUri building uri
-     * @param tsIris map of time series iris to data types
-     * @param scalarIris map of iris in kg to data types
+     * @param buildingUri building IRI
+     * @param tsIris map of time series IRIs to data types
+     * @param scalarIris map of IRIs in KG to data types
      * @param route route to pass to access agent
      */
-    public void initialiseData(Integer uriCounter, LinkedHashMap<String, List<Double>> scalars, String buildingUri, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route) {
+    public static void initialiseData(Integer uriCounter, LinkedHashMap<String, List<Double>> scalars, String buildingUri, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route) {
         WhereBuilder wb =
                 new WhereBuilder()
-                        .addPrefix("ontoubemmp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
-                        .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
-                        .addPrefix("owl", ontologyUriHelper.getOntologyUri(OntologyURIHelper.owl))
-                        .addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                        .addPrefix("obs", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltstructure));
+                        .addPrefix("ontoubemmp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                        .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                        .addPrefix("owl", OntologyURIHelper.getOntologyUri(OntologyURIHelper.owl))
+                        .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                        .addPrefix("obs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltstructure));
 
         UpdateBuilder ub = new UpdateBuilder();
 
@@ -147,31 +138,31 @@ public class DataManager {
         String thermalTubeWallEastCollectorUri = "ThermalTubeWallEastCollector_" + UUID.randomUUID() + "/";
         String thermalTubeWallWestCollectorUri = "ThermalTubeWallWestCollector_" + UUID.randomUUID() + "/";
 
-        pvRoofPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvRoofPanelUri;
-        pvWallSouthPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallSouthPanelUri;
-        pvWallNorthPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallNorthPanelUri;
-        pvWallEastPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallEastPanelUri;
-        pvWallWestPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallWestPanelUri;
-        pvtPlateRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateRoofCollectorUri;
-        pvtPlateWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallSouthCollectorUri;
-        pvtPlateWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallNorthCollectorUri;
-        pvtPlateWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallEastCollectorUri;
-        pvtPlateWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallWestCollectorUri;
-        pvtTubeRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeRoofCollectorUri;
-        pvtTubeWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallSouthCollectorUri;
-        pvtTubeWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallNorthCollectorUri;
-        pvtTubeWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallEastCollectorUri;
-        pvtTubeWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallWestCollectorUri;
-        thermalPlateRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateRoofCollectorUri;
-        thermalPlateWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallSouthCollectorUri;
-        thermalPlateWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallNorthCollectorUri;
-        thermalPlateWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallEastCollectorUri;
-        thermalPlateWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallWestCollectorUri;
-        thermalTubeRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeRoofCollectorUri;
-        thermalTubeWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallSouthCollectorUri;
-        thermalTubeWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallNorthCollectorUri;
-        thermalTubeWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallEastCollectorUri;
-        thermalTubeWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallWestCollectorUri;
+        pvRoofPanelUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvRoofPanelUri;
+        pvWallSouthPanelUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallSouthPanelUri;
+        pvWallNorthPanelUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallNorthPanelUri;
+        pvWallEastPanelUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallEastPanelUri;
+        pvWallWestPanelUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallWestPanelUri;
+        pvtPlateRoofCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateRoofCollectorUri;
+        pvtPlateWallSouthCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallSouthCollectorUri;
+        pvtPlateWallNorthCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallNorthCollectorUri;
+        pvtPlateWallEastCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallEastCollectorUri;
+        pvtPlateWallWestCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallWestCollectorUri;
+        pvtTubeRoofCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeRoofCollectorUri;
+        pvtTubeWallSouthCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallSouthCollectorUri;
+        pvtTubeWallNorthCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallNorthCollectorUri;
+        pvtTubeWallEastCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallEastCollectorUri;
+        pvtTubeWallWestCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallWestCollectorUri;
+        thermalPlateRoofCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateRoofCollectorUri;
+        thermalPlateWallSouthCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallSouthCollectorUri;
+        thermalPlateWallNorthCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallNorthCollectorUri;
+        thermalPlateWallEastCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallEastCollectorUri;
+        thermalPlateWallWestCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallWestCollectorUri;
+        thermalTubeRoofCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeRoofCollectorUri;
+        thermalTubeWallSouthCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallSouthCollectorUri;
+        thermalTubeWallNorthCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallNorthCollectorUri;
+        thermalTubeWallEastCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallEastCollectorUri;
+        thermalTubeWallWestCollectorUri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallWestCollectorUri;
 
         Map<String, String> facades = new HashMap<>();
 
@@ -180,11 +171,11 @@ public class DataManager {
         for (String measurement: CEAConstants.SCALARS) {
             String measure = measurement + "_" + UUID.randomUUID() + "/";
             String quantity = measurement + "Quantity_" + UUID.randomUUID() + "/";
-            String facade = measurement.split("SolarSuitableArea")[0] + UUID.randomUUID() + "/";
+            String facade = measurement.split("SolarSuitableArea")[0] + "_" + UUID.randomUUID() + "/";
 
-            measure = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + measure;
-            quantity = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
-            facade = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + facade;
+            measure = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + measure;
+            quantity = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
+            facade = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + facade;
 
             scalarIris.put(measurement, measure);
 
@@ -219,7 +210,7 @@ public class DataManager {
 
         for (String measurement: CEAConstants.TIME_SERIES) {
             String quantity = measurement+"Quantity_" + UUID.randomUUID() + "/";
-            quantity = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
+            quantity = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
             if (measurement.equals(CEAConstants.KEY_GRID_CONSUMPTION) || measurement.equals(CEAConstants.KEY_ELECTRICITY_CONSUMPTION) || measurement.equals(CEAConstants.KEY_COOLING_CONSUMPTION) || measurement.equals(CEAConstants.KEY_HEATING_CONSUMPTION)) {
                 createConsumptionUpdate(wb, buildingUri, "ontoubemmp:" + measurement, quantity, tsIris.get(measurement));
             }
@@ -341,20 +332,20 @@ public class DataManager {
     /**
      * Updates numerical value of scalars in KG
      * @param scalars map of scalar measurements
-     * @param scalarIris map of iris in kg to data types
+     * @param scalarIris map of IRIs in KG to data types
      * @param route route to pass to access agent
-     * @param uriCounter keep track of uris
+     * @param uriCounter keep track of URIs
      */
-    public void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<Double>> scalars, Integer uriCounter) {
+    public static void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<Double>> scalars, Integer uriCounter) {
         for (String measurement: CEAConstants.SCALARS) {
-            WhereBuilder wb1 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+            WhereBuilder wb1 = new WhereBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", "?s");
-            UpdateBuilder ub1 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+            UpdateBuilder ub1 = new UpdateBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(wb1);
 
-            WhereBuilder wb2 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+            WhereBuilder wb2 = new WhereBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", scalars.get(measurement).get(uriCounter));
-            UpdateBuilder ub2 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+            UpdateBuilder ub2 = new UpdateBuilder().addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
             ub1.addDelete(wb1);
             ub2.addInsert(wb2);
@@ -371,11 +362,11 @@ public class DataManager {
     /**
      * Creates updates for building facades
      * @param builder update builder
-     * @param building building iri
-     * @param facade facade iri
+     * @param building building IRI
+     * @param facade facade IRI
      * @param facadeType type of facade
      */
-    public void createFacadeUpdate(WhereBuilder builder, String building, String facade, String facadeType) {
+    public static void createFacadeUpdate(WhereBuilder builder, String building, String facade, String facadeType) {
         builder.addWhere(NodeFactory.createURI(building), "obs:hasFacade", NodeFactory.createURI(facade))
                 .addWhere(NodeFactory.createURI(facade), "rdf:type", facadeType);
     }
@@ -383,12 +374,12 @@ public class DataManager {
     /**
      * Creates update for energy consumption
      * @param builder update builder
-     * @param consumer iri of building/device
+     * @param consumer IRI of building/device
      * @param consumptionType type in ontology
-     * @param quantity om:Quantity iri
-     * @param measure om:Measure iri
+     * @param quantity om:Quantity IRI
+     * @param measure om:Measure IRI
      */
-    public void createConsumptionUpdate(WhereBuilder builder, String consumer, String consumptionType, String quantity, String measure){
+    public static void createConsumptionUpdate(WhereBuilder builder, String consumer, String consumptionType, String quantity, String measure){
         builder.addWhere(NodeFactory.createURI(quantity), "rdf:type", consumptionType)
                 .addWhere(NodeFactory.createURI(quantity), "rdf:type", "owl:NamedIndividual")
                 .addWhere(NodeFactory.createURI(quantity), "om:hasDimension", "om:energy-Dimension")
@@ -402,13 +393,13 @@ public class DataManager {
     /**
      * Creates update for solar energy generators supply
      * @param builder update builder
-     * @param facade facade iri
-     * @param solarGenerator solar energy generator iri
+     * @param facade facade IRI
+     * @param solarGenerator solar energy generator IRI
      * @param solarGeneratorType type of solar energy generator
-     * @param quantity om:Quantity iri
-     * @param measure om:Measure iri
+     * @param quantity om:Quantity IRI
+     * @param measure om:Measure IRI
      */
-    public void createSolarGeneratorSupplyUpdate(WhereBuilder builder, String facade, String solarGenerator, String solarGeneratorType, String quantity, String measure, String energySupply){
+    public static void createSolarGeneratorSupplyUpdate(WhereBuilder builder, String facade, String solarGenerator, String solarGeneratorType, String quantity, String measure, String energySupply){
         builder.addWhere(NodeFactory.createURI(facade), "ontoubemmp:hasTheoreticalEnergyProduction", NodeFactory.createURI(solarGenerator))
                 .addWhere(NodeFactory.createURI(solarGenerator), "rdf:type", solarGeneratorType)
                 .addWhere(NodeFactory.createURI(solarGenerator), "ontoubemmp:producesEnergy", NodeFactory.createURI(quantity))
@@ -424,12 +415,12 @@ public class DataManager {
     /**
      * Creates update for solar suitable areas
      * @param builder update builder
-     * @param facade obs:facade iri
-     * @param quantity om:Quantity iri
-     * @param measure om:Measure iri
+     * @param facade obs:Facade IRI
+     * @param quantity om:Quantity IRI
+     * @param measure om:Measure IRI
      * @param value numerical value
      */
-    public void createSolarSuitableAreaUpdate(WhereBuilder builder, String facade, String quantity, String measure, Double value) {
+    public static void createSolarSuitableAreaUpdate(WhereBuilder builder, String facade, String quantity, String measure, Double value) {
         builder.addWhere(NodeFactory.createURI(facade), "ontoubemmp:hasSolarSuitableArea", NodeFactory.createURI(quantity))
                 .addWhere(NodeFactory.createURI(quantity), "rdf:type", "om:Area")
                 .addWhere(NodeFactory.createURI(quantity), "rdf:type", "owl:NamedIndividual")

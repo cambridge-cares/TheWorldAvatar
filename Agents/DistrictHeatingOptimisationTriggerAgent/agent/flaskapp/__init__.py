@@ -76,6 +76,7 @@ def trigger_optimisation_task(params):
             query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
         
         # Check for already instantiated chain of derivations (to be reused)
+        logger.info('Checking for already instantiated derivations ...')
         # 1) Heat demand and grid temp forecast derivation IRIs; returns [] if not exist
         fc_deriv_iris = kg_client.get_forecast_derivations()
         # 2) Downstream derivation IRIs; returns [] if not exist
@@ -95,11 +96,11 @@ def trigger_optimisation_task(params):
             # Retrieve unique time inputs (i.e., optimisation interval, simulation time)
             # attached to retrieved derivations; throws Exception if any does not exists
             sim_t, opti_int, opti_t1, opti_t2 = kg_client.get_pure_trigger_inputs(derivs)
-            logger.info('Derivation chain already instantiated.')
+            print('Derivation chain already instantiated.')
             new_derivation = False
         except:
             new_derivation = True
-            logger.info('Instantiating new chain of derivations...')
+            print('Instantiating new chain of derivations ...')
             # Create IRIs for time inputs to instantiate
             sim_t, opti_int, opti_t1, opti_t2, heat_length, tmp_length, freq = \
                 tasks.create_new_time_instance_iris()
@@ -112,7 +113,7 @@ def trigger_optimisation_task(params):
                 t1 = params['start']                
                 t2 = t1 + opti_dt
                 if new_derivation:
-                    logger.info('Instantiating optimisation time etc. pure inputs...')
+                    print('Instantiating optimisation time etc. pure inputs ...')
                     # Instantiate required time instances to initiate optimisation cascades
                     kg_client.instantiate_time_instant(sim_t, t1, instance_type=OD_SIMULATION_TIME) 
                     kg_client.instantiate_time_interval(opti_int, opti_t1, opti_t2, t1, t2)
@@ -127,14 +128,16 @@ def trigger_optimisation_task(params):
                     # Add time stamps to pure inputs
                     derivation_client.addTimeInstanceCurrentTimestamp(
                         [sim_t, opti_int, heat_length, tmp_length, freq])
-                    logger.info('Instantiation of optimisation time etc. successfully finished.')
+                    print('Instantiation of optimisation time etc. successfully finished.')
                 else:
                     # Update time instances (pre-existing from previous optimisation)
+                    print('Updating time stamps of pure inputs ...')
                     tasks.update_time_instances(kg_client, derivation_client, opti_int,
                                                 sim_t, t1, opti_t1, t1, opti_t2, t2)
                 
                 ###   Instantiate derivation markups   ###
                 # 1) Forecast derivations
+                print('Instantiate/update forecast derivations ...')
                 #    1) Heat demand
                 if not fc_deriv_iris:
                     heat_demand = kg_client.get_heat_demand()
@@ -144,7 +147,7 @@ def trigger_optimisation_task(params):
                     #       for sole derivation updates when using derivations with time series
                     deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT_IRI, 
                                     inputs_demand, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
-                    logger.info(f"Heat demand forecast derivation successfully instantiated: {deriv.getIri()}")
+                    print(f"Heat demand forecast derivation successfully instantiated: {deriv.getIri()}")
                     # Add to list of all forecast derivation IRIs
                     fc_deriv_iris.append(deriv.getIri())
                     #    2) Grid temperatures
@@ -154,14 +157,15 @@ def trigger_optimisation_task(params):
                     for i in inputs_temps:
                         deriv = derivation_client.createSyncDerivationForNewInfo(FORECASTING_AGENT_IRI, 
                                         i, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
-                        logger.info(f"Grid temperature forecast derivation successfully instantiated: {deriv.getIri()}")
+                        print(f"Grid temperature forecast derivation successfully instantiated: {deriv.getIri()}")
                         fc_deriv_iris.append(deriv.getIri())
                 else:
                     for d in fc_deriv_iris:
                         derivation_client.unifiedUpdateDerivation(d)
-                        logger.info(f"Forecast derivation instance successfully updated: {d}")
+                        print(f"Forecast derivation instance successfully updated: {d}")
 
                 # 2) Generation optimisation derivation
+                print('Instantiate/update heat generation optimisation derivation ...')
                 if not opti_deriv_iri:
                     # NOTE: Instantiated using "createSyncDerivationForNewInfo" for same
                     #       reason as above, i.e., ensure initial generation of output triples
@@ -172,12 +176,13 @@ def trigger_optimisation_task(params):
                     deriv = derivation_client.createSyncDerivationForNewInfo(DH_OPTIMISATION_AGENT_IRI, 
                                     inputs_opti, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
                     opti_deriv_iri.append(deriv.getIri())
-                    logger.info(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri[0]}")
+                    print(f"Generation optimisation derivation successfully instantiated: {opti_deriv_iri[0]}")
                 else:
                     derivation_client.unifiedUpdateDerivation(opti_deriv_iri[0])
-                    logger.info(f"Generation optimisation derivation instance successfully updated: {opti_deriv_iri[0]}")
+                    print(f"Generation optimisation derivation instance successfully updated: {opti_deriv_iri[0]}")
 
                 # 3) Emission estimation derivations
+                print('Instantiate/update emission estimation derivations ...')
                 if not em_deriv_iri:
                     # Get all optimisation derivation outputs
                     opti_outputs = kg_client.get_derivation_outputs(opti_deriv_iri)
@@ -188,66 +193,80 @@ def trigger_optimisation_task(params):
                     inputs_efw_em = list(opti_outputs[OHN_PROVIDED_HEAT_AMOUNT]) + [sim_t, point_source_efw]
                     deriv = derivation_client.createSyncDerivationForNewInfo(EMISSION_ESTIMATION_AGENT_IRI, 
                                     inputs_efw_em, ONTODERIVATION_DERIVATION)
-                    logger.info(f"EfW emission estimation derivation successfully instantiated: {deriv.getIri()}")
+                    print(f"EfW emission estimation derivation successfully instantiated: {deriv.getIri()}")
                     #    2) Heating plant emissions (ConsumedGasAmount)
                     inputs_mu_em = list(opti_outputs[OHN_CONSUMED_GAS_AMOUNT]) + [sim_t, point_source_mu]
                     deriv = derivation_client.createSyncDerivationForNewInfo(EMISSION_ESTIMATION_AGENT_IRI, 
                                     inputs_mu_em, ONTODERIVATION_DERIVATION)
-                    logger.info(f"Municipal utility emission estimation derivation successfully instantiated: {deriv.getIri()}")
+                    print(f"Municipal utility emission estimation derivation successfully instantiated: {deriv.getIri()}")
                 else:
                     for d in em_deriv_iri:
                         derivation_client.unifiedUpdateDerivation(d)
-                        logger.info(f"Emission estimation derivation instance successfully updated: {d}")
+                        print(f"Emission estimation derivation instance successfully updated: {d}")
 
                 # 4) Initialise Aermod dispersion derivation markup (for existing
                 #    SimulationTime instance) by sending POST request to Dispersion
                 #    Interactor agent
-                # Read "hardcoded" parameters from json file (i.e., in bind-mount)
-                # NOTE: Currently one derivation for entire Pirmasens is instantiated;
-                #       to be updated in case multiple derivations are needed
+                # NOTE: Aermod architecture allows for initialisation/requesting
+                #       of multiple derivations at the same time
+                # Initialise dict of all dispersion derivations
+                disp_deriv_iris = {}
                 pathlist = list(Path("./resources/dispersion_interactor").glob('*.json'))
-                with open(pathlist[0], "r") as file:
-                    parameters = json.load(file)
-                parameters['simulationTimeIri'] = sim_t
-                # Send POST request incl. pre-existing Simulation Time IRI
-                # NOTE: Returns derivation IRI of 1) newly created derivation or
-                #       2) already instantiated derivation (i.e., to be updated)
-                response = requests.post(DISPERSION_INTERACTOR_URL, data=parameters)
-                if response.status_code == 200:
-                    try:
-                        # Parse the response JSON and extract "derivation" IRI
-                        result = response.json()
-                        disp_deriv_iri = result.get("derivation")
-                        logger.info(f"Dispersion derivation instance (created or retrieved): {disp_deriv_iri}")
-                    except:
-                        tasks.raise_value_error(f"Dispersion creation/retrieval request failed: {response.text}")
-                else:
-                    tasks.raise_value_error(f"Dispersion creation/retrieval request failed: {response.text}")
+                for p in pathlist:
+                    # Read "hardcoded" parameters from json files (i.e., in bind-mount)
+                    with open(p, "r") as file:
+                        logger.info(f'Loading dispersion derivation file: {p}')
+                        parameters = json.load(file)
+                    parameters['simulationTimeIri'] = sim_t
+                    # Send POST request incl. pre-existing Simulation Time IRI
+                    # NOTE: Returns derivation IRI of 1) newly created derivation or
+                    #       2) already instantiated derivation (i.e., to be updated)
+                    response = requests.post(DISPERSION_INTERACTOR_URL, data=parameters)
+                    if response.status_code == 200:
+                        try:
+                            # Parse the response JSON and extract "derivation" IRI
+                            result = response.json()
+                            disp_deriv_iri = result.get("derivation")
+                            disp_deriv_iris[parameters.get('label')] = disp_deriv_iri
+                            print(f"Dispersion derivation instance with label \"{parameters.get('label')}\" "
+                                  +f"(created or retrieved): {disp_deriv_iri}")
+                        except:
+                            raise ValueError(f"Dispersion derivation with label \"{parameters.get('label')}\" : "
+                                            +f"Creation/retrieval request failed with message: {response.text}. "
+                                            +"Ensure that Ontop endpoint is running.")
+                    else:
+                        raise ValueError(f"Dispersion derivation with label \"{parameters.get('label')}\" : "
+                                        +f"Creation/retrieval request failed with message: {response.text}")
 
             else:
                 t1 += params['timeDelta_unix']
                 t2 += params['timeDelta_unix']
                 # Update required time instances to trigger next optimisation run
+                print('Updating time stamps of pure inputs ...')
                 tasks.update_time_instances(kg_client, derivation_client, opti_int,
                                             sim_t, t1, opti_t1, t1, opti_t2, t2)
 
 
-            # Request derivation update via Aermod Agent
-            derivation_client.unifiedUpdateDerivation(disp_deriv_iri)
+            # Request derivation update(s) via Aermod Agent
+            print('')
+            print(f"Trigger optimisation run {run+1}/{params['numberOfTimeSteps']} "
+                  +"by requesting derivation update(s) from Aermod ...")
+            for key, value in disp_deriv_iris.items():
+                logger.info(f'Requesting update for dispersion derivation \"{key}\".')
+                derivation_client.unifiedUpdateDerivation(value)
             # NOTE: Aermod Agent queries emission derivations via StaticPointSources 
             # and requests update; all other derivation updates are handled by DIF 
             # directly as derivationscare directly linked via I/O relations in KG            
 
             # Print progress (to ensure output to console even for async tasks)
-            print(f"Optimisation run {run+1}/{params['numberOfTimeSteps']} completed.")
-            print(f"Current optimisation time: {t1}")
+            print(f"Optimisation run for time {t1} completed.\n")
 
         print("Optimisation completed successfully.")
 
-    except Exception:
+    except Exception as ex:
         # Log the exception
         logger.error("An error occurred during optimisation.", exc_info=True)
-        raise Exception("An error occurred during optimisation.", exc_info=True)
+        raise RuntimeError("An error occurred during optimisation.") from ex
 
 
 def is_processing_task_running():
