@@ -36,33 +36,67 @@ Functions that manipulate UI
 */
 
 function hideElems() {
-    const elemIds = ["preprocessed-question", "query-domain", "trans-latency", 'kg-latency', 'sparql-query-predicted-container', 'sparql-query-postprocessed-container', "error-container", "results", "toggle-iri", "chatbot-response"]
+    let elemIds = ["upper-right-card", "lower-right-card", 'sparql-query-predicted-container', 'sparql-query-postprocessed-container', "error-container", "results", "toggle-iri"]
     for (const elemId of elemIds) {
         document.getElementById(elemId).style.display = "none"
+    }
+
+    elemIds = ["upper-right-card", "lower-right-card"]
+    for (const elemId of elemIds) {
+        document.getElementById(elemId).innerHTML = ""
+    }
+}
+
+function getUpperRightCardUl() {
+    const upperRightCard = document.getElementById("upper-right-card")
+    upperRightCard.style.display = "block"
+
+    const ulChildren = upperRightCard.getElementsByTagName("ul")
+    if (ulChildren.length === 0) {
+        const ul = document.createElement("ul")
+        ul.className = "list-group list-group-flush"
+        upperRightCard.appendChild(ul)
+        return ul
+    } else {
+        return ulChildren[0]
     }
 }
 
 function displayDomainPredicted(domain) {
-    document.getElementById("query-domain").innerHTML = `<p>Predicted query domain: ${domain}</p>`;
-    document.getElementById('query-domain').style.display = "block";
+    const ul = getUpperRightCardUl()
+    ul.insertAdjacentHTML("beforeend", `<li class="list-group-item"><p style="margin: auto;">Predicted query domain: ${domain}</p></li>`)
+}
+
+function getLatencyLi() {
+    const optional = document.getElementById("latency-info")
+    if (!optional) {
+        getUpperRightCardUl().insertAdjacentHTML("beforeend", `
+            <li class="list-group-item" id="latency-info"></li>`)
+        return document.getElementById("latency-info")
+    } else {
+        return optional
+    }
 }
 
 function displayTranslationLatency(trans_latency) {
-    const elem = document.getElementById("trans-latency")
-    elem.innerHTML = `Translation latency: ${trans_latency.toFixed(2)}s.`
-    elem.style.display = "block";
+    const li = getLatencyLi()
+    li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">Translation latency: ${trans_latency.toFixed(2)}s.</p>`)
 }
 
 function displayKgExecLatency(kg_latency) {
-    const elem = document.getElementById("kg-latency")
-    elem.innerHTML = `SPARQL query execution latency: ${kg_latency.toFixed(2)}s.`
-    elem.style.display = "block";
+    const li = getLatencyLi()
+    li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">SPARQL query execution latency: ${kg_latency.toFixed(2)}s.</p>`)
 }
 
 function displayPreprocessedQuestion(question) {
-    elem = document.getElementById("preprocessed-question")
-    elem.innerHTML = `<p style="margin: auto;"><strong>The input query has been reformatted to the following</strong></p><p style="margin: auto; color: gray;">${question}</p>`
-    elem.style.display = "block";
+    const ul = getUpperRightCardUl()
+    ul.insertAdjacentHTML("beforeend", `
+        <li class="list-group-item">
+            <p style="margin: auto;">
+                <strong>The input query has been reformatted to the following</strong>
+            </p>
+            <p style="margin: auto; color: gray;">${question}</p>
+        </li>`)
 }
 
 function displaySparqlQueryPredicted(sparql_query) {
@@ -134,8 +168,56 @@ function displayKgResponse(data) {
     toggleIRIColumns()
 }
 
+function displayKgResults(json) {
+    displayKgExecLatency(json["latency"])
+    displayKgResponse(json["data"])
+}
+
+function initLowerRightCard() {
+    document.getElementById("lower-right-card").innerHTML = `
+    <div class="card-body">
+        <h5 class="card-title">Marie</h5>
+        <div class="spinner-border text-primary" role="status" id="chatbot-spinner">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p id="chatbot-response" style="margin: 0"></p>
+    </div>`
+    console.log(document.getElementById("lower-right-card"))
+}
+
+function getChatbotResponseElem() {
+    document.getElementById("lower-right-card").style.display = "block"
+    const optional = document.getElementById("chatbot-response")
+    if (!optional) {
+        initLowerRightCard()
+        return document.getElementById("chatbot-response")
+    } else {
+        return optional
+    }
+}
+
+function getChatbotSpinner() {
+    document.getElementById("lower-right-card").style.display = "block"
+    const optional = document.getElementById("chatbot-spinner")
+    if (!optional) {
+        initLowerRightCard()
+        return document.getElementById("chatbot-spinner")
+    } else {
+        return optional
+    }
+}
+
+function showChatbotSpinner() {
+    document.getElementById("lower-right-card").innerHTML = ""
+    getChatbotSpinner().style.display = "block"
+}
+
+function hideChatbotSpinner() {
+    getChatbotSpinner().style.display = "none"
+}
+
 async function streamChatbotResponseBodyReader(reader) {
-    const elem = document.getElementById("chatbot-response")
+    const elem = getChatbotResponseElem()
 
     // read() returns a promise that resolves when a value has been received
     reader.read().then(function pump({ done, value }) {
@@ -197,19 +279,29 @@ async function askQuestion() {
     isProcessing = true;
     document.getElementById('ask-button').className = "mybutton spinner"
 
-    const trans_results = await fetchTranslation(question)
-    displayTranslationLatency(trans_results["latency"])
-    displayTranslationResults(trans_results)
+    try {
+        const trans_results = await fetchTranslation(question)
+        displayTranslationResults(trans_results)
 
-    const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
-    displayKgExecLatency(kg_results["latency"])
-    displayKgResponse(kg_results["data"])
+        const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
+        displayKgResults(kg_results)
 
-    const chatbotResponseReader = await fetchChatbotResponseReader(question, kg_results["data"])
-    streamChatbotResponseBodyReader(chatbotResponseReader)
-
-    isProcessing = false;
-    document.getElementById('ask-button').className = "mybutton"
+        showChatbotSpinner()
+        const chatbotResponseReader = await fetchChatbotResponseReader(question, kg_results["data"])
+        hideChatbotSpinner()
+        streamChatbotResponseBodyReader(chatbotResponseReader)
+    } catch (error) {
+        console.log(error)
+        if ((error instanceof HttpError) && (error.statusCode == 500)) {
+            displayError("An internal server error is encountered. Please try again.");
+        } else {
+            displayError(error)
+        }
+    } finally {
+        isProcessing = false;
+        document.getElementById('ask-button').className = "mybutton"
+        hideChatbotSpinner()
+    }
 }
 
 function toggleIRIColumns() {
@@ -248,14 +340,6 @@ API calls
 ----------------------------------------
 */
 
-function handleError(error) {
-    if (error instanceof HttpError) {
-        if (error.statusCode == 500) {
-            displayError("An internal server error is encountered. Please try again.");
-        }
-    }
-}
-
 function fetchTranslation(question) {
     return fetch("/translate", {
         method: "POST",
@@ -269,7 +353,7 @@ function fetchTranslation(question) {
             throw new HttpError(res.status)
         }
         return res.json()
-    }).catch(handleError)
+    })
 }
 
 function fetchKgResults(domain, sparql_query) {
@@ -285,14 +369,10 @@ function fetchKgResults(domain, sparql_query) {
             throw new HttpError(res.status)
         }
         return res.json()
-    }).catch(handleError)
+    })
 }
 
 function fetchChatbotResponseReader(question, data) {
-    const elem = document.getElementById("chatbot-response")
-    elem.innerText = ""
-    elem.style.display = "block"
-
     const bindings = data["results"]["bindings"].map(binding => Object.keys(binding).reduce((obj, k) => {
         if (!binding[k]["value"].startsWith(TWA_ABOX_IRI_PREFIX)) {
             obj[k] = binding[k]["value"]
@@ -312,5 +392,5 @@ function fetchChatbotResponseReader(question, data) {
             throw new HttpError(res.status)
         }
         return res.body.pipeThrough(new TextDecoderStream()).getReader()
-    }).catch(handleError)
+    })
 }

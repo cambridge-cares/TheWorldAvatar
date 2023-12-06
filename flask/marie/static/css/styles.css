@@ -35,3 +35,7 @@
 #sparql-query-predicted, #sparql-query-postprocessed, #chatbot-response {
     white-space: pre-wrap;
 }
+
+.list-group {
+    margin: 0
+}
