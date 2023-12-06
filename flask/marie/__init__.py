@@ -4,7 +4,7 @@ import os
 import time
 from importlib.resources import files
 
-from flask import Flask, Response, render_template, request, stream_with_context
+from flask import Flask, render_template, request
 from openai import OpenAI
 
 from marie.services import KgExecutor, MultiDomainTranslator, sanitize_quantities
@@ -15,19 +15,17 @@ SAMPLE_QUESTIONS = json.loads(
 )
 app = Flask(__name__)
 
+
 translator = MultiDomainTranslator()
 kg_executor = KgExecutor()
 
 CHATBOT_ENDPOINT = os.getenv("CHATBOT_ENDPOINT", "http://localhost:8001/v1")
-print("Connecting to chatbot at endpoint:", CHATBOT_ENDPOINT)
+print("Connecting to chatbot at endpoint: " + CHATBOT_ENDPOINT)
 chatbot_client = OpenAI(base_url=CHATBOT_ENDPOINT, api_key="placeholder")
 
 
 if __name__ != "__main__":
     app.logger.setLevel(logging.DEBUG)
-    # gunicorn_logger = logging.getLogger("gunicorn.error")
-    # app.logger.handlers = gunicorn_logger.handlers
-    # app.logger.setLevel(gunicorn_logger.level)
 
 
 @app.route("/", methods=["GET"])
@@ -35,9 +33,9 @@ def home():
     return render_template("index.html", sample_questions=SAMPLE_QUESTIONS)
 
 
-@app.route("/", methods=["POST"])
+@app.route("/translate", methods=["POST"])
 def ask():
-    app.logger.info("Request received to translation endpoint")
+    app.logger.info("Received request to translation endpoint")
 
     data = request.get_json()
     question = data.get("question")
@@ -55,34 +53,40 @@ def ask():
 
     app.logger.info("Translation result: " + str(translation_result))
 
-    domain = translation_result["domain"]
-    sparql_query_verbose = translation_result["sparql"]["verbose"]
-
-    app.logger.info("Sending sparql query to KG server...")
-    start_kg = time.time()
-    if sparql_query_verbose:
-        try:
-            sparql_query_verbose = sparql_query_verbose.strip()
-            data = kg_executor.query(domain=domain, query=sparql_query_verbose)
-        except Exception as e:
-            app.logger.exception(e)
-            data = None
-    else:
-        sparql_query_verbose = None
-        data = None
-    end_kg = time.time()
-
     return dict(
         question=question,
         preprocessed_question=sanitized_inputs["preprocessed_text_for_user"],
         domain=translation_result["domain"],
         sparql=dict(
             predicted=translation_result["sparql"]["decoded"],
-            postprocessed=sparql_query_verbose,
+            postprocessed=translation_result["sparql"]["verbose"],
         ),
+        latency=end_trans - start_trans,
+    )
+
+
+@app.route("/kg", methods=["POST"])
+def query_kg():
+    app.logger.info("Received request to KG executation endpoint")
+
+    data = request.get_json()
+    query = data.get("sparql_query")
+    domain = data.get("domain")
+    app.logger.info("SPARQL query: " + query)
+    app.logger.info("Domain: " + domain)
+
+    start_kg = time.time()
+    try:
+        data = kg_executor.query(domain=domain, query=query)
+    except Exception as e:
+        app.logger.exception(e)
+        data = None
+
+    end_kg = time.time()
+
+    return dict(
         data=data,
-        translation_latency=end_trans - start_trans,
-        kg_latency=end_kg - start_kg,
+        latency=end_kg - start_kg,
     )
 
 
@@ -117,7 +121,7 @@ def stream_chatbot_response():
         for chunk in response_stream:
             content = chunk.choices[0].delta.content
             if content is not None:
-                yield 'data: {data}\n\n'.format(data=json.dumps({"content": content}))
+                yield "data: {data}\n\n".format(data=json.dumps({"content": content}))
 
     return generate(), {"Content-Type": "text/event-stream"}
 
