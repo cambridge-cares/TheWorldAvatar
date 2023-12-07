@@ -884,19 +884,6 @@ WHERE {
     }
   """ +
   """
-  #FILTER ( ?volume  >  16000 && ?volume < 45000 ) .
-  #FILTER ( ?volume  <  45000  ) .
-  #FILTER ( xsd:decimal(?a) = 90 ) .
-  #FILTER ( xsd:decimal(xsd:string(?alpha)) != 90 ) .
-
-  #FILTER ( xsd:decimal(xsd:string(?a)) > 5 && xsd:decimal(xsd:string(?a)) < 20 ) .
-  #FILTER ( xsd:decimal(xsd:string(?b)) > 5 && xsd:decimal(xsd:string(?b)) < 20 ) .
-  #FILTER ( xsd:decimal(xsd:string(?c)) > 5 && xsd:decimal(xsd:string(?c)) < 20 ) .
-  #FILTER ( xsd:decimal(xsd:string(?alpha)) > 60 && xsd:decimal(xsd:string(?alpha)) < 120 ) .
-  #FILTER ( xsd:decimal(xsd:string(?beta )) > 60 && xsd:decimal(xsd:string(?beta )) < 120 ) .
-  #FILTER ( xsd:decimal(xsd:string(?gamma)) > 60 && xsd:decimal(xsd:string(?gamma)) < 120 ) .
-  #FILTER ( ?lattice = "orthorhombic" ) .
-  #FILTER ( ?symmNum = 74 ) .
   }
 #ORDER BY (-xsd:decimal(xsd:string(?volume)))
 #LIMIT 10
@@ -915,6 +902,8 @@ WHERE {
         #print( results["results"]["bindings"] )
         #for res in results["results"]["bindings"]:
         if True:
+            if len(results["results"]["bindings"]) > 1:
+                print( "Error! Too many output for CIF generator:", len(results["results"]["bindings"]) )
             res = results["results"]["bindings"][0]
 
             output.append( "" )
@@ -936,9 +925,6 @@ PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
 #SELECT ?x ?y ?z
 SELECT ?zeoname ?afx ?afy ?afz #?a1occup ?a1label #?aF_Unit
-#SELECT ?zeoname
-#SELECT ?zeoname ?rax ?ay ?az ?volume
-#SELECT ?zeo ?a1
 WHERE {
   ?zeo       zeo:hasZeoliteCode     '""" +
   zeoName +
@@ -958,8 +944,6 @@ WHERE {
 
   #?aF_xyz     om:hasUnit               ?aF_Unit .
   #?aF_Unit  rdfs:label                 ?af_unit .
-  #?aC_xyz     om:hasUnit               ?aC_Unit .
-  #?aC_Unit  rdfs:label                 ?ac_unit .
   OPTIONAL {
     ?a1       ocr:hasAtomSiteLabel        ?a1label .
   }
