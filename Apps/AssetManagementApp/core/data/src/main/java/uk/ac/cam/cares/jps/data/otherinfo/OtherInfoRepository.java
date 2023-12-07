@@ -67,6 +67,10 @@ public class OtherInfoRepository {
         Map<String, HashMap<String, String>> otherInfo = response.getOtherInfo();
         for (String key : otherInfo.keySet()) {
             // compare whether network is different from cache
+            if (!otherInfoByKey.containsKey(key)) {
+                continue;
+            }
+
             synchronized (otherInfoByKey.get(key)) {
                 if (!otherInfo.get(key).equals(otherInfoByKey.get(key))) {
                     // write to local datastore

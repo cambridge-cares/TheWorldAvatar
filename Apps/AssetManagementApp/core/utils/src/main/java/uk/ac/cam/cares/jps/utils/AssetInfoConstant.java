@@ -74,6 +74,6 @@ public class AssetInfoConstant {
     static public final List<String> manualInfoOrder = new ArrayList<>(Arrays.asList(MANUAL_URL, MANUAL_COMMENT, MANUAL_FILE));
     static public final List<String> specSheetInfoOrder = new ArrayList<>(Arrays.asList(SPEC_SHEET_PAGE_NO, SPEC_SHEET_COMMENT, SPEC_SHEET_FILE));
 
-    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER);
+    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER);
     static public final String HAS_TIME_SERIES = "hasTimeSeries";
 }
