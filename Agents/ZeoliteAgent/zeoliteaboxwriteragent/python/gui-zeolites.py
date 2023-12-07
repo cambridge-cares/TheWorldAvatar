@@ -23,7 +23,11 @@ DONE:
 import tkinter as tk
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-address = "http://localhost:8080/blazegraph/namespace/zeo05b/sparql"
+#           http://localhost:8080/blazegraph/#query
+address = "http://localhost:8080/blazegraph/namespace/zeo05w/sparql"
+#  Works:  https://theworldavatar.io/chemistry/blazegraph-dev/ui/#query
+#address = "https://theworldavatar.io/chemistry/blazegraph-dev/ui/namespace/ontozeolite/sparql"  # < need authorization
+#address = "https://theworldavatar.io/chemistry/blazegraph/ui/namespace/ontozeolite/sparql"  # < updated once a week
 
 DEBUG_ON = True
 DEBUG_ON = False
@@ -129,7 +133,7 @@ class GuiZeolite:
                       self.entPeak3Pos,  self.entPeak3Wid,  self.entPeak3Int,
 
                       self.lblResult,    self.entResult,
-                      self.btnFind,      self.btnExit,
+                      self.btnFind,      self.btnExit,   self.btnCif,
 
                       self.lblUnitCell,
                       self.lblUnitCellHead1,  self.lblUnitCellHead2,
@@ -166,10 +170,12 @@ class GuiZeolite:
         self.entResult = tk.Entry( self.frameControl, width = 40, textvariable=self.result )
 
         # Create an Exit button.
-        self.btnFind = tk.Button( self.frameControl, text = "    Find    ", command = self.funcFind )
-        self.btnExit = tk.Button( self.frameControl, text = "Exit", command = self.root.destroy )
+        self.btnFind = tk.Button( self.frameControl, text = " Find ", command = self.funcFind )
+        self.btnExit = tk.Button( self.frameControl, text = " Exit ", command = self.root.destroy )
+        self.btnCif  = tk.Button( self.frameControl, text =  " CIF ", command = lambda: self.makeCifFile("ABW","file.cif") )
 
         ir = 0
+        self.btnCif.grid(  row = ir, column = 2 )
         self.btnFind.grid( row = ir, column = 3 )
         #self.btnExit.grid( row = ir, column = 4 )
         ir += 1
@@ -274,7 +280,7 @@ class GuiZeolite:
         pass # GuiZeolite.getPeakInfo()
 
     def funcFind( self ):
-        #print( float(self.peak1min.get()) )
+        print( "in funcFind(): ", float(self.peak1min.get()) )
 
         lists = []
 
@@ -802,6 +808,192 @@ WHERE {
         return output
         pass # GuiZeolite.queryUnitCellRange()
 
+    def makeCifFile( self, zeoName, filename ):
+        #zeoName = "ABW"
+        #filename = "file.cif"
+        """
+        For given zeoName return the cif file.
+        - unit cell parameters
+        - atomic strucure
+        """
+
+        output = []
+
+        if not isinstance( zeoName, str ):
+            print( "Error! zeoName must be a string, but got '" + zeoName + "'." )
+
+        endpoint = SPARQLWrapper( address )
+        endpoint.setQuery( """
+PREFIX zeo:	<http://www.theworldavatar.com/kg/ontozeolite/>
+PREFIX ocr:	<http://www.theworldavatar.com/kg/ontocrystal/>
+PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+#PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?a ?b ?c ?alpha ?beta ?gamma ?volume ?lattice ?symmNum ?unit_length ?unit_angle #?unitlen ?d_vol #?zeo
+WHERE {
+  ?zeo       zeo:hasZeoliteCode         '""" 
+  + zeoName 
+  + """'.
+  ?zeo       ocr:hasCrystalInformation  ?cifdata .
+  ?cifdata   ocr:hasUnitCell            ?unitcell .
+
+  ?unitcell  ocr:hasUnitCellLengths   ?abc .
+  ?abc       ocr:hasVectorComponent   ?abc_a, ?abc_b, ?abc_c .
+  ?abc        om:hasUnit              ?unitlen .
+  ?unitlen  rdfs:label                ?unit_length .
+  ?abc_a     ocr:hasComponentLabel    "a";
+             ocr:hasComponentValue    ?a .
+  ?abc_b     ocr:hasComponentLabel    "b";
+             ocr:hasComponentValue    ?b .
+  ?abc_c     ocr:hasComponentLabel    "c";
+             ocr:hasComponentValue    ?c .
+
+  ?unitcell  ocr:hasUnitCellAngles     ?abg .
+  ?abg       ocr:hasVectorComponent    ?abg_a, ?abg_b, ?abg_g .
+  ?abg        om:hasUnit               ?unitangle .
+  ?unitangle rdfs:label                ?unit_angle .
+  ?abg_a     ocr:hasComponentLabel     "alpha";
+             ocr:hasComponentValue     ?alpha .
+  ?abg_b     ocr:hasComponentLabel     "beta";
+             ocr:hasComponentValue     ?beta .
+  ?abg_g     ocr:hasComponentLabel     "gamma";
+             ocr:hasComponentValue     ?gamma .
+
+  OPTIONAL {
+  ?unitcell  ocr:hasUnitCellVolume      ?Volume .
+  ?Volume    om:hasNumericalValue       ?volume .
+	}
+
+  OPTIONAL {
+    ?abc     ocr:hasUncertaintyVector  ?dabc .
+    ?dabc    ocr:hasVectorComponent    ?dabc_a, ?dabc_b, ?dabc_c.
+    ?dabc_a  ocr:hasLabel              "a";
+             ocr:hasComponentValue     ?d_a .
+    ?dabc_b  ocr:hasLabel              "b";
+             ocr:hasComponentValue     ?d_b .
+    ?dabc_c  ocr:hasLabel              "c";
+             ocr:hasComponentValue     ?d_c .
+    }
+  OPTIONAL {
+    ?Volume    ocr:hasUncertainty      ?DVol .
+    ?DVol      om:hasNumericalValue    ?d_vol .
+    }
+  OPTIONAL {
+    ?unitcell  ocr:hasLatticeSystem    ?lattice .
+    ?unitcell  ocr:hasSymmetryNumber   ?symmNum .
+    }
+  """ +
+  """
+  #FILTER ( ?volume  >  16000 && ?volume < 45000 ) .
+  #FILTER ( ?volume  <  45000  ) .
+  #FILTER ( xsd:decimal(?a) = 90 ) .
+  #FILTER ( xsd:decimal(xsd:string(?alpha)) != 90 ) .
+
+  #FILTER ( xsd:decimal(xsd:string(?a)) > 5 && xsd:decimal(xsd:string(?a)) < 20 ) .
+  #FILTER ( xsd:decimal(xsd:string(?b)) > 5 && xsd:decimal(xsd:string(?b)) < 20 ) .
+  #FILTER ( xsd:decimal(xsd:string(?c)) > 5 && xsd:decimal(xsd:string(?c)) < 20 ) .
+  #FILTER ( xsd:decimal(xsd:string(?alpha)) > 60 && xsd:decimal(xsd:string(?alpha)) < 120 ) .
+  #FILTER ( xsd:decimal(xsd:string(?beta )) > 60 && xsd:decimal(xsd:string(?beta )) < 120 ) .
+  #FILTER ( xsd:decimal(xsd:string(?gamma)) > 60 && xsd:decimal(xsd:string(?gamma)) < 120 ) .
+  #FILTER ( ?lattice = "orthorhombic" ) .
+  #FILTER ( ?symmNum = 74 ) .
+  }
+#ORDER BY (-xsd:decimal(xsd:string(?volume)))
+#LIMIT 10
+      """ )
+
+        endpoint.setReturnFormat(JSON)
+        output = []
+        output.append( "#####################################" )
+        output.append( "#" )
+        output.append( "# CIF file for zeolite '" + zeoName + "' generated by ZeoliteAgent " )
+        output.append( "#" )
+        output.append( "#####################################" )
+
+        results = endpoint.query().convert()
+
+        #print( results["results"]["bindings"] )
+        #for res in results["results"]["bindings"]:
+        if True:
+            res = results["results"]["bindings"][0]
+
+            output.append( "" )
+            output.append( "_cell_length_a     " + res["a"]["value"] )
+            output.append( "_cell_length_b     " + res["b"]["value"] )
+            output.append( "_cell_length_c     " + res["c"]["value"] )
+            output.append( "_cell_angle_alpha  " + res["alpha"]["value"] )
+            output.append( "_cell_angle_beta   " + res["beta" ]["value"] )
+            output.append( "_cell_angle_gamma  " + res["gamma"]["value"] )
+            output.append( "" )
+           
+        ### Adding the atom coordinates:
+
+        endpoint = SPARQLWrapper( address )
+        endpoint.setQuery( """
+PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+#SELECT ?x ?y ?z
+SELECT ?zeoname ?afx ?afy ?afz #?a1occup ?a1label #?aF_Unit
+#SELECT ?zeoname
+#SELECT ?zeoname ?rax ?ay ?az ?volume
+#SELECT ?zeo ?a1
+WHERE {
+  ?zeo       zeo:hasZeoliteCode     '""" +
+  zeoName +
+  """'.
+  ?zeo       ocr:hasCrystalInformation       ?cifcore .
+  ?cifcore   ocr:hasAtomicStructure          ?atomic.
+  ?atomic    ocr:hasAtomSite                 ?a1 .
+  ?a1        ocr:hasFractionalPosition     ?aF_xyz.
+
+  ?aF_xyz    ocr:hasVectorComponent     ?aF_x, ?aF_y, ?aF_z .
+  ?aF_x      ocr:hasComponentValue      ?afx ;
+  ocr:hasComponentLabel       "x" .
+  ?aF_y      ocr:hasComponentValue      ?afy ;
+  ocr:hasComponentLabel       "y" .
+  ?aF_z      ocr:hasComponentValue      ?afz ;
+  ocr:hasComponentLabel       "z" .
+
+  #?aF_xyz     om:hasUnit               ?aF_Unit .
+  #?aF_Unit  rdfs:label                 ?af_unit .
+  #?aC_xyz     om:hasUnit               ?aC_Unit .
+  #?aC_Unit  rdfs:label                 ?ac_unit .
+  OPTIONAL {
+    ?a1       ocr:hasAtomSiteLabel        ?a1label .
+  }
+  OPTIONAL {
+    ?a1       ocr:hasOccupancy           ?a1occup.
+  }
+}
+
+  #LIMIT 5
+""" )
+
+        endpoint.setReturnFormat(JSON)
+
+        results = endpoint.query().convert()
+        output.append( "_loop" )
+
+        output.append( "_atom_site_fract_x" )
+        output.append( "_atom_site_fract_y" )
+        output.append( "_atom_site_fract_z" )
+ 
+        for res in results["results"]["bindings"]:
+            output.append( str(res["afx"]["value"]) + "\t" + \
+                           str(res["afy"]["value"]) + "\t" + \
+                           str(res["afz"]["value"]) )
+ 
+        for line in output:
+            print( line )
+
+        with open( filename, "w", encoding="utf-8" ) as fp:
+            for line in output:
+                fp.write( line + "\n" )
+
+        return output
+        pass # GuiZeolite.makeCifFile()
 
     pass # class GuiZeolite
 
