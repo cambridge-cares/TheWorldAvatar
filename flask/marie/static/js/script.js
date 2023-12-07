@@ -78,14 +78,21 @@ function getLatencyLi() {
     }
 }
 
-function displayTranslationLatency(trans_latency) {
-    const li = getLatencyLi()
-    li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">Translation latency: ${trans_latency.toFixed(2)}s.</p>`)
+function formatLatency(latency) {
+    if (typeof latency === "number") {
+        return latency.toFixed(2)
+    } else {
+        return latency
+    }
 }
 
-function displayKgExecLatency(kg_latency) {
+function displayLatency(id, desc, latency) {
     const li = getLatencyLi()
-    li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">SPARQL query execution latency: ${kg_latency.toFixed(2)}s.</p>`)
+    li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">${desc} latency: <span id="${id}">${formatLatency(latency)}</span>s.</p>`)
+}
+
+function updateLatency(id, latency) {
+    document.getElementById(id).innerHTML = formatLatency(latency)
 }
 
 function displayPreprocessedQuestion(question) {
@@ -114,7 +121,7 @@ function displayTranslationResults(json) {
         displayPreprocessedQuestion(json["preprocessed_question"])
     }
     displayDomainPredicted(json["domain"])
-    displayTranslationLatency(json["latency"])
+    displayLatency("trans-latency", "Translation", json["latency"])
 
     displaySparqlQueryPredicted(json["sparql"]["predicted"])
     if (json["sparql"]["postprocessed"]) {
@@ -169,7 +176,7 @@ function displayKgResponse(data) {
 }
 
 function displayKgResults(json) {
-    displayKgExecLatency(json["latency"])
+    displayLatency("kg-latency", "SPARQL query execution", json["latency"])
     displayKgResponse(json["data"])
 }
 
@@ -178,7 +185,7 @@ function initChatbotResponseCard() {
     <div class="card-body">
         <h5 class="card-title">Marie's response</h5>
         <p id="chatbot-response" style="margin: 0"></p>
-        <div class="spinner-grow text-primary" role="status" id="chatbot-spinner">
+        <div class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner">
             <span class="sr-only">Loading...</span>
         </div>
     </div>`
@@ -218,8 +225,9 @@ function hideChatbotSpinner() {
 async function streamChatbotResponseBodyReader(reader) {
     const elem = getChatbotResponseElem()
 
+    displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
     // read() returns a promise that resolves when a value has been received
-    reader.read().then(function pump({ done, value }) {
+    return reader.read().then(function pump({ done, value }) {
         if (done) {
             // Do something with last chunk of data then exit reader
             return;
@@ -235,6 +243,7 @@ async function streamChatbotResponseBodyReader(reader) {
         if (/\s/.test(elem.innerHTML.charAt(0))) {
             elem.innerHTML = elem.innerHTML.trimStart()
         }
+        updateLatency("chatbot-latency", datum["latency"])
 
         // Read some more, and call this function again
         return reader.read().then(pump);
@@ -287,7 +296,7 @@ async function askQuestion() {
         console.log(kg_results)
         showChatbotSpinner()
         const chatbotResponseReader = await fetchChatbotResponseReader(question, kg_results["data"])
-        streamChatbotResponseBodyReader(chatbotResponseReader)
+        await streamChatbotResponseBodyReader(chatbotResponseReader)
     } catch (error) {
         console.log(error)
         if ((error instanceof HttpError) && (error.statusCode == 500)) {

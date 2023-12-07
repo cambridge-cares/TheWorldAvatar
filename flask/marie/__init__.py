@@ -90,18 +90,9 @@ def query_kg():
     )
 
 
-@app.route("/chatbot", methods=["POST"])
-def stream_chatbot_response():
-    app.logger.info("Request received to chatbot endpoint")
-
-    request_data = request.get_json()
-    question = request_data.get("question")
-    data = request_data.get("data")
-    app.logger.info("Question: " + question)
-    app.logger.info("Data: " + data)
-
+def make_chatbot_response_stream(question: str, data: str):
     prompt_template = "## Query:\n{query}\n\n### Data:\n{data}"
-    response_stream = chatbot_client.chat.completions.create(
+    return chatbot_client.chat.completions.create(
         model="llama-2-7b-chat.Q4_K_M.gguf",
         messages=[
             {
@@ -113,15 +104,25 @@ def stream_chatbot_response():
                 "content": prompt_template.format(query=question, data=data),
             },
         ],
-        temperature=0,
         stream=True,
     )
 
+@app.route("/chatbot", methods=["POST"])
+def stream_chatbot_response():
+    app.logger.info("Request received to chatbot endpoint")
+
+    request_data = request.get_json()
+    question = request_data.get("question")
+    data = request_data.get("data")
+    app.logger.info("Question: " + question)
+    app.logger.info("Data: " + data)
+
     def generate():
-        for chunk in response_stream:
+        start = time.time()
+        for chunk in make_chatbot_response_stream(question, data):
             content = chunk.choices[0].delta.content
             if content is not None:
-                yield "data: {data}\n\n".format(data=json.dumps({"content": content}))
+                yield "data: {data}\n\n".format(data=json.dumps({"content": content, "latency": time.time() - start}))
 
     return generate(), {"Content-Type": "text/event-stream"}
 
