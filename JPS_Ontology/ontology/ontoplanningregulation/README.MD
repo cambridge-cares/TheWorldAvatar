@@ -11,7 +11,7 @@ OntoPlanningRegulations is an ontology developed to describe the regulations imp
     "AreaRegulation" ||--o{ "ontozoning:Zone" : appliesTo
     "TypeRegulation" ||--o{ "PlanningRegulation" : "rdfs:subClassOf"
     "TypeRegulation" ||--o{ "ontozoning:ZoneType" : appliesTo
-    
+    "TypeRegulation" ||--o{ "AreaRegulation" : isConstrainedBy
 ```
 
 ## 2. Legend

@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">15 November 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">07 December 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlanningRegulations is an ontology developed to describe the regulations imposed for urban planning purposes.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -128,9 +128,9 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/isConstrainedBy">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the road category regulations for a specific planning regulation.</rdfs:comment>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/TypeRegulation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship indicating that area regulations take precedence over type regulations.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is constrained by</rdfs:label>
     </owl:ObjectProperty>
@@ -399,18 +399,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/GoodClassBungalowArea -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/GoodClassBungalowArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/ConservationArea"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of conservation area regulations intended only for good class bungalow.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Good Class Bungalow Area</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/GrossFloorArea -->
 
 
@@ -443,18 +431,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation that is designated to control the building heights of a specific area.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Height Control Plan</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/LandedHousingArea -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/LandedHousingArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation to help retain the character of landed housing estates. This plan identify the locations of these safeguarded estates and the type and storey height of housing that can be built in the estate.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Landed Housing Area</rdfs:label>
     </owl:Class>
     
 
@@ -509,72 +485,7 @@
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/TypeRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each road may have a road category, that may affect the required road buffer, allowed number of storeys, and allowed programmes.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Category</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory1 -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory1">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These regulations apply to roads in Road Category 1. These are expressways that form the primary network where all long distance traffic movements should be directed. It is planned to optimise long distance mobility from one part of the island to another.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Category 1</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory2 -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory2">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These regulations apply to roads in Road Category 2. These are major arterial roads, which predominantly carries traffic through from one region to another, forming principle avenues of communication for urban traffic movements. It interconnects expressways and minor arterial as well as with other major arterial roads.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Category 2</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory3 -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory3">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These regulations apply to roads in Road Category 3. These are minor arterial roads that distribute traffic within the major residential and industrial areas. It is planned to optimise circulation within the area and facilitate through traffic between adjacent towns.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Category 3</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory4 -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory4">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These regulations apply to roads in Road Category 4. These are primary access roads that form the link between local access and arterial roads. It provides access to developments and through traffic is discouraged. However, where a development is also accessible by a local access road, the access shall be located at the local access road.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Category 4</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory5 -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory5">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These regulations apply to roads in Road Category 5. These are local access roads that give direct access to buildings and other developments and should connect only with primary access roads.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Category 5</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/RoadCategory"/>
     
 
 

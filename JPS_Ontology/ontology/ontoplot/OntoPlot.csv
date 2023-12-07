@@ -15,8 +15,6 @@ hasAllowedSiteCoverage,Object Property,,,Plot,https://www.theworldavatar.com/kg/
 hasPlotArea,Object Property,,,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,A relationship that defines the area of a plot,https://www.theworldavatar.com/kg/ontoplot/,has site area
 hasBuildableSpace,Object Property,,,Plot,BuildableSpace,,A relationship that links the buildable space for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has buildable space
 hasNeighbour ,Object Property,,,Plot,Plot,,A relationship that indicates the neighbouring plot for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has neighbour 
-hasOwner,Object Property,,,Plot,https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person,,A relationship that defines the road type of a plot.,https://www.theworldavatar.com/kg/ontoplot/,has owner
+hasOwner,Object Property,,,Plot,https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person,,A relationship that defines the owner of a land plot.,https://www.theworldavatar.com/kg/ontoplot/,has owner
 hasPrice,Object Property,,,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,,A relationship that defines the price of a specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has price
-hasRoadType,Data Property,,,Plot,String,,A relationship that defines the road type of a plot.,https://www.theworldavatar.com/kg/ontoplot/,has road type
 isCornerPlot,Data Property,,,Plot,boolean,,A relationship that indicates if the plot is a corner plot or not.,https://www.theworldavatar.com/kg/ontoplot/,is corner plot
-atResidentialFringe,Data Property,,,Plot,boolean,,A relationship that indicates if the plot is found at the residential fringe or not.,https://www.theworldavatar.com/kg/ontoplot/,at residential fringe
