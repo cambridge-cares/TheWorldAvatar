@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.dashboard.json.DashboardClient;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 @WebServlet(urlPatterns = {"/reset", "/status", "/setup"})
 public class DashboardAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
-    // Agent starts off in valid state, and will be invalid when running into exceptions
-    private static boolean VALID = true;
+    // Agent starts off in invalid state, and will become valid when initialised without exceptions
+    private static boolean valid = false;
     private static StackClient SERVICES;
     private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
@@ -30,7 +31,7 @@ public class DashboardAgent extends JPSAgent {
      * Perform required setup.
      */
     @Override
-    public synchronized void init() {
+    public synchronized void init() throws ServletException {
         try {
             super.init();
             // Ensure logging are properly working
@@ -41,14 +42,16 @@ public class DashboardAgent extends JPSAgent {
             LOGGER.fatal("This is a test FATAL message");
             // Ensure that the agent is running on a stack by initialising the services
             SERVICES = new StackClient();
+            // When initialisation occurs without error, the agent becomes valid
+            DashboardAgent.valid = true;
         } catch (ServletException exception) {
             // This error only occurs when super.init() fails
-            DashboardAgent.VALID = false;
             LOGGER.error("Could not initialise an agent instance!", exception);
+            throw new ServletException("Could not initialise an agent instance!", exception);
         } catch (Exception exception) {
             // This error will only occur if the agent is not running on a stack, which causes an error in Stack Client
-            DashboardAgent.VALID = false;
             LOGGER.error("Agent is not running on a stack and will not be initialised!", exception);
+            throw new JPSRuntimeException("Agent is not running on a stack and will not be initialised!", exception);
         }
     }
 
@@ -138,7 +141,7 @@ public class DashboardAgent extends JPSAgent {
     protected JSONObject statusRoute() {
         JSONObject response = new JSONObject();
         LOGGER.info("Detected request to get agent status...");
-        if (DashboardAgent.VALID) {
+        if (DashboardAgent.valid) {
             response.put("Result", "Agent is ready to receive requests.");
         } else {
             response.put("Error", "Agent could not be initialised! Please ensure it is running on a stack!");
@@ -153,7 +156,7 @@ public class DashboardAgent extends JPSAgent {
      */
     protected JSONObject setupRoute() {
         JSONObject response = new JSONObject();
-        if (DashboardAgent.VALID) {
+        if (DashboardAgent.valid) {
             LOGGER.info("Setting up client to interact with dashboard...");
             try {
                 DashboardClient client = new DashboardClient(SERVICES);
@@ -178,7 +181,7 @@ public class DashboardAgent extends JPSAgent {
      */
     protected JSONObject resetRoute() {
         JSONObject response = new JSONObject();
-        if (DashboardAgent.VALID) {
+        if (DashboardAgent.valid) {
             SERVICES = new StackClient();
             response.put("Result", "Agent has been successfully reset!");
         } else {

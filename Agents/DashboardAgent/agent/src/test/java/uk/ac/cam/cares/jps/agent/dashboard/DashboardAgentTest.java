@@ -10,6 +10,7 @@ import org.mockito.stubbing.Answer;
 import uk.ac.cam.cares.jps.agent.dashboard.json.DashboardClient;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
 
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 
@@ -42,12 +43,13 @@ class DashboardAgentTest {
     }
 
     @Test
-    void testProcessRequestParameters_ResetRouteViaGET() {
+    void testProcessRequestParameters_ResetRouteViaGET() throws ServletException {
         JsonObject requestParams = new JsonObject();
         requestParams.add(KEY_METHOD, GET_METHOD);
         requestParams.add(KEY_ROUTE, RESET_ROUTE);
         // Mock the client
         try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class)) {
+            agent.init();
             // Execute method
             JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
             assertEquals("Agent has been successfully reset!", response.getString("Result"));
@@ -64,12 +66,17 @@ class DashboardAgentTest {
     }
 
     @Test
-    void testProcessRequestParameters_StatusRouteViaGET() {
+    void testProcessRequestParameters_StatusRouteViaGET() throws ServletException {
         JsonObject requestParams = new JsonObject();
         requestParams.add(KEY_METHOD, GET_METHOD);
         requestParams.add(KEY_ROUTE, STATUS_ROUTE);
-        JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
-        assertEquals("Agent is ready to receive requests.", response.getString("Result"));
+        // Mock the client
+        try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class)) {
+            agent.init();
+            // Execute method
+            JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
+            assertEquals("Agent is ready to receive requests.", response.getString("Result"));
+        }
     }
 
     @Test
@@ -82,17 +89,18 @@ class DashboardAgentTest {
     }
 
     @Test
-    void testProcessRequestParameters_SetupRoute() throws IOException {
+    void testProcessRequestParameters_SetupRoute() throws IOException, ServletException {
         // Set up params
         JsonObject requestParams = new JsonObject();
         requestParams.add(KEY_METHOD, GET_METHOD);
         requestParams.add(KEY_ROUTE, SETUP_ROUTE);
         File config = TestUtils.genSampleCredFile(true, IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
-
-        try (MockedConstruction<DashboardClient> mockDashboardClient = Mockito.mockConstruction(DashboardClient.class,
+        try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class);
+             MockedConstruction<DashboardClient> mockDashboardClient = Mockito.mockConstruction(DashboardClient.class,
                 (mock, context) -> {
                     Mockito.when(mock.initDashboard()).thenAnswer((Answer<Void>) invocation -> null);
                 })) {
+            agent.init();
             // Execute method
             JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
             assertEquals("Dashboard has been successfully set up!", response.getString("Result"));
