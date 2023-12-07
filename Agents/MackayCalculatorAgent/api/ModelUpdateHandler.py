@@ -16,12 +16,10 @@ class ModelUpdateHandler(Resource):
             with open(QUERYFILEPATH) as query_json:
                 query_dict = json.load(query_json)
                 new_values = query_all(query_dict)
-                print(new_values)
                 calculator.updateFromKG(new_values)
                 final_ret = {"status": "Success"}
                 return final_ret
         except Exception as e:
-            print('err{}'.format(e))
             return Response(
                 e,
                 status=500,

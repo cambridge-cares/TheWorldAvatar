@@ -3,12 +3,13 @@ from flask_restful import Api, Resource, reqparse
 #from flask_cors import CORS #comment this on deployment
 from api.PlotDataHandler import PlotDataHandler
 from api.ModelUpdateHandler import ModelUpdateHandler
+from config import XLSMMODELPATH
 app = Flask(__name__, static_url_path='', static_folder='frontend/build')
 #CORS(app) #comment this on deployment
 api = Api(app)
 
-api.add_resource(PlotDataHandler, '/api/data')
-api.add_resource(ModelUpdateHandler, '/api/update')
+api.add_resource(PlotDataHandler, '/data')
+api.add_resource(ModelUpdateHandler, '/update')
 
 @app.route("/guides/<topic>/<filename>")
 def guide(topic, filename):
@@ -17,9 +18,10 @@ def guide(topic, filename):
     return send_from_directory('frontend/guidestest'+'/'+topic,filename)
 
 
-@app.route("/download/model")
-def download():
-    return send_from_directory('model','Excel_MacKay_Carbon_Calculator_v204.xlsm', as_attachment=True)
+#This API is currently removed
+#@app.route("/download/model")
+#def download():
+#    return send_from_directory('model',XLSMMODELPATH.replace('./model/'), as_attachment=True)
 
 @app.errorhandler(404)
 def not_found(path):

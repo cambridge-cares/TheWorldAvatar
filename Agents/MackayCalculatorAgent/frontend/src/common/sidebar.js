@@ -19,7 +19,6 @@ function Sidebar(topprops) {
     "Electricity":[ 'Seasonal Storage', 'Short Term Balancing', 'Biomass with CCS', 'Nuclear', 'Offshore & Onshore Wind', 'Solar', 'Wave & Tidal', 'Gas with CCS'],
     "Land Use & Biofuels":['Farming Yield & Efficiency', 'Forestry', 'Land for Bioenergy', 'Waste Reduction']};
     const toplabels =  Object.keys(topiclabels);
-    console.log(toplabels)
     const alllabels = toplabels.map(item=>topiclabels[item]).flat();
     const initalConfig = {};
     const intialTopConfig = {};
@@ -47,11 +46,9 @@ function Sidebar(topprops) {
         function handleValueChange(event) {
             let prev = {...configs};
             let prevTop = {...topConfigs};
-            console.log(label)
             if (toplabels.includes(label)){//is top label=>
                 //set sublabel config
                 for (let sub of topiclabels[label]){
-                    console.log(sub)
                     prev[sub] = parseInt(event.target.value);
                 }
                 //set toplabel config
@@ -118,7 +115,6 @@ function Sidebar(topprops) {
     
     function setAllLevels(event) {
         let level = parseInt(event.target.value);
-        console.log(level)
         let prev = {...configs};
         let prevTop = {...topConfigs};
         for (let key in prev){

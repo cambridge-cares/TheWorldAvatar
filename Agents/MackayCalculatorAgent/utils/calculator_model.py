@@ -1,3 +1,7 @@
+# The CalculatorModel object provides utilities to perform specific tasks on the Calculator model like
+# set lever configurations or read all weboutputs.
+# ===============================================================================
+
 from .xlsvmodel import XLSVModel
 from .plot_formatter import translateValueIdList,translateControlIdList,translateSingleValueIdList
 from .config import XLSMMODELPATH
@@ -5,7 +9,7 @@ from .access import accessKG
 import time
 from collections import deque
 
-validLevels = [1,2,3,4]
+VALID_LEVELS = [1, 2, 3, 4]
 class CalculatorModel(XLSVModel):
     def __init__(self):
         XLSVModel.__init__(self, XLSMMODELPATH)
@@ -25,7 +29,7 @@ class CalculatorModel(XLSVModel):
     def validateLevel(self, levels):
         #print('validated that post levels are integers')
         for l in levels:
-            if l not in validLevels:
+            if l not in VALID_LEVELS:
                 return False
         return True
 
@@ -86,8 +90,6 @@ class CalculatorModel(XLSVModel):
         for k in self.updateList:
             cell = self.updateList[k]
             new_value = new_values[k]
-            #print(cell)
-            #print(new_value)
             self.updateValue(cell, [new_value],pagename='model',transpose=False)
 
     def readSingles(self, singlename):

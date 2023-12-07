@@ -1,3 +1,5 @@
+# The file contains configuraitons of file paths.
+# ===============================================================================
 #Model settings
 XLSMMODELPATH = './model/Excel_MacKay_Carbon_Calculator_v209.xlsm'
 OUTPUTMAPPINGPATH = './model/output.csv'

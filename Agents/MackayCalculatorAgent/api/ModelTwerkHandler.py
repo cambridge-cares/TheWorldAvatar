@@ -16,7 +16,6 @@ class ModelTwerkHandler(Resource):
 
         calculator.twerkTillZero(action, pos_cate)
         plotdata,singlevalues = calculator.getData()
-        print(plotdata[1])
         final_ret = {"status": "Success", "values": plotdata}
         final_ret.update(singlevalues)
         return final_ret

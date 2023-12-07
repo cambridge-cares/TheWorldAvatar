@@ -6,15 +6,43 @@ A React web interface is additionally provided to interact with the Singapore Ma
 
 
 ##API
-TODO
+
+###Endpoints
+####Set Calculator levers and retrieve data
+URL:  /data 
+
+Method: POST
+
+Data constraints: Provide lever values:
+
+`````{"levers":[ an array of 45 intergers in range 1-4]}`````
+
+
+
+Success Responses: Content: 
+
+```{"status": "Success", "values": [...]}```
+
+
+#### Update the Calculator with World Avatar KG
+URL: /update
+
+Method: Get
+
+Success Responses: Code: 200 OK
+
+
 ##  Usage
 ###Overview
 Currently the agent relies on an Excel model and therefore requires a Windows OS and a copy of the Excel software to run. Until we finish converting the model into another form of code in the future this agent will not have a dockerized version.
 
+###Requirements
+python >=3.10, java jdk>=11, nodeJS>=18
+
 ###Setup
 
 
-1. Install required python packages. The project requires Python 3.10.
+1. Install required python packages.
 ```shell
 pip install -r requirements.txt
 ```

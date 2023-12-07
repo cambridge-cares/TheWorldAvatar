@@ -58,7 +58,7 @@ function CalculatorApp()  {
            let levers = Object.values(datadict);
             const sendReq = async () => {
                 setLoading(true);
-                const  resdata  = await axios.post("/api/data", JSON.stringify({levers:levers}),  {headers:{
+                const  resdata  = await axios.post("/data", JSON.stringify({levers:levers}),  {headers:{
                     'Content-Type': 'application/json'
                 }});
                 setLoading(false);

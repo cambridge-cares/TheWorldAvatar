@@ -1,6 +1,6 @@
-#Store a template in the frontend
-#Construct this template as here
-#Later only needs to pass x value via API
+'''
+This module contains utility functions to construct mappings for values in the Excel model
+'''
 import json
 
 from utils.config import XLSMMODELPATH,OUTPUTMAPPINGPATH,CONTROLMAPPINGPATH,SINGLEVALUEMAPPINGPATH
