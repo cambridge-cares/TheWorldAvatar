@@ -1,3 +1,5 @@
 Flask==2.3.2
 Flask-RESTful==0.3.10
 xlwings==0.30.10
+requests
+py4jps

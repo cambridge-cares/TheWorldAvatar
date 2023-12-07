@@ -1,4 +1,6 @@
+*
 /DATA
+/DATA_backup
 /archived
 /**/*.log
 /Training/ScoringFunction/playground/entity_list

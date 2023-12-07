@@ -82,8 +82,7 @@ class CalculatorModel(XLSVModel):
 
 
 
-    def updateFromKG(self):
-        new_values = accessKG()
+    def updateFromKG(self, new_values):
         for k in self.updateList:
             cell = self.updateList[k]
             new_value = new_values[k]
