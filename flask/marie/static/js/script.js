@@ -14,7 +14,7 @@ Custom classes
 
 class HttpError extends Error {
     constructor(statusCode) {
-        super("HTTP Error")
+        super("HTTP error")
         this.statusCode = statusCode
     }
 }
@@ -36,26 +36,26 @@ Functions that manipulate UI
 */
 
 function hideElems() {
-    let elemIds = ["upper-right-card", "lower-right-card", 'sparql-query-predicted-container', 'sparql-query-postprocessed-container', "error-container", "results", "toggle-iri"]
+    let elemIds = ["trans-metadata-card", "chatbot-response-card", 'sparql-query-predicted-container', 'sparql-query-postprocessed-container', "error-container", "results", "toggle-iri"]
     for (const elemId of elemIds) {
         document.getElementById(elemId).style.display = "none"
     }
 
-    elemIds = ["upper-right-card", "lower-right-card"]
+    elemIds = ["trans-metadata-card", "chatbot-response-card"]
     for (const elemId of elemIds) {
         document.getElementById(elemId).innerHTML = ""
     }
 }
 
-function getUpperRightCardUl() {
-    const upperRightCard = document.getElementById("upper-right-card")
-    upperRightCard.style.display = "block"
+function getTransMetadataCardUl() {
+    const transMetadataCard = document.getElementById("trans-metadata-card")
+    transMetadataCard.style.display = "block"
 
-    const ulChildren = upperRightCard.getElementsByTagName("ul")
+    const ulChildren = transMetadataCard.getElementsByTagName("ul")
     if (ulChildren.length === 0) {
         const ul = document.createElement("ul")
         ul.className = "list-group list-group-flush"
-        upperRightCard.appendChild(ul)
+        transMetadataCard.appendChild(ul)
         return ul
     } else {
         return ulChildren[0]
@@ -63,14 +63,14 @@ function getUpperRightCardUl() {
 }
 
 function displayDomainPredicted(domain) {
-    const ul = getUpperRightCardUl()
+    const ul = getTransMetadataCardUl()
     ul.insertAdjacentHTML("beforeend", `<li class="list-group-item"><p style="margin: auto;">Predicted query domain: ${domain}</p></li>`)
 }
 
 function getLatencyLi() {
     const optional = document.getElementById("latency-info")
     if (!optional) {
-        getUpperRightCardUl().insertAdjacentHTML("beforeend", `
+        getTransMetadataCardUl().insertAdjacentHTML("beforeend", `
             <li class="list-group-item" id="latency-info"></li>`)
         return document.getElementById("latency-info")
     } else {
@@ -89,7 +89,7 @@ function displayKgExecLatency(kg_latency) {
 }
 
 function displayPreprocessedQuestion(question) {
-    const ul = getUpperRightCardUl()
+    const ul = getTransMetadataCardUl()
     ul.insertAdjacentHTML("beforeend", `
         <li class="list-group-item">
             <p style="margin: auto;">
@@ -173,23 +173,22 @@ function displayKgResults(json) {
     displayKgResponse(json["data"])
 }
 
-function initLowerRightCard() {
-    document.getElementById("lower-right-card").innerHTML = `
+function initChatbotResponseCard() {
+    document.getElementById("chatbot-response-card").innerHTML = `
     <div class="card-body">
-        <h5 class="card-title">Marie</h5>
-        <div class="spinner-border text-primary" role="status" id="chatbot-spinner">
+        <h5 class="card-title">Marie's response</h5>
+        <p id="chatbot-response" style="margin: 0"></p>
+        <div class="spinner-grow text-primary" role="status" id="chatbot-spinner">
             <span class="sr-only">Loading...</span>
         </div>
-        <p id="chatbot-response" style="margin: 0"></p>
     </div>`
-    console.log(document.getElementById("lower-right-card"))
 }
 
 function getChatbotResponseElem() {
-    document.getElementById("lower-right-card").style.display = "block"
+    document.getElementById("chatbot-response-card").style.display = "block"
     const optional = document.getElementById("chatbot-response")
     if (!optional) {
-        initLowerRightCard()
+        initChatbotResponseCard()
         return document.getElementById("chatbot-response")
     } else {
         return optional
@@ -197,10 +196,10 @@ function getChatbotResponseElem() {
 }
 
 function getChatbotSpinner() {
-    document.getElementById("lower-right-card").style.display = "block"
+    document.getElementById("chatbot-response-card").style.display = "block"
     const optional = document.getElementById("chatbot-spinner")
     if (!optional) {
-        initLowerRightCard()
+        initChatbotResponseCard()
         return document.getElementById("chatbot-spinner")
     } else {
         return optional
@@ -208,7 +207,7 @@ function getChatbotSpinner() {
 }
 
 function showChatbotSpinner() {
-    document.getElementById("lower-right-card").innerHTML = ""
+    document.getElementById("chatbot-response-card").innerHTML = ""
     getChatbotSpinner().style.display = "block"
 }
 
@@ -285,17 +284,16 @@ async function askQuestion() {
 
         const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
         displayKgResults(kg_results)
-
+        console.log(kg_results)
         showChatbotSpinner()
         const chatbotResponseReader = await fetchChatbotResponseReader(question, kg_results["data"])
-        hideChatbotSpinner()
         streamChatbotResponseBodyReader(chatbotResponseReader)
     } catch (error) {
         console.log(error)
         if ((error instanceof HttpError) && (error.statusCode == 500)) {
             displayError("An internal server error is encountered. Please try again.");
         } else {
-            displayError(error)
+            displayError("An unexpected error is encountered. Please report it with the following error message<br/>" + error)
         }
     } finally {
         isProcessing = false;
@@ -340,6 +338,14 @@ API calls
 ----------------------------------------
 */
 
+async function throwErrorIfNotOk(res) {
+    if (!res.ok) {
+        console.log(await res.text())
+        throw new HttpError(res.status)
+    }
+    return res
+}
+
 function fetchTranslation(question) {
     return fetch("/translate", {
         method: "POST",
@@ -348,12 +354,9 @@ function fetchTranslation(question) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({ question })
-    }).then(res => {
-        if (!res.ok) {
-            throw new HttpError(res.status)
-        }
-        return res.json()
     })
+        .then(throwErrorIfNotOk)
+        .then(res => res.json())
 }
 
 function fetchKgResults(domain, sparql_query) {
@@ -364,12 +367,9 @@ function fetchKgResults(domain, sparql_query) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({ domain, sparql_query })
-    }).then(res => {
-        if (!res.ok) {
-            throw new HttpError(res.status)
-        }
-        return res.json()
     })
+        .then(throwErrorIfNotOk)
+        .then(res => res.json())
 }
 
 function fetchChatbotResponseReader(question, data) {
@@ -387,10 +387,7 @@ function fetchChatbotResponseReader(question, data) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({ question, data: JSON.stringify(bindings) })
-    }).then(res => {
-        if (!res.ok) {
-            throw new HttpError(res.status)
-        }
-        return res.body.pipeThrough(new TextDecoderStream()).getReader()
     })
+        .then(throwErrorIfNotOk)
+        .then(res => res.body.pipeThrough(new TextDecoderStream()).getReader())
 }
