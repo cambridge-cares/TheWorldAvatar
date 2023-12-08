@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.login;
 
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.CONNECTION_ERROR;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.LOGIN_FAILURE;
+import static uk.ac.cam.cares.jps.login.LoginErrorMessage.NO_UER_INFO_RETRIEVED;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SKEW_SYSTEM_CLOCK;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SESSION_EXPIRED;
 
@@ -266,8 +267,8 @@ public class LoginSource {
                         }
                     },
                     error -> {
-                        LOGGER.warn("No user info retrieved");
-                        callback.onFailure(error);
+                        LOGGER.warn(NO_UER_INFO_RETRIEVED);
+                        callback.onFailure(new Throwable(NO_UER_INFO_RETRIEVED));
                     }) {
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();

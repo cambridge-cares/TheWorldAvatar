@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.setting;
 
+import static uk.ac.cam.cares.jps.login.LoginErrorMessage.NO_UER_INFO_RETRIEVED;
 import static uk.ac.cam.cares.jps.login.LoginErrorMessage.SESSION_EXPIRED;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
 
@@ -108,7 +109,7 @@ public class SettingViewModel extends ViewModel {
 
             @Override
             public void onFailure(Throwable error) {
-                if (error.getMessage().equals(SESSION_EXPIRED)) {
+                if (error.getMessage().equals(NO_UER_INFO_RETRIEVED) || error.getMessage().equals(SESSION_EXPIRED)) {
                     shouldShowSessionExpired.postValue(true);
                 }
             }

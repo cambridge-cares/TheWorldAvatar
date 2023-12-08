@@ -79,10 +79,6 @@ public class LoginRepository {
                                 .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/login"))
                                 .build();
                         NavHostFragment.findNavController(fragment).navigate(request);
-
-//                        Intent loginIntent = new Intent(fragment.requireActivity(), LoginActivity.class);
-//                        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        fragment.startActivity(loginIntent);
                     }
                 }
         );
@@ -90,18 +86,19 @@ public class LoginRepository {
     }
 
     public MaterialAlertDialogBuilder getSessionExpiredDialog(Fragment fragment) {
+        if (fragment == null || fragment.getContext() == null) {
+            return null;
+        }
+
         return new MaterialAlertDialogBuilder(fragment.getContext())
                 .setTitle(R.string.session_expired_title)
                 .setMessage(R.string.session_expired)
                 .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-                    //todo: fix the activity
+                    loginSource.authStateManager.clearSharedPref();
                     NavDeepLinkRequest request = NavDeepLinkRequest.Builder
                             .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/login"))
                             .build();
                     NavHostFragment.findNavController(fragment).navigate(request);
-
-//                    activity.startActivity(new Intent(activity, LoginActivity.class));
-//                    activity.finish();
                 });
     }
 }

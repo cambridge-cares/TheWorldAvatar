@@ -17,6 +17,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.dialog.MaterialDialogs;
 import com.google.android.material.theme.MaterialComponentsViewInflater;
 
 import org.apache.log4j.BasicConfigurator;
@@ -74,7 +76,10 @@ public class SettingFragment extends Fragment {
         viewModel.getName().observe(getViewLifecycleOwner(), name -> binding.nameTv.setText(name));
         viewModel.getShouldShowSessionExpired().observe(getViewLifecycleOwner(), shouldShowSessionExpired -> {
             if (shouldShowSessionExpired) {
-                viewModel.getSessionExpiredDialog(this).show();
+                MaterialAlertDialogBuilder dialogBuilder = viewModel.getSessionExpiredDialog(this);
+                if (dialogBuilder != null) {
+                    dialogBuilder.show();
+                }
             }
         });
     }
