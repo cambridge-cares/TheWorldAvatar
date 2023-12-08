@@ -423,16 +423,40 @@ const chatbotResponseCard = (function () {
     }
 })()
 
-const inputField = {
-    populateInputText(text) {
-        document.getElementById('input-field').value = text
-        window.scrollTo(0, 0);
-    },
+const inputField =  (function(){
+    const askButton = document.getElementById('ask-button')
 
-    addToInputText(text) {
-        document.getElementById('input-field').value += text
-    },
-}
+    return {
+        populateInputText(text) {
+            document.getElementById('input-field').value = text
+            window.scrollTo(0, 0);
+        },
+    
+        addToInputText(text) {
+            document.getElementById('input-field').value += text
+        },
+
+        disableAsk() {
+            askButton.className = "mybutton spinner"
+        },
+
+        enableAsk() {
+            askButton.className = "mybutton"
+        }
+    }
+})()
+
+globalState.registerWatcher("isProcessing", (oldVal, newVal) => {
+    if (newVal === oldVal) {
+        return
+    }
+
+    if (newVal === true) {
+        inputField.disableAsk()
+    } else {
+        inputField.enableAsk()
+    }
+})
 
 async function askQuestion() {
     if (globalState.get("isProcessing")) { // No concurrent questions
@@ -451,8 +475,6 @@ async function askQuestion() {
     kgResponseContainer.reset()
     chatbotResponseCard.reset()
     inferenceMetadataCard.reset()
-    
-    document.getElementById('ask-button').className = "mybutton spinner"
 
     try {
         const trans_results = await fetchTranslation(question)
@@ -477,8 +499,7 @@ async function askQuestion() {
             globalState.set("err", "An unexpected error is encountered. Please report it with the following error message<br/>" + error)
         }
     } finally {
-        globalState.get("isProcessing", false);
-        document.getElementById('ask-button').className = "mybutton"
+        globalState.set("isProcessing", false);
         chatbotResponseCard.hideChatbotSpinner()
     }
 }
