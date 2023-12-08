@@ -33,7 +33,28 @@ const chatbotResponseCard = {
     abortController: new AbortController(),
     streamInterrupted: false,
 
-    // State
+    // Helpers
+    getChatbotResponseElem() {
+        const optional = document.getElementById("chatbot-response")
+        if (!optional) {
+            this.initHtml()
+            return document.getElementById("chatbot-response")
+        } else {
+            return optional
+        }
+    },
+
+    getChatbotSpinner() {
+        const optional = document.getElementById("chatbot-spinner")
+        if (!optional) {
+            this.initHtml()
+            return document.getElementById("chatbot-spinner")
+        } else {
+            return optional
+        }
+    },
+
+    // States
     reset() {
         this.abortController = new AbortController()
         this.streamInterrupted = false
@@ -56,26 +77,6 @@ const chatbotResponseCard = {
         </div>`
     },
 
-    getChatbotResponseElem() {
-        const optional = document.getElementById("chatbot-response")
-        if (!optional) {
-            this.initHtml()
-            return document.getElementById("chatbot-response")
-        } else {
-            return optional
-        }
-    },
-
-    getChatbotSpinner() {
-        const optional = document.getElementById("chatbot-spinner")
-        if (!optional) {
-            this.initHtml()
-            return document.getElementById("chatbot-spinner")
-        } else {
-            return optional
-        }
-    },
-
     hideChatbotSpinner() {
         this.getChatbotSpinner().style.display = "none"
     },
@@ -83,7 +84,7 @@ const chatbotResponseCard = {
     async streamChatbotResponseBodyReader(reader) {
         const elem = this.getChatbotResponseElem()
     
-        displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
+        translationMetadataCard.displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
         // read() returns a promise that resolves when a value has been received
         return reader.read().then(function pump({ done, value }) {
             if (done) {
@@ -102,7 +103,7 @@ const chatbotResponseCard = {
             if (/\s/.test(elem.innerHTML.charAt(0))) {
                 elem.innerHTML = elem.innerHTML.trimStart()
             }
-            updateLatency("chatbot-latency", datum["latency"])
+            translationMetadataCard.updateLatency("chatbot-latency", datum["latency"])
     
             // Read some more, and call this function again
             if (this.streamInterrupted) {
@@ -115,6 +116,7 @@ const chatbotResponseCard = {
         });
     },
 
+    // On-click callbaks
     interruptChatbotStream() {
         this.streamInterrupted = true
         this.abortController.abort()
@@ -144,6 +146,69 @@ const chatbotResponseCard = {
     }
 }
 
+const translationMetadataCard = {
+    // Helpers
+    formatLatency(latency) {
+        if (typeof latency === "number") {
+            return latency.toFixed(2)
+        } else {
+            return latency
+        }
+    },
+
+    getTransMetadataCardUl() {
+        const transMetadataCard = document.getElementById("trans-metadata-card")
+        transMetadataCard.style.display = "block"
+    
+        const ulChildren = transMetadataCard.getElementsByTagName("ul")
+        if (ulChildren.length === 0) {
+            const ul = document.createElement("ul")
+            ul.className = "list-group list-group-flush"
+            transMetadataCard.appendChild(ul)
+            return ul
+        } else {
+            return ulChildren[0]
+        }
+    },
+
+    getLatencyLi() {
+        const optional = document.getElementById("latency-info")
+        if (!optional) {
+            this.getTransMetadataCardUl().insertAdjacentHTML("beforeend", `
+                <li class="list-group-item" id="latency-info"></li>`)
+            return document.getElementById("latency-info")
+        } else {
+            return optional
+        }
+    },
+
+    // UI
+    displayDomainPredicted(domain) {
+        const ul = this.getTransMetadataCardUl()
+        ul.insertAdjacentHTML("beforeend", `<li class="list-group-item"><p style="margin: auto;">Predicted query domain: ${domain}</p></li>`)
+    },
+    
+    displayLatency(id, desc, latency) {
+        const li = this.getLatencyLi()
+        li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">${desc} latency: <span id="${id}">${this.formatLatency(latency)}</span>s.</p>`)
+    },
+    
+    updateLatency(id, latency) {
+        document.getElementById(id).innerHTML = this.formatLatency(latency)
+    },
+    
+    displayPreprocessedQuestion(question) {
+        const ul = this.getTransMetadataCardUl()
+        ul.insertAdjacentHTML("beforeend", `
+            <li class="list-group-item">
+                <p style="margin: auto;">
+                    <strong>The input query has been reformatted to the following</strong>
+                </p>
+                <p style="margin: auto; color: gray;">${question}</p>
+            </li>`)
+    }
+}
+
 /* 
 ------------------------------
 Functions that manipulate UI
@@ -162,65 +227,6 @@ function hideElems() {
     }
 }
 
-function getTransMetadataCardUl() {
-    const transMetadataCard = document.getElementById("trans-metadata-card")
-    transMetadataCard.style.display = "block"
-
-    const ulChildren = transMetadataCard.getElementsByTagName("ul")
-    if (ulChildren.length === 0) {
-        const ul = document.createElement("ul")
-        ul.className = "list-group list-group-flush"
-        transMetadataCard.appendChild(ul)
-        return ul
-    } else {
-        return ulChildren[0]
-    }
-}
-
-function displayDomainPredicted(domain) {
-    const ul = getTransMetadataCardUl()
-    ul.insertAdjacentHTML("beforeend", `<li class="list-group-item"><p style="margin: auto;">Predicted query domain: ${domain}</p></li>`)
-}
-
-function getLatencyLi() {
-    const optional = document.getElementById("latency-info")
-    if (!optional) {
-        getTransMetadataCardUl().insertAdjacentHTML("beforeend", `
-            <li class="list-group-item" id="latency-info"></li>`)
-        return document.getElementById("latency-info")
-    } else {
-        return optional
-    }
-}
-
-function formatLatency(latency) {
-    if (typeof latency === "number") {
-        return latency.toFixed(2)
-    } else {
-        return latency
-    }
-}
-
-function displayLatency(id, desc, latency) {
-    const li = getLatencyLi()
-    li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">${desc} latency: <span id="${id}">${formatLatency(latency)}</span>s.</p>`)
-}
-
-function updateLatency(id, latency) {
-    document.getElementById(id).innerHTML = formatLatency(latency)
-}
-
-function displayPreprocessedQuestion(question) {
-    const ul = getTransMetadataCardUl()
-    ul.insertAdjacentHTML("beforeend", `
-        <li class="list-group-item">
-            <p style="margin: auto;">
-                <strong>The input query has been reformatted to the following</strong>
-            </p>
-            <p style="margin: auto; color: gray;">${question}</p>
-        </li>`)
-}
-
 function displaySparqlQueryPredicted(sparql_query) {
     document.getElementById("sparql-query-predicted").innerHTML = sparql_query
     document.getElementById('sparql-query-predicted-container').style.display = "block";
@@ -233,10 +239,10 @@ function displaySparqlQueryPostProcessed(sparql_query) {
 
 function displayTranslationResults(json) {
     if (json["question"] != json["preprocessed_question"]) {
-        displayPreprocessedQuestion(json["preprocessed_question"])
+        translationMetadataCard.displayPreprocessedQuestion(json["preprocessed_question"])
     }
-    displayDomainPredicted(json["domain"])
-    displayLatency("trans-latency", "Translation", json["latency"])
+    translationMetadataCard.displayDomainPredicted(json["domain"])
+    translationMetadataCard.displayLatency("trans-latency", "Translation", json["latency"])
 
     displaySparqlQueryPredicted(json["sparql"]["predicted"])
     if (json["sparql"]["postprocessed"]) {
@@ -291,7 +297,7 @@ function displayKgResponse(data) {
 }
 
 function displayKgResults(json) {
-    displayLatency("kg-latency", "SPARQL query execution", json["latency"])
+    translationMetadataCard.displayLatency("kg-latency", "SPARQL query execution", json["latency"])
     displayKgResponse(json["data"])
 }
 
