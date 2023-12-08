@@ -45,7 +45,7 @@ public class DashboardClient {
         this.dashboardAccountPassword = credentials[1];
         // Verify if the dashboard container has been set up, and throws an error if not
         // A GET request to the endpoint should return a valid status code with an HTML file
-        HttpResponse response = AgentCommunicationClient.sendGetRequest(this.serviceClient.getDashboardUrl(), this.dashboardAccountUser, this.dashboardAccountPassword);
+        HttpResponse<String> response = AgentCommunicationClient.sendGetRequest(this.serviceClient.getDashboardUrl(), this.dashboardAccountUser, this.dashboardAccountPassword);
         AgentCommunicationClient.verifySuccessfulRequest(response, DASHBOARD_UNAVAILABLE_ERROR);
     }
 
@@ -71,7 +71,7 @@ public class DashboardClient {
     private void createServiceAccountToken() {
         LOGGER.info("Checking for valid service accounts...");
         String route = this.serviceClient.getDashboardUrl() + SERVICE_ACCOUNT_ROUTE;
-        HttpResponse response = AgentCommunicationClient.sendGetRequest(route + SERVICE_ACCOUNT_SEARCH_SUB_ROUTE, this.dashboardAccountUser, this.dashboardAccountPassword);
+        HttpResponse<String> response = AgentCommunicationClient.sendGetRequest(route + SERVICE_ACCOUNT_SEARCH_SUB_ROUTE, this.dashboardAccountUser, this.dashboardAccountPassword);
         JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
         // This should return a JSON array of objects, which may or may not have any existing accounts
         JsonArray accountInfo = responseBody.get("serviceAccounts").getAsJsonArray();
@@ -109,7 +109,7 @@ public class DashboardClient {
         LOGGER.info("Retrieving existing data source connections if any...");
         String route = this.serviceClient.getDashboardUrl() + DATA_SOURCE_ROUTE;
         // Retrieves any existing data connections if available
-        HttpResponse response = AgentCommunicationClient.sendGetRequest(route, this.serviceAccountToken);
+        HttpResponse<String> response = AgentCommunicationClient.sendGetRequest(route, this.serviceAccountToken);
         JsonArray responseArray = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonArray();
         // A data source map to make it easier to check for its existence
         Map<String, String> existingDataSources = new HashMap<>();
@@ -177,7 +177,7 @@ public class DashboardClient {
         }
         LOGGER.debug("Sending request to create dashboard...");
         // Create a new dashboard based on the JSON model using a POST request with security token
-        HttpResponse response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.serviceAccountToken);
+        HttpResponse<String> response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.serviceAccountToken);
         JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
         try {
             AgentCommunicationClient.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + responseBody);
@@ -197,7 +197,7 @@ public class DashboardClient {
      */
     private GrafanaModel overwriteExistingModel(String title, GrafanaModel dataModel) {
         String searchRoute = this.serviceClient.getDashboardUrl() + DASHBOARD_SEARCH_ROUTE;
-        HttpResponse response = AgentCommunicationClient.sendGetRequest(searchRoute, this.serviceAccountToken);
+        HttpResponse<String> response = AgentCommunicationClient.sendGetRequest(searchRoute, this.serviceAccountToken);
         JsonArray dashboards = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonArray();
         for (JsonElement dashboard : dashboards) {
             JsonObject dashboardData = dashboard.getAsJsonObject();

@@ -36,7 +36,7 @@ public class AgentCommunicationClient {
      * @param response     The response returned from the API.
      * @param errorMessage Error message to display if unsuccessful.
      */
-    public static void verifySuccessfulRequest(HttpResponse response, String errorMessage) {
+    public static void verifySuccessfulRequest(HttpResponse<String> response, String errorMessage) {
         if (response.statusCode() == 400) {
             LOGGER.fatal(errorMessage);
             throw new IllegalArgumentException(errorMessage);
@@ -52,8 +52,8 @@ public class AgentCommunicationClient {
      * @param response The response returned from the API.
      * @return The response body as either a JSON Object or Array.
      */
-    public static JsonElement retrieveResponseBody(HttpResponse response) {
-        JsonElement jsonResponse = JsonParser.parseString(response.body().toString());
+    public static JsonElement retrieveResponseBody(HttpResponse<String> response) {
+        JsonElement jsonResponse = JsonParser.parseString(response.body());
         // When the response is a JSON Object
         if (jsonResponse.isJsonObject()) {
             return jsonResponse.getAsJsonObject();
@@ -67,7 +67,7 @@ public class AgentCommunicationClient {
      *
      * @param url API endpoint.
      */
-    public static HttpResponse sendGetRequest(String url) {return sendGetRequest(url, null, "", "");}
+    public static HttpResponse<String> sendGetRequest(String url) {return sendGetRequest(url, null, "", "");}
 
     /**
      * Sends a GET request to a specific API endpoint authenticated with security tokens.
@@ -75,7 +75,7 @@ public class AgentCommunicationClient {
      * @param url         API endpoint.
      * @param bearerToken API token to access endpoint.
      */
-    public static HttpResponse sendGetRequest(String url, String bearerToken) {return sendGetRequest(url, bearerToken, "", "");}
+    public static HttpResponse<String> sendGetRequest(String url, String bearerToken) {return sendGetRequest(url, bearerToken, "", "");}
 
     /**
      * Sends a GET request to a specific API endpoint with basic authentication.
@@ -84,7 +84,7 @@ public class AgentCommunicationClient {
      * @param userName Username to access endpoint.
      * @param password Password to access endpoint.
      */
-    public static HttpResponse sendGetRequest(String url, String userName, String password) {return sendGetRequest(url, null, userName, password);}
+    public static HttpResponse<String> sendGetRequest(String url, String userName, String password) {return sendGetRequest(url, null, userName, password);}
 
     /**
      * Sends a GET request to a specific API endpoint with no, basic or token authentication.
@@ -94,7 +94,7 @@ public class AgentCommunicationClient {
      * @param userName    Username to access endpoint.
      * @param password    Password to access endpoint.
      */
-    public static HttpResponse sendGetRequest(String url, String bearerToken, String userName, String password) {
+    public static HttpResponse<String> sendGetRequest(String url, String bearerToken, String userName, String password) {
         try {
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -125,7 +125,7 @@ public class AgentCommunicationClient {
      * @param userName   Username for basic authentication.
      * @param password   Password for basic authentication.
      */
-    public static HttpResponse sendPostRequest(String url, String jsonParams, String userName, String password) {return sendPostRequest(url, jsonParams, null, userName, password);}
+    public static HttpResponse<String> sendPostRequest(String url, String jsonParams, String userName, String password) {return sendPostRequest(url, jsonParams, null, userName, password);}
 
     /**
      * An overloaded method that sends a POST request with JSON parameters to a specific API endpoint authenticated with security tokens.
@@ -134,7 +134,7 @@ public class AgentCommunicationClient {
      * @param jsonParams  JSON parameters to be sent in the request body.
      * @param bearerToken API token to access endpoint.
      */
-    public static HttpResponse sendPostRequest(String url, String jsonParams, String bearerToken) {return sendPostRequest(url, jsonParams, bearerToken, null, null);}
+    public static HttpResponse<String> sendPostRequest(String url, String jsonParams, String bearerToken) {return sendPostRequest(url, jsonParams, bearerToken, null, null);}
 
     /**
      * A method that sends a POST request with JSON parameters to a specific API endpoint with basic or token authentication.
@@ -145,7 +145,7 @@ public class AgentCommunicationClient {
      * @param userName    Username for basic authentication.
      * @param password    Password for basic authentication.
      */
-    public static HttpResponse sendPostRequest(String url, String jsonParams, String bearerToken, String userName, String password) {
+    public static HttpResponse<String> sendPostRequest(String url, String jsonParams, String bearerToken, String userName, String password) {
         try {
             HttpRequest.Builder request = HttpRequest.newBuilder()
                     .header("Content-Type", "application/json")

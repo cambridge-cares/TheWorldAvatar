@@ -101,10 +101,10 @@ public class SparqlClient {
         // Send a GET request to this specific url
         String requestUrl = url + "namespace?describe-each-named-graph=false";
         // If there is no password, send the GET request without an authentication header.
-        HttpResponse response = password.isEmpty() ? AgentCommunicationClient.sendGetRequest(requestUrl) :
+        HttpResponse<String> response = password.isEmpty() ? AgentCommunicationClient.sendGetRequest(requestUrl) :
                 // Else, the authentication header must be included
                 AgentCommunicationClient.sendGetRequest(requestUrl, username, password);
-        return parseXmlNamespaces(response.body().toString(), url);
+        return parseXmlNamespaces(response.body(), url);
     }
 
     /**
