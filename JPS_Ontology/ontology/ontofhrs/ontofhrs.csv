@@ -46,9 +46,9 @@ Rating Scheme,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Ratin
 http://ies.data.gov.uk/ontology/ies4#BoundingState,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Bounding State
 BusinessEstablishmentStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment Start
 BusinessEstablishmentEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment End
-http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,,,,,,,,http://ies.data.gov.uk/ontology/ies4,Particular Period
-RatingStart,,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Start
-RatingEnd,,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating End
+http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Particular Period
+RatingStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Start
+RatingEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating End
 has Address,Object Property,,,Business Establishment,Address,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has address
 has Rating,Object Property,,,Business Establishment,Rating,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has rating
 has Local Authority,Object Property,,,Business Establishment,Local Authority,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has local authority
