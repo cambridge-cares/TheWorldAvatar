@@ -26,31 +26,27 @@ Global states
 */
 
 const globalState = (function () {
-    let isProcessing = false
-    let chatbotLatency = null
-    let chatbotLatencyWatcher = null
+    const states = {
+        isProcessing: false,
+        chatbotLatency: null,
+        err: null
+    }
+    const watchers = {}
 
     return {
-        getIsProcessing() {
-            return isProcessing
+        get(prop) {
+            return states[prop]
         },
-        setIsProcessing(val) {
-            isProcessing = val
-        },
+        set(prop, val) {
+            const oldVal = states[prop]
+            states[prop] = val
 
-        getChatbotLatency() {
-            return chatbotLatency
-        },
-        setChatbotLatency(val) {
-            const oldVal = chatbotLatency
-            chatbotLatency = val
-
-            if (chatbotLatencyWatcher) {
-                chatbotLatencyWatcher(oldVal, val)
+            if (prop in watchers) {
+                watchers[prop](oldVal, val)
             }
         },
-        registerChatbotLatencyWatcher(watcher) {
-            chatbotLatencyWatcher = watcher
+        registerWatcher(prop, watcher) {
+            watchers[prop] = watcher
         }
     }
 })()
@@ -60,6 +56,14 @@ const globalState = (function () {
 API calls
 ------------------------------
 */
+
+async function throwErrorIfNotOk(res) {
+    if (!res.ok) {
+        console.log(await res.text())
+        throw new HttpError(res.status)
+    }
+    return res
+}
 
 async function fetchTranslation(question) {
     return fetch("/translate", {
@@ -73,7 +77,6 @@ async function fetchTranslation(question) {
         .then(throwErrorIfNotOk)
         .then(res => res.json())
 }
-
 
 async function fetchKgResults(domain, sparql_query) {
     return fetch("/kg", {
@@ -93,6 +96,28 @@ async function fetchKgResults(domain, sparql_query) {
 UI Components
 ------------------------------
 */
+
+const errorContainer = (function () {
+    const elem = document.getElementById("error-container")
+
+    return {
+        reset() {
+            elem.style.display = "none"
+            globalState.set("err", null)
+        },
+
+        displayError(message) {
+            elem.innerHTML = message
+            elem.style.display = "block"
+        }
+    }
+})();
+
+globalState.registerWatcher("err", (oldVal, newVal) => {
+    if (newVal) {
+        errorContainer.displayError(newVal)
+    }
+})
 
 const inferenceMetadataCard = (function () {
     const elem = document.getElementById("infer-metadata-card")
@@ -130,14 +155,14 @@ const inferenceMetadataCard = (function () {
             return optional
         }
     }
-    
+
     function _displayLatency(id, desc, latency) {
         if (elem.style.display !== "block") {
             elem.style.display = "block"
         }
         getLatencyLi().insertAdjacentHTML("beforeend", `<p style="margin: auto;">${desc} latency: <span id="${id}">${formatLatency(latency)}</span>s.</p>`)
     }
-    
+
     function _updateLatency(id, latency) {
         document.getElementById(id).innerHTML = formatLatency(latency)
     }
@@ -171,7 +196,7 @@ const inferenceMetadataCard = (function () {
     }
 })();
 
-globalState.registerChatbotLatencyWatcher((oldVal, newVal) => {
+globalState.registerWatcher("chatbotLatency", (oldVal, newVal) => {
     if (newVal === null) {
         inferenceMetadataCard.displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
     } else if (newVal !== oldVal) {
@@ -206,7 +231,7 @@ const sparqlContainer = (function () {
             if (trans_results["sparql"]["postprocessed"]) {
                 displaySparqlQueryPostProcessed(trans_results["sparql"]["postprocessed"])
             } else {
-                displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
+                globalState.set("err", "The model is unable to generate a well-formed query. Please try reformulating your question.")
             }
 
             elem.style.display = "block"
@@ -260,7 +285,7 @@ const kgResponseContainer = (function () {
 
         render(data) {
             if (!data) {
-                displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
+                globalState.set("err", "The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
                 return
             }
             let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
@@ -317,7 +342,7 @@ const chatbotResponseCard = (function () {
     let streamInterrupted = false
 
     async function streamChatbotResponseBodyReader(reader) {
-        globalState.setChatbotLatency(null)
+        globalState.set("chatbotLatency", null)
 
         function pump({ done, value }) {
             if (done) {
@@ -336,7 +361,7 @@ const chatbotResponseCard = (function () {
             if (/\s/.test(chatbotResponsePara.innerHTML.charAt(0))) {
                 chatbotResponsePara.innerHTML = chatbotResponsePara.innerHTML.trimStart()
             }
-            globalState.setChatbotLatency(datum["latency"])
+            globalState.set("chatbotLatency", datum["latency"])
 
             if (streamInterrupted) {
                 return reader.cancel()
@@ -410,7 +435,7 @@ const inputField = {
 }
 
 async function askQuestion() {
-    if (globalState.getIsProcessing()) { // No concurrent questions
+    if (globalState.get("isProcessing")) { // No concurrent questions
         return;
     }
 
@@ -419,23 +444,24 @@ async function askQuestion() {
         return;
     }
 
-    hideElems();
+    globalState.set("isProcessing", true);
 
-    globalState.setIsProcessing(true);
+    errorContainer.reset()
     sparqlContainer.reset()
     kgResponseContainer.reset()
     chatbotResponseCard.reset()
     inferenceMetadataCard.reset()
+    
     document.getElementById('ask-button').className = "mybutton spinner"
 
     try {
         const trans_results = await fetchTranslation(question)
         sparqlContainer.render(trans_results)
-        inferenceMetadataCard.displayTranslationMetadata({ 
+        inferenceMetadataCard.displayTranslationMetadata({
             question,
-            preprocessedQuestion: trans_results["preprocessed_question"], 
-            domain: trans_results["domain"], 
-            latency: trans_results["latency"] 
+            preprocessedQuestion: trans_results["preprocessed_question"],
+            domain: trans_results["domain"],
+            latency: trans_results["latency"]
         })
 
         const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
@@ -446,46 +472,13 @@ async function askQuestion() {
     } catch (error) {
         console.log(error)
         if ((error instanceof HttpError) && (error.statusCode == 500)) {
-            displayError("An internal server error is encountered. Please try again.");
+            globalState.set("err", "An internal server error is encountered. Please try again.")
         } else {
-            displayError("An unexpected error is encountered. Please report it with the following error message<br/>" + error)
+            globalState.set("err", "An unexpected error is encountered. Please report it with the following error message<br/>" + error)
         }
     } finally {
-        globalState.getIsProcessing(false);
+        globalState.get("isProcessing", false);
         document.getElementById('ask-button').className = "mybutton"
         chatbotResponseCard.hideChatbotSpinner()
     }
-}
-
-/* 
-------------------------------
-Functions that manipulate UI
-------------------------------
-*/
-
-function hideElems() {
-    let elemIds = ["error-container"]
-    for (const elemId of elemIds) {
-        document.getElementById(elemId).style.display = "none"
-    }
-}
-
-function displayError(message) {
-    elem = document.getElementById("error-container")
-    elem.innerHTML = message
-    elem.style.display = "block"
-}
-
-/* 
-----------------------------------------
-API calls
-----------------------------------------
-*/
-
-async function throwErrorIfNotOk(res) {
-    if (!res.ok) {
-        console.log(await res.text())
-        throw new HttpError(res.status)
-    }
-    return res
 }
