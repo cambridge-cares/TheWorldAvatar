@@ -77,8 +77,6 @@ The OSMAgent should be pulled automatically with the stack-manager, if not you c
 ### 4.2 Starting with the stack-manager
 The agent has been implemented to work in the stack. To do so, place [osmagent.json](stack-manager-config/inputs/config/services/osmagent.json) in the [stack-manager config directory]. 
 
-The agent container makes use of bind mounts to read in configuration details. Replace `<REPLACE_WITH_YOUR_DIRECTORY>` of the bind mount in [osmagent.json](stack-manager-config/inputs/config/services/osmagent.json) with the absolute path to OSMAgent's [resources folder](osmagent/src/main/resources) on your local machine.
-
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
 ### 4.3 Running the Agent
