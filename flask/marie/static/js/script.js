@@ -28,8 +28,121 @@ Global variables
 let isProcessing = false
 let isShowingIRI = false
 let table = null
-let abortController = null
-let streamInterrupted = false
+
+const chatbotResponseCard = {
+    abortController: new AbortController(),
+    streamInterrupted: false,
+
+    // State
+    reset() {
+        this.abortController = new AbortController()
+        this.streamInterrupted = false
+    },
+
+    // UI
+    initHtml() {
+        const card = document.getElementById("chatbot-response-card")
+        card.style.display = "block"
+        card.innerHTML = `
+        <div class="card-body">
+            <h5 class="card-title">Marie's response</h5>
+            <div>
+                <p id="chatbot-response" style="display: inline-block; margin: 0;"></p>
+                <span class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner">
+                    <span class="sr-only">Loading...</span>
+                </span>
+            <div>
+            <a class="card-link" id="chatbot-stream-interrupt" onclick="chatbotResponseCard.interruptChatbotStream()" style="cursor: pointer;">Stop</a>
+        </div>`
+    },
+
+    getChatbotResponseElem() {
+        const optional = document.getElementById("chatbot-response")
+        if (!optional) {
+            this.initHtml()
+            return document.getElementById("chatbot-response")
+        } else {
+            return optional
+        }
+    },
+
+    getChatbotSpinner() {
+        const optional = document.getElementById("chatbot-spinner")
+        if (!optional) {
+            this.initHtml()
+            return document.getElementById("chatbot-spinner")
+        } else {
+            return optional
+        }
+    },
+
+    hideChatbotSpinner() {
+        this.getChatbotSpinner().style.display = "none"
+    },
+
+    async streamChatbotResponseBodyReader(reader) {
+        const elem = this.getChatbotResponseElem()
+    
+        displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
+        // read() returns a promise that resolves when a value has been received
+        return reader.read().then(function pump({ done, value }) {
+            if (done) {
+                // Do something with last chunk of data then exit reader
+                document.getElementById("chatbot-stream-interrupt").style.display = "none"
+                return;
+            }
+            // Otherwise do something here to process current chunk
+            value = value.trim()
+            if (value.startsWith("data: ")) {
+                value = value.substring("data: ".length)
+            }
+            datum = JSON.parse(value)
+    
+            elem.innerHTML += datum["content"]
+            if (/\s/.test(elem.innerHTML.charAt(0))) {
+                elem.innerHTML = elem.innerHTML.trimStart()
+            }
+            updateLatency("chatbot-latency", datum["latency"])
+    
+            // Read some more, and call this function again
+            if (this.streamInterrupted) {
+                return reader.cancel().then(() => {
+                    document.getElementById("chatbot-stream-interrupt").style.display = "none"
+                })
+            } else {
+                return reader.read().then(pump)
+            }
+        });
+    },
+
+    interruptChatbotStream() {
+        this.streamInterrupted = true
+        this.abortController.abort()
+        document.getElementById("chatbot-stream-interrupt").style.display = "none"
+    },
+
+    // API calls
+    async fetchChatbotResponseReader(question, data) {
+        const bindings = data["results"]["bindings"].map(binding => Object.keys(binding).reduce((obj, k) => {
+            if (!binding[k]["value"].startsWith(TWA_ABOX_IRI_PREFIX)) {
+                obj[k] = binding[k]["value"]
+            }
+            return obj
+        }, {}))
+    
+        return fetch("/chatbot", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ question, data: JSON.stringify(bindings) }),
+            signal: this.abortController.signal
+        })
+            .then(throwErrorIfNotOk)
+            .then(res => res.body.pipeThrough(new TextDecoderStream()).getReader())
+    }
+}
 
 /* 
 ------------------------------
@@ -182,82 +295,6 @@ function displayKgResults(json) {
     displayKgResponse(json["data"])
 }
 
-function initChatbotResponseCard() {
-    const card = document.getElementById("chatbot-response-card")
-    card.style.display = "block"
-    card.innerHTML = `
-    <div class="card-body">
-        <h5 class="card-title">Marie's response</h5>
-        <div>
-            <p id="chatbot-response" style="display: inline-block; margin: 0;"></p>
-            <span class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner">
-                <span class="sr-only">Loading...</span>
-            </span>
-        <div>
-        <a class="card-link" id="chatbot-stream-interrupt" onclick="interruptChatbotStream()" style="cursor: pointer;">Stop</a>
-        <a class="card-link" id="chatbot-regenerate" onclick="regenerateChatbotResponse()" style="cursor: pointer; display: none;">Regenerate</a>
-    </div>`
-}
-
-function getChatbotResponseElem() {
-    const optional = document.getElementById("chatbot-response")
-    if (!optional) {
-        initChatbotResponseCard()
-        return document.getElementById("chatbot-response")
-    } else {
-        return optional
-    }
-}
-
-function getChatbotSpinner() {
-    const optional = document.getElementById("chatbot-spinner")
-    if (!optional) {
-        initChatbotResponseCard()
-        return document.getElementById("chatbot-spinner")
-    } else {
-        return optional
-    }
-}
-
-function hideChatbotSpinner() {
-    getChatbotSpinner().style.display = "none"
-}
-
-async function streamChatbotResponseBodyReader(reader) {
-    const elem = getChatbotResponseElem()
-
-    displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
-    // read() returns a promise that resolves when a value has been received
-    return reader.read().then(function pump({ done, value }) {
-        if (done) {
-            // Do something with last chunk of data then exit reader
-            document.getElementById("chatbot-stream-interrupt").style.display = "none"
-            return;
-        }
-        // Otherwise do something here to process current chunk
-        value = value.trim()
-        if (value.startsWith("data: ")) {
-            value = value.substring("data: ".length)
-        }
-        datum = JSON.parse(value)
-
-        elem.innerHTML += datum["content"]
-        if (/\s/.test(elem.innerHTML.charAt(0))) {
-            elem.innerHTML = elem.innerHTML.trimStart()
-        }
-        updateLatency("chatbot-latency", datum["latency"])
-
-        // Read some more, and call this function again
-        if (streamInterrupted) {
-            return reader.cancel().then(() => {
-                document.getElementById("chatbot-stream-interrupt").style.display = "none"
-            })
-        } else {
-            return reader.read().then(pump)
-        }
-    });
-}
-
 function displayError(message) {
     elem = document.getElementById("error-container")
     elem.innerHTML = message
@@ -293,8 +330,7 @@ async function askQuestion() {
     hideElems();
 
     isProcessing = true;
-    streamInterrupted = false
-    abortController = new AbortController()
+    chatbotResponseCard.reset()
     document.getElementById('ask-button').className = "mybutton spinner"
 
     try {
@@ -304,9 +340,8 @@ async function askQuestion() {
         const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
         displayKgResults(kg_results)
 
-        initChatbotResponseCard()
-        const chatbotResponseReader = await fetchChatbotResponseReader(question, kg_results["data"], abortController.signal)
-        await streamChatbotResponseBodyReader(chatbotResponseReader)
+        chatbotResponseCard.initHtml()
+        await chatbotResponseCard.fetchChatbotResponseReader(question, kg_results["data"]).then(reader => chatbotResponseCard.streamChatbotResponseBodyReader(reader))
     } catch (error) {
         console.log(error)
         if ((error instanceof HttpError) && (error.statusCode == 500)) {
@@ -317,7 +352,7 @@ async function askQuestion() {
     } finally {
         isProcessing = false;
         document.getElementById('ask-button').className = "mybutton"
-        hideChatbotSpinner()
+        chatbotResponseCard.hideChatbotSpinner()
     }
 }
 
@@ -351,15 +386,7 @@ function toggleIRIColumns() {
     }
 }
 
-function interruptChatbotStream() {
-    streamInterrupted = true
-    abortController.abort()
-    document.getElementById("chatbot-stream-interrupt").style.display = "none"
-}
 
-function regenerateChatbotResponse() {
-
-}
 
 /* 
 ----------------------------------------
@@ -375,7 +402,7 @@ async function throwErrorIfNotOk(res) {
     return res
 }
 
-function fetchTranslation(question) {
+async function fetchTranslation(question) {
     return fetch("/translate", {
         method: "POST",
         headers: {
@@ -388,7 +415,7 @@ function fetchTranslation(question) {
         .then(res => res.json())
 }
 
-function fetchKgResults(domain, sparql_query) {
+async function fetchKgResults(domain, sparql_query) {
     return fetch("/kg", {
         method: "POST",
         headers: {
@@ -401,23 +428,3 @@ function fetchKgResults(domain, sparql_query) {
         .then(res => res.json())
 }
 
-function fetchChatbotResponseReader(question, data, abortSignal) {
-    const bindings = data["results"]["bindings"].map(binding => Object.keys(binding).reduce((obj, k) => {
-        if (!binding[k]["value"].startsWith(TWA_ABOX_IRI_PREFIX)) {
-            obj[k] = binding[k]["value"]
-        }
-        return obj
-    }, {}))
-
-    return fetch("/chatbot", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ question, data: JSON.stringify(bindings) }),
-        signal: abortSignal
-    })
-        .then(throwErrorIfNotOk)
-        .then(res => res.body.pipeThrough(new TextDecoderStream()).getReader())
-}
