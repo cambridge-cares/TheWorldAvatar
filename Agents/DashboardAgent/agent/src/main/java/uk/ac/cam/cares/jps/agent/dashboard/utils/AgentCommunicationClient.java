@@ -24,6 +24,10 @@ public class AgentCommunicationClient {
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
+    // Private constructor to prevent instantiation.
+    private AgentCommunicationClient() {
+    }
+
     /**
      * Verifies the success of the request, which should return status code of 200.
      * If unsuccessful, agent will stop processing the request.

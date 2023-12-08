@@ -21,6 +21,9 @@ public class SparqlQuery {
     public static final String MIN_THRESHOLD = "minthreshold";
     public static final String MAX_THRESHOLD = "maxthreshold";
 
+    // Private constructor to prevent instantiation.
+    private SparqlQuery(){}
+
     /**
      * Generate a simple SPARQL query for facilities. This query is meant to detect which namespace contains the
      * building hierarchy. Even one result will indicate the namespace contains the hierarchy.
