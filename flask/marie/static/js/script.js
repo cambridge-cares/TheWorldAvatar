@@ -21,67 +21,239 @@ class HttpError extends Error {
 
 /* 
 ------------------------------
-Global variables
+Global states
 ------------------------------
 */
 
+const globalState = {
+    isProcessing: false
+}
 
-const inputField = {
-    isProcessing: false,
+/* 
+------------------------------
+API calls
+------------------------------
+*/
 
-    populateInputText(text) {
-        document.getElementById('input-field').value = text
-        window.scrollTo(0, 0);
+async function fetchTranslation(question) {
+    return fetch("/translate", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ question })
+    })
+        .then(throwErrorIfNotOk)
+        .then(res => res.json())
+}
+
+
+async function fetchKgResults(domain, sparql_query) {
+    return fetch("/kg", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ domain, sparql_query })
+    })
+        .then(throwErrorIfNotOk)
+        .then(res => res.json())
+}
+
+/* 
+------------------------------
+UI Components
+------------------------------
+*/
+
+const inferenceMetadataCard = {
+    // Helpers
+    formatLatency(latency) {
+        if (typeof latency === "number") {
+            return latency.toFixed(2)
+        } else {
+            return latency
+        }
     },
-    
-    addToInputText(text) {
-        document.getElementById('input-field').value += text
+
+    getTransMetadataCardUl() {
+        const elem = document.getElementById("infer-metadata-card")
+        elem.style.display = "block"
+
+        const ulChildren = elem.getElementsByTagName("ul")
+        if (ulChildren.length === 0) {
+            const ul = document.createElement("ul")
+            ul.className = "list-group list-group-flush"
+            elem.appendChild(ul)
+            return ul
+        } else {
+            return ulChildren[0]
+        }
     },
-    
-    async askQuestion() {
-        if (this.isProcessing) { // No concurrent questions
-            return;
+
+    getLatencyLi() {
+        const optional = document.getElementById("latency-info")
+        if (!optional) {
+            this.getTransMetadataCardUl().insertAdjacentHTML("beforeend", `
+                <li class="list-group-item" id="latency-info"></li>`)
+            return document.getElementById("latency-info")
+        } else {
+            return optional
         }
-    
-        const question = document.getElementById("input-field").value;
-        if (question === "") {
-            return;
-        }
-    
-        hideElems();
-    
-        this.isProcessing = true;
-        chatbotResponseCard.reset()
-        document.getElementById('ask-button').className = "mybutton spinner"
-    
-        try {
-            const trans_results = await translationContainer.fetchTranslation(question)
-            translationContainer.displayTranslationResults(trans_results)
-    
-            const kg_results = await kgResponseContainer.fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
-            kgResponseContainer.displayKgResults(kg_results)
-    
-            chatbotResponseCard.initHtml()
-            const reader = await chatbotResponseCard.fetchChatbotResponseReader(question, kg_results["data"])
-            await chatbotResponseCard.streamChatbotResponseBodyReader(reader)
-        } catch (error) {
-            console.log(error)
-            if ((error instanceof HttpError) && (error.statusCode == 500)) {
-                displayError("An internal server error is encountered. Please try again.");
-            } else {
-                displayError("An unexpected error is encountered. Please report it with the following error message<br/>" + error)
-            }
-        } finally {
-            this.isProcessing = false;
-            document.getElementById('ask-button').className = "mybutton"
-            chatbotResponseCard.hideChatbotSpinner()
-        }
+    },
+
+    // UI
+    displayDomainPredicted(domain) {
+        const ul = this.getTransMetadataCardUl()
+        ul.insertAdjacentHTML("beforeend", `<li class="list-group-item"><p style="margin: auto;">Predicted query domain: ${domain}</p></li>`)
+    },
+
+    displayLatency(id, desc, latency) {
+        const li = this.getLatencyLi()
+        li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">${desc} latency: <span id="${id}">${this.formatLatency(latency)}</span>s.</p>`)
+    },
+
+    updateLatency(id, latency) {
+        document.getElementById(id).innerHTML = this.formatLatency(latency)
+    },
+
+    displayPreprocessedQuestion(question) {
+        const ul = this.getTransMetadataCardUl()
+        ul.insertAdjacentHTML("beforeend", `
+            <li class="list-group-item">
+                <p style="margin: auto;">
+                    <strong>The input query has been reformatted to the following</strong>
+                </p>
+                <p style="margin: auto; color: gray;">${question}</p>
+            </li>`)
     }
+}
+
+const translationContainer = {
+    // Public
+    async render(trans_results) {
+        if (trans_results["question"] != trans_results["preprocessed_question"]) {
+            inferenceMetadataCard.displayPreprocessedQuestion(trans_results["preprocessed_question"])
+        }
+        inferenceMetadataCard.displayDomainPredicted(trans_results["domain"])
+        inferenceMetadataCard.displayLatency("trans-latency", "Translation", trans_results["latency"])
+
+        this.displaySparqlQueryPredicted(trans_results["sparql"]["predicted"])
+        if (trans_results["sparql"]["postprocessed"]) {
+            this.displaySparqlQueryPostProcessed(trans_results["sparql"]["postprocessed"])
+        } else {
+            displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
+        }
+    },
+
+    // UI
+    displaySparqlQueryPredicted(sparql_query) {
+        document.getElementById("sparql-query-predicted").innerHTML = sparql_query
+        document.getElementById('sparql-query-predicted-container').style.display = "block";
+    },
+
+    displaySparqlQueryPostProcessed(sparql_query) {
+        document.getElementById("sparql-query-postprocessed").innerHTML = sparql_query;
+        document.getElementById('sparql-query-postprocessed-container').style.display = "block";
+    }
+}
+
+
+const kgResponseContainer = {
+    table: null,
+    isShowingIRI: false,
+
+    async render(kg_results) {
+        inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", kg_results["latency"])
+        this.displayKgResponse(kg_results["data"])
+    },
+
+    // UI
+    displayKgResponse(data) {
+        if (!data) {
+            displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
+            return
+        }
+        let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
+
+        let vars = data["head"]["vars"].slice();
+        if (data["results"]["bindings"].length > 0) {
+            vars = vars.filter(varname => varname in data["results"]["bindings"][0])
+        }
+
+        content += "<th>#</th>"
+        vars.forEach(varname => {
+            content += `<th>${varname}</th>`
+        });
+        content += "</tr></thead><tbody>"
+
+        data["results"]["bindings"].forEach((valueset, idx) => {
+            content += `<tr><td>${idx + 1}</td>`
+            vars.forEach(varname => {
+                if (varname in valueset) {
+                    content += `<td>${valueset[varname]["value"]}</td>`
+                } else {
+                    content += "<td></td>"
+                }
+            })
+            content += "</tr>"
+        })
+
+        content += "</tbody></table>"
+        document.getElementById("table-container").innerHTML = content;
+        document.getElementById("toggle-iri").style.display = "block"
+        document.getElementById("results").style.display = "block"
+
+        this.table = new DataTable('#results-table', {
+            retrieve: true,
+            scrollX: true,
+        });
+
+        this.isShowingIRI = true
+        this.toggleIRIColumns()
+    },
+
+    toggleIRIColumns() {
+        if (this.table === null) {
+            return
+        }
+
+        const rowNum = this.table.rows().count()
+        if (rowNum == 0) {
+            return
+        }
+
+        this.isShowingIRI = !this.isShowingIRI
+        const rowData = this.table.row(0).data()
+        const IRIcolIdx = rowData.reduce((arr, val, idx) => {
+            if (val.startsWith(TWA_ABOX_IRI_PREFIX)) {
+                arr.push(idx)
+            }
+            return arr
+        }, [])
+        IRIcolIdx.forEach(colIdx => {
+            const col = this.table.column(colIdx)
+            col.visible(this.isShowingIRI)
+        })
+
+        if (this.isShowingIRI) {
+            document.getElementById("toggle-iri").innerHTML = "Hide IRIs"
+        } else {
+            document.getElementById("toggle-iri").innerHTML = "Show IRIs"
+        }
+    },
 }
 
 const chatbotResponseCard = {
     abortController: new AbortController(),
     streamInterrupted: false,
+
+    async render(question, data) {
+        this.initHtml()
+        return this.fetchChatbotResponseReader(question, data).then(reader => this.streamChatbotResponseBodyReader(reader))
+    },
 
     // Helpers
     getChatbotResponseElem() {
@@ -133,7 +305,7 @@ const chatbotResponseCard = {
 
     async streamChatbotResponseBodyReader(reader) {
         const elem = this.getChatbotResponseElem()
-    
+
         inferenceMetadataCard.displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
         // read() returns a promise that resolves when a value has been received
         return reader.read().then(function pump({ done, value }) {
@@ -148,13 +320,13 @@ const chatbotResponseCard = {
                 value = value.substring("data: ".length)
             }
             datum = JSON.parse(value)
-    
+
             elem.innerHTML += datum["content"]
             if (/\s/.test(elem.innerHTML.charAt(0))) {
                 elem.innerHTML = elem.innerHTML.trimStart()
             }
             inferenceMetadataCard.updateLatency("chatbot-latency", datum["latency"])
-    
+
             // Read some more, and call this function again
             if (this.streamInterrupted) {
                 return reader.cancel().then(() => {
@@ -196,207 +368,54 @@ const chatbotResponseCard = {
     }
 }
 
-const inferenceMetadataCard = {
-    // Helpers
-    formatLatency(latency) {
-        if (typeof latency === "number") {
-            return latency.toFixed(2)
-        } else {
-            return latency
-        }
+const inputField = {
+    isProcessing: false,
+
+    populateInputText(text) {
+        document.getElementById('input-field').value = text
+        window.scrollTo(0, 0);
     },
 
-    getTransMetadataCardUl() {
-        const elem = document.getElementById("infer-metadata-card")
-        elem.style.display = "block"
-    
-        const ulChildren = elem.getElementsByTagName("ul")
-        if (ulChildren.length === 0) {
-            const ul = document.createElement("ul")
-            ul.className = "list-group list-group-flush"
-            elem.appendChild(ul)
-            return ul
-        } else {
-            return ulChildren[0]
-        }
+    addToInputText(text) {
+        document.getElementById('input-field').value += text
     },
-
-    getLatencyLi() {
-        const optional = document.getElementById("latency-info")
-        if (!optional) {
-            this.getTransMetadataCardUl().insertAdjacentHTML("beforeend", `
-                <li class="list-group-item" id="latency-info"></li>`)
-            return document.getElementById("latency-info")
-        } else {
-            return optional
-        }
-    },
-
-    // UI
-    displayDomainPredicted(domain) {
-        const ul = this.getTransMetadataCardUl()
-        ul.insertAdjacentHTML("beforeend", `<li class="list-group-item"><p style="margin: auto;">Predicted query domain: ${domain}</p></li>`)
-    },
-    
-    displayLatency(id, desc, latency) {
-        const li = this.getLatencyLi()
-        li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">${desc} latency: <span id="${id}">${this.formatLatency(latency)}</span>s.</p>`)
-    },
-    
-    updateLatency(id, latency) {
-        document.getElementById(id).innerHTML = this.formatLatency(latency)
-    },
-    
-    displayPreprocessedQuestion(question) {
-        const ul = this.getTransMetadataCardUl()
-        ul.insertAdjacentHTML("beforeend", `
-            <li class="list-group-item">
-                <p style="margin: auto;">
-                    <strong>The input query has been reformatted to the following</strong>
-                </p>
-                <p style="margin: auto; color: gray;">${question}</p>
-            </li>`)
-    }
 }
 
-const kgResponseContainer = {
-    table: null,
-    isShowingIRI: false,
-
-    // UI
-    displayKgResponse(data) {
-        if (!data) {
-            displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
-            return
-        }
-        let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
-    
-        let vars = data["head"]["vars"].slice();
-        if (data["results"]["bindings"].length > 0) {
-            vars = vars.filter(varname => varname in data["results"]["bindings"][0])
-        }
-    
-        content += "<th>#</th>"
-        vars.forEach(varname => {
-            content += `<th>${varname}</th>`
-        });
-        content += "</tr></thead><tbody>"
-    
-        data["results"]["bindings"].forEach((valueset, idx) => {
-            content += `<tr><td>${idx + 1}</td>`
-            vars.forEach(varname => {
-                if (varname in valueset) {
-                    content += `<td>${valueset[varname]["value"]}</td>`
-                } else {
-                    content += "<td></td>"
-                }
-            })
-            content += "</tr>"
-        })
-    
-        content += "</tbody></table>"
-        document.getElementById("table-container").innerHTML = content;
-        document.getElementById("toggle-iri").style.display = "block"
-        document.getElementById("results").style.display = "block"
-    
-        this.table = new DataTable('#results-table', {
-            retrieve: true,
-            scrollX: true,
-        });
-    
-        this.isShowingIRI = true
-        this.toggleIRIColumns()
-    },
-
-    toggleIRIColumns() {
-        if (this.table === null) {
-            return
-        }
-    
-        const rowNum = this.table.rows().count()
-        if (rowNum == 0) {
-            return
-        }
-    
-        this.isShowingIRI = !this.isShowingIRI
-        const rowData = this.table.row(0).data()
-        const IRIcolIdx = rowData.reduce((arr, val, idx) => {
-            if (val.startsWith(TWA_ABOX_IRI_PREFIX)) {
-                arr.push(idx)
-            }
-            return arr
-        }, [])
-        IRIcolIdx.forEach(colIdx => {
-            const col = this.table.column(colIdx)
-            col.visible(this.isShowingIRI)
-        })
-    
-        if (this.isShowingIRI) {
-            document.getElementById("toggle-iri").innerHTML = "Hide IRIs"
-        } else {
-            document.getElementById("toggle-iri").innerHTML = "Show IRIs"
-        }
-    },
-    
-    displayKgResults(json) {
-        inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", json["latency"])
-        this.displayKgResponse(json["data"])
-    },
-
-    // API calls
-    async fetchKgResults(domain, sparql_query) {
-        return fetch("/kg", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ domain, sparql_query })
-        })
-            .then(throwErrorIfNotOk)
-            .then(res => res.json())
+async function askQuestion() {
+    if (globalState.isProcessing) { // No concurrent questions
+        return;
     }
-}
 
-const translationContainer = {
-    // UI
-    displaySparqlQueryPredicted(sparql_query) {
-        document.getElementById("sparql-query-predicted").innerHTML = sparql_query
-        document.getElementById('sparql-query-predicted-container').style.display = "block";
-    },
-    
-    displaySparqlQueryPostProcessed(sparql_query) {
-        document.getElementById("sparql-query-postprocessed").innerHTML = sparql_query;
-        document.getElementById('sparql-query-postprocessed-container').style.display = "block";
-    },
-    
-    displayTranslationResults(json) {
-        if (json["question"] != json["preprocessed_question"]) {
-            inferenceMetadataCard.displayPreprocessedQuestion(json["preprocessed_question"])
-        }
-        inferenceMetadataCard.displayDomainPredicted(json["domain"])
-        inferenceMetadataCard.displayLatency("trans-latency", "Translation", json["latency"])
-    
-        this.displaySparqlQueryPredicted(json["sparql"]["predicted"])
-        if (json["sparql"]["postprocessed"]) {
-            this.displaySparqlQueryPostProcessed(json["sparql"]["postprocessed"])
+    const question = document.getElementById("input-field").value;
+    if (question === "") {
+        return;
+    }
+
+    hideElems();
+
+    globalState.isProcessing = true;
+    chatbotResponseCard.reset()
+    document.getElementById('ask-button').className = "mybutton spinner"
+
+    try {
+        const trans_results = await fetchTranslation(question)
+        await translationContainer.render(trans_results)
+
+        const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
+        await kgResponseContainer.render(kg_results)
+
+        await chatbotResponseCard.render(question, kg_results["data"])
+    } catch (error) {
+        console.log(error)
+        if ((error instanceof HttpError) && (error.statusCode == 500)) {
+            displayError("An internal server error is encountered. Please try again.");
         } else {
-            displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
+            displayError("An unexpected error is encountered. Please report it with the following error message<br/>" + error)
         }
-    },
-
-    // API calls
-    async fetchTranslation(question) {
-        return fetch("/translate", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ question })
-        })
-            .then(throwErrorIfNotOk)
-            .then(res => res.json())
+    } finally {
+        globalState.isProcessing = false;
+        document.getElementById('ask-button').className = "mybutton"
+        chatbotResponseCard.hideChatbotSpinner()
     }
 }
 

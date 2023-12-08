@@ -86,8 +86,8 @@
                 </div>
                 <div class="input-group">
                     <input id="input-field" type="search" autocomplete="off" placeholder="Type your query..."
-                        onkeydown="if (event.keyCode == 13) inputField.askQuestion()">
-                    <button id="ask-button" type="button" class="mybutton" onclick="inputField.askQuestion()"></button>
+                        onkeydown="if (event.keyCode == 13) askQuestion()">
+                    <button id="ask-button" type="button" class="mybutton" onclick="askQuestion()"></button>
                 </div>
             </section>
 
@@ -128,7 +128,7 @@
                     <p>{{question_group["description"]}}</p>
                     <ul>
                         {% for question in question_group["questions"] %}
-                        <li class="sample-question" onclick="inputField.populateInputText('{{question}}'); inputField.askQuestion();">{{question}}
+                        <li class="sample-question" onclick="inputField.populateInputText('{{question}}'); askQuestion();">{{question}}
                         </li>
                         {% endfor %}
                     </ul>
