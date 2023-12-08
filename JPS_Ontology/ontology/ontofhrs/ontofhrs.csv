@@ -59,8 +59,8 @@ has City,Object Property,,,Address,City,,,http://www.theworldavatar.com/ontology
 has Region,Object Property,,,Address,Region,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has region
 has Country,Object Property,,,Address,Country,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has country
 has Rating Scheme,Object Property,,,Rating,Rating Scheme,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has rating scheme
-http://ies.data.gov.uk/ontology/ies4#isStartOf,Object Property,,,BusinessEstablishmentStart,Business Establishment,,,http://ies.data.gov.uk/ontology/ies4,has date of establishment
-http://ies.data.gov.uk/ontology/ies4#isEndOf,Object Property,,,BusinessEstablishmentEnd,Business Establishment,,,http://ies.data.gov.uk/ontology/ies4,has date of closure
+http://ies.data.gov.uk/ontology/ies4#isStartOf,Object Property,,,BusinessEstablishmentStart,Business Establishment,,,http://ies.data.gov.uk/ontology/ies4,is start of
+http://ies.data.gov.uk/ontology/ies4#isEndOf,Object Property,,,BusinessEstablishmentEnd,Business Establishment,,,http://ies.data.gov.uk/ontology/ies4,is end of
 http://ies.data.gov.uk/ontology/ies4#inPeriod,Object Property,,,BusinessEstablishmentStart UNION BusinessEstablishmentEnd UNION RatingStart UNION RatingEnd,http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,,,http://ies.data.gov.uk/ontology/ies4,in period
 has Local Authority Business ID,Data Property,,,Business Establishment,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has local authority business id
 has FHRS ID,Data Property,,,Business Establishment,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has fhrs id
