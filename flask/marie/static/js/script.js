@@ -131,44 +131,46 @@ const inferenceMetadataCard = {
     }
 }
 
-const translationContainer = {
-    sparqlContainer: document.getElementById("sparql-container"),
-    sparqlQueryPredictedDiv: document.getElementById("sparql-query-predicted"),
-    sparqlQueryPredictedContainer: document.getElementById('sparql-query-predicted-container'),
-    sparqlQueryPostprocessedDiv: document.getElementById('sparql-query-postprocessed-container'),
-    sparqlQueryPostprocessedContainer: document.getElementById('sparql-query-postprocessed-container'),
+const sparqlContainer = (function() {
+    const elem = document.getElementById("sparql-container")
+    const sparqlQueryPredictedDiv = document.getElementById("sparql-query-predicted")
+    const sparqlQueryPredictedContainer = document.getElementById('sparql-query-predicted-container')
+    const sparqlQueryPostprocessedDiv = document.getElementById('sparql-query-postprocessed')
+    const sparqlQueryPostprocessedContainer = document.getElementById('sparql-query-postprocessed-container')
 
-    // Public
-    reset() {
-        this.sparqlContainer.style.display = "none"
-    },
-
-    async render(trans_results) {
-        if (trans_results["question"] != trans_results["preprocessed_question"]) {
-            inferenceMetadataCard.displayPreprocessedQuestion(trans_results["preprocessed_question"])
-        }
-        inferenceMetadataCard.displayDomainPredicted(trans_results["domain"])
-        inferenceMetadataCard.displayLatency("trans-latency", "Translation", trans_results["latency"])
-
-        this.displaySparqlQueryPredicted(trans_results["sparql"]["predicted"])
-        if (trans_results["sparql"]["postprocessed"]) {
-            this.displaySparqlQueryPostProcessed(trans_results["sparql"]["postprocessed"])
-        } else {
-            displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
-        }
-    },
-
-    // UI
-    displaySparqlQueryPredicted(sparql_query) {
-        this.sparqlQueryPredictedDiv.innerHTML = sparql_query
-        this.sparqlQueryPredictedContainer.style.display = "block";
-    },
-
-    displaySparqlQueryPostProcessed(sparql_query) {
-        this.sparqlQueryPostprocessedDiv.innerHTML = sparql_query;
-        this.sparqlQueryPostprocessedContainer.style.display = "block";
+    function displaySparqlQueryPredicted(sparql_query) {
+        sparqlQueryPredictedDiv.innerHTML = sparql_query
+        sparqlQueryPredictedContainer.style.display = "block";
     }
-}
+
+    function displaySparqlQueryPostProcessed(sparql_query) {
+        sparqlQueryPostprocessedDiv.innerHTML = sparql_query;
+        sparqlQueryPostprocessedContainer.style.display = "block";
+    }
+
+    return {
+        reset() {
+            elem.style.display = "none"
+        },
+    
+        async render(trans_results) {
+            if (trans_results["question"] != trans_results["preprocessed_question"]) {
+                inferenceMetadataCard.displayPreprocessedQuestion(trans_results["preprocessed_question"])
+            }
+            inferenceMetadataCard.displayDomainPredicted(trans_results["domain"])
+            inferenceMetadataCard.displayLatency("trans-latency", "Translation", trans_results["latency"])
+    
+            displaySparqlQueryPredicted(trans_results["sparql"]["predicted"])
+            if (trans_results["sparql"]["postprocessed"]) {
+                displaySparqlQueryPostProcessed(trans_results["sparql"]["postprocessed"])
+            } else {
+                displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
+            }
+
+            elem.style.display = "block"
+        },
+    }
+})()
 
 const kgResponseContainer = (function() {
     const kgResultsDiv = document.getElementById("kg-response-container")
@@ -385,13 +387,13 @@ async function askQuestion() {
     hideElems();
 
     globalState.isProcessing = true;
-    translationContainer.reset()
+    sparqlContainer.reset()
     chatbotResponseCard.reset()
     document.getElementById('ask-button').className = "mybutton spinner"
 
     try {
         const trans_results = await fetchTranslation(question)
-        await translationContainer.render(trans_results)
+        await sparqlContainer.render(trans_results)
 
         const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
         await kgResponseContainer.render(kg_results)
