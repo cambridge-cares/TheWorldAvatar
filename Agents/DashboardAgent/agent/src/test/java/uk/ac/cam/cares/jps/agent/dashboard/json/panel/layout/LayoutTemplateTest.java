@@ -11,20 +11,20 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LayoutTemplateTest {
-    private static Map<String, String> SAMPLE_DB_CONNECTION_ID_MAP;
+    private static Map<String, String> sampleDbConnectionIdMap;
 
     @BeforeAll
     static void genSampleData() {
-        SAMPLE_DB_CONNECTION_ID_MAP = TestUtils.genSampleDatabaseConnectionMap();
+        sampleDbConnectionIdMap = TestUtils.genSampleDatabaseConnectionMap();
     }
 
     @Test
     void testGenAssetLayoutTemplate() {
         // Prepare test setup
         Map<String, List<String[]>> assetMeasures = TestUtils.genSampleAssetMeasureMap().get(TestUtils.ASSET_TYPE_ONE);
-        String expectedInput = genExpectedAssetLayoutJson(0, TestUtils.ASSET_TYPE_ONE, assetMeasures, SAMPLE_DB_CONNECTION_ID_MAP);
+        String expectedInput = genExpectedAssetLayoutJson(0, TestUtils.ASSET_TYPE_ONE, assetMeasures, sampleDbConnectionIdMap);
         // Execute method
-        Queue<TemplatePanel[]> results = LayoutTemplate.genAssetLayoutTemplate(TestUtils.ASSET_TYPE_ONE, assetMeasures, SAMPLE_DB_CONNECTION_ID_MAP);
+        Queue<TemplatePanel[]> results = LayoutTemplate.genAssetLayoutTemplate(TestUtils.ASSET_TYPE_ONE, assetMeasures, sampleDbConnectionIdMap);
         // Verify number of results
         assertEquals(1, results.size());
         // Process results for testing
@@ -46,9 +46,9 @@ public class LayoutTemplateTest {
     void testGenRoomLayoutTemplate_IncludeThresholds() {
         // Prepare test setup
         Map<String, List<String[]>> roomMeasures = TestUtils.genSampleRoomMeasureMap(true).get(StringHelper.ROOM_KEY);
-        String expectedOutput = genExpectedRoomLayoutJson(0, TestUtils.genSampleRoomMeasureMap(true).get(StringHelper.ROOM_KEY), SAMPLE_DB_CONNECTION_ID_MAP);
+        String expectedOutput = genExpectedRoomLayoutJson(0, TestUtils.genSampleRoomMeasureMap(true).get(StringHelper.ROOM_KEY), sampleDbConnectionIdMap);
         // Execute method
-        Queue<TemplatePanel[]> results = LayoutTemplate.genRoomLayoutTemplate(roomMeasures, SAMPLE_DB_CONNECTION_ID_MAP);
+        Queue<TemplatePanel[]> results = LayoutTemplate.genRoomLayoutTemplate(roomMeasures, sampleDbConnectionIdMap);
         // Verify number of results
         assertEquals(2, results.size()); // Two room measures are available
         // Process results for testing
@@ -71,9 +71,9 @@ public class LayoutTemplateTest {
     void testGenRoomLayoutTemplate_NoThresholds() {
         // Prepare test setup
         Map<String, List<String[]>> roomMeasures = TestUtils.genSampleRoomMeasureMap(false).get(StringHelper.ROOM_KEY);
-        String expectedOutput = genExpectedRoomLayoutJson(0, TestUtils.genSampleRoomMeasureMap(false).get(StringHelper.ROOM_KEY), SAMPLE_DB_CONNECTION_ID_MAP);
+        String expectedOutput = genExpectedRoomLayoutJson(0, TestUtils.genSampleRoomMeasureMap(false).get(StringHelper.ROOM_KEY), sampleDbConnectionIdMap);
         // Execute method
-        Queue<TemplatePanel[]> results = LayoutTemplate.genRoomLayoutTemplate(roomMeasures, SAMPLE_DB_CONNECTION_ID_MAP);
+        Queue<TemplatePanel[]> results = LayoutTemplate.genRoomLayoutTemplate(roomMeasures, sampleDbConnectionIdMap);
         // Verify number of results
         assertEquals(2, results.size()); // Two room measures are available
         // Process results for testing
@@ -96,9 +96,9 @@ public class LayoutTemplateTest {
     void testGenSystemsLayoutTemplate() {
         // Prepare test setup
         Map<String, List<String[]>> systemMeasures = TestUtils.genSampleSystemMeasureMap().get(StringHelper.SYSTEM_KEY);
-        String expectedOutput = genExpectedSystemLayoutJson(0, TestUtils.genSampleSystemMeasureMap().get(StringHelper.SYSTEM_KEY), SAMPLE_DB_CONNECTION_ID_MAP);
+        String expectedOutput = genExpectedSystemLayoutJson(0, TestUtils.genSampleSystemMeasureMap().get(StringHelper.SYSTEM_KEY), sampleDbConnectionIdMap);
         // Execute method
-        Queue<TemplatePanel[]> results = LayoutTemplate.genSystemsLayoutTemplate(systemMeasures, SAMPLE_DB_CONNECTION_ID_MAP);
+        Queue<TemplatePanel[]> results = LayoutTemplate.genSystemsLayoutTemplate(systemMeasures, sampleDbConnectionIdMap);
         // Verify number of results
         assertEquals(2, results.size()); // Two system measures are available
         // Process results for testing

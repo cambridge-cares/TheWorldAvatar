@@ -6,13 +6,13 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils;
  * @author qhouyee
  */
 public class StringHelper {
-    public static String FACILITY_KEY = "facilities";
-    public static String ASSET_KEY = "assets";
-    public static String ROOM_KEY = "Rooms";
-    public static String SYSTEM_KEY = "systems";
-    public static String THRESHOLD_KEY = "threshold";
-    public static String SERVICE_ACCOUNT_NAME = "grafana";
-    public static String INTERVAL_VARIABLE_NAME = "Time Interval";
+    public static final String FACILITY_KEY = "facilities";
+    public static final String ASSET_KEY = "assets";
+    public static final String ROOM_KEY = "Rooms";
+    public static final String SYSTEM_KEY = "systems";
+    public static final String THRESHOLD_KEY = "threshold";
+    public static final String SERVICE_ACCOUNT_NAME = "grafana";
+    public static final String INTERVAL_VARIABLE_NAME = "Time Interval";
 
     /**
      * Formats the SPARQL variable name for a SPARQL query syntax. Note that a space will be appended beforehand.

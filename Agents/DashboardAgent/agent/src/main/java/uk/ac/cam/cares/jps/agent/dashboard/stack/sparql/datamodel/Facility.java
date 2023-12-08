@@ -9,9 +9,9 @@ import java.util.*;
  * @author qhouyee
  */
 public class Facility {
-    private final String FACILITY_NAME;
+    private final String facilityName;
     // Use a set to ensure unique items
-    private final Set<String> ROOMS_AND_ASSETS = new HashSet<>();
+    private final Set<String> roomsAndAssets = new HashSet<>();
 
     /**
      * Standard Constructor. This will store the facility name and its corresponding rooms or assets that is within the facility.
@@ -20,8 +20,8 @@ public class Facility {
      * @param roomOrAssetName  The name of the room or asset found in the facility.
      */
     protected Facility(String facilityName, String roomOrAssetName) {
-        this.FACILITY_NAME = facilityName;
-        this.ROOMS_AND_ASSETS.add(roomOrAssetName);
+        this.facilityName = facilityName;
+        this.roomsAndAssets.add(roomOrAssetName);
     }
 
     /**
@@ -30,13 +30,13 @@ public class Facility {
      * @param roomOrAssetName  The name of the room or asset found in the facility.
      */
     protected void addItem(String roomOrAssetName) {
-        this.ROOMS_AND_ASSETS.add(roomOrAssetName);
+        this.roomsAndAssets.add(roomOrAssetName);
     }
 
     /**
      * A getter method for facility name.
      */
-    protected String getFacilityName() {return this.FACILITY_NAME;}
+    protected String getFacilityName() {return this.facilityName;}
 
     /**
      * A getter method to retrieve all assets and rooms within this facility.
@@ -45,12 +45,12 @@ public class Facility {
      */
     protected String[] getFacilityData() {
         // Initialise a new string array of the total count of rooms and assets and one extra slot for the facility name
-        String[] metadata = new String[this.ROOMS_AND_ASSETS.size() + 1];
+        String[] metadata = new String[this.roomsAndAssets.size() + 1];
         // Add the facility name in the first position
         metadata[0] = this.getFacilityName();
         // Add all remaining items into the remaining slots of the array
         int counter = 1; // Use a counter to keep track of position
-        for (String item : this.ROOMS_AND_ASSETS) {
+        for (String item : this.roomsAndAssets) {
             metadata[counter] = item;
             counter++;
         }

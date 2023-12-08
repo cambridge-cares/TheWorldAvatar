@@ -14,8 +14,8 @@ import java.util.Queue;
  * @author qhouyee
  */
 public class TechnicalSystem {
-    private final String SYSTEM_NAME;
-    private final Map<String, String[]> MEASURES = new HashMap<>();
+    private final String systemName;
+    private final Map<String, String[]> measures = new HashMap<>();
 
     /**
      * Standard Constructor. This will store the metadata retrieved from the SPARQL query.
@@ -27,7 +27,7 @@ public class TechnicalSystem {
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
     protected TechnicalSystem(String name, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        this.SYSTEM_NAME = name;
+        this.systemName = name;
         this.addMeasure(measureName, unit, measureIri, timeSeriesIri);
     }
 
@@ -47,13 +47,13 @@ public class TechnicalSystem {
         // Only append a unit if the inserted value is not null
         if (unit != null) iris[3] = unit;
         iris[4] = StringHelper.SYSTEM_KEY;
-        this.MEASURES.put(measureName, iris);
+        this.measures.put(measureName, iris);
     }
 
     /**
      * A getter method for system name.
      */
-    protected String getName() {return this.SYSTEM_NAME;}
+    protected String getName() {return this.systemName;}
 
     /**
      * A getter method to retrieve all measure metadata associated with this system.
@@ -62,8 +62,8 @@ public class TechnicalSystem {
      */
     protected Queue<String[]> getData() {
         Queue<String[]> measureInfo = new ArrayDeque<>();
-        for (String measure : this.MEASURES.keySet()) {
-            measureInfo.offer(this.MEASURES.get(measure));
+        for (String measure : this.measures.keySet()) {
+            measureInfo.offer(this.measures.get(measure));
         }
         return measureInfo;
     }

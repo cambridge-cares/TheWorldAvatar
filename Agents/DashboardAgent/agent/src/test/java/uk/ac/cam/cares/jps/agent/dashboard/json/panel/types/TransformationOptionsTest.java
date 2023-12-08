@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransformationOptionsTest {
-    private static TransformationOptions OPTIONS;
+    private static TransformationOptions options;
     private static final String SAMPLE_FIRST_ASSET_NAME = "asset one";
     private static final String SAMPLE_FIRST_ASSET_COL_NAME = "column7";
     private static final String SAMPLE_ASSET_TABLE_NAME = "table1";
@@ -26,41 +26,41 @@ class TransformationOptionsTest {
 
     @BeforeEach
     void reset() {
-        OPTIONS = new TransformationOptions();
+        options = new TransformationOptions();
     }
 
     @Test
     void testAddOrganizeTransformation_WithoutNameSuffix() {
         // Execute method
-        OPTIONS.addOrganizeTransformation(SAMPLE_METADATA);
+        options.addOrganizeTransformation(SAMPLE_METADATA);
         // Verify result
-        assertEquals("[" + genExpectedOrganizeTransformation(SAMPLE_METADATA, "") + "]", OPTIONS.construct());
+        assertEquals("[" + genExpectedOrganizeTransformation(SAMPLE_METADATA, "") + "]", options.construct());
     }
 
     @Test
     void testAddOrganizeTransformation_WithNameSuffix() {
         // Execute method
-        OPTIONS.addOrganizeTransformation(" (range)", SAMPLE_METADATA);
+        options.addOrganizeTransformation(" (range)", SAMPLE_METADATA);
         // Verify result
-        assertEquals("[" + genExpectedOrganizeTransformation(SAMPLE_METADATA, " (range)") + "]", OPTIONS.construct());
+        assertEquals("[" + genExpectedOrganizeTransformation(SAMPLE_METADATA, " (range)") + "]", options.construct());
     }
 
     @Test
     void testAddGroupByTransformation() {
         // Execute method
-        OPTIONS.addGroupByTransformation("range", SAMPLE_METADATA);
+        options.addGroupByTransformation("range", SAMPLE_METADATA);
         // Verify result
-        assertEquals("[" + genExpectedGroupByTransformation("range", SAMPLE_METADATA) + "]", OPTIONS.construct());
+        assertEquals("[" + genExpectedGroupByTransformation("range", SAMPLE_METADATA) + "]", options.construct());
     }
 
     @Test
     void testConstruct_MultipleTransformations() {
         // Set up the test
         String expected = "[" + genExpectedGroupByTransformation("range", SAMPLE_METADATA) + "," + genExpectedOrganizeTransformation(SAMPLE_METADATA, " (range)") + "]";
-        OPTIONS.addGroupByTransformation("range", SAMPLE_METADATA);
-        OPTIONS.addOrganizeTransformation(" (range)", SAMPLE_METADATA);
+        options.addGroupByTransformation("range", SAMPLE_METADATA);
+        options.addOrganizeTransformation(" (range)", SAMPLE_METADATA);
         // Execute and verify result
-        assertEquals(expected, OPTIONS.construct());
+        assertEquals(expected, options.construct());
     }
 
     public static String genExpectedGroupByTransformation(String aggregateType, List<String[]> itemDetails) {

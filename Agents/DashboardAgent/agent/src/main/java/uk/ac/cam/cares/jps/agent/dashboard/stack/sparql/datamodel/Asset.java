@@ -12,9 +12,9 @@ import java.util.Queue;
  * @author qhouyee
  */
 public class Asset {
-    private final String ASSET_NAME;
-    private final String ASSET_TYPE;
-    private final Map<String, String[]> MEASURES = new HashMap<>();
+    private final String assetName;
+    private final String assetType;
+    private final Map<String, String[]> measures = new HashMap<>();
 
     /**
      * Standard Constructor. This will store the metadata retrieved from the SPARQL query.
@@ -26,8 +26,8 @@ public class Asset {
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
     protected Asset(String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        this.ASSET_NAME = assetName;
-        this.ASSET_TYPE = assetType;
+        this.assetName = assetName;
+        this.assetType = assetType;
         this.addMeasure(assetType, measureName, unit, measureIri, timeSeriesIri);
     }
 
@@ -40,7 +40,7 @@ public class Asset {
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
     protected void addMeasure(String measureName, String unit, String measureIri, String timeSeriesIri) {
-        this.addMeasure(this.ASSET_TYPE, measureName, unit, measureIri, timeSeriesIri);
+        this.addMeasure(this.assetType, measureName, unit, measureIri, timeSeriesIri);
     }
 
     /**
@@ -61,13 +61,13 @@ public class Asset {
         // Only append a unit if the inserted value is not null
         if (unit != null) iris[3] = unit;
         iris[4] = assetType;
-        this.MEASURES.put(measureName, iris);
+        this.measures.put(measureName, iris);
     }
 
     /**
      * A getter method for asset name.
      */
-    protected String getAssetName() {return this.ASSET_NAME;}
+    protected String getAssetName() {return this.assetName;}
 
     /**
      * A getter method to retrieve all assets and their associated metadata
@@ -76,8 +76,8 @@ public class Asset {
      */
     protected Queue<String[]> getAssetData() {
         Queue<String[]> measureInfo = new ArrayDeque<>();
-        for (String measure : this.MEASURES.keySet()) {
-            measureInfo.offer(this.MEASURES.get(measure));
+        for (String measure : this.measures.keySet()) {
+            measureInfo.offer(this.measures.get(measure));
         }
         return measureInfo;
     }

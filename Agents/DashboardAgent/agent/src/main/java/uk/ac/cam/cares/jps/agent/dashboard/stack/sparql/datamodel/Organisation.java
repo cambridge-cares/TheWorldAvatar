@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
  */
 public class Organisation {
     // Key value pair is asset name and its stored information respectively
-    private final Map<String, Asset> ASSETS = new HashMap<>();
-    private final Map<String, Room> ROOMS = new HashMap<>();
-    private final Map<String, TechnicalSystem> SYSTEMS = new HashMap<>();
-    private final Queue<String[]> FACILITY_THRESHOLDS = new ArrayDeque<>();
-    private final Set<String> UNIQUE_THRESHOLDS = new HashSet<>();
-    private final Map<String, Facility> FACILITIES = new HashMap<>();
+    private final Map<String, Asset> assets = new HashMap<>();
+    private final Map<String, Room> rooms = new HashMap<>();
+    private final Map<String, TechnicalSystem> systems = new HashMap<>();
+    private final Queue<String[]> facilityThresholds = new ArrayDeque<>();
+    private final Set<String> uniqueThresholds = new HashSet<>();
+    private final Map<String, Facility> facilities = new HashMap<>();
 
     /**
      * Constructor to initialise an organisation object.
@@ -38,27 +38,27 @@ public class Organisation {
     public Map<String, Queue<String[]>> getAllMeasures() {
         // For all assets, store them in a map with their asset type as a key and individual asset names as values
         Map<String, Queue<String[]>> measures = new HashMap<>();
-        for (Asset asset : this.ASSETS.values()) {
+        for (Asset asset : this.assets.values()) {
             String assetName = asset.getAssetName();
             measures.put(assetName, asset.getAssetData());
         }
-        for (Room room : this.ROOMS.values()) {
+        for (Room room : this.rooms.values()) {
             String roomName = room.getRoomName();
             measures.put(roomName, room.getRoomData());
         }
-        for (TechnicalSystem system : this.SYSTEMS.values()) {
+        for (TechnicalSystem system : this.systems.values()) {
             String systemName = system.getName();
             measures.put(systemName, system.getData());
         }
         // Retrieve all facility data through the use of streams and collect them as a queue
-        Queue<String[]> facilityDataQueue = this.FACILITIES.values()
+        Queue<String[]> facilityDataQueue = this.facilities.values()
                 .stream()
                 .map(Facility::getFacilityData)
                 .collect(Collectors.toCollection(ArrayDeque::new));
         // If the queue has values, add the facility key
         if (!facilityDataQueue.isEmpty()) measures.put(StringHelper.FACILITY_KEY, facilityDataQueue);
         // Only add the thresholds if there are values
-        if (!this.FACILITY_THRESHOLDS.isEmpty()) measures.put(StringHelper.THRESHOLD_KEY, this.FACILITY_THRESHOLDS);
+        if (!this.facilityThresholds.isEmpty()) measures.put(StringHelper.THRESHOLD_KEY, this.facilityThresholds);
         return measures;
     }
 
@@ -74,14 +74,14 @@ public class Organisation {
     public void addRoom(String facilityName, String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
         this.addFacilityItem(facilityName, roomName);
         // Check if the room already exists in the map using its name as a key
-        if (this.ROOMS.containsKey(roomName)) {
+        if (this.rooms.containsKey(roomName)) {
             // If there is a preceding room object, add only the measure to the right room
-            Room room = this.ROOMS.get(roomName);
+            Room room = this.rooms.get(roomName);
             room.addMeasure(measureName, unit, measureIri, timeSeriesIri);
         } else {
             // If it does not exist, create a new room and add it into the map
             Room room = new Room(roomName, measureName, unit, measureIri, timeSeriesIri);
-            this.ROOMS.put(roomName, room);
+            this.rooms.put(roomName, room);
         }
     }
 
@@ -98,14 +98,14 @@ public class Organisation {
     public void addAsset(String facilityName, String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
         this.addFacilityItem(facilityName, assetName);
         // Check if the asset already exists in the map using its name as a key
-        if (this.ASSETS.containsKey(assetName)) {
+        if (this.assets.containsKey(assetName)) {
             // If there is a preceding asset object, add only the measure to the right asset
-            Asset asset = this.ASSETS.get(assetName);
+            Asset asset = this.assets.get(assetName);
             asset.addMeasure(measureName, unit, measureIri, timeSeriesIri);
         } else {
             // If it does not exist, create a new asset and add it into the map
             Asset element = new Asset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
-            this.ASSETS.put(assetName, element);
+            this.assets.put(assetName, element);
         }
     }
 
@@ -121,14 +121,14 @@ public class Organisation {
     public void addSystem(String facilityName, String systemName, String measureName, String unit, String measureIri, String timeSeriesIri) {
         this.addFacilityItem(facilityName, systemName);
         // Check if the system already exists in the map using its name as a key
-        if (this.SYSTEMS.containsKey(systemName)) {
+        if (this.systems.containsKey(systemName)) {
             // If there is a preceding room object, add only the measure to the right system
-            TechnicalSystem system = this.SYSTEMS.get(systemName);
+            TechnicalSystem system = this.systems.get(systemName);
             system.addMeasure(measureName, unit, measureIri, timeSeriesIri);
         } else {
             // If it does not exist, create a new technical system and add it into the map
             TechnicalSystem system = new TechnicalSystem(systemName, measureName, unit, measureIri, timeSeriesIri);
-            this.SYSTEMS.put(systemName, system);
+            this.systems.put(systemName, system);
         }
     }
 
@@ -142,10 +142,10 @@ public class Organisation {
     public void addThresholds(String measureName, String minThreshold, String maxThreshold) {
         String[] thresholdData = new String[]{measureName, minThreshold, maxThreshold};
         // Verify if this threshold has already been added for the same measure
-        if (!this.UNIQUE_THRESHOLDS.contains(String.join("", thresholdData))) {
+        if (!this.uniqueThresholds.contains(String.join("", thresholdData))) {
             // If not, add it to the queue and the set
-            this.FACILITY_THRESHOLDS.offer(thresholdData);
-            this.UNIQUE_THRESHOLDS.add(String.join("", thresholdData));
+            this.facilityThresholds.offer(thresholdData);
+            this.uniqueThresholds.add(String.join("", thresholdData));
         }
     }
 
@@ -157,14 +157,14 @@ public class Organisation {
      */
     private void addFacilityItem(String facilityName, String itemName) {
         // Check if there is an existing facility
-        if (this.FACILITIES.containsKey(facilityName)) {
+        if (this.facilities.containsKey(facilityName)) {
             // If there is one, add the room name to the existing contents
-            Facility facility = this.FACILITIES.get(facilityName);
+            Facility facility = this.facilities.get(facilityName);
             facility.addItem(itemName);
         } else {
             // If it does not exist, create a new facility object with the facility and room name
             Facility facility = new Facility(facilityName, itemName);
-            this.FACILITIES.put(facilityName, facility);
+            this.facilities.put(facilityName, facility);
         }
     }
 }

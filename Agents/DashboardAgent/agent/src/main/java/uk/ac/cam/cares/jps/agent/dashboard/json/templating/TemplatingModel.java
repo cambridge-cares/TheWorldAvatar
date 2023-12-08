@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * @author qhouyee
  */
 public class TemplatingModel {
-    private final StringBuilder VARIABLES_SYNTAX = new StringBuilder();
+    private final StringBuilder variablesSyntax = new StringBuilder();
     private static final String TIME_INTERVAL_FILTER_DESCRIPTION = "A filter to display the time interval requested by the user in the trend related charts.";
     private static final String FACILITY_FILTER_DESCRIPTION = "A filter at the facility level to view the specified facilities and their associated measures.";
 
@@ -65,7 +65,7 @@ public class TemplatingModel {
         // Enable templating in the dashboard
         builder.append("{\"enable\": true,")
                 // List of all variables
-                .append("\"list\": [").append(this.VARIABLES_SYNTAX).append("]")
+                .append("\"list\": [").append(this.variablesSyntax).append("]")
                 .append("}");
         return builder.toString();
     }
@@ -138,9 +138,9 @@ public class TemplatingModel {
      */
     private void addVariable(TemplateVariable variable) {
         // Append a comma before that variable if it is not the first variable
-        if (this.VARIABLES_SYNTAX.length() != 0) this.VARIABLES_SYNTAX.append(",");
+        if (this.variablesSyntax.length() != 0) this.variablesSyntax.append(",");
         // Construct its syntax and append it to the key syntax
-        this.VARIABLES_SYNTAX.append(variable.construct());
+        this.variablesSyntax.append(variable.construct());
     }
 
     /**

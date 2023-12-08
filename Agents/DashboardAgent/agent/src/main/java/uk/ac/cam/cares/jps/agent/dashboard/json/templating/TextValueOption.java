@@ -7,9 +7,9 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
  * @author qhouyee
  */
 class TextValueOption {
-    private final String IS_SELECTED;
-    private final String LABEL;
-    private final String VALUE;
+    private final String isSelected;
+    private final String label;
+    private final String value;
 
     /**
      * Constructor to ingest required data.
@@ -19,9 +19,9 @@ class TextValueOption {
      * @param value        The value that Grafana requires to enable proper variable linkage.
      */
     protected TextValueOption(boolean isSelected, String displayLabel, String value) {
-        this.IS_SELECTED = String.valueOf(isSelected);
-        this.LABEL = displayLabel;
-        this.VALUE = value;
+        this.isSelected = String.valueOf(isSelected);
+        this.label = displayLabel;
+        this.value = value;
     }
 
     /**
@@ -32,11 +32,11 @@ class TextValueOption {
     protected String construct() {
         StringBuilder builder = new StringBuilder();
         builder.append("{")
-                .append("\"selected\": ").append(this.IS_SELECTED).append(",")
+                .append("\"selected\": ").append(this.isSelected).append(",")
                 // Display text
-                .append("\"text\": \"").append(this.LABEL).append("\",")
+                .append("\"text\": \"").append(this.label).append("\",")
                 // Value for processing in Grafana
-                .append("\"value\": \"").append(this.VALUE).append("\"")
+                .append("\"value\": \"").append(this.value).append("\"")
                 .append("}");
         return builder.toString();
     }

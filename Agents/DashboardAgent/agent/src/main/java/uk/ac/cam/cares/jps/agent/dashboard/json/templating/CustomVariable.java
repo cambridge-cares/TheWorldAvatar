@@ -11,10 +11,10 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
  * @author qhouyee
  */
 class CustomVariable extends TemplateVariable {
-    private final String LABEL;
-    private final String DESCRIPTION;
-    private final StringBuilder VARIABLE_SELECTION_OPTIONS = new StringBuilder();
-    private final StringBuilder QUERY_SYNTAX = new StringBuilder();
+    private final String label;
+    private final String description;
+    private final StringBuilder variableSelectionOptions = new StringBuilder();
+    private final StringBuilder querySyntax = new StringBuilder();
 
     /**
      * A Constructor that provides customised settings and defaults to true for the selectAllOption and multivalue slections.
@@ -41,8 +41,8 @@ class CustomVariable extends TemplateVariable {
     protected CustomVariable(String name, String description, String[] values, Integer dashboardDisplayOption, boolean isMultiValue, boolean selectAllOption) {
         // Construct the super class
         super(name, dashboardDisplayOption, isMultiValue, selectAllOption);
-        this.LABEL = StringHelper.addSpaceBetweenCapitalWords(name);
-        this.DESCRIPTION = description;
+        this.label = StringHelper.addSpaceBetweenCapitalWords(name);
+        this.description = description;
         // A boolean to indicate if the option is the default selected
         boolean isDefaultOption = true;
         TextValueOption option;
@@ -50,14 +50,14 @@ class CustomVariable extends TemplateVariable {
         if (selectAllOption) {
             // Create a default option for all values
             option = new TextValueOption(isDefaultOption, "All", "$__all");
-            this.VARIABLE_SELECTION_OPTIONS.append(option.construct());
+            this.variableSelectionOptions.append(option.construct());
             isDefaultOption = false;
         }
         // Append each value in the array in the required format
         for (String value : values) {
             // Only append a comma before if it is not the first value
-            if (this.QUERY_SYNTAX.length() != 0) this.QUERY_SYNTAX.append(",");
-            this.QUERY_SYNTAX.append(value);
+            if (this.querySyntax.length() != 0) this.querySyntax.append(",");
+            this.querySyntax.append(value);
             // Append the individual option for these values
             option = new TextValueOption(isDefaultOption, value, value);
             if (isDefaultOption) {
@@ -65,8 +65,8 @@ class CustomVariable extends TemplateVariable {
                 isDefaultOption = false;
             }
             // Add a comma as this is not the first item
-            else {this.VARIABLE_SELECTION_OPTIONS.append(",");}
-            this.VARIABLE_SELECTION_OPTIONS.append(option.construct());
+            else {this.variableSelectionOptions.append(",");}
+            this.variableSelectionOptions.append(option.construct());
         }
     }
 
@@ -80,13 +80,13 @@ class CustomVariable extends TemplateVariable {
         // Construct the common elements
         StringBuilder builder = super.genCommonJson()
                 // Variable display label
-                .append("\"label\": \"").append(this.LABEL).append("\",")
+                .append("\"label\": \"").append(this.label).append("\",")
                 // Description for this variable
-                .append("\"description\": \"").append(this.DESCRIPTION).append("\",")
+                .append("\"description\": \"").append(this.description).append("\",")
                 // Array of variable text/value pairs available for selection on dashboard
-                .append("\"options\": [").append(this.VARIABLE_SELECTION_OPTIONS).append("],")
+                .append("\"options\": [").append(this.variableSelectionOptions).append("],")
                 // Query values of this variable
-                .append("\"query\": \"").append(this.QUERY_SYNTAX).append("\",")
+                .append("\"query\": \"").append(this.querySyntax).append("\",")
                 // Default settings but unsure what they are for
                 .append("\"queryValue\": \"\",")
                 // Variable type must be set as custom to work

@@ -36,9 +36,9 @@ import java.util.function.Supplier;
  * @author qhouyee
  */
 public class SparqlClient {
-    private final List<String> SPATIAL_ZONE_SPARQL_ENDPOINTS = new ArrayList<>();
-    private final List<String> REMAINING_SPARQL_ENDPOINTS = new ArrayList<>();
-    private final Map<String, Organisation> ORGANISATIONS = new HashMap<>();
+    private final List<String> spatialZoneSparqlEndpoints = new ArrayList<>();
+    private final List<String> remainingSparqlEndpoints = new ArrayList<>();
+    private final Map<String, Organisation> organisations = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
     /**
@@ -57,7 +57,7 @@ public class SparqlClient {
         }
         LOGGER.debug("Retrieving all metadata from SPARQL endpoints...");
         // For each of the spatial zone endpoint, retrieve the metadata associated with them
-        for (String endpoint : this.SPATIAL_ZONE_SPARQL_ENDPOINTS) {
+        for (String endpoint : this.spatialZoneSparqlEndpoints) {
             executeSparqlAction(endpoint, this::retrieveRoomMetaData);
             executeSparqlAction(endpoint, this::retrieveSystemMetaData);
             executeSparqlAction(endpoint, this::retrieveAssetMetaData);
@@ -70,7 +70,7 @@ public class SparqlClient {
      * @return An array of all available organisations to monitor.
      */
     protected String[] getAllOrganisations() {
-        Set<String> organisations = this.ORGANISATIONS.keySet();
+        Set<String> organisations = this.organisations.keySet();
         return organisations.toArray(new String[organisations.size()]);
     }
 
@@ -86,7 +86,7 @@ public class SparqlClient {
      *         thresholds: [[measureName, min, max],...]}
      */
     protected Map<String, Queue<String[]>> getAllSpatialZoneMetaData(String organisation) {
-        return this.ORGANISATIONS.get(organisation).getAllMeasures();
+        return this.organisations.get(organisation).getAllMeasures();
     }
 
     /**
@@ -177,10 +177,10 @@ public class SparqlClient {
         conn.queryResultSet(SparqlQuery.genSimpleFacilityQuery(), (resultSet) -> {
             // If there is at least one result, the current endpoint holds spatial zone information
             if (resultSet.hasNext()) {
-                this.SPATIAL_ZONE_SPARQL_ENDPOINTS.add(endpoint); // Store different endpoint types in different lists
+                this.spatialZoneSparqlEndpoints.add(endpoint); // Store different endpoint types in different lists
             } else {
                 // If no results are available, this endpoint holds various information that are not on spatial zones
-                this.REMAINING_SPARQL_ENDPOINTS.add(endpoint);
+                this.remainingSparqlEndpoints.add(endpoint);
             }
         });
     }
@@ -205,7 +205,7 @@ public class SparqlClient {
                 maxThreshold = String.valueOf(maxLiteral.getValue());
             }
             // Retrieve the organisation
-            Organisation organisation = this.ORGANISATIONS.get(dataArray[0]);
+            Organisation organisation = this.organisations.get(dataArray[0]);
             // Add the item
             organisation.addRoom(dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
             if (!minThreshold.isEmpty() && !maxThreshold.isEmpty()) {
@@ -222,7 +222,7 @@ public class SparqlClient {
      */
     private void retrieveSystemMetaData(RDFConnection conn, String endpoint) {
         retrieveMetaData(conn, SparqlQuery.SYSTEM_NAME, SparqlQuery::genFacilitySystemMeasureQuery, (qs, dataArray) -> {
-            Organisation organisation = this.ORGANISATIONS.get(dataArray[0]);
+            Organisation organisation = this.organisations.get(dataArray[0]);
             organisation.addSystem(dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
         });
     }
@@ -237,12 +237,12 @@ public class SparqlClient {
         // Execute a SELECT query on the current spatial zone endpoint
         // As the time series triples are stored on the remaining endpoints, these have to be executed one by one using the SERVICE keyword
         // Effectively, we repeatedly perform the following steps for all remaining endpoints
-        for (String serviceEndpoint : this.REMAINING_SPARQL_ENDPOINTS) {
+        for (String serviceEndpoint : this.remainingSparqlEndpoints) {
             retrieveMetaData(conn, SparqlQuery.ELEMENT_NAME, () -> SparqlQuery.genFacilityAssetMeasureQuery(serviceEndpoint), (qs, dataArray) -> {
                 // Retrieve asset type
                 String assetType = qs.getResource(SparqlQuery.ELEMENT_TYPE).getLocalName();
                 // Retrieve organisation
-                Organisation organisation = this.ORGANISATIONS.get(dataArray[0]);
+                Organisation organisation = this.organisations.get(dataArray[0]);
                 // Add asset
                 organisation.addAsset(dataArray[1], dataArray[2], assetType, dataArray[3], dataArray[4], dataArray[5], dataArray[6]);
             });
@@ -282,7 +282,7 @@ public class SparqlClient {
             }
             String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
             // Initialise the organisation if it hasn't yet
-            if (!this.ORGANISATIONS.containsKey(orgName)) this.ORGANISATIONS.put(orgName, new Organisation());
+            if (!this.organisations.containsKey(orgName)) this.organisations.put(orgName, new Organisation());
             // Stores the values into a bi-consumer that can be retrieved in other functions
             dataConsumer.accept(qs, new String[]{orgName, facilityName, objectName, measureName, unit, measureIri, timeSeriesIri});
         });

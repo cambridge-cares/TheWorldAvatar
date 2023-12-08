@@ -9,12 +9,12 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
  * @author qhouyee
  */
 class TemplateVariable {
-    private String DEFAULT_SELECTED_TEXT;
-    private String DEFAULT_SELECTED_VALUE;
-    private final String NAME;
-    private final String DASHBOARD_DISPLAY_OPTION;
-    private final boolean IS_MULTI_OPTION;
-    private final boolean INCLUDE_ALL_OPTION;
+    private String defaultSelectedText;
+    private String defaultSelectedValue;
+    private final String name;
+    private final String dashboardDisplayOption;
+    private final boolean isMultiOption;
+    private final boolean includeAllOption;
 
     /**
      * Standard Constructor.
@@ -26,12 +26,12 @@ class TemplateVariable {
      */
     protected TemplateVariable(String name, Integer dashboardDisplayOption, boolean isMultiValue, boolean includeAllOption) {
         // Transform name into lower cases and remove all white spaces
-        this.NAME = StringHelper.formatVariableName(name);
-        this.DASHBOARD_DISPLAY_OPTION = dashboardDisplayOption.toString();
-        this.IS_MULTI_OPTION = isMultiValue;
-        this.INCLUDE_ALL_OPTION = includeAllOption;
-        this.DEFAULT_SELECTED_TEXT = "All";
-        this.DEFAULT_SELECTED_VALUE = "$__all";
+        this.name = StringHelper.formatVariableName(name);
+        this.dashboardDisplayOption = dashboardDisplayOption.toString();
+        this.isMultiOption = isMultiValue;
+        this.includeAllOption = includeAllOption;
+        this.defaultSelectedText = "All";
+        this.defaultSelectedValue = "$__all";
     }
 
 
@@ -46,17 +46,17 @@ class TemplateVariable {
                 // Default selection should be all
                 .append("\"current\": {")
                 .append("\"selected\": false,")
-                .append("\"text\": [\"").append(this.DEFAULT_SELECTED_TEXT).append("\"],")
-                .append("\"value\": [\"").append(this.DEFAULT_SELECTED_VALUE).append("\"]")
+                .append("\"text\": [\"").append(this.defaultSelectedText).append("\"],")
+                .append("\"value\": [\"").append(this.defaultSelectedValue).append("\"]")
                 .append("},")
                 // Variable name
-                .append("\"name\": \"").append(this.NAME).append("\",")
+                .append("\"name\": \"").append(this.name).append("\",")
                 // Include option to select all values
-                .append("\"includeAll\": ").append(INCLUDE_ALL_OPTION).append(",")
+                .append("\"includeAll\": ").append(includeAllOption).append(",")
                 // Allow multiple value selection if true eg Value 1 and 2 can be selected but not Value 3
-                .append("\"multi\":").append(this.IS_MULTI_OPTION).append(",")
+                .append("\"multi\":").append(this.isMultiOption).append(",")
                 // The display option for this variable
-                .append("\"hide\": ").append(this.DASHBOARD_DISPLAY_OPTION).append(",")
+                .append("\"hide\": ").append(this.dashboardDisplayOption).append(",")
                 .append("\"skipUrlSync\": false,");
         return builder;
     }
@@ -65,8 +65,8 @@ class TemplateVariable {
      * Sets the default selected text and value.
      */
     protected void setDefaultSelectedTextValue(String defaultValue) {
-        this.DEFAULT_SELECTED_TEXT = defaultValue;
-        this.DEFAULT_SELECTED_VALUE = defaultValue;
+        this.defaultSelectedText = defaultValue;
+        this.defaultSelectedValue = defaultValue;
     }
 
     /**

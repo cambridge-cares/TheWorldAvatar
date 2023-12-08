@@ -14,8 +14,8 @@ import java.util.*;
  */
 public class PanelModel {
     // Requires an object variable to keep track of the same number in different methods
-    private int ROW_NUMBER;
-    private final StringBuilder PANEL_SYNTAX = new StringBuilder();
+    private int rowNumber;
+    private final StringBuilder panelSyntax = new StringBuilder();
     private static final int CHART_HEIGHT = 8;
     private static final int CHART_WIDTH = 12;
 
@@ -27,7 +27,7 @@ public class PanelModel {
      */
     public PanelModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
         // Row numbers to compute y positions; Initialise from 0
-        this.ROW_NUMBER = 0; // Each row correspond to one item group
+        this.rowNumber = 0; // Each row correspond to one item group
         // Generate the syntax for all room-related panels if available
         // Note to start with room as it has additional thresholds keys
         if (timeSeries.containsKey(StringHelper.ROOM_KEY)) {
@@ -60,7 +60,7 @@ public class PanelModel {
      * @return The JSON model syntax as a String.
      */
     public String construct() {
-        return this.PANEL_SYNTAX.toString();
+        return this.panelSyntax.toString();
     }
 
 
@@ -84,18 +84,18 @@ public class PanelModel {
             Queue<TemplatePanel[]> intermediateQueue = new ArrayDeque<>();
             intermediateQueue.offer(roomPanels);
             // Append a comma before if it is not the first row
-            if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
+            if (this.panelSyntax.length() != 0) this.panelSyntax.append(",");
             // Generate the row panel syntax
-            this.PANEL_SYNTAX.append("{")
+            this.panelSyntax.append("{")
                     .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
                     // Title should be the measure name of these rooms
                     .append("\"title\": \"").append(title).append("\",")
                     .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
-                    .append(",\"x\": 0,\"y\": ").append(this.ROW_NUMBER).append("},")
-                    .append("\"panels\": [").append(genPanelSyntax(this.ROW_NUMBER, intermediateQueue))
+                    .append(",\"x\": 0,\"y\": ").append(this.rowNumber).append("},")
+                    .append("\"panels\": [").append(genPanelSyntax(this.rowNumber, intermediateQueue))
                     .append("]}");
             // Increment the row number for each measure of the rooms
-            this.ROW_NUMBER++;
+            this.rowNumber++;
         }
     }
 
@@ -107,18 +107,18 @@ public class PanelModel {
      */
     private void groupPanelsAsRow(String itemGroup, Queue<TemplatePanel[]> panelQueue) {
         // Append a comma before if it is not the first row
-        if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
+        if (this.panelSyntax.length() != 0) this.panelSyntax.append(",");
         String title = itemGroup.equals(StringHelper.SYSTEM_KEY) ? "Smart Meter" : StringHelper.addSpaceBetweenCapitalWords(itemGroup);
         // Generate the row panel syntax
-        this.PANEL_SYNTAX.append("{")
+        this.panelSyntax.append("{")
                 .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
                 .append("\"title\": \"").append(title).append("\",")
                 .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
-                .append(",\"x\": 0,\"y\": ").append(this.ROW_NUMBER).append("},")
-                .append("\"panels\": [").append(genPanelSyntax(this.ROW_NUMBER, panelQueue))
+                .append(",\"x\": 0,\"y\": ").append(this.rowNumber).append("},")
+                .append("\"panels\": [").append(genPanelSyntax(this.rowNumber, panelQueue))
                 .append("]}");
         // Increment the row number once this row for the item group has been set up
-        this.ROW_NUMBER++;
+        this.rowNumber++;
     }
 
     /**

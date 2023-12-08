@@ -15,10 +15,10 @@ import java.util.*;
  * @author qhouyee
  */
 public class PostGisClient {
-    private final String STACK_JDBC_URL;
-    private final String STACK_POSTGIS_USER;
-    private final String STACK_POSTGIS_PASSWORD;
-    private final List<String> DATABASE_LIST = new ArrayList<>();
+    private final String stackJdbcUrl;
+    private final String stackPostgisUser;
+    private final String stackPostgisPassword;
+    private final List<String> databaseList = new ArrayList<>();
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
     /**
@@ -30,9 +30,9 @@ public class PostGisClient {
      */
     protected PostGisClient(String jdbcUrl, String user, String pass) {
         // Set up the required information for further interactions
-        this.STACK_JDBC_URL = jdbcUrl;
-        this.STACK_POSTGIS_USER = user;
-        this.STACK_POSTGIS_PASSWORD = pass;
+        this.stackJdbcUrl = jdbcUrl;
+        this.stackPostgisUser = user;
+        this.stackPostgisPassword = pass;
         // Retrieve all available custom database so that methods can perform federated query on each
         // Note that to retrieve all databases, this method must connect to any default database, which is postgres in this case
         try (Connection conn = connect(this.getJdbc("postgres"), user, pass)) {
@@ -47,21 +47,21 @@ public class PostGisClient {
      * Get the list of database names that is available in this stack. This method is accessible for the stack client's usage.
      */
     protected List<String> getDatabaseNames() {
-        return this.DATABASE_LIST;
+        return this.databaseList;
     }
 
     /**
      * Get the PostGIS username.
      */
     protected String getUsername() {
-        return this.STACK_POSTGIS_USER;
+        return this.stackPostgisUser;
     }
 
     /**
      * Get the PostGIS password.
      */
     protected String getPassword() {
-        return this.STACK_POSTGIS_PASSWORD;
+        return this.stackPostgisPassword;
     }
 
     /**
@@ -71,7 +71,7 @@ public class PostGisClient {
      * @return The JDBC URL of the database specified.
      */
     protected String getJdbc(String database) {
-        return this.STACK_JDBC_URL + database;
+        return this.stackJdbcUrl + database;
     }
 
     /**
@@ -118,8 +118,8 @@ public class PostGisClient {
         // Parse time series here so that it is only executed once rather than every loop
         String[] measureIris = parseTimeSeriesMapForQuery(timeSeries);
         // Connect to all existing database and attempt to retrieve the required metadata
-        for (String database : this.DATABASE_LIST) {
-            try (Connection conn = connect(this.getJdbc(database), this.STACK_POSTGIS_USER, this.STACK_POSTGIS_PASSWORD)) {
+        for (String database : this.databaseList) {
+            try (Connection conn = connect(this.getJdbc(database), this.stackPostgisUser, this.stackPostgisPassword)) {
                 Queue<String[]> postGisData = this.retrieveAllColAndTableNames(conn, database, measureIris);
                 // If there are results, store them into the overall queue for further processing
                 // This step is required as data might be stored on different databases for different assets
@@ -167,7 +167,7 @@ public class PostGisClient {
             // When there is a next row available,
             while (columnsResultSet.next()) {
                 // Append each row's value for their database name
-                this.DATABASE_LIST.add(columnsResultSet.getString(1));
+                this.databaseList.add(columnsResultSet.getString(1));
             }
         } catch (SQLException e) {
             LOGGER.fatal("Failed to retrieve all database names available! " + e);

@@ -12,10 +12,10 @@ import java.util.List;
  * @author qhouyee
  */
 public class Gauge extends TemplatePanel {
-    private boolean SHOW_THRESHOLD_MARKERS = false;
-    private String COLOR_MODE = "palette-classic";
-    private String COLOR_STEPS = "{\"color\":\"red\",\"value\":80}";
-    private String MIN_MAX_VALS = "";
+    private boolean showThresholdMarkers = false;
+    private String colorMode = "palette-classic";
+    private String colorSteps = "{\"color\":\"red\",\"value\":80}";
+    private String minMaxVals = "";
 
     /**
      * An alternate constructor that will generate a gauge chart for all items.
@@ -87,14 +87,14 @@ public class Gauge extends TemplatePanel {
         }
         // If there are thresholds, override the following items
         if (thresholds.length != 0) {
-            this.SHOW_THRESHOLD_MARKERS = true;
-            this.COLOR_MODE = "thresholds";
+            this.showThresholdMarkers = true;
+            this.colorMode = "thresholds";
             // Color steps should be from min (green) to max (red) threshold
-            this.COLOR_STEPS = "{\"color\":\"green\",\"value\":" + thresholds[0] + "},{\"color\":\"red\",\"value\":" + thresholds[1] + "}";
+            this.colorSteps = "{\"color\":\"green\",\"value\":" + thresholds[0] + "},{\"color\":\"red\",\"value\":" + thresholds[1] + "}";
             // Ensure that the gauge can see past the min and max threshold to allow user to recognise the limits
             double minValue = Float.parseFloat(thresholds[0]) - 1.0;
             double maxValue = Float.parseFloat(thresholds[1]) + 1.0;
-            this.MIN_MAX_VALS = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
+            this.minMaxVals = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
         }
     }
 
@@ -116,10 +116,10 @@ public class Gauge extends TemplatePanel {
                 // Field Configuration
                 .append("\"fieldConfig\":{")
                 // Default field configuration
-                .append("\"defaults\":{\"color\":{\"mode\": \"").append(this.COLOR_MODE).append("\"},")
+                .append("\"defaults\":{\"color\":{\"mode\": \"").append(this.colorMode).append("\"},")
                 .append("\"thresholds\":{\"mode\": \"absolute\",")
-                .append("\"steps\": [{\"color\":\"red\",\"value\":null},").append(this.COLOR_STEPS).append("]},")
-                .append(this.MIN_MAX_VALS)
+                .append("\"steps\": [{\"color\":\"red\",\"value\":null},").append(this.colorSteps).append("]},")
+                .append(this.minMaxVals)
                 .append("\"mappings\": [],")
                 .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
                 .append("},") // End of defaults
@@ -130,7 +130,7 @@ public class Gauge extends TemplatePanel {
                 // Legend options
                 .append("\"reduceOptions\": {\"values\": false,\"calcs\": [\"lastNotNull\"],\"fields\": \"\"},")
                 // Tooltip options
-                .append("\"orientation\": \"auto\",\"showThresholdLabels\":false,\"showThresholdMarkers\":").append(this.SHOW_THRESHOLD_MARKERS).append(",\"text\": {}")
+                .append("\"orientation\": \"auto\",\"showThresholdLabels\":false,\"showThresholdMarkers\":").append(this.showThresholdMarkers).append(",\"text\": {}")
                 .append("}") // end of options
                 .append("}");
         return builder.toString();

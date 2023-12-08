@@ -8,13 +8,13 @@ import java.util.*;
  * @author qhouyee
  */
 public class TransformationOptions {
-    private final Queue<String> TRANSFORMATION_OPTIONS;
+    private final Queue<String> transformationOptions;
 
     /**
      * Standard Constructor to initialise this class.
      */
     public TransformationOptions() {
-        this.TRANSFORMATION_OPTIONS = new ArrayDeque<>();
+        this.transformationOptions = new ArrayDeque<>();
     }
 
     /**
@@ -56,7 +56,7 @@ public class TransformationOptions {
                 .append("\"indexByName\":{").append(fieldColumnIndex).append("},")
                 .append("\"renameByName\":{").append(fieldColumnMapping).append("}")
                 .append("}}");
-        this.TRANSFORMATION_OPTIONS.offer(transformationBuilder.toString());
+        this.transformationOptions.offer(transformationBuilder.toString());
     }
 
     /**
@@ -85,7 +85,7 @@ public class TransformationOptions {
                 .append("\"interval\":{\"aggregations\":[],\"operation\":\"groupby\"},")
                 .append(fieldAggregations)
                 .append("}}}");
-        this.TRANSFORMATION_OPTIONS.add(transformationBuilder.toString());
+        this.transformationOptions.add(transformationBuilder.toString());
     }
 
     /**
@@ -96,8 +96,8 @@ public class TransformationOptions {
     public String construct() {
         StringBuilder builder = new StringBuilder();
         // Retrieves and add the transformations
-        while (!this.TRANSFORMATION_OPTIONS.isEmpty()) {
-            String transformation = this.TRANSFORMATION_OPTIONS.poll();
+        while (!this.transformationOptions.isEmpty()) {
+            String transformation = this.transformationOptions.poll();
             // If there are preexisting transformations, add a comma
             if (builder.length() != 0) builder.append(",");
             builder.append(transformation);

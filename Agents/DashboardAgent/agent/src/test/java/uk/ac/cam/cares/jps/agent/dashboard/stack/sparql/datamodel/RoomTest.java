@@ -14,41 +14,41 @@ class RoomTest {
     private static final String MEASURE_ONE_UNIT = "kW";
     private static final String MEASURE_TWO_NAME = "Ambient Relative Humidity";
     private static final String MEASURE_TWO_UNIT = null;
-    private static String MEASURE_ONE_IRI;
-    private static String MEASURE_ONE_TS_IRI;
-    private static String MEASURE_TWO_IRI;
-    private static String MEASURE_TWO_TS_IRI;
+    private static String measureOneIri;
+    private static String measureOneTsIri;
+    private static String measureTwoIri;
+    private static String measureTwoTsIri;
 
     @BeforeAll
     static void setup() {
-        MEASURE_ONE_IRI = TestUtils.genInstance("ElectricityConsumption");
-        MEASURE_ONE_TS_IRI = TestUtils.genTimeSeriesInstance();
-        MEASURE_TWO_IRI = TestUtils.genInstance("Humidity");
-        MEASURE_TWO_TS_IRI = TestUtils.genTimeSeriesInstance();
+        measureOneIri = TestUtils.genInstance("ElectricityConsumption");
+        measureOneTsIri = TestUtils.genTimeSeriesInstance();
+        measureTwoIri = TestUtils.genInstance("Humidity");
+        measureTwoTsIri = TestUtils.genTimeSeriesInstance();
     }
 
     @Test
     void testAddMeasure() {
         // Initialise object
-        Room sample = new Room(ROOM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI);
+        Room sample = new Room(ROOM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, measureOneIri, measureOneTsIri);
         // Execute method
-        sample.addMeasure(MEASURE_TWO_NAME, MEASURE_TWO_UNIT, MEASURE_TWO_IRI, MEASURE_TWO_TS_IRI);
+        sample.addMeasure(MEASURE_TWO_NAME, MEASURE_TWO_UNIT, measureTwoIri, measureTwoTsIri);
         // Verify it has been added properly
         Queue<String[]> results = sample.getRoomData();
         assertEquals(2, results.size()); // Two measure arrays should be available in the queue
         // For the first measure
         String[] measure = results.poll();
         // If unit is null, the corresponding unit stored should be null as well
-        verifyRoomMeasureArrayContents(MEASURE_TWO_NAME, MEASURE_TWO_IRI, MEASURE_TWO_TS_IRI, null, measure);
+        verifyRoomMeasureArrayContents(MEASURE_TWO_NAME, measureTwoIri, measureTwoTsIri, null, measure);
         // For the second measure
         measure = results.poll();
-        verifyRoomMeasureArrayContents(MEASURE_ONE_NAME, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI, MEASURE_ONE_UNIT, measure);
+        verifyRoomMeasureArrayContents(MEASURE_ONE_NAME, measureOneIri, measureOneTsIri, MEASURE_ONE_UNIT, measure);
     }
 
     @Test
     void testGetRoomName() {
         // Initialise object
-        Room sample = new Room(ROOM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI);
+        Room sample = new Room(ROOM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, measureOneIri, measureOneTsIri);
         // Execute and test method
         assertEquals(ROOM_NAME, sample.getRoomName());
     }
@@ -56,13 +56,13 @@ class RoomTest {
     @Test
     void testGetRoomData() {
         // Initialise object
-        Room sample = new Room(ROOM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI);
+        Room sample = new Room(ROOM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, measureOneIri, measureOneTsIri);
         // Execute method to retrieve the simple measure
         Queue<String[]> results = sample.getRoomData();
         // Test results
         assertEquals(1, results.size()); // Only one measure array should be available in the queue
         String[] measure = results.poll();
-        verifyRoomMeasureArrayContents(MEASURE_ONE_NAME, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI, MEASURE_ONE_UNIT, measure);
+        verifyRoomMeasureArrayContents(MEASURE_ONE_NAME, measureOneIri, measureOneTsIri, MEASURE_ONE_UNIT, measure);
     }
 
     protected static void verifyRoomMeasureArrayContents(String measureName, String measureIRI, String measureTSIri, String measureUnit, String[] measure) {

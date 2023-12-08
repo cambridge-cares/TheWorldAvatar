@@ -15,52 +15,52 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TemplatingModelTest {
-    private static Map<String, String> SAMPLE_DB_CONNECTION_ID_MAP;
-    private static Map<String, Map<String, List<String[]>>> SAMPLE_ASSETS;
-    private static Map<String, Map<String, List<String[]>>> SAMPLE_ROOMS;
-    private static Map<String, Map<String, List<String[]>>> SAMPLE_SYSTEMS;
+    private static Map<String, String> sampleDbConnectionIdMap;
+    private static Map<String, Map<String, List<String[]>>> sampleAssets;
+    private static Map<String, Map<String, List<String[]>>> sampleRooms;
+    private static Map<String, Map<String, List<String[]>>> sampleSystems;
     private static final String TIME_INTERVAL_FILTER_DESCRIPTION = "A filter to display the time interval requested by the user in the trend related charts.";
     private static final String FACILITY_FILTER_DESCRIPTION = "A filter at the facility level to view the specified facilities and their associated measures.";
 
     @BeforeAll
     static void genSampleData() {
-        SAMPLE_ASSETS = TestUtils.genSampleAssetMeasureMap();
-        SAMPLE_ASSETS = TestUtils.addSampleFacilityData(SAMPLE_ASSETS, true, false, false);
-        SAMPLE_DB_CONNECTION_ID_MAP = TestUtils.genSampleDatabaseConnectionMap();
-        SAMPLE_ROOMS = TestUtils.genSampleRoomMeasureMap(true);
-        SAMPLE_ROOMS = TestUtils.addSampleFacilityData(SAMPLE_ROOMS, false, true, false);
-        SAMPLE_SYSTEMS = TestUtils.genSampleSystemMeasureMap();
-        SAMPLE_SYSTEMS = TestUtils.addSampleFacilityData(SAMPLE_SYSTEMS, false, false, true, true);
+        sampleAssets = TestUtils.genSampleAssetMeasureMap();
+        sampleAssets = TestUtils.addSampleFacilityData(sampleAssets, true, false, false);
+        sampleDbConnectionIdMap = TestUtils.genSampleDatabaseConnectionMap();
+        sampleRooms = TestUtils.genSampleRoomMeasureMap(true);
+        sampleRooms = TestUtils.addSampleFacilityData(sampleRooms, false, true, false);
+        sampleSystems = TestUtils.genSampleSystemMeasureMap();
+        sampleSystems = TestUtils.addSampleFacilityData(sampleSystems, false, false, true, true);
     }
 
     @Test
     void testConstruct_AssetsOnly() {
         // Construct and execute the method
-        String result = new TemplatingModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ASSETS).construct();
+        String result = new TemplatingModel(sampleDbConnectionIdMap, sampleAssets).construct();
         // Test outputs
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleAssetMeasureMap();
         sampleMap = TestUtils.addSampleFacilityData(sampleMap, true, false, false);
-        assertEquals(genExpectedJsonSyntax(SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), result);
+        assertEquals(genExpectedJsonSyntax(sampleDbConnectionIdMap, sampleMap), result);
     }
 
     @Test
     void testConstruct_RoomsOnly() {
         // Construct and execute the method
-        String result = new TemplatingModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ROOMS).construct();
+        String result = new TemplatingModel(sampleDbConnectionIdMap, sampleRooms).construct();
         // Test outputs
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleRoomMeasureMap(true);
         sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, true, false);
-        assertEquals(genExpectedJsonSyntax(SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), result);
+        assertEquals(genExpectedJsonSyntax(sampleDbConnectionIdMap, sampleMap), result);
     }
 
     @Test
     void testConstruct_SystemsOnly() {
         // Construct and execute the method
-        String result = new TemplatingModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_SYSTEMS).construct();
+        String result = new TemplatingModel(sampleDbConnectionIdMap, sampleSystems).construct();
         // Test outputs
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleSystemMeasureMap();
         sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, false, true, true);
-        assertEquals(genExpectedJsonSyntax(SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), result);
+        assertEquals(genExpectedJsonSyntax(sampleDbConnectionIdMap, sampleMap), result);
     }
 
     public static String genExpectedJsonSyntax(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> organisationMapping) {

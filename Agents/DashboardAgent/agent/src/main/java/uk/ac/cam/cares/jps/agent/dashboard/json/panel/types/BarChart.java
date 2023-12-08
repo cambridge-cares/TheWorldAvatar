@@ -63,9 +63,9 @@ public class BarChart extends TemplatePanel {
                 .append(" END;");
         super.setQuery(query);
         // Apply an aggregate transformation before renaming the fields
-        super.TRANSFORMATIONS.addGroupByTransformation("range", timeSeriesMetadata);
+        super.transformations.addGroupByTransformation("range", timeSeriesMetadata);
         // Add a white space as the group by transformation in Grafana appends the following
-        super.TRANSFORMATIONS.addOrganizeTransformation(" (range)", timeSeriesMetadata);
+        super.transformations.addOrganizeTransformation(" (range)", timeSeriesMetadata);
     }
 
     /**

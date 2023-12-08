@@ -13,10 +13,10 @@ import java.util.Map;
  * @author qhouyee
  */
 class PostgresVariable extends TemplateVariable {
-    private final String LABEL;
-    private final String DESCRIPTION;
-    private final String DATABASE_CONNECTION_ID;
-    private final StringBuilder QUERY_SYNTAX = new StringBuilder();
+    private final String label;
+    private final String description;
+    private final String databaseConnectionId;
+    private final StringBuilder querySyntax = new StringBuilder();
 
     /**
      * Constructor for a variable to filter the asset type or rooms associated with a specific facility.
@@ -29,14 +29,14 @@ class PostgresVariable extends TemplateVariable {
         // Ensure that this variable can be viewed on the dashboard
         super(itemType, 0, true, true);
         // Add label for the type
-        this.LABEL = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" :
+        this.label = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" :
                 itemType.equals(StringHelper.SYSTEM_KEY) ? "Smart Meter" : StringHelper.addSpaceBetweenCapitalWords(itemType);
         // Description should follow the item type
-        this.DESCRIPTION = "A filter for the items of " + this.LABEL.toLowerCase() + " type.";
+        this.description = "A filter for the items of " + this.label.toLowerCase() + " type.";
         // Append each value in the list in the required format
-        this.QUERY_SYNTAX.append("SELECT v AS \\\"__value\\\" FROM (values ");
+        this.querySyntax.append("SELECT v AS \\\"__value\\\" FROM (values ");
         StringBuilder temp = new StringBuilder();
-        this.DATABASE_CONNECTION_ID = databaseId;
+        this.databaseConnectionId = databaseId;
         // For each facility, add a query to link the facility and its containing item as a key value pair
         for (String facility : facilityItemMapping.keySet()) {
             facilityItemMapping.get(facility).stream().forEach(itemName -> {
@@ -46,7 +46,7 @@ class PostgresVariable extends TemplateVariable {
                         .append(itemName).append("')");
             });
         }
-        this.QUERY_SYNTAX.append(temp).append(") AS v(k,v)  WHERE k IN (${").append(StringHelper.FACILITY_KEY).append("});");
+        this.querySyntax.append(temp).append(") AS v(k,v)  WHERE k IN (${").append(StringHelper.FACILITY_KEY).append("});");
     }
 
     /**
@@ -61,14 +61,14 @@ class PostgresVariable extends TemplateVariable {
         // Variable name will be a combination of measure name and item type to make it unique
         super(measure + item, 2, true, true);
         // Empty label as the label will not be displayed
-        this.LABEL = "";
+        this.label = "";
         // Description should follow the measure name and item type
-        this.DESCRIPTION = "A hidden filter that displays the corresponding time series of " + StringHelper.addSpaceBetweenCapitalWords(measure).toLowerCase()
+        this.description = "A hidden filter that displays the corresponding time series of " + StringHelper.addSpaceBetweenCapitalWords(measure).toLowerCase()
                 + " for " + StringHelper.addSpaceBetweenCapitalWords(item).toLowerCase();
         // Append each value in the list in the required format
-        this.QUERY_SYNTAX.append("SELECT k AS \\\"__text\\\", v AS \\\"__value\\\" FROM (values ");
+        this.querySyntax.append("SELECT k AS \\\"__text\\\", v AS \\\"__value\\\" FROM (values ");
         StringBuilder temp = new StringBuilder();
-        this.DATABASE_CONNECTION_ID = databaseId;
+        this.databaseConnectionId = databaseId;
         for (String[] assetMeasure : assetMeasures) {
             // Only append a comma at the start if it is not the first value
             if (temp.length() != 0) temp.append(", ");
@@ -77,7 +77,7 @@ class PostgresVariable extends TemplateVariable {
                     .append(assetMeasure[1]).append("')");
         }
         String itemVariable = StringHelper.formatVariableName(item); // Format variable name according to its formatted name
-        this.QUERY_SYNTAX.append(temp).append(") AS v(k,v)  WHERE k IN (${").append(itemVariable).append("});");
+        this.querySyntax.append(temp).append(") AS v(k,v)  WHERE k IN (${").append(itemVariable).append("});");
     }
 
     /**
@@ -90,14 +90,14 @@ class PostgresVariable extends TemplateVariable {
         // Construct the common elements
         StringBuilder builder = super.genCommonJson()
                 // Variable display label
-                .append("\"label\": \"").append(this.LABEL).append("\",")
+                .append("\"label\": \"").append(this.label).append("\",")
                 // Postgres datasource
-                .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(this.DATABASE_CONNECTION_ID).append("\"},")
+                .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(this.databaseConnectionId).append("\"},")
                 // Description for this variable
-                .append("\"description\": \"").append(this.DESCRIPTION).append("\",")
+                .append("\"description\": \"").append(this.description).append("\",")
                 // Query values of this variable
-                .append("\"definition\": \"").append(this.QUERY_SYNTAX).append("\",")
-                .append("\"query\": \"").append(this.QUERY_SYNTAX).append("\",")
+                .append("\"definition\": \"").append(this.querySyntax).append("\",")
+                .append("\"query\": \"").append(this.querySyntax).append("\",")
                 // Default settings but unsure what they are for
                 .append("\"regex\": \"\",")
                 .append("\"sort\" : 0,")

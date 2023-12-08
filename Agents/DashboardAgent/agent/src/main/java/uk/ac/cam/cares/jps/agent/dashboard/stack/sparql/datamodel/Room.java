@@ -14,8 +14,8 @@ import java.util.Queue;
  * @author qhouyee
  */
 public class Room {
-    private final String ROOM_NAME;
-    private final Map<String, String[]> MEASURES = new HashMap<>();
+    private final String roomName;
+    private final Map<String, String[]> measures = new HashMap<>();
 
     /**
      * Standard Constructor. This will store the metadata retrieved from the SPARQL query.
@@ -27,7 +27,7 @@ public class Room {
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
     protected Room(String name, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        this.ROOM_NAME = name;
+        this.roomName = name;
         this.addMeasure(measureName, unit, measureIri, timeSeriesIri);
     }
 
@@ -47,13 +47,13 @@ public class Room {
         // Only append a unit if the inserted value is not null
         if (unit != null) iris[3] = unit;
         iris[4] = StringHelper.ROOM_KEY;
-        this.MEASURES.put(measureName, iris);
+        this.measures.put(measureName, iris);
     }
 
     /**
      * A getter method for room name.
      */
-    protected String getRoomName() {return this.ROOM_NAME;}
+    protected String getRoomName() {return this.roomName;}
 
     /**
      * A getter method to retrieve all measure metadata associated with this room.
@@ -62,8 +62,8 @@ public class Room {
      */
     protected Queue<String[]> getRoomData() {
         Queue<String[]> measureInfo = new ArrayDeque<>();
-        for (String measure : this.MEASURES.keySet()) {
-            measureInfo.offer(this.MEASURES.get(measure));
+        for (String measure : this.measures.keySet()) {
+            measureInfo.offer(this.measures.get(measure));
         }
         return measureInfo;
     }

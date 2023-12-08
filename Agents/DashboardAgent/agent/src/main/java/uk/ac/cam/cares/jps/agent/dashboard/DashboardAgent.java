@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
  */
 @WebServlet(urlPatterns = {"/reset", "/status", "/setup"})
 public class DashboardAgent extends JPSAgent {
-    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     // Agent starts off in invalid state, and will become valid when initialised without exceptions
     private static boolean valid = false;
-    private static StackClient SERVICES;
+    private static StackClient services;
+    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
 
@@ -41,9 +41,9 @@ public class DashboardAgent extends JPSAgent {
             LOGGER.error("This is a test ERROR message");
             LOGGER.fatal("This is a test FATAL message");
             // Ensure that the agent is running on a stack by initialising the services
-            SERVICES = new StackClient();
+            services = new StackClient();
             // When initialisation occurs without error, the agent becomes valid
-            DashboardAgent.valid = true;
+            valid = true;
         } catch (ServletException exception) {
             // This error only occurs when super.init() fails
             LOGGER.error("Could not initialise an agent instance!", exception);
@@ -141,7 +141,7 @@ public class DashboardAgent extends JPSAgent {
     protected JSONObject statusRoute() {
         JSONObject response = new JSONObject();
         LOGGER.info("Detected request to get agent status...");
-        if (DashboardAgent.valid) {
+        if (valid) {
             response.put("Result", "Agent is ready to receive requests.");
         } else {
             response.put("Error", "Agent could not be initialised! Please ensure it is running on a stack!");
@@ -156,10 +156,10 @@ public class DashboardAgent extends JPSAgent {
      */
     protected JSONObject setupRoute() {
         JSONObject response = new JSONObject();
-        if (DashboardAgent.valid) {
+        if (valid) {
             LOGGER.info("Setting up client to interact with dashboard...");
             try {
-                DashboardClient client = new DashboardClient(SERVICES);
+                DashboardClient client = new DashboardClient(services);
                 client.initDashboard();
             } catch (Exception e) {
                 LOGGER.fatal("Dashboard could not be set up! " + e.getMessage());
@@ -179,10 +179,10 @@ public class DashboardAgent extends JPSAgent {
      *
      * @return A response to the request called as a JSON Object.
      */
-    protected JSONObject resetRoute() {
+    protected static JSONObject resetRoute() {
         JSONObject response = new JSONObject();
-        if (DashboardAgent.valid) {
-            SERVICES = new StackClient();
+        if (valid) {
+            services = new StackClient();
             response.put("Result", "Agent has been successfully reset!");
         } else {
             response.put("Error", "Agent could not be initialised! Please check logs for more information...");

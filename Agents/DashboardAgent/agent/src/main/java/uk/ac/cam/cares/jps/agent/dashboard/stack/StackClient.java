@@ -19,10 +19,10 @@ import java.util.Queue;
  */
 public class StackClient {
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
-    private final String STACK_RDB_DOMAIN;
-    private final GrafanaEndpointConfig DASHBOARD_CONFIG;
-    private final PostGisClient POSTGIS_CLIENT;
-    private final SparqlClient SPARQL_CLIENT;
+    private final String stackRdbDomain;
+    private final GrafanaEndpointConfig dashboardConfig;
+    private final PostGisClient postgisClient;
+    private final SparqlClient sparqlClient;
 
     /**
      * Standard Constructor.
@@ -32,11 +32,11 @@ public class StackClient {
         ContainerClient client = new ContainerClient();
         BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
         PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-        this.DASHBOARD_CONFIG = client.readEndpointConfig("grafana", GrafanaEndpointConfig.class);
+        this.dashboardConfig = client.readEndpointConfig("grafana", GrafanaEndpointConfig.class);
         LOGGER.debug("Retrieving PostGIS services...");
-        this.STACK_RDB_DOMAIN = postConfig.getHostName() + ":" + postConfig.getPort();
-        String stackJdbcUrl = "jdbc:postgresql://" + this.STACK_RDB_DOMAIN + "/";
-        this.POSTGIS_CLIENT = new PostGisClient(stackJdbcUrl, postConfig.getUsername(), postConfig.getPassword());
+        this.stackRdbDomain = postConfig.getHostName() + ":" + postConfig.getPort();
+        String stackJdbcUrl = "jdbc:postgresql://" + this.stackRdbDomain + "/";
+        this.postgisClient = new PostGisClient(stackJdbcUrl, postConfig.getUsername(), postConfig.getPassword());
         LOGGER.debug("Retrieving SPARQL services...");
         // Generate the generic stack SPARQL endpoint url based on their authentication enabled
         String stackSparqlEndpoint = blazeConfig.getPassword().isEmpty() ?
@@ -45,7 +45,7 @@ public class StackClient {
                 // Authenticated endpoint
                 "http://" + blazeConfig.getUsername() + ":" + blazeConfig.getPassword() + "@" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/";
         // Initialise a new Sparql client
-        this.SPARQL_CLIENT = new SparqlClient(stackSparqlEndpoint, blazeConfig.getUsername(), blazeConfig.getPassword());
+        this.sparqlClient = new SparqlClient(stackSparqlEndpoint, blazeConfig.getUsername(), blazeConfig.getPassword());
         LOGGER.debug("Services have been successfully retrieved from the stack...");
     }
 
@@ -55,14 +55,14 @@ public class StackClient {
      * @return An array of all available organisations and their associated spatial zones to monitor.
      */
     public String[] getAllOrganisations() {
-        return this.SPARQL_CLIENT.getAllOrganisations();
+        return this.sparqlClient.getAllOrganisations();
     }
 
     /**
      * Get the list of database names that is available in this stack.
      */
     public List<String> getDatabaseNames() {
-        return this.POSTGIS_CLIENT.getDatabaseNames();
+        return this.postgisClient.getDatabaseNames();
     }
 
     /**
@@ -72,9 +72,9 @@ public class StackClient {
      */
     public String[] getPostGisCredentials() {
         String[] credentials = new String[3];
-        credentials[0] = this.STACK_RDB_DOMAIN;
-        credentials[1] = this.POSTGIS_CLIENT.getUsername();
-        credentials[2] = this.POSTGIS_CLIENT.getPassword();
+        credentials[0] = this.stackRdbDomain;
+        credentials[1] = this.postgisClient.getUsername();
+        credentials[2] = this.postgisClient.getPassword();
         return credentials;
     }
 
@@ -82,7 +82,7 @@ public class StackClient {
      * Get the dashboard service within this stack.
      */
     public String getDashboardUrl() {
-        return this.DASHBOARD_CONFIG.getServiceUrl();
+        return this.dashboardConfig.getServiceUrl();
     }
 
     /**
@@ -90,7 +90,7 @@ public class StackClient {
      *
      * @return An array containing the dashboard username and password in sequence.
      */
-    public String[] getDashboardCredentials() {return new String[]{this.DASHBOARD_CONFIG.getUsername(), this.DASHBOARD_CONFIG.getPassword()};}
+    public String[] getDashboardCredentials() {return new String[]{this.dashboardConfig.getUsername(), this.dashboardConfig.getPassword()};}
 
     /**
      * Get all time series associated with the spatial zones managed by an organisation, namely their assets and rooms' measures in the knowledge graph.
@@ -126,8 +126,8 @@ public class StackClient {
      */
     public Map<String, Map<String, List<String[]>>> getAllTimeSeries(String organisation) {
         LOGGER.debug("Retrieving the spatial zone metadata for organisation: " + organisation + "...");
-        Map<String, Queue<String[]>> measures = this.SPARQL_CLIENT.getAllSpatialZoneMetaData(organisation);
+        Map<String, Queue<String[]>> measures = this.sparqlClient.getAllSpatialZoneMetaData(organisation);
         LOGGER.debug("Retrieving the time series metadata from PostGIS...");
-        return this.POSTGIS_CLIENT.getMeasureColAndTableName(measures);
+        return this.postgisClient.getMeasureColAndTableName(measures);
     }
 }

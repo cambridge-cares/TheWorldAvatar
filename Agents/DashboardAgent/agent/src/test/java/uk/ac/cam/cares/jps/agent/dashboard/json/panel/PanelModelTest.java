@@ -12,73 +12,73 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PanelModelTest {
-    private static Map<String, String> SAMPLE_DB_CONNECTION_ID_MAP;
-    private static Map<String, Map<String, List<String[]>>> SAMPLE_ASSETS;
-    private static Map<String, Map<String, List<String[]>>> SAMPLE_ROOMS;
+    private static Map<String, String> sampleDbConnectionIdMap;
+    private static Map<String, Map<String, List<String[]>>> sampleAssets;
+    private static Map<String, Map<String, List<String[]>>> sampleRooms;
     // A global counter will ensure value can be increased even in nested methods
-    private static int ROW_NUMBER;
+    private static int rowNumber;
 
     @BeforeAll
     static void genSampleData() {
-        SAMPLE_ASSETS = TestUtils.genSampleAssetMeasureMap();
-        SAMPLE_DB_CONNECTION_ID_MAP = TestUtils.genSampleDatabaseConnectionMap();
+        sampleAssets = TestUtils.genSampleAssetMeasureMap();
+        sampleDbConnectionIdMap = TestUtils.genSampleDatabaseConnectionMap();
     }
 
     @BeforeEach
     void genModifiableSampleData() {
         // Sample rooms will be removed during the syntax construction
-        SAMPLE_ROOMS = TestUtils.genSampleRoomMeasureMap(false);
+        sampleRooms = TestUtils.genSampleRoomMeasureMap(false);
     }
 
     @Test
     void testConstruct_AssetsOnly() {
         // Construct and execute the method
-        String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ASSETS).construct();
+        String result = new PanelModel(sampleDbConnectionIdMap, sampleAssets).construct();
         // Test outputs
-        assertEquals(genExpectedRowSyntax(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ASSETS), result);
+        assertEquals(genExpectedRowSyntax(sampleDbConnectionIdMap, sampleAssets), result);
     }
 
     @Test
     void testConstruct_RoomsOnlyNoThresholds() {
         // Construct and execute the method
-        String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ROOMS).construct();
+        String result = new PanelModel(sampleDbConnectionIdMap, sampleRooms).construct();
         // Test outputs
-        assertEquals(genExpectedRowSyntax(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleRoomMeasureMap(false)), result);
+        assertEquals(genExpectedRowSyntax(sampleDbConnectionIdMap, TestUtils.genSampleRoomMeasureMap(false)), result);
     }
 
     @Test
     void testConstruct_RoomsOnlyThresholds() {
         // This test only include thresholds for one of the room measures as thresholds are not mandatory
         // Construct and execute the method
-        String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleRoomMeasureMap(true)).construct();
+        String result = new PanelModel(sampleDbConnectionIdMap, TestUtils.genSampleRoomMeasureMap(true)).construct();
         // Test outputs
-        assertEquals(genExpectedRowSyntax(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleRoomMeasureMap(true)), result);
+        assertEquals(genExpectedRowSyntax(sampleDbConnectionIdMap, TestUtils.genSampleRoomMeasureMap(true)), result);
     }
 
     @Test
     void testConstruct_SystemsOnly() {
         // This test only include thresholds for one of the room measures as thresholds are not mandatory
         // Construct and execute the method
-        String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleSystemMeasureMap()).construct();
+        String result = new PanelModel(sampleDbConnectionIdMap, TestUtils.genSampleSystemMeasureMap()).construct();
         // Test outputs
-        assertEquals(genExpectedRowSyntax(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleSystemMeasureMap()), result);
+        assertEquals(genExpectedRowSyntax(sampleDbConnectionIdMap, TestUtils.genSampleSystemMeasureMap()), result);
     }
 
     @Test
     void testConstruct_AssetsAndRoomsNoThresholds() {
         // Construct and execute the method
-        String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false)).construct();
+        String result = new PanelModel(sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(false)).construct();
         // Test outputs
-        assertEquals(genExpectedRowSyntax(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false)), result);
+        assertEquals(genExpectedRowSyntax(sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(false)), result);
     }
 
     @Test
     void testConstruct_AssetsAndRoomsWithThreshold() {
         // This test only include thresholds for one of the room measures as thresholds are not mandatory
         // Construct and execute the method
-        String result = new PanelModel(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(true)).construct();
+        String result = new PanelModel(sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(true)).construct();
         // Test outputs
-        assertEquals(genExpectedRowSyntax(SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(true)), result);
+        assertEquals(genExpectedRowSyntax(sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(true)), result);
     }
 
 
@@ -86,7 +86,7 @@ public class PanelModelTest {
         if (items.isEmpty()) return "";
         // Initialise the settings
         StringBuilder builder = new StringBuilder();
-        ROW_NUMBER = 0;
+        rowNumber = 0;
         // For the rooms
         if (items.containsKey(StringHelper.ROOM_KEY)) {
             Map<String, List<String[]>> roomMetadata = items.get(StringHelper.ROOM_KEY);
@@ -117,9 +117,9 @@ public class PanelModelTest {
                             .append("\"title\": \"").append(title).append("\",")
                             .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.CHART_WIDTH * 2)
                             // The row header should start at 0, and then increment the number after
-                            .append(",\"x\": 0,\"y\": ").append(ROW_NUMBER++).append("},")
+                            .append(",\"x\": 0,\"y\": ").append(rowNumber++).append("},")
                             // Row contents should start at +1 from the header
-                            .append("\"panels\": [").append(LayoutTemplateTest.genExpectedRoomLayoutJson(ROW_NUMBER, expectedIndividualMap, databaseConnectionMap))
+                            .append("\"panels\": [").append(LayoutTemplateTest.genExpectedRoomLayoutJson(rowNumber, expectedIndividualMap, databaseConnectionMap))
                             .append("]}");
                 }
             }
@@ -135,8 +135,8 @@ public class PanelModelTest {
                     .append("\"title\": \"").append(title).append("\",")
                     .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.CHART_WIDTH * 2)
                     // The row header should start on a separate position (-1) before the row contents
-                    .append(",\"x\": 0,\"y\": ").append(ROW_NUMBER).append("},")
-                    .append("\"panels\": [").append(LayoutTemplateTest.genExpectedSystemLayoutJson(++ROW_NUMBER, systemMetadata, databaseConnectionMap))
+                    .append(",\"x\": 0,\"y\": ").append(rowNumber).append("},")
+                    .append("\"panels\": [").append(LayoutTemplateTest.genExpectedSystemLayoutJson(++rowNumber, systemMetadata, databaseConnectionMap))
                     .append("]}");
             items.remove(StringHelper.SYSTEM_KEY);
         }
@@ -150,8 +150,8 @@ public class PanelModelTest {
                     .append("\"title\": \"").append(title).append("\",")
                     .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.CHART_WIDTH * 2)
                     // The row header should start on a separate position (-1) before the row contents
-                    .append(",\"x\": 0,\"y\": ").append(ROW_NUMBER).append("},")
-                    .append("\"panels\": [").append(LayoutTemplateTest.genExpectedAssetLayoutJson(++ROW_NUMBER, assetType, assetMetadata, databaseConnectionMap))
+                    .append(",\"x\": 0,\"y\": ").append(rowNumber).append("},")
+                    .append("\"panels\": [").append(LayoutTemplateTest.genExpectedAssetLayoutJson(++rowNumber, assetType, assetMetadata, databaseConnectionMap))
                     .append("]}");
         }
         return builder.toString();

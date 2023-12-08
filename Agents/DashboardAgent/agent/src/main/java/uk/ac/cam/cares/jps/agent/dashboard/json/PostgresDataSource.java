@@ -7,11 +7,11 @@ package uk.ac.cam.cares.jps.agent.dashboard.json;
  * @author qhouyee
  */
 public class PostgresDataSource {
-    private final String SOURCE_NAME;
-    private final String SOURCE_URL;
-    private final String USERNAME;
-    private final String PASSWORD;
-    private final String DATABASE_NAME;
+    private final String sourceName;
+    private final String sourceUrl;
+    private final String username;
+    private final String password;
+    private final String databaseName;
 
     /**
      * Constructor to set up required syntax for the data source HTTP API.
@@ -23,11 +23,11 @@ public class PostgresDataSource {
      * @param databaseName The specific database to connect to.
      */
     public PostgresDataSource(String name, String url, String user, String password, String databaseName) {
-        this.SOURCE_NAME = name;
-        this.SOURCE_URL = url;
-        this.USERNAME = user;
-        this.PASSWORD = password;
-        this.DATABASE_NAME = databaseName;
+        this.sourceName = name;
+        this.sourceUrl = url;
+        this.username = user;
+        this.password = password;
+        this.databaseName = databaseName;
     }
 
     /**
@@ -38,17 +38,17 @@ public class PostgresDataSource {
     protected String construct() {
         StringBuilder builder = new StringBuilder();
         builder.append("{")
-                .append("\"name\": \"").append(this.SOURCE_NAME).append("\",")
+                .append("\"name\": \"").append(this.sourceName).append("\",")
                 .append("\"type\": \"postgres\",")
-                .append("\"url\": \"").append(this.SOURCE_URL).append("\",")
-                .append("\"user\": \"").append(this.USERNAME).append("\",")
-                .append("\"database\": \"").append(this.DATABASE_NAME).append("\",")
+                .append("\"url\": \"").append(this.sourceUrl).append("\",")
+                .append("\"user\": \"").append(this.username).append("\",")
+                .append("\"database\": \"").append(this.databaseName).append("\",")
                 .append("\"basicAuth\": false,")
                 .append("\"access\": \"proxy\",")
                 .append("\"withCredentials\": false,")
                 .append("\"isDefault\": false,")
                 .append("\"jsonData\": ").append(this.genJsonDataConfig())
-                .append("\"secureJsonData\": { \"password\": \"").append(this.PASSWORD).append("\"}")
+                .append("\"secureJsonData\": { \"password\": \"").append(this.password).append("\"}")
                 .append("}");
         return builder.toString();
     }

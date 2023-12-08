@@ -15,62 +15,62 @@ import static org.junit.jupiter.api.Assertions.*;
 class GrafanaModelTest {
     private static final String SAMPLE_TITLE = "Overview";
 
-    private static Map<String, String> SAMPLE_DB_CONNECTION_ID_MAP;
-    private static Map<String, Map<String, List<String[]>>> SAMPLE_ASSETS;
-    private static Map<String, Map<String, List<String[]>>> SAMPLE_ROOMS;
-    private static Map<String, Map<String, List<String[]>>> SAMPLE_SYSTEMS;
+    private static Map<String, String> sampleDbConnectionIdMap;
+    private static Map<String, Map<String, List<String[]>>> sampleAssets;
+    private static Map<String, Map<String, List<String[]>>> sampleRooms;
+    private static Map<String, Map<String, List<String[]>>> sampleSystems;
 
     @BeforeAll
     static void genSampleData() {
-        SAMPLE_ASSETS = TestUtils.genSampleAssetMeasureMap();
-        SAMPLE_ASSETS = TestUtils.addSampleFacilityData(SAMPLE_ASSETS, true, false, false);
-        SAMPLE_DB_CONNECTION_ID_MAP = TestUtils.genSampleDatabaseConnectionMap();
-        SAMPLE_ROOMS = TestUtils.genSampleRoomMeasureMap(true);
-        SAMPLE_ROOMS = TestUtils.addSampleFacilityData(SAMPLE_ROOMS, false, true, false);
-        SAMPLE_SYSTEMS = TestUtils.genSampleSystemMeasureMap();
-        SAMPLE_SYSTEMS = TestUtils.addSampleFacilityData(SAMPLE_SYSTEMS, false, false, true);
+        sampleAssets = TestUtils.genSampleAssetMeasureMap();
+        sampleAssets = TestUtils.addSampleFacilityData(sampleAssets, true, false, false);
+        sampleDbConnectionIdMap = TestUtils.genSampleDatabaseConnectionMap();
+        sampleRooms = TestUtils.genSampleRoomMeasureMap(true);
+        sampleRooms = TestUtils.addSampleFacilityData(sampleRooms, false, true, false);
+        sampleSystems = TestUtils.genSampleSystemMeasureMap();
+        sampleSystems = TestUtils.addSampleFacilityData(sampleSystems, false, false, true);
     }
 
     @Test
     void testConstruct_EmptyTimeSeries() {
-        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, new HashMap<>());
-        assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, new HashMap<>()), sampleModel.construct());
+        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, sampleDbConnectionIdMap, new HashMap<>());
+        assertEquals(genExpectedResults(SAMPLE_TITLE, sampleDbConnectionIdMap, new HashMap<>()), sampleModel.construct());
     }
 
     @Test
     void testConstruct_OnlyAssets() {
-        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ASSETS);
+        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, sampleDbConnectionIdMap, sampleAssets);
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleAssetMeasureMap();
         sampleMap = TestUtils.addSampleFacilityData(sampleMap, true, false, false);
-        assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), sampleModel.construct());
+        assertEquals(genExpectedResults(SAMPLE_TITLE, sampleDbConnectionIdMap, sampleMap), sampleModel.construct());
     }
 
     @Test
     void testConstruct_OnlyRooms() {
-        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_ROOMS);
+        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, sampleDbConnectionIdMap, sampleRooms);
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleRoomMeasureMap(true);
         sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, true, false);
-        assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), sampleModel.construct());
+        assertEquals(genExpectedResults(SAMPLE_TITLE, sampleDbConnectionIdMap, sampleMap), sampleModel.construct());
     }
 
     @Test
     void testConstruct_OnlySystems() {
-        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, SAMPLE_SYSTEMS);
+        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, sampleDbConnectionIdMap, sampleSystems);
         Map<String, Map<String, List<String[]>>> sampleMap = TestUtils.genSampleSystemMeasureMap();
         sampleMap = TestUtils.addSampleFacilityData(sampleMap, false, false, true);
-        assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, sampleMap), sampleModel.construct());
+        assertEquals(genExpectedResults(SAMPLE_TITLE, sampleDbConnectionIdMap, sampleMap), sampleModel.construct());
     }
 
     @Test
     void testConstruct_RoomsAndAssets() {
-        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(true, true));
-        assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(true, true)), sampleModel.construct());
+        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(true, true));
+        assertEquals(genExpectedResults(SAMPLE_TITLE, sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(true, true)), sampleModel.construct());
     }
 
     @Test
     void testConstruct_RoomsAndAssetsNoThresholds() {
-        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false, true));
-        assertEquals(genExpectedResults(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false, true)), sampleModel.construct());
+        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(false, true));
+        assertEquals(genExpectedResults(SAMPLE_TITLE, sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(false, true)), sampleModel.construct());
     }
 
     @Test
@@ -78,11 +78,11 @@ class GrafanaModelTest {
         // Set up
         int sampleId = 5;
         String sampleUid = "h18jrna";
-        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false, true));
+        GrafanaModel sampleModel = new GrafanaModel(SAMPLE_TITLE, sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(false, true));
         // Execute method
         sampleModel.setExistingIds(sampleId, sampleUid);
         // Verify results
-        assertEquals(genExpectedResults(String.valueOf(sampleId), sampleUid, SAMPLE_TITLE, "20s", "Initialised dashboard", SAMPLE_DB_CONNECTION_ID_MAP, TestUtils.genSampleComplexMeasureMap(false, true), true), sampleModel.construct());
+        assertEquals(genExpectedResults(String.valueOf(sampleId), sampleUid, SAMPLE_TITLE, "20s", "Initialised dashboard", sampleDbConnectionIdMap, TestUtils.genSampleComplexMeasureMap(false, true), true), sampleModel.construct());
     }
 
 

@@ -14,41 +14,41 @@ class TechnicalSystemTest {
     private static final String MEASURE_ONE_UNIT = "kW";
     private static final String MEASURE_TWO_NAME = "Thermal Consumption";
     private static final String MEASURE_TWO_UNIT = null;
-    private static String MEASURE_ONE_IRI;
-    private static String MEASURE_ONE_TS_IRI;
-    private static String MEASURE_TWO_IRI;
-    private static String MEASURE_TWO_TS_IRI;
+    private static String measureOneIri;
+    private static String measureOneTsIri;
+    private static String measureTwoIri;
+    private static String measureTwoTsIri;
 
     @BeforeAll
     static void setup() {
-        MEASURE_ONE_IRI = TestUtils.genInstance("ElectricityConsumption");
-        MEASURE_ONE_TS_IRI = TestUtils.genTimeSeriesInstance();
-        MEASURE_TWO_IRI = TestUtils.genInstance("ThermalConsumption");
-        MEASURE_TWO_TS_IRI = TestUtils.genTimeSeriesInstance();
+        measureOneIri = TestUtils.genInstance("ElectricityConsumption");
+        measureOneTsIri = TestUtils.genTimeSeriesInstance();
+        measureTwoIri = TestUtils.genInstance("ThermalConsumption");
+        measureTwoTsIri = TestUtils.genTimeSeriesInstance();
     }
 
     @Test
     void testAddMeasure() {
         // Initialise object
-        TechnicalSystem sample = new TechnicalSystem(SYSTEM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI);
+        TechnicalSystem sample = new TechnicalSystem(SYSTEM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, measureOneIri, measureOneTsIri);
         // Execute method
-        sample.addMeasure(MEASURE_TWO_NAME, MEASURE_TWO_UNIT, MEASURE_TWO_IRI, MEASURE_TWO_TS_IRI);
+        sample.addMeasure(MEASURE_TWO_NAME, MEASURE_TWO_UNIT, measureTwoIri, measureTwoTsIri);
         // Verify it has been added properly
         Queue<String[]> results = sample.getData();
         assertEquals(2, results.size()); // Two measure arrays should be available in the queue
         // For the first measure
         String[] measure = results.poll();
         // If unit is null, the corresponding unit stored should be null as well
-        verifySystemMeasureArrayContents(MEASURE_TWO_NAME, MEASURE_TWO_IRI, MEASURE_TWO_TS_IRI, null, measure);
+        verifySystemMeasureArrayContents(MEASURE_TWO_NAME, measureTwoIri, measureTwoTsIri, null, measure);
         // For the second measure
         measure = results.poll();
-        verifySystemMeasureArrayContents(MEASURE_ONE_NAME, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI, MEASURE_ONE_UNIT, measure);
+        verifySystemMeasureArrayContents(MEASURE_ONE_NAME, measureOneIri, measureOneTsIri, MEASURE_ONE_UNIT, measure);
     }
 
     @Test
     void testGetName() {
         // Initialise object
-        TechnicalSystem sample = new TechnicalSystem(SYSTEM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI);
+        TechnicalSystem sample = new TechnicalSystem(SYSTEM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, measureOneIri, measureOneTsIri);
         // Execute and test method
         assertEquals(SYSTEM_NAME, sample.getName());
     }
@@ -56,13 +56,13 @@ class TechnicalSystemTest {
     @Test
     void testGetData() {
         // Initialise object
-        TechnicalSystem sample = new TechnicalSystem(SYSTEM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI);
+        TechnicalSystem sample = new TechnicalSystem(SYSTEM_NAME, MEASURE_ONE_NAME, MEASURE_ONE_UNIT, measureOneIri, measureOneTsIri);
         // Execute method to retrieve the simple measure
         Queue<String[]> results = sample.getData();
         // Test results
         assertEquals(1, results.size()); // Only one measure array should be available in the queue
         String[] measure = results.poll();
-        verifySystemMeasureArrayContents(MEASURE_ONE_NAME, MEASURE_ONE_IRI, MEASURE_ONE_TS_IRI, MEASURE_ONE_UNIT, measure);
+        verifySystemMeasureArrayContents(MEASURE_ONE_NAME, measureOneIri, measureOneTsIri, MEASURE_ONE_UNIT, measure);
     }
 
     protected static void verifySystemMeasureArrayContents(String measureName, String measureIRI, String measureTSIri, String measureUnit, String[] measure) {

@@ -13,8 +13,8 @@ import java.util.List;
  * @author qhouyee
  */
 public class TimeSeriesChart extends TemplatePanel {
-    private String THRESHOLD_STYLE = "off";
-    private String THRESHOLD_KEY_VALUE = "";
+    private String thresholdStyle = "off";
+    private String thresholdKeyValue = "";
 
     /**
      * Standard Constructor.
@@ -41,8 +41,8 @@ public class TimeSeriesChart extends TemplatePanel {
         super.setDescription(description);
         // If there are thresholds, override the following items
         if (thresholds.length != 0) {
-            this.THRESHOLD_STYLE = "area";
-            this.THRESHOLD_KEY_VALUE = "\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
+            this.thresholdStyle = "area";
+            this.thresholdKeyValue = "\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
                     "{\"color\":\"red\",\"value\":null},{\"color\":\"green\",\"value\":" + thresholds[0] + "}," +
                     "{\"color\":\"red\",\"value\":" + thresholds[1] + "}]},";
         }
@@ -74,9 +74,9 @@ public class TimeSeriesChart extends TemplatePanel {
                 .append("\"hideFrom\":{\"legend\":false, \"tooltip\":false, \"viz\":false},")
                 .append("\"lineInterpolation\":\"linear\", \"lineWidth\":1, \"pointSize\":5,")
                 .append("\"scaleDistribution\":{\"type\":\"linear\"}, \"showPoints\":\"auto\", \"spanNulls\":false,")
-                .append("\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"" + this.THRESHOLD_STYLE + "\"}")
+                .append("\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"" + this.thresholdStyle + "\"}")
                 .append("},") // End of custom parts
-                .append(this.THRESHOLD_KEY_VALUE)
+                .append(this.thresholdKeyValue)
                 .append("\"mappings\": [],")
                 .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
                 .append("},") // End of defaults
