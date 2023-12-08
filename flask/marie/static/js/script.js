@@ -400,6 +400,7 @@ const chatbotResponseCard = (function () {
             elem.style.display = "none"
             chatbotResponsePara.innerHTML = ""
             chatbotSpinnerSpan.style.display = "inline-block"
+            chatbotStopAnchor.style.display = "inline"
 
             abortController = new AbortController()
             streamInterrupted = false
