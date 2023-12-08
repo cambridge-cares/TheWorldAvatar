@@ -84,7 +84,7 @@ const chatbotResponseCard = {
     async streamChatbotResponseBodyReader(reader) {
         const elem = this.getChatbotResponseElem()
     
-        translationMetadataCard.displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
+        inferenceMetadataCard.displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
         // read() returns a promise that resolves when a value has been received
         return reader.read().then(function pump({ done, value }) {
             if (done) {
@@ -103,7 +103,7 @@ const chatbotResponseCard = {
             if (/\s/.test(elem.innerHTML.charAt(0))) {
                 elem.innerHTML = elem.innerHTML.trimStart()
             }
-            translationMetadataCard.updateLatency("chatbot-latency", datum["latency"])
+            inferenceMetadataCard.updateLatency("chatbot-latency", datum["latency"])
     
             // Read some more, and call this function again
             if (this.streamInterrupted) {
@@ -146,7 +146,7 @@ const chatbotResponseCard = {
     }
 }
 
-const translationMetadataCard = {
+const inferenceMetadataCard = {
     // Helpers
     formatLatency(latency) {
         if (typeof latency === "number") {
@@ -157,14 +157,14 @@ const translationMetadataCard = {
     },
 
     getTransMetadataCardUl() {
-        const transMetadataCard = document.getElementById("trans-metadata-card")
-        transMetadataCard.style.display = "block"
+        const elem = document.getElementById("infer-metadata-card")
+        elem.style.display = "block"
     
-        const ulChildren = transMetadataCard.getElementsByTagName("ul")
+        const ulChildren = elem.getElementsByTagName("ul")
         if (ulChildren.length === 0) {
             const ul = document.createElement("ul")
             ul.className = "list-group list-group-flush"
-            transMetadataCard.appendChild(ul)
+            elem.appendChild(ul)
             return ul
         } else {
             return ulChildren[0]
@@ -216,12 +216,12 @@ Functions that manipulate UI
 */
 
 function hideElems() {
-    let elemIds = ["trans-metadata-card", "chatbot-response-card", 'sparql-query-predicted-container', 'sparql-query-postprocessed-container', "error-container", "results", "toggle-iri"]
+    let elemIds = ["infer-metadata-card", "chatbot-response-card", 'sparql-query-predicted-container', 'sparql-query-postprocessed-container', "error-container", "results", "toggle-iri"]
     for (const elemId of elemIds) {
         document.getElementById(elemId).style.display = "none"
     }
 
-    elemIds = ["trans-metadata-card", "chatbot-response-card"]
+    elemIds = ["infer-metadata-card", "chatbot-response-card"]
     for (const elemId of elemIds) {
         document.getElementById(elemId).innerHTML = ""
     }
@@ -239,10 +239,10 @@ function displaySparqlQueryPostProcessed(sparql_query) {
 
 function displayTranslationResults(json) {
     if (json["question"] != json["preprocessed_question"]) {
-        translationMetadataCard.displayPreprocessedQuestion(json["preprocessed_question"])
+        inferenceMetadataCard.displayPreprocessedQuestion(json["preprocessed_question"])
     }
-    translationMetadataCard.displayDomainPredicted(json["domain"])
-    translationMetadataCard.displayLatency("trans-latency", "Translation", json["latency"])
+    inferenceMetadataCard.displayDomainPredicted(json["domain"])
+    inferenceMetadataCard.displayLatency("trans-latency", "Translation", json["latency"])
 
     displaySparqlQueryPredicted(json["sparql"]["predicted"])
     if (json["sparql"]["postprocessed"]) {
@@ -297,7 +297,7 @@ function displayKgResponse(data) {
 }
 
 function displayKgResults(json) {
-    translationMetadataCard.displayLatency("kg-latency", "SPARQL query execution", json["latency"])
+    inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", json["latency"])
     displayKgResponse(json["data"])
 }
 
