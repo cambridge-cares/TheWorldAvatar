@@ -6,7 +6,6 @@ import com.cmclinnovations.stack.clients.grafana.GrafanaEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 
 import java.util.List;
 import java.util.Map;
@@ -18,11 +17,11 @@ import java.util.Queue;
  * @author qhouyee
  */
 public class StackClient {
-    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private final String stackRdbDomain;
     private final GrafanaEndpointConfig dashboardConfig;
     private final PostGisClient postgisClient;
     private final SparqlClient sparqlClient;
+    private static final Logger LOGGER = LogManager.getLogger(StackClient.class);
 
     /**
      * Standard Constructor.

@@ -15,7 +15,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlAction;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlQuery;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
@@ -39,7 +38,7 @@ public class SparqlClient {
     private final List<String> spatialZoneSparqlEndpoints = new ArrayList<>();
     private final List<String> remainingSparqlEndpoints = new ArrayList<>();
     private final Map<String, Organisation> organisations = new HashMap<>();
-    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(SparqlClient.class);
 
     /**
      * Standard Constructor to initialise this client.

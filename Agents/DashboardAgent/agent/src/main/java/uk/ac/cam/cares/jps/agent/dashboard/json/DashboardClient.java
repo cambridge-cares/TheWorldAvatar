@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
@@ -25,7 +24,6 @@ public class DashboardClient {
     private final String dashboardAccountPassword;
     private final StackClient serviceClient;
     private final Map<String, String> databaseConnectionMap = new HashMap<>();
-    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private static final String CONNECTION_NAME_PREFIX = "Postgis";
     private static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
     private static final String SERVICE_ACCOUNT_SEARCH_SUB_ROUTE = "/search";
@@ -35,6 +33,7 @@ public class DashboardClient {
     private static final String DASHBOARD_UNAVAILABLE_ERROR = "Dashboard container has not been set up within the stack. Please set it up first!";
     private static final String FAILED_REQUEST_ERROR = "Unable to send request! See response for more details: ";
     private static final String INVALID_DATA_ERROR = "Bad request data! The json model is not compliant with Grafana standards!";
+    private static final Logger LOGGER = LogManager.getLogger(DashboardClient.class);
 
     /**
      * Standard Constructor.

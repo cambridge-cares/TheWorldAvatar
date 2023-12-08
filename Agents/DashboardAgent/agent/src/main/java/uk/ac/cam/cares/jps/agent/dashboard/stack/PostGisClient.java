@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.dashboard.stack;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -19,7 +18,7 @@ public class PostGisClient {
     private final String stackPostgisUser;
     private final String stackPostgisPassword;
     private final List<String> databaseList = new ArrayList<>();
-    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(PostGisClient.class);
 
     /**
      * Standard Constructor to initialise this client.

@@ -23,9 +23,9 @@ public class DashboardAgent extends JPSAgent {
     // Agent starts off in invalid state, and will become valid when initialised without exceptions
     private static boolean valid = false;
     private static StackClient services;
-    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
+    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
     /**
      * Perform required setup.

@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.util.Base64;
  */
 public class AgentCommunicationClient {
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
-    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(AgentCommunicationClient.class);
 
     // Private constructor to prevent instantiation.
     private AgentCommunicationClient() {
