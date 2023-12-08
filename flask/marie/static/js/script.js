@@ -170,26 +170,45 @@ const translationContainer = {
     }
 }
 
+const kgResponseContainer = (function() {
+    const kgResultsDiv = document.getElementById("kg-response-container")
+    const tableContainer = document.getElementById("table-container")
+    const toggleIriButton = document.getElementById("toggle-iri")
+    
+    let table = null 
+    let isShowingIRI = false
 
-const kgResponseContainer = {
-    kgResultsDiv: document.getElementById("kg-results"),
-    tableContainer: document.getElementById("table-container"),
-    toggleIriButton: document.getElementById("toggle-iri"),
-    table: null,
-    isShowingIRI: false,
+    function _toggleIRIColumns() {
+        if (table === null) {
+            return
+        }
 
-    reset() {
-        this.kgResultsDiv.style.display = "none"
-        this.tableContainer.innerHTML = ""
-    },
+        const rowNum = table.rows().count()
+        if (rowNum == 0) {
+            return
+        }
 
-    async render(kg_results) {
-        inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", kg_results["latency"])
-        this.displayKgResponse(kg_results["data"])
-    },
+        isShowingIRI = !isShowingIRI
+        const rowData = table.row(0).data()
+        const IRIcolIdx = rowData.reduce((arr, val, idx) => {
+            if (val.startsWith(TWA_ABOX_IRI_PREFIX)) {
+                arr.push(idx)
+            }
+            return arr
+        }, [])
+        IRIcolIdx.forEach(colIdx => {
+            const col = table.column(colIdx)
+            col.visible(isShowingIRI)
+        })
 
-    // UI
-    displayKgResponse(data) {
+        if (isShowingIRI) {
+            toggleIriButton.innerHTML = "Hide IRIs"
+        } else {
+            toggleIriButton.innerHTML = "Show IRIs"
+        }
+    }
+
+    function displayKgResponse(data) {
         if (!data) {
             displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
             return
@@ -220,48 +239,34 @@ const kgResponseContainer = {
         })
 
         content += "</tbody></table>"
-        this.tableContainer.innerHTML = content;
-        this.kgResultsDiv.style.display = "block"
+        tableContainer.innerHTML = content;
+        kgResultsDiv.style.display = "block"
 
-        this.table = new DataTable('#results-table', {
+        table = new DataTable('#results-table', {
             retrieve: true,
             scrollX: true,
         });
 
-        this.isShowingIRI = true
-        this.toggleIRIColumns()
-    },
+        isShowingIRI = true
+        _toggleIRIColumns()
+    }
 
-    toggleIRIColumns() {
-        if (this.table === null) {
-            return
-        }
-
-        const rowNum = this.table.rows().count()
-        if (rowNum == 0) {
-            return
-        }
-
-        this.isShowingIRI = !this.isShowingIRI
-        const rowData = this.table.row(0).data()
-        const IRIcolIdx = rowData.reduce((arr, val, idx) => {
-            if (val.startsWith(TWA_ABOX_IRI_PREFIX)) {
-                arr.push(idx)
-            }
-            return arr
-        }, [])
-        IRIcolIdx.forEach(colIdx => {
-            const col = this.table.column(colIdx)
-            col.visible(this.isShowingIRI)
-        })
-
-        if (this.isShowingIRI) {
-            this.toggleIriButton.innerHTML = "Hide IRIs"
-        } else {
-            this.toggleIriButton.innerHTML = "Show IRIs"
-        }
-    },
-}
+    return {
+        reset() {
+            kgResultsDiv.style.display = "none"
+            tableContainer.innerHTML = ""
+        },
+    
+        async render(kg_results) {
+            inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", kg_results["latency"])
+            displayKgResponse(kg_results["data"])
+        },
+    
+        toggleIRIColumns() {
+            _toggleIRIColumns()
+        },
+    }
+})()
 
 const chatbotResponseCard = (function () {
     const elem = document.getElementById("chatbot-response-card")
@@ -274,7 +279,7 @@ const chatbotResponseCard = (function () {
 
     async function streamChatbotResponseBodyReader(reader) {
         inferenceMetadataCard.displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
-        
+
         function pump({ done, value }) {
             if (done) {
                 // Do something with last chunk of data then exit reader
@@ -312,7 +317,7 @@ const chatbotResponseCard = (function () {
             }
             return obj
         }, {}))
-    
+
         return fetch("/chatbot", {
             method: "POST",
             headers: {
@@ -331,7 +336,7 @@ const chatbotResponseCard = (function () {
             elem.style.display = "none"
             chatbotResponsePara.innerHTML = ""
             chatbotSpinnerSpan.style.display = "inline-block"
-    
+
             abortController = new AbortController()
             streamInterrupted = false
         },
@@ -345,7 +350,7 @@ const chatbotResponseCard = (function () {
         interruptChatbotStream() {
             streamInterrupted = true
             abortController.abort()
-            chatbotStopAnchor.style.display = "none"
+            this.hideChatbotSpinner()
         },
 
         hideChatbotSpinner() {
