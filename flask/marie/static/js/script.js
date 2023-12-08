@@ -209,6 +209,58 @@ const inferenceMetadataCard = {
     }
 }
 
+const kgResponseContainer = {
+    // UI
+    displayKgResponse(data) {
+        if (!data) {
+            displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
+            return
+        }
+        let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
+    
+        let vars = data["head"]["vars"].slice();
+        if (data["results"]["bindings"].length > 0) {
+            vars = vars.filter(varname => varname in data["results"]["bindings"][0])
+        }
+    
+        content += "<th>#</th>"
+        vars.forEach(varname => {
+            content += `<th>${varname}</th>`
+        });
+        content += "</tr></thead><tbody>"
+    
+        data["results"]["bindings"].forEach((valueset, idx) => {
+            content += `<tr><td>${idx + 1}</td>`
+            vars.forEach(varname => {
+                if (varname in valueset) {
+                    content += `<td>${valueset[varname]["value"]}</td>`
+                } else {
+                    content += "<td></td>"
+                }
+            })
+            content += "</tr>"
+        })
+    
+        content += "</tbody></table>"
+        document.getElementById("table-container").innerHTML = content;
+        document.getElementById("toggle-iri").style.display = "block"
+        document.getElementById("results").style.display = "block"
+    
+        table = new DataTable('#results-table', {
+            retrieve: true,
+            scrollX: true,
+        });
+    
+        isShowingIRI = true
+        toggleIRIColumns()
+    },
+    
+    displayKgResults(json) {
+        inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", json["latency"])
+        this.displayKgResponse(json["data"])
+    }
+}
+
 /* 
 ------------------------------
 Functions that manipulate UI
@@ -250,55 +302,6 @@ function displayTranslationResults(json) {
     } else {
         displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
     }
-}
-
-function displayKgResponse(data) {
-    if (!data) {
-        displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
-        return
-    }
-    let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
-
-    let vars = data["head"]["vars"].slice();
-    if (data["results"]["bindings"].length > 0) {
-        vars = vars.filter(varname => varname in data["results"]["bindings"][0])
-    }
-
-    content += "<th>#</th>"
-    vars.forEach(varname => {
-        content += `<th>${varname}</th>`
-    });
-    content += "</tr></thead><tbody>"
-
-    data["results"]["bindings"].forEach((valueset, idx) => {
-        content += `<tr><td>${idx + 1}</td>`
-        vars.forEach(varname => {
-            if (varname in valueset) {
-                content += `<td>${valueset[varname]["value"]}</td>`
-            } else {
-                content += "<td></td>"
-            }
-        })
-        content += "</tr>"
-    })
-
-    content += "</tbody></table>"
-    document.getElementById("table-container").innerHTML = content;
-    document.getElementById("toggle-iri").style.display = "block"
-    document.getElementById("results").style.display = "block"
-
-    table = new DataTable('#results-table', {
-        retrieve: true,
-        scrollX: true,
-    });
-
-    isShowingIRI = true
-    toggleIRIColumns()
-}
-
-function displayKgResults(json) {
-    inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", json["latency"])
-    displayKgResponse(json["data"])
 }
 
 function displayError(message) {
@@ -344,7 +347,7 @@ async function askQuestion() {
         displayTranslationResults(trans_results)
 
         const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
-        displayKgResults(kg_results)
+        kgResponseContainer.displayKgResults(kg_results)
 
         chatbotResponseCard.initHtml()
         await chatbotResponseCard.fetchChatbotResponseReader(question, kg_results["data"]).then(reader => chatbotResponseCard.streamChatbotResponseBodyReader(reader))
