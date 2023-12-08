@@ -1,7 +1,7 @@
 {
     "groups": [
         {
-            "name": "Buildings",
+            "name": "Buildings with usage",
             "expanded": false,
             "stack": "http://localhost:3838",
             "sources": [
