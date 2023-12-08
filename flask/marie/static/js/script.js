@@ -25,7 +25,59 @@ Global variables
 ------------------------------
 */
 
-let isProcessing = false
+
+const inputField = {
+    isProcessing: false,
+
+    populateInputText(text) {
+        document.getElementById('input-field').value = text
+        window.scrollTo(0, 0);
+    },
+    
+    addToInputText(text) {
+        document.getElementById('input-field').value += text
+    },
+    
+    async askQuestion() {
+        if (this.isProcessing) { // No concurrent questions
+            return;
+        }
+    
+        const question = document.getElementById("input-field").value;
+        if (question === "") {
+            return;
+        }
+    
+        hideElems();
+    
+        this.isProcessing = true;
+        chatbotResponseCard.reset()
+        document.getElementById('ask-button').className = "mybutton spinner"
+    
+        try {
+            const trans_results = await translationContainer.fetchTranslation(question)
+            translationContainer.displayTranslationResults(trans_results)
+    
+            const kg_results = await kgResponseContainer.fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
+            kgResponseContainer.displayKgResults(kg_results)
+    
+            chatbotResponseCard.initHtml()
+            const reader = await chatbotResponseCard.fetchChatbotResponseReader(question, kg_results["data"])
+            await chatbotResponseCard.streamChatbotResponseBodyReader(reader)
+        } catch (error) {
+            console.log(error)
+            if ((error instanceof HttpError) && (error.statusCode == 500)) {
+                displayError("An internal server error is encountered. Please try again.");
+            } else {
+                displayError("An unexpected error is encountered. Please report it with the following error message<br/>" + error)
+            }
+        } finally {
+            this.isProcessing = false;
+            document.getElementById('ask-button').className = "mybutton"
+            chatbotResponseCard.hideChatbotSpinner()
+        }
+    }
+}
 
 const chatbotResponseCard = {
     abortController: new AbortController(),
@@ -371,62 +423,6 @@ function displayError(message) {
     elem.innerHTML = message
     elem.style.display = "block"
 }
-
-/* 
-----------------------------------------
-Functions that respond to onclick events
-----------------------------------------
-*/
-
-function populateInputText(text) {
-    document.getElementById('input-field').value = text
-    window.scrollTo(0, 0);
-}
-
-function addToInputText(text) {
-    document.getElementById('input-field').value += text
-}
-
-async function askQuestion() {
-    if (isProcessing) { // No concurrent questions
-        return;
-    }
-
-    const question = document.getElementById("input-field").value;
-    if (question === "") {
-        return;
-    }
-
-    hideElems();
-
-    isProcessing = true;
-    chatbotResponseCard.reset()
-    document.getElementById('ask-button').className = "mybutton spinner"
-
-    try {
-        const trans_results = await translationContainer.fetchTranslation(question)
-        translationContainer.displayTranslationResults(trans_results)
-
-        const kg_results = await kgResponseContainer.fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
-        kgResponseContainer.displayKgResults(kg_results)
-
-        chatbotResponseCard.initHtml()
-        const reader = await chatbotResponseCard.fetchChatbotResponseReader(question, kg_results["data"])
-        await chatbotResponseCard.streamChatbotResponseBodyReader(reader)
-    } catch (error) {
-        console.log(error)
-        if ((error instanceof HttpError) && (error.statusCode == 500)) {
-            displayError("An internal server error is encountered. Please try again.");
-        } else {
-            displayError("An unexpected error is encountered. Please report it with the following error message<br/>" + error)
-        }
-    } finally {
-        isProcessing = false;
-        document.getElementById('ask-button').className = "mybutton"
-        chatbotResponseCard.hideChatbotSpinner()
-    }
-}
-
 
 /* 
 ----------------------------------------
