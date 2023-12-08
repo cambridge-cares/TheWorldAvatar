@@ -26,8 +26,6 @@ Global variables
 */
 
 let isProcessing = false
-let isShowingIRI = false
-let table = null
 
 const chatbotResponseCard = {
     abortController: new AbortController(),
@@ -210,6 +208,9 @@ const inferenceMetadataCard = {
 }
 
 const kgResponseContainer = {
+    table: null,
+    isShowingIRI: false,
+
     // UI
     displayKgResponse(data) {
         if (!data) {
@@ -246,18 +247,104 @@ const kgResponseContainer = {
         document.getElementById("toggle-iri").style.display = "block"
         document.getElementById("results").style.display = "block"
     
-        table = new DataTable('#results-table', {
+        this.table = new DataTable('#results-table', {
             retrieve: true,
             scrollX: true,
         });
     
-        isShowingIRI = true
-        toggleIRIColumns()
+        this.isShowingIRI = true
+        this.toggleIRIColumns()
+    },
+
+    toggleIRIColumns() {
+        if (this.table === null) {
+            return
+        }
+    
+        const rowNum = this.table.rows().count()
+        if (rowNum == 0) {
+            return
+        }
+    
+        this.isShowingIRI = !this.isShowingIRI
+        const rowData = this.table.row(0).data()
+        const IRIcolIdx = rowData.reduce((arr, val, idx) => {
+            if (val.startsWith(TWA_ABOX_IRI_PREFIX)) {
+                arr.push(idx)
+            }
+            return arr
+        }, [])
+        IRIcolIdx.forEach(colIdx => {
+            const col = this.table.column(colIdx)
+            col.visible(this.isShowingIRI)
+        })
+    
+        if (this.isShowingIRI) {
+            document.getElementById("toggle-iri").innerHTML = "Hide IRIs"
+        } else {
+            document.getElementById("toggle-iri").innerHTML = "Show IRIs"
+        }
     },
     
     displayKgResults(json) {
         inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", json["latency"])
         this.displayKgResponse(json["data"])
+    },
+
+    // API calls
+    async fetchKgResults(domain, sparql_query) {
+        return fetch("/kg", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ domain, sparql_query })
+        })
+            .then(throwErrorIfNotOk)
+            .then(res => res.json())
+    }
+}
+
+const translationContainer = {
+    // UI
+    displaySparqlQueryPredicted(sparql_query) {
+        document.getElementById("sparql-query-predicted").innerHTML = sparql_query
+        document.getElementById('sparql-query-predicted-container').style.display = "block";
+    },
+    
+    displaySparqlQueryPostProcessed(sparql_query) {
+        document.getElementById("sparql-query-postprocessed").innerHTML = sparql_query;
+        document.getElementById('sparql-query-postprocessed-container').style.display = "block";
+    },
+    
+    displayTranslationResults(json) {
+        if (json["question"] != json["preprocessed_question"]) {
+            inferenceMetadataCard.displayPreprocessedQuestion(json["preprocessed_question"])
+        }
+        inferenceMetadataCard.displayDomainPredicted(json["domain"])
+        inferenceMetadataCard.displayLatency("trans-latency", "Translation", json["latency"])
+    
+        this.displaySparqlQueryPredicted(json["sparql"]["predicted"])
+        if (json["sparql"]["postprocessed"]) {
+            this.displaySparqlQueryPostProcessed(json["sparql"]["postprocessed"])
+        } else {
+            displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
+        }
+    },
+
+    // API calls
+    async fetchTranslation(question) {
+        return fetch("/translate", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ question })
+        })
+            .then(throwErrorIfNotOk)
+            .then(res => res.json())
     }
 }
 
@@ -279,37 +366,11 @@ function hideElems() {
     }
 }
 
-function displaySparqlQueryPredicted(sparql_query) {
-    document.getElementById("sparql-query-predicted").innerHTML = sparql_query
-    document.getElementById('sparql-query-predicted-container').style.display = "block";
-}
-
-function displaySparqlQueryPostProcessed(sparql_query) {
-    document.getElementById("sparql-query-postprocessed").innerHTML = sparql_query;
-    document.getElementById('sparql-query-postprocessed-container').style.display = "block";
-}
-
-function displayTranslationResults(json) {
-    if (json["question"] != json["preprocessed_question"]) {
-        inferenceMetadataCard.displayPreprocessedQuestion(json["preprocessed_question"])
-    }
-    inferenceMetadataCard.displayDomainPredicted(json["domain"])
-    inferenceMetadataCard.displayLatency("trans-latency", "Translation", json["latency"])
-
-    displaySparqlQueryPredicted(json["sparql"]["predicted"])
-    if (json["sparql"]["postprocessed"]) {
-        displaySparqlQueryPostProcessed(json["sparql"]["postprocessed"])
-    } else {
-        displayError("The model is unable to generate a well-formed query. Please try reformulating your question.")
-    }
-}
-
 function displayError(message) {
     elem = document.getElementById("error-container")
     elem.innerHTML = message
     elem.style.display = "block"
 }
-
 
 /* 
 ----------------------------------------
@@ -343,14 +404,15 @@ async function askQuestion() {
     document.getElementById('ask-button').className = "mybutton spinner"
 
     try {
-        const trans_results = await fetchTranslation(question)
-        displayTranslationResults(trans_results)
+        const trans_results = await translationContainer.fetchTranslation(question)
+        translationContainer.displayTranslationResults(trans_results)
 
-        const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
+        const kg_results = await kgResponseContainer.fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
         kgResponseContainer.displayKgResults(kg_results)
 
         chatbotResponseCard.initHtml()
-        await chatbotResponseCard.fetchChatbotResponseReader(question, kg_results["data"]).then(reader => chatbotResponseCard.streamChatbotResponseBodyReader(reader))
+        const reader = await chatbotResponseCard.fetchChatbotResponseReader(question, kg_results["data"])
+        await chatbotResponseCard.streamChatbotResponseBodyReader(reader)
     } catch (error) {
         console.log(error)
         if ((error instanceof HttpError) && (error.statusCode == 500)) {
@@ -364,37 +426,6 @@ async function askQuestion() {
         chatbotResponseCard.hideChatbotSpinner()
     }
 }
-
-function toggleIRIColumns() {
-    if (table === null) {
-        return
-    }
-
-    const rowNum = table.rows().count()
-    if (rowNum == 0) {
-        return
-    }
-
-    isShowingIRI = !isShowingIRI
-    const rowData = table.row(0).data()
-    const IRIcolIdx = rowData.reduce((arr, val, idx) => {
-        if (val.startsWith(TWA_ABOX_IRI_PREFIX)) {
-            arr.push(idx)
-        }
-        return arr
-    }, [])
-    IRIcolIdx.forEach(colIdx => {
-        const col = table.column(colIdx)
-        col.visible(isShowingIRI)
-    })
-
-    if (isShowingIRI) {
-        document.getElementById("toggle-iri").innerHTML = "Hide IRIs"
-    } else {
-        document.getElementById("toggle-iri").innerHTML = "Show IRIs"
-    }
-}
-
 
 
 /* 
@@ -410,30 +441,3 @@ async function throwErrorIfNotOk(res) {
     }
     return res
 }
-
-async function fetchTranslation(question) {
-    return fetch("/translate", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ question })
-    })
-        .then(throwErrorIfNotOk)
-        .then(res => res.json())
-}
-
-async function fetchKgResults(domain, sparql_query) {
-    return fetch("/kg", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ domain, sparql_query })
-    })
-        .then(throwErrorIfNotOk)
-        .then(res => res.json())
-}
-

@@ -96,16 +96,18 @@
                 <div class="container-fluid" style="padding: 0; margin-bottom: 2rem;">
                     <div class="row">
                         <div class="col-md-7">
-                            <div id="sparql-query-predicted-container" style="display: none;">
-                                <button type='submit' class='accordion'>Click to view the predicted SPARQL query</button>
-                                <div id="sparql-query-predicted" class='accordion-panel'></div>
-                            </div>
-                            <div id="sparql-query-postprocessed-container" style="display: none; margin-bottom: 2rem;">
-                                <button type='submit' class='accordion'>Click to view the post-processed SPARQL query</button>
-                                <div id="sparql-query-postprocessed" class='accordion-panel'></div>
+                            <div>
+                                <div id="sparql-query-predicted-container" style="display: none;">
+                                    <button type='submit' class='accordion'>Click to view the predicted SPARQL query</button>
+                                    <div id="sparql-query-predicted" class='accordion-panel'></div>
+                                </div>
+                                <div id="sparql-query-postprocessed-container" style="display: none; margin-bottom: 2rem;">
+                                    <button type='submit' class='accordion'>Click to view the post-processed SPARQL query</button>
+                                    <div id="sparql-query-postprocessed" class='accordion-panel'></div>
+                                </div>
                             </div>
                             <div id="results" style="display: none;">
-                                <button id="toggle-iri" type="button" class="btn btn-info" onclick="toggleIRIColumns();" style="margin-bottom: 1rem;">Show IRIs</button>
+                                <button id="toggle-iri" type="button" class="btn btn-info" onclick="kgResponseContainer.toggleIRIColumns();" style="margin-bottom: 1rem;">Show IRIs</button>
                                 <div id="table-container"></div>
                             </div>
                         </div>
