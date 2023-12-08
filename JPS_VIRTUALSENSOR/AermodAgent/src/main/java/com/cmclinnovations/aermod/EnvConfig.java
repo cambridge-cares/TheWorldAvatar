@@ -19,6 +19,8 @@ public class EnvConfig {
     public static final String STATIC_SOURCE_TABLE = System.getenv("STATIC_SOURCE_TABLE");
     public static final String ELEVATION_CONTOURS_TABLE = System.getenv("ELEVATION_CONTOURS_TABLE");
     public static final String PARALLELISE_EMISSIONS_UPDATE = System.getenv("PARALLELISE_EMISSIONS_UPDATE");
+    public static final double TARGET_EMISSION_VOLUME_FRACTION = Double
+            .parseDouble(System.getenv("TARGET_EMISSION_VOLUME_FRACTION"));
 
     private EnvConfig() {
         throw new IllegalStateException();

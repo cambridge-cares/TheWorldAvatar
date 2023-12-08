@@ -15,8 +15,6 @@ public class PointSource {
     private double mixtureMolWeight; // kg/mol
     private double mixtureCp; // J/kg/K
     private double mixtureTemperature; // K
-    private double mixtureMassFlux = 0.0192143028723584; // kg/s, constant in python script anyway, probably violates
-                                                         // mass balance
     private double mixtureDensity; // kg/m3
     private double particleDensity; // kg/m3
 
@@ -71,7 +69,7 @@ public class PointSource {
     }
 
     public double getMixtureMassFlux() {
-        return this.mixtureMassFlux;
+        return flowrateInGramsPerS.values().stream().mapToDouble(d -> d).sum() / 1000;
     }
 
     public void setMixtureDensityInKgm3(double mixtureDensity) {
