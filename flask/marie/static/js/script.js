@@ -28,6 +28,8 @@ Global variables
 let isProcessing = false
 let isShowingIRI = false
 let table = null
+let abortController = null
+let streamInterrupted = false
 
 /* 
 ------------------------------
@@ -186,10 +188,14 @@ function initChatbotResponseCard() {
     card.innerHTML = `
     <div class="card-body">
         <h5 class="card-title">Marie's response</h5>
-        <p id="chatbot-response" style="display: inline-block; margin: 0;"></p>
-        <div class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner" style="display: inline-block;">
-            <span class="sr-only">Loading...</span>
-        </div>
+        <div>
+            <p id="chatbot-response" style="display: inline-block; margin: 0;"></p>
+            <span class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner">
+                <span class="sr-only">Loading...</span>
+            </span>
+        <div>
+        <a class="card-link" id="chatbot-stream-interrupt" onclick="interruptChatbotStream()" style="cursor: pointer;">Stop</a>
+        <a class="card-link" id="chatbot-regenerate" onclick="regenerateChatbotResponse()" style="cursor: pointer; display: none;">Regenerate</a>
     </div>`
 }
 
@@ -225,6 +231,7 @@ async function streamChatbotResponseBodyReader(reader) {
     return reader.read().then(function pump({ done, value }) {
         if (done) {
             // Do something with last chunk of data then exit reader
+            document.getElementById("chatbot-stream-interrupt").style.display = "none"
             return;
         }
         // Otherwise do something here to process current chunk
@@ -241,7 +248,13 @@ async function streamChatbotResponseBodyReader(reader) {
         updateLatency("chatbot-latency", datum["latency"])
 
         // Read some more, and call this function again
-        return reader.read().then(pump);
+        if (streamInterrupted) {
+            return reader.cancel().then(() => {
+                document.getElementById("chatbot-stream-interrupt").style.display = "none"
+            })
+        } else {
+            return reader.read().then(pump)
+        }
     });
 }
 
@@ -280,6 +293,8 @@ async function askQuestion() {
     hideElems();
 
     isProcessing = true;
+    streamInterrupted = false
+    abortController = new AbortController()
     document.getElementById('ask-button').className = "mybutton spinner"
 
     try {
@@ -290,7 +305,7 @@ async function askQuestion() {
         displayKgResults(kg_results)
 
         initChatbotResponseCard()
-        const chatbotResponseReader = await fetchChatbotResponseReader(question, kg_results["data"])
+        const chatbotResponseReader = await fetchChatbotResponseReader(question, kg_results["data"], abortController.signal)
         await streamChatbotResponseBodyReader(chatbotResponseReader)
     } catch (error) {
         console.log(error)
@@ -336,6 +351,16 @@ function toggleIRIColumns() {
     }
 }
 
+function interruptChatbotStream() {
+    streamInterrupted = true
+    abortController.abort()
+    document.getElementById("chatbot-stream-interrupt").style.display = "none"
+}
+
+function regenerateChatbotResponse() {
+
+}
+
 /* 
 ----------------------------------------
 API calls
@@ -376,7 +401,7 @@ function fetchKgResults(domain, sparql_query) {
         .then(res => res.json())
 }
 
-function fetchChatbotResponseReader(question, data) {
+function fetchChatbotResponseReader(question, data, abortSignal) {
     const bindings = data["results"]["bindings"].map(binding => Object.keys(binding).reduce((obj, k) => {
         if (!binding[k]["value"].startsWith(TWA_ABOX_IRI_PREFIX)) {
             obj[k] = binding[k]["value"]
@@ -390,7 +415,8 @@ function fetchChatbotResponseReader(question, data) {
             "Accept": "application/json",
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ question, data: JSON.stringify(bindings) })
+        body: JSON.stringify({ question, data: JSON.stringify(bindings) }),
+        signal: abortSignal
     })
         .then(throwErrorIfNotOk)
         .then(res => res.body.pipeThrough(new TextDecoderStream()).getReader())
