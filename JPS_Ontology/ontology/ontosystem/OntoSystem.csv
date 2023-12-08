@@ -22,7 +22,7 @@ CombustionAnalysisSystem,Class,LabEquipmentSystem,IS-A,,,,A system for analysing
 ChromatographySystem,Class,LabEquipmentSystem,IS-A,,,,A system for doing chromatography on a solution.,https://www.theworldavatar.com/kg/ontosystem/,Chromatography system
 EmissionDiagnosticSystem,Class,LabEquipmentSystem,IS-A,,,,A system for diagnosing the emission of an engine.,https://www.theworldavatar.com/kg/ontosystem/,Emission diagnostic system
 MedicalMonitoringSystem,Class,LabEquipmentSystem,IS-A,,,,A system for monitoring medical conditions of a human,https://www.theworldavatar.com/kg/ontosystem/,Medical monitoring system
-EyeTrackingSystem,Class,MedicalMonitoringSystem,IS-A,,,,A system for stracking eye movement and focus.,https://www.theworldavatar.com/kg/ontosystem/,Eye tracking system
+EyeTrackingSystem,Class,System,IS-A,,,,A system for stracking eye movement and focus.,https://www.theworldavatar.com/kg/ontosystem/,Eye tracking system
 EEGSystem,Class,MedicalMonitoringSystem,IS-A,,,,A system for doing and collecting data on an electroencephalogram experiments,https://www.theworldavatar.com/kg/ontosystem/,EEG system
 ECGRespirationMonitoringSystem,Class,MedicalMonitoringSystem,IS-A,,,,A system that monitors heart and respiration conditions by detecting electrical signals in the body,https://www.theworldavatar.com/kg/ontosystem/,ECG and respiration monitoring system
 ComputerSystem,Class,System,IS-A,,,,A system of computer parts working together as a computer or a computer part,https://www.theworldavatar.com/kg/ontosystem/,Computer system
