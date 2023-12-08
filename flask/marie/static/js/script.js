@@ -132,7 +132,17 @@ const inferenceMetadataCard = {
 }
 
 const translationContainer = {
+    sparqlContainer: document.getElementById("sparql-container"),
+    sparqlQueryPredictedDiv: document.getElementById("sparql-query-predicted"),
+    sparqlQueryPredictedContainer: document.getElementById('sparql-query-predicted-container'),
+    sparqlQueryPostprocessedDiv: document.getElementById('sparql-query-postprocessed-container'),
+    sparqlQueryPostprocessedContainer: document.getElementById('sparql-query-postprocessed-container'),
+
     // Public
+    reset() {
+        this.sparqlContainer.style.display = "none"
+    },
+
     async render(trans_results) {
         if (trans_results["question"] != trans_results["preprocessed_question"]) {
             inferenceMetadataCard.displayPreprocessedQuestion(trans_results["preprocessed_question"])
@@ -150,20 +160,28 @@ const translationContainer = {
 
     // UI
     displaySparqlQueryPredicted(sparql_query) {
-        document.getElementById("sparql-query-predicted").innerHTML = sparql_query
-        document.getElementById('sparql-query-predicted-container').style.display = "block";
+        this.sparqlQueryPredictedDiv.innerHTML = sparql_query
+        this.sparqlQueryPredictedContainer.style.display = "block";
     },
 
     displaySparqlQueryPostProcessed(sparql_query) {
-        document.getElementById("sparql-query-postprocessed").innerHTML = sparql_query;
-        document.getElementById('sparql-query-postprocessed-container').style.display = "block";
+        this.sparqlQueryPostprocessedDiv.innerHTML = sparql_query;
+        this.sparqlQueryPostprocessedContainer.style.display = "block";
     }
 }
 
 
 const kgResponseContainer = {
+    kgResultsDiv: document.getElementById("kg-results"),
+    tableContainer: document.getElementById("table-container"),
+    toggleIriButton: document.getElementById("toggle-iri"),
     table: null,
     isShowingIRI: false,
+
+    reset() {
+        this.kgResultsDiv.style.display = "none"
+        this.tableContainer.innerHTML = ""
+    },
 
     async render(kg_results) {
         inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", kg_results["latency"])
@@ -202,9 +220,8 @@ const kgResponseContainer = {
         })
 
         content += "</tbody></table>"
-        document.getElementById("table-container").innerHTML = content;
-        document.getElementById("toggle-iri").style.display = "block"
-        document.getElementById("results").style.display = "block"
+        this.tableContainer.innerHTML = content;
+        this.kgResultsDiv.style.display = "block"
 
         this.table = new DataTable('#results-table', {
             retrieve: true,
@@ -239,79 +256,29 @@ const kgResponseContainer = {
         })
 
         if (this.isShowingIRI) {
-            document.getElementById("toggle-iri").innerHTML = "Hide IRIs"
+            this.toggleIriButton.innerHTML = "Hide IRIs"
         } else {
-            document.getElementById("toggle-iri").innerHTML = "Show IRIs"
+            this.toggleIriButton.innerHTML = "Show IRIs"
         }
     },
 }
 
-const chatbotResponseCard = {
-    abortController: new AbortController(),
-    streamInterrupted: false,
+const chatbotResponseCard = (function () {
+    const elem = document.getElementById("chatbot-response-card")
+    const chatbotResponsePara = document.getElementById("chatbot-response")
+    const chatbotSpinnerSpan = document.getElementById("chatbot-spinner")
+    const chatbotStopAnchor = document.getElementById("chatbot-stop")
 
-    async render(question, data) {
-        this.initHtml()
-        return this.fetchChatbotResponseReader(question, data).then(reader => this.streamChatbotResponseBodyReader(reader))
-    },
+    let abortController = new AbortController()
+    let streamInterrupted = false
 
-    // Helpers
-    getChatbotResponseElem() {
-        const optional = document.getElementById("chatbot-response")
-        if (!optional) {
-            this.initHtml()
-            return document.getElementById("chatbot-response")
-        } else {
-            return optional
-        }
-    },
-
-    getChatbotSpinner() {
-        const optional = document.getElementById("chatbot-spinner")
-        if (!optional) {
-            this.initHtml()
-            return document.getElementById("chatbot-spinner")
-        } else {
-            return optional
-        }
-    },
-
-    // States
-    reset() {
-        this.abortController = new AbortController()
-        this.streamInterrupted = false
-    },
-
-    // UI
-    initHtml() {
-        const card = document.getElementById("chatbot-response-card")
-        card.style.display = "block"
-        card.innerHTML = `
-        <div class="card-body">
-            <h5 class="card-title">Marie's response</h5>
-            <div>
-                <p id="chatbot-response" style="display: inline-block; margin: 0;"></p>
-                <span class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner">
-                    <span class="sr-only">Loading...</span>
-                </span>
-            <div>
-            <a class="card-link" id="chatbot-stream-interrupt" onclick="chatbotResponseCard.interruptChatbotStream()" style="cursor: pointer;">Stop</a>
-        </div>`
-    },
-
-    hideChatbotSpinner() {
-        this.getChatbotSpinner().style.display = "none"
-    },
-
-    async streamChatbotResponseBodyReader(reader) {
-        const elem = this.getChatbotResponseElem()
-
+    async function streamChatbotResponseBodyReader(reader) {
         inferenceMetadataCard.displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
-        // read() returns a promise that resolves when a value has been received
-        return reader.read().then(function pump({ done, value }) {
+        
+        function pump({ done, value }) {
             if (done) {
                 // Do something with last chunk of data then exit reader
-                document.getElementById("chatbot-stream-interrupt").style.display = "none"
+                chatbotStopAnchor.style.display = "none"
                 return;
             }
             // Otherwise do something here to process current chunk
@@ -321,32 +288,24 @@ const chatbotResponseCard = {
             }
             datum = JSON.parse(value)
 
-            elem.innerHTML += datum["content"]
-            if (/\s/.test(elem.innerHTML.charAt(0))) {
-                elem.innerHTML = elem.innerHTML.trimStart()
+            chatbotResponsePara.innerHTML += datum["content"]
+            if (/\s/.test(chatbotResponsePara.innerHTML.charAt(0))) {
+                chatbotResponsePara.innerHTML = chatbotResponsePara.innerHTML.trimStart()
             }
             inferenceMetadataCard.updateLatency("chatbot-latency", datum["latency"])
 
-            // Read some more, and call this function again
-            if (this.streamInterrupted) {
-                return reader.cancel().then(() => {
-                    document.getElementById("chatbot-stream-interrupt").style.display = "none"
-                })
+            if (streamInterrupted) {
+                return reader.cancel()
             } else {
                 return reader.read().then(pump)
             }
-        });
-    },
+        }
 
-    // On-click callbaks
-    interruptChatbotStream() {
-        this.streamInterrupted = true
-        this.abortController.abort()
-        document.getElementById("chatbot-stream-interrupt").style.display = "none"
-    },
+        return reader.read().then(pump);
+    }
 
     // API calls
-    async fetchChatbotResponseReader(question, data) {
+    async function fetchChatbotResponseReader(question, data) {
         const bindings = data["results"]["bindings"].map(binding => Object.keys(binding).reduce((obj, k) => {
             if (!binding[k]["value"].startsWith(TWA_ABOX_IRI_PREFIX)) {
                 obj[k] = binding[k]["value"]
@@ -361,12 +320,39 @@ const chatbotResponseCard = {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ question, data: JSON.stringify(bindings) }),
-            signal: this.abortController.signal
+            signal: abortController.signal
         })
             .then(throwErrorIfNotOk)
             .then(res => res.body.pipeThrough(new TextDecoderStream()).getReader())
     }
-}
+
+    return {
+        reset() {
+            elem.style.display = "none"
+            chatbotResponsePara.innerHTML = ""
+            chatbotSpinnerSpan.style.display = "inline-block"
+    
+            abortController = new AbortController()
+            streamInterrupted = false
+        },
+
+        async render(question, data) {
+            elem.style.display = "block"
+            return fetchChatbotResponseReader(question, data).then(streamChatbotResponseBodyReader)
+        },
+
+        // On-click callbaks
+        interruptChatbotStream() {
+            streamInterrupted = true
+            abortController.abort()
+            chatbotStopAnchor.style.display = "none"
+        },
+
+        hideChatbotSpinner() {
+            chatbotSpinnerSpan.style.display = "none"
+        }
+    }
+})()
 
 const inputField = {
     isProcessing: false,
@@ -394,6 +380,7 @@ async function askQuestion() {
     hideElems();
 
     globalState.isProcessing = true;
+    translationContainer.reset()
     chatbotResponseCard.reset()
     document.getElementById('ask-button').className = "mybutton spinner"
 
@@ -426,12 +413,12 @@ Functions that manipulate UI
 */
 
 function hideElems() {
-    let elemIds = ["infer-metadata-card", "chatbot-response-card", 'sparql-query-predicted-container', 'sparql-query-postprocessed-container', "error-container", "results", "toggle-iri"]
+    let elemIds = ["infer-metadata-card", "error-container"]
     for (const elemId of elemIds) {
         document.getElementById(elemId).style.display = "none"
     }
 
-    elemIds = ["infer-metadata-card", "chatbot-response-card"]
+    elemIds = ["infer-metadata-card"]
     for (const elemId of elemIds) {
         document.getElementById(elemId).innerHTML = ""
     }

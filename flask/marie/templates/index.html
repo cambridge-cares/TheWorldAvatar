@@ -96,7 +96,7 @@
                 <div class="container-fluid" style="padding: 0; margin-bottom: 2rem;">
                     <div class="row">
                         <div class="col-md-7">
-                            <div>
+                            <div id="sparql-container">
                                 <div id="sparql-query-predicted-container" style="display: none;">
                                     <button type='submit' class='accordion'>Click to view the predicted SPARQL query</button>
                                     <div id="sparql-query-predicted" class='accordion-panel'></div>
@@ -106,14 +106,25 @@
                                     <div id="sparql-query-postprocessed" class='accordion-panel'></div>
                                 </div>
                             </div>
-                            <div id="results" style="display: none;">
+                            <div id="kg-results" style="display: none;">
                                 <button id="toggle-iri" type="button" class="btn btn-info" onclick="kgResponseContainer.toggleIRIColumns();" style="margin-bottom: 1rem;">Show IRIs</button>
                                 <div id="table-container"></div>
                             </div>
                         </div>
                         <div class="col-md-5">
                             <div class="card" id="infer-metadata-card" style="display: none; margin-bottom: 2rem;"></div>
-                            <div class="card" id="chatbot-response-card" style="display: none"></div>
+                            <div class="card" id="chatbot-response-card" style="display: none">
+                                <div class="card-body">
+                                    <h5 class="card-title">Marie's response</h5>
+                                    <div>
+                                        <p id="chatbot-response" style="display: inline-block; margin: 0;"></p>
+                                        <span class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                        <div>
+                                            <a class="card-link" id="chatbot-stop" onclick="chatbotResponseCard.interruptChatbotStream()" style="cursor: pointer;">Stop</a>
+                                        </div>
+                            </div>
                         </div>
                     </div>
                 </div>
