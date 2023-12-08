@@ -25,9 +25,35 @@ Global states
 ------------------------------
 */
 
-const globalState = {
-    isProcessing: false
-}
+const globalState = (function () {
+    let isProcessing = false
+    let chatbotLatency = null
+    let chatbotLatencyWatcher = null
+
+    return {
+        getIsProcessing() {
+            return isProcessing
+        },
+        setIsProcessing(val) {
+            isProcessing = val
+        },
+
+        getChatbotLatency() {
+            return chatbotLatency
+        },
+        setChatbotLatency(val) {
+            const oldVal = chatbotLatency
+            chatbotLatency = val
+
+            if (chatbotLatencyWatcher) {
+                chatbotLatencyWatcher(oldVal, val)
+            }
+        },
+        registerChatbotLatencyWatcher(watcher) {
+            chatbotLatencyWatcher = watcher
+        }
+    }
+})()
 
 /* 
 ------------------------------
@@ -68,60 +94,12 @@ UI Components
 ------------------------------
 */
 
-const inferenceMetadataCard = {
-    // Helpers
-    formatLatency(latency) {
-        if (typeof latency === "number") {
-            return latency.toFixed(2)
-        } else {
-            return latency
-        }
-    },
+const inferenceMetadataCard = (function () {
+    const elem = document.getElementById("infer-metadata-card")
+    const inferMetadataList = document.getElementById("infer-metadata-list")
 
-    getTransMetadataCardUl() {
-        const elem = document.getElementById("infer-metadata-card")
-        elem.style.display = "block"
-
-        const ulChildren = elem.getElementsByTagName("ul")
-        if (ulChildren.length === 0) {
-            const ul = document.createElement("ul")
-            ul.className = "list-group list-group-flush"
-            elem.appendChild(ul)
-            return ul
-        } else {
-            return ulChildren[0]
-        }
-    },
-
-    getLatencyLi() {
-        const optional = document.getElementById("latency-info")
-        if (!optional) {
-            this.getTransMetadataCardUl().insertAdjacentHTML("beforeend", `
-                <li class="list-group-item" id="latency-info"></li>`)
-            return document.getElementById("latency-info")
-        } else {
-            return optional
-        }
-    },
-
-    // UI
-    displayDomainPredicted(domain) {
-        const ul = this.getTransMetadataCardUl()
-        ul.insertAdjacentHTML("beforeend", `<li class="list-group-item"><p style="margin: auto;">Predicted query domain: ${domain}</p></li>`)
-    },
-
-    displayLatency(id, desc, latency) {
-        const li = this.getLatencyLi()
-        li.insertAdjacentHTML("beforeend", `<p style="margin: auto;">${desc} latency: <span id="${id}">${this.formatLatency(latency)}</span>s.</p>`)
-    },
-
-    updateLatency(id, latency) {
-        document.getElementById(id).innerHTML = this.formatLatency(latency)
-    },
-
-    displayPreprocessedQuestion(question) {
-        const ul = this.getTransMetadataCardUl()
-        ul.insertAdjacentHTML("beforeend", `
+    function displayPreprocessedQuestion(question) {
+        inferMetadataList.insertAdjacentHTML("beforeend", `
             <li class="list-group-item">
                 <p style="margin: auto;">
                     <strong>The input query has been reformatted to the following</strong>
@@ -129,9 +107,79 @@ const inferenceMetadataCard = {
                 <p style="margin: auto; color: gray;">${question}</p>
             </li>`)
     }
-}
 
-const sparqlContainer = (function() {
+    function displayDomainPredicted(domain) {
+        inferMetadataList.insertAdjacentHTML("beforeend", `<li class="list-group-item"><p style="margin: auto;">Predicted query domain: ${domain}</p></li>`)
+    }
+
+    function formatLatency(latency) {
+        if (typeof latency === "number") {
+            return latency.toFixed(2)
+        } else {
+            return latency
+        }
+    }
+
+    function getLatencyLi() {
+        const optional = document.getElementById("latency-info")
+        if (!optional) {
+            inferMetadataList.insertAdjacentHTML("beforeend", `
+                <li class="list-group-item" id="latency-info"></li>`)
+            return document.getElementById("latency-info")
+        } else {
+            return optional
+        }
+    }
+    
+    function _displayLatency(id, desc, latency) {
+        if (elem.style.display !== "block") {
+            elem.style.display = "block"
+        }
+        getLatencyLi().insertAdjacentHTML("beforeend", `<p style="margin: auto;">${desc} latency: <span id="${id}">${formatLatency(latency)}</span>s.</p>`)
+    }
+    
+    function _updateLatency(id, latency) {
+        document.getElementById(id).innerHTML = formatLatency(latency)
+    }
+
+
+    return {
+        reset() {
+            elem.style.display = "none"
+            inferMetadataList.innerHTML = ""
+        },
+
+        displayTranslationMetadata({ question, preprocessedQuestion, domain, latency }) {
+            if (preprocessedQuestion !== question) {
+                displayPreprocessedQuestion(preprocessedQuestion)
+            }
+            displayDomainPredicted(domain)
+            _displayLatency("trans-latency", "Translation", latency)
+        },
+
+        displayKgExecMetadata({ latency }) {
+            _displayLatency("kg-latency", "SPARQL query execution", latency)
+        },
+
+        displayLatency(id, desc, latency) {
+            _displayLatency(id, desc, latency)
+        },
+
+        updateLatency(id, latency) {
+            _updateLatency(id, latency)
+        }
+    }
+})();
+
+globalState.registerChatbotLatencyWatcher((oldVal, newVal) => {
+    if (newVal === null) {
+        inferenceMetadataCard.displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
+    } else if (newVal !== oldVal) {
+        inferenceMetadataCard.updateLatency("chatbot-latency", newVal)
+    }
+})
+
+const sparqlContainer = (function () {
     const elem = document.getElementById("sparql-container")
     const sparqlQueryPredictedDiv = document.getElementById("sparql-query-predicted")
     const sparqlQueryPredictedContainer = document.getElementById('sparql-query-predicted-container')
@@ -152,14 +200,8 @@ const sparqlContainer = (function() {
         reset() {
             elem.style.display = "none"
         },
-    
-        async render(trans_results) {
-            if (trans_results["question"] != trans_results["preprocessed_question"]) {
-                inferenceMetadataCard.displayPreprocessedQuestion(trans_results["preprocessed_question"])
-            }
-            inferenceMetadataCard.displayDomainPredicted(trans_results["domain"])
-            inferenceMetadataCard.displayLatency("trans-latency", "Translation", trans_results["latency"])
-    
+
+        render(trans_results) {
             displaySparqlQueryPredicted(trans_results["sparql"]["predicted"])
             if (trans_results["sparql"]["postprocessed"]) {
                 displaySparqlQueryPostProcessed(trans_results["sparql"]["postprocessed"])
@@ -172,12 +214,12 @@ const sparqlContainer = (function() {
     }
 })()
 
-const kgResponseContainer = (function() {
+const kgResponseContainer = (function () {
     const kgResultsDiv = document.getElementById("kg-response-container")
     const tableContainer = document.getElementById("table-container")
     const toggleIriButton = document.getElementById("toggle-iri")
-    
-    let table = null 
+
+    let table = null
     let isShowingIRI = false
 
     function _toggleIRIColumns() {
@@ -210,60 +252,55 @@ const kgResponseContainer = (function() {
         }
     }
 
-    function displayKgResponse(data) {
-        if (!data) {
-            displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
-            return
-        }
-        let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
-
-        let vars = data["head"]["vars"].slice();
-        if (data["results"]["bindings"].length > 0) {
-            vars = vars.filter(varname => varname in data["results"]["bindings"][0])
-        }
-
-        content += "<th>#</th>"
-        vars.forEach(varname => {
-            content += `<th>${varname}</th>`
-        });
-        content += "</tr></thead><tbody>"
-
-        data["results"]["bindings"].forEach((valueset, idx) => {
-            content += `<tr><td>${idx + 1}</td>`
-            vars.forEach(varname => {
-                if (varname in valueset) {
-                    content += `<td>${valueset[varname]["value"]}</td>`
-                } else {
-                    content += "<td></td>"
-                }
-            })
-            content += "</tr>"
-        })
-
-        content += "</tbody></table>"
-        tableContainer.innerHTML = content;
-        kgResultsDiv.style.display = "block"
-
-        table = new DataTable('#results-table', {
-            retrieve: true,
-            scrollX: true,
-        });
-
-        isShowingIRI = true
-        _toggleIRIColumns()
-    }
-
     return {
         reset() {
             kgResultsDiv.style.display = "none"
             tableContainer.innerHTML = ""
         },
-    
-        async render(kg_results) {
-            inferenceMetadataCard.displayLatency("kg-latency", "SPARQL query execution", kg_results["latency"])
-            displayKgResponse(kg_results["data"])
+
+        render(data) {
+            if (!data) {
+                displayError("The generated SPARQL query is malformed and cannot be executed against the knowledge base.")
+                return
+            }
+            let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
+
+            let vars = data["head"]["vars"].slice();
+            if (data["results"]["bindings"].length > 0) {
+                vars = vars.filter(varname => varname in data["results"]["bindings"][0])
+            }
+
+            content += "<th>#</th>"
+            vars.forEach(varname => {
+                content += `<th>${varname}</th>`
+            });
+            content += "</tr></thead><tbody>"
+
+            data["results"]["bindings"].forEach((valueset, idx) => {
+                content += `<tr><td>${idx + 1}</td>`
+                vars.forEach(varname => {
+                    if (varname in valueset) {
+                        content += `<td>${valueset[varname]["value"]}</td>`
+                    } else {
+                        content += "<td></td>"
+                    }
+                })
+                content += "</tr>"
+            })
+
+            content += "</tbody></table>"
+            tableContainer.innerHTML = content;
+            kgResultsDiv.style.display = "block"
+
+            table = new DataTable('#results-table', {
+                retrieve: true,
+                scrollX: true,
+            });
+
+            isShowingIRI = true
+            _toggleIRIColumns()
         },
-    
+
         toggleIRIColumns() {
             _toggleIRIColumns()
         },
@@ -280,7 +317,7 @@ const chatbotResponseCard = (function () {
     let streamInterrupted = false
 
     async function streamChatbotResponseBodyReader(reader) {
-        inferenceMetadataCard.displayLatency("chatbot-latency", desc = "Chatbot response", latency = "...")
+        globalState.setChatbotLatency(null)
 
         function pump({ done, value }) {
             if (done) {
@@ -299,7 +336,7 @@ const chatbotResponseCard = (function () {
             if (/\s/.test(chatbotResponsePara.innerHTML.charAt(0))) {
                 chatbotResponsePara.innerHTML = chatbotResponsePara.innerHTML.trimStart()
             }
-            inferenceMetadataCard.updateLatency("chatbot-latency", datum["latency"])
+            globalState.setChatbotLatency(datum["latency"])
 
             if (streamInterrupted) {
                 return reader.cancel()
@@ -352,7 +389,7 @@ const chatbotResponseCard = (function () {
         interruptChatbotStream() {
             streamInterrupted = true
             abortController.abort()
-            this.hideChatbotSpinner()
+            chatbotSpinnerSpan.style.display = "none"
         },
 
         hideChatbotSpinner() {
@@ -362,8 +399,6 @@ const chatbotResponseCard = (function () {
 })()
 
 const inputField = {
-    isProcessing: false,
-
     populateInputText(text) {
         document.getElementById('input-field').value = text
         window.scrollTo(0, 0);
@@ -375,7 +410,7 @@ const inputField = {
 }
 
 async function askQuestion() {
-    if (globalState.isProcessing) { // No concurrent questions
+    if (globalState.getIsProcessing()) { // No concurrent questions
         return;
     }
 
@@ -386,17 +421,26 @@ async function askQuestion() {
 
     hideElems();
 
-    globalState.isProcessing = true;
+    globalState.setIsProcessing(true);
     sparqlContainer.reset()
+    kgResponseContainer.reset()
     chatbotResponseCard.reset()
+    inferenceMetadataCard.reset()
     document.getElementById('ask-button').className = "mybutton spinner"
 
     try {
         const trans_results = await fetchTranslation(question)
-        await sparqlContainer.render(trans_results)
+        sparqlContainer.render(trans_results)
+        inferenceMetadataCard.displayTranslationMetadata({ 
+            question,
+            preprocessedQuestion: trans_results["preprocessed_question"], 
+            domain: trans_results["domain"], 
+            latency: trans_results["latency"] 
+        })
 
         const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
-        await kgResponseContainer.render(kg_results)
+        kgResponseContainer.render(kg_results["data"])
+        inferenceMetadataCard.displayKgExecMetadata({ latency: kg_results["latency"] })
 
         await chatbotResponseCard.render(question, kg_results["data"])
     } catch (error) {
@@ -407,7 +451,7 @@ async function askQuestion() {
             displayError("An unexpected error is encountered. Please report it with the following error message<br/>" + error)
         }
     } finally {
-        globalState.isProcessing = false;
+        globalState.getIsProcessing(false);
         document.getElementById('ask-button').className = "mybutton"
         chatbotResponseCard.hideChatbotSpinner()
     }
@@ -420,14 +464,9 @@ Functions that manipulate UI
 */
 
 function hideElems() {
-    let elemIds = ["infer-metadata-card", "error-container"]
+    let elemIds = ["error-container"]
     for (const elemId of elemIds) {
         document.getElementById(elemId).style.display = "none"
-    }
-
-    elemIds = ["infer-metadata-card"]
-    for (const elemId of elemIds) {
-        document.getElementById(elemId).innerHTML = ""
     }
 }
 
