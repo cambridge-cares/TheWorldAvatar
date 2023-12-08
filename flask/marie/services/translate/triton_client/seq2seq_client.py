@@ -24,7 +24,7 @@ class Seq2SeqClient:
                 model_name="seq2seq", inputs=input_tensors
             )
         except ConnectionRefusedError:
-            raise ConnectionRefusedError("Unable to connect to triton server at the endpoint: " + self.client._parsed_url)
+            raise ConnectionRefusedError("Unable to connect to triton server at the endpoint: " + str(self.client._parsed_url))
 
         # Output
         return pred_response.as_numpy("OUTPUT").astype(str)[0]
