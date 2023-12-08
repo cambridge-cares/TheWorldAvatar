@@ -62,8 +62,8 @@ public class Room {
      */
     protected Queue<String[]> getRoomData() {
         Queue<String[]> measureInfo = new ArrayDeque<>();
-        for (String measure : this.measures.keySet()) {
-            measureInfo.offer(this.measures.get(measure));
+        for (Map.Entry<String, String[]> measure : this.measures.entrySet()) {
+            measureInfo.offer(measure.getValue());
         }
         return measureInfo;
     }

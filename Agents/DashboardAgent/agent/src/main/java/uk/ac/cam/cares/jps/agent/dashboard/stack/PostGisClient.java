@@ -142,12 +142,6 @@ public class PostGisClient {
      * @return the database Connection object.
      */
     private Connection connect(String jdbcUrl, String user, String password) throws SQLException {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            LOGGER.fatal(e);
-            throw new JPSRuntimeException(e);
-        }
         return DriverManager.getConnection(jdbcUrl, user, password);
     }
 
@@ -190,9 +184,9 @@ public class PostGisClient {
         StringBuilder unitCaseWhenValues = new StringBuilder();
         StringBuilder matchingTableValues = new StringBuilder();
         // For each asset or room
-        for (String roomOrAsset : timeSeries.keySet()) {
-            // Retrieve all their measureIRIs
-            Queue<String[]> measureIRIs = timeSeries.get(roomOrAsset);
+        for (Map.Entry<String, Queue<String[]>> entry : timeSeries.entrySet()) {
+            String roomOrAsset = entry.getKey();
+            Queue<String[]> measureIRIs = entry.getValue();
             // While the queue isn't empty, retrieve and remove the first time series IRI set
             // Parse them according to the desired format
             while (!measureIRIs.isEmpty()) {
@@ -342,20 +336,19 @@ public class PostGisClient {
                     itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : itemType;
             String nestedItemKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY :
                     itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : StringHelper.ASSET_KEY;
-            // If the asset type, system, or room key does not exist in the map,
-            if (!results.containsKey(itemTypeKey)) {
-                // Initialise a new hashmap containing only one key-value pair to consolidate the rooms or link the asset names to their type
-                measureMap = new HashMap<>();
+            // If the asset type, system, or room key does not exist in the map, initialise a new hashmap containing only one key-value pair
+            results.computeIfAbsent(itemTypeKey, measureMapValue -> {
+                Map<String, List<String[]>> newMap = new HashMap<>();
                 // Corresponding key will be consistently available to make it easier to link asset names to their type and find all rooms and systems
-                measureMap.put(nestedItemKey, new ArrayList<>());
-                results.put(itemTypeKey, measureMap);
-            }
+                newMap.put(nestedItemKey, new ArrayList<>());
+                return newMap;
+            });
             // Retrieve either an existing or newly created map with the corresponding asset type, system, or room key
             measureMap = results.get(itemTypeKey);
             // Add the room, system, or asset name directly to the corresponding list
             measureMap.get(nestedItemKey).add(new String[]{assetOrRoomOrSystemName});
             // If the measure specified does not exist in the map, initialise a new empty list
-            if (!measureMap.containsKey(measureKey)) measureMap.put(measureKey, new ArrayList<>());
+            measureMap.computeIfAbsent(measureKey, measureList -> new ArrayList<>());
             // Add the required measure metadata into the list
             measureMap.get(measureKey).add(new String[]{assetOrRoomOrSystemName, columnName, tableName, database, unit});
         }
@@ -399,7 +392,7 @@ public class PostGisClient {
      */
     private void addThresholds(Map<String, Map<String, List<String[]>>> metaMap, Queue<String[]> thresholds) {
         // Only attempt this if there is more than one threshold and there are rooms
-        if (thresholds.size() > 0 && metaMap.containsKey(StringHelper.ROOM_KEY)) {
+        if (!thresholds.isEmpty() && metaMap.containsKey(StringHelper.ROOM_KEY)) {
             // Retrieve the nested map for rooms
             Map<String, List<String[]>> roomMetadata = metaMap.get(StringHelper.ROOM_KEY);
             // Initialise a new list to hold information

@@ -23,6 +23,7 @@ public class Organisation {
      * Constructor to initialise an organisation object.
      */
     public Organisation() {
+        // Results may return nothing, so the organisation can be empty
     }
 
     /**

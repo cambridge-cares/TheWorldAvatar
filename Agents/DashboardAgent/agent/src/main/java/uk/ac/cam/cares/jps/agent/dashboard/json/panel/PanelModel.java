@@ -48,8 +48,10 @@ public class PanelModel {
             timeSeries.remove(StringHelper.SYSTEM_KEY);
         }
         // For each item group that is not a room or system
-        for (String currentItemGroup : timeSeries.keySet()) {
-            Queue<TemplatePanel[]> panelQueue = LayoutTemplate.genAssetLayoutTemplate(currentItemGroup, timeSeries.get(currentItemGroup), databaseConnectionMap);
+        for (Map.Entry<String, Map<String, List<String[]>>> entry : timeSeries.entrySet()) {
+            String currentItemGroup = entry.getKey();
+            Map<String, List<String[]>> currentItemMeasureMap = entry.getValue();
+            Queue<TemplatePanel[]> panelQueue = LayoutTemplate.genAssetLayoutTemplate(currentItemGroup, currentItemMeasureMap, databaseConnectionMap);
             groupPanelsAsRow(currentItemGroup, panelQueue);
         }
     }

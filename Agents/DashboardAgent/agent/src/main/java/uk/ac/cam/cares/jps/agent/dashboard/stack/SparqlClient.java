@@ -119,7 +119,9 @@ public class SparqlClient {
         // Parse the response into an XML document format
         Document xmlDoc;
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
             InputSource is = new InputSource(new StringReader(responseBody));
             xmlDoc = builder.parse(is);
         } catch (ParserConfigurationException e) {
@@ -173,7 +175,7 @@ public class SparqlClient {
      */
     private void classifyEndpointType(RDFConnection conn, String endpoint) {
         // Executes a simple facility query to see if there are any facilities with assets.
-        conn.queryResultSet(SparqlQuery.genSimpleFacilityQuery(), (resultSet) -> {
+        conn.queryResultSet(SparqlQuery.genSimpleFacilityQuery(), resultSet -> {
             // If there is at least one result, the current endpoint holds spatial zone information
             if (resultSet.hasNext()) {
                 this.spatialZoneSparqlEndpoints.add(endpoint); // Store different endpoint types in different lists
@@ -265,7 +267,7 @@ public class SparqlClient {
      */
     private void retrieveMetaData(RDFConnection conn, String objectNameVar, Supplier<String> querySupplier, BiConsumer<QuerySolution, String[]> dataConsumer) {
         // Execute the query in the supplier as a SELECT query
-        conn.querySelect(querySupplier.get(), (qs) -> {
+        conn.querySelect(querySupplier.get(), qs -> {
             // Retrieve the common variables
             String orgName = qs.getLiteral(SparqlQuery.ORGANISATION_NAME).toString();
             String facilityName = qs.getLiteral(SparqlQuery.FACILITY_NAME).toString();

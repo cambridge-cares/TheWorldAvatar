@@ -177,7 +177,7 @@ public class PostGisClientTest {
         assertEquals(SparqlClientTest.SAMPLE_OFFICE_STAFF_ROOM_NAME, facilityList.get(0)[0]); // The only room name
         // Get nested map
         Map<String, List<String[]>> itemMetadata = results.get(StringHelper.ROOM_KEY);
-        // For the asset key, only one value should be available for the name
+        // For the room key, only one value should be available for the name
         List<String[]> metadataList = itemMetadata.get(StringHelper.ROOM_KEY);
         assertEquals(1, metadataList.size());
         assertEquals(SparqlClientTest.SAMPLE_OFFICE_STAFF_ROOM_NAME, metadataList.get(0)[0]);

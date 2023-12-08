@@ -38,8 +38,9 @@ class PostgresVariable extends TemplateVariable {
         StringBuilder temp = new StringBuilder();
         this.databaseConnectionId = databaseId;
         // For each facility, add a query to link the facility and its containing item as a key value pair
-        for (String facility : facilityItemMapping.keySet()) {
-            facilityItemMapping.get(facility).stream().forEach(itemName -> {
+        for (Map.Entry<String, List<String>> entry : facilityItemMapping.entrySet()) {
+            String facility = entry.getKey();
+            entry.getValue().stream().forEach(itemName -> {
                 // Only append a comma at the start if it is not the first value
                 if (temp.length() != 0) temp.append(", ");
                 temp.append("('").append(facility).append("', '")

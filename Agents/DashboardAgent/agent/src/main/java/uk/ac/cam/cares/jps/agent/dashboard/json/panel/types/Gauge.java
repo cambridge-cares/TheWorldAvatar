@@ -49,10 +49,10 @@ public class Gauge extends TemplatePanel {
         // Title and description depends on requirements
         if (calcAggregate) {
             // Set Title for panel - Systems will generate the latest total while rooms generate the latest average
-            String titleContent = itemGroup.equals("systems") ? "Latest Cumulative Total" : "Latest Average";
+            String titleContent = itemGroup.equals(StringHelper.SYSTEM_KEY) ? "Latest Cumulative Total" : "Latest Average";
             super.setTitle(titleContent);
             // Set Description for panel
-            String description = itemGroup.equals("systems") ? "A gauge chart displaying the latest cumulative total value of " + measure.toLowerCase() + " for all " + itemGroup.toLowerCase()
+            String description = itemGroup.equals(StringHelper.SYSTEM_KEY) ? "A gauge chart displaying the latest cumulative total value of " + measure.toLowerCase() + " for all " + itemGroup.toLowerCase()
                     : "A gauge chart displaying the latest average value of " + measure.toLowerCase() + " for all " + itemGroup.toLowerCase();
             description += "; Do note that this value is constant at the dashboard level and unaffected by any filters for individual elements";
             super.setDescription(description);
@@ -67,7 +67,7 @@ public class Gauge extends TemplatePanel {
                 totalItems++;
             }
             // Systems require a simple summation to compute the total. Rooms require an average computed from the summation
-            String aggregateVar = itemGroup.equals("systems") ? summation.toString() : "(" + summation + ")/" + totalItems;
+            String aggregateVar = itemGroup.equals(StringHelper.SYSTEM_KEY) ? summation.toString() : "(" + summation + ")/" + totalItems;
             aggregateQuery.append("SELECT time AS \\\"time\\\",").append(aggregateVar).append(" FROM \\\"")
                     .append(timeSeriesMetadata.get(0)[2]) // Retrieve table name and assumes they are all the same for the same measure
                     .append("\\\" WHERE $__timeFilter(time)");
