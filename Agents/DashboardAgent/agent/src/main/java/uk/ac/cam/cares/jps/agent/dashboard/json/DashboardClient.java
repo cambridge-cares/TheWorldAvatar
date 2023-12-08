@@ -124,7 +124,7 @@ public class DashboardClient {
                 existingDataSources.put(databaseName, url);
                 // Store their existing metadata for generating the json model syntax
                 this.databaseConnectionMap.put(databaseName, databaseConnectionID);
-                LOGGER.debug("Detected existing connection to " + databaseName);
+                LOGGER.debug("Detected existing connection to {}", databaseName);
             }
         }
         LOGGER.info("Retrieving RDB databases...");
@@ -135,7 +135,7 @@ public class DashboardClient {
             // If the existing data connections does not include this database or the url does not match it,
             // Create a new connection and store its metadata
             if (!existingDataSources.containsKey(database) || !existingDataSources.get(database).equals(credentials[0])) {
-                LOGGER.debug("Creating connection to " + database + "...");
+                LOGGER.debug("Creating connection to {}...", database);
                 // Generate a source name with prefix and a random uuid
                 String sourceName = CONNECTION_NAME_PREFIX + UUID.randomUUID();
                 // Format the syntax into valid json
@@ -172,8 +172,8 @@ public class DashboardClient {
             dataModel = this.overwriteExistingModel(title, dataModel);
             jsonSyntax = dataModel.construct();
         } catch (Exception e) {
-            LOGGER.fatal("Failed to construct grafana model syntax. See error message for more details: " + e.getMessage());
-            throw new JPSRuntimeException("Failed to construct grafana model syntax. See error message for more details: " + e.getMessage());
+            LOGGER.fatal("Failed to construct grafana model syntax. See error message for more details: ", e);
+            throw new JPSRuntimeException("Failed to construct grafana model syntax. See error message for more details: ", e);
         }
         LOGGER.debug("Sending request to create dashboard...");
         // Create a new dashboard based on the JSON model using a POST request with security token

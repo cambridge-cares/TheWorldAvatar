@@ -20,6 +20,8 @@ import java.util.Base64;
  * @author qhouyee
  */
 public class AgentCommunicationClient {
+    private static final String BAD_REQUEST_ERROR = "Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details:";
+    private static final String INTERRUPTED_ERROR = "Thread has been interrupted!";
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final Logger LOGGER = LogManager.getLogger(AgentCommunicationClient.class);
 
@@ -65,9 +67,7 @@ public class AgentCommunicationClient {
      *
      * @param url API endpoint.
      */
-    public static HttpResponse sendGetRequest(String url) {
-        return sendGetRequest(url, null, "", "");
-    }
+    public static HttpResponse sendGetRequest(String url) {return sendGetRequest(url, null, "", "");}
 
     /**
      * Sends a GET request to a specific API endpoint authenticated with security tokens.
@@ -108,11 +108,12 @@ public class AgentCommunicationClient {
             // Await response before continue executing the rest of the code
             return HTTP_CLIENT.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            LOGGER.fatal("Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details: " + e.getMessage());
-            throw new JPSRuntimeException("Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details: " + e.getMessage());
+            LOGGER.fatal(BAD_REQUEST_ERROR, e);
+            throw new JPSRuntimeException(BAD_REQUEST_ERROR, e);
         } catch (InterruptedException e) {
-            LOGGER.fatal("Thread has been interrupted! " + e.getMessage());
-            throw new JPSRuntimeException("Thread has been interrupted! " + e.getMessage());
+            LOGGER.fatal(INTERRUPTED_ERROR, e);
+            Thread.currentThread().interrupt();
+            throw new JPSRuntimeException(INTERRUPTED_ERROR, e);
         }
     }
 
@@ -160,11 +161,12 @@ public class AgentCommunicationClient {
             // Await response before continue executing the rest of the code
             return HTTP_CLIENT.send(request.build(), HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            LOGGER.fatal("Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details: " + e.getMessage());
-            throw new JPSRuntimeException("Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details: " + e.getMessage());
+            LOGGER.fatal(BAD_REQUEST_ERROR, e);
+            throw new JPSRuntimeException(BAD_REQUEST_ERROR, e);
         } catch (InterruptedException e) {
-            LOGGER.fatal("Thread has been interrupted! " + e.getMessage());
-            throw new JPSRuntimeException("Thread has been interrupted! " + e.getMessage());
+            LOGGER.fatal(INTERRUPTED_ERROR, e);
+            Thread.currentThread().interrupt();
+            throw new JPSRuntimeException(INTERRUPTED_ERROR, e);
         }
     }
 

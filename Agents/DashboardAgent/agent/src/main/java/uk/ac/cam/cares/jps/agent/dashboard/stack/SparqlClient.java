@@ -69,8 +69,8 @@ public class SparqlClient {
      * @return An array of all available organisations to monitor.
      */
     protected String[] getAllOrganisations() {
-        Set<String> organisations = this.organisations.keySet();
-        return organisations.toArray(new String[organisations.size()]);
+        Set<String> organisationsKey = this.organisations.keySet();
+        return organisationsKey.toArray(new String[organisationsKey.size()]);
     }
 
     /**
@@ -78,11 +78,11 @@ public class SparqlClient {
      *
      * @param organisation The organisation with time series measures available in their facilities.
      * @return A map linking all rooms, systems, and assets to their measures within the specified organisation's facilities.
-     *         Format: {asset1: [measure1, dataIRI, timeseriesIRI, unit, assetType], [measure2, dataIRI, timeseriesIRI, null(if no unit), assetType]],
-     *         room1: [[measureName, dataIRI, timeseriesIRI, unit, rooms], [measureName, dataIRI, timeseriesIRI, unit, rooms]], ...],
-     *         system1: [[measureName, dataIRI, timeseriesIRI, unit, systems], [measureName, dataIRI, timeseriesIRI, unit, systems]], ...],
-     *         facilities: [[facility1, asset1InFacility1,system1InFacility1,...],[facility2, room1InFacility2,...]]
-     *         thresholds: [[measureName, min, max],...]}
+     * Format: {asset1: [measure1, dataIRI, timeseriesIRI, unit, assetType], [measure2, dataIRI, timeseriesIRI, null(if no unit), assetType]],
+     * room1: [[measureName, dataIRI, timeseriesIRI, unit, rooms], [measureName, dataIRI, timeseriesIRI, unit, rooms]], ...],
+     * system1: [[measureName, dataIRI, timeseriesIRI, unit, systems], [measureName, dataIRI, timeseriesIRI, unit, systems]], ...],
+     * facilities: [[facility1, asset1InFacility1,system1InFacility1,...],[facility2, room1InFacility2,...]]
+     * thresholds: [[measureName, min, max],...]}
      */
     protected Map<String, Queue<String[]>> getAllSpatialZoneMetaData(String organisation) {
         return this.organisations.get(organisation).getAllMeasures();
@@ -123,14 +123,14 @@ public class SparqlClient {
             InputSource is = new InputSource(new StringReader(responseBody));
             xmlDoc = builder.parse(is);
         } catch (ParserConfigurationException e) {
-            LOGGER.fatal("Unable to create a DocumentBuilder which satisfies the configuration requested! Please see error for more details: " + e.getMessage());
-            throw new JPSRuntimeException("Unable to create a DocumentBuilder which satisfies the configuration requested! Please see error for more details: " + e.getMessage());
+            LOGGER.fatal("Unable to create a DocumentBuilder which satisfies the configuration requested! Please see error for more details: ", e);
+            throw new JPSRuntimeException("Unable to create a DocumentBuilder which satisfies the configuration requested! Please see error for more details: ", e);
         } catch (SAXException e) {
-            LOGGER.fatal("Unable to parse the response into valid XML! Please see error for more details: " + e.getMessage());
-            throw new JPSRuntimeException("Unable to parse the response into valid XML! Please see error for more details: " + e.getMessage());
+            LOGGER.fatal("Unable to parse the response into valid XML! Please see error for more details: ", e);
+            throw new JPSRuntimeException("Unable to parse the response into valid XML! Please see error for more details: ", e);
         } catch (IOException e) {
-            LOGGER.fatal("Unable to access the response string! Please see error for more details: " + e.getMessage());
-            throw new JPSRuntimeException("Unable to access the response string! Please see error for more details: " + e.getMessage());
+            LOGGER.fatal("Unable to access the response string! Please see error for more details: ", e);
+            throw new JPSRuntimeException("Unable to access the response string! Please see error for more details: ", e);
         }
         // Iterate through XML format to get each namespace details
         NodeList descriptions = xmlDoc.getElementsByTagName("rdf:Description");
@@ -156,11 +156,11 @@ public class SparqlClient {
         try (RDFConnection conn = RDFConnection.connect(endpoint)) {
             action.execute(conn, endpoint);
         } catch (QueryParseException e) {
-            LOGGER.fatal("Invalid query: " + e.getMessage());
-            throw new JPSRuntimeException("Invalid query: " + e.getMessage());
+            LOGGER.fatal("Invalid query: ", e);
+            throw new JPSRuntimeException("Invalid query: ", e);
         } catch (Exception e) {
-            LOGGER.fatal("Error connecting to SPARQL endpoint: " + e);
-            throw new JPSRuntimeException("Error connecting to SPARQL endpoint: " + e);
+            LOGGER.fatal("Error connecting to SPARQL endpoint: ", e);
+            throw new JPSRuntimeException("Error connecting to SPARQL endpoint: ", e);
         }
     }
 

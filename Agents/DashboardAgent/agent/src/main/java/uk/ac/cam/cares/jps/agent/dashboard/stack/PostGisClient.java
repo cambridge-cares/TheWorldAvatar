@@ -6,6 +6,7 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.*;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -37,8 +38,8 @@ public class PostGisClient {
         try (Connection conn = connect(this.getJdbc("postgres"), user, pass)) {
             this.retrieveAllDatabaseNames(conn);
         } catch (SQLException e) {
-            LOGGER.fatal("Error connecting to database: " + e);
-            throw new JPSRuntimeException("Error connecting to database: " + e);
+            LOGGER.fatal("Error connecting to database: ", e);
+            throw new JPSRuntimeException("Error connecting to database: ", e);
         }
     }
 
@@ -125,8 +126,8 @@ public class PostGisClient {
                 // If we ignore this step, only results from one database is stored
                 postGisResults.addAll(postGisData);
             } catch (SQLException e) {
-                LOGGER.fatal("Error connecting to database at: " + database + " :" + e);
-                throw new JPSRuntimeException("Error connecting to database at: " + database + " :" + e);
+                LOGGER.fatal("Error connecting to database at: {} :", database, e);
+                throw new JPSRuntimeException(MessageFormat.format("Error connecting to database at: {0} :", database), e);
             }
         }
         return processQueryResultsAsNestedMap(postGisResults, facilities, thresholds);
@@ -169,8 +170,8 @@ public class PostGisClient {
                 this.databaseList.add(columnsResultSet.getString(1));
             }
         } catch (SQLException e) {
-            LOGGER.fatal("Failed to retrieve all database names available! " + e);
-            throw new JPSRuntimeException("Failed to retrieve all database names available! " + e);
+            LOGGER.fatal("Failed to retrieve all database names available! ", e);
+            throw new JPSRuntimeException("Failed to retrieve all database names available! ", e);
         }
     }
 
@@ -282,8 +283,8 @@ public class PostGisClient {
             // Without a dbTable, the database is probably for other non-time series uses and should be ignored without breaking the code
             // But otherwise, every other error should stop the code
             if (!e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
-                LOGGER.fatal("Failed to retrieve column and table names available! " + e);
-                throw new JPSRuntimeException("Failed to retrieve column and table names available! " + e);
+                LOGGER.fatal("Failed to retrieve column and table names available! ", e);
+                throw new JPSRuntimeException("Failed to retrieve column and table names available! ", e);
             }
         }
         return results;

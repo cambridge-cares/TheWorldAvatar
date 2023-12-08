@@ -11,6 +11,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import java.text.MessageFormat;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,8 +24,12 @@ public class DashboardAgent extends JPSAgent {
     // Agent starts off in invalid state, and will become valid when initialised without exceptions
     private static boolean valid = false;
     private static StackClient services;
+    private static final String JSON_ERROR_KEY = "Error";
+    private static final String JSON_RESULT_KEY = "Result";
+    private static final String JSON_RUNTIME_KEY = "Runtime";
     private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
+    private static final String INVALID_HTTP_NON_GET_TYPE_ERROR = "{0}{1} can only accept GET request.";
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
     /**
@@ -87,38 +92,38 @@ public class DashboardAgent extends JPSAgent {
                 if (requestType.equals("GET")) {
                     jsonMessage = resetRoute();
                 } else {
-                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                    jsonMessage.put("Error", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    LOGGER.fatal(INVALID_HTTP_NON_GET_TYPE_ERROR, INVALID_ROUTE_ERROR_MSG, route);
+                    jsonMessage.put(JSON_ERROR_KEY, MessageFormat.format(INVALID_HTTP_NON_GET_TYPE_ERROR, INVALID_ROUTE_ERROR_MSG, route));
                 }
                 break;
             case "status":
                 if (requestType.equals("GET")) {
                     jsonMessage = statusRoute();
                 } else {
-                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                    jsonMessage.put("Error", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    LOGGER.fatal(INVALID_HTTP_NON_GET_TYPE_ERROR, INVALID_ROUTE_ERROR_MSG, route);
+                    jsonMessage.put(JSON_ERROR_KEY, MessageFormat.format(INVALID_HTTP_NON_GET_TYPE_ERROR, INVALID_ROUTE_ERROR_MSG, route));
                 }
                 break;
             case "setup":
                 if (requestType.equals("GET")) {
                     jsonMessage = setupRoute();
                 } else {
-                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                    jsonMessage.put("Error", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    LOGGER.fatal(INVALID_HTTP_NON_GET_TYPE_ERROR, INVALID_ROUTE_ERROR_MSG, route);
+                    jsonMessage.put(JSON_ERROR_KEY, MessageFormat.format(INVALID_HTTP_NON_GET_TYPE_ERROR, INVALID_ROUTE_ERROR_MSG, route));
                 }
                 break;
             default:
-                LOGGER.fatal(UNDEFINED_ROUTE_ERROR_MSG + route);
-                jsonMessage.put("Error", UNDEFINED_ROUTE_ERROR_MSG + route);
+                LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
+                jsonMessage.put(JSON_ERROR_KEY, UNDEFINED_ROUTE_ERROR_MSG + route);
         }
         // Total agent run time in nanoseconds
         long duration = System.nanoTime() - startTime;
         // If it can be converted to second, return run time in seconds
         if (TimeUnit.NANOSECONDS.toSeconds(duration) > 0) {
-            jsonMessage.accumulate("Runtime", TimeUnit.NANOSECONDS.toSeconds(duration) + "s");
+            jsonMessage.accumulate(JSON_RUNTIME_KEY, TimeUnit.NANOSECONDS.toSeconds(duration) + "s");
         } else {
             // Else return as nanoseconds
-            jsonMessage.accumulate("Runtime", duration + "ns");
+            jsonMessage.accumulate(JSON_RUNTIME_KEY, duration + "ns");
         }
         return jsonMessage;
     }
@@ -142,9 +147,9 @@ public class DashboardAgent extends JPSAgent {
         JSONObject response = new JSONObject();
         LOGGER.info("Detected request to get agent status...");
         if (valid) {
-            response.put("Result", "Agent is ready to receive requests.");
+            response.put(JSON_RESULT_KEY, "Agent is ready to receive requests.");
         } else {
-            response.put("Error", "Agent could not be initialised! Please ensure it is running on a stack!");
+            response.put(JSON_ERROR_KEY, "Agent could not be initialised! Please ensure it is running on a stack!");
         }
         return response;
     }
@@ -162,14 +167,14 @@ public class DashboardAgent extends JPSAgent {
                 DashboardClient client = new DashboardClient(services);
                 client.initDashboard();
             } catch (Exception e) {
-                LOGGER.fatal("Dashboard could not be set up! " + e.getMessage());
-                response.put("Error", "Dashboard could not be set up! " + e.getMessage());
+                LOGGER.fatal("Dashboard could not be set up!", e);
+                response.put(JSON_ERROR_KEY, "Dashboard could not be set up! " + e.getMessage());
                 return response;
             }
             LOGGER.info("Dashboard has been successfully set up!");
-            response.put("Result", "Dashboard has been successfully set up!");
+            response.put(JSON_RESULT_KEY, "Dashboard has been successfully set up!");
         } else {
-            response.put("Error", "Agent could not be initialised! Please check logs for more information...");
+            response.put(JSON_ERROR_KEY, "Agent could not be initialised! Please check logs for more information...");
         }
         return response;
     }
@@ -183,9 +188,9 @@ public class DashboardAgent extends JPSAgent {
         JSONObject response = new JSONObject();
         if (valid) {
             services = new StackClient();
-            response.put("Result", "Agent has been successfully reset!");
+            response.put(JSON_RESULT_KEY, "Agent has been successfully reset!");
         } else {
-            response.put("Error", "Agent could not be initialised! Please check logs for more information...");
+            response.put(JSON_ERROR_KEY, "Agent could not be initialised! Please check logs for more information...");
         }
         return response;
     }
