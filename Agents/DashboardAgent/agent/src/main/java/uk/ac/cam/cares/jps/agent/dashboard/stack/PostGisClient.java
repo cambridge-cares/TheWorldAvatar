@@ -332,15 +332,21 @@ public class PostGisClient {
             String database = metadata[6];
             Map<String, List<String[]>> measureMap;
             // Depending on whether it is a room, system, or not, set the keys accordingly
-            String itemTypeKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY :
-                    itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : itemType;
-            String nestedItemKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY :
-                    itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : StringHelper.ASSET_KEY;
+            String itemTypeKey = itemType;
+            String nestedItemKey = StringHelper.ASSET_KEY;
+            if (itemType.equals(StringHelper.ROOM_KEY)) {
+                itemTypeKey = StringHelper.ROOM_KEY;
+                nestedItemKey = StringHelper.ROOM_KEY;
+            } else if (itemType.equals(StringHelper.SYSTEM_KEY)) {
+                itemTypeKey = StringHelper.SYSTEM_KEY;
+                nestedItemKey = StringHelper.SYSTEM_KEY;
+            }
             // If the asset type, system, or room key does not exist in the map, initialise a new hashmap containing only one key-value pair
+            String finalNestedItemKey = nestedItemKey;
             results.computeIfAbsent(itemTypeKey, measureMapValue -> {
                 Map<String, List<String[]>> newMap = new HashMap<>();
                 // Corresponding key will be consistently available to make it easier to link asset names to their type and find all rooms and systems
-                newMap.put(nestedItemKey, new ArrayList<>());
+                newMap.put(finalNestedItemKey, new ArrayList<>());
                 return newMap;
             });
             // Retrieve either an existing or newly created map with the corresponding asset type, system, or room key

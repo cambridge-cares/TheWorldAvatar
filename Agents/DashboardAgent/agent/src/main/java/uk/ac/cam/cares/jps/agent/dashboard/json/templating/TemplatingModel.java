@@ -110,8 +110,12 @@ public class TemplatingModel {
             typeFacilityItemMapping.put(itemType, new HashMap<>()); // Initialise an empty map for this item
             Map<String, List<String>> facilityItemMapping = typeFacilityItemMapping.get(itemType);
             // Seek to retrieve either the list of individual rooms, assets, or systems associated with this type
-            String nestedKey = itemType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY :
-                    itemType.equals(StringHelper.SYSTEM_KEY) ? StringHelper.SYSTEM_KEY : StringHelper.ASSET_KEY; // The key name will vary depending on if it is a room or asset
+            String nestedKey = StringHelper.ASSET_KEY;
+            if (itemType.equals(StringHelper.ROOM_KEY)) {
+                nestedKey = StringHelper.ROOM_KEY;
+            } else if (itemType.equals(StringHelper.SYSTEM_KEY)) {
+                nestedKey = StringHelper.SYSTEM_KEY;
+            }
             // Process the list into an array of items
             String[] itemsArray = itemTypeContents.get(nestedKey).stream().flatMap(Stream::of).distinct().toArray(String[]::new);
             // Iterate through each item and add into the mapping

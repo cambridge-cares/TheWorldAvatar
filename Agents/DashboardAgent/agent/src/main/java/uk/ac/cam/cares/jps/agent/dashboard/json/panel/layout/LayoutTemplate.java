@@ -92,8 +92,10 @@ public class LayoutTemplate {
                 // Assume the unit of each measure for the rooms is consistent
                 String unit = roomTimeSeries.get(0)[4];
                 // Retrieves the thresholds if it is available, else, it should return an empty array
-                String[] thresholds = thresholdMap.isEmpty() ? new String[]{} :
-                        thresholdMap.containsKey(measure) ? thresholdMap.get(measure) : new String[]{};
+                String[] thresholds = new String[]{};
+                if (!thresholdMap.isEmpty() && thresholdMap.containsKey(measure)) {
+                    thresholds = thresholdMap.get(measure);
+                }
                 // Generate a gauge panel displaying the average of all time series
                 Gauge averageGaugePanel = new Gauge(measure, StringHelper.ROOM_KEY, unit, databaseID, roomTimeSeries, thresholds, true);
                 // Generate a gauge and time series chart
