@@ -159,6 +159,36 @@ public class GDALClient extends ContainerClient {
                         Multimap::putAll);
     }
 
+    private void addCustomCRStoPostGis(String postGisContainerId, String containerId, String dirPath, String newSrid ) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        String execId = createComplexCommand(containerId, "gdalsrsinfo", "-o", "proj4", dirPath)
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .exec();
+                handleErrors(errorStream, execId, logger);
+        String proj4String = outputStream.toString().replace("\n", "");
+
+
+                execId = createComplexCommand(containerId, "gdalsrsinfo", "-o", "wkt2_2018", "--single-line", dirPath)
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .exec();
+                handleErrors(errorStream, execId, logger);
+                String wktString = outputStream.toString().replace("\n", "");
+
+                String[] sridAuthNameArray = newSrid.split(":");
+                String authName = sridAuthNameArray[0];
+                String srid = sridAuthNameArray[1];
+    
+        
+        execId = createComplexCommand(postGisContainerId,
+                "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", "-w")
+                .withHereDocument("INSERT INTO spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) VALUES (" + srid + authName +  srid + wktString + "," + proj4String + ");"
+                .withErrorStream(errorStream)
+                .exec());
+                handleErrors(errorStream, execId, logger);
+    }
+
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
             String layerName, TempDir tempDir, GDALTranslateOptions options) {
 
@@ -186,7 +216,7 @@ public class GDALClient extends ContainerClient {
                     createdDirectories.add(directoryPath);
                 }
                 String execId;
-                if ("NETCDF".equals(inputFormat)) {
+                if ("netCDF".equals(inputFormat)) {
                     execId = createComplexCommand(gdalContainerId, "cp",
                             filePath,
                             outputPath)
@@ -238,7 +268,7 @@ public class GDALClient extends ContainerClient {
         String execId = createComplexCommand(postGISContainerId, "bash", "-c",
                 "(which raster2pgsql || (apt update && apt install -y postgis && rm -rf /var/lib/apt/lists/*)) && " +
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
-                "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
+                        "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
                         + geotiffFiles.stream().collect(Collectors.joining("' '", " '", "' "))
                         + layerName
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")
