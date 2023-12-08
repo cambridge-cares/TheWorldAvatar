@@ -101,6 +101,8 @@ class SubunitBuilder:
             target_atom = "O"    
         elif bs_type == "MDCOCl":
             target_atom = "C"
+        elif bs_type == "CNRC":
+            target_atom = "N"            
         else:
             logging.warning("Unsupported bs_type")
             #print("Unsupported bs_type")
