@@ -226,13 +226,14 @@ public class SparqlClientTest {
     }
 
     public static void insertFacilityTriples(String endpoint) {
-        StringBuilder builder = SparqlQueryTest.genExpectedPrefixesString();
+        StringBuilder builder = new StringBuilder();
         String organisationRepresentation = TestUtils.genInstance("Organisation");
         String organisationNameRepresentation = TestUtils.genInstance("OrganisationName");
         String directorRoomRepresentation = TestUtils.genInstance("Representation");
         String staffRoomRepresentation = TestUtils.genInstance("Representation");
         String storageRoomRepresentation = TestUtils.genInstance("Representation");
-        builder.append("INSERT DATA {<")
+        builder.append(SparqlQueryTest.genExpectedPrefixesString())
+                .append("INSERT DATA {<")
                 // A building has lab and office facility
                 .append(SAMPLE_BUILDING_INSTANCE).append("> rdf:type bot:Building;")
                 .append("ontobim:hasFacility <").append(SAMPLE_LAB_INSTANCE).append(">;")
@@ -289,8 +290,9 @@ public class SparqlClientTest {
     }
 
     public static void insertSystemTriples(String endpoint) {
-        StringBuilder builder = SparqlQueryTest.genExpectedPrefixesString();
-        builder.append("INSERT DATA {<")
+        StringBuilder builder = new StringBuilder();
+        builder.append(SparqlQueryTest.genExpectedPrefixesString())
+                .append("INSERT DATA {<")
                 // Insert a HVAC system
                 .append(SAMPLE_OFFICE_INSTANCE).append("> ontotechsystem:containsSystem <").append(SAMPLE_OFFICE_SYSTEM_INSTANCE).append(">.")
                 .append("<").append(SAMPLE_OFFICE_SYSTEM_INSTANCE).append("> rdfs:label \"").append(SAMPLE_OFFICE_SYSTEM_NAME).append("\";")
@@ -307,13 +309,14 @@ public class SparqlClientTest {
 
 
     public static void insertAssetTriples(String endpoint, boolean isComplex) {
-        StringBuilder builder = SparqlQueryTest.genExpectedPrefixesString();
+        StringBuilder builder = new StringBuilder();
         String intermediateSensorTwo = TestUtils.genInstance("Sensor");
         String intermediateSensorFour = TestUtils.genInstance("Sensor");
         String intermediateMAUSensor = TestUtils.genInstance("Sensor");
         String operatingRangeInstance = TestUtils.genInstance("OperatingRange");
         String operatingPropertyInstance = TestUtils.genInstance("OperatingProperty");
-        builder.append("INSERT DATA {")
+        builder.append(SparqlQueryTest.genExpectedPrefixesString())
+                .append("INSERT DATA {")
                 // First sub sensor pattern
                 .append("<").append(SAMPLE_LAB_SMART_SENSOR_INSTANCE).append("> ontodevice:sendsSignalTo <").append(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE).append(">.")
                 .append(genMeasureTriples(SAMPLE_LAB_SMART_SENSOR_SUB_SENSOR_ONE_INSTANCE, "ontodevice:measures", TEMPERATURE, TEMPERATURE_UNIT, PostGisClientTest.SAMPLE_TEMPERATURE_INSTANCE, PostGisClientTest.SAMPLE_TEMPERATURE_TIME_SERIES_INSTANCE));

@@ -128,8 +128,6 @@ The core model in *Figure 2* must be available to support the retrieval of time 
     "Building_Instance" ||--o{ "bot:Building" : "rdf:type"
     "Building_Instance" ||--o{ "Facility_Instance" : "ontobim:hasFacility"
     "Facility_Instance" {rdfs-label FacilityName}
-    "Facility_Instance" ||--o{ "Room_Instance" : "ontobim:hasRoom"
-    "Room_Instance" ||--o{ "ontobim:Room" : "rdf:type"
     "Facility_Instance" ||--o{ "Organisation_Instance" : "ontoam:isManagedBy"
     "Organisation_Instance" ||--o{ "OrgName_Instance" : "omgCD:hasName"
     "OrgName_Instance" {rdfs-label OrganisationName}
@@ -141,6 +139,8 @@ This agent retrieves measures for sensors and other devices within the facility.
 *Figure 3. Snippet of possible device ABox*
 ```mermaid
     erDiagram 
+    "Facility_Instance" ||--o{ "Room_Instance" : "ontobim:hasRoom"
+    "Room_Instance" ||--o{ "ontobim:Room" : "rdf:type"
     "Room_Instance" ||--o{ "Sensor_Instance" : "bot:containsElement"
     "Sensor_Instance" ||--o{ "Quantity_Instance" : "ontodevice:measures"
     "Sensor_Instance" {
@@ -170,6 +170,8 @@ This agent retrieves measures for sensors and other devices within the facility.
 *Figure 4. Snippet of nested sensor ABox*
 ```mermaid
     erDiagram 
+    "Facility_Instance" ||--o{ "Room_Instance" : "ontobim:hasRoom"
+    "Room_Instance" ||--o{ "ontobim:Room" : "rdf:type"
     "Room_Instance" ||--o{ "Element_Instance" : "bot:containsElement"
     "Element_Instance" ||--o{ "Sensor_Instance" : "ontodevice:sendsSignalTo"
     "Sensor_Instance" ||--o{ "Quantity_Instance" : "ontodevice:measures"
@@ -192,10 +194,11 @@ At the moment, this agent can only retrieve humidity and temperature measures fo
 *Figure 5. Snippet of a room ABox*
 ```mermaid
     erDiagram 
+    "Room_Instance" ||--o{ "ontobim:Room" : "rdf:type"
     "Room_Instance" {ontobim-hasIfcRepresentation--rdfs-label RoomName}
     "Room_Instance" ||--o{ "Relative_Humidity_Quantity_Instance" : "ontodevice:hasRelativeHumidity"
     "Room_Instance" ||--o{ "Temperature_Quantity_Instance" : "ontodevice:hasTemperature"
-    "Facility_Instance" ||--o{ "Room_Instance" : "ontobim:hasRoom"    
+    "Facility_Instance" ||--o{ "Room_Instance" : "ontobim:hasRoom"
     "Facility_Instance" ||--o{ "MinThreshold_Instance" : "ontodevice:hasMinThreshold"
     "Facility_Instance" ||--o{ "MaxThreshold_Instance" : "ontodevice:hasMaxThreshold"
     "MinThreshold_Instance" ||--o{ "ontodevice:Threshold" : "rdf:type"
