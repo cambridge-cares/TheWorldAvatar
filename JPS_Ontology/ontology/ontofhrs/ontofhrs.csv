@@ -32,17 +32,17 @@ Guest House,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/
 Takeaway,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Takeaway
 Sandwich Shop,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Sandwich Shop
 Catering Premise,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Catering Premise
-Address,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Address
-Rating,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating
-Local Authority,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Local Authority
-Score,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Score
+Address,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Address
+Rating,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating
+Local Authority,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Local Authority
+Score,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Score
 Hygiene Score,Class,Score,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Hygiene Score
 Structural Score,Class,Score,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Structural Score
 Confidence Management Score,Class,Score,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Confidence Management Score
-City,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,City
-Region,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Region
-Country,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Country
-Rating Scheme,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Scheme
+City,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,City
+Region,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Region
+Country,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Country
+Rating Scheme,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Scheme
 has Address,Object Property,,,Business Establishment,Address,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has address
 has Rating,Object Property,,,Business Establishment,Rating,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has rating
 has Local Authority,Object Property,,,Business Establishment,Local Authority,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has local authority
