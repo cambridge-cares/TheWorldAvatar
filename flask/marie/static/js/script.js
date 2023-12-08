@@ -181,18 +181,19 @@ function displayKgResults(json) {
 }
 
 function initChatbotResponseCard() {
-    document.getElementById("chatbot-response-card").innerHTML = `
+    const card = document.getElementById("chatbot-response-card")
+    card.style.display = "block"
+    card.innerHTML = `
     <div class="card-body">
         <h5 class="card-title">Marie's response</h5>
-        <p id="chatbot-response" style="margin: 0"></p>
-        <div class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner">
+        <p id="chatbot-response" style="display: inline-block; margin: 0;"></p>
+        <div class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner" style="display: inline-block;">
             <span class="sr-only">Loading...</span>
         </div>
     </div>`
 }
 
 function getChatbotResponseElem() {
-    document.getElementById("chatbot-response-card").style.display = "block"
     const optional = document.getElementById("chatbot-response")
     if (!optional) {
         initChatbotResponseCard()
@@ -203,7 +204,6 @@ function getChatbotResponseElem() {
 }
 
 function getChatbotSpinner() {
-    document.getElementById("chatbot-response-card").style.display = "block"
     const optional = document.getElementById("chatbot-spinner")
     if (!optional) {
         initChatbotResponseCard()
@@ -211,11 +211,6 @@ function getChatbotSpinner() {
     } else {
         return optional
     }
-}
-
-function showChatbotSpinner() {
-    document.getElementById("chatbot-response-card").innerHTML = ""
-    getChatbotSpinner().style.display = "block"
 }
 
 function hideChatbotSpinner() {
@@ -293,8 +288,8 @@ async function askQuestion() {
 
         const kg_results = await fetchKgResults(trans_results["domain"], trans_results["sparql"]["postprocessed"])
         displayKgResults(kg_results)
-        console.log(kg_results)
-        showChatbotSpinner()
+
+        initChatbotResponseCard()
         const chatbotResponseReader = await fetchChatbotResponseReader(question, kg_results["data"])
         await streamChatbotResponseBodyReader(chatbotResponseReader)
     } catch (error) {
