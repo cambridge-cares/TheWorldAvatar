@@ -84,7 +84,7 @@ from pymatgen.core.structure import Structure, Lattice
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 import pymatgen
 
-#import ontozeolite
+import ontozeolite
 
 
 def splitStr( value ):
@@ -191,6 +191,7 @@ def omInitUnit( unit ):
         newUnit = unit
 
     output = []
+
     output.append( [ omOntoPrefix +  newUnit, "Instance", 
                      omOntoPrefix + "Unit", "", "", "" ] )
     output.append( [ "rdfs:label", "Data Property",
@@ -223,6 +224,7 @@ def omSetUnit( subject, unit ):
                        " OM2_KEYWORDS array if unit is missing." )
 
     output = []
+
     output.append( [ subject, "Instance", omOntoPrefix + newUnit, 
                                           omOntoPrefix + "hasUnit", "", "" ] )
     return output
@@ -231,13 +233,17 @@ def omSetUnit( subject, unit ):
 def omNameConvert( unitIn ):
     """
     A function specially for OM-2 ontology. Adds the full path in front.
+    Input unit must start wtih 'om:'.
     """
-    if unitIn.startswith( "om:" ):
-        if unitIn[3:] in OM2_KEYWORDS :
+    short = unitIn.strip()
+    if short.startswith( "om:" ):
+        if short[3:] in OM2_KEYWORDS :
             unitOut = "http://www.ontology-of-units-of-measure.org/resource/om-2/" + \
-                      unitIn[3:]
+                      short[3:]
         else:
             logging.error( " Unknown unit '" + unitIn + "', require a full IRI." )
+            if short in OM2_KEYWORDS:
+                logging.error( "      Did you forget the 'om:' prefix?" )
     else:
         unitOut = unitIn
 
@@ -245,20 +251,19 @@ def omNameConvert( unitIn ):
     pass # omNameConvert()
 
 
-
-entriesWithUncertainties = [ "_cell_length_a", "_cell_length_b", "_cell_length_c", 
-                  "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma",
-                  "_cell_volume", "_cell_measurement_temperature",
-                  "_diffrn_ambient_temperature",
-                  "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
-                  "_atom_site_U_iso_or_equiv",
-                  "_atom_site_aniso_U_11", "_atom_site_aniso_U_22", 
-                  "_atom_site_aniso_U_33", "_atom_site_aniso_U_23", 
-                  "_atom_site_aniso_U_13", "_atom_site_aniso_U_12", 
-                  "_geom_bond_distance", "_geom_angle", 
-                  "_refine_ls_extinction_coef"
-                  ]
-
+entriesWithUncertainties = [ 
+             "_cell_length_a",    "_cell_length_b",   "_cell_length_c", 
+             "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma",
+             "_cell_volume", "_cell_measurement_temperature",
+             "_diffrn_ambient_temperature",
+             "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
+             "_atom_site_U_iso_or_equiv",
+             "_atom_site_aniso_U_11", "_atom_site_aniso_U_22", 
+             "_atom_site_aniso_U_33", "_atom_site_aniso_U_23", 
+             "_atom_site_aniso_U_13", "_atom_site_aniso_U_12", 
+             "_geom_bond_distance",   "_geom_angle", 
+             "_refine_ls_extinction_coef"
+                           ]
 
 def splitErrorBar( value, file_line ):
     #print( "Starting splitErrorBar() ================== " )
@@ -288,7 +293,12 @@ def splitErrorBar( value, file_line ):
 
 def splitErrorBarLoop( line, headers, file_line ):
     """
-    Remove error bars from the CIF file and save the result to a temporary file
+    FIXME Warning! Error bar here is only in brackets: i.e. 1.23(4).
+                   Need to implement syntax: 1.23,4
+
+    Remove error bars from the CIF file and save the result to a temporary file.
+    Return a tuple: 
+    line made of values (no error bars), and number of removed error bars.
     """
     #print( "Running error bar loop", line )
     #words = line.split()
@@ -319,8 +329,8 @@ def splitErrorBarLoop( line, headers, file_line ):
 
         vOut, eOut = splitErrorBar( words[ih].strip(), file_line )
         if eOut != "":
-          nBracket += 1
-          #self.setValueAndError( cifName, h, vOut, eOut )
+            nBracket += 1
+            #self.setValueAndError( cifName, h, vOut, eOut )
 
         pos = line.find( words[ih] )
         lineNew = lineNew.replace( words[ih], vOut )
@@ -1516,153 +1526,147 @@ class OntoPlot:
     pass # class OntoPlot
 
 class AtomInformation:
-  """
-  cifName  - is the name of the molecule, as it will be save in abox. 
-             Withing the molecule an atom can be addressed by the label. 
-  cifLabel - label of the atom within the compound (cifName).
-             The unique id of the atom is cifName+_+cifLabel.
-
-  """
-  __slots__ = [ "uuidDB", "cifName", "cifLabel", 
-                "frac", "cart", "element", "occupancy", 
-                "crystOntoPrefix" ]
-  def __init__(self, uuidDB, compound ):
-    self.uuidDB    = uuidDB
-    self.cifName   = compound
-
-    self.frac      = None # save as array, converted to vector only before saving.
-    self.cart      = None # save as array, converted to vector only before saving.
-    self.element   = None # A string (1-2 letters), the atom name from Mendeleev table.
-    self.occupancy = None # Optional.
-    self.cifLabel  = None # This is directly from cif. Optional value.
-
-    self.crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
-    pass # AtomInformation.__init__()
-
-  def setCoordFrac( self, x, y, z ):
-    self.frac = [ x, y, z ]
-    pass # AtomInformation.setCoordFrac()
-
-  def setCoordCart( self, x, y, z ):
-    self.cart = [ x, y, z ]
-    pass # AtomInformation.setCoordFrac()
-
-  def setProp( self, element = None, occupancy = None, label = None ):
-
-    if element != None:
-      if not isinstance( element, str):
-        logging.warning( " atom element is not a string: '" + str(element) + "'." )
-      self.element = element
-
-    if occupancy != None:
-      if not isinstance( occupancy, float) and not isinstance(occupancy, int):
-        logging.warning( " atom occupancy is not a number: '" + str(occupancy) + "'." )
-      self.occupancy = occupancy
-
-    if label != None:
-      if not isinstance( label, str):
-        logging.warning( " atom label is not a string: '" + str(label) + "'." )
-      self.cifLabel = str(label)
-
-    pass # AtomInformation.setProp()
-
-  def getArrAtom( self, subject, predicate, label = None ):
-    #print( "================" )
     """
-    subject   - Is the full hame of instance of class, 
-                which contains this Vector class.
-    predicate - Is the Object Property linking the Subject and the current UnitCell.
-                Typically is should be contain "has".
+    cifName  - is the name of the molecule, as it will be save in abox. 
+               Withing the molecule an atom can be addressed by the label. 
+    cifLabel - label of the atom within the compound (cifName).
+               The unique id of the atom is cifName+_+cifLabel.
+    element  - The chemical element (from cif: _atom_site_type_symbol)
+
     """
-    if subject.find("AtomicStructure") < 0:
-      logging.warning( " Atom expects a subject 'AtomicStrucure', " + \
-                       "but got '" + subject + "'." )
-    if predicate.find("hasAtomSite") < 0:
-      logging.warning( " Atom expects a predicate 'hasAtomSite', " + \
-                       "but got '" + predicate + "'." )
+    __slots__ = [ "uuidDB", "cifName", "cifLabel", 
+                  "frac", "cart", "element", "occupancy", 
+                  "crystOntoPrefix" ]
+    def __init__(self, uuidDB, compound ):
+        self.uuidDB    = uuidDB
+        self.cifName   = compound
 
-    output = []
+        self.frac      = None # save as array, converted to vector only before saving.
+        self.cart      = None # save as array, converted to vector only before saving.
+        self.element   = None # A string (1-2 letters), the atom name from Mendeleev table.
+        self.occupancy = None # Optional.
+        self.cifLabel  = None # This is directly from cif. Optional value.
 
-    if self.cifLabel != None:
-      atomLabel = self.cifLabel
-    elif label != None:
-      atomLabel = str(label)
-    else:
-      logging.warning( " Neither cifLabel, nor atom label is specified. " + 
-                       "I use a random number as label." )
-      atomLabel = tools.getUUID_random( "" )
+        self.crystOntoPrefix = "http://www.theworldavatar.com/kg/ontocrystal/"
+        pass # AtomInformation.__init__()
+
+    def setCoordFrac( self, x, y, z ):
+        self.frac = [ x, y, z ]
+        pass # AtomInformation.setCoordFrac()
+
+    def setCoordCart( self, x, y, z ):
+        self.cart = [ x, y, z ]
+        pass # AtomInformation.setCoordFrac()
+
+    def setProp( self, element = None, occupancy = None, label = None ):
+
+        if element != None:
+            if not isinstance( element, str):
+                logging.warning( " Atom element is not a string: '" + str(element) + "'." )
+            self.element = element
+
+        if occupancy != None:
+            if not isinstance( occupancy, float) and not isinstance(occupancy, int):
+                logging.warning( " Atom occupancy is not a number: '" + str(occupancy) + "'." )
+            self.occupancy = occupancy
+
+        if label != None:
+            if not isinstance( label, str):
+                logging.warning( " atom label is not a string: '" + str(label) + "'." )
+            self.cifLabel = str(label)
+
+        pass # AtomInformation.setProp()
+
+    def getArrAtom( self, subject, predicate, label = None ):
+        #print( "================" )
+        """
+        subject   - Is the full hame of instance of class, 
+                    which contains this Vector class.
+        predicate - Is the Object Property linking the Subject and the current UnitCell.
+                    Typically is should be contain "has".
+        """
+        if subject.find("AtomicStructure") < 0:
+            logging.warning( " Atom expects a subject 'AtomicStrucure', " + \
+                             "but got '" + subject + "'." )
+        if predicate.find("hasAtomSite") < 0:
+            logging.warning( " Atom expects a predicate 'hasAtomSite', " + \
+                             "but got '" + predicate + "'." )
+
+        output = []
+
+        if self.cifLabel != None:
+            atomLabel = self.cifLabel
+        elif label != None:
+            atomLabel = str(label)
+        else:
+            logging.warning( " Neither cifLabel, nor atom label is specified. " + 
+                             "I use a random number as label." )
+            atomLabel = tools.getUUID_random( "" )
 
 
-    uuid_atom,_ = self.uuidDB.addUUID(  "AtomSite", "Atom_" + self.cifName + atomLabel )
-    #uuid_atom = tools.getUUID( self.uuidDB, "AtomSite", "Atom_" + self.cifName + atomLabel )
-    output.append( [ uuid_atom, "Instance", "AtomSite", "", "", "" ] )
+        uuid_atom,_ = self.uuidDB.addUUID(  "AtomSite", "Atom_" + self.cifName + atomLabel )
+        #uuid_atom = tools.getUUID( self.uuidDB, "AtomSite", "Atom_" + self.cifName + atomLabel )
+        output.append( [ uuid_atom, "Instance", "AtomSite", "", "", "" ] )
  
-    # Define relation between the class instances:
-    output.append( [ subject, "Instance", uuid_atom, predicate, "", "" ] )
+        # Define relation between the class instances:
+        output.append( [ subject, "Instance", uuid_atom, predicate, "", "" ] )
 
-    ### Setting the available data:
-    if self.cifLabel != None:
-      output.append( [ self.crystOntoPrefix + "hasAtomSiteLabel", "Data Property", 
+        ### Setting the available data:
+        if self.cifLabel != None:
+            output.append( [ self.crystOntoPrefix + "hasAtomSiteLabel", "Data Property", 
                              uuid_atom, "", self.cifLabel, "xsd:string" ] )
+            #print( "cifLabel =", self.cifLabel )
+        #else:
+            #print( "cifLabel =", self.cifLabel )
       
-    if self.occupancy != None:
-      output.append( [ self.crystOntoPrefix + "hasOccupancy", "Data Property", 
+        if self.occupancy != None:
+            output.append( [ self.crystOntoPrefix + "hasOccupancy", "Data Property", 
                              uuid_atom, "", self.occupancy, "xsd:decimal" ] )
       
-    if self.element != None:
-      # TODO add species
-      #output.append( "" )
-      pass
+        if self.element != None:
+            # TODO add species
+            #output.append( "" )
+            #output.append( [ self.crystOntoPrefix + "has", "Data Property", 
+            #                 uuid_atom, "", self.occupancy, "xsd:decimal" ] )
+            output.append( [ self.crystOntoPrefix + "hasAtomSiteLabel", "Data Property", 
+                             uuid_atom, "", self.element, "xsd:string" ] )
+            pass
 
-    if self.frac != None:
-      atomPos = OntoVector( 
+
+        if self.frac != None:
+            atomPos = OntoVector( 
                             className = "PositionVector", 
                             itemName  = self.cifName + "_FracCoord_" + label, #+ cifName + label,
                             uuidDB    = self.uuidDB, 
                             #myName  = self.cifName + "_FracCoord_" + label, #+ cifName + label,
                             unit  = "om:dimensionOne" )
-      #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
 
-      atomPos.addComponent( label = "x", value = str(self.frac[0]) ) #, error = error )
-      atomPos.addComponent( label = "y", value = str(self.frac[1]) ) #, error = error )
-      atomPos.addComponent( label = "z", value = str(self.frac[2]) ) #, error = error )
-      output += atomPos.getCsvArr( uuid_atom, self.crystOntoPrefix + "hasFractionalPosition" ) 
-      pass
+            atomPos.addComponent( label = "x", value = str(self.frac[0]) ) #, error = error )
+            atomPos.addComponent( label = "y", value = str(self.frac[1]) ) #, error = error )
+            atomPos.addComponent( label = "z", value = str(self.frac[2]) ) #, error = error )
+            output += atomPos.getCsvArr( uuid_atom, self.crystOntoPrefix + "hasFractionalPosition" ) 
+            pass
 
-    if self.cart != None:
-      atomPos = OntoVector( 
+        if self.cart != None:
+            atomPos = OntoVector( 
                             className = "PositionVector", 
                             itemName  = self.cifName + "_CartCoord_" + label, #+ cifName + label,
                             uuidDB = self.uuidDB, 
                             #myName  = self.cifName + "_CartCoord_" + label, #+ cifName + label,
                             unit  = "om:angstrom" )
-      #myUnit = "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom" )
 
-      atomPos.addComponent( label = "x", value = str(self.cart[0]) ) #, error = error )
-      atomPos.addComponent( label = "y", value = str(self.cart[1]) ) #, error = error )
-      atomPos.addComponent( label = "z", value = str(self.cart[2]) ) #, error = error )
-      output += atomPos.getCsvArr( uuid_atom, self.crystOntoPrefix + "hasCartesianPosition" ) 
+            atomPos.addComponent( label = "x", value = str(self.cart[0]) ) #, error = error )
+            atomPos.addComponent( label = "y", value = str(self.cart[1]) ) #, error = error )
+            atomPos.addComponent( label = "z", value = str(self.cart[2]) ) #, error = error )
+            output += atomPos.getCsvArr( uuid_atom, self.crystOntoPrefix + "hasCartesianPosition" ) 
  
-      pass
-
-    #uuid_cif_uc = tools.getUUID( self.uuidDB, "UnitCell", "UnitCell_" + zeoname )
-    #output.append( [ uuid_cif_uc, "Instance", "UnitCell", "", "", "" ] )
-
-    # Define relation between the class instances:
-    #output.append( [ subject, "Instance", uuid_cif,  
-    #output.append( [ uuid_zeolite, "Instance", uuid_cif,  
-                     #self.crystOntoPrefix + "hasCrystalInformation", "", "" ] )
-
-    #output.append( [ uuid_cif, "Instance", uuid_cif_uc,  
-                     #predicate, "", "" ] )
-                     #self.crystOntoPrefix + "hasUnitCell", "", "" ] )
-
+            pass
 
    
-    return output
-    pass # AtomInformation.getArrAtom()
+        return output
+        pass # AtomInformation.getArrAtom()
 
-  pass # class AtomInformation
+    pass # class AtomInformation
  
 class CrystalInformation:
   """
@@ -2052,8 +2056,14 @@ class CrystalInformation:
             #atom.element   = site.species_string
             # FIXME no occupancy ??
             #atom.occupancy = site.species_and_occupancy[0].occupancy
+            #print( type(site), site, ";", site.species_string, ";" ) #, vars(site._species) )
+            #print( site, type(site), vars(site) )
+            #print( " >>>>  ", vars(site._species) )
+            #print( " >>>>  ", vars(site) )
       
             self.listAtomAll.append( atom )
+
+        #print( self.struct.sites, type(self.struct.sites) )
 
         pass # CrystalInformation.evalPyMatGenAtom()
 
@@ -2376,7 +2386,6 @@ class CrystalInformation:
                   
             self.unitCellVolume.setValue( value = value, error = error, \
                                           unit = "om:cubicAngstrom" )
-       #unit = "http://www.ontology-of-units-of-measure.org/resource/om-2/cubicAngstrom" )
 
         elif "_symmetry_equiv_pos_as_xyz" == entry or "_space_group_symop_operation_xyz":
             # '_space_group_symop_operation_xyz'
@@ -2620,7 +2629,6 @@ class CsvMaker:
         #self.zeoList = self.zeoList[240:]
         #self.zeoList = [ os.path.join( "test", "913885.cif" ) ]
 
-        #self.uuidDB  = tools.loadUUID( )
         self.uuidDB  = tools.UuidDB( os.path.join( "ontozeolite", "uuid", "default.csv") )
 
         # May be also command line arguments here:
@@ -2632,7 +2640,6 @@ class CsvMaker:
 
   def finalize( self ):
 
-        #tools.saveUUID( self.uuidDB )
         self.uuidDB.saveDB( )
         pass # CsvMaker.finalize()
 
@@ -2782,6 +2789,11 @@ class CsvMaker:
         output += omInitUnit( "om:cubicAngstrom" )
         output += omInitUnit( "om:degree" )
         output += omInitUnit( "om:dimensionOne" )
+
+        # Example of use:
+        #omSetUnit( uuid_volume, "cubicAngstrom" )
+
+        ''' Old version:
         output.append( [ omOntoPrefix + "angstrom", "Instance", 
                          omOntoPrefix + "Unit", "", "", "" ] )
         output.append( [ omOntoPrefix + "reciprocalAngstrom", "Instance", 
@@ -2792,16 +2804,7 @@ class CsvMaker:
                          omOntoPrefix + "Unit", "", "", "" ] )
         output.append( [ omOntoPrefix + "dimensionOne", "Instance", 
                          omOntoPrefix + "Unit", "", "", "" ] )
-
-        # Example of use:
-        #omSetUnit( uuid_volume, "cubicAngstrom" )
         '''
-        '''
- 
-        # The framework should be initialized only once.
-        #uuidDB = tools.loadUUID( )
-        #uuidDB = self.uuidDB
-        #tools.saveUUID( uuidDB )
 
         return output
         pass # CsvMaker.arrInit()
@@ -2830,19 +2833,8 @@ class CsvMaker:
         output = []
 
         structure = self.cifPyMatGen.struct
-        #path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
-
-        #dataIn = tools.readCsv( path )
-        #if not os.path.isfile( path ):
-        #  logging.error( "File not found '" + path + "'." )
-        #  return
-
         #structure = Structure.from_file( path )
-        #uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
-        #uuid_cif = tools.getUUID( self.uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
 
-        #uuid_cif_core_trans,_ = self.uuidDB.addUUID( "CoordinateTransformation", 
-        #                                   "CoordinateCIFCoreTransform_" + zeoname )
         uuid_cif_core_trans = tools.getUUID( self.uuidDB.uuidDB, "CoordinateTransformation", 
                                              "CoordinateCIFCoreTransform_" + zeoname )
         output.append( [ uuid_cif_core_trans, "Instance", "CoordinateTransformation", "", "", "" ] )
@@ -3031,9 +3023,6 @@ class CsvMaker:
 
         # TODO to add get_crystal_system(), get_space_group_number(), 
         #      https://pymatgen.org/pymatgen.symmetry.html
-
-        #uuidDB = tools.loadUUID( )
-        #uuidDB = self.uuidDB
 
         path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
 
@@ -3285,8 +3274,6 @@ class CsvMaker:
         logging.warning( " No data available for tile '" + zeoname + "'." )
         return None
 
-    #uuid_zeolite = tools.getUUID( self.uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
-
     uuid_tstructure = tools.getUUID( self.uuidDB.uuidDB, "TiledStructure", "TiledStructure_" + zeoname )
     output.append( [ uuid_tstructure, "Instance", "TiledStructure", "", "", "" ] )
     output.append( [ subject, "Instance", uuid_tstructure, predicate, "", "" ] )
@@ -3454,9 +3441,6 @@ class CsvMaker:
         #output.append( [ self.ontoBase + "#hasFaceCode", "Data Property", 
         #                               uuid_tile_face, "", int(cell[0]), "string" ] )
 
-
-    #tools.saveUUID( uuidDB )
-
     return output
     pass # CsvMaker.arrTiles()
 
@@ -3605,6 +3589,7 @@ class CsvMaker:
         return output
         pass # CsvMaker.loadXRDPeaks()
 
+  '''
   # TODO delete this function from this class:
   def splitErrorBarLoop( self, line, headers, file_line ):
     """
@@ -3648,6 +3633,7 @@ class CsvMaker:
     #print( "lineNew =", lineNew )
     return lineNew, nBracket
     pass # CsvMaker.splitErrorBarLoop()
+   '''
 
   # TODO detele this function from this class:
   def setValueAndError( self, cifName, entry, value, error ):
@@ -4049,12 +4035,85 @@ class CsvMaker:
         pass # CsvMaker.readWithUncertainties()
 
 
-  def getCsvArrFromCif( self, filePath, subject, predicate = "hasCrystalInformation" ):
+  def getCsvArrFromCif( self, filePath, name, subject, predicate = "hasCrystalInformation" ):
+        """
+        Here subject is the element of class crystal_uuid
+        """
         output = []
 
-        # Load CIF data:
+        # First load data to (struct in cifPyMatGen and unitCellLengths in cifValAndErr)
+        # QQQQQQ
+        self.loadPyMatGen(  filePath, name )
+        self.loadValAndErr( filePath, name )
+
+        # Second evaluate data (create all arrays and internal data):
+        # QQQQQQ
+        self.evalPyMatGen ()
+        self.evalValAndErr()
+
+        # Third choose which to save from which crystal information:
+        #print(" ==> ", self.cifValAndErr.unitCellLengths )
+        # QQQQQQ
+        self.mergeCrystInfo()
+        #self.cifOutput = self.cifValAndErr
+        #print(" -->  ", self.cifOutput.unitCellLengths )
+
+        #self.loadCifZeolite( z ) 
+        #self.evalCifData()
+
+
 
         # Output:
+        if True:
+            uuid_cif = tools.getUUID( self.uuidDB.uuidDB, "CrystalInformation", \
+                                      "ZeoliteCIF_" + name )
+            output.append( [ uuid_cif, "Instance", "CrystalInformation", "", "", "" ] )
+
+            # Define relation between the class instances:
+            #output.append( [ subject, "Instance", uuid_cif,  
+
+            predicate = self.crystOntoPrefix + "hasCrystalInformation"
+
+            output.append( [ subject, "Instance", uuid_cif,  
+                             predicate, "", "" ] )
+
+
+            #self.loadUnitCellPyMatGen( zeoname )
+
+            #arr += self.arrInitZeolite( uuid_zeolite )
+
+            tmp = self.arrUnitCell( uuid_cif, self.crystOntoPrefix + "hasUnitCell", name )
+            if None == tmp:
+                logging.warning( " Missing Unit Cell information!" )
+            else:
+                output += tmp
+
+            tmp = self.arrTransform( uuid_cif, self.crystOntoPrefix + "hasCoordinateTransformation", name )
+            if None == tmp:
+                logging.warning( " Missing Transformation information!" )
+            else:
+                output += tmp
+
+            tmp = self.arrAtomSite( uuid_cif, self.crystOntoPrefix + "hasAtomicStructure", name )
+            if None == tmp:
+                logging.warning( " Missing Atom Site information!" )
+            else:
+                output += tmp
+
+            tmp = self.arrTiles( uuid_cif, self.crystOntoPrefix + "hasTiledStructure", name )
+            if None == tmp:
+                logging.warning( " Missing Tiled Structure information!" )
+            else:
+                output += tmp
+
+            tmp = self.arrSpectrum( uuid_cif, self.crystOntoPrefix + "hasXRDSpectrum", name )
+            if None == tmp:
+                logging.warning( " Missing Spectrum information!" )
+            else:
+                output += tmp
+            # FIXME
+            """
+            """
         
         return output
         pass # CsvMaker.getCsvArrFromCif()
@@ -4062,97 +4121,67 @@ class CsvMaker:
   def makeCsvs( self ):
         errCount = 0
 
-        self.prepare()
-        #self.zeoList = self.zeoList[0:1]
+        self.prepare()   # <- self.zeoList is defined inside
+
+        # Load all general information about zeolitic materials:
+        zeoData = ontozeolite.OntoZeolite( \
+                                           #itemName = z, className = "Zeolite", \
+                                           uuidDB = self.uuidDB )
+        zeoData.loadZeolites( )
 
         t_start = datetime.datetime.now()
         for iz, z in enumerate(self.zeoList):
             #print( "In zeolist z =", z )
-            arr  = self.arrInit( "zeolite" )  # The header (ontology description)
+
+            # Each framework is saved in a separate arr (and separate file):
+            arr = []
+
+            # The header (tbox and abox description):
+            arr += self.arrInit( "zeolite" )  
+
+            #uuid_zeoframe = tools.getUUID( self.uuidDB.uuidDB, "ZeoliteFramework", "Zeolite_" + z )
+            
+            #arr.append( [ uuid_zeoframe, "Instance", "ZeoliteFramework", "", "", "" ] )
+ 
+            #arr.append( [ self.zeoOntoPrefix + "hasZeoliteCode", "Data Property", 
+            #              uuid_zeoframe, "", z.strip(' "'), "string" ] )
+
+
+            # Description of the framework:
+            arr += zeoData.getCsvArrFramework( z, "", "" )
+
+            # get the framework from the zeoData. 
+            # This is necessary, because OntoCrystal is not a separate module.
+            # Otherwise I would simply call Crystal information from the OntoZeolite class. TODO
+            uuid_zeoframe = zeoData.getFrameworkUUID( z )
 
             path = os.path.join( "CIF", zeolist.zeoCodeToCode3(z).upper() + ".cif")
     
-            # First load data to (struct in cifPyMatGen and unitCellLengths in cifValAndErr)
-            # QQQQQQ
-            self.loadPyMatGen(  path, z )
-            self.loadValAndErr( path, z )
+            logging.warning( " For debugging no CIF data" )
+            # CIF information for the given framework:
+            arr += self.getCsvArrFromCif( path, z, uuid_zeoframe )
 
-            # Second evaluate data (create all arrays and internal data):
-            # QQQQQQ
-            self.evalPyMatGen ()
-            self.evalValAndErr()
+            # To add Citation information, or is it loaded in getCsvArrFromCif ?
 
-            # Third choose which to save from which crystal information:
-            #print(" ==> ", self.cifValAndErr.unitCellLengths )
-            # QQQQQQ
-            self.mergeCrystInfo()
-            #self.cifOutput = self.cifValAndErr
-            #print(" -->  ", self.cifOutput.unitCellLengths )
+            # Description of all the zeolites for this framework:
+            for cifLine, extLine in zeoData.getMaterialIDs( z ):
 
-            #self.loadCifZeolite( z ) 
-            #self.evalCifData()
+                arr += zeoData.getCsvArrMaterial( cifLine, uuid_zeoframe, "" )
 
+                # CIF if exists:
+                path = os.path.join( "CIF", zeolist.zeoCodeToCode3(z).upper() + ".cif")
+    
+                uuid_zeolite = zeoData.getMaterialUUID( cifLine )
 
-            uuid_zeolite = tools.getUUID( self.uuidDB.uuidDB, "ZeoliteFramework", "Zeolite_" + z )
-            arr.append( [ uuid_zeolite, "Instance", "ZeoliteFramework", "", "", "" ] )
- 
-            arr.append( [ self.zeoOntoPrefix + "hasZeoliteCode", "Data Property", 
-                          uuid_zeolite, "", z.strip(' "'), "string" ] )
-
-            uuid_cif = tools.getUUID( self.uuidDB.uuidDB, "CrystalInformation", "ZeoliteCIF_" + z )
-            arr.append( [ uuid_cif, "Instance", "CrystalInformation", "", "", "" ] )
- 
-
-            # Define relation between the class instances:
-            #output.append( [ subject, "Instance", uuid_cif,  
-            arr.append( [ uuid_zeolite, "Instance", uuid_cif,  
-                          self.crystOntoPrefix + "hasCrystalInformation", "", "" ] )
+                logging.warning( " For debugging no CIF data" )
+                #arr += self.getCsvArrFromCif( path, cifLine[1], uuid_zeolite )
 
 
-            #self.loadUnitCellPyMatGen( zeoname )
+                # Description of the recipe for the given zeolite (if exists):
+                arr += zeoData.getCsvArrRecipe( cifLine, uuid_zeolite, "" )
 
-            #arr += self.arrInitZeolite( uuid_zeolite )
-
-            tmp = self.arrUnitCell( uuid_cif, self.crystOntoPrefix + "hasUnitCell", z )
-            if None == tmp:
-                logging.warning( " Missing Unit Cell information!" )
-            else:
-                arr += tmp
-
-            tmp = self.arrTransform( uuid_cif, self.crystOntoPrefix + "hasCoordinateTransformation", z )
-            if None == tmp:
-                logging.warning( " Missing Transformation information!" )
-            else:
-                arr += tmp
-
-            tmp = self.arrAtomSite( uuid_cif, self.crystOntoPrefix + "hasAtomicStructure", z )
-            if None == tmp:
-                logging.warning( " Missing Atom Site information!" )
-            else:
-                arr += tmp
-
-            tmp = self.arrTiles( uuid_cif, self.crystOntoPrefix + "hasTiledStructure", z )
-            if None == tmp:
-                logging.warning( " Missing Tiled Structure information!" )
-            else:
-                arr += tmp
-
-            tmp = self.arrSpectrum( uuid_cif, self.crystOntoPrefix + "hasXRDSpectrum", z )
-            if None == tmp:
-                logging.warning( " Missing Spectrum information!" )
-            else:
-                arr += tmp
-            # FIXME
-            """
-            """
-
-
-            #zeoData = ontozeolite.OntoZeolite( itemName = z, className = "Zeolite", 
-            #                                 uuidDB = self.uuidDB )
-            #zeoData.loadZeolites( "FIXME" )
-
-            arr.append( [ self.zeoOntoPrefix + "hasZeoliteCode", "Data Property", 
-                          uuid_zeolite, "", z.strip(' "'), "string" ] )
+                # Description of the chemical constituent for the given zeolite:
+                arr += zeoData.getCsvArrConstituent( cifLine, uuid_zeolite, "" )
 
             #tmp = zeoData.getCsvArr( uuid_cif, self.crystOntoPrefix + "has???" )
 
@@ -4160,8 +4189,8 @@ class CsvMaker:
             #    logging.warning( " Missing zeolite information!" )
             #else:
             #    arr += tmp
- 
 
+            # Saving the framework in a file:
             #print( "arr =", arr )
             #csvWrite( arr )
             path = os.path.join( self.outputDir, z + ".csv" )

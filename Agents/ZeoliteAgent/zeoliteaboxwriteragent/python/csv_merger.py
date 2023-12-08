@@ -71,25 +71,28 @@ def merge_files( pathsIn, pathOut ):
             # Don't include the output file to the list of inputs
             continue
 
+        #print( "file = ", f )
         with open(f) as fIn:
-            for line in fIn:
+            for il,line in enumerate(fIn):
+                #print( "line ", il )
                 words = line.split( "," )
                 # Skip the header line of all except the first file:
                 #if count > 0 and line.lower().startswith("source,type,target,relation") :
-                if count > 0 and "source"   == words[0].lower() \
-                             and "type"     == words[1].lower() \
-                             and "target"   == words[2].lower() \
-                             and "relation" == words[3].lower(): 
-                    continue
-                if count > 0 and "ontology" == words[1].lower():
-                    continue
-                if isSingleton( words[0] ):
-                    if words[0] in singletons:
+                if len(words) > 1:
+                    if count > 0 and "source"   == words[0].lower() \
+                                 and "type"     == words[1].lower() \
+                                 and "target"   == words[2].lower() \
+                                 and "relation" == words[3].lower(): 
                         continue
-                    else:
-                        singletons.append( words[0] )
+                    if count > 0 and "ontology" == words[1].lower():
+                        continue
+                    if isSingleton( words[0] ):
+                        if words[0] in singletons:
+                            continue
+                        else:
+                            singletons.append( words[0] )
 
-                fOut.write( line )
+                    fOut.write( line )
 
     fOut.close()
 
