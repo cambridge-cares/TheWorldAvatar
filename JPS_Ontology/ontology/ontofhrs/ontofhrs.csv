@@ -65,7 +65,7 @@ http://ies.data.gov.uk/ontology/ies4#inPeriod,Object Property,,,BusinessEstablis
 has Local Authority Business ID,Data Property,,,Business Establishment,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has local authority business id
 has FHRS ID,Data Property,,,Business Establishment,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has fhrs id
 has Name,Data Property,,,Business Establishment UNION Local Authority,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has name
-http://www.opengis.net/ont/geosparql#asWKT,Data Property,,,Business Establishment,http://www.opengis.net/ont/geosparql#wktLiteral,,,http://www.opengis.net/ont/geosparql,has wgs84 latitude longitude
+http://www.opengis.net/ont/geosparql#asWKT,Data Property,,,Business Establishment,http://www.opengis.net/ont/geosparql#wktLiteral,,,http://www.opengis.net/ont/geosparql,as WKT
 has Street Number,Data Property,,,Address,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has street number
 has Street,Data Property,,,Address,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has street
 has Postcode,Data Property,,,Address,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has postcode
