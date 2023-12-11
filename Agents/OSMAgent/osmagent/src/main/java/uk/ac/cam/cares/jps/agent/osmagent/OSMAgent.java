@@ -28,7 +28,6 @@ public class OSMAgent extends JPSAgent {
     private static final String PROPERTIES_PATH = "/resources/config.properties";
     private static final Path obdaFile = Path.of("/resources/building_usage.obda");
 
-                                                    
     private EndpointConfig endpointConfig = new EndpointConfig();
 
     private String dbName;
@@ -39,6 +38,7 @@ public class OSMAgent extends JPSAgent {
     public String pointTable;
     public String polygonTable;
     public String landUseTable;
+    public String landUseCsv;
     public static final String usageTable = "usage.usage";
 
     public void init() {
@@ -57,6 +57,7 @@ public class OSMAgent extends JPSAgent {
             this.dbName = prop.getProperty("db.name");
             this.osmSchema = prop.getProperty("osm.schema");
             this.landUseTable = prop.getProperty("landuse.table");
+            this.landUseCsv = prop.getProperty("landuse.csv");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
@@ -86,7 +87,7 @@ public class OSMAgent extends JPSAgent {
 
             // match buildings without OSM usage with land use
             if (!landUseTable.isEmpty()) {
-                shareCalculator.updateLandUse(usageTable, landUseTable);
+                shareCalculator.updateLandUse(usageTable, landUseTable, landUseCsv);
             }
 
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage
