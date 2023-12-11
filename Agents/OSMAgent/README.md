@@ -46,6 +46,11 @@ DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin 
 The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
 Please note that PSDT is a private repository, permission may be required.
 
+#### 2.4.3. Other Land Use Data
+If other land use data, that are not the DLM files, are uploaded, please create a CSV file under the [resources folder](osmagent/src/main/resources/). The CSV file is to contain a mapping between the uploaded land use data's land use tags and the OntoBuiltEnv concepts.
+Please see [dlm_landuse.csv](osmagent/src/main/resources/dlm_landuse.csv) for format. In the CSV file, the `Key` column should contain the column name for land use, `Value` should be the land use value, and `OntoBuiltEnv` should be the corresponding OntoBuiltEnv concept that `Value` is mapped to; `Comment` column is optional.
+Please also update `landuse.csv` in [config.properties](osmagent/src/main/resources/config.properties) to use the correct CSV file with the appropriate mapping for the land use data uploaded. 
+
 #### Important note
 The following datasets must exists in the same PostgreSQL database, they are allowed to have different schemas.  
 1)  DLM land use data
