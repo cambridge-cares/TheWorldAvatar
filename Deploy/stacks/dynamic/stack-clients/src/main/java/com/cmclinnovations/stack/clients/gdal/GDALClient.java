@@ -127,7 +127,10 @@ public class GDALClient extends ContainerClient {
             String dirPath, GDALTranslateOptions options, boolean append) {
 
         String gdalContainerId = getContainerId("gdal");
-        String postGISContainerId = getContainerId("postgis");
+        String postgisContainerID = getContainerId("postgis");
+        String geoserverContainerId = getContainerId("geoserver");
+
+        addCustomCRStoPostGis(postgisContainerID, geoserverContainerId);
 
         try (TempDir tempDir = makeLocalTempDir()) {
 
@@ -159,34 +162,40 @@ public class GDALClient extends ContainerClient {
                         Multimap::putAll);
     }
 
-    private void addCustomCRStoPostGis(String postGisContainerId, String containerId, String dirPath, String newSrid ) {
+    private void addCustomCRStoPostGis(String geoserverContainerID, String postgisContainerID, String dirPath, String newSrid) {
+              
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        String execId = createComplexCommand(containerId, "gdalsrsinfo", "-o", "proj4", dirPath)
+        String execId = createComplexCommand(postgisContainerID, "gdalsrsinfo", "-o", "proj4", dirPath)
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .exec();
-                handleErrors(errorStream, execId, logger);
+        handleErrors(errorStream, execId, logger);
         String proj4String = outputStream.toString().replace("\n", "");
 
-
-                execId = createComplexCommand(containerId, "gdalsrsinfo", "-o", "wkt2_2018", "--single-line", dirPath)
+        execId = createComplexCommand(postgisContainerID, "gdalsrsinfo", "-o", "wkt2_2018", "--single-line", dirPath)
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .exec();
-                handleErrors(errorStream, execId, logger);
-                String wktString = outputStream.toString().replace("\n", "");
+        handleErrors(errorStream, execId, logger);
+        String wktString = outputStream.toString().replace("\n", "");
+        // insert AUTHORITY["EPSG","100002"]]
+        // docker exec (GEOSERVER_DATA_DIR)/user_projections/epsg.properties
+        createComplexCommand(geoserverContainerID, "bash", "-c", "echo > $GEOSERVER_DATA_DIR/user_projections/epsg.properties <<EOF " + wktString + "\nEOF");
+        // restart geoserver
+        // post reload
 
-                String[] sridAuthNameArray = newSrid.split(":");
-                String authName = sridAuthNameArray[0];
-                String srid = sridAuthNameArray[1];
-    
-        
+        String[] sridAuthNameArray = newSrid.split(":");
+        String authName = sridAuthNameArray[0];
+        String srid = sridAuthNameArray[1];
+
         execId = createComplexCommand(postGisContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", "-w")
-                .withHereDocument("INSERT INTO spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) VALUES (" + srid + authName +  srid + wktString + "," + proj4String + ");"
-                .withErrorStream(errorStream)
-                .exec());
-                handleErrors(errorStream, execId, logger);
+                .withHereDocument(
+                        "INSERT INTO spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) VALUES (" + srid
+                                + authName + srid + wktString + "," + proj4String + ");"
+                                        .withErrorStream(errorStream)
+                                        .exec());
+        handleErrors(errorStream, execId, logger);
     }
 
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
