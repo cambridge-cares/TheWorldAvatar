@@ -94,22 +94,21 @@ class PostgresVariable extends TemplateVariable {
     @Override
     protected String construct() {
         // Construct the common elements
-        StringBuilder builder = super.genCommonJson()
+        return super.genCommonJson() +
                 // Variable display label
-                .append("\"label\": \"").append(this.label).append("\",")
+                "\"label\": \"" + this.label + "\"," +
                 // Postgres datasource
-                .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(this.databaseConnectionId).append("\"},")
+                "\"datasource\": {\"type\": \"postgres\", \"uid\": \"" + this.databaseConnectionId + "\"}," +
                 // Description for this variable
-                .append("\"description\": \"").append(this.description).append("\",")
+                "\"description\": \"" + this.description + "\"," +
                 // Query values of this variable
-                .append("\"definition\": \"").append(this.querySyntax).append("\",")
-                .append("\"query\": \"").append(this.querySyntax).append("\",")
+                "\"definition\": \"" + this.querySyntax + "\"," +
+                "\"query\": \"" + this.querySyntax + "\"," +
                 // Default settings but unsure what they are for
-                .append("\"regex\": \"\",")
-                .append("\"sort\" : 0,")
+                "\"regex\": \"\"," +
+                "\"sort\" : 0," +
                 // Variable type must be set as query to work
-                .append("\"type\": \"query\"")
-                .append("}");
-        return builder.toString();
+                "\"type\": \"query\"" +
+                "}";
     }
 }

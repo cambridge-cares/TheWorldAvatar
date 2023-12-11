@@ -19,6 +19,9 @@ public class PostGisClient {
     private final String stackPostgisUser;
     private final String stackPostgisPassword;
     private final List<String> databaseList = new ArrayList<>();
+    private static final String WHEN_DATA_IRI = "WHEN \"dataIRI\" = '";
+    private static final String AND_TIMESERIES_IRI = "' AND \"timeseriesIRI\"= '";
+    private static final String THEN_STATEMENT = "' THEN '";
     private static final Logger LOGGER = LogManager.getLogger(PostGisClient.class);
 
     /**
@@ -198,23 +201,23 @@ public class PostGisClient {
                 matchingTableValues.append("('").append(timeSeriesIRIs[1]).append("', '")
                         .append(timeSeriesIRIs[2]).append("') ");
                 // For the room and asset case when values, attach the right asset or room name to the right combination
-                roomOrAssetCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
-                        .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
+                roomOrAssetCaseWhenValues.append(WHEN_DATA_IRI).append(timeSeriesIRIs[1])
+                        .append(AND_TIMESERIES_IRI).append(timeSeriesIRIs[2])
                         // Ensure that there is a backslash behind quotes to escape the name
-                        .append("' THEN '").append(StringHelper.addCharacterEscapingForSingleQuotes(roomOrAsset)).append("'");
+                        .append(THEN_STATEMENT).append(StringHelper.addCharacterEscapingForSingleQuotes(roomOrAsset)).append("'");
                 // For the measure case when values, attach the right measure name to the right combination
-                measureCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
-                        .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
-                        .append("' THEN '").append(timeSeriesIRIs[0]).append("'");
+                measureCaseWhenValues.append(WHEN_DATA_IRI).append(timeSeriesIRIs[1])
+                        .append(AND_TIMESERIES_IRI).append(timeSeriesIRIs[2])
+                        .append(THEN_STATEMENT).append(timeSeriesIRIs[0]).append("'");
                 // For the unit case when values, attach the unit if it exists. Otherwise, attach null. Not all measures have units
-                unitCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
-                        .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
-                        .append("' THEN '").append(timeSeriesIRIs[3]).append("'");
+                unitCaseWhenValues.append(WHEN_DATA_IRI).append(timeSeriesIRIs[1])
+                        .append(AND_TIMESERIES_IRI).append(timeSeriesIRIs[2])
+                        .append(THEN_STATEMENT).append(timeSeriesIRIs[3]).append("'");
                 // For the asset type case when values, only attach the right asset type to the right combination
                 // Rooms will have an asset type of rooms
-                assetTypeCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
-                        .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
-                        .append("' THEN '").append(timeSeriesIRIs[4]).append("'");
+                assetTypeCaseWhenValues.append(WHEN_DATA_IRI).append(timeSeriesIRIs[1])
+                        .append(AND_TIMESERIES_IRI).append(timeSeriesIRIs[2])
+                        .append(THEN_STATEMENT).append(timeSeriesIRIs[4]).append("'");
             }
         }
         // Once added, attach the right syntax to the final array returned

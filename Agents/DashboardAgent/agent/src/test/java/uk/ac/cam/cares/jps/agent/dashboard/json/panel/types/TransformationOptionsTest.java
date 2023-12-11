@@ -95,10 +95,8 @@ class TransformationOptionsTest {
             colNameMapper.append("\"").append(metadata[1]).append(colNameSuffix).append("\":\"").append(metadata[0]).append("\"");
         }
         // Generate the expected output
-        StringBuilder results = new StringBuilder();
-        results.append("{\"id\":\"organize\",\"options\":{\"excludeByName\":{},")
-                .append("\"indexByName\":{\"time\": 0,").append(indexMapper).append("},")
-                .append("\"renameByName\":{").append(colNameMapper).append("}}}");
-        return results.toString();
+        return "{\"id\":\"organize\",\"options\":{\"excludeByName\":{}," +
+                "\"indexByName\":{\"time\": 0," + indexMapper + "}," +
+                "\"renameByName\":{" + colNameMapper + "}}}";
     }
 }

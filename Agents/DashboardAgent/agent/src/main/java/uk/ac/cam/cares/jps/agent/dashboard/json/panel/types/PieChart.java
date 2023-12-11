@@ -45,35 +45,33 @@ public class PieChart extends TemplatePanel {
      */
     @Override
     public String construct(int height, int width, int xPosition, int yPosition) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{").append(super.genCommonJson(height, width, xPosition, yPosition))
-                .append(",\"type\":\"piechart\",")
+        return "{" + super.genCommonJson(height, width, xPosition, yPosition) +
+                ",\"type\":\"piechart\"," +
                 // Plugin version
-                .append("\"pluginVersion\":\"10.0.3\",")
+                "\"pluginVersion\":\"10.0.3\"," +
                 // Field Configuration
-                .append("\"fieldConfig\": {")
+                "\"fieldConfig\": {" +
                 // Default field configuration
-                .append("\"defaults\": {\"color\": {\"mode\": \"palette-classic\"},")
+                "\"defaults\": {\"color\": {\"mode\": \"palette-classic\"}," +
                 // Custom parts of field configurations
-                .append("\"custom\":{").append("\"hideFrom\":{\"legend\":false,\"tooltip\":false,\"viz\":false}")
-                .append("},") // End of custom parts
-                .append("\"mappings\": [],")
-                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
-                .append("},") // End of defaults
-                .append("\"overrides\": []")
-                .append("},") // End of field configuration
+                "\"custom\":{" + "\"hideFrom\":{\"legend\":false,\"tooltip\":false,\"viz\":false}" +
+                "}," + // End of custom part+
+                "\"mappings\": []," +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(super.getUnit()) + "\"" +
+                "}," + // End of defaults
+                "\"overrides\": []" +
+                "}," + // End of field configuration
                 // Options
-                .append("\"options\":{")
+                "\"options\":{" +
                 // Legend options
-                .append("\"legend\":{\"displayMode\":\"list\",\"placement\":\"right\",\"showLegend\":true},")
+                "\"legend\":{\"displayMode\":\"list\",\"placement\":\"right\",\"showLegend\":true}," +
                 // Tooltip options
-                .append("\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"},")
+                "\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"}," +
                 // Other options
-                .append("\"displayLabels\":[\"percent\"],")
-                .append("\"pieType\":\"donut\",")
-                .append("\"reduceOptions\": {\"calcs\":[\"lastNotNull\"],\"fields\":\"\",\"values\":false}")
-                .append("}") // end of options
-                .append("}");
-        return builder.toString();
+                "\"displayLabels\":[\"percent\"]," +
+                "\"pieType\":\"donut\"," +
+                "\"reduceOptions\": {\"calcs\":[\"lastNotNull\"],\"fields\":\"\",\"values\":false}" +
+                "}" + // end of options
+                "}";
     }
 }

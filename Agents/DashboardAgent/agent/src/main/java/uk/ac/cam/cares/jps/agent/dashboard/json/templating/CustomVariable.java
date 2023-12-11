@@ -78,20 +78,19 @@ class CustomVariable extends TemplateVariable {
     @Override
     protected String construct() {
         // Construct the common elements
-        StringBuilder builder = super.genCommonJson()
+        return super.genCommonJson() +
                 // Variable display label
-                .append("\"label\": \"").append(this.label).append("\",")
+                "\"label\": \"" + this.label + "\"," +
                 // Description for this variable
-                .append("\"description\": \"").append(this.description).append("\",")
+                "\"description\": \"" + this.description + "\"," +
                 // Array of variable text/value pairs available for selection on dashboard
-                .append("\"options\": [").append(this.variableSelectionOptions).append("],")
+                "\"options\": [" + this.variableSelectionOptions + "]," +
                 // Query values of this variable
-                .append("\"query\": \"").append(this.querySyntax).append("\",")
+                "\"query\": \"" + this.querySyntax + "\"," +
                 // Default settings but unsure what they are for
-                .append("\"queryValue\": \"\",")
+                "\"queryValue\": \"\"," +
                 // Variable type must be set as custom to work
-                .append("\"type\": \"custom\"")
-                .append("}");
-        return builder.toString();
+                "\"type\": \"custom\"" +
+                "}";
     }
 }

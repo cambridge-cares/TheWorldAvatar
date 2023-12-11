@@ -104,15 +104,13 @@ class PostgresVariableTest {
     }
 
     private static String genExpectedPostgresVarSyntax(String title, String label, String description, String databaseID, String query, int displayOption) {
-        StringBuilder results = new StringBuilder();
-        results.append(TemplateVariableTest.genExpectedCommonJsonBase(title, "", displayOption, true, true))
-                .append("\"label\": \"").append(label).append("\",")
-                .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(databaseID).append("\"},")
-                .append("\"description\": \"").append(description).append("\",")
-                .append("\"definition\": \"").append(query).append("\",")
-                .append("\"query\": \"").append(query).append("\"")
-                .append(",\"regex\": \"\",\"sort\" : 0,\"type\": \"query\"}");
-        return results.toString();
+        return TemplateVariableTest.genExpectedCommonJsonBase(title, "", displayOption, true, true) +
+                "\"label\": \"" + label + "\"," +
+                "\"datasource\": {\"type\": \"postgres\", \"uid\": \"" + databaseID + "\"}," +
+                "\"description\": \"" + description + "\"," +
+                "\"definition\": \"" + query + "\"," +
+                "\"query\": \"" + query + "\"" +
+                ",\"regex\": \"\",\"sort\" : 0,\"type\": \"query\"}";
     }
 
     private static StringBuilder genValueQueryForListOfArrays(List<String[]> assetMeasureMap) {

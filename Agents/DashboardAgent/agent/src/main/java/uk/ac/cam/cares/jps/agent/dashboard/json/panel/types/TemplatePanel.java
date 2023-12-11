@@ -92,31 +92,29 @@ public abstract class TemplatePanel {
      *
      * @return The variable syntax as a StringBuilder.
      */
-    protected StringBuilder genCommonJson(int height, int width, int xPosition, int yPosition) {
+    protected String genCommonJson(int height, int width, int xPosition, int yPosition) {
         verifyVariable(this.title, "Title");
         verifyVariable(this.description, "Description");
-        StringBuilder builder = new StringBuilder();
-        builder.append("\"id\": null,") // Generate a new ID for this panel
+        return "\"id\": null," +  // Generate a new ID for this panel
                 // Title of this panel
-                .append("\"title\": \"").append(this.title).append("\",")
+                "\"title\": \"" + this.title + "\"," +
                 // Description for this panel
-                .append("\"description\": \"").append(this.description).append("\",")
+                "\"description\": \"" + this.description + "\"," +
                 // Postgres datasource
-                .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(this.databaseConnectionId).append("\"},")
+                "\"datasource\": {\"type\": \"postgres\", \"uid\": \"" + this.databaseConnectionId + "\"}," +
                 // Targets the written queries with their configuration to execute and retrieve data
-                .append("\"targets\": [{\"datasource\":{\"type\":\"postgres\",\"uid\":\"").append(this.databaseConnectionId) // Ensure data source is postgres
+                "\"targets\": [{\"datasource\":{\"type\":\"postgres\",\"uid\":\"" + this.databaseConnectionId + // Ensure data source is postgres
                 // Query configurations
-                .append("\"}, \"editorMode\":\"code\",\"format\":\"table\",\"rawQuery\":true,\"refId\":\"A\",")
-                .append("\"sql\":{\"columns\": [{\"parameters\": [],\"type\":\"function\"}], \"groupBy\": [{\"property\":{\"type\":\"string\"},\"type\":\"groupBy\"}],\"limit\":50},")
+                "\"}, \"editorMode\":\"code\",\"format\":\"table\",\"rawQuery\":true,\"refId\":\"A\"," +
+                "\"sql\":{\"columns\": [{\"parameters\": [],\"type\":\"function\"}], \"groupBy\": [{\"property\":{\"type\":\"string\"},\"type\":\"groupBy\"}],\"limit\":50}," +
                 // Query to be executed
-                .append("\"rawSql\":\"").append(this.querySyntax).append("\"}],")
+                "\"rawSql\":\"" + this.querySyntax + "\"}]," +
                 // Grid position: Two panels of height:4 and width:6 will be found at (0,0), (6,4) coordinates
                 // Height and width are dimensions of the panel
-                .append("\"gridPos\":{\"h\":").append(height).append(",\"w\":").append(width)
+                "\"gridPos\":{\"h\":" + height + ",\"w\":" + width +
                 // x and y are the placement position within the dashboard/grid
-                .append(",\"x\":").append(xPosition).append(",\"y\":").append(yPosition).append("},")
-                .append("\"transformations\":").append(this.transformations.construct());
-        return builder;
+                ",\"x\":" + xPosition + ",\"y\":" + yPosition + "}," +
+                "\"transformations\":" + this.transformations.construct();
     }
 
     /**

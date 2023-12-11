@@ -38,27 +38,25 @@ class TemplateVariable {
     /**
      * Construct the common JSON parts for variable as a StringBuilder which will continue to append specific syntax for different query types.
      *
-     * @return The variable syntax as a StringBuilder.
+     * @return The variable syntax as a string.
      */
-    protected StringBuilder genCommonJson() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{")
+    protected String genCommonJson() {
+        return "{" +
                 // Default selection should be all
-                .append("\"current\": {")
-                .append("\"selected\": false,")
-                .append("\"text\": [\"").append(this.defaultSelectedText).append("\"],")
-                .append("\"value\": [\"").append(this.defaultSelectedValue).append("\"]")
-                .append("},")
+                "\"current\": {" +
+                "\"selected\": false," +
+                "\"text\": [\"" + this.defaultSelectedText + "\"]," +
+                "\"value\": [\"" + this.defaultSelectedValue + "\"]" +
+                "}," +
                 // Variable name
-                .append("\"name\": \"").append(this.name).append("\",")
+                "\"name\": \"" + this.name + "\"," +
                 // Include option to select all values
-                .append("\"includeAll\": ").append(includeAllOption).append(",")
+                "\"includeAll\": " + includeAllOption + "," +
                 // Allow multiple value selection if true eg Value 1 and 2 can be selected but not Value 3
-                .append("\"multi\":").append(this.isMultiOption).append(",")
+                "\"multi\":" + this.isMultiOption + "," +
                 // The display option for this variable
-                .append("\"hide\": ").append(this.dashboardDisplayOption).append(",")
-                .append("\"skipUrlSync\": false,");
-        return builder;
+                "\"hide\": " + this.dashboardDisplayOption + "," +
+                "\"skipUrlSync\": false,";
     }
 
     /**

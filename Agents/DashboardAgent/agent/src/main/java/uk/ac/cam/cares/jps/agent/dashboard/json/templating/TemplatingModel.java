@@ -63,13 +63,11 @@ public class TemplatingModel {
      * @return The JSON model syntax as a String.
      */
     public String construct() {
-        StringBuilder builder = new StringBuilder();
         // Enable templating in the dashboard
-        builder.append("{\"enable\": true,")
+        return "{\"enable\": true," +
                 // List of all variables
-                .append("\"list\": [").append(this.variablesSyntax).append("]")
-                .append("}");
-        return builder.toString();
+                "\"list\": [" + this.variablesSyntax + "]" +
+                "}";
     }
 
     /**

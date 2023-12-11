@@ -51,7 +51,7 @@ class CustomVariableTest {
         assertEquals(genExpectedCustomVariableSyntax(EXPECTED_TYPE_NAME, DESCRIPTION, FACILITIES, DASHBOARD_DISPLAY_OPTION, true, false).toString(), result);
     }
 
-    public static StringBuilder genExpectedCustomVariableSyntax(String varName, String description, String[] assets, Integer dashboardDisplayOption, boolean isMultiValue, boolean includeAllOption) {
+    public static String genExpectedCustomVariableSyntax(String varName, String description, String[] assets, Integer dashboardDisplayOption, boolean isMultiValue, boolean includeAllOption) {
         String jsonBase;
         String selectedAllOption;
         String filterOptions;
@@ -66,15 +66,13 @@ class CustomVariableTest {
             selectedAllOption = "";
             filterOptions = filterOptionsResult[0];
         }
-        StringBuilder results = new StringBuilder();
-        results.append(jsonBase)
-                .append("\"label\": \"").append(varName).append("\",")
-                .append("\"description\": \"").append(description).append("\",")
-                .append("\"options\": [").append(selectedAllOption)
-                .append(filterOptions)
-                .append("],\"query\": \"").append(genSimpleQueryForArrays(assets))
-                .append("\",\"queryValue\": \"\",\"type\": \"custom\"}");
-        return results;
+        return jsonBase +
+                "\"label\": \"" + varName + "\"," +
+                "\"description\": \"" + description + "\"," +
+                "\"options\": [" + selectedAllOption +
+                filterOptions +
+                "],\"query\": \"" + genSimpleQueryForArrays(assets) +
+                "\",\"queryValue\": \"\",\"type\": \"custom\"}";
     }
 
     private static String[] genFilterOptionsForArrays(String[] facilities, boolean isDefault) {

@@ -109,30 +109,28 @@ public class Gauge extends TemplatePanel {
      */
     @Override
     public String construct(int height, int width, int xPosition, int yPosition) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{").append(super.genCommonJson(height, width, xPosition, yPosition))
+        return "{" + super.genCommonJson(height, width, xPosition, yPosition) +
                 // Chart type must be set to gauge
-                .append(",\"type\": \"gauge\",")
+                ",\"type\": \"gauge\"," +
                 // Field Configuration
-                .append("\"fieldConfig\":{")
+                "\"fieldConfig\":{" +
                 // Default field configuration
-                .append("\"defaults\":{\"color\":{\"mode\": \"").append(this.colorMode).append("\"},")
-                .append("\"thresholds\":{\"mode\": \"absolute\",")
-                .append("\"steps\": [{\"color\":\"red\",\"value\":null},").append(this.colorSteps).append("]},")
-                .append(this.minMaxVals)
-                .append("\"mappings\": [],")
-                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
-                .append("},") // End of defaults
-                .append("\"overrides\": []")
-                .append("},") // End of field configuration
+                "\"defaults\":{\"color\":{\"mode\": \"" + this.colorMode + "\"}," +
+                "\"thresholds\":{\"mode\": \"absolute\"," +
+                "\"steps\": [{\"color\":\"red\",\"value\":null}," + this.colorSteps + "]}," +
+                this.minMaxVals +
+                "\"mappings\": []," +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(super.getUnit()) + "\"" +
+                "}," +// End of defaults
+                "\"overrides\": []" +
+                "}," + // End of field configuration
                 // Options
-                .append("\"options\":{")
+                "\"options\":{" +
                 // Legend options
-                .append("\"reduceOptions\": {\"values\": false,\"calcs\": [\"lastNotNull\"],\"fields\": \"\"},")
+                "\"reduceOptions\": {\"values\": false,\"calcs\": [\"lastNotNull\"],\"fields\": \"\"}," +
                 // Tooltip options
-                .append("\"orientation\": \"auto\",\"showThresholdLabels\":false,\"showThresholdMarkers\":").append(this.showThresholdMarkers).append(",\"text\": {}")
-                .append("}") // end of options
-                .append("}");
-        return builder.toString();
+                "\"orientation\": \"auto\",\"showThresholdLabels\":false,\"showThresholdMarkers\":" + this.showThresholdMarkers + ",\"text\": {}" +
+                "}" + // end of options
+                "}";
     }
 }

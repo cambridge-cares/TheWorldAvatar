@@ -14,6 +14,7 @@ public class StringHelper {
     public static final String SERVICE_ACCOUNT_NAME = "grafana";
     public static final String INTERVAL_VARIABLE_NAME = "Time Interval";
 
+
     // Private constructor to prevent instantiation.
     private StringHelper() {
     }

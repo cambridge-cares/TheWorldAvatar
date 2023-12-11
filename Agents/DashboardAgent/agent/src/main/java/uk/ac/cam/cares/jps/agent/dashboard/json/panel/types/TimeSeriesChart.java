@@ -59,37 +59,35 @@ public class TimeSeriesChart extends TemplatePanel {
      */
     @Override
     public String construct(int height, int width, int xPosition, int yPosition) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{").append(super.genCommonJson(height, width, xPosition, yPosition))
+        return "{" + super.genCommonJson(height, width, xPosition, yPosition) +
                 // Chart type must be set to time series
-                .append(",\"type\": \"timeseries\",")
+                ",\"type\": \"timeseries\"," +
                 // Field Configuration
-                .append("\"fieldConfig\": { ")
+                "\"fieldConfig\": { " +
                 // Default field configuration
-                .append("\"defaults\": {\"color\": {\"mode\": \"palette-classic\"},")
+                "\"defaults\": {\"color\": {\"mode\": \"palette-classic\"}," +
                 // Custom parts of field configurations
-                .append("\"custom\":{").append("\"axisCenteredZero\":false,\"axisColorMode\":\"text\",")
-                .append("\"axisLabel\":\"\",\"axisPlacement\":\"auto\", \"barAlignment\":0, \"drawStyle\":\"line\",")
-                .append("\"fillOpacity\":0,\"gradientMode\":\"none\",")
-                .append("\"hideFrom\":{\"legend\":false, \"tooltip\":false, \"viz\":false},")
-                .append("\"lineInterpolation\":\"linear\", \"lineWidth\":1, \"pointSize\":5,")
-                .append("\"scaleDistribution\":{\"type\":\"linear\"}, \"showPoints\":\"auto\", \"spanNulls\":false,")
-                .append("\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"" + this.thresholdStyle + "\"}")
-                .append("},") // End of custom parts
-                .append(this.thresholdKeyValue)
-                .append("\"mappings\": [],")
-                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
-                .append("},") // End of defaults
-                .append("\"overrides\": []")
-                .append("},") // End of field configuration
+                "\"custom\":{" + "\"axisCenteredZero\":false,\"axisColorMode\":\"text\"," +
+                "\"axisLabel\":\"\",\"axisPlacement\":\"auto\", \"barAlignment\":0, \"drawStyle\":\"line\"," +
+                "\"fillOpacity\":0,\"gradientMode\":\"none\"," +
+                "\"hideFrom\":{\"legend\":false, \"tooltip\":false, \"viz\":false}," +
+                "\"lineInterpolation\":\"linear\", \"lineWidth\":1, \"pointSize\":5," +
+                "\"scaleDistribution\":{\"type\":\"linear\"}, \"showPoints\":\"auto\", \"spanNulls\":false," +
+                "\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"" + this.thresholdStyle + "\"}" +
+                "}," + // End of custom parts
+                this.thresholdKeyValue +
+                "\"mappings\": []," +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(super.getUnit()) + "\"" +
+                "}," + // End of defaults
+                "\"overrides\": []" +
+                "}," + // End of field configuration
                 // Options
-                .append("\"options\":{")
+                "\"options\":{" +
                 // Legend options
-                .append("\"legend\":{\"calcs\": [], \"displayMode\":\"list\",\"placement\":\"bottom\",\"showLegend\":true},")
+                "\"legend\":{\"calcs\": [], \"displayMode\":\"list\",\"placement\":\"bottom\",\"showLegend\":true}," +
                 // Tooltip options
-                .append("\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"}")
-                .append("}") // end of options
-                .append("}");
-        return builder.toString();
+                "\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"}" +
+                "}" + // end of options
+                "}";
     }
 }

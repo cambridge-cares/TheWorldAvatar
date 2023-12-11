@@ -13,6 +13,9 @@ import java.util.List;
  * @author qhouyee
  */
 public class BarChart extends TemplatePanel {
+    private static final String WHEN_SQL_START = " WHEN '${";
+    private static final String WHEN_SQL_END = ":csv}'='";
+
     /**
      * Standard Constructor.
      *
@@ -38,30 +41,30 @@ public class BarChart extends TemplatePanel {
         String tableName = timeSeriesMetadata.get(0)[2];
         String timeIntervalVariableName = StringHelper.formatVariableName(StringHelper.INTERVAL_VARIABLE_NAME);
         // Set a query for the specified time interval
-        StringBuilder query = new StringBuilder().append("SELECT CASE")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_WEEK).append("' THEN to_char(time,'DD-Mon-YY')")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_MONTH).append("' THEN to_char(time,'DD-Mon')")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.WEEKLY_OVER_MONTH).append("' THEN 'Week '|| to_char(time,'W Mon-YY')")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.MONTHLY).append("' THEN to_char(time,'Mon-YY')")
-                .append(" END AS \\\"interval\\\",${")
+        String query = "SELECT CASE" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_WEEK + "' THEN to_char(time,'DD-Mon-YY')" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_MONTH + "' THEN to_char(time,'DD-Mon')" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.WEEKLY_OVER_MONTH + "' THEN 'Week '|| to_char(time,'W Mon-YY')" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.MONTHLY + "' THEN to_char(time,'Mon-YY')" +
+                " END AS \\\"interval\\\",${" +
                 // Custom csv parameter must be lower case with no spacing ie: measurenameitemgroup
-                .append(StringHelper.formatVariableName(measure)).append(StringHelper.formatVariableName(itemGroup)).append(":csv} ")
-                .append("FROM \\\"").append(tableName).append("\\\" ")
+                StringHelper.formatVariableName(measure) + StringHelper.formatVariableName(itemGroup) + ":csv} " +
+                "FROM \\\"" + tableName + "\\\" " +
                 // Time interval according to template variable
-                .append("WHERE CASE")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_WEEK).append("' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'6 day' AND TO_TIMESTAMP(${__to}/1000)")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_MONTH).append("' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.WEEKLY_OVER_MONTH).append("' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.MONTHLY).append("' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 year'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)")
-                .append(" END ")
+                "WHERE CASE" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_WEEK + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'6 day' AND TO_TIMESTAMP(${__to}/1000)" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_MONTH + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.WEEKLY_OVER_MONTH + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.MONTHLY + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 year'+interval'1 day' AND TO_TIMESTAMP(${__to}/1000)" +
+                " END " +
                 // Arrange results starting from the latest interval and go backwards
-                .append("ORDER BY CASE")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_WEEK).append("' THEN (EXTRACT(DOW FROM time)-EXTRACT(DOW FROM TO_TIMESTAMP(${__to}/1000))+6)%7")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.DAILY_OVER_MONTH).append("' THEN (EXTRACT(DOY FROM time)-EXTRACT(DOY FROM TO_TIMESTAMP(${__to}/1000))+365)%366")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.WEEKLY_OVER_MONTH).append("' THEN (EXTRACT(WEEK FROM time)-EXTRACT(WEEK FROM TO_TIMESTAMP(${__to}/1000))+51)%52")
-                .append(" WHEN '${").append(timeIntervalVariableName).append(":csv}'='").append(TemporalInterval.MONTHLY).append("' THEN (EXTRACT(MONTH FROM time)-EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))+11)%12")
-                .append(" END;");
-        super.setQuery(query);
+                "ORDER BY CASE" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_WEEK + "' THEN (EXTRACT(DOW FROM time)-EXTRACT(DOW FROM TO_TIMESTAMP(${__to}/1000))+6)%7" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_MONTH + "' THEN (EXTRACT(DOY FROM time)-EXTRACT(DOY FROM TO_TIMESTAMP(${__to}/1000))+365)%366" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.WEEKLY_OVER_MONTH + "' THEN (EXTRACT(WEEK FROM time)-EXTRACT(WEEK FROM TO_TIMESTAMP(${__to}/1000))+51)%52" +
+                WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.MONTHLY + "' THEN (EXTRACT(MONTH FROM time)-EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))+11)%12" +
+                " END;";
+        super.setQuery(new StringBuilder(query));
         // Apply an aggregate transformation before renaming the fields
         super.transformations.addGroupByTransformation("range", timeSeriesMetadata);
         // Add a white space as the group by transformation in Grafana appends the following
@@ -79,45 +82,41 @@ public class BarChart extends TemplatePanel {
      */
     @Override
     public String construct(int height, int width, int xPosition, int yPosition) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{").append(super.genCommonJson(height, width, xPosition, yPosition))
+        return "{" + super.genCommonJson(height, width, xPosition, yPosition) +
                 // Chart type must be set to time series
-                .append(",\"type\": \"barchart\",")
+                ",\"type\": \"barchart\"," +
                 // Plugin version
-                .append("\"pluginVersion\": \"10.0.3\",")
+                "\"pluginVersion\": \"10.0.3\"," +
                 // Field Configuration
-                .append("\"fieldConfig\": { ")
+                "\"fieldConfig\": { " +
                 // Default field configuration
-                .append("\"defaults\": {\"color\": {\"mode\": \"palette-classic\"},")
+                "\"defaults\": {\"color\": {\"mode\": \"palette-classic\"}," +
                 // Custom parts of field configurations
-                .append("\"custom\":{").append("\"axisCenteredZero\":false,\"axisColorMode\":\"text\",")
-                .append("\"axisLabel\":\"\",\"axisPlacement\":\"auto\", \"barAlignment\":0, \"drawStyle\":\"line\",")
-                .append("\"fillOpacity\":80,\"gradientMode\":\"none\",\"lineWidth\":1,")
-                .append("\"hideFrom\":{\"legend\":false, \"tooltip\":false, \"viz\":false},")
-                .append("\"scaleDistribution\":{\"type\":\"linear\"}, \"showPoints\":\"auto\", \"spanNulls\":false,")
-                .append("\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"off\"}")
-                .append("},") // End of custom parts
+                "\"custom\":{" + "\"axisCenteredZero\":false,\"axisColorMode\":\"text\"," +
+                "\"axisLabel\":\"\",\"axisPlacement\":\"auto\", \"barAlignment\":0, \"drawStyle\":\"line\"," +
+                "\"fillOpacity\":80,\"gradientMode\":\"none\",\"lineWidth\":1," +
+                "\"hideFrom\":{\"legend\":false, \"tooltip\":false, \"viz\":false}," +
+                "\"scaleDistribution\":{\"type\":\"linear\"}, \"showPoints\":\"auto\", \"spanNulls\":false," +
+                "\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"off\"}" +
+                "}," + // End of custom part
                 // Thresholds
-                .append("\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
-                        "{\"color\":\"green\",\"value\":null},{\"color\":\"red\",\"value\":80}")
-                .append("]},")
-                .append("\"mappings\": [],")
-                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(super.getUnit())).append("\"")
-                .append("},") // End of defaults
-                .append("\"overrides\": []")
-                .append("},") // End of field configuration
+                "\"thresholds\":{\"mode\": \"absolute\", \"steps\": [{\"color\":\"green\",\"value\":null},{\"color\":\"red\",\"value\":80}]}," +
+                "\"mappings\": []," +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(super.getUnit()) + "\"" +
+                "}," + // End of defaults
+                "\"overrides\": []" +
+                "}," + // End of field configuration
                 // Options
-                .append("\"options\":{")
+                "\"options\":{" +
                 // Legend options
-                .append("\"legend\":{\"calcs\": [], \"displayMode\":\"list\",\"placement\":\"bottom\",\"showLegend\":true},")
+                "\"legend\":{\"calcs\": [], \"displayMode\":\"list\",\"placement\":\"bottom\",\"showLegend\":true}," +
                 // Tooltip options
-                .append("\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"},")
+                "\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"}," +
                 // Bar chart options
-                .append("\"barRadius\":0,\"barWidth\":0.8,\"fullHighlight\":false,\"groupWidth\":0.7,")
-                .append("\"orientation\":\"auto\",\"showValue\":\"never\",\"stacking\":\"normal\",")
-                .append("\"xTickLabelRotation\":0,\"xTickLabelSpacing\":100")
-                .append("}") // end of options
-                .append("}");
-        return builder.toString();
+                "\"barRadius\":0,\"barWidth\":0.8,\"fullHighlight\":false,\"groupWidth\":0.7," +
+                "\"orientation\":\"auto\",\"showValue\":\"never\",\"stacking\":\"normal\"," +
+                "\"xTickLabelRotation\":0,\"xTickLabelSpacing\":100" +
+                "}" + // end of options
+                "}";
     }
 }

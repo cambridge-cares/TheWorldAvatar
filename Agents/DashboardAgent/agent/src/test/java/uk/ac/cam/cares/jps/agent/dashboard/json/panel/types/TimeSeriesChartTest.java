@@ -114,30 +114,28 @@ public class TimeSeriesChartTest {
         String thresholdSteps = thresholds.length == 0 ? "" : "\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
                 "{\"color\":\"red\",\"value\":null},{\"color\":\"green\",\"value\":" + thresholds[0] + "}," +
                 "{\"color\":\"red\",\"value\":" + thresholds[1] + "}]},";
-        StringBuilder sb = new StringBuilder();
-        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails))
-                .append(",\"type\": \"timeseries\",")
-                .append("\"fieldConfig\": { ")
-                .append("\"defaults\": {\"color\": {\"mode\": \"palette-classic\"},")
-                .append("\"custom\":{").append("\"axisCenteredZero\":false,\"axisColorMode\":\"text\",")
-                .append("\"axisLabel\":\"\",\"axisPlacement\":\"auto\", \"barAlignment\":0, \"drawStyle\":\"line\",")
-                .append("\"fillOpacity\":0,\"gradientMode\":\"none\",")
-                .append("\"hideFrom\":{\"legend\":false, \"tooltip\":false, \"viz\":false},")
-                .append("\"lineInterpolation\":\"linear\", \"lineWidth\":1, \"pointSize\":5,")
-                .append("\"scaleDistribution\":{\"type\":\"linear\"}, \"showPoints\":\"auto\", \"spanNulls\":false,")
-                .append("\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"" + thresholdStyle + "\"}")
-                .append("},")
-                .append(thresholdSteps)
-                .append("\"mappings\": [],")
-                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(metadata[4])).append("\"")
-                .append("},")
-                .append("\"overrides\": []")
-                .append("},")
-                .append("\"options\":{")
-                .append("\"legend\":{\"calcs\": [], \"displayMode\":\"list\",\"placement\":\"bottom\",\"showLegend\":true},")
-                .append("\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"}")
-                .append("}")
-                .append("}");
-        return sb.toString();
+        return "{" + TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails) +
+                ",\"type\": \"timeseries\"," +
+                "\"fieldConfig\": { " +
+                "\"defaults\": {\"color\": {\"mode\": \"palette-classic\"}," +
+                "\"custom\":{" + "\"axisCenteredZero\":false,\"axisColorMode\":\"text\"," +
+                "\"axisLabel\":\"\",\"axisPlacement\":\"auto\", \"barAlignment\":0, \"drawStyle\":\"line\"," +
+                "\"fillOpacity\":0,\"gradientMode\":\"none\"," +
+                "\"hideFrom\":{\"legend\":false, \"tooltip\":false, \"viz\":false}," +
+                "\"lineInterpolation\":\"linear\", \"lineWidth\":1, \"pointSize\":5," +
+                "\"scaleDistribution\":{\"type\":\"linear\"}, \"showPoints\":\"auto\", \"spanNulls\":false," +
+                "\"stacking\":{\"group\":\"A\", \"mode\":\"none\"}, \"thresholdsStyle\":{\"mode\":\"" + thresholdStyle + "\"}" +
+                "}," +
+                thresholdSteps +
+                "\"mappings\": []," +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(metadata[4]) + "\"" +
+                "}," +
+                "\"overrides\": []" +
+                "}," +
+                "\"options\":{" +
+                "\"legend\":{\"calcs\": [], \"displayMode\":\"list\",\"placement\":\"bottom\",\"showLegend\":true}," +
+                "\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"}" +
+                "}" +
+                "}";
     }
 }

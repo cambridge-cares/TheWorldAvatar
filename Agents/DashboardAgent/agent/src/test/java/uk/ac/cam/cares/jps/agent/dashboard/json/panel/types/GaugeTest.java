@@ -147,25 +147,23 @@ public class GaugeTest {
             double maxValue = Float.parseFloat(thresholds[1]) + 1.0;
             minMax = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, query))
-                .append(",\"type\": \"gauge\",")
-                .append("\"fieldConfig\":{")
-                .append("\"defaults\":{\"color\":{\"mode\": \"").append(colorMode).append("\"},")
-                .append("\"thresholds\":{\"mode\": \"absolute\",")
-                .append("\"steps\": [{\"color\":\"red\",\"value\":null},").append(colorSteps).append("]},")
-                .append(minMax)
-                .append("\"mappings\": [],")
-                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(metadata[4])).append("\"")
-                .append("},")
-                .append("\"overrides\": []")
-                .append("},")
-                .append("\"options\":{")
-                .append("\"reduceOptions\": {\"values\": false,\"calcs\": [\"lastNotNull\"],\"fields\": \"\"},")
-                .append("\"orientation\": \"auto\",\"showThresholdLabels\":false,\"showThresholdMarkers\":").append(showThresholdMarkers).append(",\"text\": {}")
-                .append("}")
-                .append("}");
-        return sb.toString();
+        return "{" + TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, query) +
+                ",\"type\": \"gauge\"," +
+                "\"fieldConfig\":{" +
+                "\"defaults\":{\"color\":{\"mode\": \"" + colorMode + "\"}," +
+                "\"thresholds\":{\"mode\": \"absolute\"," +
+                "\"steps\": [{\"color\":\"red\",\"value\":null}," + colorSteps + "]}," +
+                minMax +
+                "\"mappings\": []," +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(metadata[4]) + "\"" +
+                "}," +
+                "\"overrides\": []" +
+                "}," +
+                "\"options\":{" +
+                "\"reduceOptions\": {\"values\": false,\"calcs\": [\"lastNotNull\"],\"fields\": \"\"}," +
+                "\"orientation\": \"auto\",\"showThresholdLabels\":false,\"showThresholdMarkers\":" + showThresholdMarkers + ",\"text\": {}" +
+                "}" +
+                "}";
     }
 
     public static String genAggregateQuery(List<String[]> itemsMetadata, boolean isAverage) {

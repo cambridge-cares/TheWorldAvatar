@@ -87,27 +87,25 @@ public class PieChartTest {
         String description = "A pie chart displaying the latest distribution for " + metadata[0].toLowerCase() + " of " + metadata[1].toLowerCase();
         String expectedTransformations = "[" + TransformationOptionsTest.genExpectedOrganizeTransformation(itemDetails, "") + "]";
         // Construct the expected syntax
-        StringBuilder sb = new StringBuilder();
-        sb.append("{").append(TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, ""))
-                .append(",\"type\":\"piechart\",")
-                .append("\"pluginVersion\":\"10.0.3\",")
-                .append("\"fieldConfig\": {")
-                .append("\"defaults\": {\"color\": {\"mode\": \"palette-classic\"},")
-                .append("\"custom\":{").append("\"hideFrom\":{\"legend\":false,\"tooltip\":false,\"viz\":false}").append("},")
-                .append("\"mappings\": [],")
-                .append("\"unit\":\"").append(UnitMapper.getUnitSyntax(metadata[4])).append("\"")
-                .append("},")
-                .append("\"overrides\": []")
-                .append("},")
+        return "{" + TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, "") +
+                ",\"type\":\"piechart\"," +
+                "\"pluginVersion\":\"10.0.3\"," +
+                "\"fieldConfig\": {" +
+                "\"defaults\": {\"color\": {\"mode\": \"palette-classic\"}," +
+                "\"custom\":{" + "\"hideFrom\":{\"legend\":false,\"tooltip\":false,\"viz\":false}" + "}," +
+                "\"mappings\": []," +
+                "\"unit\":\"" + UnitMapper.getUnitSyntax(metadata[4]) + "\"" +
+                "}," +
+                "\"overrides\": []" +
+                "}," +
                 // Options
-                .append("\"options\":{")
-                .append("\"legend\":{\"displayMode\":\"list\",\"placement\":\"right\",\"showLegend\":true},")
-                .append("\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"},")
-                .append("\"displayLabels\":[\"percent\"],")
-                .append("\"pieType\":\"donut\",")
-                .append("\"reduceOptions\": {\"calcs\":[\"lastNotNull\"],\"fields\":\"\",\"values\":false}")
-                .append("}") // end of options
-                .append("}");
-        return sb.toString();
+                "\"options\":{" +
+                "\"legend\":{\"displayMode\":\"list\",\"placement\":\"right\",\"showLegend\":true}," +
+                "\"tooltip\":{\"mode\":\"single\",\"sort\":\"none\"}," +
+                "\"displayLabels\":[\"percent\"]," +
+                "\"pieType\":\"donut\"," +
+                "\"reduceOptions\": {\"calcs\":[\"lastNotNull\"],\"fields\":\"\",\"values\":false}" +
+                "}" + // end of options
+                "}";
     }
 }

@@ -20,6 +20,7 @@ import java.util.Base64;
  * @author qhouyee
  */
 public class AgentCommunicationClient {
+    private static final String AUTHORISATION_HEADER = "Authorization";
     private static final String BAD_REQUEST_ERROR = "Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details:";
     private static final String INTERRUPTED_ERROR = "Thread has been interrupted!";
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
@@ -101,10 +102,10 @@ public class AgentCommunicationClient {
                     .GET()
                     .timeout(Duration.ofSeconds(3600));
             if (bearerToken != null) {
-                requestBuilder.header("Authorization", "Bearer " + bearerToken);
+                requestBuilder.header(AUTHORISATION_HEADER, "Bearer " + bearerToken);
             } else if (!userName.isEmpty() && !password.isEmpty())
                 // If username and password are provided, add the authentication
-                requestBuilder.header("Authorization", getBasicAuthenticationHeader(userName, password));
+                requestBuilder.header(AUTHORISATION_HEADER, getBasicAuthenticationHeader(userName, password));
             // Await response before continue executing the rest of the code
             return HTTP_CLIENT.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
@@ -154,9 +155,9 @@ public class AgentCommunicationClient {
                     .POST(HttpRequest.BodyPublishers.ofString(jsonParams))
                     .timeout(Duration.ofSeconds(3600));
             if (bearerToken != null) {
-                request.header("Authorization", "Bearer " + bearerToken);
+                request.header(AUTHORISATION_HEADER, "Bearer " + bearerToken);
             } else if (userName != null && password != null) {
-                request.header("Authorization", getBasicAuthenticationHeader(userName, password));
+                request.header(AUTHORISATION_HEADER, getBasicAuthenticationHeader(userName, password));
             }
             // Await response before continue executing the rest of the code
             return HTTP_CLIENT.send(request.build(), HttpResponse.BodyHandlers.ofString());

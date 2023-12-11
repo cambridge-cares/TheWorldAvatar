@@ -36,21 +36,19 @@ public class PostgresDataSource {
      * @return The JSON parameter for a PostgreSQL data source as a String.
      */
     protected String construct() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{")
-                .append("\"name\": \"").append(this.sourceName).append("\",")
-                .append("\"type\": \"postgres\",")
-                .append("\"url\": \"").append(this.sourceUrl).append("\",")
-                .append("\"user\": \"").append(this.username).append("\",")
-                .append("\"database\": \"").append(this.databaseName).append("\",")
-                .append("\"basicAuth\": false,")
-                .append("\"access\": \"proxy\",")
-                .append("\"withCredentials\": false,")
-                .append("\"isDefault\": false,")
-                .append("\"jsonData\": ").append(this.genJsonDataConfig())
-                .append("\"secureJsonData\": { \"password\": \"").append(this.password).append("\"}")
-                .append("}");
-        return builder.toString();
+        return "{" +
+                "\"name\": \"" + this.sourceName + "\"," +
+                "\"type\": \"postgres\"," +
+                "\"url\": \"" + this.sourceUrl + "\"," +
+                "\"user\": \"" + this.username + "\"," +
+                "\"database\": \"" + this.databaseName + "\"," +
+                "\"basicAuth\": false," +
+                "\"access\": \"proxy\"," +
+                "\"withCredentials\": false," +
+                "\"isDefault\": false," +
+                "\"jsonData\": " + this.genJsonDataConfig() +
+                "\"secureJsonData\": { \"password\": \"" + this.password + "\"}" +
+                "}";
     }
 
     /**
@@ -59,18 +57,16 @@ public class PostgresDataSource {
      * @return The JSON Data parameter for the PostgreSQL data source configuration as a String.
      */
     private String genJsonDataConfig() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{")
-                .append("\"tlsAuth\": false,")
-                .append("\"connMaxLifetime\": 14400,")
-                .append("\"maxIdleConns\": 100,")
-                .append("\"maxIdleConnsAuto\": true,")
-                .append("\"maxOpenConns\": 100,")
-                .append("\"sslmode\": \"disable\",")
+        return "{" +
+                "\"tlsAuth\": false," +
+                "\"connMaxLifetime\": 14400," +
+                "\"maxIdleConns\": 100," +
+                "\"maxIdleConnsAuto\": true," +
+                "\"maxOpenConns\": 100," +
+                "\"sslmode\": \"disable\"," +
                 // Ensure that last line does not have comma
-                .append("\"postgresVersion\": 1500")
+                "\"postgresVersion\": 1500" +
                 // Note that a comma is appended because the JSON param still has another parameter after
-                .append("},");
-        return builder.toString();
+                "},";
     }
 }

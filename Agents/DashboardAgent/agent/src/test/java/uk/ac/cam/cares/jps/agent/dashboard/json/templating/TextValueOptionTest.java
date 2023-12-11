@@ -30,14 +30,12 @@ class TextValueOptionTest {
     }
 
     private static String genExpectedJsonSyntax(boolean isSelected, String label, String value) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{")
-                .append("\"selected\": ").append(isSelected).append(",")
+        return "{" +
+                "\"selected\": " + isSelected + "," +
                 // Display text
-                .append("\"text\": \"").append(label).append("\",")
+                "\"text\": \"" + label + "\"," +
                 // Value for processing in Grafana
-                .append("\"value\": \"").append(value).append("\"")
-                .append("}");
-        return builder.toString();
+                "\"value\": \"" + value + "\"" +
+                "}";
     }
 }

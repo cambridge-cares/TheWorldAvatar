@@ -77,27 +77,25 @@ public class GrafanaModel {
      * @return The JSON model syntax as a String.
      */
     protected String construct() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\"dashboard\": {")
+        return "{\"dashboard\": {" +
                 // generate new id and uid using null
-                .append("\"id\":").append(this.dashboardId).append(",")
-                .append("\"uid\":").append(this.dashboardUid).append(",")
+                "\"id\":" + this.dashboardId + "," +
+                "\"uid\":" + this.dashboardUid + "," +
                 // The dashboard title
-                .append("\"title\": \"").append(this.dashboardTitle).append("\",")
+                "\"title\": \"" + this.dashboardTitle + "\"," +
                 // Templating
-                .append("\"templating\": ").append(this.templatingSyntax).append(",")
+                "\"templating\": " + this.templatingSyntax + "," +
                 // Panel
-                .append("\"panels\": [").append(this.panelSyntax).append("],")
+                "\"panels\": [" + this.panelSyntax + "]," +
                 // Disable any editing by non-admin users
-                .append("\"editable\": false,")
-                .append("\"timezone\": \"browser\",")
+                "\"editable\": false," +
+                "\"timezone\": \"browser\"," +
                 // Default view - time frame
-                .append("\"time\": {\"from\": \"now-3h\", \"to\": \"now\"},")
-                .append("\"refresh\": \"").append(this.dashboardRefreshRate).append("\"")
-                .append("},")
+                "\"time\": {\"from\": \"now-3h\", \"to\": \"now\"}," +
+                "\"refresh\": \"" + this.dashboardRefreshRate + "\"" +
+                "}," +
                 // Comments for each update/ version
-                .append("\"message\": \"").append(this.comment).append("\",")
-                .append("\"overwrite\": ").append(this.overwrite).append("}");
-        return builder.toString();
+                "\"message\": \"" + this.comment + "\"," +
+                "\"overwrite\": " + this.overwrite + "}";
     }
 }

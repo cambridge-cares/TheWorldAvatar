@@ -30,14 +30,12 @@ class TextValueOption {
      * @return The variable option syntax as a String.
      */
     protected String construct() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{")
-                .append("\"selected\": ").append(this.isSelected).append(",")
+        return "{" +
+                "\"selected\": " + this.isSelected + "," +
                 // Display text
-                .append("\"text\": \"").append(this.label).append("\",")
+                "\"text\": \"" + this.label + "\"," +
                 // Value for processing in Grafana
-                .append("\"value\": \"").append(this.value).append("\"")
-                .append("}");
-        return builder.toString();
+                "\"value\": \"" + this.value + "\"" +
+                "}";
     }
 }

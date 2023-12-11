@@ -17,9 +17,9 @@ class TemplateVariableTest {
         TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true, true);
         // Execute the method
         variable.setDefaultSelectedTextValue(sampleText);
-        StringBuilder result = variable.genCommonJson();
+        String result = variable.genCommonJson();
         // Test outputs
-        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, sampleText, DASHBOARD_DISPLAY_OPTION, true, true), result.toString());
+        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, sampleText, DASHBOARD_DISPLAY_OPTION, true, true), result);
     }
 
     @Test
@@ -27,9 +27,9 @@ class TemplateVariableTest {
         // Construct the object
         TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, true, true);
         // Execute the method
-        StringBuilder result = variable.genCommonJson();
+        String result = variable.genCommonJson();
         // Test outputs
-        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, "", DASHBOARD_DISPLAY_OPTION, true, true), result.toString());
+        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, "", DASHBOARD_DISPLAY_OPTION, true, true), result);
     }
 
     @Test
@@ -37,9 +37,9 @@ class TemplateVariableTest {
         // Construct the object
         TemplateVariable variable = new TemplateVariable(VARIABLE_NAME, DASHBOARD_DISPLAY_OPTION, false, false);
         // Execute the method
-        StringBuilder result = variable.genCommonJson();
+        String result = variable.genCommonJson();
         // Test outputs
-        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, "", DASHBOARD_DISPLAY_OPTION, false, false), result.toString());
+        assertEquals(genExpectedCommonJsonBase(EXPECTED_VARIABLE_NAME, "", DASHBOARD_DISPLAY_OPTION, false, false), result);
     }
 
     @Test
@@ -59,11 +59,9 @@ class TemplateVariableTest {
             defaultSelectedText = defaultVal;
             defaultSelectedValue = defaultVal;
         }
-        StringBuilder results = new StringBuilder();
-        results.append("{\"current\": {\"selected\": false,\"text\": [\"").append(defaultSelectedText)
-                .append("\"],\"value\": [\"").append(defaultSelectedValue).append("\"]},\"name\": \"")
-                .append(varName).append("\",\"includeAll\": ").append(includeAllOption).append(",\"multi\":").append(isMultiValue).append(",\"hide\": ").append(dashboardDisplayOption)
-                .append(",\"skipUrlSync\": false,");
-        return results.toString();
+        return "{\"current\": {\"selected\": false,\"text\": [\"" + defaultSelectedText +
+                "\"],\"value\": [\"" + defaultSelectedValue + "\"]},\"name\": \"" +
+                varName + "\",\"includeAll\": " + includeAllOption + ",\"multi\":" + isMultiValue + ",\"hide\": " + dashboardDisplayOption +
+                ",\"skipUrlSync\": false,";
     }
 }
