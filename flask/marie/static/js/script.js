@@ -425,16 +425,21 @@ const chatbotResponseCard = (function () {
 })()
 
 const inputField =  (function(){
+    const elem = document.getElementById('input-field')
     const askButton = document.getElementById('ask-button')
 
     return {
         populateInputText(text) {
-            document.getElementById('input-field').value = text
+            elem.value = text
             window.scrollTo(0, 0);
         },
     
         addToInputText(text) {
-            document.getElementById('input-field').value += text
+            const startPos = elem.selectionStart
+            const endPos = elem.selectionEnd
+            elem.value = elem.value.substring(0, startPos) + text + elem.value.substring(endPos, elem.value.length)
+            elem.selectionStart = startPos + text.length
+            elem.selectionEnd = startPos + text.length
         },
 
         disableAsk() {

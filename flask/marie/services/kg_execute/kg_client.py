@@ -1,6 +1,9 @@
 from typing import Optional
+from urllib.parse import urlparse
 
 from SPARQLWrapper import SPARQLWrapper, POST, JSON
+
+from marie.exceptions import InvalidUrlError
 
 
 class KgClient:
@@ -19,6 +22,9 @@ PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.ow
         user: Optional[str] = None,
         pw: Optional[str] = None,
     ):
+        if not isinstance(kg_endpoint, str):
+            raise InvalidUrlError(kg_endpoint)
+        
         sparql = SPARQLWrapper(kg_endpoint)
         sparql.setReturnFormat(JSON)
         if user is not None and pw is not None:
