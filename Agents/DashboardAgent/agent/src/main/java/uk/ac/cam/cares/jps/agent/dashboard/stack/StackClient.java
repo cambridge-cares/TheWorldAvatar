@@ -65,16 +65,24 @@ public class StackClient {
     }
 
     /**
-     * Get the PostGIS credentials for the dashboard.
-     *
-     * @return An array containing the credentials in sequence of domain name, username, and password.
+     * Get the RDB domain url within the stack.
      */
-    public String[] getPostGisCredentials() {
-        String[] credentials = new String[3];
-        credentials[0] = this.stackRdbDomain;
-        credentials[1] = this.postgisClient.getUsername();
-        credentials[2] = this.postgisClient.getPassword();
-        return credentials;
+    public String getRdbDomain() {
+        return this.stackRdbDomain;
+    }
+
+    /**
+     * Get the username to access the RDB within the stack.
+     */
+    public String getRdbUser() {
+        return this.postgisClient.getUsername();
+    }
+
+    /**
+     * Get the username to access the RDB within the stack.
+     */
+    public String getRdbPassword() {
+        return this.postgisClient.getPassword();
     }
 
     /**
@@ -85,11 +93,14 @@ public class StackClient {
     }
 
     /**
-     * Get the dashboard credentials within this stack.
-     *
-     * @return An array containing the dashboard username and password in sequence.
+     * Get the dashboard username credentials within this stack.
      */
-    public String[] getDashboardCredentials() {return new String[]{this.dashboardConfig.getUsername(), this.dashboardConfig.getPassword()};}
+    public String getDashboardUser() { return this.dashboardConfig.getUsername(); }
+
+    /**
+     * Get the dashboard password credential within this stack.
+     */
+    public String getDashboardPassword() { return this.dashboardConfig.getPassword(); }
 
     /**
      * Get all time series associated with the spatial zones managed by an organisation, namely their assets and rooms' measures in the knowledge graph.

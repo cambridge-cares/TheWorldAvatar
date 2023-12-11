@@ -33,6 +33,7 @@ class StackClientTest {
         IntegrationTestUtils.updateEndpoint(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, IntegrationTestUtils.SPARQL_DELETE);
         IntegrationTestUtils.updateEndpoint(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT, IntegrationTestUtils.SPARQL_DELETE);
         IntegrationTestUtils.deletePasswordFile(IntegrationTestUtils.TEST_POSTGIS_PASSWORD_PATH);
+        IntegrationTestUtils.deletePasswordFile(IntegrationTestUtils.TEST_DASHBOARD_PASSWORD_PATH);
     }
 
     @AfterAll
@@ -41,8 +42,9 @@ class StackClientTest {
     }
 
     @Test
-    void testGetDashboardUrl() {
+    void testGetDashboardConfigs_Url_User_Password() {
         IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_POSTGIS_PASSWORD_PATH, IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
+        IntegrationTestUtils.createPasswordFile(IntegrationTestUtils.TEST_DASHBOARD_PASSWORD_PATH, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
         try (MockedConstruction<ContainerClient> mockClient = Mockito.mockConstruction(ContainerClient.class, (mock, context) -> {
             // Ensure all mocks return the test config class for the method to continue
             Mockito.when(mock.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class)).thenReturn(IntegrationTestUtils.SPARQL_ENDPOINT_CONFIG);
@@ -50,8 +52,9 @@ class StackClientTest {
             Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
         })) {
             StackClient mockStackClient = new StackClient();
-            // Verify there is no organisation if no relevant triples are found
             assertEquals(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl(), mockStackClient.getDashboardUrl());
+            assertEquals(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getUsername(), mockStackClient.getDashboardUser());
+            assertEquals(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getPassword(), mockStackClient.getDashboardPassword());
         }
     }
 
@@ -116,7 +119,7 @@ class StackClientTest {
     }
 
     @Test
-    void testGetPostGisCredentials() {
+    void testGetPostGisCredentials_RdbDomain_User_Pass() {
         // Insert these triples into the blazegraph
         SparqlClientTest.insertFacilityTriples(IntegrationTestUtils.SPATIAL_ZONE_SPARQL_ENDPOINT);
         SparqlClientTest.insertAssetTriples(IntegrationTestUtils.GENERAL_SPARQL_ENDPOINT, true);
@@ -129,11 +132,10 @@ class StackClientTest {
             Mockito.when(mock.readEndpointConfig("grafana", GrafanaEndpointConfig.class)).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG);
         })) {
             StackClient mockStackClient = new StackClient();
-            String[] credentials = mockStackClient.getPostGisCredentials();
             // Verify that credentials are as follows
-            assertEquals(IntegrationTestUtils.DOCKER_HOST_NAME + ":5431", credentials[0]);
-            assertEquals(IntegrationTestUtils.TEST_POSTGIS_USER, credentials[1]);
-            assertEquals(IntegrationTestUtils.TEST_POSTGIS_PASSWORD, credentials[2]);
+            assertEquals(IntegrationTestUtils.DOCKER_HOST_NAME + ":5431", mockStackClient.getRdbDomain());
+            assertEquals(IntegrationTestUtils.TEST_POSTGIS_USER, mockStackClient.getRdbUser());
+            assertEquals(IntegrationTestUtils.TEST_POSTGIS_PASSWORD, mockStackClient.getRdbPassword());
 
         }
     }

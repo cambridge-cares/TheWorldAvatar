@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DashboardClientIntegrationTest {
     private static final String SAMPLE_SQL_DATABASE = "test";
-    private static final String[] DASHBOARD_CREDENTIALS = new String[2];
 
     @BeforeAll
     static void setup() {
@@ -39,9 +38,6 @@ class DashboardClientIntegrationTest {
         IntegrationTestUtils.createNamespace(IntegrationTestUtils.SPATIAL_ZONE_NAMESPACE);
         IntegrationTestUtils.createNamespace(IntegrationTestUtils.GENERAL_NAMESPACE);
         PostGisClientTest.genSampleDatabases();
-        // For credentials
-        DASHBOARD_CREDENTIALS[0] = IntegrationTestUtils.DASHBOARD_ACCOUNT_USER;
-        DASHBOARD_CREDENTIALS[1] = IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS;
     }
 
     @AfterEach
@@ -71,7 +67,8 @@ class DashboardClientIntegrationTest {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
             // Ensure all mocks return the dashboard credentials to function
-            Mockito.when(mock.getDashboardCredentials()).thenReturn(DASHBOARD_CREDENTIALS);
+            Mockito.when(mock.getDashboardUser()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER);
+            Mockito.when(mock.getDashboardPassword()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
         })) {
             StackClient mockStackClient = new StackClient();
             // Execute method
@@ -85,7 +82,8 @@ class DashboardClientIntegrationTest {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
             // Ensure all mocks return the dashboard credentials to function
-            Mockito.when(mock.getDashboardCredentials()).thenReturn(DASHBOARD_CREDENTIALS);
+            Mockito.when(mock.getDashboardUser()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER);
+            Mockito.when(mock.getDashboardPassword()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
         })) {
@@ -110,7 +108,8 @@ class DashboardClientIntegrationTest {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
             // Ensure all mocks return the dashboard credentials to function
-            Mockito.when(mock.getDashboardCredentials()).thenReturn(DASHBOARD_CREDENTIALS);
+            Mockito.when(mock.getDashboardUser()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER);
+            Mockito.when(mock.getDashboardPassword()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
         })) {
@@ -136,12 +135,14 @@ class DashboardClientIntegrationTest {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
             // Ensure all mocks return the dashboard credentials to function
-            Mockito.when(mock.getDashboardCredentials()).thenReturn(DASHBOARD_CREDENTIALS);
+            Mockito.when(mock.getDashboardUser()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER);
+            Mockito.when(mock.getDashboardPassword()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
-            Mockito.when(mock.getPostGisCredentials()).thenReturn(new String[]{IntegrationTestUtils.TEST_POSTGIS_JDBC,
-                    IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD});
+            Mockito.when(mock.getRdbDomain()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_JDBC);
+            Mockito.when(mock.getRdbUser()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_USER);
+            Mockito.when(mock.getRdbPassword()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
         })) {
             StackClient mockStackClient = new StackClient();
             DashboardClient client = new DashboardClient(mockStackClient);
@@ -164,12 +165,14 @@ class DashboardClientIntegrationTest {
             // Ensure all mocks return the test dashboard url and to allow the program to continue
             Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.DASHBOARD_ENDPOINT_CONFIG.getServiceUrl());
             // Ensure all mocks return the dashboard credentials to function
-            Mockito.when(mock.getDashboardCredentials()).thenReturn(DASHBOARD_CREDENTIALS);
+            Mockito.when(mock.getDashboardUser()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER);
+            Mockito.when(mock.getDashboardPassword()).thenReturn(IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
             // Mock that this returns an empty string array as this test is not for creating dashboards
             Mockito.when(mock.getAllOrganisations()).thenReturn(new String[]{});
             Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
-            Mockito.when(mock.getPostGisCredentials()).thenReturn(new String[]{IntegrationTestUtils.TEST_POSTGIS_JDBC,
-                    IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD});
+            Mockito.when(mock.getRdbDomain()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_JDBC);
+            Mockito.when(mock.getRdbUser()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_USER);
+            Mockito.when(mock.getRdbPassword()).thenReturn(IntegrationTestUtils.TEST_POSTGIS_PASSWORD);
         })) {
             StackClient mockStackClient = new StackClient();
             DashboardClient client = new DashboardClient(mockStackClient);
