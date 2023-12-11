@@ -1,39 +1,54 @@
+import logging
 import os
 
-from flask import Flask, g
+from flask import g
 
+from marie.exceptions import KgConnectionError, MissingKgEndpointError
 from .kg_client import KgClient
+
+
+logger = logging.getLogger(__name__)
 
 
 class KgExecutor:
     def __init__(self):
-        ontospecies_endpoint = os.getenv("ONTOSPECIES_ENDPOINT")
-        print(
-            "Initialize KG client for OntoSpecies with the endpoint ",
-            ontospecies_endpoint,
-        )
-        ontospecies_client = KgClient(ontospecies_endpoint)
+        try:
+            ontospecies_endpoint = os.getenv("ONTOSPECIES_ENDPOINT")
+            if ontospecies_endpoint is None:
+                raise MissingKgEndpointError("OntoSpecies")
+            logger.info(
+                "Initialize KG client for OntoSpecies with the endpoint " +
+                ontospecies_endpoint,
+            )
+            ontospecies_client = KgClient(ontospecies_endpoint)
 
-        ontokin_endpoint = os.getenv("ONTOKIN_ENDPOINT")
-        print("Initialize KG client for OntoKin with the endpoint ", ontokin_endpoint)
-        ontokin_client = KgClient(
-            ontokin_endpoint,
-            user=os.getenv("ONTOKIN_USERNAME"),
-            pw=os.getenv("ONTOKIN_PASSWORD"),
-        )
+            ontokin_endpoint = os.getenv("ONTOKIN_ENDPOINT")
+            if ontospecies_endpoint is None:
+                raise MissingKgEndpointError("OntoKin")
+            logger.info("Initialize KG client for OntoKin with the endpoint " + ontokin_endpoint)
+            ontokin_client = KgClient(
+                ontokin_endpoint,
+                user=os.getenv("ONTOKIN_USERNAME"),
+                pw=os.getenv("ONTOKIN_PASSWORD"),
+            )
 
-        ontocompchem_endpoint = os.getenv("ONTOCOMPCHEM_ENDPOINT")
-        print(
-            "Initialize KG client for OntoCompChem with the endpoint ",
-            ontocompchem_endpoint,
-        )
-        ontocompchem_client = KgClient(ontocompchem_endpoint)
+            ontocompchem_endpoint = os.getenv("ONTOCOMPCHEM_ENDPOINT")
+            if ontospecies_endpoint is None:
+                raise MissingKgEndpointError("OntoCompChem")
+            logger.info(
+                "Initialize KG client for OntoCompChem with the endpoint " +
+                ontocompchem_endpoint,
+            )
+            ontocompchem_client = KgClient(ontocompchem_endpoint)
 
-        self.domain2sparql = dict(
-            ontospecies=ontospecies_client,
-            ontokin=ontokin_client,
-            ontocompchem=ontocompchem_client,
-        )
+            self.domain2sparql = dict(
+                ontospecies=ontospecies_client,
+                ontokin=ontokin_client,
+                ontocompchem=ontocompchem_client,
+            )
+        except MissingKgEndpointError:
+            raise KgConnectionError()
+
 
     def get_domains(self):
         return list(self.domain2sparql.keys())
@@ -47,11 +62,3 @@ def get_kg():
     if "kg" not in g:
         g.kg = KgExecutor()
     return g.kg
-
-
-def close_kg(e = None):
-    g.pop("kg", None)
-
-
-def init_app(app: Flask):
-    app.teardown_appcontext(close_kg)

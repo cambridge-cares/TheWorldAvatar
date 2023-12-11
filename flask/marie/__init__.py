@@ -3,10 +3,12 @@ import logging
 import os
 import time
 from importlib.resources import files
+import traceback
 
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from openai import OpenAI
 
+from marie.exceptions import BaseError
 from marie.services.kg_execute import get_kg
 from marie.services import MultiDomainTranslator, sanitize_quantities
 
@@ -76,11 +78,7 @@ def query_kg():
     app.logger.info("Domain: " + domain)
 
     start_kg = time.time()
-    try:
-        data = get_kg().query(domain=domain, query=query)
-    except Exception as e:
-        app.logger.exception(e)
-        data = None
+    data = get_kg().query(domain=domain, query=query)
 
     end_kg = time.time()
 
@@ -88,6 +86,12 @@ def query_kg():
         data=data,
         latency=end_kg - start_kg,
     )
+
+
+@app.errorhandler(BaseError)
+def handle_kg_connection_error(e: BaseError):
+    app.logger.error(traceback.format_exc())
+    return jsonify(e.to_dict()), e.code
 
 
 def make_chatbot_response_stream(question: str, data: str):
@@ -107,6 +111,7 @@ def make_chatbot_response_stream(question: str, data: str):
         stream=True,
     )
 
+
 @app.route("/chatbot", methods=["POST"])
 def stream_chatbot_response():
     app.logger.info("Request received to chatbot endpoint")
@@ -122,14 +127,13 @@ def stream_chatbot_response():
         for chunk in make_chatbot_response_stream(question, data):
             content = chunk.choices[0].delta.content
             if content is not None:
-                yield "data: {data}\n\n".format(data=json.dumps({"content": content, "latency": time.time() - start}))
+                yield "data: {data}\n\n".format(
+                    data=json.dumps(
+                        {"content": content, "latency": time.time() - start}
+                    )
+                )
 
     return generate(), {"Content-Type": "text/event-stream"}
-
-
-from marie.services import kg_execute
-
-kg_execute.init_app(app)
 
 
 if __name__ == "__main__":
