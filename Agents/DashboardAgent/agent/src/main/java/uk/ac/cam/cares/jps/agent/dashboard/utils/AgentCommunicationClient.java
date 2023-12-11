@@ -54,13 +54,7 @@ public class AgentCommunicationClient {
      * @return The response body as either a JSON Object or Array.
      */
     public static JsonElement retrieveResponseBody(HttpResponse<String> response) {
-        JsonElement jsonResponse = JsonParser.parseString(response.body());
-        // When the response is a JSON Object
-        if (jsonResponse.isJsonObject()) {
-            return jsonResponse.getAsJsonObject();
-        }
-        // When the response is a JSON array
-        return jsonResponse.getAsJsonArray();
+        return JsonParser.parseString(response.body());
     }
 
     /**
