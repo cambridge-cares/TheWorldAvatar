@@ -7,7 +7,8 @@ from importlib.resources import files
 from flask import Flask, render_template, request
 from openai import OpenAI
 
-from marie.services import KgExecutor, MultiDomainTranslator, sanitize_quantities
+from marie.services.kg_execute import get_kg
+from marie.services import MultiDomainTranslator, sanitize_quantities
 
 
 SAMPLE_QUESTIONS = json.loads(
@@ -17,7 +18,6 @@ app = Flask(__name__)
 
 
 translator = MultiDomainTranslator()
-kg_executor = KgExecutor()
 
 CHATBOT_ENDPOINT = os.getenv("CHATBOT_ENDPOINT", "http://localhost:8001/v1")
 print("Connecting to chatbot at endpoint: " + CHATBOT_ENDPOINT)
@@ -77,7 +77,7 @@ def query_kg():
 
     start_kg = time.time()
     try:
-        data = kg_executor.query(domain=domain, query=query)
+        data = get_kg().query(domain=domain, query=query)
     except Exception as e:
         app.logger.exception(e)
         data = None
@@ -125,6 +125,11 @@ def stream_chatbot_response():
                 yield "data: {data}\n\n".format(data=json.dumps({"content": content, "latency": time.time() - start}))
 
     return generate(), {"Content-Type": "text/event-stream"}
+
+
+from marie.services import kg_execute
+
+kg_execute.init_app(app)
 
 
 if __name__ == "__main__":
