@@ -62,9 +62,10 @@ public class CityDB extends GeoServerDataSubset {
 
         super.loadInternal(parent);
 
-        logger.info("Exporting data...");
-
-        writeOutPrevious(database);
+        if (null != previousFile) {
+            logger.info("Exporting data...");
+            writeOutPrevious(database);
+        }
 
         logger.info("Creating 3D tiles...");
 
