@@ -4,8 +4,16 @@
 ##########################################
 '''
 Log:
-Clean-up:
-deleted the old code with definitions of datatypes
+
+
+TODO: proper abox and tbox address (HASH/SLASH)
+
+There are two traditional ways to form the IRI for instances:
+1) HASH-separated:
+    if abox address contains "#" at the end
+2) SLASH-separated
+    if abox address contains "/" at the end
+Depending on the abox and tbox address
 
 '''
 
@@ -103,7 +111,7 @@ def is_empty( value ):
         return True
     return False
 
-""" Return True if the input is a string looking line an http address
+""" Return True if the input is a string looking like an http address
 (starting from http://) """
 def is_http( value ):
     if not isinstance( value, str):
@@ -221,6 +229,10 @@ def split_name_uuid( value, file_line ):
             if uuid[14] != "4" or uuid[19] not in "89ab":
                 if show_warning:
                     print(f"Warning: Instance '{value}' uses UUID version other than UUID4 {file_line}." )
+        elif value.startswith("http://www.ontology-of-units-of-measure.org") or \
+           value.startswith("om:"):
+            # Do nothing, these don't need to follow NAME_UUID pattern
+            pass
         else:
             if show_warning:
                 print(f"Warning: Instance '{value}' does not follow pattern NAME_UUID {file_line}." )
@@ -351,6 +363,8 @@ def process_data(row, file_line):
 
             if tBox:
                 if not tBox.isKnownClass( row[2] ):
+                    if show_warning:
+                        print(f"Warning: class {row[2]} is not defined in TBox." )
                     warning_count += 1
         # End of instance_of_class option, below only relation between instances
 
@@ -387,8 +401,11 @@ def process_data(row, file_line):
                                      URIRef(row0_http), URIRef(row2_http) )
 
             if tBox:
-                warning_count += tBox.checkTriple( instances[row[0]], row[3], \
-                                                   instances[row[2]], file_line)
+                tmp = tBox.checkTriple( instances[row[0]], row[3], \
+                                        instances[row[2]], file_line)
+                if show_warning and tmp > 0:
+                    print(f"Warnings: {tmp} in tBox.checkTriple {file_line}." )
+                warning_count += tmp
 
         else: # Warnings only
             if not row[2].strip() in instances:
@@ -433,9 +450,12 @@ def process_data(row, file_line):
                                         get_data_type(row[5], file_line))
 
         if tBox:
-            warning_count += tBox.checkTriple( instances[row[2]], row[0], \
-                                                         row[5], file_line )
+            tmp = tBox.checkTriple( instances[row[2]], row[0], \
+                                                       row[5], file_line )
                              #  get_data_type(row[5], file_line ), file_line )
+            if show_warning and tmp > 0:
+                print(f"Warnings: {tmp} in tBox.checkTriple {file_line}." )
+            warning_count += tmp
 
     else:
         if show_warning:
@@ -496,13 +516,23 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
     output_file_path = os.path.join(output_file_path,input_name+propread.readABoxFileExtension())
 
     #tbox_file_path = "ontocrystal.csv"
+    tbox_file_path = ["ontocrystal.csv", "ontozeolite.csv"]
+    #tbox_file_path = ["ontozeolite.csv", "ontocrystal.csv"]
+
     if tbox_file_path:
-        if os.path.isfile(tbox_file_path):
-            tBox = tboxtools.TBoxTools()
-            tBox.readExcel(tbox_file_path)
-            tBox.parseInputData()
-        else:
-            print(f"Error! Input TBox file does not exist: '{tbox_file_path}'.")
+        tBox = tboxtools.TBoxTools()
+        tmp = tBox.readExcelList(tbox_file_path)
+        if tmp > 0:
+            print(f"Got {tmp} errors while reading tbox file(s)." )
+        tBox.parseInputData()
+        if tBox.isEmpty():
+            tBox = None
+
+        #if os.path.isfile(tbox_file_path):
+        #    tBox.readExcel(tbox_file_path)
+        #    tBox.parseInputData()
+        #else:
+        #    print(f"Error! Input TBox file does not exist: '{tbox_file_path}'.")
     #print( tBox.triples )
     #print( tBox.classRel )
 
@@ -518,7 +548,7 @@ def convert_into_rdf(input_file_path, output_file_path=None, tbox_file_path=None
     g.serialize(destination=output_file_path,format="application/rdf+xml")
     print(f"Conversion complete. Abox created at '{output_file_path}'.")
     #if warning_count > 0:
-    print(f"Total number of warnings = {warning_count}." )
+    print(f"Total number of warnings in entityrdfizer = {warning_count}." )
     #save_instances( "list_of_instances.csv" )
 
 
