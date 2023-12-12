@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 public class CityDB extends GeoServerDataSubset {
 
@@ -82,10 +83,6 @@ public class CityDB extends GeoServerDataSubset {
 
         loadDataInternal(dataSubsetDir, database, baseIRI, lineage);
 
-        if (augmentData) {
-            augmentData(database);
-        }
-
     }
 
     protected void loadDataInternal(Path dataSubsetDir, String database, String baseIRI, String lineage) {
@@ -124,6 +121,15 @@ public class CityDB extends GeoServerDataSubset {
 
         logger.info("Setting tables to logged...");
         CityDBClient.getInstance().relogTable(database);
+    }
+
+    @Override
+    public void runSQLPostProcess(String database) {
+
+        if (augmentData) {
+            augmentData(database);
+        }
+        super.runSQLPostProcess(database);
     }
 
     @Override
