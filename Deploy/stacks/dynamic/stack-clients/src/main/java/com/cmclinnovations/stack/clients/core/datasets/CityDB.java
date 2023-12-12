@@ -40,6 +40,8 @@ public class CityDB extends GeoServerDataSubset {
     private boolean discoverThematicSurface = false;
     @JsonProperty
     private double critAreaRatio = 0.1;
+    @JsonProperty
+    private boolean parallelTiling = true;
 
     @JsonIgnore
     private String lineage;
@@ -159,7 +161,7 @@ public class CityDB extends GeoServerDataSubset {
     }
 
     protected void generateTiles(String database) {
-        CityTilerClient.getInstance().generateTiles(database, "citydb", cityTilerOptions);
+        CityTilerClient.getInstance().generateTiles(database, "citydb", cityTilerOptions, parallelTiling);
     }
 
     private void writeOutPrevious(String database) {
