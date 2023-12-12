@@ -56,13 +56,13 @@ function showCustomControls() {
     showRadiusButton.addEventListener("click", function() {
         if(showRadiusButton.innerHTML.includes("Show")) {
             // Show radius
-            MapHandler.MAP.setLayoutProperty("0.3.power_renewable_radius_layer", "visibility", "visible");
-            MapHandler.MAP.setLayoutProperty("0.3.power_fossil_radius_layer", "visibility", "visible");
+            MapHandler.MAP.setLayoutProperty("0.3.0.power_renewable_radius_layer", "visibility", "visible");
+            MapHandler.MAP.setLayoutProperty("0.3.0.power_fossil_radius_layer", "visibility", "visible");
             showRadiusButton.innerHTML = "<p>Hide 1KM radius</p>";
         } else {
             // Hide radius
-            MapHandler.MAP.setLayoutProperty("0.3.power_renewable_radius_layer", "visibility", "none");
-            MapHandler.MAP.setLayoutProperty("0.3.power_fossil_radius_layer", "visibility", "none");
+            MapHandler.MAP.setLayoutProperty("0.3.0.power_renewable_radius_layer", "visibility", "none");
+            MapHandler.MAP.setLayoutProperty("0.3.0.power_fossil_radius_layer", "visibility", "none");
             showRadiusButton.innerHTML = "<p>Show 1KM radius</p>";
         }
     });
@@ -93,9 +93,9 @@ function showCustomControls() {
         } else {
             let selectedLayer = window.currentFeature.layer.id;
 
-            if(selectedLayer === "0.3.power_renewable_layer" && visibleLayerIDs.includes("0.3.power_renewable_radius_layer")) {
+            if(selectedLayer === "0.3.0.power_renewable_layer" && visibleLayerIDs.includes("0.3.0.power_renewable_radius_layer")) {
                 customControlsContainer.style.display = "block";
-            } else if(selectedLayer === "0.3.power_fossil_layer" && visibleLayerIDs.includes("0.3.power_fossil_radius_layer")) {
+            } else if(selectedLayer === "0.3.0.power_fossil_layer" && visibleLayerIDs.includes("0.3.0.power_fossil_radius_layer")) {
                 customControlsContainer.style.display = "block";
             } else {
                 customControlsContainer.style.display = "none";
