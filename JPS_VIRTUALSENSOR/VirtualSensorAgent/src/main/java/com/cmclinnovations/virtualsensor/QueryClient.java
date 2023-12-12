@@ -144,7 +144,6 @@ public class QueryClient {
         // dispMatrix is the timeseries data IRI of the fileServer URL of the AERMOD
         // concentration output (averageConcentration.dat).
         // There is exactly one such data IRI for each pollutant ID.
-
         query.where(iri(derivation).has(isDerivedFrom, dispersionOutput),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri)
                         .andHas(HAS_DISPERSION_RASTER, dispRaster),
@@ -159,7 +158,6 @@ public class QueryClient {
             pollutantToDispRaster.put(pollutantId, dispMatrixIri);
         }
         return pollutantToDispRaster;
-
     }
 
     public Point getSensorLocation(String derivation) {
@@ -219,14 +217,12 @@ public class QueryClient {
         }
 
         return pollutantToConcIriMap;
-
     }
 
     public void updateStationUsingDispersionRaster(Instant latestTime, Map<String, String> pollutantToDispRaster,
-            Map<String, String> pollutantToConcIri, Point stationLocation) {
+            Map<String, String> concToDataIriMap, Point stationLocation, Connection conn) {
 
         List<String> dispRasterIriList = new ArrayList<>(pollutantToDispRaster.values());
-        TimeSeries<Long> dispRasterTimeSeries = null;
 
         // Coordinates in the dispersion matrices will be in the
         // simulation srid.
@@ -239,86 +235,57 @@ public class QueryClient {
         if (latestTime != null)
             latestTimeLong = latestTime.getEpochSecond();
 
-        try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            dispRasterTimeSeries = tsClientLong
-                    .getTimeSeriesWithinBounds(dispRasterIriList, latestTimeLong, null, conn);
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
-            return;
-        }
-
         List<String> tsDataList = new ArrayList<>();
         List<List<?>> tsValuesList = new ArrayList<>();
 
-        try (Connection conn = remoteRDBStoreClient.getConnection();
-                Statement stmt = conn.createStatement();) {
-            for (String pollutant : pollutantToDispRaster.keySet()) {
-                String dispRasterIri = pollutantToDispRaster.get(pollutant);
-                List<String> dispersionRasterFileNames = dispRasterTimeSeries.getValuesAsString(dispRasterIri);
-                List<Double> concentrations = new ArrayList<>();
-                for (int j = 0; j < dispersionRasterFileNames.size(); j++) {
-                    String rasterFileName = dispersionRasterFileNames.get(j);
-                    String sql = String.format(
-                            "SELECT ST_Value(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) AS val "
-                                    +
-                                    "FROM %s WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) "
-                                    +
-                                    "AND filename='%s'",
-                            stationLocation.toString(),
-                            "dispersion_raster", stationLocation.toString(), rasterFileName);
-                    ResultSet result = stmt.executeQuery(sql);
+        Map<String, String> concToPollutantMap = new HashMap<>();
+        concToPollutantMap.put(CO2_CONC, CO2);
+        concToPollutantMap.put(CO_CONC, CO);
+        concToPollutantMap.put(NO_X_CONC, NO_X);
+        concToPollutantMap.put(PM25_CONC, PM25);
+        concToPollutantMap.put(PM10_CONC, PM10);
+        concToPollutantMap.put(SO2_CONC, SO2);
+        concToPollutantMap.put(UHC_CONC, UHC);
+
+        TimeSeries<Long> dispRasterTimeSeries = tsClientLong
+                .getTimeSeriesWithinBounds(dispRasterIriList, latestTimeLong, null, conn);
+
+        for (Map.Entry<String, String> concToDataIri : concToDataIriMap.entrySet()) {
+            String pollutant = concToPollutantMap.get(concToDataIri.getKey());
+            String dispRasterIri = pollutantToDispRaster.get(pollutant);
+            List<String> dispersionRasterFileNames = dispRasterTimeSeries.getValuesAsString(dispRasterIri);
+            List<Double> concentrations = new ArrayList<>();
+            for (int j = 0; j < dispersionRasterFileNames.size(); j++) {
+                String rasterFileName = dispersionRasterFileNames.get(j);
+                String sql = String.format(
+                        "SELECT ST_Value(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) AS val "
+                                + "FROM %s WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) "
+                                + "AND filename='%s'",
+                        stationLocation.toString(),
+                        "dispersion_raster", stationLocation.toString(), rasterFileName);
+                try (ResultSet result = conn.createStatement().executeQuery(sql)) {
                     if (result.next()) {
                         double concentration = result.getDouble("val");
                         concentrations.add(concentration);
                     } else {
-                        LOGGER.warn(
-                                "Could not get concentration value of pollutant {} with dispersion raster {}." +
-                                        "Its value will be set to zero. ",
-                                pollutant, rasterFileName);
-                        concentrations.add(0.0);
+                        String errmsg = "Could not obtain raster value";
+                        LOGGER.error(errmsg);
+                        throw new RuntimeException(errmsg);
                     }
-
+                } catch (SQLException e) {
+                    String errmsg = "Possible error at reading sql query result";
+                    LOGGER.error(e.getMessage());
+                    LOGGER.error(errmsg);
+                    throw new RuntimeException(errmsg, e);
                 }
-                tsValuesList.add(concentrations);
-                switch (pollutant) {
-                    case CO2:
-                        tsDataList.add(pollutantToConcIri.get(CO2_CONC));
-                        break;
-                    case NO_X:
-                        tsDataList.add(pollutantToConcIri.get(NO_X_CONC));
-                        break;
-                    case SO2:
-                        tsDataList.add(pollutantToConcIri.get(SO2_CONC));
-                        break;
-                    case CO:
-                        tsDataList.add(pollutantToConcIri.get(CO_CONC));
-                        break;
-                    case UHC:
-                        tsDataList.add(pollutantToConcIri.get(UHC_CONC));
-                        break;
-                    case PM10:
-                        tsDataList.add(pollutantToConcIri.get(PM10_CONC));
-                        break;
-                    case PM25:
-                        tsDataList.add(pollutantToConcIri.get(PM25_CONC));
-                        break;
-                    default:
-                        LOGGER.info(
-                                "Unknown pollutant ID encountered in the updateStation method of VirtualSensorAgent/QueryClient class: {}",
-                                pollutant);
-
-                }
-
             }
-
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
+            tsValuesList.add(concentrations);
+            tsDataList.add(concToDataIri.getValue());
         }
 
         // AermodAgent uses Unix timestamps. These must be converted to Instant
         // for the times
         // to be parsed correctly by FeatureInfoAgent.
-
         List<Long> timeStampsLong = dispRasterTimeSeries.getTimes();
         List<Instant> timeStamps = new ArrayList<>();
 
@@ -330,12 +297,6 @@ public class QueryClient {
         TimeSeries<Instant> timeSeries = new TimeSeries<>(timeStamps,
                 tsDataList, tsValuesList);
 
-        try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            tsClientInstant.addTimeSeriesData(timeSeries, conn);
-        } catch (SQLException e) {
-            LOGGER.error("Failed at closing connection");
-            LOGGER.error(e.getMessage());
-        }
-
+        tsClientInstant.addTimeSeriesData(timeSeries, conn);
     }
 }

@@ -68,7 +68,7 @@ public class IsochroneGenerator {
 
         String tableGeneration = "--CREATE ISOCHRONE TABLE\n" +
                 "-- Create isochrone_final table to store all the isochrones table\n" +
-                "CREATE TABLE isochrone_aggregated (\n" +
+                "CREATE TABLE IF NOT EXISTS isochrone_aggregated (\n" +
                 "    minute integer,\n" +
                 "    transportmode VARCHAR,\n" +
                 "    transportmode_iri VARCHAR,\n" +
@@ -286,7 +286,7 @@ public class IsochroneGenerator {
      * @throws SQLException
      */
     public List<String> getPoiTypes (RemoteRDBStoreClient remoteRDBStoreClient) throws SQLException {
-        String getNearestNode_sql = "SELECT DISTINCT poi_type FROM poi_nearest_node";
+        String getNearestNode_sql = "SELECT DISTINCT pnn.poi_type FROM poi_nearest_node AS pnn LEFT JOIN isochrone_aggregated AS ia ON pnn.poi_type = ia.poi_type WHERE ia.poi_type IS NULL";
     
         List<String> poiTypes = new ArrayList<>();
     
