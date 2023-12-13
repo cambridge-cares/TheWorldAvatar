@@ -455,20 +455,26 @@ public class QueryClient {
         SelectQuery query = Queries.SELECT();
         Variable entity = query.var();
         Variable derivation = query.var();
+        Variable heightVar = query.var();
         query.where(iri(scopeIri).isA(SCOPE), derivation.has(isDerivedFrom, iri(scopeIri)),
-                entity.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation))
-                .prefix(P_DISP)
-                .select(entity).distinct();
+                entity.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
+                        .andHas(PropertyPaths.path(HAS_HEIGHT, HAS_VALUE, HAS_NUMERICALVALUE), heightVar))
+                .prefix(P_DISP, P_OM)
+                .select(entity, heightVar).distinct();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-        List<String> dispersionOutputs = new ArrayList<>();
-
+        // one output per pollutant
+        Map<Double, List<String>> heightToDispOutputMap = new HashMap<>();
         for (int j = 0; j < queryResult.length(); j++) {
+            double height = queryResult.getJSONObject(j).getDouble(heightVar.getQueryString().substring(1));
             String dispOutput = queryResult.getJSONObject(j).getString(entity.getQueryString().substring(1));
-            dispersionOutputs.add(dispOutput);
+            heightToDispOutputMap.computeIfAbsent(height, k -> new ArrayList<>());
+            heightToDispOutputMap.get(height).add(dispOutput);
         }
 
-        List<String> inputs = new ArrayList<>(dispersionOutputs);
+        // get dispersion output at lowest height
+        double minHeight = heightToDispOutputMap.keySet().stream().mapToDouble(d -> d).min().getAsDouble();
+        List<String> inputs = heightToDispOutputMap.get(minHeight);
 
         // output (OntoEMS reporting station)
         String mainUuid = "virtualsensor_" + UUID.randomUUID();
@@ -497,7 +503,6 @@ public class QueryClient {
         // Create derivation for each virtual sensor
         derivationClient.createDerivationWithTimeSeries(
                 List.of(stationIri), virtualSensorUpdateIri, inputs);
-        derivationClient.addTimeInstance(inputs);
 
         // Create POSTGIS and GeoServer feature for this OntoEMS station
         JSONObject geometry = new JSONObject();
@@ -508,7 +513,7 @@ public class QueryClient {
         feature.put("geometry", geometry);
         feature.put("iri", stationIri);
         feature.put("main_uuid", mainUuid);
-        feature.put("name", "Virtual sensor");
+        feature.put("name", String.format("Virtual sensor at %.2f m", minHeight));
         feature.put("endpoint", sparqlEndpoint);
         feature.put("geom_uuid", UUID.randomUUID());
 
