@@ -46,7 +46,7 @@ public class UsageShareCalculatorTest {
             try (MockedConstruction<RemoteRDBStoreClient> rdbStoreClientMock = mockConstruction(RemoteRDBStoreClient.class)) {
                 UsageShareCalculator usageShareCalculator = new UsageShareCalculator("", "", "");
 
-                usageShareCalculator.updateLandUse("usage.usage", "public.landuse");
+                usageShareCalculator.updateLandUse("usage.usage", "public.landuse", "");
 
                 ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
 

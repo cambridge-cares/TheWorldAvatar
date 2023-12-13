@@ -33,11 +33,11 @@ if [ "${EXECUTABLE}" == "docker" ]; then
         export DEBUG_PORT
         DEBUG_COMPOSE_FILE="--compose-file=docker-compose-debug.yml"
     fi
-    
+
     if [ -f "docker-compose-docker.yml" ]; then
         EXECUTABLE_SPECIFIC_COMPOSE_FILE="--compose-file=docker-compose-docker.yml"
     fi
-    
+
     # Redeploy services
     ${EXECUTABLE} stack deploy --compose-file=docker-compose-stack.yml --compose-file=docker-compose.yml $EXECUTABLE_SPECIFIC_COMPOSE_FILE $DEBUG_COMPOSE_FILE --with-registry-auth "${STACK_NAME}"
 
@@ -63,11 +63,11 @@ else
         export DEBUG_PORT
         DEBUG_COMPOSE_FILE="-f docker-compose-debug.yml"
     fi
-    
+
     if [ -f "docker-compose-podman.yml" ]; then
         EXECUTABLE_SPECIFIC_COMPOSE_FILE="-f docker-compose-podman.yml"
     fi
-    
+
     # Redeploy services
     ${COMPOSE_EXECUTABLE} -f docker-compose-stack.yml -f docker-compose.yml $EXECUTABLE_SPECIFIC_COMPOSE_FILE $DEBUG_COMPOSE_FILE -p "${STACK_NAME}" up -d
 fi
