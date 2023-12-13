@@ -42,6 +42,8 @@ public class CityDB extends GeoServerDataSubset {
     @JsonProperty
     private double critAreaRatio = 0.1;
     @JsonProperty
+    private boolean createTile = true;
+    @JsonProperty
     private boolean parallelTiling = true;
 
     @JsonIgnore
@@ -70,9 +72,10 @@ public class CityDB extends GeoServerDataSubset {
             writeOutPrevious(database);
         }
 
-        logger.info("Creating 3D tiles...");
-
-        createLayer(database);
+        if (createTile) {
+            logger.info("Creating 3D tiles...");
+            createLayer(database);
+        }
 
     }
 
