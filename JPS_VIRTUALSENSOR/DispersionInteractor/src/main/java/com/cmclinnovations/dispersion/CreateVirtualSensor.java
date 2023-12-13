@@ -54,11 +54,17 @@ public class CreateVirtualSensor extends HttpServlet {
             scopeIriList = queryClient.getScopesIncludingPoint(virtualSensorLocation);
             if (scopeIriList.size() == 1 && !dispersionPostGISClient.sensorExists(virtualSensorLocation, conn)) {
                 vsScopeList.add(scopeIriList.get(0));
+                boolean firstTime = false;
                 if (!dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn)) {
+                    firstTime = true;
+                }
+                queryClient.initialiseVirtualSensors(vsScopeList, virtualSensorLocation, pollutants, conn);
+
+                // upload obda after creating table
+                if (firstTime) {
                     queryClient.initialiseVirtualSensorAgent();
                     initialiseObda();
                 }
-                queryClient.initialiseVirtualSensors(vsScopeList, virtualSensorLocation, pollutants, conn);
             } else if (scopeIriList.isEmpty()) {
                 LOGGER.warn(" The specified virtual sensor location " +
                         "at {} does not fall within any existing scope. No sensor will be created at this location.",

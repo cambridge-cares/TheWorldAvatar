@@ -7,8 +7,10 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
+import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -22,12 +24,12 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.postgis.Point;
 
@@ -57,8 +59,7 @@ public class QueryClient {
     // as Iri classes for sparql updates sent directly from here
     private static final Iri MEASURE = P_OM.iri("Measure");
     private static final Iri REPORTING_STATION = P_EMS.iri("ReportingStation");
-    private static final Iri DISPERSION_OUTPUT = P_DISP.iri("DispersionOutput");
-    private static final Iri GEOM = iri("http://www.opengis.net/ont/geosparql#Geometry");
+    static final String DISPERSION_OUTPUT = PREFIX + "DispersionOutput";
 
     // Pollutants
     private static final String NO_X = PREFIX + "NOx";
@@ -133,21 +134,23 @@ public class QueryClient {
 
     }
 
-    public Map<String, String> getDispersionRasterIris(String derivation) {
+    public Map<String, String> getDispersionRasterIris(List<String> dispersionOutput) {
         // Get data IRIs of dispersion derivations
         SelectQuery query = Queries.SELECT();
-        Variable dispersionOutput = query.var();
         Variable pollutantIri = query.var();
         Variable pollutant = query.var();
         Variable dispRaster = query.var();
+        Variable dispOutputVar = query.var();
+
+        ValuesPattern values = new ValuesPattern(dispOutputVar,
+                dispersionOutput.stream().map(Rdf::iri).collect(Collectors.toList()));
 
         // dispMatrix is the timeseries data IRI of the fileServer URL of the AERMOD
         // concentration output (averageConcentration.dat).
         // There is exactly one such data IRI for each pollutant ID.
-        query.where(iri(derivation).has(isDerivedFrom, dispersionOutput),
-                dispersionOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri)
-                        .andHas(HAS_DISPERSION_RASTER, dispRaster),
-                pollutantIri.isA(pollutant)).prefix(P_DISP, P_OM, P_EMS)
+        query.where(dispOutputVar.has(HAS_POLLUTANT_ID, pollutantIri)
+                .andHas(HAS_DISPERSION_RASTER, dispRaster),
+                pollutantIri.isA(pollutant), values).prefix(P_DISP, P_OM, P_EMS)
                 .select(pollutant, dispRaster);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
