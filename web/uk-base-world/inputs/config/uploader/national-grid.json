@@ -172,15 +172,15 @@
     "styles": [
         {
             "name": "poles-towers",
-            "file": "poles-towers.sld"
+            "file": "./sld/poles-towers.sld"
         },
         {
             "name": "overhead-lines",
-            "file": "overhead-lines.sld"
+            "file": "./sld/overhead-lines.sld"
         },
         {
             "name": "underground-cables",
-            "file": "underground-cables.sld"
+            "file": "./sld/underground-cables.sld"
         }
     ],
     "staticGeoServerData": {

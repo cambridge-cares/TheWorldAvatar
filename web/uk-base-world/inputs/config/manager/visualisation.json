@@ -4,10 +4,10 @@
         "Name": "visualisation",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dtvf-base-image:4",
+                "Image": "ghcr.io/cambridge-cares/twa-vf:4.2.0-SNAPSHOT",
                 "Mounts": [
                     {
-                        "Type": "volume",
+                        "Type": "bind",
                         "Source": "vis-files",
                         "Target": "/var/www/html"
                     }

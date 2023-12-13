@@ -34,6 +34,7 @@
             "id": "3d-tiles-layer",
 			"name": "Buildings of New York", 
             "source": "3d-tiles-source",
+            "interactions": "all",
             "style": {
                 "show": "${feature['BIN']} !== '1085792'",
                 "defines": {
@@ -85,8 +86,7 @@
         {
             "id": "sample-2d-layer",
 			"name": "Hudson River Sediment", 
-            "source": "sample-2d-data",
-            "visibility": "none"
+            "source": "sample-2d-data"
         }
 	]
 }

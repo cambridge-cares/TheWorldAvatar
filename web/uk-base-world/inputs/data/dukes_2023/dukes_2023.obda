@@ -28,6 +28,7 @@ target          twa:PowerPlant/{id} a eip1:PowerPlant ;
                     eip3:hasRealizationAspect twa:Generator/{id} ;
                     eip3:hasFunctionalAspect twa:Generation/{id} ;
                     eip3:hasRequirementsAspect twa:Capacity/{id} ;
+                    eip1:hasPopulationInRadius {pop}^^xsd:double ;
                     energy:hasWGS84LatitudeLongitude "{longitude}#{latitude}"^^geo:lat-lon .
                 # PowerPlant -> hasRealizationAspect -> PowerGenerator
                 twa:Generator/{id} a eip0:PowerGenerator ;
@@ -53,22 +54,23 @@ target          twa:PowerPlant/{id} a eip1:PowerPlant ;
                 twa:Owner/{id} a eip0:Organization ;
                     eip0:hasName {company}^^xsd:string .
 source          SELECT
-                    "uuid" as id ,
-                    "Company Name" as company , 
-                    "Site Name" as name ,
-                    "Site Technology" as technology ,
-                    "Site Type" as type ,
-                    "Combined Heat and Power" as chp ,
-                    "Primary Fuel" as primary_fuel ,
-                    "Secondary Fuel" as secondary_fuel ,
-                    "Installed Capacity (MW)" as installed_capacity ,
-                    "Grid Connection Type" as grid_connection_type ,
-                    "Country" as country ,
-                    "Region" as region ,
-                    "Year Commissioned" as year_commissioned ,
+                    "uuid" as id,
+                    "Company Name" as company, 
+                    dukes_2023."Site Name" as name,
+                    "Site Technology" as technology,
+                    "Site Type" as type,
+                    "Combined Heat and Power" as chp,
+                    "Primary Fuel" as primary_fuel,
+                    "Secondary Fuel" as secondary_fuel,
+                    "Installed Capacity (MW)" as installed_capacity,
+                    "Grid Connection Type" as grid_connection_type,
+                    "Country" as country,
+                    "Region" as region,
+                    "Year Commissioned" as year_commissioned,
                     "Latitude" as latitude,
-                    "Longitude" as longitude 
-                FROM "dukes_2023"
+                    "Longitude" as longitude,
+                    "pop" as pop
+                FROM dukes_2023 LEFT JOIN dukes_2023_pop ON dukes_2023."Site Name" = dukes_2023_pop."Site Name"
 
 # Skip null secondary fuels
 mappingId       skip-empty-secondaries

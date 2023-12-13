@@ -218,11 +218,11 @@
     "styles": [
         {
             "name": "poles-towers",
-            "file": "poles-towers.sld"
+            "file": "./sld/poles-towers.sld"
         },
         {
             "name": "overhead-lines",
-            "file": "overhead-lines.sld"
+            "file": "./sld/overhead-lines.sld"
         }
     ],
     "staticGeoServerData": {

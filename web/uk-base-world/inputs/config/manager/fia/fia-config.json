@@ -2,7 +2,7 @@
     "queries": [
         {
             "class": "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant",
-            "metaFile": "dukes_query.sparql"
+            "metaFile": "fia_dukes_query.sparql"
         },
         {
             "class": "http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl#Woodland",
