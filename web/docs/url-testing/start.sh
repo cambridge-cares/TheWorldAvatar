@@ -7,7 +7,7 @@
 
 # Run the system
 echo "Building and starting containers..."
-docker compose -f ./docker-compose.yml up -d --build
+docker compose -f ./docker-compose.yml up -d --build || exit 1
 sleep 3
 echo "...containers should now be running."
 
