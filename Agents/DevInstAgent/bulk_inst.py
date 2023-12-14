@@ -13,8 +13,9 @@ if "__name__" == "__main__":
         raise Exception("Please uinput the URL and path to folder in the parameter")
 
     for filename in os.listdir(folder):
-        with open(filename) as f:
-            req = requests.post(url, data = json.load(filename))
+        if filename.endswith(".json"):
+            with open(filename) as f:
+                req = requests.post(url, data = json.load(filename))
 
     print("Command success!")
 
