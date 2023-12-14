@@ -63,7 +63,7 @@ The committed `docker-compose.yml` file also spins up a simple web server in its
 
 Accessed directly         |  Accessed vis redirect
 :-------------------------:|:-------------------------:
-![](./direct.JPG)  |  ![](redirect.JPG)
+![](./url-testing/direct.JPG)  |  ![](./url-testing/redirect.JPG)
 
 ## Redirect scope
 
