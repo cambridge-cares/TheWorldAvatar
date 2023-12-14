@@ -72,6 +72,24 @@ Generally the following instances are created by the agent without any additiona
 
 ![Instantiation without additional queries](./readme_img/normal_instantiation.png)
 
+### Bulk instantiation
+To isntantiate a large amount of sensors, a simple bulk instantiation script is provided. Given a folder filled with .json files, the script will automatically extract the json descriptors files and send a POST request to the agent. Only files ending with .json will be used. At the end of the script a log will be shown containing the success/fail of the instantiation.
+
+The script can be run by the following command:
+```bash
+python ./bulk_inst.py url={AGENT ENDPOINT URL} folder={FOLDER CONTAINING DEVICE DESCRIPTORS}
+```
+
+### Template Maker
+A template maker is provided in the `.\templatemaker` folder to ease the sensor development. The template maker uses the same device descriptors as the instantiation part of the agent. The script generates a .ino files and 3 headers: credentials, getter and setter, as per the template provided in `./templatemaker/templates`. The script was developed with ESP32 arduino and Thingsboard in mind. The getter.h produced need to be modified according to the usage of the sensor. Ideally the rest of the script shouldn't need any modifications and are ready to be used, however it is open to any modification as needed.
+
+The template could also be used separately from the template maker. In the template provided in `./templatemaker/templates`, several lines are marked by flags in the form of comments in all capital, for example: `//TEMPLATE PIN` or `"//TEMPLATE GET`. These flags are used by the template maker to change specific lines with informations provided in the descriptor. Any willing user could also provide such changes by paying attention to these flags if manual development of the arduino script is desired.
+
+The template maker can be run by changing the `SENSOR_JSON` and `SENSOR_JSON_LOC` variable in the file to the name of the target descriptor and the folder it is located. a new folder in the `SENSOR_JSON_LOC` folder named `result` will contain the resulting script. To run the script, simply call:
+```bash
+python ./templatemaker/templatemaker.py
+```
+
 ## Running the agent
 
 The agent could be build using the following command in the folder of the repo:
@@ -130,7 +148,9 @@ Content-Type: application/json
           "http://example.com/prefix/OPENLABAREA https://w3id.org/bot#containsElement IRIMapper=find;ProximitySensor_FH-02",
           "http://example.com/prefix/OPENLABAREA https://w3id.org/bot#containsElement http://example.com/prefix/WFH",
           "IRIMapper=find;ProximitySensor_FH-02 https://www.theworldavatar.com/kg/ontodevice/isAttachedTo http://example.com/prefix/WFH"
-      ]
+      ],
+    "Task":["Get occupancy of a fumehood"],
+    "Command":[]
   }
 }
 
