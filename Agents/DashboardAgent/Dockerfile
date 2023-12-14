@@ -48,7 +48,7 @@ CMD mvn test
 FROM tomcat:9.0.68-jre11-temurin as agent
 
 # Copies all files in config directory to destination
-COPY --from=builder /root/agent/output/dashboard-agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/agent/output/dashboard-agent##1.0.1-SNAPSHOT.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
