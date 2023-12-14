@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.clients.utils.TempDir;
@@ -26,6 +27,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 public class GDALClient extends ContainerClient {
+
+    /**
+     *
+     */
+    private static final String GDALSRSINFO = "gdalsrsinfo";
 
     private static final Logger logger = LoggerFactory.getLogger(GDALClient.class);
 
@@ -127,10 +133,7 @@ public class GDALClient extends ContainerClient {
             String dirPath, GDALTranslateOptions options, boolean append) {
 
         String gdalContainerId = getContainerId("gdal");
-        String postgisContainerID = getContainerId("postgis");
-        String geoserverContainerId = getContainerId("geoserver");
-
-        addCustomCRStoPostGis(postgisContainerID, geoserverContainerId);
+        String postGISContainerId = getContainerId("postgis");
 
         try (TempDir tempDir = makeLocalTempDir()) {
 
@@ -162,40 +165,82 @@ public class GDALClient extends ContainerClient {
                         Multimap::putAll);
     }
 
-    private void addCustomCRStoPostGis(String geoserverContainerID, String postgisContainerID, String dirPath, String newSrid) {
-              
+    private void addCustomCRStoPostGis(String geoserverContainerID, String postGISContainerId, String gdalContainerId,
+            String filePath, String databaseName, String newSrid) {
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        String execId = createComplexCommand(postgisContainerID, "gdalsrsinfo", "-o", "proj4", dirPath)
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+        String execId = createComplexCommand(gdalContainerId, GDALSRSINFO, "-o", "epsg", filePath)
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+        String detectedSrid = outputStream.toString().replace("\n", "");
+
+        outputStream.reset();
+        errorStream.reset();
+        String[] sridAuthNameArray = newSrid.split(":");
+        String authName = sridAuthNameArray[0];
+        String srid = sridAuthNameArray[1];
+
+        outputStream.reset();
+        errorStream.reset();
+        execId = createComplexCommand(gdalContainerId, GDALSRSINFO, "-o", "proj4", filePath)
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
         String proj4String = outputStream.toString().replace("\n", "");
 
-        execId = createComplexCommand(postgisContainerID, "gdalsrsinfo", "-o", "wkt2_2018", "--single-line", dirPath)
+        outputStream.reset();
+        errorStream.reset();
+
+        execId = createComplexCommand(gdalContainerId, GDALSRSINFO, "-o", "wkt2_2018", "--single-line", filePath)
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .exec();
+
         handleErrors(errorStream, execId, logger);
         String wktString = outputStream.toString().replace("\n", "");
         // insert AUTHORITY["EPSG","100002"]]
         // docker exec (GEOSERVER_DATA_DIR)/user_projections/epsg.properties
-        createComplexCommand(geoserverContainerID, "bash", "-c", "echo > $GEOSERVER_DATA_DIR/user_projections/epsg.properties <<EOF " + wktString + "\nEOF");
-        // restart geoserver
-        // post reload
 
-        String[] sridAuthNameArray = newSrid.split(":");
-        String authName = sridAuthNameArray[0];
-        String srid = sridAuthNameArray[1];
+        if (detectedSrid.equals("EPSG:-1")) {
+            logger.info("Unknown CRS detected, adding custom projection to postGIS and GeoServer");
 
-        execId = createComplexCommand(postGisContainerId,
-                "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", "-w")
-                .withHereDocument(
-                        "INSERT INTO spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) VALUES (" + srid
-                                + authName + srid + wktString + "," + proj4String + ");"
-                                        .withErrorStream(errorStream)
-                                        .exec());
-        handleErrors(errorStream, execId, logger);
+            execId = createComplexCommand(postGISContainerId,
+                    "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", databaseName, "-w")
+                    .withHereDocument(
+                            "INSERT INTO spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) VALUES ("
+                                    + srid + ",'"
+                                    + authName + "'," + srid + ",'" + wktString + "','" + proj4String + "');")
+                    .withErrorStream(errorStream)
+                    .exec(); // will throw error if EPSG exists in table due to constraint
+                             // "spatial_ref_system_pkey".
+            handleErrors(errorStream, execId, logger);
+            outputStream.reset();
+            errorStream.reset();
+
+            execId = createComplexCommand(geoserverContainerID, "mkdir", "-p",
+                    "/opt/geoserver_data/user_projections")
+                    .withErrorStream(errorStream)
+                    .exec();
+            handleErrors(errorStream, execId, logger);
+            outputStream.reset();
+            errorStream.reset();
+
+            execId = createComplexCommand(geoserverContainerID, "bash", "-c",
+                    "echo > /opt/geoserver_data/user_projections/epsg.properties <<EOF " + wktString + "\nEOF")
+                    .withErrorStream(errorStream)
+                    .exec();
+            handleErrors(errorStream, execId, logger);
+            outputStream.reset();
+            errorStream.reset();
+
+            GeoServerClient.getInstance().reload();
+            handleErrors(errorStream, execId, logger);
+        }
     }
 
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
@@ -209,15 +254,22 @@ public class GDALClient extends ContainerClient {
         Set<Path> createdDirectories = new HashSet<>();
 
         List<String> geotiffFiles = new ArrayList<>();
+        String geoserverContainerId = getContainerId("geoserver");
 
         for (Map.Entry<String, Collection<String>> fileTypeEntry : foundRasterFiles.asMap().entrySet()) {
             String inputFormat = fileTypeEntry.getKey();
             for (String filePath : fileTypeEntry.getValue()) {
 
-                String outputPath = generateRasterOutFilePath(tempDir.toString(), databaseName, schemaName, layerName,
-                        filePath);
+                String outputPath;
+                if (inputFormat.equals("netCDF")) {
+                    outputPath = generateOutFilePath(tempDir.toString(), databaseName, schemaName, layerName, filePath);
+                } else {
+                    outputPath = generateRasterOutFilePath(tempDir.toString(), databaseName, schemaName, layerName,filePath);
+                }
                 geotiffFiles.add(outputPath);
-
+                String postGISContainerId = getContainerId("postgis");
+                addCustomCRStoPostGis(geoserverContainerId, postGISContainerId, gdalContainerId, filePath, databaseName,
+                        options.getSridOut());
                 Path directoryPath = Paths.get(outputPath).getParent();
                 if (!createdDirectories.contains(directoryPath)) {
                     makeDir(gdalContainerId, directoryPath.toString());
@@ -225,7 +277,8 @@ public class GDALClient extends ContainerClient {
                     createdDirectories.add(directoryPath);
                 }
                 String execId;
-                if ("netCDF".equals(inputFormat)) {
+                if (inputFormat.equals("netCDF")) {
+                    logger.info("netCDF found, uploading without translate");
                     execId = createComplexCommand(gdalContainerId, "cp",
                             filePath,
                             outputPath)
@@ -233,6 +286,7 @@ public class GDALClient extends ContainerClient {
                             .withErrorStream(errorStream)
                             .withEvaluationTimeout(300)
                             .exec();
+                    handleErrors(errorStream, execId, logger);
                 } else {
                     execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
                             "-if", inputFormat,
@@ -245,8 +299,8 @@ public class GDALClient extends ContainerClient {
                             .withEnvVars(options.getEnv())
                             .withEvaluationTimeout(300)
                             .exec();
+                    handleErrors(errorStream, execId, logger);
                 }
-                handleErrors(errorStream, execId, logger);
             }
         }
 
@@ -293,10 +347,16 @@ public class GDALClient extends ContainerClient {
             String layerName,
             String filePath) {
         return FileUtils.replaceExtension(
-                generateRasterOutDirPath(databaseName, schemaName, layerName)
-                        .resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
-                        .toString(),
+                generateOutFilePath(basePathIn, databaseName, schemaName, layerName, filePath),
                 ".tif");
+    }
+
+    private static String generateOutFilePath(String basePathIn, String databaseName, String schemaName,
+            String layerName,
+            String filePath) {
+        return generateRasterOutDirPath(databaseName, schemaName, layerName)
+                .resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
+                .toString();
     }
 
     public static Path generateRasterOutDirPath(String databaseName, String schemaName, String layerName) {

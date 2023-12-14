@@ -99,6 +99,10 @@ public class GeoServerClient extends ContainerClient {
         }
     }
 
+    public void reload() {
+        manager.getPublisher().reload();
+    }
+
     public void loadStyle(GeoServerStyle style, String workspaceName) {
         String name = style.getName();
         if (manager.getReader().existsStyle(workspaceName, name)) {
