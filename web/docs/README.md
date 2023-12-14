@@ -58,3 +58,7 @@ Expected format for `.env` file:
 ### Example
 
 The committed `docker-compose.yml` file also spins up a simple web server in it's own container hosting some static content to display an example of which URL types will and won't work. You can access this container directly from `http://localhost:3000` or via the provided redirect at `https://localhost/example`.
+
+Accessed directly         |  Accessed vis redirect
+:-------------------------:|:-------------------------:
+![](./direct.JPG)  |  ![](redirect.JPG)
