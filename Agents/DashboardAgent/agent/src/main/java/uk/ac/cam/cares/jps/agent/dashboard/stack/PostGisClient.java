@@ -145,6 +145,12 @@ public class PostGisClient {
      * @return the database Connection object.
      */
     private Connection connect(String jdbcUrl, String user, String password) throws SQLException {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            LOGGER.fatal(e);
+            throw new JPSRuntimeException(e);
+        }
         return DriverManager.getConnection(jdbcUrl, user, password);
     }
 
