@@ -57,11 +57,6 @@ To run it, follow the below steps:
 > [!NOTE]
 > You may find that accessing the redirect in your browser shows a "Your connection is not private" error. This is expected as we're creating a fake (self-signed) SSL certificate to emulate HTTPS locally. You should be able safely dismiss and continue to test your URLs via the redirect.
 
-Expected format for `.env` file:
-
-```
-    URL=http://127.0.0.1:3000/
-```
 ### Example
 
 The committed `docker-compose.yml` file also spins up a simple web server in its own container hosting some static content to display an example of which URL types will and won't work. You can access this container directly from `http://localhost:3000` or via the provided redirect at `https://localhost/example`; switching between to two should showcases the difference in URLs.
