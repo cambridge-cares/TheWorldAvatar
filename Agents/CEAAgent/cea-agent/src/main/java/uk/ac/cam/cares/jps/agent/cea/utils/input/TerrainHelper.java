@@ -28,13 +28,13 @@ public class TerrainHelper {
     }
 
     /**
-     * Gets terrain data for city object
-     * @param uriString city object id
-     * @param endpoint endpoint to city object geometry data
+     * Gets terrain data for building
+     * @param uriString building IRI
+     * @param endpoint endpoint to building geometry data
      * @param table PostGIS table name
      * @return terrain data as byte[]
      */
-    public byte[] getTerrain(String uriString, String endpoint, List<CEAGeometryData> surroundings, String table, OntologyURIHelper uriHelper) {
+    public byte[] getTerrain(String uriString, String endpoint, List<CEAGeometryData> surroundings, String table) {
         RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
 
         // query for the coordinate reference system used by the terrain data
@@ -67,7 +67,7 @@ public class TerrainHelper {
                 radius += 30;
             }
             else {
-                CEAGeometryData ceaGeometryData = new GeometryQueryHelper(uriHelper).getBuildingGeometry(uriString, endpoint, true);
+                CEAGeometryData ceaGeometryData = GeometryQueryHelper.getBuildingGeometry(uriString, endpoint, true);
 
                 Envelope envelope = new Envelope();
 

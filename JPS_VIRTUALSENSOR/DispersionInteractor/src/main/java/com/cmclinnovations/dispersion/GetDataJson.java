@@ -198,7 +198,9 @@ public class GetDataJson extends HttpServlet {
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
             }
-        } else if (Boolean.TRUE.equals(hasLayers.get(1))) {
+        }
+
+        if (Boolean.TRUE.equals(hasLayers.get(1))) {
             String buildingWms = Config.STACK_URL + "/geoserver/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                     +
@@ -219,7 +221,11 @@ public class GetDataJson extends HttpServlet {
             buildingLayer.put("source", "building-source");
             buildingLayer.put("source-layer", "building-pirmasens_gsl");
             buildingLayer.put("minzoom", 4);
-            buildingLayer.put("layout", visibility);
+            if (pirmasensVis) {
+                buildingLayer.put("layout", hideVisility);
+            } else {
+                buildingLayer.put("layout", visibility);
+            }
 
             JSONObject buildingLayerPaint = new JSONObject();
             buildingLayerPaint.put("fill-extrusion-base", 0);

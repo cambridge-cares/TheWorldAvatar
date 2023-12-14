@@ -19,7 +19,7 @@ public class Ship extends PointSource {
 
     @Override
     public double getMixtureMassFlux() {
-        return 0.0192143028723584;
+        return 0.0192143028723584; // hardcoded in python
     }
 
     public void setLocationMeasureIri(String locationMeasureIri) {

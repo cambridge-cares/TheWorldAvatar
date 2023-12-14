@@ -1,0 +1,28 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "./",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "skip": false,
+            "table": "population",
+            "subdirectory": "population",
+            "gdalTranslateOptions": {
+				"sridIn": "EPSG:4326"
+			},
+			"geoServerSettings": {
+				"layerSettings": {
+					"defaultStyle": "twa:uk-population-style"
+				}
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "uk-population-style",
+            "file": "./sld/uk-population-style.sld"
+        }
+    ]
+}

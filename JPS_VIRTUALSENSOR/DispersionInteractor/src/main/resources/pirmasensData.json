@@ -1,7 +1,7 @@
 {
     "groups": [
         {
-            "name": "Buildings",
+            "name": "Buildings with usage",
             "expanded": false,
             "stack": "http://localhost:3838",
             "sources": [
@@ -41,11 +41,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -77,11 +77,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -113,11 +113,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -149,11 +149,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -185,11 +185,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -221,11 +221,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -257,11 +257,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -293,11 +293,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -329,11 +329,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -365,11 +365,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -401,11 +401,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -437,11 +437,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -473,11 +473,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -509,11 +509,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -545,11 +545,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -581,11 +581,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -617,11 +617,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -653,11 +653,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -689,11 +689,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -725,11 +725,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -761,11 +761,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -797,11 +797,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]
@@ -1317,11 +1317,11 @@
                             "case",
                             [
                                 "has",
-                                "measured_height"
+                                "building_height"
                             ],
                             [
                                 "get",
-                                "measured_height"
+                                "building_height"
                             ],
                             8
                         ]

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="44.84" height="44.84" viewBox="0 0 44.84 44.84">
+  <circle cx="22.42" cy="22.42" r="22.42" style="fill: #2edaff; opacity: .2; stroke-width: 0px;"/>
+  <g style="opacity: .5;">
+    <path d="m22.42,1c11.81,0,21.42,9.61,21.42,21.42s-9.61,21.42-21.42,21.42S1,34.23,1,22.42,10.61,1,22.42,1m0-1C10.04,0,0,10.04,0,22.42s10.04,22.42,22.42,22.42,22.42-10.04,22.42-22.42S34.8,0,22.42,0h0Z" style="fill: #2edaff; stroke-width: 0px;"/>
+  </g>
+</svg>
