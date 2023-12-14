@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.bmsupdate;
 
+import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.Literal;
@@ -17,9 +18,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class BMSUpdateAgent {
 
@@ -28,10 +38,19 @@ public class BMSUpdateAgent {
     private final String STR_OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private final Prefix P_OM = SparqlBuilder.prefix("om", iri(STR_OM));
 
-    final String FAIL_TO_GET_TEMP = "Fail to get temperature";
-    final String FAIL_TO_UPDATE_TEMP = "Fail to update temperature in knowledge graph";
-    final String FAIL_TO_TOGGLE = "Fail to trigger ESPHomeAgent to toggle device status";
-    final String FAIL_TO_PULL_DATA = "Fail to trigger ESPHomeUpdateAgent to pull data";
+    private final String STR_ONTOBMS = "https://www.theworldavatar.com/kg/ontobms/";
+    private final Prefix P_ONTOBMS = SparqlBuilder.prefix("ontobms", iri(STR_ONTOBMS));
+
+    final String FAIL_TO_GET_TEMP = "Fail to get temperature!";
+    final String FAIL_TO_UPDATE_TEMP = "Fail to update temperature in knowledge graph!";
+    final String FAIL_TO_TOGGLE = "Fail to trigger ESPHomeAgent to toggle device status!";
+    final String FAIL_TO_PULL_DATA = "Fail to trigger ESPHomeUpdateAgent to pull data!";
+    final String FAIL_TO_GET_BACNETDEVICEID = "Fail to get Bacnet Device ID!";
+    final String FAIL_TO_GET_BACNETOBJECTID = "Fail to get Bacnet Object ID!";
+    final String FAIL_TO_GET_LATESTDATA = "Unable to get latest timeseries data for the following IRI: ";
+    final String FAIL_TO_UPDATE_NEW_VALUE = "Unable to update new numerical value for the following IRI: ";
+    final String FAIL_TO_INSERT_TRIPLES = "Unable to insert the following triples: ";
+    final String FAIL_TO_DELETE_TRIPLES = "Unable to delete the following triples: ";
 
     /**
      * Change the temperature of a fan's set point in the knowledge graph.
@@ -143,5 +162,202 @@ public class BMSUpdateAgent {
         }
         LOGGER.warn("Unknown fan state, cannot parse the response");
         return "";
+    }
+
+    /**
+     * Get the Bacnet Device ID of the data IRI
+     *
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @return Bacnet Device ID of data IRI
+     */
+    public String getDeviceId(String dataIRI, RemoteStoreClient rsClient) {
+        SelectQuery selectQuery = Queries.SELECT();
+        Variable deviceIdVar = SparqlBuilder.var("deviceIdVar");
+        TriplePattern getBacnetDeviceId = GraphPatterns.tp(iri(dataIRI), P_ONTOBMS.iri("hasBacnetDeviceID"), deviceIdVar);
+        selectQuery.prefix(P_ONTOBMS).select(deviceIdVar).where(getBacnetDeviceId);
+        try {
+            LOGGER.info("getting Bacnet Device ID of " + dataIRI +" ...");
+            LOGGER.info("execute query: " + selectQuery.getQueryString());
+            JSONArray results = new JSONArray(rsClient.execute(selectQuery.getQueryString()));
+            return results.getJSONObject(0).getString("deviceIdVar");
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_GET_BACNETDEVICEID);
+            throw new JPSRuntimeException(FAIL_TO_GET_BACNETDEVICEID);
+        }
+    }
+
+    /**
+     * Get the Bacnet Object ID of the data IRI
+     *
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @return Bacnet Object ID of data IRI
+     */
+    public String getObjectId(String dataIRI, RemoteStoreClient rsClient) {
+        SelectQuery selectQuery = Queries.SELECT();
+        Variable objectIdVar = SparqlBuilder.var("objectIdVar");
+        TriplePattern getBacnetObjectId = GraphPatterns.tp(iri(dataIRI), P_ONTOBMS.iri("hasBacnetObjectID"), objectIdVar);
+        selectQuery.prefix(P_ONTOBMS).select(objectIdVar).where(getBacnetObjectId);
+        try {
+            LOGGER.info("getting Bacnet Object ID of " + dataIRI +" ...");
+            LOGGER.info("execute query: " + selectQuery.getQueryString());
+            JSONArray results = new JSONArray(rsClient.execute(selectQuery.getQueryString()));
+            return results.getJSONObject(0).getString("objectIdVar");
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_GET_BACNETOBJECTID);
+            throw new JPSRuntimeException(FAIL_TO_GET_BACNETOBJECTID);
+        }
+    }
+
+    private boolean check(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue) {
+        TimeSeries<OffsetDateTime> timeseries;
+        TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(rsClient ,OffsetDateTime.class);
+        try (Connection conn = RDBClient.getConnection()) {
+            timeseries = tsClient.getLatestData(dataIRI, conn);
+        } catch (Exception e) {
+            throw new JPSRuntimeException(FAIL_TO_GET_LATESTDATA + dataIRI);
+        }
+        String latestValue = timeseries.getValuesAsString(dataIRI).get(timeseries.getValuesAsString(dataIRI).size() - 1);
+        OffsetDateTime latestTimeStamp = timeseries.getTimes().get(timeseries.getTimes().size() - 1);
+        Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
+        sdf.setTimeZone(TimeZone.getDefault());
+        Object ts = sdf.format(date);
+        LOGGER.info("The latest value for " + dataIRI +" is " + latestValue + " and the corresponding timestamp is " + ts.toString());
+        if (latestValue.equals(triggerValue)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private String insert(RemoteStoreClient rsClient,String insertString) {
+        ParameterizedSparqlString queryStr = new ParameterizedSparqlString();
+        queryStr.append("INSERT DATA ");
+        queryStr.append("{ ");
+        queryStr.append(insertString);
+        queryStr.append(" }");
+        LOGGER.info("The triples to insert is " + queryStr.toString());
+        try {
+            rsClient.executeUpdate(queryStr.asUpdate().toString());
+            LOGGER.info("Executed the following to the knowledge graph: " + queryStr.asUpdate().toString());
+            return "Executed the following to the knowledge graph: " + queryStr.asUpdate().toString();
+        } catch (Exception e) {
+            throw new JPSRuntimeException(FAIL_TO_INSERT_TRIPLES + queryStr.asUpdate().toString());
+        }
+    }
+
+    private String delete(RemoteStoreClient rsClient,String deleteString) {
+        ParameterizedSparqlString queryStr = new ParameterizedSparqlString();
+        queryStr.append("DELETE DATA ");
+        queryStr.append("{ ");
+        queryStr.append(deleteString);
+        queryStr.append(" }");
+        LOGGER.info("The triples to delete is " + queryStr.toString());
+        try {
+            rsClient.executeUpdate(queryStr.asUpdate().toString());
+            LOGGER.info("Executed the following to the knowledge graph: " + queryStr.asUpdate().toString());
+            return "Executed the following to the knowledge graph: " + queryStr.asUpdate().toString();
+        } catch (Exception e) {
+            throw new JPSRuntimeException(FAIL_TO_DELETE_TRIPLES + queryStr.asUpdate().toString());
+        }
+    }
+
+    /**
+     * Get latest timeseries value for the data IRI and compared it with the trigger value,
+     * if they are equal, run a sparql update to insert a set of triples and delete a set of triples
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @param RDBClient The remote RDB client
+     * @param triggerValue The value to compare with the latest timeseries value
+     * @param insertString The string to insert via sparql update
+     * @param deleteString The string to delete via sparql update
+     * @return 
+     */
+    public JSONObject checkInsertAndDelete(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue, String insertString, String deleteString) {
+        JSONObject result = new JSONObject();
+        boolean check = check(dataIRI, rsClient, RDBClient, triggerValue);
+        if (check == true) {
+            result.accumulate("message", insert(rsClient, insertString));
+            result.accumulate("message", delete(rsClient, deleteString));
+        } else {
+            result.accumulate("message", "The latest timeseries value of " + dataIRI + " is not equivalent to the trigger value " + triggerValue);
+        }
+        return result;
+    }
+
+    /**
+     * Get latest timeseries value for the data IRI and compared it with the trigger value, if they are equal, run a sparql update to insert a set of triples
+     *
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @param RDBClient The remote RDB client
+     * @param triggerValue The value to compare with the latest timeseries value
+     * @param insertString The string to insert via sparql update
+     * @return 
+     */
+    public JSONObject checkInsert(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue, String insertString) {
+        JSONObject result = new JSONObject();
+        boolean check = check(dataIRI, rsClient, RDBClient, triggerValue);
+        if (check == true) {
+            result.accumulate("message", insert(rsClient, insertString));
+        } else {
+            result.accumulate("message", "The latest timeseries value of " + dataIRI + " is not equivalent to the trigger value " + triggerValue);
+        }
+        return result;
+    }
+
+    /**
+     * Get latest timeseries value for the data IRI and compared it with the trigger value, if they are equal, run a sparql update to delete a set of triples
+     *
+     * @param dataIRI The data iri
+     * @param rsClient The knowledge graph client
+     * @param RDBClient The remote RDB client
+     * @param triggerValue The value to compare with the latest timeseries value
+     * @param deleteString The string to insert via sparql update
+     * @return 
+     */
+    public JSONObject checkDelete(String dataIRI, RemoteStoreClient rsClient, RemoteRDBStoreClient RDBClient, String triggerValue, String deleteString) {
+        JSONObject result = new JSONObject();
+        boolean check = check(dataIRI, rsClient, RDBClient, triggerValue);
+        if (check == true) {
+            result.accumulate("message", delete(rsClient, deleteString));
+        } else {
+            result.accumulate("message", "The latest timeseries value of " + dataIRI + " is not equivalent to the trigger value " + triggerValue);
+        }
+        return result;
+    }
+
+    /**
+     * Change the numerical value of a om:Measure or om:Point in the knowledge graph.
+     *
+     * @param dataIRI The iri of the om:Measure or om:Point
+     * @param newValue the new value to insert
+     * @param rsClient The knowledge graph client
+     */
+    public JSONObject setNumericalValue(String dataIRI, double newValue, RemoteStoreClient rsClient) {
+        JSONObject result = new JSONObject();
+        ModifyQuery modifyDataQuery = Queries.MODIFY();
+        Variable numValue = SparqlBuilder.var("numValue");
+        TriplePattern deleteExistingNumValue = GraphPatterns.tp(iri(dataIRI), P_OM.iri("hasNumericalValue"), numValue);
+        modifyDataQuery.prefix(P_OM).delete(deleteExistingNumValue);
+        modifyDataQuery.where(deleteExistingNumValue);
+
+        ValueFactory factory = SimpleValueFactory.getInstance();
+        Literal newValueLiteral = factory.createLiteral(newValue);
+        TriplePattern insertNewNumValue = GraphPatterns.tp(iri(dataIRI), P_OM.iri("hasNumericalValue"), newValueLiteral);
+        modifyDataQuery.insert(insertNewNumValue);
+
+        try {
+            LOGGER.info("sending sparql request to: " + rsClient.getUpdateEndpoint());
+            LOGGER.info("execute modify: " + modifyDataQuery.getQueryString());
+            rsClient.executeUpdate(modifyDataQuery.getQueryString());
+            result.put("message", "Sucessfully executed the following query string: " + modifyDataQuery.getQueryString());
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_UPDATE_NEW_VALUE + dataIRI);
+            throw new JPSRuntimeException(FAIL_TO_UPDATE_NEW_VALUE + dataIRI);
+        }
+        return result;
     }
 }
