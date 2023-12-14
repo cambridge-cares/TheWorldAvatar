@@ -46,7 +46,7 @@ As an extra note, it is worth testing if your URLs require an ending slash (`/`)
 
 Within the `url-testing` directory, there's a small example NGINX service configured to run as a Docker container that will simulate the TWA reverse proxy so that you can access your new service container through a redirect and test these URLs.
 
-To run it, simply add the URL for your external container (which can be running) to a `.env` following the format below, then run the `run.sh` script. This should spin up a local NGINX container with a redirect to your external service, accessible via the `https://localhost/redirect/` URL.
+To run it, simply add the URL for your external container (which can be running) to a `.env` following the format below, then run the `start.sh` script. This should spin up a local NGINX container with a redirect to your external service, accessible via the `https://localhost/redirect/` URL.
 
 > [!NOTE]
 > You may find that accessing the redirect in your browser shows a "Your connection is not private" error. This is expected as we're creating a fake (self-signed) SSL certificate to emulate HTTPS locally. You should be able safely dismiss and continue to test your URLs via the redirect.
