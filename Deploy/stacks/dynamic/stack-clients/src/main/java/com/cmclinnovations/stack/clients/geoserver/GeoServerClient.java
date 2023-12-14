@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.clients.geoserver;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -282,5 +283,28 @@ public class GeoServerClient extends ContainerClient {
                         "GeoServer coverage datastore '" + name + "' does not exist and could not be created.", ex);
             }
         }
+    }
+
+    public void addProjectionsToGeoserver(String geoserverContainerID, String wktString, String srid) {
+        String execId;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+        execId = createComplexCommand(geoserverContainerID, "mkdir", "-p",
+                "/opt/geoserver_data/user_projections")
+                .withErrorStream(errorStream)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+        outputStream.reset();
+        errorStream.reset();
+
+        execId = createComplexCommand(geoserverContainerID, "bash", "-c",
+                "echo > /opt/geoserver_data/user_projections/epsg.properties <<EOF " + srid + "=" + wktString
+                        + "\nEOF")
+                .withErrorStream(errorStream)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+
+        GeoServerClient.getInstance().reload();
+        handleErrors(errorStream, execId, logger);
     }
 }
