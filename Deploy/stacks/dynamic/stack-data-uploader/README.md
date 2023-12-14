@@ -498,6 +498,10 @@ A full explanation of the acceptable SRS formats is given [here][raster-common-t
 This sets the value of the [`TARGET_SRS`][gdal-cog-t_srs] creation option passed to `gdal_translate`.
 This is an option specific to the [COG][gdal-cog] raster driver when using `gdal_translate`, although we could use `gdalwarp` to handle this more efficiently in the future.
 
+ If gdal does not recognise the EPSG SRID (i.e. `gdalsrsinfo` returns an EPSG:-1), then the projection is assumed to be a custom one and will be appended to the spatial ref system in postGIS and GeoServer. This must still include an authority (although not EPSG) and a new number. The uploader will throw an error if the number exists already in the table.
+ 
+ e.g. if the `sridOut` is set to `TWA:101000` and the projection is not recognised, this will be used as the SRID and authority in the newly specified custom projection.
+
 ##### `"inputDatasetOpenOptions"`
 Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
 These can be set as key-value pairs within a `"inputDatasetOpenOptions"` object.
@@ -521,6 +525,9 @@ A list of possible options can be found on the [raster common options][raster-co
 ##### Common Drivers
 - [GeoTIFF][raster-geotiff]
 - [COG – Cloud Optimized GeoTIFF][raster-cog] (mainly as the output)
+
+##### netCDF Files
+netCDF files are commonly used in climate science projection data. Currently the uploader can recognise these and will copy them into GeoServer without any `gdal_translate` operation. The intention is for GeoServer to handle them using the netCDF plugin which is also enabled by default, although this has not yet been fully tested.
 
 #### GeoServer Options
 
