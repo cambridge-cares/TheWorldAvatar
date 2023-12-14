@@ -40,6 +40,8 @@ URLs that are written absolute but without the domain name (i.e. `/images/image.
 **Relative URLs**:
 URLs that are written relative to the root of the site (i.e. `./images/image.png`). If your content is served from the root of your container (i.e. from `container-ip:3000` rather than `container-ip:3000/content`), which is recommended, then these URLs should resolve as they're routed through the redirect. As an example, the image URL listed and the redirect should above would resolve to `https://theworldavatar.io/demos/my-new-service/images/image.png`, which should find your image correctly.
 
+As an extra note, it is worth testing if your URLs require an ending slash (`/`) character to function. URLs with trailing slashes are not equivalent to those without, and depending on your service's NGINX configuration, may not return the same content.
+
 ### Testing your URLs
 
 Within the `url-testing` directory, there's a small example NGINX service configured to run as a Docker container that will simulate the TWA reverse proxy so that you can access your new service container through a redirect and test these URLs.
@@ -54,7 +56,17 @@ Expected format for `.env` file:
 ```
     URL=http://127.0.0.1:3000/
 ```
-
 ### Example
 
 The committed `docker-compose.yml` file also spins up a simple web server in it's own container hosting some static content to display an example of which URL types will and won't work. You can access this container directly from `http://localhost:3000` or via the provided redirect at `https://localhost/example`.
+
+## Redirect scope
+
+It's worth noting here that as we have an easily editable, nice-looking CMS for the website (Wordpress), we expect all static content to be added directly to the website so it's well integrated and managed. We do not recommmend that people host static web content (i.e. unchanging text & images) within their containers we redirect to. The containers should ideally just host the interactive demo/agent/data endpoint. In the few cases were static content _must_ be added to the container, effort should be made to ensure it fits within the visual theme of the main website.,
+
+## Redirect persistance
+
+Adding a redirect to theworldavatar.io should provide users with an unchanging, maintained, publically accessible link to their service that can be used in presentations and publications. Note however that as this website is an ongoing, in-development environment, **we do not guarantee that redirects will be maintained** beyond a resonable age (~6 months), or that they will not be changed to avoid collisions with other services/pages.
+
+> [!CAUTION]
+> Redirects may be changed, or go offline, at any time. Whilst we endevour not to change them, no guarantees are made. 
