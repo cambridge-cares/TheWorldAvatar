@@ -69,8 +69,8 @@ Contains parameter for timeseries client and knowledge graph endpoints.
 - `db.password` the password to access the Postgres database
 - `sparql.query.endpoint` the SPARQL endpoint to query the knowledge graph
 - `sparql.update.endpoint` the SPARQL endpoint to update the knowledge graph
-- `sparql.user` Username to be used when accessing the knowledge graph. Optional. 
-- `sparql.pass` Password to be used when accessing the knowledge graph. Optional.
+- `sparql.username` Username to be used when accessing the knowledge graph. Optional. 
+- `sparql.password` Password to be used when accessing the knowledge graph. Optional.
 
 #### iriMapping.txt
  This file contains the IRI mapping for all raw and derived variable. This file will automatically be generated if not found and all the IRI will be created on call and hence, this file is not included in the repository. The format for the mapping is the following: 
@@ -85,7 +85,7 @@ This file is made to ensure the IRI of instances created is consistent over mult
 Files under the `config/mapping` folder are properties file for timeseries instantiations. The IRI generated will be saved in these files and are consistent with contents of `iriMapping.txt`. Each file contains derived variables mapped to their respective IRI. If left empty, an IRI will be generated. Different timeseries will require different file.
 
 
-### Building the Fumehood Agent
+### Before building and running the agent
 The Fumehood Agent is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central).
 You'll need to provide  your credentials in single-word text files located like this:
 ```
@@ -99,30 +99,50 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Modify `api.properties` and `client.properties` in the `config` folder accordingly. You should not modify the `agent.properties` file as the Dockerfile will set the environment variable 
 THINGSBOARD_AGENT_MAPPINGS to point towards the location of the mapping folder. The Dockerfile will copy all 3 properties files and mapping folder and set environment variables pointing 
-to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually.
+to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually. The `config` folder will be mounted onto the docker container as a volume and changes can be made to the properties files even after the agent has been deployed.
 
-To build and start the agent, open up the command prompt in the same directory as this README, run
+### Building the agent
+
+The agent can be depoyed as part of the stack or as a standalone.
+
+#### Part of the stack
+
+To build the agent's image, open up the command prompt in the same directory as this README, run
 ```
-docker-compose up -d
+docker-compose build
 ```
+Open `stack-manager-input-config-service/fh-agent.json` and under the Mounts section, modify the Source and insert the filepath of where the config folder is located at (For Windows users using WSL on Docker, the file path should start with /mnt/c/, which is equivalent to C://).
+
+Copy `stack-manager-input-config-service/fh-agent.json` to the services folder under your stack-manager directory (By default it should be TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/) and start up the stack.
+
+The agent is reachable at "fh-agent/retrieve" or "fh-agent/instantiate" on localhost port 3838 by default.
+
+#### Standalone
+
+To build and deploy the agent, open up the command prompt in the same directory as this README, run
+```
+docker compose up -d
+```
+
+The agent is reachable at "fh-agent/retrieve" or "fh-agent/instantiate" on localhost port 1010. 
 
 ### Running the agent
 
-The agent is reachable at "fh-agent/retrieve" or "fh-agent/instantiate" on localhost port 1010. 
+The agent currently has two functions:
 - "fh-agent/retrieve" will calculate the occupancy status and instantiate timeseries instances
 - "fh-agent/instantiate" will instantiate derivation instances
 
 Both URL pattern took in POST request. Follow the request shown below:
 
 ```
-POST http://localhost:1010/fh-agent/retrieve
+POST http://localhost:<port number>/fh-agent/retrieve
 Content-Type: application/json
 {"agentProperties":"THINGSBOARD_AGENTPROPERTIES","apiProperties":"THINGSBOARD_APIPROPERTIES","clientProperties":"THINGSBOARD_CLIENTPROPERTIES", "iriMapFile":"IRI_MAPPINGSTORE"}
 ```
 or
 
 ```
-POST http://localhost:1010/fh-agent/instantiate
+POST http://localhost:<port number>/fh-agent/instantiate
 Content-Type: application/json
 {"agentProperties":"THINGSBOARD_AGENTPROPERTIES","apiProperties":"THINGSBOARD_APIPROPERTIES","clientProperties":"THINGSBOARD_CLIENTPROPERTIES", "iriMapFile":"IRI_MAPPINGSTORE"}
 ```
