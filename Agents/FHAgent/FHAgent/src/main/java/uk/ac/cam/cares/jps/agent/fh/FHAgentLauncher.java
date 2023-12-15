@@ -2,10 +2,15 @@ package uk.ac.cam.cares.jps.agent.fh;
 
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,9 +34,16 @@ public class FHAgentLauncher extends JPSAgent {
     public static final String KEY_IRIMAPFILE = "iriMapFile";
 	
 	
-	 String agentProperties;
-	 String apiProperties;
-	 String clientProperties;
+	String agentProperties;
+	String apiProperties;
+	String clientProperties;
+    private static String sparqlUpdateEndpoint;
+    private static String sparqlQueryEndpoint;
+    private static String sparqlUser;
+    private static String sparqlPassword;
+    private static String dbUrl;
+    private static String dbUser;
+    private static String dbPassword;
 
     static String requestURL;
     /**
@@ -46,6 +58,7 @@ public class FHAgentLauncher extends JPSAgent {
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the ThingsBoard API connector needed to interact with the API!";
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
+    private static final String LOADTSCONFIG_ERROR_MSG = "Unable to load configs from timeseries client properties file";
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -155,10 +168,20 @@ public class FHAgentLauncher extends JPSAgent {
 
         // Create and set the time series client
         TimeSeriesClient<OffsetDateTime> tsClient;
+
         try {
-            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
+            loadTSClientConfigs(args[1]);
+            } catch (IOException e) {
+                throw new JPSRuntimeException(LOADTSCONFIG_ERROR_MSG, e);
+        }
+
+        RemoteStoreClient kbClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint, sparqlUser, sparqlPassword);
+        
+        try {
+            tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class);
+            tsClient.setRDBClient(dbUrl, dbUser, dbPassword);
             agent.setTsClient(tsClient);
-        } catch (IOException | JPSRuntimeException e) {
+        } catch (JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
             throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
         }
@@ -238,4 +261,56 @@ public class FHAgentLauncher extends JPSAgent {
 		return jsonMessage;
     }
 
+        /**
+     * Reads the parameters needed for the timeseries client
+     * @param filepath Path to the properties file from which to read the parameters
+     */
+    private static void loadTSClientConfigs(String filepath) throws IOException {
+        // Check whether properties file exists at specified location
+        File file = new File(filepath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
+        }
+
+        // Try-with-resource to ensure closure of input stream
+        try (InputStream input = new FileInputStream(file)) {
+
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+
+            // Get timeseries client parameters from properties file
+            if (prop.containsKey("db.url")) {
+                dbUrl = prop.getProperty("db.url");
+            } else {
+                throw new IOException("Properties file is missing \"db.url=<db_url>\"");
+            }
+            if (prop.containsKey("db.user")) {
+                dbUser = prop.getProperty("db.user");
+            } else {
+                throw new IOException("Properties file is missing \"db.user=<db_user>\"");
+            }
+            if (prop.containsKey("db.password")) {
+                dbPassword = prop.getProperty("db.password");
+            } else {
+                throw new IOException("Properties file is missing \"db.password=<db_password>\"");
+            }
+            if (prop.containsKey("sparql.query.endpoint")) {
+                sparqlQueryEndpoint = prop.getProperty("sparql.query.endpoint");
+            } else {
+                throw new IOException("Properties file is missing \"sparql.query.endpoint=<sparql_query_endpoint>\"");
+            }
+            if (prop.containsKey("sparql.update.endpoint")) {
+                sparqlUpdateEndpoint = prop.getProperty("sparql.update.endpoint");
+            } else {
+                throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
+            }
+            if (prop.containsKey("sparql.username")) {
+                sparqlUser = prop.getProperty("sparql.username");
+            }
+            if (prop.containsKey("sparql.password")) {
+                sparqlPassword = prop.getProperty("sparql.password");
+            }
+        }
+    }
 }

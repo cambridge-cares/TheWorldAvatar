@@ -134,8 +134,8 @@ public class FHAgentDerivation {
             prop.load(input);
             try {
                 // Read the mappings folder from the properties file
-                sparqlUser = prop.getProperty("sparql.user");
-                sparqlPass = prop.getProperty("sparql.pass");
+                sparqlUser = prop.getProperty("sparql.username");
+                sparqlPass = prop.getProperty("sparql.password");
             }
             catch (Exception e) {
             	throw new IOException ("Error parsing KG credentials from properties file.");
