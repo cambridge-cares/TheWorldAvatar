@@ -23,6 +23,9 @@
 		},
 		{
 			"path": "third-party/postgis"
+		},
+		{
+			"path": "../../../web"
 		}
 	],
 	"settings": {
