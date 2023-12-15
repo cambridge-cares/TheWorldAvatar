@@ -22,7 +22,6 @@
     },
     "dependencies": {
         "mapbox-gl": "^2.8.2",
-        "tsc": "^2.0.4",
         "turf": "^3.0.14"
     }
 }
