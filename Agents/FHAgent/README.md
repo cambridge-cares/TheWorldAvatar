@@ -3,15 +3,15 @@
 This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding fumehood occupancy status.
 The agent will retrieve the sensor readings from the Thingsboard (TB) server and determine the fumehood occupancy. The agent is also responsible for instantiating the derivations and agent instances of the occupancy derivation instances using the derivation client.
 
-This agent is derived from the [ThingsboardInputAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-1505-proximity-sensor-for-lab_FHAgent/Agents/ThingsBoardAgent).
+This agent is derived from the [ThingsboardInputAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ThingsBoardAgent).
 This agent has the basic same functionality to the ThingsBoardInputAgent. 
 The difference lies in the agents ability to convert sensor reading to occupancy status before instantiating the timeseries. 
 
-For information regarding Thingsboard API, refer to the following [documentation from ThingsboardInputAgent](https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-1505-proximity-sensor-for-lab_FHAgent/Agents/ThingsBoardAgent/README.md#thingsboard-api).
+For information regarding Thingsboard API, refer to the following [ThingsBoard rest API documentation](https://thingsboard.io/docs/user-guide/telemetry/#data-query-rest-api).
 
 ## Usage
 
-The agent is connected to a proximity sensor connected to a microcontroller. This module is attached to a fumehood and reads the average distance between the sensor an the nearest object in front of the fumehood. 
+The agent is designed to derive the occupancy status of an entity based on the distance measured by a proximity sensor that is allocated to said entity.
 
 The agent takes in the latest 600 average distance reading from TB server and calculates the occupancy status. The occupancy calculation is done on the following tally algorithm:
 - The tally start from 0. 
@@ -24,6 +24,23 @@ The agent takes in the latest 600 average distance reading from TB server and ca
 The occupancy result will then be calculated and instantiated. 
 
 The agent will be packaged to a .war file for the deployment. As the agent will instantiate timeseries data and derivation instances, a connection to a POSTgresql database and a knowledge graph is required.
+
+## Pre-requisites
+
+This agent is used in tandem with the [DevInstAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DevInstAgent). The DevInstAgent is first used to instantiate the ABoxes for the Devices (Sensors, microcontrollers etc) and any measured or observed variables (length, occupancy status etc). An example of the request to instantiate the ABoxes for the proximity sensor, microcontroller, length and occupancy status can be found below:
+```
+<PlaceHolder>
+```
+The DevInstAgent will generate the IRIs for length and occupancy status accordingly. Note down the IRIs for the variables and insert them into the following:
+1) Under the `config/mapping` folder, create a properties file similar to the examples files located there and add in the occupancy status IRI, for example:
+```
+occupiedState_FH-03=https://www.theworldavatar.com/kg/ontotimeseries/fh_occupiedState_FH-03_ffc2ca51-0485-49f1-ab6d-e2800b639b0b
+```
+2) Under the `agent.properties` file, edit `derivation.mapping` accordingly. For example, if length IRI = "https://www.theworldavatar.com/kg/ontoderivation/avgDist_FH-0356411cdc-f26b-4d62-a436-d43fe0b45da9" and occupied state IRI = "https://www.theworldavatar.com/kg/ontotimeseries/fh_occupiedState_FH-03_ffc2ca51-0485-49f1-ab6d-e2800b639b0b", `derivation.mapping` should be edited as such:
+
+```
+avgDist_FH:fh_occupiedState_FH-03
+```
 
 ### Using the stack
 The agent can function with and without using the stack. A config file is provided in `./stack-manager-input-config-service/`
@@ -48,9 +65,8 @@ Contains config for the agent operations such as calculations and instantiations
 - `tally.max` : The tally maximum value for the occupancy calculation system
 - `tally.min` : The tally minimum value for the occupancy calculation system
 - `decrease.factor` : The factor the tally is decreased by during tally calculation
-- `increase.factor` ; The factor the tal;ly is increased by when the distance threshold is breached 
+- `increase.factor` ; The factor the tally is increased by when the distance threshold is breached 
 - `derivation.baseurl` : The derivation instances base iri
-
 
 #### api.properties
 Contains the parameters for Thingsboard API
