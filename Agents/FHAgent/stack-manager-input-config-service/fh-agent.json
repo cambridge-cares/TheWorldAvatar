@@ -1,9 +1,16 @@
 {
     "ServiceSpec": {
-      "Name": "asset-manager-agent",
+      "Name": "fh-agent",
       "TaskTemplate": {
         "ContainerSpec": {
           "Image": "docker.io/library/fh-agent:1.0.1",
+          "Mounts": [
+            {
+              "Type": "bind",
+              "Source": "/mnt/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/FHAgent/config",
+              "Target": "/root"
+            }
+          ],
           "Configs": [
             {
               "ConfigName": "blazegraph"
