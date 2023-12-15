@@ -112,6 +112,9 @@ class SeachEntityComponent extends DynamicComponent {
       // Retrieve the option for site area search parameter
       let areaInputs: string[] = this.retrieveMinMaxInput(textComponentArray[0], true);
       let gfaInputs: string[] = this.retrieveMinMaxInput(textComponentArray[1], true);
+      if (zoneTypes === "''" && areaInputs[0] === "''" && gfaInputs[0] === "''") {
+        return;
+      }
       // Show the loader and overlay in this order
       this.overlay.show();
       this.loader.show();
