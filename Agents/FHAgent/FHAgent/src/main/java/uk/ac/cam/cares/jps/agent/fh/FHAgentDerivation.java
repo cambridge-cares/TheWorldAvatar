@@ -1,8 +1,5 @@
 package uk.ac.cam.cares.jps.agent.fh;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -19,14 +16,6 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import org.eclipse.rdf4j.model.vocabulary.OWL;
-import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-
-import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 /*Class for instantiating Derivation instances for the fumehood occupancy case
  * 

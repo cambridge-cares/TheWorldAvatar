@@ -7,7 +7,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.jena.sparql.function.library.print;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -21,38 +20,25 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.semanticweb.owlapi.util.IRIComparator;
-import org.skyscreamer.jsonassert.*;
-import org.springframework.test.context.transaction.BeforeTransaction;
-
-import com.bigdata.service.ndx.pipeline.IndexWriteTask.M;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import wiremock.org.eclipse.jetty.util.ajax.JSON;
-
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 
+@Ignore("Requires triple store endpoint set up and running (using testcontainers)\n" +
+        "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 public class FHAgentDerivationTest {
     // Temporary folder to place a properties file
     @Rule
@@ -199,7 +185,7 @@ public class FHAgentDerivationTest {
             "derivation.baseurl = http://derivationexample.com/triplestore/repository/"
         }));
         
-        String[] clientPropParam = {"db_url="+jdbcURL, "db.user="+postgresUsername, "db.password="+postgresPassword,"sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint};
+        String[] clientPropParam = {"db_url="+jdbcURL, "db.user="+postgresUsername, "db.password="+postgresPassword,"sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint, "sparql.username=", "sparql.password="};
         writePropertyFile(clientPropFile, Arrays.asList(clientPropParam));
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
         // To mock the environment variable, a try catch need to be used
@@ -235,7 +221,6 @@ public class FHAgentDerivationTest {
         exampleData.put("values", testValPair);
     }
 
-    @Ignore("Requieres docker desktop to test.")
     @Test
     public void testConstructor() throws IOException {
         //TODO is this needed? Most of the time the agent fails first before derivation instantiation happens
@@ -247,7 +232,7 @@ public class FHAgentDerivationTest {
             writePropertyFile(propertiesFile, new ArrayList<>());
 
             String clientPropFile = Paths.get(folder.getRoot().toString(), "client.properties").toString();
-            String[] clientPropParam = {"db_url="+jdbcURL, "db.user="+postgresUsername, "db.password="+postgresPassword, "sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint};
+            String[] clientPropParam = {"db_url="+jdbcURL, "db.user="+postgresUsername, "db.password="+postgresPassword, "sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint, "sparql.username=", "sparql.password="};
             writePropertyFile(clientPropFile, Arrays.asList(clientPropParam));
             String iriMapperFile = Paths.get(folder.getRoot().toString(), "iriMapping.txt").toString();
         
@@ -344,7 +329,6 @@ public class FHAgentDerivationTest {
 
     }
 
-    @Ignore("Requieres docker desktop to test.")
     @Test
     public void testInstantiateAgent() {
         //Test with dummy URL
@@ -389,14 +373,6 @@ public class FHAgentDerivationTest {
         System.out.println(storeClient.executeQuery(queryRaw.getQueryString()));
         Assert.assertEquals(testDerivator.iriMap.size()-testAgent.getNumberOfTimeSeries(), storeClient.executeQuery(queryRaw.getQueryString()).length());
     }
-
-    @Ignore("Requieres docker desktop to test.")
-    @Test
-    public void testInstantiateAgentDoubleCall () {
-        testDerivator.instantiateAgent("http://localhost:1010/fh-agent/instantiate");
-        testDerivator.instantiateAgent("http://localhost:1010/fh-agent/instantiate");
-    }
-
 
     @After
 	public void cleanUp() {
