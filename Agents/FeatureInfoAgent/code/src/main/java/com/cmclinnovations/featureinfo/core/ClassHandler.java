@@ -23,6 +23,7 @@ import com.cmclinnovations.featureinfo.FeatureInfoAgent;
 import com.cmclinnovations.featureinfo.config.ConfigEntry;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.StackEndpointType;
+import com.cmclinnovations.featureinfo.objects.Request;
 import com.cmclinnovations.featureinfo.utils.Utils;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -77,17 +78,17 @@ public class ClassHandler {
      * @throws IllegalStateException if class determination returns no matches.
      * @throws InternalServerErrorException if class determination query cannot be executed.
      */
-    public List<ConfigEntry> determineClassMatches(String iri, String enforcedEndpoint) throws IllegalStateException, InternalServerErrorException {
+    public List<ConfigEntry> determineClassMatches(Request request) throws IllegalStateException, InternalServerErrorException {
         // Get the list of class IRIs from the KG
         List<String> classIRIs = null;
         try {
-            classIRIs = runClassQuery(iri, enforcedEndpoint);
+            classIRIs = runClassQuery(request);
             if(classIRIs == null || classIRIs.isEmpty()) {
                 throw new IllegalStateException("Class determination query has failed to return any results, cannot continue!");
             }
         } catch(Exception exception) {
             LOGGER.error("Running class determination query has thrown an exception!", exception);
-            throw new InternalServerErrorException("Class determination query has thrown an exception, cannot continue!");
+            throw new InternalServerErrorException("Class determination query has thrown an exception, cannot continue!", exception);
         }
 
         // Find matches, in order returned from KG
@@ -113,20 +114,19 @@ public class ClassHandler {
      * 
      * @throws Exception if KG query fails due to connection issues.
      */
-    private List<String> runClassQuery(String iri, String enforcedEndpoint) throws Exception {
+    private List<String> runClassQuery(Request request) throws Exception {
         // Read the class determination SPARQL query
         loadQuery();
 
         // Get final query string (post injection)
         String queryString = Utils.queryInject(
-            this.queryTemplate,
-            iri,
-            configStore.getStackEndpoints(StackEndpointType.ONTOP),
-            Utils.getBlazegraphEndpoints(configStore, enforcedEndpoint)
-        );
+                this.queryTemplate,
+                request.getIri(),
+                configStore.getStackEndpoints(StackEndpointType.ONTOP),
+                Utils.getBlazegraphEndpoints(configStore, request.getEndpoint()));
 
         // Run query
-        List<String> endpoints = Utils.getBlazegraphURLs(configStore, enforcedEndpoint);
+        List<String> endpoints = Utils.getBlazegraphURLs(configStore, request.getEndpoint());
         JSONArray jsonResult = null;
 
         if(endpoints.size() == 1) {
