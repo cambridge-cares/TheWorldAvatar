@@ -1,5 +1,13 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 4.2.0
+### Features
+* Added an "interactions" layer parameter to set level of allowed mouse interaction ("all"|"click-only"|"hover-only"|"none", defaults to "all").
+* Added the ability to use "[SELECTED-IRI]" and "[HOVERED-IRI]" placeholders in Mapbox expressions (Cesium TBD).
+* Added system to set callbacks for feature selection, unselection, and layer tree change events.
+### Bug Fixes:
+* Fixed minor issue with loading metadata from selected raster layers in Cesium.
+
 # 4.1.2
 ### Features
 * _No features present._
