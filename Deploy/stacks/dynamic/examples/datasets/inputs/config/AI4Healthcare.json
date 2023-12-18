@@ -1,0 +1,14 @@
+{
+    "services": {
+        "includes": [
+                    "vis-mapbox",
+                     "vis-cesium",
+                     "feature-info-agent"
+                    ]
+    },
+    "volumes": {
+        "mapbox-files": "webspace-mapbox",
+        "cesium-files": "webspace-cesium",
+        "fia-queries": "fia-queries"
+    }
+}
