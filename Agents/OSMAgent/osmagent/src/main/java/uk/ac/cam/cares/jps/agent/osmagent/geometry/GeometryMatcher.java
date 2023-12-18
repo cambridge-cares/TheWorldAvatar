@@ -178,16 +178,18 @@ public class GeometryMatcher {
         String geometry = geoObject.getGeometry();
 
         if (flag) {
-            query = "SELECT ogc_fid AS id FROM " + table + " WHERE \"geometryProperty\" IS NOT NULL AND public.ST_Intersects(public.ST_GeomFromText(\'" + geometry + "\'," + srid + ")," +
+            query = "SELECT ogc_fid AS id FROM " + table + " WHERE \"geometryProperty\" IS NOT NULL AND public.ST_Intersects(" + geometryString(geometry, srid) + "," +
                     "public.ST_Transform(\"geometryProperty\"," + srid + ")) AND building_iri IS NULL";
         }
         else {
-            String subQuery = "(SELECT ogc_fid, public.ST_Area(public.ST_Intersection(public.ST_Transform(public.ST_GeomFromText(\'" + geometry + "\'," + srid +
-                    ")," + epsg4326 + "),public.ST_Transform(\"geometryProperty\"," + epsg4326 + ")),true) AS matchedarea," +
+            String gmlString  = "WITH gmlgeo AS (SELECT public.ST_Transform(" + geometryString(geometry, srid)
+                    + "," + epsg4326 + ") AS geo FROM citydb.building LIMIT 1) \n";
+            String subQuery = "(SELECT ogc_fid, public.ST_Area(public.ST_Intersection((SELECT geo FROM gmlgeo),public.ST_Transform(\"geometryProperty\"," + epsg4326 + ")),true) AS matchedarea," +
                     "public.ST_Area(public.ST_Transform(\"geometryProperty\"," + epsg4326 +"),true) AS area FROM " + table +
                     " WHERE \"geometryProperty\" IS NOT NULL AND landuse IS NULL AND building IS NULL AND building_iri is NULL) AS q";
 
-            query = "SELECT q.ogc_fid AS id FROM " + subQuery + " WHERE (matchedarea / area) >= " + threshold;
+            query = "SELECT q.ogc_fid AS id FROM " + subQuery + " WHERE (matchedarea / area) >= " + threshold + " OR matchedarea / (SELECT public.ST_Area(geo, true) FROM gmlgeo) >= " + threshold;
+            query = gmlString + query;
         }
 
         return query;
@@ -222,11 +224,12 @@ public class GeometryMatcher {
         String osmObjectString = "WITH osmgeo AS (SELECT public.ST_Transform(" + geometryString(osmObject.getGeometry(), osmObject.getSrid())
                 + "," + epsg4326 + ") AS geo FROM citydb.building LIMIT 1) \n";
 
-        String query =  "SELECT public.ST_Area(public.ST_Intersection(public.ST_Transform(q.geometry," + epsg4326 + "), (SELECT geo FROM osmgeo)), true) AS area, q.urival AS building_iri";
+        String query =  "SELECT public.ST_Area(public.ST_Intersection(public.ST_Transform(q.geometry," + epsg4326 + "), (SELECT geo FROM osmgeo)), true) AS matchedarea, " +
+                "public.ST_Area(public.ST_Transform(q.geometry," + epsg4326 + "), true) AS gmlarea, q.urival AS building_iri";
         query += " FROM \n" + subQuery();
 
         return osmObjectString + "SELECT building_iri FROM (" + query + ") AS intersection \n" +
-                "WHERE intersection.area / (SELECT public.ST_Area(geo, true) FROM osmgeo) >= " + threshold;
+                "WHERE intersection.matchedarea / (SELECT public.ST_Area(geo, true) FROM osmgeo) >= " + threshold + " OR matchedarea / intersection.gmlarea >= " + threshold;
     }
 
     /**
