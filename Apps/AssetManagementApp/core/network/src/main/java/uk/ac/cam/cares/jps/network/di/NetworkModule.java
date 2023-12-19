@@ -13,6 +13,7 @@ import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.datasheet.DataSheetNetworkSource;
 import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
+import uk.ac.cam.cares.jps.network.maintenance.MaintenanceNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.BMSNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
 import uk.ac.cam.cares.jps.network.qrprint.QRPrintingNetworkSource;
@@ -60,6 +61,12 @@ public class NetworkModule {
     @Singleton
     public QRPrintingNetworkSource provideQRPrintingNetworkSource(Connection connection) {
         return new QRPrintingNetworkSource(connection);
+    }
+
+    @Provides
+    @Singleton
+    public MaintenanceNetworkSource provideMaintenanceNetworkSource(Connection connection) {
+        return new MaintenanceNetworkSource(connection);
     }
 
 }

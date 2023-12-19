@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace 'uk.ac.cam.cares.jps.assetmanagementapp'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "uk.ac.cam.cares.jps.assetmanagementapp"
         minSdk 26
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -53,6 +53,7 @@ dependencies {
     implementation project(path: ':feature:addasset')
     implementation project(path: ':feature:qrprint')
     implementation project(path: ':feature:login')
+    implementation project(path: ':feature:addmaintenance')
     implementation project(path: ':core:network')
     implementation project(path: ':core:notification')
     implementation project(path: ':core:utils')

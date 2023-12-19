@@ -6,65 +6,93 @@
     xmlns:shimmer="http://schemas.android.com/tools"
     android:theme="@style/Theme.AssetManagementApp.NoActionBar">
 
-    <RelativeLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/relativeLayout">
-        <include layout="@layout/app_bar"
-            android:id="@+id/app_bar"
-            app:layout_constraintTop_toTopOf="parent"/>
-    </RelativeLayout>
-
-    <!--    the button for asset summary-->
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/done_bt"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/relativeLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="@dimen/appbar_padding"
-        android:background="@drawable/ripple_done_24"
-        android:contentDescription="@string/done"
-        android:visibility="gone"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:navigationIcon="@drawable/ripple_back"
+            android:id="@+id/topAppBar"
         />
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/info_app_bar_buttons"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/relativeLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="@dimen/appbar_padding"
-        android:visibility="gone">
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/edit_bt"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/ripple_edit"
-            android:contentDescription="@string/edit"
-            android:visibility="visible"
-            />
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:id="@+id/relativeLayout"-->
+<!--        android:visibility="visible">-->
+<!--        <include layout="@layout/app_bar"-->
+<!--            android:id="@+id/app_bar"-->
+<!--            app:layout_constraintTop_toTopOf="parent"/>-->
+<!--    </RelativeLayout>-->
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/delete_bt"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/edit_bt"
-            android:layout_marginEnd="@dimen/component_margin_small"
-            android:background="@drawable/ripple_delete"
-            android:contentDescription="@string/delete"
-            android:visibility="visible"
-            />
+<!--    &lt;!&ndash;    the button for asset summary&ndash;&gt;-->
+<!--    <ImageButton-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/done_bt"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/relativeLayout"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:layout_marginEnd="@dimen/appbar_padding"-->
+<!--        android:background="@drawable/ripple_done_24"-->
+<!--        android:contentDescription="@string/done"-->
+<!--        android:visibility="gone"-->
+<!--        />-->
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!--    the button for info page-->
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/info_app_bar_buttons"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/relativeLayout"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:layout_marginEnd="@dimen/appbar_padding"-->
+<!--        android:visibility="gone">-->
+<!--        <ImageButton-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/edit_bt"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            android:background="@drawable/ripple_edit"-->
+<!--            android:contentDescription="@string/edit"-->
+<!--            android:visibility="visible"-->
+<!--            />-->
+
+<!--        <ImageButton-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/delete_bt"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/edit_bt"-->
+<!--            android:layout_marginEnd="@dimen/component_margin_small"-->
+<!--            android:background="@drawable/ripple_delete"-->
+<!--            android:contentDescription="@string/delete"-->
+<!--            android:visibility="visible"-->
+<!--            />-->
+
+<!--        <ImageButton-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/maintenance_bt"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/delete_bt"-->
+<!--            android:layout_marginEnd="@dimen/component_margin_small"-->
+<!--            android:background="@drawable/ripple_build"-->
+<!--            android:contentDescription="@string/delete"-->
+<!--            android:visibility="visible"-->
+<!--            />-->
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_view_container"

@@ -13,5 +13,6 @@
     <include app:graph="@navigation/add_asset_graph"/>
     <include app:graph="@navigation/qr_print_graph"/>
     <include app:graph="@navigation/login_graph"/>
+    <include app:graph="@navigation/add_maintenance_graph"/>
 
 </navigation>

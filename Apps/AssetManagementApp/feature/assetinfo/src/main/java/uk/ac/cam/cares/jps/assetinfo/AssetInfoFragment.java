@@ -10,7 +10,11 @@ import static uk.ac.cam.cares.jps.utils.SerializationUtils.serializeObjectToStri
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -58,7 +62,7 @@ public class AssetInfoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        view.findViewById(uk.ac.cam.cares.jps.ui.R.id.back_bt).setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
+        binding.topAppBar.setNavigationOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
         Uri uri = ((Intent) getArguments().get("android-support-nav:controller:deepLinkIntent")).getData();
 
@@ -93,67 +97,45 @@ public class AssetInfoFragment extends Fragment {
 
     }
 
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        return super.onContextItemSelected(item);
+    }
+
     private void showAssetInfoForGivenUri(View view, String uri) {
         LOGGER.info("Navigated to asset info page");
         LOGGER.info(getArguments().getString("uri"));
 
-        ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.asset_info);
-        view.findViewById(R.id.info_app_bar_buttons).setVisibility(View.VISIBLE);
-        ImageButton editButton = view.findViewById(R.id.edit_bt);
-        editButton.setEnabled(false);
-        editButton.setOnClickListener(view1 -> {
-            // todo: the infor for assetinfo here may not be complete due to setting. need to fix it when goes to edit
-            AssetInfo assetInfo = viewModel.getAssetInfo().getValue();
-            NavDeepLinkRequest request = null;
-            try {
-                request = NavDeepLinkRequest.Builder
-                        .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/edit_asset?assetinfo=" + serializeObjectToString(assetInfo)))
-                        .build();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        binding.topAppBar.setTitle(R.string.asset_info);
+        binding.topAppBar.inflateMenu(R.menu.asset_info_menu);
+
+        viewModel.assetInfo.observe(getViewLifecycleOwner(), assetInfo -> {
+            if (!binding.topAppBar.hasOnClickListeners()) {
+                binding.topAppBar.setOnMenuItemClickListener(menuItem -> {
+                    if (menuItem.getItemId() == R.id.edit) {
+                        editItemClicked();
+                        return true;
+                    } else if (menuItem.getItemId() == R.id.add_maintenance) {
+                        maintenanceItemClicked();
+                        return true;
+                    } else if (menuItem.getItemId() == R.id.delete) {
+                        UiUtils.showNotImplementedDialog(requireContext());
+                        return true;
+                    }
+                    return false;
+                });
             }
-            NavHostFragment.findNavController(this).navigate(request);
-        });
 
-        ImageButton deleteButton = view.findViewById(R.id.delete_bt);
-        deleteButton.setEnabled(false);
-        deleteButton.setOnClickListener(view1 -> {
-            // todo: call repository for delete
-            UiUtils.showNotImplementedDialog(requireContext());
-        });
-
-        viewModel.getAssetInfo().observe(this.getViewLifecycleOwner(), assetInfo -> {
             assetInfoAdapter.updateProperties(assetInfo);
             hideShimmer();
             binding.assetInfoRv.setVisibility(View.VISIBLE);
 
-            editButton.setEnabled(true);
-            deleteButton.setEnabled(true);
-
-            binding.viewGraphBt.setOnClickListener(bt -> new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.view_status_graph)
-                    .setMessage(R.string.view_status_in_bms_app).setPositiveButton(R.string.yes, (dialogInterface, i) -> {
-                        Intent bmsIntent = new Intent();
-                        bmsIntent.setAction("uk.ac.cam.cares.jps.bmsqueryapp.action.VIEW_GRAPH");
-                        bmsIntent.putExtra("equipmentIRI", assetInfo.getProperties().get(IRI));
-                        bmsIntent.putExtra("equipmentLabel", assetInfo.getProperties().getOrDefault(REFERENCE_LABEL, ""));
-                        bmsIntent.putExtra("equipmentType", assetInfo.getProperties().get(TYPE));
-                        bmsIntent.setType("text/plain");
-
-                        try {
-                            startActivity(bmsIntent);
-                        } catch (Exception e) {
-                            new MaterialAlertDialogBuilder(requireActivity())
-                                    .setTitle(R.string.unable_to_open_bms_app)
-                                    .setMessage(R.string.check_bms_installation)
-                                    .setPositiveButton(R.string.ok, (dialogInterface1, i1) -> {})
-                                    .show();
-                        }
-                    })
-                    .setNegativeButton(R.string.no, null)
-                    .show());
-            if (assetInfo.getProperties().get(HAS_TIME_SERIES).equals("true")) {
-                binding.viewGraphBt.setVisibility(View.VISIBLE);
-            }
+            setupViewGraphButton(assetInfo);
         });
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             hideShimmer();
@@ -169,19 +151,76 @@ public class AssetInfoFragment extends Fragment {
         binding.shimmerViewContainer.startShimmer();
     }
 
+    private void editItemClicked() {
+        AssetInfo assetInfo = viewModel.getAssetInfo().getValue();
+        NavDeepLinkRequest request = null;
+        try {
+            request = NavDeepLinkRequest.Builder
+                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/edit_asset?assetinfo=" + serializeObjectToString(assetInfo)))
+                    .build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        NavHostFragment.findNavController(this).navigate(request);
+    }
+
+    private void maintenanceItemClicked() {
+        AssetInfo assetInfo = viewModel.getAssetInfo().getValue();
+        NavDeepLinkRequest request = null;
+        try {
+            request = NavDeepLinkRequest.Builder
+                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/add_maintenance?assetinfo=" + serializeObjectToString(assetInfo)))
+                    .build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        NavHostFragment.findNavController(this).navigate(request);
+    }
+
+    private void setupViewGraphButton(AssetInfo assetInfo) {
+        binding.viewGraphBt.setOnClickListener(bt -> new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.view_status_graph)
+                .setMessage(R.string.view_status_in_bms_app).setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                    Intent bmsIntent = new Intent();
+                    bmsIntent.setAction("uk.ac.cam.cares.jps.bmsqueryapp.action.VIEW_GRAPH");
+                    bmsIntent.putExtra("equipmentIRI", assetInfo.getProperties().get(IRI));
+                    bmsIntent.putExtra("equipmentLabel", assetInfo.getProperties().getOrDefault(REFERENCE_LABEL, ""));
+                    bmsIntent.putExtra("equipmentType", assetInfo.getProperties().get(TYPE));
+                    bmsIntent.setType("text/plain");
+
+                    try {
+                        startActivity(bmsIntent);
+                    } catch (Exception e) {
+                        new MaterialAlertDialogBuilder(requireActivity())
+                                .setTitle(R.string.unable_to_open_bms_app)
+                                .setMessage(R.string.check_bms_installation)
+                                .setPositiveButton(R.string.ok, (dialogInterface1, i1) -> {})
+                                .show();
+                    }
+                })
+                .setNegativeButton(R.string.no, null)
+                .show());
+        if (assetInfo.getProperties().get(HAS_TIME_SERIES).equals("true")) {
+            binding.viewGraphBt.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void showAssetSummary(View view, AssetInfo assetInfo, int appBarTitle, NavDeepLinkRequest request) {
         // NOTICE: assetinfo is not hosted in ViewModel
-        ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(appBarTitle);
         assetInfoAdapter = new AssetInfoAdapter(assetInfo, false);
         binding.assetInfoRv.setLayoutManager(new LinearLayoutManager(view.getContext()));
         binding.assetInfoRv.setAdapter(assetInfoAdapter);
         hideShimmer();
         binding.assetInfoRv.setVisibility(View.VISIBLE);
 
-        ImageButton doneButton = view.findViewById(R.id.done_bt);
-        doneButton.setVisibility(View.VISIBLE);
-        doneButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(request);
+        binding.topAppBar.setTitle(appBarTitle);
+        binding.topAppBar.inflateMenu(R.menu.asset_summary_menu);
+
+        binding.topAppBar.setOnMenuItemClickListener( menuItem -> {
+            if (menuItem.getItemId() == R.id.done) {
+                NavHostFragment.findNavController(this).navigate(request);
+                return true;
+            }
+            return false;
         });
     }
 

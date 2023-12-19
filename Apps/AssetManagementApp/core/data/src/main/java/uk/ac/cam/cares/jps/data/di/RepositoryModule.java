@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.data.assetinfo.AssetInfoRepository;
 import uk.ac.cam.cares.jps.data.mail.MailRepository;
+import uk.ac.cam.cares.jps.data.maintenance.MaintenanceRepository;
 import uk.ac.cam.cares.jps.data.otherinfo.OtherInfoRepository;
 import uk.ac.cam.cares.jps.data.qrprint.QRPrintRepository;
 import uk.ac.cam.cares.jps.data.setting.SettingRepository;
@@ -17,6 +18,7 @@ import uk.ac.cam.cares.jps.datastore.SettingLocalSource;
 import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 import uk.ac.cam.cares.jps.network.datasheet.DataSheetNetworkSource;
 import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
+import uk.ac.cam.cares.jps.network.maintenance.MaintenanceNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.BMSNetworkSource;
 import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
 import uk.ac.cam.cares.jps.network.qrprint.QRPrintingNetworkSource;
@@ -52,5 +54,11 @@ public class RepositoryModule {
     @Singleton
     public QRPrintRepository provideQRPrintingRepository(QRPrintingLocalSource localSource, QRPrintingNetworkSource networkSource) {
         return new QRPrintRepository(localSource, networkSource);
+    }
+
+    @Provides
+    @Singleton
+    public MaintenanceRepository provideMaintenanceRepository(MaintenanceNetworkSource networkSource) {
+        return new MaintenanceRepository(networkSource);
     }
 }
