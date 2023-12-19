@@ -14,6 +14,20 @@
         <!-- Customize your theme here. -->
         <item name="textAppearanceSubtitle1">@style/Subtitle1</item>
         <item name="textAppearanceBody2">@style/Body2</item>
+        <item name="toolbarStyle">@style/Toolbar</item>
+    </style>
+
+    <style name="Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="titleTextColor">@color/white</item>
+        <item name="titleCentered">true</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="titleMarginTop">13dp</item>
+        <item name="popupTheme">@style/PopupMenu</item>
+    </style>
+
+    <style name="PopupMenu">
+        <item name="android:gravity">center_vertical</item>
     </style>
 
     <style name="Theme.AssetManagementApp.NoActionBar">
