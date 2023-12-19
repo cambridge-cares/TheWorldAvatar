@@ -191,14 +191,8 @@ public class GeometryHandler {
 //        List<LinearRing> holes = new ArrayList<>();
         GeometryFactory geometryFactory = new GeometryFactory();
         String geoType;
-        boolean flag84 = false;
 
         List<Geometry> result = new ArrayList<>();
-
-        if (originalCRS.equals("CRS84")) {
-            originalCRS = "4326";
-            flag84 = true;
-        }
 
         originalCRS = "EPSG:" + originalCRS;
 
@@ -208,10 +202,6 @@ public class GeometryHandler {
             String wkt = surfaceArray.getJSONObject(0).getString("wkt");
 
             Geometry temp = toGeometry(wkt);
-
-            if (flag84) {
-                temp = swapCoordinates(temp);
-            }
 
             try {
                 result.add(transformGeometry(temp, originalCRS, EPSG_4326));
@@ -229,10 +219,6 @@ public class GeometryHandler {
 
                 // create Polygon object from WKT string
                 Polygon polygon = (Polygon) toGeometry(wkt);
-
-                if (flag84) {
-                    polygon = swapCoordinates(polygon);
-                }
 
                 try {
                     polygon = (Polygon) transformGeometry(polygon, originalCRS, EPSG_4326);
