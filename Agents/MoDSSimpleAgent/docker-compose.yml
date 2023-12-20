@@ -2,9 +2,26 @@ version: "3.8"
 
 services:
   modssimpleagent:
-    image: ghcr.io/cambridge-cares/modssimpleagent:0.4.0
+    image: ghcr.io/cambridge-cares/modssimpleagent:0.5.0-sampling-SNAPSHOT
     build: .
     container_name: modssimpleagent
+    environment:
+      DATA_DIR: /app/files
+      CMCL_LICENSE_PATH: "/run/secrets/mods_agent_licence"
+      MODS_SAVE_DIR: "/usr/local/mods-simple-agent/savedsurrogates"
+    ports:
+      - "58085:58085"
+      - "8000:8000"
+    secrets:
+      - mods_agent_licence
+    volumes:
+      - "./savedsurrogates:/usr/local/mods-simple-agent/savedsurrogates/"
+  modssrmagent:
+    image: ghcr.io/cambridge-cares/modssrmagent:0.5.0-sampling-SNAPSHOT
+    build:
+      context: .
+      dockerfile: Dockerfile2
+    container_name: modssrmagent
     environment:
       DATA_DIR: /app/files
       CMCL_LICENSE_PATH: "/run/secrets/mods_agent_licence"
