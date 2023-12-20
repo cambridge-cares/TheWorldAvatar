@@ -301,13 +301,13 @@ class MapHandler_Mapbox extends MapHandler {
             let options = {...source.definition};
 
             // Remove properties not expected by Mapbox
-            if(options["id"]) delete options["id"];
-            if(options["metaFiles"]) delete options["metaFiles"];
-            if(options["timeseriesFiles"]) delete options["timeseriesFiles"];
+            if(options.hasOwnProperty("id")) delete options["id"];
+            if(options.hasOwnProperty("metaFiles")) delete options["metaFiles"];
+            if(options.hasOwnProperty("timeseriesFiles")) delete options["timeseriesFiles"];
 
             // Add attributions if missing
             if(source.type !== "video" && source.type !== "image") {
-                if(!options["attribution"]) {
+                if(!options.hasOwnProperty("attribution")) {
                     options["attribution"] = "CMCL";
                 }
             }
@@ -325,51 +325,48 @@ class MapHandler_Mapbox extends MapHandler {
      */
     private addLayer(layer: DataLayer) {
         let collision = MapHandler.MAP.getLayer(layer.id);
+        if(collision != null) return;
 
-        if(collision === null || collision === undefined) {
-            // Clone the original layer definition
-            let options = {...layer.definition};
+        // Clone the original layer definition
+        let options = {...layer.definition};
 
-            // Add attributions if missing
-            if(!options["metadata"]) {
-                options["metadata"] = {};
-            }
-            if(!options["metadata"]["attribution"]) {
-                options["metadata"]["attribution"] = "CMCL";
-            }
-
-            // Remove 'interactions' and 'clickable' if specified
-            if(options["interactions"]) {
-                delete options["interactions"]
-            } else if(options["clickable"]) {
-                delete options["clickable"]
-            }
-
-            // Remove 'treeable' if specified
-            if(options["treeable"]) {
-                options["metadata"]["treeable"] = options["treeable"]
-                delete options["treeable"]
-            } else {
-                options["metadata"]["treeable"] = true
-            }
-
-            // Use the cached visibility, not the one from the original definition
-            if(!options.hasOwnProperty("layout")) {
-                options["layout"] = {};
-            }
-            options["layout"]["visibility"] = (layer.getVisibility()) ? "visible" : "none";
-            
-            // Update to unique ID
-            options["id"] = layer.id;
-
-            // Remove fields not strictly required by Mapbox
-            delete options["name"];
-            delete options["order"];
-
-            // Add to the map
-            MapHandler.MAP.addLayer(options);
-            console.info("Added data layer to map '" + layer.id + "'.");
+        // Add attributions if missing
+        if(!options.hasOwnProperty("metadata")) {
+            options["metadata"] = {};
         }
+        if(!options["metadata"].hasOwnProperty("attribution")) {
+            options["metadata"]["attribution"] = "CMCL";
+        }
+
+        // Remove 'interactions' and 'clickable' if specified
+        if(options.hasOwnProperty("interactions")) {
+            delete options["interactions"]
+        }
+        if(options.hasOwnProperty("clickable")) {
+            delete options["clickable"]
+        }
+
+        // Remove 'treeable' if specified
+        if(options.hasOwnProperty("treeable")) {
+            delete options["treeable"]
+        } 
+
+        // Use the cached visibility, not the one from the original definition
+        if(!options.hasOwnProperty("layout")) {
+            options["layout"] = {};
+        }
+        options["layout"]["visibility"] = layer.getVisibility() ? "visible" : "none";
+        
+        // Update to unique ID
+        options["id"] = layer.id;
+
+        // Remove fields not strictly required by Mapbox
+        delete options["name"];
+        delete options["order"];
+
+        // Add to the map
+        MapHandler.MAP.addLayer(options);
+        console.info("Added data layer to map '" + layer.id + "'.");
     }
 
     /**
