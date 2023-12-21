@@ -14,6 +14,14 @@ RUN sed -i "s|WA_REPO_USERNAME|$(cat ../credentials/wa_repo_username.txt)|;s|WA_
 # Build
 WORKDIR /root/mods-simple-agent
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
+
+# pull SRM
+WORKDIR /root/srm
+RUN --mount=type=cache,target=/root/.m2/repository mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
+    -DrepoUrl=all-cmcl-products \
+    -Dartifact=com.cmclinnovations:srm-backend-linux:11.6.0:zip && \
+	apt update && apt install unzip && \
+	unzip /root/.m2/repository/com/cmclinnovations/srm-backend-linux/11.6.0/srm-backend-linux-11.6.0.zip -d ./
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
@@ -43,9 +51,11 @@ RUN apt remove *python* -y
 COPY --chown=${USER}:${USER} mods-simple-agent/src/python/requirements.txt "${MODS_BIN_DIR}"
 
 USER ${USER}
+COPY --chown=${USER}:${USER} --from=builder /root/srm /usr/local/srm
 WORKDIR /usr/local/mods-simple-agent
 COPY --chown=${USER}:${USER} --from=builder /root/mods-simple-agent/target/*.jar app.jar
 COPY --chown=${USER}:${USER} --from=builder /root/mods-simple-agent/target/bin "${MODS_BIN_DIR}"
+
 
 ENV MODS_BIN_DIR="${MODS_BIN_DIR}"
 ARG MODS_VENV_PATH="${MODS_BIN_DIR}/env"
@@ -63,6 +73,9 @@ ENV PATH="${MODS_BIN_DIR}:${PATH}"
 ARG CMCL_LICENSE_PATH=6200@host.docker.internal
 ENV CMCL_LICENSE_PATH="${CMCL_LICENSE_PATH}"
 ENV JAVA_OPTS=${JAVA_OPTS}
+
+ARG USER="user"
+COPY --chown=${USER}:${USER} --from=builder /root/srm /usr/local/srm
 
 COPY ./entrypoint.sh ./entrypoint.sh
 
