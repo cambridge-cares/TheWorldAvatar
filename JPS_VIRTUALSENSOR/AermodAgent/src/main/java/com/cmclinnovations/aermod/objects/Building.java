@@ -1,7 +1,6 @@
 package com.cmclinnovations.aermod.objects;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -14,6 +13,8 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 public class Building {
     private String iri;
@@ -70,8 +71,21 @@ public class Building {
     public double getRadius() {
         Coordinate[] baseCoords = footPrint.getCoordinates();
 
-        return Arrays.stream(baseCoords)
-                .mapToDouble(d -> location.distance(new GeometryFactory().createPoint(d))).average().orElse(0.0);
+        // ensure coordinates are in meters
+        List<Coordinate> coordinatesInMeter = new ArrayList<>();
+        for (Coordinate coordinate : baseCoords) {
+            double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
+            double[] xyTransformed = CRSTransformer.transform(getSrid(), "EPSG:3857", xyOriginal);
+            coordinatesInMeter.add(new Coordinate(xyTransformed[0], xyTransformed[1]));
+        }
+
+        double[] centroidOriginal = { footPrint.getCentroid().getX(), footPrint.getCentroid().getY() };
+        double[] centroidTransformed = CRSTransformer.transform(getSrid(), "EPSG:3857", centroidOriginal);
+        Point centroidAsPoint = new GeometryFactory()
+                .createPoint(new Coordinate(centroidTransformed[0], centroidTransformed[1]));
+
+        return coordinatesInMeter.stream()
+                .mapToDouble(d -> centroidAsPoint.distance(new GeometryFactory().createPoint(d))).average().orElse(0.0);
     }
 
     /**

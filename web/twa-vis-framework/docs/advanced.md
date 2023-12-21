@@ -51,6 +51,22 @@ By default, these fields within the data need to be named `name` and `descriptio
 
 <br/>
 
+## Setting interaction level
+
+Each layer with a visualisation can independently specify the allowed level of mouse interaction. Using the optional `"interactions"` layer parameter, users can set one of four possible values: `"all"`, `"click-only"`, `"hover-only"`, and `"none"` (with `"all"` being the default if unspecified). See the [UK Base World Visualisation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/uk-base-world) for example usage of this parameter.
+
+<br/>
+
 ## Attribution
 
-If users wish, or are required, to show attributions for their visualised data, then a HTML string can be added to the `settings.json` file under the `attribution` parameter. When present, this will display a collapsible attributions box in the lower left of the visualisation.
+If users wish, or are required, to show attributions for their data, then a HTML string can be added to the `settings.json` file under the `attribution` parameter. When present, this will display a collapsible attributions box in the lower left of the visualisation.
+
+<br/>
+
+**Note:** this control does not offer a lot of space for textual content and should probably be avoided. An alternative is to update your `index.html` file with a new tab of static HTML content that can detail your attributions/acknowledgements.
+
+<br/>
+
+## Dashboards
+
+Where applicable, the TWA-VF can now display a link to an associated analytics dashboard. To add this link, simply set the `dashboard` parameter in the visualisation's `settings.json` file to the dashboard's URL.

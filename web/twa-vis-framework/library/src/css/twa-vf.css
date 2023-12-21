@@ -1096,6 +1096,15 @@ label[for="select-feature"] {
 
 #layerContainer {
     max-height: 550px;
+    display: flex;
+	flex-flow: column;
+	overflow: hidden;
+}
+
+#layerContainer .controlContents {
+    display: flex;
+	flex-flow: column;
+	overflow: hidden;
 }
 
 #layerTree {
@@ -1108,11 +1117,10 @@ label[for="select-feature"] {
     list-style-type: none;
 }
 
-
 #layerTreeContainer {
     min-height: 30vh;
     max-height: 50vh;
-    overflow-y: auto;
+    overflow: scroll;
 }
 
 @media only screen and (max-height: 900px) {
@@ -1433,7 +1441,7 @@ label[for="select-feature"] {
     background-color: #B8B8B8;
 }
 
-#helpandsearchandlogout {
+#helpandsearch {
     display: flex;
 }
 
@@ -1469,12 +1477,4 @@ label[for="select-feature"] {
     max-width: 360px;
     padding: 20px;
     object-fit: cover
-}
-
-#logout-button {
-    display: block;
-    width: 60px;
-    text-align: center;
-    cursor: pointer;
-    margin-right: 10px;
 }

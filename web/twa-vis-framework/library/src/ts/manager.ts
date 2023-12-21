@@ -48,6 +48,16 @@ class Manager {
     private searchHandler: SearchHandler;
 
     /**
+     * Optional callbacks to trigger once a singluar feature has been selected.
+     */
+    public selectionCallbacks = [];
+
+    /**
+     * Optional callbacks to trigger once a feature selection is cleared.
+     */
+    public unselectionCallbacks = [];
+
+    /**
      * Optional callback to trigger once data definitions have been loaded.
      */
     public dataLoadCallback;
@@ -148,6 +158,37 @@ class Manager {
             }
         });
 
+    }
+
+    /**
+     * Adds a callback that will fire with the selected feature once a 
+     * singular feature has been selected.
+     * 
+     * @param selectionCallback callback function.
+     */
+    public addSelectionCallback(selectionCallback) {
+        this.selectionCallbacks.push(selectionCallback);
+    }
+
+    /**
+     * Adds a callback that will fire with no parameters once the
+     * current feature selection is cleared.
+     * 
+     * @param unselectionCallback callback function.
+     */
+    public addUnselectionCallback(unselectionCallback) {
+        this.unselectionCallbacks.push(unselectionCallback);
+        this.panelHandler.addUnselectionCallback(unselectionCallback);
+    }
+
+    /**
+     * Adds a callback that will fire with two arrays of layerIDs (visible, hidden)
+     * when any selection state in the layer tree changes.
+     * 
+     * @param treeSelectionCallback callback function.
+     */
+    public addTreeSelectionCallback(treeSelectionCallback) {
+        this.controlHandler.addTreeSelectionCallback(treeSelectionCallback);
     }
 
     /**
@@ -345,6 +386,11 @@ class Manager {
         
         // Store selected feature
         window.currentFeature = feature;
+
+        // Fire selection callbacks
+        this.selectionCallbacks.forEach(callback => {
+            callback(feature);
+        });
     }
 
     /**

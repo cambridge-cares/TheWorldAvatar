@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -49,9 +50,10 @@ public class VirtualSensorAgent extends DerivationAgent {
         // Get latest time for which pollutant data has been stored, list of dispersion
         // matrix data IRIs and station location
         String derivation = derivationInputs.getDerivationIRI();
+        List<String> dispersionOutputs = derivationInputs.getIris(QueryClient.DISPERSION_OUTPUT);
         Instant latestTime = queryClient.getLatestStationTime(derivation);
 
-        Map<String, String> pollutantToDispRaster = queryClient.getDispersionRasterIris(derivation);
+        Map<String, String> pollutantToDispRaster = queryClient.getDispersionRasterIris(dispersionOutputs);
         Point stationLocation = queryClient.getSensorLocation(derivation);
 
         // this should be a subset of the disp raster map, as the virtual sensor is only
