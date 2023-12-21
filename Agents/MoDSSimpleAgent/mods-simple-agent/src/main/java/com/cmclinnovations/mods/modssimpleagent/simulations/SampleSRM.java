@@ -34,6 +34,14 @@ class SampleSRM extends Simulation {
     }
 
     @Override
+    protected void populateModelNodes() {
+        String type = "Executable";
+        for (String modelName : getModels()) {
+            super.getInputFile().addModel(modelName, type, "bash","\"${MODS_BIN_DIR}/runKineticsSRM.sh\"");
+        }
+    }
+
+    @Override
     protected void generateFiles() throws FileGenerationException {
         generateInitialFileFromMetaData();
         generateSamplingAlgDataFiles();

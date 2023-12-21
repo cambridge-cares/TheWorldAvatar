@@ -153,6 +153,19 @@ public final class BackendInputFile implements FileGenerator {
         addModel(model);
     }
 
+    public void addModel(String name, String type, String executable_name, String args) {
+        Model model = objectFactory.createModsModelsModel();
+
+        model.setName(name);
+        Details details = objectFactory.createDetails();
+        addDetail(details, "model_type", type);
+        addDetail(details, "executable_name", executable_name);
+        addDetail(details, "args", args);
+        model.setDetails(details);
+
+        addModel(model);
+    }
+
     private void addModel(Model model) {
         Models models = modsObject.getModels();
         if (null == models) {

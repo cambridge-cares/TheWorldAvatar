@@ -49,6 +49,7 @@ RUN apt update && apt install temurin-17-jdk mpich rsync -y && \
 RUN apt remove *python* -y
 
 COPY --chown=${USER}:${USER} mods-simple-agent/src/python/requirements.txt "${MODS_BIN_DIR}"
+COPY --chown=${USER}:${USER} mods-simple-agent/runKineticsSRM.sh "${MODS_BIN_DIR}"
 
 USER ${USER}
 COPY --chown=${USER}:${USER} --from=builder /root/srm /usr/local/srm

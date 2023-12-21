@@ -17,6 +17,7 @@
                 <detail name="output_by_case">false</detail>
                 <detail name="output_values">true</detail>
                 <detail name="global">false</detail>
+                <detail name="evaluate_models">true</detail>
 				<detail name="previous_algorithm">SamplingAlg_data</detail>
             </details>
         </algorithm>

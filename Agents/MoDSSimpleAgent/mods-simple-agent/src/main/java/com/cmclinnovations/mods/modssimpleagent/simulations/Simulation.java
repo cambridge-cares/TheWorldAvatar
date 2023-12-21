@@ -173,7 +173,7 @@ public abstract class Simulation {
         }
     }
 
-    private void populateModelNodes() {
+    protected void populateModelNodes() {
         String type = "Executable";
         for (String modelName : getModels()) {
             inputFile.addModel(modelName, type);
