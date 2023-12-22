@@ -59,6 +59,12 @@ class SampleSRM extends Simulation {
             getInputFile().addParameter(name, variable.getSubtype(), variable.type(), getVariableCases(name),
                     getVariableModels(name), minItr.next(), maxItr.next(), variable.path());
         }
+        for (Variable variable:variables) {
+            if (variable.type().equals("output")) {
+                getInputFile().addParameter(variable.name(), variable.getSubtype(), variable.type(), getVariableCases(variable.name()),
+                    getVariableModels(variable.name()),variable.initialReadDetail(), variable.workingReadDetail());
+            }
+        }
     }
 
     @Override

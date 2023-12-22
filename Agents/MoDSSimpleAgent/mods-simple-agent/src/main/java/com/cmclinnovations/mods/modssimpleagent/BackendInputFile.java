@@ -20,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -252,6 +254,29 @@ public final class BackendInputFile implements FileGenerator {
         addParameter(param);
     }
 
+    public void addParameter(String name, String subtype, String type,
+            List<String> caseNames, List<String> modelNames,
+            Map<String,String> initialReadDetail, Map<String,String> workingReadDetail) {
+        Parameter param = objectFactory.createModsParametersParameter();
+
+        param.setName(name);
+        param.setType("active_" + type);
+        param.setSubtype(subtype);
+        param.setScaling("linear");
+
+        addParameterCases(param, caseNames);
+        addParameterModels(param, modelNames);
+
+        Parameter.Files.InitialRead initialRead = createInitialRead(initialReadDetail);
+        Parameter.Files.WorkingRead workingRead = createWorkingRead(initialReadDetail.get("file_name"),workingReadDetail);
+        Parameter.Files files = objectFactory.createModsParametersParameterFiles();
+        files.setInitialRead(initialRead);
+        files.setWorkingRead(workingRead);
+        param.setFiles(files);
+
+        addParameter(param);
+    }
+
     private void addParameterCases(Parameter param, List<String> caseNames) {
         Parameter.Cases paramCases = objectFactory.createModsParametersParameterCases();
         paramCases.getCase().addAll(caseNames);
@@ -277,6 +302,30 @@ public final class BackendInputFile implements FileGenerator {
         addDetail(initialDetails, "ub_abs", upperBound);
         initialRead.setDetails(initialDetails);
         return initialRead;
+    }
+
+    private Parameter.Files.InitialRead createInitialRead(Map<String,String> initialReadDetail) {
+        Parameter.Files.InitialRead initialRead = objectFactory
+                .createModsParametersParameterFilesInitialRead();
+        initialRead.setFileName(Simulation.INITIAL_FILE_NAME);
+        Details initialDetails = objectFactory.createDetails();
+        for (Map.Entry<String,String> entry : initialReadDetail.entrySet()) {
+            addDetail(initialDetails, entry.getKey(), entry.getValue());
+        }
+        initialRead.setDetails(initialDetails);
+        return initialRead;
+    }
+
+    private Parameter.Files.WorkingRead createWorkingRead(String filename, Map<String,String> workingReadDetail) {
+        Parameter.Files.WorkingRead workingRead = objectFactory
+                .createModsParametersParameterFilesWorkingRead();
+        workingRead.setFileName(filename);
+        Details initialDetails = objectFactory.createDetails();
+        for (Map.Entry<String,String> entry : workingReadDetail.entrySet()) {
+            addDetail(initialDetails, entry.getKey(), entry.getValue());
+        }
+        workingRead.setDetails(initialDetails);
+        return workingRead;
     }
 
     private Parameter.Files.WorkingWrite createWorkingWrite(String path) {
