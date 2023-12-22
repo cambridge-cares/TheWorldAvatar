@@ -255,7 +255,7 @@ public final class BackendInputFile implements FileGenerator {
     }
 
     public void addParameter(String name, String subtype, String type,
-            List<String> caseNames, List<String> modelNames,
+            List<String> caseNames, List<String> modelNames, Integer NParams,
             Map<String,String> initialReadDetail, Map<String,String> workingReadDetail) {
         Parameter param = objectFactory.createModsParametersParameter();
 
@@ -263,6 +263,8 @@ public final class BackendInputFile implements FileGenerator {
         param.setType("active_" + type);
         param.setSubtype(subtype);
         param.setScaling("linear");
+        param.setDetailSep(",");
+        param.setNParamsPerCase(String.valueOf(NParams));
 
         addParameterCases(param, caseNames);
         addParameterModels(param, modelNames);

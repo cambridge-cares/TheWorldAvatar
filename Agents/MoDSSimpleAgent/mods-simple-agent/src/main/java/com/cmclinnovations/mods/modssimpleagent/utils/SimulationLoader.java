@@ -28,12 +28,12 @@ public class SimulationLoader {
         try {
             if (!Files.exists(loadDirectory)) {
                 throw new IOException(
-                        "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+                        "Directory '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
             }
 
             FileUtils.copyDirectory(loadDirectory, surrogateDirectory);
 
-            LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+            LOGGER.info("Directory '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
                     surrogateDirectory.toAbsolutePath());
 
         } catch (IOException ex) {
@@ -50,12 +50,12 @@ public class SimulationLoader {
         try {
             if (!Files.exists(loadDirectory)) {
                 throw new IOException(
-                        "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+                        "Directory '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
             }
 
             FileUtils.copyDirectory(loadDirectory, simDirectory);
 
-            LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+            LOGGER.info("Directory '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
                     simDirectory.toAbsolutePath());
 
         } catch (IOException ex) {

@@ -1,5 +1,6 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,7 +63,7 @@ class SampleSRM extends Simulation {
         for (Variable variable:variables) {
             if (variable.type().equals("output")) {
                 getInputFile().addParameter(variable.name(), variable.getSubtype(), variable.type(), getVariableCases(variable.name()),
-                    getVariableModels(variable.name()),variable.initialReadDetail(), variable.workingReadDetail());
+                    getVariableModels(variable.name()),variable.nParams(),variable.initialReadDetail(), variable.workingReadDetail());
             }
         }
     }
@@ -72,6 +73,13 @@ class SampleSRM extends Simulation {
         generateInitialFileFromMetaData();
         generateSamplingAlgDataFiles();
         super.generateFiles();
+    }
+
+    @Override
+    public void run() throws IOException {
+        populateInputFile();
+        generateFiles();
+        getModsBackend().run();
     }
 
     @Override
