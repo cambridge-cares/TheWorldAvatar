@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public record Variable(String name, String type, @JsonInclude(Include.NON_NULL) String objective,
         @JsonInclude(Include.NON_NULL) Double minimum, @JsonInclude(Include.NON_NULL) Double maximum,
-        @JsonInclude(Include.NON_NULL) Double weight) {
+        @JsonInclude(Include.NON_NULL) Double weight, @JsonInclude(Include.NON_NULL) String path) {
 
     public static final String SUBTYPE_PREFIX = "subtype_";
 

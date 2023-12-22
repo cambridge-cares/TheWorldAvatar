@@ -1,5 +1,6 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.cmclinnovations.mods.modssimpleagent.utils.SimulationLoader;
 import com.cmclinnovations.mods.modssimpleagent.utils.SimulationSaver;
 import com.google.common.collect.Streams;
@@ -37,14 +39,26 @@ class SampleSRM extends Simulation {
     protected void populateModelNodes() {
         String type = "Executable";
         for (String modelName : getModels()) {
-            super.getInputFile().addModel(modelName, type, "bash","\"${MODS_BIN_DIR}/runKineticsSRM.sh\"");
+            getInputFile().addModel(modelName, type, "bash","\"${MODS_BIN_DIR}/runKineticsSRM.sh\"");
         }
     }
 
     @Override
     protected void populateFileNodes() {
         super.populateFileNodes();
-        super.getInputFile().addInputParams();
+        getInputFile().addInputParams();
+    }
+
+    @Override
+    protected void populateParameterNodes(List<Variable> variables) {
+        Iterator<Double> minItr = getInputMetaData().getMinima().iterator();
+        Iterator<Double> maxItr = getInputMetaData().getMaxima().iterator();
+        for (String name : getInputMetaData().getVarNames()) {
+            Variable variable = variables.stream().filter(varToTest -> varToTest.name().equals(name)).findFirst()
+                    .orElseThrow();
+            getInputFile().addParameter(name, variable.getSubtype(), variable.type(), getVariableCases(name),
+                    getVariableModels(name), minItr.next(), maxItr.next(), variable.path());
+        }
     }
 
     @Override

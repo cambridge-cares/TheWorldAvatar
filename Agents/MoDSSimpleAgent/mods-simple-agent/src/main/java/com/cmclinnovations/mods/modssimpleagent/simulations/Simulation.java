@@ -195,7 +195,7 @@ public abstract class Simulation {
         .collect(Collectors.toList());
     }
 
-    private void populateParameterNodes(List<Variable> variables) {
+    protected void populateParameterNodes(List<Variable> variables) {
         Iterator<Double> minItr = inputMetaData.getMinima().iterator();
         Iterator<Double> maxItr = inputMetaData.getMaxima().iterator();
         for (String name : inputMetaData.getVarNames()) {

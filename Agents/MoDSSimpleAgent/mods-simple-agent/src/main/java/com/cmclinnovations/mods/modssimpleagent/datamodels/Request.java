@@ -19,7 +19,7 @@ public record Request(String jobID, @JsonProperty("SimulationType") String simul
         @JsonProperty("Files") List<String> files) {
 
     public Request(String jobID, String simulationType) {
-        this(jobID, simulationType, null, null, null, null, new ArrayList<>());
+        this(jobID, simulationType, null, null, null, null, null);
     }
 
     @JsonIgnore

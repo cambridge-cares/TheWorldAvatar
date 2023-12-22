@@ -229,6 +229,29 @@ public final class BackendInputFile implements FileGenerator {
         addParameter(param);
     }
 
+    public void addParameter(String name, String subtype, String type,
+            List<String> caseNames, List<String> modelNames,
+            double lowerBound, double upperBound, String path) {
+        Parameter param = objectFactory.createModsParametersParameter();
+
+        param.setName(name);
+        param.setType("active_" + type);
+        param.setSubtype(subtype);
+        param.setScaling("linear");
+
+        addParameterCases(param, caseNames);
+        addParameterModels(param, modelNames);
+
+        Parameter.Files.InitialRead initialRead = createInitialRead(name, lowerBound, upperBound);
+        Parameter.Files.WorkingWrite workingWrite = createWorkingWrite(path);
+        Parameter.Files files = objectFactory.createModsParametersParameterFiles();
+        files.setInitialRead(initialRead);
+        files.setWorkingWrite(workingWrite);
+        param.setFiles(files);
+
+        addParameter(param);
+    }
+
     private void addParameterCases(Parameter param, List<String> caseNames) {
         Parameter.Cases paramCases = objectFactory.createModsParametersParameterCases();
         paramCases.getCase().addAll(caseNames);
@@ -254,6 +277,17 @@ public final class BackendInputFile implements FileGenerator {
         addDetail(initialDetails, "ub_abs", upperBound);
         initialRead.setDetails(initialDetails);
         return initialRead;
+    }
+
+    private Parameter.Files.WorkingWrite createWorkingWrite(String path) {
+        Parameter.Files.WorkingWrite workingWrite = objectFactory
+                .createModsParametersParameterFilesWorkingWrite();
+        workingWrite.setFileName("InputParams.xml");
+        Details initialDetails = objectFactory.createDetails();
+        addDetail(initialDetails, "path", path);
+        addDetail(initialDetails, "write_function", "Set_XML_double");
+        workingWrite.setDetails(initialDetails);
+        return workingWrite;
     }
 
     private void addParameter(Parameter param) {
