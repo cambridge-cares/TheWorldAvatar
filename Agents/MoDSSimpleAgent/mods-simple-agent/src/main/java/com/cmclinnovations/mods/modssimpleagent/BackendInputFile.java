@@ -196,6 +196,18 @@ public final class BackendInputFile implements FileGenerator {
         files.getFile().add(file);
     }
 
+    public void addInputParams() {
+        Files.File file = objectFactory.createModsFilesFile();
+
+        file.setFileName("InputParams.xml");
+        Details details = objectFactory.createDetails();
+        addDetail(details, "file_type", "XML");
+        addDetail(details, "XML_namespace", "http://como.cheng.cam.ac.uk/srm");
+        file.setDetails(details);
+
+        addFile(file);
+    }
+
     public void addParameter(String name, String subtype, String type,
             List<String> caseNames, List<String> modelNames,
             double lowerBound, double upperBound) {

@@ -1,5 +1,6 @@
 package com.cmclinnovations.mods.modssimpleagent.datamodels;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,10 +15,11 @@ import lombok.Builder;
 @Builder(toBuilder = true)
 public record Request(String jobID, @JsonProperty("SimulationType") String simulationType,
         @JsonProperty("Algorithms") List<Algorithm> algorithms, @JsonProperty("Inputs") Data inputs,
-        @JsonProperty("Outputs") Data outputs, @JsonProperty("Sensitivities") List<SensitivityResult> sensitivities) {
+        @JsonProperty("Outputs") Data outputs, @JsonProperty("Sensitivities") List<SensitivityResult> sensitivities,
+        @JsonProperty("Files") List<String> files) {
 
     public Request(String jobID, String simulationType) {
-        this(jobID, simulationType, null, null, null, null);
+        this(jobID, simulationType, null, null, null, null, new ArrayList<>());
     }
 
     @JsonIgnore

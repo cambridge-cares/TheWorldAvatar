@@ -42,6 +42,12 @@ class SampleSRM extends Simulation {
     }
 
     @Override
+    protected void populateFileNodes() {
+        super.populateFileNodes();
+        super.getInputFile().addInputParams();
+    }
+
+    @Override
     protected void generateFiles() throws FileGenerationException {
         generateInitialFileFromMetaData();
         generateSamplingAlgDataFiles();
