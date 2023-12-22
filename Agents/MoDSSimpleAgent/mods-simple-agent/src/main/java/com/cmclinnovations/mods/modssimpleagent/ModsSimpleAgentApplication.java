@@ -7,6 +7,8 @@ import javax.xml.bind.JAXBException;
 
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.simulations.Simulation;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.SpringApplication;
@@ -15,9 +17,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -40,6 +44,15 @@ public class ModsSimpleAgentApplication {
     @GetMapping(value = "/")
     public String home() {
         return endpointMap.keySet().toString();
+    }
+
+    @PostMapping(value = "/filerequest")
+    public String requestbyfile(@RequestParam("file") MultipartFile file) throws IOException, JAXBException {
+        // Do something with the file
+        String config = new String(file.getBytes());
+
+        return request(config);
+
     }
 
     @GetMapping(value = "/request")
