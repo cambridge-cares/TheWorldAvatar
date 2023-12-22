@@ -179,12 +179,19 @@ public class GDALClient extends ContainerClient {
             String proj4String = getProj4String(gdalContainerId, filePath);
             String wktString = getWktString(gdalContainerId, filePath);
 
-            String[] sridAuthNameArray = newSrid.split(":");
-            String authName = sridAuthNameArray[0];
-            String srid = sridAuthNameArray[1];
-            PostGISClient.getInstance().addProjectionsToPostgis(postGISContainerId, databaseName, proj4String, wktString,
-                    authName, srid);
-            GeoServerClient.getInstance().addProjectionsToGeoserver(geoserverContainerID, wktString, srid);
+            String[] sridAuthNameArray;
+            try {
+                sridAuthNameArray = newSrid.split(":");
+                String authName = sridAuthNameArray[0];
+                String srid = sridAuthNameArray[1];
+                PostGISClient.getInstance().addProjectionsToPostgis(postGISContainerId, databaseName, proj4String,
+                        wktString,
+                        authName, srid);
+                GeoServerClient.getInstance().addProjectionsToGeoserver(geoserverContainerID, wktString, srid);
+            } catch (NullPointerException e) {
+                logger.error("Custom CRS not specified, add \"sridOut\": \"AUTH:123456\" to gdalTranslateOptions");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -210,17 +217,74 @@ public class GDALClient extends ContainerClient {
         return outputStream.toString().replace("\n", "");
     }
 
-    private String getWktString(String gdalContainerId, String filePath) { 
+    private String getWktString(String gdalContainerId, String filePath) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        String execId = createComplexCommand(gdalContainerId, GDALSRSINFO,  "-o", "wkt", "--single-line", filePath) // This will get either wkt1 or wkt2 whichever exists. Other options exist instead of "wkt": { wkt_all,  wkt1, wkt_simple, wkt_noct, wkt_esri, wkt2, wkt2_2015, wkt2_2018})
+        String execId = createComplexCommand(gdalContainerId, GDALSRSINFO, "-o", "wkt", "--single-line", filePath) // This
+                                                                                                                   // will
+                                                                                                                   // get
+                                                                                                                   // either
+                                                                                                                   // wkt1
+                                                                                                                   // or
+                                                                                                                   // wkt2
+                                                                                                                   // whichever
+                                                                                                                   // exists.Other
+                                                                                                                   // options
+                                                                                                                   // exist
+                                                                                                                   // instead
+                                                                                                                   // of"wkt"
+                                                                                                                   // :{wkt_all,wkt1,wkt_simple,wkt_noct,wkt_esri,wkt2,
+                                                                                                                   // wkt2_2015,
+                                                                                                                   // wkt2_2018})
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
         return outputStream.toString();
     }
-    
+
+    private JSONArray getTimeFromGdalmdiminfo(String arrayName, String filePath) {
+        String gdalContainerId = getContainerId("gdal");
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+        String execId = createComplexCommand(gdalContainerId, "gdalmdiminfo", "-detailed", "-array", arrayName,
+                filePath)
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+
+        String inputString = outputStream.toString().replace(" ", "");
+        return new JSONObject(inputString).getJSONArray("values");
+    }
+
+    private void multipleRastersFromMultiDim(String timeArrayName, String variableArrayName, String filePath,
+            Path outputDirectory) {
+        JSONArray arrayList = getTimeFromGdalmdiminfo(timeArrayName, filePath); // to generate output filenames
+        String gdalContainerId = getContainerId("gdal");
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+        for (int index = 0; index < arrayList.length(); index++) {
+            String outputRasterFilePath = outputDirectory.resolve(variableArrayName + "_" + arrayList.getString(index) + ".tif").toString();
+            String execId = createComplexCommand(gdalContainerId, "gdalwarp", "-srcband", Integer.toString(index + 1),
+                    "-t_srs", "EPSG:4326", "-r", "cubicspline", "-wo", "OPTIMIZE_SIZE=YES", "-multi", "-wo",
+                    "NUM_THREADS=ALL_CPUS", "NETCDF:" + filePath + ":" + variableArrayName,
+                    outputRasterFilePath)
+                    .withOutputStream(outputStream)
+                    .withErrorStream(errorStream)
+                    .exec();
+            handleErrors(errorStream, execId, logger);
+            outputStream.reset();
+            errorStream.reset();// reset
+        }
+
+        // gdalwarp -b 1 -t_srs EPSG:4326 -r cubicspline -wo OPTIMIZE_SIZE=YES -multi
+        // -wo NUM_THREADS=ALL_CPUS
+        // input: NETCDF:tas_rcp85_land-cpm_uk_2.2km_01_1hr_20400101-20400130.nc:tas
+        // tas_rcp85_land-cpm_uk_2.2km_01_1hr_20400101-20400130.tif
+    }
 
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
             String layerName, TempDir tempDir, GDALTranslateOptions options) {
@@ -267,7 +331,7 @@ public class GDALClient extends ContainerClient {
                             .withEvaluationTimeout(300)
                             .exec();
                     handleErrors(errorStream, execId, logger);
-                    multipleRastersFromMultiDim("yyyymmddhh", "tas", filePath, directoryPath);                    
+                    multipleRastersFromMultiDim("yyyymmddhh", "tas", filePath, directoryPath);
                 } else {
                     execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
                             "-if", inputFormat,
