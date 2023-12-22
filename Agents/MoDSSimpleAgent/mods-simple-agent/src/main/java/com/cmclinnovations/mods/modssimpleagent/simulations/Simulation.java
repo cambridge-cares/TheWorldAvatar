@@ -86,6 +86,10 @@ public abstract class Simulation {
         if (request.getSurrogateToLoad() != null) {
             simulationLoader.loadSurrogate(request.getSurrogateToLoad());
         }
+        if (request.getModelToLoad() != null) {
+            simulationLoader.loadModel(request.getModelToLoad());
+        }
+        
 
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend);
         SimulationSaver simulationSaver = new SimulationSaver(modsBackend, inputMetaData);
@@ -388,6 +392,10 @@ public abstract class Simulation {
 
     public static Path getSurrogateSaveDirectoryPath() {
         return Path.of(System.getenv("MODS_SAVE_DIR"));
+    }
+
+    public static Path getModelSaveDirectoryPath() {
+        return Path.of(System.getenv("MODS_SAVE_MODEL_DIR"));
     }
 
     public SimulationSaver getSimulationSaver() {

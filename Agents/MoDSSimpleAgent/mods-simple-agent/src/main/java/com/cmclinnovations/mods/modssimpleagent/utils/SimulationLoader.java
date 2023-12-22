@@ -43,4 +43,28 @@ public class SimulationLoader {
                     "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
         }
     }
+
+    public void loadModel(String modelToLoad) {
+        Path simDirectory = modsBackend.getSimDir();
+        Path loadDirectory = Simulation.getModelSaveDirectoryPath().resolve(modelToLoad);
+        try {
+            if (!Files.exists(loadDirectory)) {
+                throw new IOException(
+                        "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+            }
+
+            FileUtils.copyDirectory(loadDirectory, simDirectory);
+
+            LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+                    simDirectory.toAbsolutePath());
+
+        } catch (IOException ex) {
+            LOGGER.error("Failed to load '{}' to '{}'.", loadDirectory.toAbsolutePath(),
+                    simDirectory.toAbsolutePath(), ex);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
+        }
+    }
+
+    
 }

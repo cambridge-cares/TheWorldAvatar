@@ -33,7 +33,7 @@ public class SensitivityTest {
 
         Sensitivity sensitivitySimulation = new Sensitivity(
                 Request.builder()
-                        .algorithms(List.of(new Algorithm(null, "GenSurrogateAlg", null, null, null, null)))
+                        .algorithms(List.of(new Algorithm(null, "GenSurrogateAlg", null, null, null, null, null)))
                         .build(),
                 null, modsBackendMock, null, null, null);
 

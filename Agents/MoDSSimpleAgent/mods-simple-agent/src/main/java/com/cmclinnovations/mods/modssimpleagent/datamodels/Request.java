@@ -31,4 +31,9 @@ public record Request(String jobID, @JsonProperty("SimulationType") String simul
     public String getSurrogateToLoad() {
         return algorithms.stream().map(Algorithm::surrogateToLoad).filter(Objects::nonNull).findFirst().orElse(null);
     }
+
+    @JsonIgnore
+    public String getModelToLoad() {
+        return algorithms.stream().map(Algorithm::modelToLoad).filter(Objects::nonNull).findFirst().orElse(null);
+    }
 }
