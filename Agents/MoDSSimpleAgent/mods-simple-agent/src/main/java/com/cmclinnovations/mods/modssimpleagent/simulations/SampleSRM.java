@@ -99,7 +99,7 @@ class SampleSRM extends Simulation {
                 .map(MoDSAPI::getVarName)
                 .collect(Collectors.toList());
 
-        List<List<Double>> points = MoDSAPI.getPointsInMap(simDir, algorithmName, new Options().setVarIndexFirst(true))
+        List<List<Double>> points = MoDSAPI.getPointsInMap(simDir, algorithmName, new Options().setVarIndexFirst(false))
                 .get(DataType.OutputVariable);
 
         Data outputValues = new Data(
