@@ -1,6 +1,6 @@
 import csv
-from rdflib import Graph, RDF, URIRef, RDFS, Literal
 import uuid
+from rdflib import Graph, RDF, URIRef, RDFS, Literal
 ONTO_COFS = 'https://www.theworldavatar.com/kg/ontocofs/'
 
 
@@ -38,7 +38,7 @@ def create_ocn(g, bs_iri, ocn):
     g.add((bs_iri, URIRef(ONTO_COFS + 'outerCoordinationNumber'), Literal(ocn)))
     return g
 
-def instantiate_precursor_lfr_ocn(precursor_file, reaction_file, ocn_file, ttl_file):
+def instantiate_precursor_lfr_ocn(precursor_file, reaction_file, ocn_file, ttl_file=None):
     core_bs_dict = {}
     bs_iri_dict = {}
     core_iri_dict = {}
@@ -89,5 +89,18 @@ def instantiate_precursor_lfr_ocn(precursor_file, reaction_file, ocn_file, ttl_f
         for row in reader:
             g = create_ocn(g, URIRef(bs_iri_dict[row[0]]), int(row[1]))
 
-    g.serialize(destination=ttl_file, format='turtle')
-    return g
+    if ttl_file is not None:
+        g.serialize(destination=ttl_file, format='turtle')
+    return g, bs_iri_dict, core_iri_dict
+
+def number_of_precursor(sparql_client):
+    return len(
+        sparql_client.performQuery(
+        """
+        prefix ocof: <https://www.theworldavatar.com/kg/ontocofs/>
+        select distinct ?p
+        where {
+            ?p a ocof:Precursor.
+        }
+        """)
+    )
