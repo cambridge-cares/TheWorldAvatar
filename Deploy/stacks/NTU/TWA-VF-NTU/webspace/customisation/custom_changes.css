@@ -43,3 +43,18 @@
 .custom-button3:hover {
     background-color: #5989de;
 }
+
+.dotted-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.dotted-list li:before {
+    content: '\2022';   /* Unicode character for a bullet */
+    font-size: 1.5em;   /* Adjust size as needed */
+    line-height: 0.5;   /* Adjust line-height for positioning */
+    margin-right: 10px; /* Space between the bullet and the text */
+    color: black;       /* Color of the bullet */
+    vertical-align: middle;
+    font-family: "Times New Roman", Times, serif; /* Adjust font-family as needed */
+}

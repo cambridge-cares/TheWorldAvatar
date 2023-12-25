@@ -17,55 +17,65 @@ PanelHandler.prototype.prepareMetaContainers = function(e, t) {
 
 
         document.getElementById('getClassScheduleButton').addEventListener('click', function () {
+
             alert('Getting class schedule data...');
             var iframe = document.createElement("iframe");
+
             // Set attributes for the iframe
-            iframe.src = "http://localhost:3838/analytics/d-solo/a3e4e240-87cc-455e-888a-fd3af4e9e64d/ntu-dashboard?orgId=1&var-schedule=All&from=1672731037713&to=1672787129841&theme=light&panelId=1";
+            iframe.src = "http://128.199.151.149:3838/analytics/d-solo/b56f5515-ef78-4feb-b712-7e5cddb4ba25/ntu-classschedule?orgId=1&from=1672731037713&to=1672787129841&theme=light&panelId=1";
             iframe.width = "450";
             iframe.height = "800";
             iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
 
-            // Get the container element
-            var container = document.getElementById("metaTabs");
-            // Append the iframe to the container
-            container.replaceWith(iframe);
-            container = document.getElementById("metaContainer");
-            container.replaceWith(" ");
+            // Get the "metaTabs" container and replace its content with the iframe
+            var metaTabsContainer = document.getElementById("metaTabs");
+            metaTabsContainer.innerHTML = '';
+            metaTabsContainer.appendChild(iframe);
+
+            // Get the "metaContainer" div and clear its content
+            var metaContainer = document.getElementById("metaContainer");
+            metaContainer.innerHTML = '';
         });
 
         document.getElementById('getWeatherDataButton').addEventListener('click', function () {
+
+
             alert('Getting weather data...');
 
-            var iframe = document.createElement("iframe");
-            var header = document.createElement("b");  // Using h2 as an example, you can adjust the heading level as needed
-            header.textContent = "Weather dashboard";
-            // Set attributes for the iframe
-            iframe.src = "http://localhost:3838/analytics/d-solo/f9f0c568-ebe8-4971-95c0-b4d1729692a3/new-dashboard-2?orgId=1&from=1672531200000&to=1672588799000&theme=light&panelId=1";
-            //iframe.src = "http://localhost:3838/analytics/d-solo/f73dc197-c9c5-4dab-848d-e3c1f9140874/new-dashboard3?orgId=1&from=1672531200000&to=1673046000000&theme=light&panelId=1";
-            iframe.width = "450";
-            iframe.height = "270";
-            iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
-            // Append the iframe to the container
-            //container.appendChild(header);
+            // Create first iframe and its header
+            var iframe1 = document.createElement("iframe");
+            var header1 = document.createElement("b");
+            header1.textContent = "Weather dashboard";
+            iframe1.src = "http://128.199.151.149:3838/analytics/d-solo/ba4fb953-c3c7-47f0-8869-df2ceb036343/ntu-weather?orgId=1&from=1672531200000&to=1673046000000&theme=light&panelId=2";
+            iframe1.width = "450";
+            iframe1.height = "270";
+            iframe1.frameBorder = "0";
+
+            // Get the container and clear its content
             var container = document.getElementById("metaTabs");
-            container.replaceWith(iframe);
+            container.innerHTML = '';
 
-            var iframe = document.createElement("iframe");
-            var header = document.createElement("b");  // Using h2 as an example, you can adjust the heading level as needed
-            header.textContent = "Weather forecast";
-            // Set attributes for the iframe
-            iframe.src = "http://localhost:3838/analytics/d-solo/c7376c69-1c16-4d12-89f6-450707cd8897/new-dashboard?orgId=1&from=1672531200000&to=1672588799000&theme=light&panelId=1";
-            iframe.width = "450";
-            iframe.height = "280";
-            iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
+            // Append the first iframe and its header to the container
+            container.appendChild(header1);
+            container.appendChild(iframe1);
 
-            // Get the container element
+            // Create second iframe and its header (assuming you want to append it to the same container)
+            var iframe2 = document.createElement("iframe");
+            var header2 = document.createElement("b");
+            header2.textContent = "Weather forecast";
+                        
+            iframe2.src = "http://128.199.151.149:3838/analytics/d-solo/ba4fb953-c3c7-47f0-8869-df2ceb036343/ntu-weather?orgId=1&from=1672531200000&to=1672588799000&theme=light&panelId=1";
+            iframe2.width = "450";
+            iframe2.height = "280";
+            iframe2.frameBorder = "0";
+
+            // Append the second iframe and its header to the container
+            container.appendChild(header2);
+            container.appendChild(iframe2);
 
             // Append the iframe to the container
-            var container = document.getElementById("contentContainer");
-            container.appendChild(iframe);
-            container = document.getElementById("metaContainer");
-            container.replaceWith(" ");
+            metaContainer = document.getElementById("metaContainer");
+            metaContainer.innerHTML = '';
 
         });
 
@@ -132,7 +142,7 @@ Manager.prototype.showFeature = function(e, t) {
             a = e.hasOwnProperty("id") && "object" != typeof e.id ? "Feature " + e.id : "NTU Digital Twin Visualisation";
         }
 
-        this.panelHandler.setTitle("<img src='twa-logo-with-title-blue-256.png'><br><h3>" + a + "</h3>");
+        this.panelHandler.setTitle("<img src='twa-logo-with-title-blue-256.png'><br><h3>" + "KG-Driven NTU Digital Twin Visualisation" + "</h3>");
         document.getElementById("titleContainer").classList.add("clickable");
 
         let n = t.description;
@@ -275,7 +285,7 @@ PanelHandler.prototype.addSupportingData = function(e, a) {
                 var header = document.createElement("b");  // Using h2 as an example, you can adjust the heading level as needed
                 header.textContent = "Class Schedule";
                 // Set attributes for the iframe
-                iframe.src = "http://localhost:3838/analytics/d-solo/a3e4e240-87cc-455e-888a-fd3af4e9e64d/ntu-dashboard?orgId=1&var-schedule=All&from=1672531200000&to=1672617599000&var-classroom=LT"+ a[Object.keys(a)[0]] +"&theme=light&panelId=2";
+                iframe.src = "http://128.199.151.149:3838/analytics/d-solo/b56f5515-ef78-4feb-b712-7e5cddb4ba25/ntu-classschedule?orgId=1&var-classroom=LT"+ a[Object.keys(a)[0]] +"&var-schedule=All&from=1672531200000&to=1673049000000&theme=light&panelId=2";
                 iframe.width = "450";
                 iframe.height = "100";
                 iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
@@ -312,7 +322,7 @@ PanelHandler.prototype.addSupportingData = function(e, a) {
 
         console.warn("sent request: http://localhost:3838/feature-info-agent/get", iriValue);
 
-        return $.getJSON("http://localhost:3838/feature-info-agent/get", {
+        return $.getJSON("http://128.199.151.149:3838/feature-info-agent/get", {
             iri: iriValue
         }, function(e) {
             let t;
@@ -401,7 +411,6 @@ MapHandler_Cesium.prototype.addLayer = function(e) {
                             let content = tile.content;
                             let featuresLength = content.featuresLength;
                             for (let j = 0; j < featuresLength; j++) {
-                                console.log("adding color for each building")
                                 let feature = content.getFeature(j);
                                 let featureId = feature.getProperty('id'); // Replace 'id' with the correct property name for the ID
                                 if (academicBuildings.includes(featureId)) {
@@ -431,6 +440,8 @@ MapHandler_Cesium.prototype.addLayer = function(e) {
         default:
             console.warn("Unknown type '" + t.type + "', skipping this data source.")
     }
+
+
 
     let coordinates = []; // Array to hold coordinates for the tube
 
@@ -477,7 +488,7 @@ MapHandler_Cesium.prototype.addLayer = function(e) {
     return positions;
     }
 
-    // Create points with labels for building names
+    // Create your points here...
     const SPMS = createRedPointWithLabel("SPMS", 103.6818313449, 1.3418622912);
     const Gaia = createRedPointWithLabel("Gaia", 103.6832968323, 1.3420784334);
     const EEE = createRedPointWithLabel("EEE", 103.6808374316, 1.3432265836);
