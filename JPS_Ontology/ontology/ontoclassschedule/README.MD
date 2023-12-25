@@ -1,7 +1,7 @@
 
 # Ontology for Class Schedule
 ## 1. Introduction
-OntoClassSchedule is developed to represent assets and its related information (e.g. purchase documents, location).
+OntoClassSchedule is designed to represent and manage class schedules in an educational setting. It captures the relationships between sessions, courses, and various types of course offerings.
 **bot: <**[**https://w3id.org/bot#>**](https://w3id.org/bot#%3E) **(Building Topology Ontology)**
 
 **ontobim: <**[**https://www.theworldavatar.com/kg/ontobim#>**](https://www.theworldavatar.com/kg/ontobim#%3E)
