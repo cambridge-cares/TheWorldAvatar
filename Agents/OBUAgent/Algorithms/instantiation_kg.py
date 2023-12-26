@@ -38,7 +38,11 @@ def create_ocn(g, bs_iri, ocn):
     g.add((bs_iri, URIRef(ONTO_COFS + 'outerCoordinationNumber'), Literal(ocn)))
     return g
 
-def instantiate_precursor_lfr_ocn(precursor_file, reaction_file, ocn_file, ttl_file=None):
+def create_smarts(g, iri, smarts):
+    g.add((iri, URIRef(ONTO_COFS + 'smarts'), Literal(smarts)))
+    return g
+
+def instantiate_precursor_lfr_ocn(precursor_file, reaction_file, ocn_file, bs_smarts_file, core_smarts_file, ttl_file=None):
     core_bs_dict = {}
     bs_iri_dict = {}
     core_iri_dict = {}
@@ -66,7 +70,7 @@ def instantiate_precursor_lfr_ocn(precursor_file, reaction_file, ocn_file, ttl_f
     # Instantiate reactions
     with open(reaction_file, 'r', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
-        next (reader)
+        next(reader)
         for row in reader:
             if row[1] not in bs_iri_dict and row[1] != 'None':
                 bs_iri = create_cofs_iri_str('BindingSite')
@@ -85,9 +89,24 @@ def instantiate_precursor_lfr_ocn(precursor_file, reaction_file, ocn_file, ttl_f
     # Instantiate outer coordination number
     with open(ocn_file, 'r', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
-        next (reader)
+        next(reader)
         for row in reader:
             g = create_ocn(g, URIRef(bs_iri_dict[row[0]]), int(row[1]))
+
+    # Instantiate bs smarts strings
+    with open(bs_smarts_file, 'r', encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)
+        for row in reader:
+            g = create_smarts(g, URIRef(bs_iri_dict[row[0]]), row[2])
+
+    # Instantiate core smarts strings
+    with open(core_smarts_file, 'r', encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)
+        for row in reader:
+            if row[0] in core_iri_dict:
+                g = create_smarts(g, URIRef(core_iri_dict[row[0]]), row[1].strip('"'))
 
     if ttl_file is not None:
         g.serialize(destination=ttl_file, format='turtle')
