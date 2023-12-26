@@ -41,8 +41,12 @@ public class CEAVisualisationAgent extends JPSAgent {
         String createTable = "CREATE TABLE IF NO EXISTS " + SCHEMA + "." + TABLE + "("
                 + "building_iri VARCHAR(4000),\n";
 
-        for (CEAVisualisationConstants column : CEAVisualisationConstants.values()) {
-            createTable += column.getValue() + " DOUBLE PRECISION,";
+        for (Column ceaFields : Column.values()) {
+            for (Annual annual : ceaFields.getAnnuals()) {
+                createTable += annual.getAnnual() + " DOUBLE PRECISION,";
+                createTable += annual.getAnnualPerArea() + " DOUBLE PRECISION,";
+            }
+            createTable += ceaFields.getArea() + " DOUBLE PRECISION,";
         }
 
         createTable = createTable.substring(0, createTable.length()-1) + ")";
