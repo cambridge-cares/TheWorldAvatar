@@ -1,8 +1,8 @@
 import csv
 from rdflib import Graph, URIRef
-import Algorithms.instantiation as inst
+import Algorithms.instantiation_kg as inst
 
-def expand_precursor_space_lfr(sparql_client, expanded_output_file, include_hypothetical=True):
+def expand_precursor_space_lfr(sparql_client, expanded_output_file, expand_all=True):
     """This function swaps the cores for binding sites that are involved in the same linkage formation reaction
     and share the same outer coordination number.
     """
@@ -13,7 +13,7 @@ def expand_precursor_space_lfr(sparql_client, expanded_output_file, include_hypo
         prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         select distinct ?bs ?core ?bs_label ?core_label
         where {{
-            ?bs {'(' if include_hypothetical else ''}^ocof:hasBindingSite/ocof:hasBindingSite{')+' if include_hypothetical else ''} ?connected_bs.
+            ?bs {'(' if expand_all else ''}^ocof:hasBindingSite/ocof:hasBindingSite{')+' if expand_all else ''} ?connected_bs.
             ?bs ocof:outerCoordinationNumber ?bs_ocn.
             ?connected_bs ocof:outerCoordinationNumber ?connected_bs_ocn.
             filter (?bs_ocn = ?connected_bs_ocn)

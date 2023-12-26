@@ -1,9 +1,9 @@
 import csv
 from rdflib import Graph, URIRef
-import Algorithms.instantiation as instantiation
+import Algorithms.instantiation_kg as inst
 
 # Function to find common cores between sets of cores grouped based on binding sites and update the precursor space
-def expand_precursor_space(sparql_client, expanded_output_file, include_hypothetical=True):
+def expand_precursor_space(sparql_client, expanded_output_file, expand_all=True):
     # Query the combination of binding sites and cores that form the new precursor space
     result_list = sparql_client.performQuery(
         f"""
@@ -13,7 +13,7 @@ def expand_precursor_space(sparql_client, expanded_output_file, include_hypothet
         where {{
             ?any_bs a ocof:BindingSite.
             ?any_bs ^ocof:compatibleWith ?core.
-            ?any_bs {'(' if include_hypothetical else ''}^ocof:compatibleWith/ocof:compatibleWith{')+' if include_hypothetical else ''} ?bs.
+            ?any_bs {'(' if expand_all else ''}^ocof:compatibleWith/ocof:compatibleWith{')+' if expand_all else ''} ?bs.
             FILTER NOT EXISTS{{?core ocof:compatibleWith ?bs .}}
             ?bs rdfs:label ?bs_label.
             ?core rdfs:label ?core_label.
@@ -31,5 +31,5 @@ def expand_precursor_space(sparql_client, expanded_output_file, include_hypothet
         g = Graph()
         for res in result_list:
             writer.writerow([res['bs_label'], res['core_label']])
-            g = instantiation.create_precursor(g, URIRef(res['bs']), URIRef(res['core']))
+            g = inst.create_precursor(g, URIRef(res['bs']), URIRef(res['core']))
         sparql_client.uploadGraph(g)
