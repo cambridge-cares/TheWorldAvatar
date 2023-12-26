@@ -1,5 +1,8 @@
+# Data Handler for retrieve calculator chart values and defined single values by setting lever configuration
+# ===============================================================================
 from flask_restful import Api, Resource, reqparse,request
 from utils.calculator_model import CalculatorModel
+from flask import Response
 from flask import jsonify
 
 calculator = CalculatorModel()
@@ -9,8 +12,15 @@ class PlotDataHandler(Resource):
         request_json = request.json
         # ret_status, ret_msg = ReturnData(request_type, request_json)
         # currently just returning the req straight
-        calculator.setControls(request_json['levers'])
-        plotdata,singlevalues = calculator.getData()
-        final_ret = {"status": "Success", "values": plotdata}
-        final_ret.update(singlevalues)
-        return final_ret
+        try:
+            calculator.setControls(request_json['levers'])
+            plotdata,singlevalues = calculator.getData()
+            final_ret = {"status": "Success", "values": plotdata}
+            final_ret.update(singlevalues)
+            return final_ret
+        except Exception as e:
+            print(e)
+            return Response(
+                str(e),
+                status=500,
+            )

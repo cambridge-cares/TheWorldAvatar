@@ -1,3 +1,5 @@
+# Data Handler for update the Calculator with all defined values retrieve from KG queries
+# ===============================================================================
 from flask_restful import Api, Resource, reqparse,request
 from flask import Response
 from utils.calculator_model import CalculatorModel
@@ -21,6 +23,6 @@ class ModelUpdateHandler(Resource):
                 return final_ret
         except Exception as e:
             return Response(
-                e,
-                status=500,
+                str(e),
+                status=500
             )

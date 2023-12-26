@@ -10,6 +10,8 @@ import string
 
 ALPHABETIC_LIST = list(string.ascii_uppercase)
 
+
+#Color Palattes of charts
 palette = ["#f5e58f",
             "#d2b085",
             "#8061a2",
@@ -57,6 +59,10 @@ yranges =[
     [0,105]
 ]
 
+
+
+
+#construct a data object for one line in chart
 def getLine(idxline, name,type,y, maxy=None):
     HOVERTEMPLATE = "year %{x}: %{y}"
     x = list(range(2015,2105,5))
@@ -85,7 +91,7 @@ def getLine(idxline, name,type,y, maxy=None):
     return component
 
 
-
+# parse to the format to feed into Plotly to create a flow chart from edge list
 def parseFlowEdges(edges):
     nodes = {}
     idx = 0
@@ -106,6 +112,7 @@ def parseFlowEdges(edges):
     return labels,sources,targets
 
 
+# get the value range of a list of values in graph
 def getGraphRange(ys):
     low, high = 0,0
     for ylist in ys:
@@ -113,7 +120,8 @@ def getGraphRange(ys):
         high = max(high, max(ylist))
     return [low, high]
 
-def translateControlIdList(type=None):
+# read from the control mapping csv to construct a value dictionary
+def translateControlIdList(type="levervalue"):
     metas = readGraphsMeta(CONTROLMAPPINGPATH)
     reformed = {}
     for idx,row in enumerate(metas):
@@ -123,6 +131,7 @@ def translateControlIdList(type=None):
 
     return reformed[type] if type is not None else reformed
 
+# construct a data object for one chart
 def getGraph(idx,names, linetype, ys, title, unit=None):
     graph = []
     titleObj = {}
@@ -177,8 +186,9 @@ def getGraph(idx,names, linetype, ys, title, unit=None):
         idxline = idxline+1
     return  graph,titleObj
 
-#{'page': '1A', 'chartno': '1', 'names': 'G272-G283', 'values': 'H-Y|272-283', 'type': "'stack_lastline'", 'title': 'G264', 'unit': 'G265'}
 
+
+# read meta infomration from a mappingcsv
 def readGraphsMeta(folder, readAsDict = True):
     metas =[]
     with open(folder) as csvfile:
@@ -195,13 +205,8 @@ def readGraphsMeta(folder, readAsDict = True):
     return metas
 
 
-def parseRange(rangestr):
-    idxs = rangestr.split('-')
-    colName = idxs[0][0]
-    start = int(idxs[0].replace(colName,''))
-    end = int(idxs[1].replace(colName,''))
-    return [colName+str(idx) for idx in list(range(start, end+1))]
 
+# prase a Excel range str to a list of cell names
 def parseCellTable(cellstr):
     tags = cellstr.split('|')
     colTags = tags[0].split('-')
@@ -216,6 +221,8 @@ def parseCellTable(cellstr):
 
 levelLists = translateControlIdList("levervalue")
 
+
+# parse for the full range of all the charts in all 4 level settings
 def getYRange(calculator, valueCells):
     calculator.updateValue(levelLists, [4 for _ in range(45)])
     ys1 = calculator.readValue(valueCells)
@@ -238,6 +245,9 @@ def getYRange(calculator, valueCells):
     return (min1,max1)
 
 
+# Main function to extract all plot data from the Excel model for a initial json file
+#format of one line in output mapping csv
+#{'page': '1A', 'chartno': '1', 'names': 'G272-G283', 'values': 'H-Y|272-283', 'type': "'stack_lastline'", 'title': 'G264', 'unit': 'G265'}
 def translateMetas():
     model = XLSVModel(XLSMMODELPATH)
     metas = readGraphsMeta(OUTPUTMAPPINGPATH)
@@ -256,9 +266,6 @@ def translateMetas():
         valueCells = chart['values']
         ys =  model.readValue(valueCells)
         type = chart['type']
-        #f type != 'flow':
-        #    range = getYRange(model, valueCells)
-        #    print(range)
         title = model.readValue(chart['title'])
         unit = model.readValue(chart['unit'])
         data,layout = getGraph(idx,names,type,ys,title,unit)
@@ -274,6 +281,7 @@ def translateMetas():
     return jsonStr
 
 
+# Main function to extract all plot data from the Excel model for a initial json file
 def translateValueIdList():
     metas = readGraphsMeta(OUTPUTMAPPINGPATH)
     nametoid = {}
@@ -291,25 +299,26 @@ def translateValueIdList():
     return IdLists
 
 
-
+# Main function to extract the dict for single values
 def translateSingleValueIdList():
     metas = readGraphsMeta(SINGLEVALUEMAPPINGPATH,readAsDict=False)
     return metas
 
 
-
+#  Main function to read all names of control levels
 def getControlNamelist():
-    controlIdlist = translateControlIdList()
+    controlIdlist = translateControlIdList(type=None)
     nameIds = controlIdlist['levername']
     model = XLSVModel(XLSMMODELPATH)
     names = model.readValue(nameIds,'control')
-    print(names)
 
+# Replace all possible typos of country in model texts
 def checkexpression(s):
     return s.replace('UK', 'Singapore')
 
+# Main function to extract control lever descriptions into a json
 def readControlMetas():
-    cellmap = translateControlIdList()
+    cellmap = translateControlIdList(type=None)
     d0range = cellmap['leveldescription0']
     d1range = cellmap['leveldescription1']
     d2range = cellmap['leveldescription2']

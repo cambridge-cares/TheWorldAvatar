@@ -1,5 +1,5 @@
 '''
-# Basic wrapper includes read and write to the Excel Calculator model.
+# Basic wrapper includes read and write to the Excel Calculator model. This class is to be extended for more complex functions of the calculator.
 '''
 
 
@@ -11,8 +11,6 @@ class XLSVModel():
         self.root = root  # connect to a file that is open or in the current working directory
         self.pageDict = {'control':'Control', 'output':'WebOutputs', 'result':'Results', 'model':'Model'}
 
-
-
     def readValue(self,ranges,pagename='output'):
         book = xw.Book(self.root)
         sheet = book.sheets[self.pageDict[pagename]]
@@ -21,10 +19,8 @@ class XLSVModel():
             return values
         return [sheet[r].value for r in ranges]
 
-
     def updateValue(self, range, values, pagename='control', transpose=True):
         book = xw.Book(self.root)
-        #book.app.screen_updating = 'False'
         sheet = book.sheets[self.pageDict[pagename]]
         sheet.range(range).options(transpose=transpose).value = values
 

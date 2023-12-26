@@ -2,10 +2,12 @@ import React from "react";
 import Header from './../common/header';
 import Sidebar from './../common/sidebar';
 import MyPlot from './../common/plot';
+import AlertError  from './../common/alert';
 import axios from "axios";
 import { Preloader, Bars } from 'react-preloader-icon';
 import { useState, useEffect } from 'react';
 import initialdata from './../assets/json/initial_plotdata.json';
+
 
 function CalculatorApp()  {
     
@@ -14,18 +16,14 @@ function CalculatorApp()  {
     });
     const [mode2050, setMode2050] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [displayerr, setDisplayErr] = useState(false);
     const [reductionPercent, setReductionPercent] = useState(0.46);
     const [warn4, setWarn4] = useState(0);
     const [warn4Text, setWarn4Text] = useState("0 lever is set to level 4, considered by experts to be the limit of what is plausible");
     const [warnFast, setWarnFast] = useState(0);
     const [warnFastText, setWarnFastText] = useState("0 lever has a rate of increase in ambition that is higher than Level 4 ambition over the default deployment time, considered by experts to be the fastest plausible.");
-    /**
-    useEffect(() => {//Fetch when page loads
-        fetch('./initial_plotdata.json')
-            .then((response) => response.json())
-            .then((json) => setFullData({...fulldata, ...json}));
-    }, []);
-    **/
+
+
     const updateDataArr = (dataarr, newvalues)=>{
         dataarr.forEach((pageobj, idxP)=>{
             
@@ -52,11 +50,12 @@ function CalculatorApp()  {
         })
         
     }
-    
+
     
         const fetchData = (datadict) => {
            let levers = Object.values(datadict);
             const sendReq = async () => {
+               try {
                 setLoading(true);
                 const  resdata  = await axios.post("/data", JSON.stringify({levers:levers}),  {headers:{
                     'Content-Type': 'application/json'
@@ -72,6 +71,11 @@ function CalculatorApp()  {
                 let updated = [...fulldata['plotdata']];
                 updateDataArr(updated, newValues)
                 setFullData({...fulldata, plotdata:updated});
+                } catch (err) { // request data error
+                setLoading(false);
+                setDisplayErr(true);
+                setTimeout(()=>{ setDisplayErr(false)}, 2000);
+                }
             };
             sendReq()
             
@@ -100,6 +104,7 @@ function CalculatorApp()  {
                     <div class="loader"></div>
                     <p>Calculating, please be patient.</p>
                 </div>
+                <AlertError displayerr={displayerr} setDisplayErr={setDisplayErr}/>
                 <div id="plot-container1">
                     <MyPlot fulldata={fulldata} mode2050={mode2050} index={0}/></div>
                 <div id="plot-container2">
