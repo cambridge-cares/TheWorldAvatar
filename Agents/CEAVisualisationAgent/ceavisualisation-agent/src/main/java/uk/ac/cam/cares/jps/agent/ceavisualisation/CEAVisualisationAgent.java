@@ -3,11 +3,15 @@ package uk.ac.cam.cares.jps.agent.ceavisualisation;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 import javax.servlet.annotation.WebServlet;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet(
@@ -37,10 +41,12 @@ public class CEAVisualisationAgent extends JPSAgent {
         DB_PASSWORD = endpointConfig.getDbPassword();
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(DB_NAME), DB_USER, DB_PASSWORD);
         initialiseTable();
+        createGeoServerLayer();
     }
 
     /***
-     * Intialise table to be used for visualisation in TWA-VF
+     * Initialise table to be used for visualisation in TWA-VF
+     * @return returns the columns in the table as a list
      */
     public void initialiseTable() {
         // create schema
@@ -52,12 +58,8 @@ public class CEAVisualisationAgent extends JPSAgent {
         String createTable = "CREATE TABLE IF NO EXISTS " + SCHEMA + "." + TABLE + "("
                 + IRI + " VARCHAR(4000),\n";
 
-        for (Area area : Area.values()) {
-            for (Annual annual : Column.getAnnuals(area.getValue())) {
-                createTable += annual.getAnnual() + " DOUBLE PRECISION,";
-                createTable += annual.getAnnualPerArea() + " DOUBLE PRECISION,";
-            }
-            createTable += area.getValue() + " DOUBLE PRECISION,";
+        for (String column : Column.getColumns()) {
+            createTable += column + " DOUBLE PRECISION,";
         }
 
         createTable = createTable.substring(0, createTable.length()-1) + ")";
@@ -65,28 +67,39 @@ public class CEAVisualisationAgent extends JPSAgent {
         rdbStoreClient.executeUpdate(createTable);
     }
 
-
     /**
-     * Update table with CEA values used for visualisation
-     * @param ceaValues map storing CEA values
-     * @param iri building iri associated with ceaValues
+     * Update table with building IRI and CEA values used for visualisation
+     * @param visValues list storing building IRI and CEA values
      */
-    public void updateTable(Map<String, Double> ceaValues, String iri) {
+    public void updateTable(List<VisValues> visValues) {
         String insert = "INSERT INTO " + SCHEMA + "." + TABLE + " (" + IRI + ",";
-        String values = "VALUES (" + iri + ",";
+        String values = "VALUES\n";
         String conflict = "ON CONFLICT (" + IRI + ")";
         String update = "DO UPDATE SET";
         String set = "";
 
-        for (Map.Entry<String, Double> entry : ceaValues.entrySet()) {
-            insert += entry.getKey() + ",";
-            values += entry.getValue() + ",";
-            set += entry.getKey() + "=" + entry.getValue() + ",";
+        for (String column : Column.getColumns()) {
+            // column names
+            insert += column + ",";
+            set += column + "=EXCLUDED." + column +",";
         }
 
         insert = insert.substring(0, insert.length()-1) + ")";
-        values = values.substring(0, values.length()-1) + ")";
-        set = set.substring(0, set.length()-1) + ")";
+        set = set.substring(0, set.length()-1);
+
+        // column values
+        for (VisValues vis : visValues) {
+            String valueRow = "(";
+            valueRow += vis.getIri() + ",";
+            Map<String, Double> ceaValues = vis.getValues();
+            for (String column : Column.getColumns()) {
+                valueRow +=  ceaValues.get(column) + ",";
+            }
+            valueRow = valueRow.substring(0, valueRow.length()-1) + "),";
+            values += valueRow;
+        }
+
+        values = values.substring(0, values.length()-1);
 
         String sql = insert + "\n" + values + "\n" + conflict + "\n" + update + "\n" + set;
 

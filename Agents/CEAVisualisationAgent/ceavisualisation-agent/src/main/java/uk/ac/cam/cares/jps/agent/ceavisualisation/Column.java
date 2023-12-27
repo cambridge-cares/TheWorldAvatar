@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ceavisualisation;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 enum Column {
     BUILDING(Area.GFA, Set.of(Annual.GRID, Annual.ELECTRICITY, Annual.HEATING, Annual.COOLING)),
@@ -14,11 +12,20 @@ enum Column {
 
     private static final Map<String, Set<Annual>> map = new HashMap<>();
 
+    private static final List<String> columns = new ArrayList<>();
+
     static {
         for (Column column: values()) {
             map.put(column.area.getValue(), column.annuals);
+            columns.add(column.area.getValue());
+            for (Annual annual : column.annuals) {
+                columns.add(annual.getAnnual());
+                columns.add(annual.getAnnualPerArea());
+
+            }
         }
     }
+
     private final Area area;
     private final Set<Annual> annuals;
 
@@ -29,5 +36,9 @@ enum Column {
 
     public static Set<Annual> getAnnuals(String area) {
         return map.get(area);
+    }
+
+    public static List<String> getColumns() {
+         return columns;
     }
 }
