@@ -22,7 +22,8 @@ import java.util.Map;
 public class CEAVisualisationAgent extends JPSAgent {
     public static final String URI_RUN = "/run";
 
-    public final String DB_NAME;
+    public static final String KEY_DB = "DB_NAME";
+    public final String DB_NAME = System.getenv(KEY_DB);
     public final String DB_USER;
     public final String DB_PASSWORD;
     public RemoteRDBStoreClient rdbStoreClient;
@@ -50,30 +51,31 @@ public class CEAVisualisationAgent extends JPSAgent {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
+        if (validateInput(requestParams)) {
+            JSONArray data = requestParams.getJSONArray(KEY_DATA);
 
-        JSONArray data = requestParams.getJSONArray(KEY_DATA);
+            List<VisValues> visValues = new ArrayList<>();
 
-        List<VisValues> visValues = new ArrayList<>();
+            for (int i = 0; i < data.length(); i++) {
+                Map<String, Double> areas = new HashMap<>();
+                for (Area area : Area.values()) {
 
-        for (int i = 0; i < data.length(); i++) {
-            Map<String, Double> areas = new HashMap<>();
-            for (Area area : Area.values()) {
+                    areas.put(area.getValue(), Double.valueOf(data.getJSONObject(i).getString(area.getValue())));
+                }
 
-                areas.put(area.getValue(), Double.valueOf(data.getJSONObject(i).getString(area.getValue())));
+                Map<String, Double> annuals = new HashMap<>();
+                for (Annual annual : Annual.values()) {
+
+                    annuals.put(annual.getAnnual(), Double.valueOf(data.getJSONObject(i).getString(annual.getAnnual())));
+                }
+
+                Map<String, Double> ceaValues = visValues(areas, annuals);
+
+                visValues.add(new VisValues(data.getJSONObject(i).getString(IRI), ceaValues));
             }
 
-            Map<String, Double> annuals = new HashMap<>();
-            for (Annual annual : Annual.values()) {
-
-                annuals.put(annual.getAnnual(), Double.valueOf(data.getJSONObject(i).getString(annual.getAnnual())));
-            }
-
-            Map<String, Double> ceaValues = visValues(areas, annuals);
-
-            visValues.add(new VisValues(data.getJSONObject(i).getString(IRI), ceaValues));
+            updateTable(visValues);
         }
-
-        updateTable(visValues);
 
         return requestParams;
     }
