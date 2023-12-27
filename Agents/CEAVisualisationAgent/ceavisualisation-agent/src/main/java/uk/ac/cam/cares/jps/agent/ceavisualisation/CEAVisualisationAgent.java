@@ -44,6 +44,36 @@ public class CEAVisualisationAgent extends JPSAgent {
         createGeoServerLayer();
     }
 
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+
+        JSONArray data = requestParams.getJSONArray("data");
+
+        List<VisValues> visValues = new ArrayList<>();
+
+        for (int i = 0; i < data.length(); i++) {
+            Map<String, Double> areas = new HashMap<>();
+            for (Area area : Area.values()) {
+
+                areas.put(area.getValue(), Double.valueOf(data.getJSONObject(i).getString(area.getValue())));
+            }
+
+            Map<String, Double> annuals = new HashMap<>();
+            for (Annual annual : Annual.values()) {
+
+                annuals.put(annual.getAnnual(), Double.valueOf(data.getJSONObject(i).getString(annual.getAnnual())));
+            }
+
+            Map<String, Double> ceaValues = visValues(areas, annuals);
+
+            visValues.add(new VisValues(data.getJSONObject(i).getString(IRI), ceaValues));
+        }
+
+        updateTable(visValues);
+
+        return requestParams;
+    }
+
     /***
      * Initialise table to be used for visualisation in TWA-VF
      * @return returns the columns in the table as a list
