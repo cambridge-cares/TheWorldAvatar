@@ -1,0 +1,7 @@
+version: "3.8"
+
+services:
+  ceavisualisation-agent:
+    container_name: ceavisualisation-agent
+    image: ghcr.io/cambridge-cares/ceavisualisation-agent:1.0.0
+    build: .
