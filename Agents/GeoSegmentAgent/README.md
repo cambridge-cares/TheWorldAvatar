@@ -68,8 +68,13 @@ Example API call to perform SAM semantic segmentation:
 ```
 curl -X GET "http://localhost:5000/SAM-semantic-segmentation?minLon=xxx&minLat=yyy&maxLon=zzz&maxLat=www&tablename=my_table"
 ```
+### Update OBDA Mapping
+Finally, upload the obda file to the Ontop container by running the following command:
+
+```
+curl -X http://localhost:3838/geosegment-agent/update-obda
+```
 
 Ensure that the GeoTIFF files, table names, and other parameters are specified correctly for your particular segmentation task.
-
 
 By correctly specifying these input parameters, you can achieve different segmentation results based on the utilized segmentation algorithm (either k-means clustering or SAM semantic segmentation), the characteristics of the input raster data, and your desired output in terms of labeled segments.
