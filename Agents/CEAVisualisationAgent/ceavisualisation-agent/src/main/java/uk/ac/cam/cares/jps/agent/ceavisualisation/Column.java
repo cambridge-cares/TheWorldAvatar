@@ -22,7 +22,7 @@ enum Column {
     private final Area area;
     private final Set<Annual> annuals;
 
-    private Column(Area area, Set<Annual> annuals) {
+     Column(Area area, Set<Annual> annuals) {
         this.area = area;
         this.annuals = annuals;
     }
@@ -30,5 +30,4 @@ enum Column {
     public static Set<Annual> getAnnuals(String area) {
         return map.get(area);
     }
-
 }
