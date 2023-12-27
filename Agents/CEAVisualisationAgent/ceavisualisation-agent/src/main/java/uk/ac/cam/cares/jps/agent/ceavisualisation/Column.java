@@ -12,11 +12,11 @@ enum Column {
     WEST(Area.WEST_AREA, Set.of(Annual.PV_WEST, Annual.PVT_PLATE_E_WEST, Annual.PVT_PLATE_Q_WEST, Annual.PVT_TUBE_E_WEST, Annual.PVT_TUBE_Q_WEST, Annual.SC_PLATE_WEST, Annual.SC_TUBE_WEST)),
     EAST(Area.EAST_AREA, Set.of(Annual.PV_EAST, Annual.PVT_PLATE_E_EAST, Annual.PVT_PLATE_Q_EAST, Annual.PVT_TUBE_E_EAST, Annual.PVT_TUBE_Q_EAST, Annual.SC_PLATE_EAST, Annual.SC_TUBE_EAST));
 
-    private static final Map<Area, Set<Annual>> map = new HashMap<>();
+    private static final Map<String, Set<Annual>> map = new HashMap<>();
 
     static {
         for (Column column: values()) {
-            map.put(column.area, column.annuals);
+            map.put(column.area.getValue(), column.annuals);
         }
     }
     private final Area area;
@@ -27,7 +27,7 @@ enum Column {
         this.annuals = annuals;
     }
 
-    public static Set<Annual> getAnnuals(Area area) {
+    public static Set<Annual> getAnnuals(String area) {
         return map.get(area);
     }
 
