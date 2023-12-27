@@ -25,15 +25,15 @@ The ontology can be divided into these respective domains:
 ```mermaid
 erDiagram
 
-"ontoClassSchedule:Session"  ||--o{  DayOfWeek  : hasDayOfWeek
+"ontoClassSchedule:Session"  ||--o{  DayOfWeek  : "ontoClassSchedule:hasDayOfWeek"
 
-"bot:Zone"  ||--o{  "ontoClassSchedule:Session"  : hasSession
+"bot:Zone"  ||--o{  "ontoClassSchedule:Session"  : "ontoClassSchedule:hasSession"
 
-"ontoClassSchedule:Session"  ||--o{  Course  : isPartOfCourse
+"ontoClassSchedule:Session"  ||--o{  "ontoClassSchedule:Course"  : "ontoClassSchedule:isPartOfCourse"
 
   
 
-Course  {
+"ontoClassSchedule:Course"  {
 
 hasCourseCode string
 
@@ -55,15 +55,15 @@ hasStartTime time
 
   
 
-Zone  }|--||  "bot:Zone"  : "rdfs:subClassOf"
+"ontoClassSchedule:Zone"  }|--||  "bot:Zone"  : "rdfs:subClassOf"
 
-Course  }|--||  "ontoclassschedule:Course"  : "rdfs:subClassOf"
+"ontoClassSchedule:Course"  }|--||  "ontoclassschedule:Course"  : "rdfs:subClassOf"
 
-Laboratory  }|--||  "ontoClassSchedule:Session"  : "rdfs:subClassOf"
+"ontoClassSchedule:Laboratory"  }|--||  "ontoClassSchedule:Session"  : "rdfs:subClassOf"
 
-Lecture  }|--||  "ontoClassSchedule:Session"  : "rdfs:subClassOf"
+"ontoClassSchedule:Lecture"  }|--||  "ontoClassSchedule:Session"  : "rdfs:subClassOf"
 
-Seminar  }|--||  "ontoClassSchedule:Session"  : "rdfs:subClassOf"
+"ontoClassSchedule:Seminar"  }|--||  "ontoClassSchedule:Session"  : "rdfs:subClassOf"
 
-Tutorial  }|--||  "ontoClassSchedule:Session"  : "rdfs:subClassOf"
+"ontoClassSchedule:Tutorial"  }|--||  "ontoClassSchedule:Session"  : "rdfs:subClassOf"
 ```
