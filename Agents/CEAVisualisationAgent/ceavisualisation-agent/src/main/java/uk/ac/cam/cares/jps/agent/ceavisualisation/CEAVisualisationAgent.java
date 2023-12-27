@@ -9,6 +9,8 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 import javax.servlet.annotation.WebServlet;
+import javax.ws.rs.BadRequestException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +26,8 @@ public class CEAVisualisationAgent extends JPSAgent {
     public final String DB_USER;
     public final String DB_PASSWORD;
     public RemoteRDBStoreClient rdbStoreClient;
+
+    public static final String KEY_DATA = "data";
     public static final String SCHEMA = "ceavis";
     public static final String TABLE = "cea";
     public static final String IRI = "building_iri";
@@ -47,7 +51,7 @@ public class CEAVisualisationAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
 
-        JSONArray data = requestParams.getJSONArray("data");
+        JSONArray data = requestParams.getJSONArray(KEY_DATA);
 
         List<VisValues> visValues = new ArrayList<>();
 
@@ -72,6 +76,29 @@ public class CEAVisualisationAgent extends JPSAgent {
         updateTable(visValues);
 
         return requestParams;
+    }
+
+    @Override
+    public boolean validateInput(JSONObject requestParams) {
+        boolean validation = true;
+        if (requestParams.has(KEY_DATA)) {
+            JSONArray data = requestParams.getJSONArray("data");
+            validation = validation && !data.isEmpty();
+            for (int i = 0; i < data.length(); i++) {
+                for (Annual annual : Annual.values()) {
+                    validation = validation && data.getJSONObject(i).has(annual.getAnnual());
+                }
+            }
+        }
+        else {
+            throw new BadRequestException();
+        }
+
+        if (!validation) {
+            throw new BadRequestException();
+        }
+
+        return true;
     }
 
     /***
