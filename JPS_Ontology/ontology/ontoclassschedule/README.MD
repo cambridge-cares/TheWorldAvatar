@@ -25,7 +25,7 @@ The ontology can be divided into these respective domains:
 ```mermaid
 erDiagram
 
-"ontoClassSchedule:Session"  ||--o{  DayOfWeek  : "ontoClassSchedule:hasDayOfWeek"
+"ontoClassSchedule:Session"  ||--o{  "ontoClassSchedule:DayOfWeek"  : "ontoClassSchedule:hasDayOfWeek"
 
 "bot:Zone"  ||--o{  "ontoClassSchedule:Session"  : "ontoClassSchedule:hasSession"
 
