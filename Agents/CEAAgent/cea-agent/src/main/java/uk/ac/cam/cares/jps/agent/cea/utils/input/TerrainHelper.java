@@ -120,17 +120,17 @@ public class TerrainHelper {
     }
 
     /**
-     * Creates a SQL query string for raster data within a square bounding box of length 2*radius, center point at (x, y)
-     * @param x first coordinate of center point
-     * @param y second coordinate of center point
-     * @param radius length of the square bounding box divided by 2
+     * Creates a SQL query string for raster data within a square bounding box which envelope buffered by bufferDistance
+     * @param bufferDistance buffer distance of envelope
+     * @param envelope envelope that form as the base of square bounding box for terrain query
+     * @param originalCRS CRS of envelope
      * @param postgisCRS coordinate reference system of the raster data queried
      * @param table table storing raster data
      * @return SQL query string
      */
-    private String getTerrainQuery(Double x, Double y, Double radius, Integer postgisCRS, String table) {
+    private String getTerrainQuery(String bufferDistance, Double envelope, Integer originalCRS, Integer postgisCRS, String table) {
         // SQL commands for creating a square bounding box
-        String terrainBoundary = String.format("ST_Expand(ST_SetSRID(ST_MakePoint(%f, %f), %d), %f)", x, y, postgisCRS, radius);
+        String terrainBoundary = String.format("ST_Buffer(ST_Transform((ST_GeomFromText(%s, %f), %f), %f)", envelope, originalCRS, postgisCRS, bufferDistance);
 
         // query result to be converted to TIF format
         String query = String.format("SELECT ST_AsTIFF(ST_Union(ST_Clip(rast, %s))) as data ", terrainBoundary);
