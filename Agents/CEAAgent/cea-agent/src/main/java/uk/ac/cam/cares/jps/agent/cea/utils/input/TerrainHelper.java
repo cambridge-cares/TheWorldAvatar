@@ -40,46 +40,34 @@ public class TerrainHelper {
         // query for the coordinate reference system used by the terrain data
         String sridQuery = String.format("SELECT ST_SRID(rast) as srid FROM %s LIMIT 1", table);
 
-        Coordinate centerCoordinate;
-
-        Double radius;
+        Double bufferDistance;
 
         String crs;
 
+        Envelope envelope = new Envelope();
+
         try {
             if (!surroundings.isEmpty()) {
-                Envelope envelope = new Envelope();
-
                 for (CEAGeometryData ceaGeometryData : surroundings) {
                     for (Geometry geometry : ceaGeometryData.getFootprint()) {
                         envelope.expandToInclude(geometry.getEnvelopeInternal());
                     }
                 }
-                centerCoordinate = envelope.centre();
-
-                Double w = envelope.getWidth();
-                Double h = envelope.getHeight();
-
-                radius = w > h ? w/2 : h/2;
 
                 crs = surroundings.get(0).getCrs();
 
-                radius += 30;
+                bufferDistance = 30.0;
             }
             else {
                 CEAGeometryData ceaGeometryData = GeometryQueryHelper.getBuildingGeometry(uriString, endpoint, true);
-
-                Envelope envelope = new Envelope();
 
                 for (Geometry geometry : ceaGeometryData.getFootprint()) {
                     envelope.expandToInclude(geometry.getEnvelopeInternal());
                 }
 
-                centerCoordinate = envelope.centre();
-
                 crs = ceaGeometryData.getCrs();
 
-                radius = 160.0;
+                bufferDistance = 160.0;
             }
 
             crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
@@ -89,13 +77,14 @@ public class TerrainHelper {
 
                 JSONArray sridResult = postgisClient.executeQuery(sridQuery);
 
-                if (sridResult.isEmpty()) {return null;}
+                if (sridResult.isEmpty()) {
+                    return null;
+                }
+
                 Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
 
-                Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, "EPSG:" + postgisCRS);
-
                 // query for terrain data
-                String terrainQuery = getTerrainQuery(coordinate.getX(), coordinate.getY(), radius, postgisCRS, table);
+                String terrainQuery = getTerrainQuery(bufferDistance, envelope.toString(), Integer.valueOf(crs), postgisCRS, table);
 
                 try (Connection conn = postgisClient.getConnection()) {
                     Statement stmt = conn.createStatement();
@@ -128,7 +117,7 @@ public class TerrainHelper {
      * @param table table storing raster data
      * @return SQL query string
      */
-    private String getTerrainQuery(String bufferDistance, Double envelope, Integer originalCRS, Integer postgisCRS, String table) {
+    private String getTerrainQuery(Double bufferDistance, String envelope, Integer originalCRS, Integer postgisCRS, String table) {
         // SQL commands for creating a square bounding box
         String terrainBoundary = String.format("ST_Buffer(ST_Transform((ST_GeomFromText(%s, %f), %f), %f)", envelope, originalCRS, postgisCRS, bufferDistance);
 
