@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
 import org.locationtech.jts.geom.*;
+import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
@@ -29,12 +30,12 @@ public class TerrainHelper {
 
     /**
      * Gets terrain data for building
-     * @param uriString building IRI
-     * @param endpoint endpoint to building geometry data
+     * @param buildings ArrayList of CEABuildingData of target buildings
+     * @param surroundings list of CEA
      * @param table PostGIS table name
      * @return terrain data as byte[]
      */
-    public byte[] getTerrain(String uriString, String endpoint, List<CEAGeometryData> surroundings, String table) {
+    public byte[] getTerrain(ArrayList<CEABuildingData> buildings, List<CEAGeometryData> surroundings, String table) {
         RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
 
         // query for the coordinate reference system used by the terrain data
@@ -59,13 +60,13 @@ public class TerrainHelper {
                 bufferDistance = 30.0;
             }
             else {
-                CEAGeometryData ceaGeometryData = GeometryQueryHelper.getBuildingGeometry(uriString, endpoint, true);
-
-                for (Geometry geometry : ceaGeometryData.getFootprint()) {
-                    envelope.expandToInclude(geometry.getEnvelopeInternal());
+                for (CEABuildingData building : buildings) {
+                    for (Geometry geometry : building.getGeometry().getFootprint()) {
+                        envelope.expandToInclude(geometry.getEnvelopeInternal());
+                    }
                 }
 
-                crs = ceaGeometryData.getCrs();
+                crs = buildings.get(0).getGeometry().getCrs();
 
                 bufferDistance = 160.0;
             }

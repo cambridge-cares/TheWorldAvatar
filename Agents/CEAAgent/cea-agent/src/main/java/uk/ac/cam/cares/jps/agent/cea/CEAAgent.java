@@ -158,7 +158,7 @@ public class CEAAgent extends JPSAgent {
 
                 TerrainHelper terrainHelper = new TerrainHelper(terrainUrl, dbUser, dbPassword);
 
-                byte[] terrain = terrainHelper.getTerrain(uriStringArray.get(0), geometryRoute, surrounding, terrainTable);
+                byte[] terrain = terrainHelper.getTerrain(testData, surrounding, terrainTable);
 
                 CEAMetaData ceaMetaData;
 
