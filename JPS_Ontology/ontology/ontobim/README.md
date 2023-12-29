@@ -28,7 +28,7 @@ The primary objective of this representation is to empower users to scale and ag
 
 ### 1.2 IFC Representation
 
-This ontology also offers a simplified semantic representation of the Industry Foundation Classes (IFC) modelling paradigm to enhance data retrieval speeds. One notable innovation is the intentional separation of the semantic representation of zones and elements from their modelling counterparts. This ensures that functional information, such as utility consumption, remains retrievable even in the absence of geometry models. Figure 2 visually outlines this separation of concerns and highlights the attributes assigned to these IFC representation concepts. Figure 3 depicts an overview for the geometric representation of the IFC modelling paradigm, serving as a guide for understanding these representations. Notably, the representation initiates at the Project level, offering a contextual framework for modelling. Figure 4 illustrates the core geometry modelling parameters - `CartesianPoint` and `DirectionVector`. 
+This ontology also offers a simplified semantic representation of the Industry Foundation Classes (IFC) modelling paradigm to enhance data retrieval speeds. One notable innovation is the intentional separation of the semantic representation of zones and elements from their modelling counterparts. This ensures that functional information, such as utility consumption, remains retrievable even in the absence of geometry models. Figure 2 visually outlines this separation of concerns and highlights the attributes assigned to these IFC representation concepts. Figure 3 depicts an overview for the IFC representation, beginning at the project level, offering a contextual framework for modelling geometry. geometric representation of the IFC modelling paradigm, serving as a guide for understanding these representations. Notably, the representation initiates at the Project level, offering a contextual framework for modelling. Figure 4  illustrates the geometric representation of the IFC 3D modelling paradigm.
 
 *Figure 2. Data model for connecting functional representation to their IFC representation*
 ```mermaid
@@ -78,7 +78,7 @@ This ontology also offers a simplified semantic representation of the Industry F
     }
 ```
 
-*Figure 3. Data model for IFC geometric representation*
+*Figure 3. Data model for an overview of IFC representation*
 ```mermaid
     erDiagram 
     "IfcProjectRepresentation" ||--o{ "IfcSiteRepresentation" : "hasRootZone"
@@ -105,6 +105,31 @@ This ontology also offers a simplified semantic representation of the Industry F
         hasRepresentationType xsd-string
         hasSourcePlacement LocalPlacement
     }
+    "LocalPlacement" ||--o{ "LocalPlacement" : "hasRelativePositionTo"
+    "LocalPlacement" ||--o{ "CartesianPoint" : "hasRefPoint"
+    "LocalPlacement" ||--o{ "DirectionVector" : "hasRefDirection"
+    "LocalPlacement" ||--o{ "DirectionVector" : "hasAxisDirection"
+    "CartesianTransformationOperator" ||--o{ "CartesianPoint" : "hasLocalOrigin"
+    "CartesianTransformationOperator" ||--o{ "DirectionVector" : "hasDerivedXAxis"
+    "CartesianTransformationOperator" ||--o{ "DirectionVector" : "hasDerivedYAxis"
+    "CartesianTransformationOperator" {
+        hasScale xsd-double
+    }
+    "CartesianPoint" {
+        hasXCoordinate xsd-double
+        hasYCoordinate xsd-double
+        hasZCoordinate xsd-double
+    }
+    "DirectionVector" {
+        hasXDirectionRatio xsd-double
+        hasYDirectionRatio xsd-double
+        hasZDirectionRatio xsd-double
+    }
+```
+
+*Figure 4. Data model for IFC geometric representation*
+```mermaid
+    erDiagram 
     "BooleanClippingResult" ||--o{ "GeometricRepresentation" : "subClassOf"
     "BooleanClippingResult" ||--o{ "GeometricRepresentation" : "hasFirstOperand"
     "BooleanClippingResult" ||--o{ "GeometricRepresentation" : "hasSecondOperand"
@@ -153,30 +178,5 @@ This ontology also offers a simplified semantic representation of the Industry F
         hasProfileType ifc-AREA
         hasXDimensionExtent xsd-double
         hasYDimensionExtent xsd-double
-    }
-```
-
-*Figure 4. Data model for the key IFC modelling parameters*
-```mermaid
-    erDiagram 
-    "LocalPlacement" ||--o{ "LocalPlacement" : "hasRelativePositionTo"
-    "LocalPlacement" ||--o{ "CartesianPoint" : "hasRefPoint"
-    "LocalPlacement" ||--o{ "DirectionVector" : "hasRefDirection"
-    "LocalPlacement" ||--o{ "DirectionVector" : "hasAxisDirection"
-    "CartesianTransformationOperator" ||--o{ "CartesianPoint" : "hasLocalOrigin"
-    "CartesianTransformationOperator" ||--o{ "DirectionVector" : "hasDerivedXAxis"
-    "CartesianTransformationOperator" ||--o{ "DirectionVector" : "hasDerivedYAxis"
-    "CartesianTransformationOperator" {
-        hasScale xsd-double
-    }
-    "CartesianPoint" {
-        hasXCoordinate xsd-double
-        hasYCoordinate xsd-double
-        hasZCoordinate xsd-double
-    }
-    "DirectionVector" {
-        hasXDirectionRatio xsd-double
-        hasYDirectionRatio xsd-double
-        hasZDirectionRatio xsd-double
     }
 ```
