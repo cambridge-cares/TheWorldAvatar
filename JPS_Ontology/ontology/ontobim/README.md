@@ -1,6 +1,6 @@
 # Building Information Modelling ontology
 ## 1. Introduction
-OntoBIM is an ontology developed to represent the detailed information and topological relationships of buildings and their components (walls, doors, roofs, furniture, equipment) that is available in the Industry Foundation Classes (IFC) data schema. Information about their individual characteristics such as material, readings, and dimensions is combined from IFC or other data sources. There are two major aspects of this ontology:
+OntoBIM is an ontology developed to represent the detailed information and topological relationships of buildings and their components (walls, doors, roofs, funiture, equipment) that is available in the Industry Foundation Classes (IFC) data schema. Briefly, IFC is an exchange standard between BIM users and software but more information can be found on their [website](https://technical.buildingsmart.org/standards/ifc/ifc-schema-specifications/). Information about their individual characteristics such as material, readings, and dimensions is combined from IFC or other data sources. The following subsections feature the two categories of semantic representations offered by OntoBIM.
 
 ### 1.1 Topological Relationship
 
@@ -28,57 +28,9 @@ The primary objective of this representation is to empower users to scale and ag
 
 ### 1.2 IFC Representation
 
-This ontology also offers a simplified semantic representation of the Industry Foundation Classes (IFC) modelling paradigm to enhance data retrieval speeds. One notable innovation is the intentional separation of the semantic representation of zones and elements from their modelling counterparts. This ensures that functional information, such as utility consumption, remains retrievable even in the absence of geometry models. Figure 2 visually outlines this separation of concerns and highlights the attributes assigned to these IFC representation concepts. Figure 3 depicts an overview for the IFC representation, beginning at the project level, offering a contextual framework for modelling geometry. geometric representation of the IFC modelling paradigm, serving as a guide for understanding these representations. Notably, the representation initiates at the Project level, offering a contextual framework for modelling. Figure 4  illustrates the geometric representation of the IFC 3D modelling paradigm.
+This ontology also offers a simplified semantic representation of the IFC modelling paradigm to enhance data retrieval speeds. The ontology is designed to be a version-agnostic representation of IFC, but it is still a work-in-progress and non-exhaustive. Generally, an IFC model is stored as a project for each file. This concept of project is defined as the `IfcProject` that set the modelling context for all geometry models and is rooted in either the site or building. Figure 2 depicts this overview for the IFC representation. Effectively, an object could have a `ModelRepresentation3D` that is defined within the context of the entire project. This context is required to position the object in relation to the room, storey, building, or site.
 
-*Figure 2. Data model for connecting functional representation to their IFC representation*
-```mermaid
-    erDiagram 
-    "bot:Zone" ||--o{ "IfcAbstractRepresentation" : "hasIfcRepresentation"
-    "IfcAbstractRepresentation" ||--o{ "LocalPlacement" : "hasLocalPosition"
-    "IfcAbstractRepresentation" {
-       hasIfcId xsd-string
-       rdfs-label xsd-string
-    }
-    "bot:Site" ||--o{ "bot:Zone" : "subClassOf"
-    "bot:Site" ||--o{ "IfcSiteRepresentation" : "hasIfcRepresentation"
-    "IfcSiteRepresentation" ||--o{ "IfcAbstractRepresentation" : "subClassOf"
-    "IfcSiteRepresentation"{
-        hasRefElevation om-Height
-        hasRefLatitude CompoundPlaneAngle
-        hasRefLongitude CompoundPlaneAngle
-    }
-    "bot:Building" ||--o{ "bot:Zone" : "subClassOf"
-    "bot:Building" ||--o{ "IfcBuildingRepresentation" : "hasIfcRepresentation"
-    "IfcBuildingRepresentation" ||--o{ "IfcAbstractRepresentation" : "subClassOf"
-    "IfcBuildingRepresentation"{
-        hasRefElevation om-Height
-        hasTerrainElevation om-Height
-    }
-    "bot:Storey" ||--o{ "bot:Zone" : "subClassOf"
-    "bot:Storey" ||--o{ "IfcStoreyRepresentation" : "hasIfcRepresentation"
-    "IfcStoreyRepresentation" ||--o{ "IfcAbstractRepresentation" : "subClassOf"
-    "IfcStoreyRepresentation"{
-        hasRefElevation om-Height
-    }
-    "Room" ||--o{ "bot:Zone" : "subClassOf"
-    "Room" ||--o{ "IfcRoomRepresentation" : "hasIfcRepresentation"
-    "IfcRoomRepresentation" ||--o{ "IfcAbstractRepresentation" : "subClassOf"
-    "bot:Element" ||--o{ "IfcModelRepresentation" : "hasIfcRepresentation"
-    "IfcModelRepresentation" ||--o{ "LocalPlacement" : "hasLocalPosition"
-    "IfcModelRepresentation" ||--o{ "ModelRepresentation3D" : "hasGeometricRepresentation"
-    "IfcModelRepresentation" ||--o{ "GeometricVoid" : "hasVoid"
-    "IfcModelRepresentation" {
-        hasIfcId xsd-string
-        rdfs-label xsd-string
-    }
-    "GeometricVoid" ||--o{ "ModelRepresentation3D" : "hasGeometricRepresentation"
-    "GeometricVoid" {
-        hasLocalPosition LocalPlacement
-        hasVoidType xsd-string
-    }
-```
-
-*Figure 3. Data model for an overview of IFC representation*
+*Figure 2. Data model for an overview of IFC representation*
 ```mermaid
     erDiagram 
     "IfcProjectRepresentation" ||--o{ "IfcSiteRepresentation" : "hasRootZone"
@@ -126,6 +78,58 @@ This ontology also offers a simplified semantic representation of the Industry F
         hasZDirectionRatio xsd-double
     }
 ```
+
+The IFC modelling paradigm and parameters has developed its unique syntax for the BIM domain. However, there are also other geometry representations available in different formats such as CityGML and GLB. Although these geometry representation differs, their functional attributes such as utility consumption and costs do not. Accordingly, we should intentionally separate the semantic and geometric representations to allow the retrieval of functional information even in the absence of geometry models. Figure 3 visually outlines this separation of concerns and highlights the attributes assigned to these IFC representation concepts. 
+
+*Figure 3. Data model for connecting functional representation to their IFC representation*
+```mermaid
+    erDiagram 
+    "bot:Zone" ||--o{ "IfcAbstractRepresentation" : "hasIfcRepresentation"
+    "IfcAbstractRepresentation" ||--o{ "LocalPlacement" : "hasLocalPosition"
+    "IfcAbstractRepresentation" {
+       hasIfcId xsd-string
+       rdfs-label xsd-string
+    }
+    "bot:Site" ||--o{ "bot:Zone" : "subClassOf"
+    "bot:Site" ||--o{ "IfcSiteRepresentation" : "hasIfcRepresentation"
+    "IfcSiteRepresentation" ||--o{ "IfcAbstractRepresentation" : "subClassOf"
+    "IfcSiteRepresentation"{
+        hasRefElevation om-Height
+        hasRefLatitude CompoundPlaneAngle
+        hasRefLongitude CompoundPlaneAngle
+    }
+    "bot:Building" ||--o{ "bot:Zone" : "subClassOf"
+    "bot:Building" ||--o{ "IfcBuildingRepresentation" : "hasIfcRepresentation"
+    "IfcBuildingRepresentation" ||--o{ "IfcAbstractRepresentation" : "subClassOf"
+    "IfcBuildingRepresentation"{
+        hasRefElevation om-Height
+        hasTerrainElevation om-Height
+    }
+    "bot:Storey" ||--o{ "bot:Zone" : "subClassOf"
+    "bot:Storey" ||--o{ "IfcStoreyRepresentation" : "hasIfcRepresentation"
+    "IfcStoreyRepresentation" ||--o{ "IfcAbstractRepresentation" : "subClassOf"
+    "IfcStoreyRepresentation"{
+        hasRefElevation om-Height
+    }
+    "Room" ||--o{ "bot:Zone" : "subClassOf"
+    "Room" ||--o{ "IfcRoomRepresentation" : "hasIfcRepresentation"
+    "IfcRoomRepresentation" ||--o{ "IfcAbstractRepresentation" : "subClassOf"
+    "bot:Element" ||--o{ "IfcModelRepresentation" : "hasIfcRepresentation"
+    "IfcModelRepresentation" ||--o{ "LocalPlacement" : "hasLocalPosition"
+    "IfcModelRepresentation" ||--o{ "ModelRepresentation3D" : "hasGeometricRepresentation"
+    "IfcModelRepresentation" ||--o{ "GeometricVoid" : "hasVoid"
+    "IfcModelRepresentation" {
+        hasIfcId xsd-string
+        rdfs-label xsd-string
+    }
+    "GeometricVoid" ||--o{ "ModelRepresentation3D" : "hasGeometricRepresentation"
+    "GeometricVoid" {
+        hasLocalPosition LocalPlacement
+        hasVoidType xsd-string
+    }
+```
+
+The IFC schema has its own syntax and concepts to achieve its 3D modelling paradigm. At the moment, OntoBIM has yet to fully represent all the available types but the commonly used geometries have been represented. Figure 4 illustrates the available geometry representation concepts in OntoBIM.
 
 *Figure 4. Data model for IFC geometric representation*
 ```mermaid
