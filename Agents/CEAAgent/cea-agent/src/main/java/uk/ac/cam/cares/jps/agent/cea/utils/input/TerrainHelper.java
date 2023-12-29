@@ -71,37 +71,34 @@ public class TerrainHelper {
                 bufferDistance = 160.0;
             }
 
-            crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
-
             List<byte[]> result = new ArrayList<>();
 
+            JSONArray sridResult = postgisClient.executeQuery(sridQuery);
 
-                JSONArray sridResult = postgisClient.executeQuery(sridQuery);
+            if (sridResult.isEmpty()) {
+                return null;
+            }
 
-                if (sridResult.isEmpty()) {
-                    return null;
+            Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
+
+            // query for terrain data
+            String terrainQuery = getTerrainQuery(bufferDistance, envelope.toString(), Integer.valueOf(crs), postgisCRS, table);
+
+            try (Connection conn = postgisClient.getConnection()) {
+                Statement stmt = conn.createStatement();
+                ResultSet terrainResult = stmt.executeQuery(terrainQuery);
+                while(terrainResult.next()) {
+                    byte[] rasterBytes = terrainResult.getBytes("data");
+                    result.add(rasterBytes);
                 }
+            }
 
-                Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
-
-                // query for terrain data
-                String terrainQuery = getTerrainQuery(bufferDistance, envelope.toString(), Integer.valueOf(crs), postgisCRS, table);
-
-                try (Connection conn = postgisClient.getConnection()) {
-                    Statement stmt = conn.createStatement();
-                    ResultSet terrainResult = stmt.executeQuery(terrainQuery);
-                    while(terrainResult.next()) {
-                        byte[] rasterBytes = terrainResult.getBytes("data");
-                        result.add(rasterBytes);
-                    }
-                }
-
-                if (result.size() == 1) {
-                    return result.get(0);
-                }
-                else{
-                    return null;
-                }
+            if (result.size() == 1) {
+                return result.get(0);
+            }
+            else{
+                return null;
+            }
         }
         catch (Exception e) {
             System.out.println("No terrain data retrieved, agent will run CEA with CEA's default terrain.");
