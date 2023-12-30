@@ -399,13 +399,22 @@ public class GDALClient extends ContainerClient {
     private static String generateOutFilePath(String basePathIn, String databaseName, String schemaName,
             String layerName,
             String filePath) {
-        return generateRasterOutDirPath(databaseName, schemaName, layerName)
-                .resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
-                .toString();
+        if (filePath.endsWith(".nc")) {
+            return generateMultiDimOutDirPath(databaseName, schemaName, layerName)
+                    .resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
+                    .toString();
+        } else {
+            return generateRasterOutDirPath(databaseName, schemaName, layerName)
+                    .resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
+                    .toString();
+        }
     }
 
     public static Path generateRasterOutDirPath(String databaseName, String schemaName, String layerName) {
         return Path.of(StackClient.GEOTIFFS_DIR, databaseName, schemaName, layerName);
     }
 
+    public static Path generateMultiDimOutDirPath(String databaseName, String schemaName, String layerName) {
+        return Path.of(StackClient.MULTIDIM_GEOSPATIAL_DIR, databaseName, schemaName, layerName);
+    }
 }
