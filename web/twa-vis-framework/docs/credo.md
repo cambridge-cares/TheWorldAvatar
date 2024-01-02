@@ -1,6 +1,6 @@
 # TWA-VF: CReDo specific features
 
-This page documents the advanced features of the TWA-VF specific for the [CReDo project](https://digitaltwinhub.co.uk/credo). It is intended that these features are updated to become generics features within the TWA, usable on any project, but currently are only available as part of CReDo.
+This page documents the advanced features of the TWA-VF specific for the [CReDo project](https://digitaltwinhub.co.uk/credo). It is intended that these features be updated to become generic features within the TWA, usable on any project, but currently are only available as part of CReDo.
 
 ## Scenario handling
 
