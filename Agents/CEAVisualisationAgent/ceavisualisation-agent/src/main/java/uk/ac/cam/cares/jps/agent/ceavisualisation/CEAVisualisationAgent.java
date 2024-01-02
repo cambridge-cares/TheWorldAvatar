@@ -232,7 +232,6 @@ public class CEAVisualisationAgent extends JPSAgent {
                 "INNER JOIN citydb.surface_geometry sg ON b.lod0_footprint_id = sg.parent_id\n" +
                 "WHERE cga.urival NOT IN (SELECT " + IRI + " FROM SCHEMA" + "." + "TABLE)";
 
-
         UpdatedGSVirtualTableEncoder notCEATable = new UpdatedGSVirtualTableEncoder();
 
         GeoServerVectorSettings notCEALayerSettings = new GeoServerVectorSettings();
