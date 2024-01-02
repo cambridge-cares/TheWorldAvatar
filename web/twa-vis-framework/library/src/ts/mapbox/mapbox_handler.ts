@@ -61,34 +61,28 @@ class MapHandler_Mapbox extends MapHandler {
 
         // Get all visible features under the mouse click
         let features = [];
-        if(feature !== null && feature !== undefined) {
+        if(feature != null) {
             features.push(feature);
         } else {
             features = MapHandler.MAP.queryRenderedFeatures(event.point);
         }
 
-        // Filter out non-CMCL layers
+        // Filter out non-clickable layers & non-CMCL layers
         features = features.filter(feature => {
-            return MapboxUtils.isCMCLLayer(feature);
+            return MapboxUtils.isCMCLLayer(feature) && MapboxUtils.isLayerClickable(feature);
         });
 
         // Filter out duplicates (Mapbox can return these if a feature is split across a tile boundary)
         features = MapboxUtils.deduplicate(features);
 
         if(features.length > 1) {
-            // Click on overlapping, individual features/clusters
+            // Click on overlapping, individual features or clusters
             this.clickMultiple(features);
 
         } else if (features.length === 1) {
+            // Click on a single, non-overlapping, feature or cluster
             let feature = features[0];
-            let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
             
-            let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
-            if(!clickable) {
-                // No mouse interaction
-                return;
-            }
-
             if(MapboxUtils.isCluster(feature)) {
                 // Clicked on a clustered feature, handle as if multiple
                 this.clickMultiple(features);
@@ -122,16 +116,10 @@ class MapHandler_Mapbox extends MapHandler {
         let sortedLeafs = {};
 
         // Group the features by layer
-        for(let i = 0; i < leafs.length; i++) {
-            let leaf = leafs[i];
+        for(const element of leafs) {
+            let leaf = element;
             let layerID = leaf["layer"]["id"];
             let layer = Manager.DATA_STORE.getLayerWithID(layerID);
-
-            let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
-            if(clickable !== null && clickable === false) {
-                // No mouse interaction
-                continue;
-            }
 
             if(sortedLeafs[layer.name] === null || sortedLeafs[layer.name] === undefined) {
                 sortedLeafs[layer.name] = [];
