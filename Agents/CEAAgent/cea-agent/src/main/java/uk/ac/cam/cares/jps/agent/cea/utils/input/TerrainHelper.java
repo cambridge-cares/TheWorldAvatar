@@ -130,6 +130,7 @@ public class TerrainHelper {
      * @param x first coordinate of center point
      * @param y second coordinate of center point
      * @param radius length of the square bounding box divided by 2
+     * @param originalCRS coordinate reference system of center point
      * @param postgisCRS coordinate reference system of the raster data queried
      * @param table table storing raster data
      * @return SQL query string
