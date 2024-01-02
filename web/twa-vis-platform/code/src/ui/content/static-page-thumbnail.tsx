@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Tooltip } from "@mui/material";
 import Link from "next/link";
 
@@ -19,9 +20,10 @@ interface Props {
  * @param description Description for content page.
  */
 export default function StaticPageThumbnail({ page }: Readonly<Props>) {
-    let tooltipText = "Click to open the '" + page.title + "' page.";
-    let thumbnail = page.thumbnail ?? "/img/icons/info.svg";
-    let url = "/posts/" + page.slug;
+
+    const tooltipText = "Click to open the '" + page.title + "' page.";
+    const thumbnail = page.thumbnail ?? "/img/icons/info.svg";
+    const url = "/posts/" + page.slug;
 
     return (
         <Tooltip title={tooltipText} enterDelay={1000} leaveDelay={100}>
@@ -33,12 +35,9 @@ export default function StaticPageThumbnail({ page }: Readonly<Props>) {
                 </div>
 
                 <div className={styles.content}>
-                    {/* Page title */}
                     <div className={styles.title}>
                         <h1>{page.title}</h1>
                     </div>
-
-                    {/* Page description */}
                     <div className={styles.description}>
                         {page.description}
                     </div>

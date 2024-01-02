@@ -3,7 +3,10 @@ import { Metadata } from "next";
 
 import LandingPage from "ui/pages/landing";
 import UISettings from "io/config/ui-settings";
+
+import MapContainer from "./visualisation/page";
 import { OptionalPages } from "io/config/optional-pages";
+
 
 /**
  * Set page metadata.
@@ -35,14 +38,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function App() {
     const moduleSettings = UISettings.getSettings().modules;
     
-    if(moduleSettings.landing) {
-        // Enabled, load components for that here
-        return <LandingPage/>
-        
-    } else {
-        // Disabled, load straight into map here
-        return (
-            <h1>MAP GOES HERE </h1>
-        )
-    }
+    return (
+        <>
+            {moduleSettings.landing &&
+                <LandingPage/>
+            }
+            {!moduleSettings.landing &&
+                <MapContainer/>
+            }
+        </>
+    );
 }

@@ -1,62 +1,75 @@
 "use client";
 
 import React from "react";
+import Konami from 'react-konami-code';
+import {  Provider } from "react-redux";
 
+import Trex from "utils/trex";
 import Toolbar from "./toolbar/toolbar";
-import { SettingsInterface } from "../io/config/ui-settings";
 import ContextMenu from "./context-menu/context-menu";
-import Raptor from "../utils/raptor";
+import { reduxStore } from "../app/store";
+import { SettingsInterface } from "../io/config/ui-settings";
 
+// Incoming properties for global container
 type GlobalContainerProps = {
     children?: React.ReactNode,
     settings: SettingsInterface
 }
 
-export default class GlobalContainer extends React.Component<GlobalContainerProps> {
+// Internal state for global container
+type GlobalContainerState = {
+    popup: boolean
+}
 
-    menuItems = [
-        {
-            id: "show-toolbar",
-            name: "Show Toolbar",
-            toggleEnabled: true,
-            toggleDefault: true
-        },
-        {
-            id: "show-ribbon",
-            name: "Show Ribbon",
-            toggleEnabled: true,
-            toggleDefault: true
-        }
-    ];
+/**
+ * Component representing a common global page container for all content.
+ */
+export default class GlobalContainer extends React.Component<GlobalContainerProps, GlobalContainerState> {
+
+    // Initial state
+    state = {
+        popup: false
+    }
+
+    // Update popup state
+    setPopup = () => {
+        this.setState(prevState => ({
+            popup: !prevState.popup
+        }));
+    }
 
     // Return displayable element
     render() {
         const { modules, branding } = this.props.settings;
 
         return (
-            <div
-                id="globalContainer"
-                onContextMenu={(e) => {
-                    e.preventDefault()
-                }}>
+            <Provider store={reduxStore}>
+                <div
+                    id="globalContainer"
+                    onContextMenu={(e) => {
+                        e.preventDefault()
+                    }}> 
 
-                <ContextMenu items={this.menuItems} />
+                    {/* Right click menu */}
+                    <ContextMenu />
 
-                {/* Slim toolbar component */}
-                <Toolbar
-                    landing={modules.landing}
-                    help={modules.help}
-                    dashboard={modules.dashboard}
-                    toolbarLogo={branding.toolbarLogo.toString()}
-                />
+                    {/* Slim toolbar component */}
+                    <Toolbar
+                        showLanding={modules.landing}
+                        toolbarLogo={branding.toolbarLogo.toString()}
+                    />
 
-                {/* Main content container */}
-                <div id="contentContainer">
-                    {this.props.children}
+                    {/* Main content container */}
+                    <div id="contentContainer">
+                        {this.props.children}
+                    </div>
+                    
+                    <Konami action={this.setPopup} timeout={6000} resetDelay={1000}/>
+                    {this.state.popup &&
+                        <Trex callback={this.setPopup}/>
+                    }
                 </div>
-
-                {/* <Raptor/> */}
-            </div>
+            </Provider>
         );
     }
 

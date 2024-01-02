@@ -81,7 +81,7 @@ export default class Ribbon extends React.Component<RibbonProps, RibbonState> {
                             text="3D Terrain"
                             tooltip="Toggle 3D terrain."
                         />
-                           <RibbonComponent
+                        <RibbonComponent
                             icon="/img/icons/maximise.svg"
                             text="Maximise"
                             tooltip="Toggle fullscreen mode."

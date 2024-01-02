@@ -87,6 +87,7 @@ body {
     background-image: var(--background-image);
     background-position: center;
     background-size: cover;
+    overflow: hidden;
 }
 
 a {
@@ -130,11 +131,15 @@ img {
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 #contentContainer {
     width: 100%;
     flex-grow: 1;
     overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
 }
 
 * {

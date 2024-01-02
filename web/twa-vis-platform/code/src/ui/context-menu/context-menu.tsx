@@ -1,77 +1,89 @@
 "use client";
 
-import { useLocation } from 'react-router-dom'
-
-import Icon from "@mui/material/Icon";
 import styles from "./context-menu.module.css";
 
 import React from "react";
+import { connect } from "react-redux";
 
-export type ContextMenuItem = {
-    id: string,
-    name: string, 
-    toggleEnabled: boolean,
-    toggleDefault?: boolean,
-    callback?: (id: string, toggled: boolean) => void
-}
+import { ReduxState } from "../../app/store";
+import ContextItem, { ContextItemDefinition } from "./context-item";
+import { addItem, toggleItem } from "../../state/context-menu-slice";
 
+// Incoming properties type
 type ContextMenuProps = {
-    items: ContextMenuItem[]
+    items?: ContextItemDefinition[],
+    addItem?: (item: ContextItemDefinition) => void,
+    toggleItem?: (name: string) => void
 }
 
+// Internal state
 type ContextMenuState = {
-    xPos: string,
+    xPos: string, 
     yPos: string,
     show: boolean
 }
 
+const toolbarItem: ContextItemDefinition = {
+    name: "Show Toolbar",
+    description: "Toggle visibility of global toolbar.",
+    toggled: true
+}
+
 /**
+ * Represents a component for a custom right-click menu, containing instances of the
+ * ContextItem class to representing individual items. 
  * 
+ * The definition (and current toggled state) of each ContextItem is stored within
+ * the global Redux state so it that it persists across the application lifecycle.
  */
-export default class ContextMenu extends React.Component<ContextMenuProps, ContextMenuState> {
+class ContextMenu extends React.Component<ContextMenuProps, ContextMenuState> {
+
+    // Default state
     state = {
         xPos: "0px",
         yPos: "0px",
         show: false
     }
 
+    // On render
     componentDidMount() {
-        document.addEventListener("click", this.handleClick);
-        document.addEventListener("contextmenu", this.handleContextMenu);
+        document.addEventListener("click", this.handleLeftClick);
+        document.addEventListener("contextmenu", this.handleRightClick);
+        this.props.addItem(toolbarItem);
     }
 
+    // On dispose
     componentWillUnmount() {
-        document.removeEventListener("click", this.handleClick);
-        document.removeEventListener("contextmenu", this.handleContextMenu);
+        document.removeEventListener("click", this.handleLeftClick);
+        document.removeEventListener("contextmenu", this.handleRightClick);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    handleClick = (e: MouseEvent) => {
-
-        const location = useLocation();
-        console.log("RIGHT-CLICKED");
-        console.log(location.pathname);
-
+    // On left-click
+    handleLeftClick = () => {
         if (this.state.show) this.setState({ show: false });
     }
 
-    handleContextMenu = (e: MouseEvent) => {
+    // On right-click
+    handleRightClick = (e: MouseEvent) => {
         e.preventDefault();
         this.setState({
             xPos: `${e.pageX}px`,
             yPos: `${e.pageY}px`,
             show: true
         });
-        console.log("X = " + e.pageX);
-        console.log("Y = " + e.pageY);
     }
 
+    handleItemClick = (name: string) => {
+        this.props.toggleItem(name);
+    }
+
+    // Return element(s) for display
     render() {
         const { show, xPos, yPos } = this.state;
-        if(!show) return null;
 
-        const iconClass = ["material-symbols-outlined", styles.icon].join(" ");
-        const items = this.props.items;
+        if(!show || this.props.items == null || this.props.items.length === 0){
+            return null;
+        }
 
         return (
             <div
@@ -82,18 +94,29 @@ export default class ContextMenu extends React.Component<ContextMenuProps, Conte
                     left: xPos
                 }}>
 
-                {items.map((item) => (
-                    <div key={item.id} className={styles.menuItem}>
-                        <span className={styles.text}>{item.name}</span>
-
-                        {item.toggleEnabled &&
-                            <Icon className={iconClass}>
-                                {item.toggleDefault ? "check_box" : "check_box_outline_blank"}
-                            </Icon>
-                        }
-                    </div>
+                {this.props.items.map((item) => (
+                    <ContextItem
+                        key={item.name}
+                        name={item.name}
+                        description={item.description ?? ""}
+                        toggled={item.toggled}
+                        callback={(name: string) => {
+                            this.handleItemClick(name);
+                        }}
+                    />
                 ))}
             </div>
         );
     }
 }
+
+// Convert redux state to incoming props
+const mapStateToProps = (state: ReduxState) => ({
+    items: state.contextMenu.items
+});
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapDispatchToProps = (dispatch: any) => ({
+    addItem: (item: ContextItemDefinition) => dispatch(addItem(item)),
+    toggleItem: (name: string) => dispatch(toggleItem(name))
+});
+export default connect(mapStateToProps, mapDispatchToProps)(ContextMenu);

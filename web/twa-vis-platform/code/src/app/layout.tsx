@@ -50,7 +50,7 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
             </head>
             <body>
                 <StartupLogging/>
-            
+                
                 <GlobalContainer settings={uiSettings}>
                     {children}
                 </GlobalContainer>
