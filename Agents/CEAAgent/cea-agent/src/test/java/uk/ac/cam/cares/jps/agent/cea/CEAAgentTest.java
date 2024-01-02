@@ -184,7 +184,7 @@ public class CEAAgentTest {
                                         byte[] terrain = new byte[1];
                                         try (MockedConstruction<TerrainHelper> terrainHelperMock = mockConstruction(TerrainHelper.class,
                                                 (mock, context) -> {
-                                                    doReturn(terrain).when(mock).getTerrain(anyString(), anyString(), anyList(), anyString());
+                                                    doReturn(terrain).when(mock).getTerrain(any(), anyList(), anyString());
                                                 })) {
                                             try (MockedConstruction<RunCEATask> mockTask = mockConstruction(RunCEATask.class)) {
                                                 // test run endpoint
@@ -204,7 +204,7 @@ public class CEAAgentTest {
                                                 usageHelpermock.verify(() -> BuildingUsageHelper.getBuildingUsages(anyString(), anyString()), times(1));
                                                 surroundingsHelperMock.verify(() -> SurroundingsHelper.getSurroundings(any(), any(), anyString()), times(1));
                                                 verify(weatherHelperMock.constructed().get(0), times(1)).getWeather(any(), anyList(), anyString(), anyString(), anyList());
-                                                verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(anyString(), anyString(), anyList(), anyString());
+                                                verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(any(), anyList(), anyString());
                                                 verify(executor, times(1)).execute(mockTask.constructed().get(0));
                                                 assertEquals(requestParams, returnParams);
                                             }
