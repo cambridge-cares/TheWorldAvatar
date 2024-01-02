@@ -20,8 +20,10 @@ class ModelUpdateHandler(Resource):
                 new_values = query_all(query_dict)
                 calculator.updateFromKG(new_values)
                 final_ret = {"status": "Success"}
+                app.logger.info('Updated Mackay model values from TWA')
                 return final_ret
         except Exception as e:
+            app.logger.debug('ModelUpdateHandler error: %s', e)
             return Response(
                 str(e),
                 status=500

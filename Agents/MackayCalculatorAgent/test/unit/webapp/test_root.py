@@ -32,4 +32,3 @@ def test_post_lever(client):
 def test_post_lever_err_range(client):
     response = client.post("/data", json={'levers':[5 for _ in range(45)]})
     assert response.status_code == 500
-

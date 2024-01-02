@@ -21,8 +21,6 @@ api.add_resource(ModelUpdateHandler, '/update')
 #For one-pagers
 @app.route("/guides/<topic>/<filename>")
 def guide(topic, filename):
-    app.logger.info('%s', topic)
-    app.logger.info('%s', filename)
     return send_from_directory(os.path.join(ONEPAGERPATH,topic),filename)
 
 

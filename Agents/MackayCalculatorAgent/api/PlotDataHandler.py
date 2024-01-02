@@ -19,7 +19,7 @@ class PlotDataHandler(Resource):
             final_ret.update(singlevalues)
             return final_ret
         except Exception as e:
-            print(e)
+            app.logger.debug('PlotDataHandler error: %s', e)
             return Response(
                 str(e),
                 status=500,
