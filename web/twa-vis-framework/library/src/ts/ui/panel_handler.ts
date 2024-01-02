@@ -235,7 +235,7 @@ class PanelHandler {
      * @param endpoint 
      * @returns 
      */
-    public addSupportingData(feature, properties) {
+    public addSupportingData(feature, properties, scenarioID) {
         properties = filterNulls(properties);
 
         // Get required details
@@ -262,6 +262,15 @@ class PanelHandler {
             "iri": iri,
             "endpoint": endpoint
         };
+
+        // If running in CReDo mode, update the agent URL.
+        // Note: the CReDo backend should be updated to fit the generic interface of
+        // the feature info agent (i.e. use the same url and accept scenario IDs as
+        // parameters).
+        if(Manager.SETTINGS.getSetting("credo") === true) {
+            agentURL = stack + "/CReDoAccessAgent/getMetadataPrivate/";
+            agentURL += scenarioID + "?iri=" + encodeURIComponent(iri);
+        }
 
         let self = this;
         var promise = $.getJSON(agentURL, params, function(rawJSON) {

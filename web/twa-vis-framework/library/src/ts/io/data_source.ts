@@ -29,8 +29,6 @@ class DataSource {
         this.definition = json;
         this.id = json["id"];
         this.type = json["type"];
-
-        console.info("Created DataSource instance '" + this.id + "'.");
     }    
 
     /**
