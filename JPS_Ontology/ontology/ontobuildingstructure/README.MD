@@ -49,7 +49,7 @@ Additionally, there are concepts of roof and wall facades directly linked to the
         hasNumOfRise xsd-integer
         hasNumOfTread xsd-integer
         hasRiserHeight xsd-double
-        hasTreadLength xsd-string
+        hasTreadLength xsd-double
     }
 ```
 
