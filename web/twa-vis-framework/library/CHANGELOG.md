@@ -6,6 +6,7 @@
 * Added optional "credo" flag to use different format URLs for FeatureInfoAgent calls.
 ### Bug Fixes:
 * Fixed checks for object properties before passing layers/sources to Mapbox API.
+* Click events now correctly filter out non-interactable layers.
 
 # 4.2.0
 ### Features
