@@ -56,7 +56,10 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
     private static final String LOADTSCONFIG_ERROR_MSG = "Unable to load configs from timeseries client properties file";
 
-
+    public static String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
+	public static String DATABASE = System.getenv("DATABASE");
+	public static String LAYERNAME = System.getenv("LAYERNAME");
+    
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         return processRequestParameters(requestParams);
@@ -218,7 +221,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         }
 
         try {
-            SparqlHandler sparqlHandler = new SparqlHandler(args[0], args[1], args[2]);
+            WeatherSparqlHandler sparqlHandler = new WeatherSparqlHandler(args[0], args[1], args[2]);
             sparqlHandler.instantiateIfNotExist(weatherDataReadings);
         } catch (Exception e) {
             throw new JPSRuntimeException("Unable to carry out queries or insert data into the sparql store!", e);

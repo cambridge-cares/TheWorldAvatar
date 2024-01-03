@@ -70,7 +70,7 @@ public class SparqlHandlerIntegrationTest {
     private ArrayList<String> IRIs;
 
     //SparqlHandler
-    private SparqlHandler sparqlHandler;
+    private WeatherSparqlHandler sparqlHandler;
 
     @Before
     public void initialize() throws IOException {
@@ -118,7 +118,7 @@ public class SparqlHandlerIntegrationTest {
         //create SparqlHandler
         try {
             SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                sparqlHandler = new SparqlHandler(agentPropertiesFile, clientPropertiesFile, apiPropertiesFile);
+                sparqlHandler = new WeatherSparqlHandler(agentPropertiesFile, clientPropertiesFile, apiPropertiesFile);
             });
         }
         catch (Exception e) {

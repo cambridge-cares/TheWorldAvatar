@@ -183,7 +183,7 @@ public class CARESWeatherStationInputAgentLauncherTest {
         // Use a mock for the input agent
         try(MockedConstruction<CARESWeatherStationInputAgent> mockAgent = Mockito.mockConstruction(CARESWeatherStationInputAgent.class)) {
             // Use a mock for SparqlHandler
-            try(MockedConstruction<SparqlHandler> mockHandler = Mockito.mockConstruction(SparqlHandler.class)) {
+            try(MockedConstruction<WeatherSparqlHandler> mockHandler = Mockito.mockConstruction(WeatherSparqlHandler.class)) {
                 // Use a mock for the connector that returns the dummy readings
                 try(MockedConstruction<CARESWeatherStationAPIConnector> ignored = Mockito.mockConstruction(CARESWeatherStationAPIConnector.class,
                 (mock, context) -> {

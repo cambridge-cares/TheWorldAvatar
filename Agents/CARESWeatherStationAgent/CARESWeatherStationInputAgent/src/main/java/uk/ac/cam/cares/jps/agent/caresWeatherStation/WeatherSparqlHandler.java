@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.caresWeatherStation;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +26,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.core.io.ClassPathResource;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOfType;
@@ -32,7 +35,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOfType;
 /**
  * Class to construct queries for SPARQL stores
  * @author Wilson */
-public class SparqlHandler {
+public class WeatherSparqlHandler {
 	/**
      * Logger for reporting info/errors.
      */
@@ -124,6 +127,8 @@ public class SparqlHandler {
     //list to contain mappings
     private List<JSONKeyToIRIMapper> mappings;
 
+	private WeatherPostGISClient postgisClient;
+
     //endpoints and credentials
     String sparqlQueryEndpoint;
     String sparqlUpdateEndpoint;
@@ -138,7 +143,7 @@ public class SparqlHandler {
      * @param agentPropertiesFile the filepath of the agent.properties file
      * @param clientPropertiesFile the filepath of the client.properties file
      */
-    public SparqlHandler(String agentPropertiesFile, String clientPropertiesFile, String apiPropertiesFile) throws IOException {
+    public WeatherSparqlHandler(String agentPropertiesFile, String clientPropertiesFile, String apiPropertiesFile) throws IOException {
         try (InputStream input = new FileInputStream(agentPropertiesFile)) {
             // Load properties file from specified path
             Properties prop = new Properties();
@@ -588,85 +593,21 @@ public class SparqlHandler {
 
     /**
      * Check for sf:point instance linked to ReportingStation, if it does not exist, instantiate it and update the lat long values
+     * change to this, follow the weatherAgent createStation path
+     * already have sparqlHandler which has the same function as WeatherQueryClient
      * @param reportingStationIRI the ReportingStation IRI to check for
      * @param weatherReadings weather readings retrieved via API
      */
     private void InstantiateGeoLocationIfNotExist(String reportingStationIRI, JSONObject weatherReadings) {
         //retrieve long lat from JSONObject weatherReadings
-        String longitude = weatherReadings.getJSONArray("observations").getJSONObject(weatherReadings.getJSONArray("observations").length() - 1).get("lon").toString();
-        String latitude = weatherReadings.getJSONArray("observations").getJSONObject(weatherReadings.getJSONArray("observations").length() - 1).get("lat").toString();
-
-        SelectQuery query = Queries.SELECT();
-        Variable geoLocation = SparqlBuilder.var("geoLocation");
-        //check for point instance linked to reporting station via ontodevice:hasGeoLocation
-        //create triple pattern:
-        // <reportingStationIRI> ontodevice:hasGeoLocation ?geoLocation .
-        TriplePattern queryPattern = iri(reportingStationIRI).has(hasGeoLocation, geoLocation);
-        query.prefix(PREFIX_ONTODEVICE).select(geoLocation).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        String geoLocationIRI;
         try {
-            JSONArray queryResult = kbClient.executeQuery();
-            if(!queryResult.isEmpty()){
-                LOGGER.info("The geo location already exist: " + queryResult.getJSONObject(0).getString("geoLocation"));
-                geoLocationIRI = queryResult.getJSONObject(0).getString("geoLocation");
-            } else {
-                geoLocationIRI = ONTOEMS_NS + "GeoLocation_" + UUID.randomUUID();
-                //create triple pattern:
-                // <reportingStationIRI> ontodevice:hasGeoLocation <geoLocationIRI> .
-                // <geoLocationIRI> rdf:type sf:Point .
-                queryPattern = iri(reportingStationIRI).has(hasGeoLocation, iri(geoLocationIRI));
-                TriplePattern queryPattern2 = iri(geoLocationIRI).isA(point);
-                InsertDataQuery insertQuery = Queries.INSERT_DATA(queryPattern, queryPattern2).prefix(PREFIX_ONTODEVICE,PREFIX_SF);
-                kbClient.executeUpdate(insertQuery.getQueryString());
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());   
-            }
-        } catch (Exception e){
-            throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString(), e);
-        }
-        Variable var = SparqlBuilder.var("var");
-        //check for wkt literal linked to geolocationIRI via geo:asWKT
-        //create triple pattern:
-        // <geoLocationIRI> geo:asWKT ?var .
-        queryPattern = iri(geoLocationIRI).has(asWKT, var);
-        query = Queries.SELECT();
-        query.prefix(PREFIX_GEO).select(var).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        String pointLiteral;
-        try {
-            JSONArray queryResult = kbClient.executeQuery();
-            if(!queryResult.isEmpty()) {
-                LOGGER.info("The wkt literal is: " + queryResult.getJSONObject(0).getString("var"));
-                pointLiteral = queryResult.getJSONObject(0).getString("var");
-                //Delete the existing wkt literal containing the lat and long
-                //create triple pattern:
-                // <geoLocationIRI> geo:asWKT "pointLiteral"^^geo:wktLiteral .
-                queryPattern = iri(geoLocationIRI).has(asWKT, literalOfType(pointLiteral, wktLiteral));
-                DeleteDataQuery deleteDataQuery = Queries.DELETE_DATA(queryPattern).prefix(PREFIX_GEO);
-                kbClient.setQuery(deleteDataQuery.getQueryString());
-                kbClient.executeUpdate();
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());
-                //Insert wkt literal containing lat and long values retrieved via API
-                //create triple pattern:
-                // <geoLocationIRI> geo:asWKT "POINT(longitude latitude)"^^geo:wktLiteral .
-                queryPattern = iri(geoLocationIRI).has(asWKT, literalOfType("POINT(" + longitude + " " + latitude +")", wktLiteral));
-                InsertDataQuery insertDataQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_GEO);
-                kbClient.setQuery(insertDataQuery.getQueryString());
-                kbClient.executeUpdate();
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString()); 
-            } else {
-                //Insert wkt literal containing lat and long values retrieved via API
-                //create triple pattern:
-                // <geoLocationIRI> geo:asWKT "POINT(longitude latitude)"^^geo:wktLiteral .
-                queryPattern = iri(geoLocationIRI).has(asWKT, literalOfType("POINT(" + longitude + " " + latitude +")", wktLiteral));
-                InsertDataQuery insertDataQuery = Queries.INSERT_DATA(queryPattern).prefix(PREFIX_GEO);
-                kbClient.setQuery(insertDataQuery.getQueryString());
-                kbClient.executeUpdate();
-                LOGGER.info(UPDATE_SUCCESS_MSG + queryPattern.getQueryString());   
-            }
-        } catch (Exception e) {
-            throw new JPSRuntimeException(UPDATEORQUERY_ERROR_MSG + queryPattern.getQueryString(), e);
-        }
+            Double longitude = Double.parseDouble(weatherReadings.getJSONArray("observations").getJSONObject(weatherReadings.getJSONArray("observations").length() - 1).get("lon").toString());
+            Double latitude = Double.parseDouble(weatherReadings.getJSONArray("observations").getJSONObject(weatherReadings.getJSONArray("observations").length() - 1).get("lat").toString());
+		} catch (Exception e) {
+			LOGGER.error("Error retrieving latitude and longitude values from JSONObject!");
+			LOGGER.error(e.getMessage());
+			throw new RuntimeException(e);
+		}
     }
 
     /**
