@@ -29,6 +29,11 @@ abstract class DataLayer {
     public order: number = 0;
 
     /**
+     * Type of interactions that are allowed ("all"|"hover-only"|"click-only"|"none")
+     */
+    public interactions = "all";
+
+    /**
      * A cached visibility state that persists across map terrain
      * changes. Should be updated whenever visibility is changed
      * via the mapping API
@@ -42,22 +47,6 @@ abstract class DataLayer {
         this.id = id;
         this.name = name;
         this.source = source;
-
-        console.info("Created DataLayer instance '" + this.name + "' with id '" + this.id + "'.");
-    }
-
-    /**
-     * Returns true if this layer is interactable.
-     * 
-     * @returns true if clickable
-     */
-    public isClickable(): boolean {
-        if(this.definition != null) {
-            if("clickable" in Object.keys(this.definition)) {
-                return this.definition["clickable"];
-            }
-        }
-        return false;
     }
 
     /**
@@ -65,7 +54,7 @@ abstract class DataLayer {
      * 
      * @param isVisible current visibility state
      */
-      public cacheVisibility(isVisible) {
+    public cacheVisibility(isVisible) {
         this.isVisible = isVisible;
     }
 

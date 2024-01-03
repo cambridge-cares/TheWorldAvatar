@@ -143,4 +143,33 @@ class DataStore {
         return null;
     }
 
+    /**
+     * Gets a flatten list of all MapLayer instances defined across the entire
+     * group hierarchy.
+     */
+    public getLayerList() {
+        let layers = [];
+        this.dataGroups.forEach(topGroup => {
+            this.collectLayers(layers,topGroup);
+        })
+        return layers;
+    }
+
+    /**
+     * Recurse through group hierarchy, adding any present layer objects to the
+     * flattened layerList parameter.
+     * 
+     * @param layerList collector for flatten layers.
+     * @param currentGroup current data group in hierarchy.
+     */
+    private collectLayers(layerList, currentGroup) {
+        if(currentGroup != null) {
+            layerList.push(...currentGroup.dataLayers);
+    
+            currentGroup.subGroups.forEach(subGroup => {
+                this.collectLayers(layerList, subGroup);
+            });
+        }
+    }
+
 }

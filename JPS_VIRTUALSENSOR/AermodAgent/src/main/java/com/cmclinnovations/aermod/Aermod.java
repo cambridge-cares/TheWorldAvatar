@@ -494,8 +494,6 @@ public class Aermod {
     void createPointsFile(List<PointSource> pointSources, int simulationSrid, PollutantType pollutantType, int z) {
         StringBuilder sb = new StringBuilder();
 
-        double maxFlowRate = 0.0;
-
         for (int i = 0; i < pointSources.size(); i++) {
             PointSource ps = pointSources.get(i);
             String stkId = "S" + i;
@@ -507,12 +505,9 @@ public class Aermod {
             double area = Math.PI * Math.pow(ps.getDiameter() / 2, 2); // m2
             double density = ps.getMixtureDensityInKgm3(); // kg/m3
 
-            double massFlowrateInGs = ps.getFlowrateInGramsPerS(pollutantType);
-
-            // TODO: This will not work for PM10 and PM2.5.
-            double velocity = massFlowrateInGs / 1000 / area / density; // m/s
-
-            maxFlowRate = Math.max(maxFlowRate, massFlowrateInGs);
+            // for particles, assumed to be part of the air. Pollutant stream is part of a
+            // much larger air stream
+            double velocity = ps.getMixtureMassFlux() / EnvConfig.TARGET_EMISSION_VOLUME_FRACTION / area / density; // m/s
 
             double baseElevation = 0.0;
             if (ps.getClass() == StaticPointSource.class) {
@@ -524,7 +519,7 @@ public class Aermod {
                     baseElevation));
             sb.append(System.lineSeparator());
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f", stkId,
-                    massFlowrateInGs, ps.getHeight(), ps.getMixtureTemperatureInKelvin(),
+                    ps.getFlowrateInGramsPerS(pollutantType), ps.getHeight(), ps.getMixtureTemperatureInKelvin(),
                     velocity, ps.getDiameter()));
             sb.append(System.lineSeparator());
         }

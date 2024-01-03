@@ -13,7 +13,7 @@ The dockerised agent can be deployed as standalone version (i.e., outside a larg
 
 Before starting the agent, the `disp:hasOntoCityGMLCityObject` range instances in the [static_point_sources.ttl] file need to be populated manually with the corresponding exhaust outlets/chimneys, as there is currently no way to extract these CityObject IRIs programmatically. The agent will not start in case syntactically invalid IRIs are provided. As the entire [resources] folder is mounted into the container, no rebuilding is required after changing the triples to upload; a simple restart shall be sufficient.
 
-The published agent image assumes the stack name to be `dhstack`. This is because this agent is an integral part of a larger stack and requires another service to be finished before it can start up. To determine when this is the case that service is curled via `dhstack-dh-instantiation`. Further details can be found [here](https://github.com/cambridge-cares/pirmasens/tree/dev-dh-stack-deployment/districtheating_stack).<br>
+The published agent image assumes the stack name to be `dhstack`. This is because this agent is an integral part of a larger stack and requires another service to be finished before it can start up. To determine when this is the case that service is curled via `dhstack-dh-instantiation`. Further details can be found [here](https://github.com/cambridge-cares/pirmasens/tree/main/districtheating_stack).<br>
 To deploy this agent to another stack, please adjust the stack name in the [delayed startup script] prior to re-building the image.
 
 
@@ -77,7 +77,6 @@ If you want to spin up this agent as part of a stack, do the following:
 3) Copy the `dh-optimisation-trigger-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config/services` folder of the stack manager
 4) Add the service to a corresponding stack configuration json in `inputs/config`
 5) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
-6) The agent shall become available at `http://<HOST>:<PORT>/dhTriggerAgent/`
 
 For more details see the stack manager README on [specifying custom containers].
 
@@ -120,7 +119,7 @@ Markus Hofmeister (mh807@cam.ac.uk), July 2023
 <!-- websites -->
 [OntoTimeSeries (Miro board)]: https://miro.com/app/board/uXjVPFaO5As=/
 [OntoHeatNet (Miro board)]: https://miro.com/app/board/uXjVOhnB9_4=/
-[chained derivations]: https://lucid.app/documents/view/9fabc350-143b-4ca3-be52-b174c9f82c07
+[chained derivations]: https://lucid.app/publicSegments/view/a00b553e-d9d1-4845-97b7-f480e980898e/image.png
 [specifying custom containers]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#specifying-custom-containers
 
 <!-- files -->

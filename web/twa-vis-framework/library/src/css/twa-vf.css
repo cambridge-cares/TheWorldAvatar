@@ -1096,6 +1096,15 @@ label[for="select-feature"] {
 
 #layerContainer {
     max-height: 550px;
+    display: flex;
+	flex-flow: column;
+	overflow: hidden;
+}
+
+#layerContainer .controlContents {
+    display: flex;
+	flex-flow: column;
+	overflow: hidden;
 }
 
 #layerTree {
@@ -1108,11 +1117,10 @@ label[for="select-feature"] {
     list-style-type: none;
 }
 
-
 #layerTreeContainer {
     min-height: 30vh;
     max-height: 50vh;
-    overflow-y: auto;
+    overflow: scroll;
 }
 
 @media only screen and (max-height: 900px) {
@@ -1173,12 +1181,11 @@ label[for="select-feature"] {
 }
 
 
-
 #finderContainer {
     display: table;
     position: absolute;
-    bottom: 30px;
-    left: 20px;
+    bottom: 30;
+    left: 20;
     height: 40px;
     width: calc(100% - 540px);
 
@@ -1188,10 +1195,12 @@ label[for="select-feature"] {
 #finderContainer label {
     color: #fff;
     padding-left: 10px;
-    font-size: 11pt;
+    font-weight: 700;
+    font-size: 12pt;
     display: table-cell;
     height: 40px;
-    width: 160px;
+    width: 15%;
+    min-width: 175px;
     vertical-align: middle;
 }
 .finderSelectClass {
@@ -1202,6 +1211,7 @@ label[for="select-feature"] {
     text-align: center;
     display: table-cell;
     width: 20%;
+    margin-top: 5px;
 }
 .finderSelectClass option {
     background-color: rgba(0, 0, 0, 0.5) !important;
@@ -1212,10 +1222,10 @@ label[for="select-feature"] {
 }
 #finderField {
     display: table-cell;
-    height: 25px;
-    margin-top: 4px;
+    height: 30px;
+    margin-top: 5px;
     margin-left: 10px;
-    width: 50%;
+    width: 54%;
     padding-left: 10px;
 }
 
@@ -1469,4 +1479,118 @@ label[for="select-feature"] {
     max-width: 360px;
     padding: 20px;
     object-fit: cover
+}
+
+
+#scenario-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+#scenario-blocker {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,.75);
+    z-index: 1000;
+    position: absolute;
+    pointer-events: none;
+}
+#scenario-popup {
+    position: absolute;
+    background-color: white;
+    top: 15%;
+    left: 15%;
+    right: 15%;
+    bottom: 15%;
+    border-radius: 20px;
+    z-index: 1001;
+}
+#scenario-close {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 15px;
+    right: 15px;
+    text-align: center;
+    display: table;
+}
+#scenario-close i {
+    vertical-align: middle;
+    display: table-cell;
+    color: grey;
+}
+#scenario-header {
+    position: absolute;
+    top: 25px;
+    left: 15px;
+    height: 75px;
+    right: 15px;
+    font-family: Inter, sans-serif !important;
+    font-size: 1.1em;
+}
+#scenario-inner {
+    position: absolute;
+    left: 15px;
+    right: 15px;
+    bottom: 30px;
+    top: 120px;
+    border: 1px solid gray;
+    overflow-y: auto;
+}
+#scenario-loading {
+    display: flex !important;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.scenario-element {
+    height: 100px;
+    padding: 10px;
+    border-style: solid;
+    border-width: 0 0 1 0;
+    border-color: lightgray;
+    background-color: white;
+    font-size: 80%;
+    line-height: 110%;
+    position: relative;
+}
+.scenario-element:hover {
+    background-color: lightblue;
+}
+.scenario-element .scenario-button {
+    visibility: hidden;
+    position: absolute;
+    right: 25px;
+    bottom: 10px;
+    width: 100px;
+    height: 25px;
+}
+.scenario-element:hover .scenario-button {
+    visibility: visible;
+}
+#scenarioChangeContainer {
+    cursor: pointer;
+    text-decoration: inherit;
+    display: none;
+}
+#scenarioChangeContainer:hover {
+    text-decoration: underline;
+ }
+#scenarioChangeContainer p {
+    font-size: 10pt;
+    font-weight: normal;
+}
+
+#dashButtonContainer {
+    cursor: pointer;
+}
+#dashButtonContainer p {
+    font-size: 10pt !important;
+    font-weight: 400 !important;
+    text-decoration: none;
+}
+#dashButtonContainer:hover {
+    text-decoration: underline;
 }

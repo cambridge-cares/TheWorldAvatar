@@ -276,8 +276,8 @@ class ForecastingAgent(DerivationAgent):
         
         The method expects a HTTP POST JSON body with the following parameters:
         { "query": {
-            "tsIRI_target": "https://...",
-            "tsIRI_fc" : "https://..."
+            "dataIRI_target": "https://...",
+            "dataIRI_fc" : "https://..."
             }
         }
         """
@@ -294,13 +294,13 @@ class ForecastingAgent(DerivationAgent):
                 logger.error(msg, ex)
                 raise InvalidInput(msg) from ex
             
-            inputs = {'target': 'tsIRI_target', 'forecast': 'tsIRI_fc'}
-            # Extract time series IRIs to evaluate
+            inputs = {'target': 'dataIRI_target', 'forecast': 'dataIRI_fc'}
+            # Extract time series data IRIs to evaluate
             try:
                 for k, v in inputs.items():
                     inputs[k] = str(query[v])
             except Exception as ex:
-                msg = 'Unable to extract time series IRIs to evaluate: ' + str(ex)
+                msg = 'Unable to extract time series data IRIs to evaluate: ' + str(ex)
                 logger.error(msg)
                 raise InvalidInput(msg) from ex
 
@@ -308,12 +308,8 @@ class ForecastingAgent(DerivationAgent):
             ts_client = TSClient(kg_client=self.sparql_client)
             for k, v in inputs.items():
                 try:
-                    # Retrieve associated dataIRI
-                    dataIRI = self.sparql_client.get_dataIRI(v)
-                    if not dataIRI:
-                        raise ValueError(f'No dataIRI found for tsIRI: {v}')
                     # Retrieve time series data using TimeSeriesClient
-                    times, values = ts_client.retrieve_timeseries(dataIRI)
+                    times, values = ts_client.retrieve_timeseries(v)
                     # Create darts TimeSeries objects
                     t = pd.DatetimeIndex(times)
                     inputs[k] = TimeSeries.from_times_and_values(times=t, values=values)

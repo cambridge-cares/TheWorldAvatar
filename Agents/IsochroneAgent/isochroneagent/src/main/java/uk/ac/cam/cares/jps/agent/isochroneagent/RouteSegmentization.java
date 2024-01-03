@@ -57,9 +57,23 @@ public class RouteSegmentization {
                         "    maxspeed_forward,\n" +
                         "    maxspeed_backward,\n" +
                         "    priority,\n" +
-                        "    (ST_DumpSegments(ST_Segmentize(the_geom, 0.0005))).geom AS the_geom -- Split the \"the_geom\" column\n" +
+                        "    (ST_DumpSegments(ST_Segmentize(the_geom, "+segmentization_length+"))).geom AS the_geom -- Split the \"the_geom\" column\n" +
                         "FROM\n" +
-                        "    routing_ways;\n";
+                        "    routing_ways;\n" +
+                        "" +
+                        "UPDATE routing_ways_segment\n" +
+                        "SET \n" +
+                        "  length = ST_Length(the_geom),\n" +
+                        "  length_m = ST_Length(ST_Transform(the_geom, 3857)),\n" +
+                        "  cost_s = ST_Length(ST_Transform(the_geom, 3857)) / (maxspeed_forward * 1000 / 3600),\n" +
+                        "  reverse_cost_s = CASE\n" +
+                        "                     WHEN reverse_cost_s > 0 THEN ST_Length(ST_Transform(the_geom, 3857)) / (maxspeed_backward* 1000 / 3600)\n" +
+                        "                     WHEN reverse_cost_s < 0 THEN -ST_Length(ST_Transform(the_geom, 3857)) / (maxspeed_backward* 1000 / 3600)\n" +
+                        "                     ELSE 0  -- Assuming default value when reverse_cost_s is 0\n" +
+                        "                 END,\n" +
+                        "  cost = null,\n" +
+                        "  reverse_cost = null;" +
+                        "";
 
                 String segmentization_rearrange_sql=
                 "-- Step 1: Create a temporary sequence\n" +
@@ -221,6 +235,57 @@ public class RouteSegmentization {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
+    }
+
+    public void createFloodCost(RemoteRDBStoreClient remoteRDBStoreClient, int floodDepth_cm){
+
+         try (Connection connection = remoteRDBStoreClient.getConnection()) {
+
+
+             String createFloodTableSQL = "CREATE\n" +
+                     " MATERIALIZED VIEW IF NOT EXISTS flood_cost_"+floodDepth_cm+"cm_segment AS\n" +
+                     "SELECT\n" +
+                     "    rw.gid AS id,\n" +
+                     "    rw.tag_id as tag_id,\n" +
+                     "    rw.source,\n" +
+                     "    rw.target,\n" +
+                     "    CASE\n" +
+                     "        WHEN (\n" +
+                     "            EXISTS (\n" +
+                     "                SELECT\n" +
+                     "                    1\n" +
+                     "                FROM\n" +
+                     "                    flood_polygon_single_"+floodDepth_cm+"cm\n" +
+                     "                WHERE\n" +
+                     "                    st_intersects(rw.the_geom, flood_polygon_single_"+floodDepth_cm+"cm.geom)\n" +
+                     "            )\n" +
+                     "        ) THEN (- abs(rw.cost_s))\n" +
+                     "        ELSE rw.cost_s\n" +
+                     "    END AS cost_s,\n" +
+                     "    CASE\n" +
+                     "        WHEN (\n" +
+                     "            EXISTS (\n" +
+                     "                SELECT\n" +
+                     "                    1\n" +
+                     "                FROM\n" +
+                     "                    flood_polygon_single_"+floodDepth_cm+"cm\n" +
+                     "                WHERE\n" +
+                     "                    st_intersects(rw.the_geom, flood_polygon_single_"+floodDepth_cm+"cm.geom)\n" +
+                     "            )\n" +
+                     "        ) THEN (- abs(rw.reverse_cost_s))\n" +
+                     "        ELSE rw.reverse_cost_s\n" +
+                     "    END AS reverse_cost_s\n" +
+                     "FROM\n" +
+                     "    routing_ways_segment rw;";
+
+             executeSql(connection,createFloodTableSQL);
+            System.out.println("Flood cost segmented tables created.");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+
     }
 
 }

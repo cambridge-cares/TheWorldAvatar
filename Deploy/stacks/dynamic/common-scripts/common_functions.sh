@@ -37,6 +37,8 @@ init_server(){
         fi
     else
         if [ ! -S "$API_SOCK" ] || [ -z "$(pidof podman)" ]; then
+            rm -rf "$API_SOCK"
+            mkdir -p "$(dirname "$API_SOCK")"
             podman system service -t 0 "unix://$API_SOCK" &
         fi
     fi

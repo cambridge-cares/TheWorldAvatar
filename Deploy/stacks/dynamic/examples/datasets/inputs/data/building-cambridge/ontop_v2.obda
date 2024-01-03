@@ -37,8 +37,9 @@ target      building:{gmlid} os:hasGmlId {gmlid}^^xsd:string ;
                     geo:hasGeometry "{wkt}"^^geo:wktLiteral .
 source          -- This mapping links the GMLID of the city object with the Geometry attribute of that object
                 -- The Geometry is fetched from the surface_geometry table and converted to text (wkt)
+				-- The transformed geometry is in CRS84
                 SELECT "citydb"."cityobject"."gmlid" as gmlid,
-                ST_AsText("citydb"."surface_geometry"."geometry") as wkt
+                ST_AsText(ST_TRANSFORM("citydb"."surface_geometry"."geometry", 4326)) as wkt
                 FROM "citydb"."surface_geometry"
                 INNER JOIN "citydb"."cityobject" ON "citydb"."surface_geometry"."cityobject_id" = "citydb"."cityobject"."id"
                 INNER JOIN "citydb"."cityobject_genericattrib" ON "citydb"."cityobject_genericattrib"."cityobject_id" = "citydb"."cityobject"."id"
