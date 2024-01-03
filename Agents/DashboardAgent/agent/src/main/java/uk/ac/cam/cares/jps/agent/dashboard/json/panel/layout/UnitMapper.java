@@ -16,7 +16,7 @@ public class UnitMapper {
 
     // Initialise the mapping in a static block or a static method
     static {
-        UNIT_MAP.put("kwh", "kwatth");
+        UNIT_MAP.put("kwh", "kWh");
         UNIT_MAP.put("°c", "celsius");
         UNIT_MAP.put("%", "percent");
         UNIT_MAP.put("null", "");
