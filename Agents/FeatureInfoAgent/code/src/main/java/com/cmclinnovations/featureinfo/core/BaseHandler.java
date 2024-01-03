@@ -1,4 +1,4 @@
-package com.cmclinnovations.featureinfo.kg;
+package com.cmclinnovations.featureinfo.core;
 
 import java.util.ArrayList;
 import java.util.List;

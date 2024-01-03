@@ -1,4 +1,4 @@
-package com.cmclinnovations.featureinfo.kg;
+package com.cmclinnovations.featureinfo.core.time;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

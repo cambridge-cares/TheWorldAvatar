@@ -1,4 +1,4 @@
-package com.cmclinnovations.featureinfo.kg;
+package com.cmclinnovations.featureinfo.core.time;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
 import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.core.BaseHandler;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;

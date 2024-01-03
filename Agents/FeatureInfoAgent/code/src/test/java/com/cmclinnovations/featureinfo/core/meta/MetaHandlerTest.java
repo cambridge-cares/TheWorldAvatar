@@ -1,4 +1,4 @@
-package com.cmclinnovations.featureinfo.kg;
+package com.cmclinnovations.featureinfo.core.meta;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
 import com.cmclinnovations.featureinfo.config.ConfigEndpoint;

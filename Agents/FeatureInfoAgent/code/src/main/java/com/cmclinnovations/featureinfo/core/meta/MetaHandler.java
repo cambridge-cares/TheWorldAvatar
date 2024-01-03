@@ -1,4 +1,4 @@
-package com.cmclinnovations.featureinfo.kg;
+package com.cmclinnovations.featureinfo.core.meta;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
 import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.core.BaseHandler;
 
 /**
  * This class handles querying a Blazegraph endpoint to run a predetermined

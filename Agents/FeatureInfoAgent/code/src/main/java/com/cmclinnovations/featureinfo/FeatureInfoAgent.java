@@ -26,9 +26,9 @@ import org.springframework.stereotype.Controller;
 import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.EndpointType;
-import com.cmclinnovations.featureinfo.kg.ClassHandler;
-import com.cmclinnovations.featureinfo.kg.MetaHandler;
-import com.cmclinnovations.featureinfo.kg.TimeHandler;
+import com.cmclinnovations.featureinfo.core.ClassHandler;
+import com.cmclinnovations.featureinfo.core.time.TimeHandler;
+import com.cmclinnovations.featureinfo.core.meta.MetaHandler;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -99,7 +99,7 @@ public class FeatureInfoAgent extends JPSAgent {
             LOGGER.error("Could not initialise agent configuration!", exception);
         }
     }
-    
+
     /**
      * Perform required setup.
      *
@@ -162,12 +162,12 @@ public class FeatureInfoAgent extends JPSAgent {
                     // Enforce a single blazegraph endpoint
                     if(requestParams.has("endpoint")) {
                         LOGGER.info("Enforcing a single Blazegraph endpoint: {}", requestParams.getString("endpoint"));
-                        
+
                         this.enforcedEndpoint = new ConfigEndpoint(
-                            "ENFORCED", 
-                            requestParams.getString("endpoint"), 
-                            null, 
-                            null,
+                                "ENFORCED",
+                                requestParams.getString("endpoint"),
+                                null,
+                                null,
                             EndpointType.BLAZEGRAPH
                         );
                     }
@@ -175,23 +175,23 @@ public class FeatureInfoAgent extends JPSAgent {
                     // Run main GET logic
                     getRoute(requestParams, response);
                 }
-                break;
+                    break;
 
                 case "/status":
                 case "status": {
                     // Return status
                     statusRoute(response);
                 }
-                break;
+                    break;
 
                 default: {
                     LOGGER.info("Detected an unknown request route...");
                     response.setStatus(Response.Status.NOT_IMPLEMENTED.getStatusCode());
                     response.getWriter().write("{\"description\":\"Unknown route, only '/get' and '/status' are permitted.\"}");
                 }
-                break;
+                    break;
             }
-        } 
+        }
 
         response.getWriter().flush();
         LOGGER.info("Call finished, response object's writer has been flushed.");
@@ -271,7 +271,7 @@ public class FeatureInfoAgent extends JPSAgent {
         try {
             // Determine the class match
             String classMatch = this.getClass(iri, response);
-            
+
             if(classMatch != null) {
                 // Get the metadata
                 JSONArray metaArray = this.getMetadata(iri, classMatch, response);
@@ -293,7 +293,7 @@ public class FeatureInfoAgent extends JPSAgent {
 
         } catch(Exception exception) {
             LOGGER.error("An unexpected exception has occured, please see the log file!", exception);
-            
+
             response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
             response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
         }
@@ -346,7 +346,7 @@ public class FeatureInfoAgent extends JPSAgent {
                 response.getWriter().write("{\"description\":\"Queries sent, but no classes could be determined.\"}");
                 return null;
             }
-           
+
             return classMatch;
 
         } catch(Exception exception) {
@@ -416,11 +416,11 @@ public class FeatureInfoAgent extends JPSAgent {
             response.getWriter().write("{\"description\":\"Could not determine the PostgreSQL endpoint.\"}");
             return null;
         }
-        
+
         // Construct clients
         RemoteStoreClient rsClient = new RemoteStoreClient();
         TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(
-            rsClient, 
+                rsClient,
             Instant.class
         );
 
@@ -441,16 +441,16 @@ public class FeatureInfoAgent extends JPSAgent {
         LOGGER.info("     Using Username: {}", postEndpoint.get().username());
 
         RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(
-            dbURL,
-            postEndpoint.get().username(),
+                dbURL,
+                postEndpoint.get().username(),
             postEndpoint.get().password()
         );
 
         // Build timeseries handler
         TimeHandler handler = new TimeHandler(iri, classMatch, endpoints);
         handler.setClients(
-            (RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient,
-            (RDB_CLIENT_OVER != null) ? RDB_CLIENT_OVER : rdbClient,
+                (RS_CLIENT_OVER != null) ? RS_CLIENT_OVER : rsClient,
+                (RDB_CLIENT_OVER != null) ? RDB_CLIENT_OVER : rdbClient,
             (TS_CLIENT_OVER != null) ? TS_CLIENT_OVER : tsClient
         );
 
