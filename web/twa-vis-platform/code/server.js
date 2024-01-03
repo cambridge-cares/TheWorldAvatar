@@ -6,6 +6,8 @@
  * By default, NextJS only allows static content in it's "public" 
  * directory, which expects its contents at build time.
  */
+
+/* eslint-disable */
 const express = require('express');
 const next = require('next');
 

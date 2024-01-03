@@ -71,10 +71,27 @@ The [MapContainer](./src/app/visualisation/page.tsx) element contains the map el
 
 React has a strange workflow that results in a specific method being required to store and update a component's state. In effect, it means that you cannot store a component's state in class/global variables like you would in a regular Javascript class.
 
-If you create a custom component as a class or function (in this example let's say we have a `MyComponent` class that extends from `React.Component`), create an instance and try to render it, it's not the instance of the class that actually gets rendered; React creates an `Element` from your component instance and uses that. This is why you cannot then call methods to change the variables within your component instance. This is explained far clearer in [the top answer here](https://stackoverflow.com/questions/30971395/difference-between-react-component-and-react-element).
+If you create a custom component as a class or function (in this example let's say we have a `MyComponent` class that extends from `React.Component`), create an instance and try to render it, it's not the instance of the class that actually gets rendered; React creates an `Element` from your component instance and uses that. This is why you cannot then call methods to change the variables within your component instance. This is explained far clearer in [the top answer here](https://stackoverflow.com/questions/30971395/difference-between-react-component-and-react-element) as well as in the article [here](https://www.seanmcp.com/articles/storing-data-in-state-vs-class-variable/).
 
 To manage a component's state, React provides per-component state management hook (read about them [here](https://www.freecodecamp.org/news/what-is-state-in-react-explained-with-examples/)). However, the state is stored within the component instance; this means that if you show/hide components by not rendering them from a parent component, each time they reappear they will have been reinitialised with a default state.
 
 In addition to the above, creating component that can interact with other components is quite tricky. Depending on how far apart they are in the UI tree, this could involve passing around a metric crap-tonne of callback functions as component properties. To address this, [Redux](https://redux.js.org/tutorials/essentials/part-1-overview-concepts) has been added to the project to allow for a global store of states; allowing one component to update a global state, and another to listen for changes in it and update accordingly. At the time of writing, this is primarily used in the custom right-click (context) menu; an option to hide the Map controls ribbon is added once the map is shown.
 
 Note that this may not be the optimal solution, some further research is warranted once we've spent more time working with React.
+
+
+## Runtime Resources
+
+By default, Next.js offers the `public` directory for housing resources such as images, videos, configuration files etc. Unfortunately, Next requires this directory and its contents to be present at build time. To provide a location in which deploying developers can add their context-specific images & configurations, the `uploads` directory aims to be the target for mounting Docker volumes.
+
+Uploads content provided by the deploying developer should match the below directory structure.
+
+* `config/`: Should contain config/settings files.
+  * `map-settings.json`: Non-data specific configuration for maps.
+  * `ui-settings.json`: UI configuration settings.
+* `images/`: Custom image files.
+* `optional-pages/`: Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
+* `style-overrides.css`: Optional CSS overrides.
+
+> [!NOTE]  
+> At the time of writing, a method allowing deploying developers to add their own custom code to the pre-generated TWA-ViP image has not been identified. This is something that needs further investigation.
