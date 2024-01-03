@@ -136,10 +136,9 @@ public class LayoutTemplate {
                 // Assume the unit of each measure for the systems is consistent
                 String unit = systemTimeSeries.get(0)[4];
                 // Generate related panels
-                Gauge averageGaugePanel = new Gauge(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, new String[]{}, true);
                 PieChart distributionPanel = new PieChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries);
                 BarChart barChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries);
-                TemplatePanel[] panelArr = new TemplatePanel[]{averageGaugePanel, distributionPanel, barChart};
+                TemplatePanel[] panelArr = new TemplatePanel[]{distributionPanel, barChart};
                 panelQueue.offer(panelArr);
             }
         }

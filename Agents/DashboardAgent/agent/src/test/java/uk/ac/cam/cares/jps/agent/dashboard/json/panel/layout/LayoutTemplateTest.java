@@ -107,10 +107,9 @@ public class LayoutTemplateTest {
         while (!results.isEmpty()) {
             if (jsonResult.length() != 0) jsonResult.append(",");
             TemplatePanel[] panels = results.poll();
-            String averageGaugePanelJson = panels[0].construct(TestUtils.CHART_HEIGHT, 4, 0, rowNumber);
-            String pieChartJson = panels[1].construct(TestUtils.CHART_HEIGHT, 8, 4, rowNumber);
-            String barChartJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
-            jsonResult.append(averageGaugePanelJson).append(",").append(pieChartJson).append(",").append(barChartJson);
+            String pieChartJson = panels[0].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber);
+            String barChartJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
+            jsonResult.append(pieChartJson).append(",").append(barChartJson);
             rowNumber++;
         }
         // Verify results
@@ -193,20 +192,11 @@ public class LayoutTemplateTest {
                 int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber};
                 List<String[]> systemTimeSeries = systemMeasures.get(measure);
                 Collections.sort(systemTimeSeries, Comparator.comparing(data -> data[1]));
-                // For the overall average Gauge chart
-                expectedGeometryPosition[1] = 4; // New width
-                String query = GaugeTest.genAggregateQuery(systemMeasures.get(measure), false);
-                builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries,
-                                new String[]{}, query))
-                        .append(",");
                 // For the pie chart
-                expectedGeometryPosition[1] = 8;  // New width
-                expectedGeometryPosition[2] = 4;  // New x position
                 builder.append(PieChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries))
                         .append(",");
-                // For the bar chart
-                expectedGeometryPosition[1] = TestUtils.CHART_WIDTH; // Original Width
-                expectedGeometryPosition[2] = TestUtils.CHART_WIDTH; // New x position
+                // For the bar chart, only the x position will change
+                expectedGeometryPosition[2] = TestUtils.CHART_WIDTH;
                 builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries));
                 rowNumber++;
             }
