@@ -116,11 +116,25 @@
             <version>${jps.base.version}</version>
         </dependency>
 
+        <!-- for interacting with the stack -->
+        <dependency>
+            <groupId>com.cmclinnovations</groupId>
+            <artifactId>stack-clients</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!-- For sending HTTP request to the API -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.10</version>
+        </dependency>
+
+        <!-- used to parse geosparql wkt literal -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-geosparql</artifactId>
+            <version>4.7.0</version>
         </dependency>
 
         <!-- Logging -->
