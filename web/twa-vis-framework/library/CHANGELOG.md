@@ -1,5 +1,13 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 4.3.0
+### Features
+* Initial support for "parallel-world" scenarios (not yet supported by TWA backend).
+* Added optional "credo" flag to use different format URLs for FeatureInfoAgent calls.
+### Bug Fixes:
+* Fixed checks for object properties before passing layers/sources to Mapbox API.
+* Click events now correctly filter out non-interactable layers.
+
 # 4.2.0
 ### Features
 * Added an "interactions" layer parameter to set level of allowed mouse interaction ("all"|"click-only"|"hover-only"|"none", defaults to "all").
