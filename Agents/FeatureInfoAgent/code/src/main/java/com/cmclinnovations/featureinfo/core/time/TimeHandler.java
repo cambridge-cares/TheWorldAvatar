@@ -1,31 +1,34 @@
 package com.cmclinnovations.featureinfo.core.time;
 
-import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.IntStream;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
-import com.cmclinnovations.featureinfo.core.BaseHandler;
+import com.cmclinnovations.featureinfo.config.ConfigEntry;
+import com.cmclinnovations.featureinfo.config.ConfigStore;
+import com.cmclinnovations.featureinfo.config.StackEndpoint;
+import com.cmclinnovations.featureinfo.config.StackEndpointType;
+import com.cmclinnovations.featureinfo.config.StackInteractor;
+import com.cmclinnovations.featureinfo.config.TimeReference;
+import com.cmclinnovations.featureinfo.utils.Utils;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -33,11 +36,10 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * This class handles querying a Blazegraph endpoint to determine what
- * measurements are available, then retrieving these from the PostGreSQL
- * endpoint.
+ * This class handles the Knowledge Graph to determine measurement IRIs, then
+ * passing these to the RDB to get time series values.
  */
-public final class TimeHandler extends BaseHandler {
+public class TimeHandler {
 
     /**
      * Logger for reporting info/errors.
@@ -45,335 +47,427 @@ public final class TimeHandler extends BaseHandler {
     private static final Logger LOGGER = LogManager.getLogger(TimeHandler.class);
 
     /**
-     * Constant name for measurement IRI column
+     * IRI of the asset.
      */
-    private static final String MEASUREMENT = "Measurement";
+    private final String iri;
 
     /**
-     * Constant name for forecast IRI column
+     * Optional enforced Blazegraph URL.
      */
-    private static final String FORECAST = "Forecast";
+    private final Optional<String> enforcedEndpoint;
+    
+    /**
+     * Configuration store.
+     */
+    private final ConfigStore configStore;
 
     /**
-     * Name of matching class.
+     * Communications with KG.
      */
-    private final String classMatch;
+    private RemoteStoreClient kgClient;
 
     /**
-     * Connection to RDB.
+     * Communications with RDB. 
      */
-    private RemoteRDBStoreClient rdbClient;
+    private RemoteRDBStoreClient dbClient;
 
     /**
-     * Connection to timeseries RDB
+     * Time series client, limited to Instant due to design.
      */
     private TimeSeriesClient<Instant> tsClient;
 
     /**
-     * Last n hours to get timeseries data for.
-     */
-    private int hours = 24;
-
-    /**
-     * Response to write details back to.
-     */
-    private HttpServletResponse response;
-
-    /**
-     * Initialise a new TimeHandler.
+     * Initialise a new TimeHandler instance.
      * 
-     * @param iri        IRI of the asset.
-     * @param classMatch name of class for asset.
-     * @param endpoint   Blazegraph endpoint for the KG.
+     * @param iri IRI of the asset.
+     * @param enforcedEndpoint optional enforced Blazegraph URL.
+     * @param configStore Store of class mappings and stack endpoints.
      */
-    public TimeHandler(String iri, String classMatch, ConfigEndpoint endpoint) {
-        this(iri, classMatch, Arrays.asList(endpoint));
+    public TimeHandler(String iri, Optional<String> enforcedEndpoint, ConfigStore configStore) {
+        this.iri = iri;
+        this.enforcedEndpoint = enforcedEndpoint;
+        this.configStore = configStore;
     }
 
     /**
-     * Initialise a new TimeHandler with multiple endpoints.
+     * Sets the remote store clients used to connect to the KG.
      * 
-     * @param iri        IRI of the asset.
-     * @param classMatch name of class for asset
-     * @param endpoints  Blazegraph endpoints for the KG.
+     * @param kgClient KG connection client.
      */
-    public TimeHandler(String iri, String classMatch, List<ConfigEndpoint> endpoints) {
-        super(iri, endpoints);
+    public void setClients(
+        RemoteStoreClient kgClient,
+        TimeSeriesClient<Instant> tsClient,
+        RemoteRDBStoreClient dbClient) {
 
-        this.classMatch = classMatch;
-    }
-
-    /**
-     * Sets the remote store client used to connect to the KG.
-     * 
-     * @param rsClient KG connection client.
-     * @param tsClient Timeseries client.
-     */
-    public void setClients(RemoteStoreClient rsClient, RemoteRDBStoreClient rdbClient,
-            TimeSeriesClient<Instant> tsClient) {
-        this.setClient(rsClient);
-        this.rdbClient = rdbClient;
+        this.kgClient = kgClient;
         this.tsClient = tsClient;
+        this.dbClient = dbClient;
     }
 
     /**
-     * Queries the KG to determine measurement details using the provided timeQuery,
-     * then passes these measurement IRIs to the TimeSeriesClient to get real
-     * timeseries data.
+     * Queries the KG to determine measurement IRIs, the passes these onto the 
+     * relational database to get time series values.
      * 
-     * @param response HttpServletResponse object.
+     * @param classMatches configuration entries that contain class matches.
+     * @param response HTTP response to write to.
      * 
-     * @return JSONArray of query result.
-     * 
-     * @throws Exception if anything goes wrong.
+     * @return JSONObject of query result.
      */
-    public JSONArray getData(HttpServletResponse response) throws Exception {
-        this.response = response;
+    public JSONArray getData(List<ConfigEntry> classMatches, HttpServletResponse response) {
+        // Pool for all measureables across all class matches
+        List<Measurable> allMeasurables = new ArrayList<>();
 
-        if (!this.hasEndpoints()) {
-            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            response.getWriter().write("{\"description\":\"Could not determine any Blazegraph endpoints.\"}");
-            return null;
-        }
+        // Iterate through each matching query
+        classMatches.forEach(classMatch -> {
+            try {
+                if(classMatch.getTimeQueryContent() == null || classMatch.getTimeQueryContent().isEmpty()) {
+                    LOGGER.info("No time configuration set for class match, skipping: {}", classMatch.getClassIRI());
+                } else {
+                    // Get measurable entities
+                    LOGGER.info("Processing time series queries for class match: {}", classMatch.getClassIRI());
+                    allMeasurables.addAll(getMeasurables(classMatch));
+                }
+            } catch(Exception exception) {
+                LOGGER.error("Execution for time series acquisition has failed!", exception);
+            }
+        });
+        LOGGER.debug("Detected {} measurable instances.", allMeasurables.size());
 
-        // Lookup time limit attached to class
-        this.hours = FeatureInfoAgent.CONFIG.getTimeLimit(classMatch);
+        // Group measurables by the database their time series is defined within
+        Map<String, List<Measurable>> groupByDatabase = allMeasurables
+            .stream()
+            .collect(
+                Collectors.groupingBy((measurable) -> measurable.getConfigEntry().getTimeDatabase())
+            );
+        LOGGER.debug("Time series queries will take place across {} distinct databases.", groupByDatabase.size());
 
-        // Lookup queries attached to classes
-        String queryTemplate = FeatureInfoAgent.CONFIG.getTimeQuery(this.classMatch);
-        if (queryTemplate == null) {
-            LOGGER.info("Could not find any timeseries queries for this class, skipping this stage.");
-            return null;
-        }
+        // Get postgres endpoint (assume there's one)
+        StackEndpoint rdbEndpoint = this.configStore.getStackEndpoints(StackEndpointType.POSTGRES).get(0);
 
-        try {
-            // Run matching query
-            JSONArray jsonResult = runQuery(queryTemplate, "measurement IRIs");
+        // Pool of all constructed and populated timeseries objects
+        Map<TimeSeries<Instant>, List<Measurable>> allTimeSeries = new LinkedHashMap<>();
 
-            // Transform into expected JSON objects
-            return this.populateTimeseries(jsonResult);
-        } catch (IllegalStateException ex) {
-            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            response.getWriter().write("{\"description\":\"Could not determine the Ontop endpoint.\"}");
-            throw ex;
-        } catch (Exception exception) {
-            LOGGER.warn("Query to get measurement details has caused an exception!");
+        // Iterate through unique database names
+        for(Map.Entry<String, List<Measurable>> entryByDB : groupByDatabase.entrySet()) {
+            LOGGER.debug("Running queries for time series in database: {}", entryByDB);
 
-            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            response.getWriter().write("{\"description\":\"intCould not determine a valid Blazegraph endpo.\"}");
-            return null;
-        }
-    }
+            // Connect to a new database
+            try (Connection connection = connectToDatabase(rdbEndpoint, entryByDB.getKey())) {
 
-    /**
-     * Filter the raw JSON array returned from the KG, trimming any URLS
-     * 
-     * @param array raw KG results.
-     */
-    @Override
-    @SuppressWarnings("java:S3776")
-    protected JSONArray formatJSON(JSONArray array) {
-        if (array == null || array.length() == 0) {
-            LOGGER.warn("No results regarding measurements, maybe this IRI has none?");
-            return null;
-        }
+                // Group measurables by their time series IRIs
+                Map<String, List<Measurable>> groupByTimeSeries = entryByDB.getValue()
+                    .stream()
+                    .collect(
+                        Collectors.groupingBy(Measurable::getTimeSeriesIRI)
+                    );
+                LOGGER.debug("There are {} distinct time series in database.", groupByTimeSeries.size());
 
-        for (int i = 0; i < array.length(); i++) {
-            Map<String, String> replacements = new LinkedHashMap<>();
-            JSONObject object = array.getJSONObject(i);
+                // Iterate through unique timeseries IRIs
+                for(Map.Entry<String, List<Measurable>> entryByTime : groupByTimeSeries.entrySet()) {
 
-            Iterator<String> keyIter = object.keys();
-            while (keyIter.hasNext()) {
-                String key = keyIter.next();
-                String value = object.get(key).toString();
-                boolean toRemove = false;
+                    // Group measurable again, by shared configuration entries
+                    // This is because whilst they share a timeseries IRI, each configuration
+                    // entry may define different value bounds.
+                    Map<ConfigEntry, List<Measurable>> groupedByConfigs = entryByTime.getValue()
+                        .stream()
+                        .collect(
+                            Collectors.groupingBy(Measurable::getConfigEntry)
+                        );
 
-                // Don't touch the measurement property
-                if (key.equalsIgnoreCase(MEASUREMENT) || key.equalsIgnoreCase(FORECAST))
-                    continue;
+                    // Iterate through unique config entries
+                    for(Map.Entry<ConfigEntry, List<Measurable>> entryByConfig : groupedByConfigs.entrySet()) {
+                        ConfigEntry thisConfig = entryByConfig.getKey();
+                        List<Measurable> theseMeasurables = entryByConfig.getValue();
 
-                // Replace underscores with spaces
-                if (key.contains("_") || value.contains("_")) {
-                    key = key.replaceAll(Pattern.quote("_"), " ");
-                    value = value.replaceAll(Pattern.quote("_"), " ");
-                    replacements.put(key, value);
-                    toRemove = true;
+                        // Get populated time series object from client
+                        LOGGER.debug("Getting data for time series IRI: {}", entryByTime.getKey());
+
+                        TimeSeries<Instant> timeseries = getTimeSeries(thisConfig, connection, theseMeasurables);
+                        LOGGER.debug("Got populated time series instance from the client.");
+
+                        timeseries.getDataIRIs().forEach(dataIRI -> {
+                            LOGGER.debug("There are {} values for measurable IRI: {}", timeseries.getValues(dataIRI).size(), dataIRI);
+                        });
+
+                        if(timeseries != null && timeseries.getTimes() != null && !timeseries.getTimes().isEmpty()) {
+                            allTimeSeries.put(timeseries, theseMeasurables);
+                        } else {
+                            LOGGER.debug("Returned time series has no time entries, skipping: {}", entryByTime.getKey());
+                        }
+                    }
                 }
 
-                if (toRemove)
-                    keyIter.remove();
+            } catch(Exception exception) {
+                LOGGER.error("Exception occurered when connecting to RDB!", exception);
             }
-
-            // Add replacements back in
-            replacements.keySet().forEach(key -> object.put(key, replacements.get(key)));
         }
-        return array;
+
+
+        // Convert all timeseries to JSON objects.
+        LOGGER.debug("Converting time series data to JSON...");
+        return convertTimeSeries(allTimeSeries);
     }
 
     /**
-     * Given the JSON array with details on measurements, this method
-     * queries the Postgres endpoint to get actual timeseries data then
-     * returns the final format JSONArray for return to the caller.
+     * Queries the KG and returns details on measurements for the class match.
      * 
-     * @param measurements measurement definitions from KG
+     * @param classMatch configuration entry.
      * 
-     * @return timeseries details
+     * @returns List of discovered measurement objects.
+     * 
+     * @throws Exception if SPARQL queries fail.
      */
-    @SuppressWarnings("java:S3776")
-    private JSONArray populateTimeseries(JSONArray measurements) {
-        Map<String, TimeSeries<Instant>> tsObjectList = new LinkedHashMap<>();
+    private List<Measurable> getMeasurables(ConfigEntry classMatch) throws Exception {
+        String templateQuery = classMatch.getTimeQueryContent();
+        String query = Utils.queryInject(
+            templateQuery,
+            this.iri,
+            configStore.getStackEndpoints(StackEndpointType.ONTOP),
+            Utils.getBlazegraphEndpoints(configStore, enforcedEndpoint)
+        );
 
-        try (Connection rdbConnection = rdbClient.getConnection()) {
-            // Build timeseries objects for all measurements
-            for (int i = 0; i < measurements.length(); i++) {
-                JSONObject entry = measurements.getJSONObject(i);
+        // Run query
+        List<String> endpoints = Utils.getBlazegraphURLs(configStore, enforcedEndpoint);
+        JSONArray result = null;
 
-                String measureIRI = entry.getString(MEASUREMENT);
-                if (measureIRI == null)
-                    measureIRI = entry.getString(FORECAST);
-
-                // Get timeseries object
-                TimeSeries<Instant> tsObject = this.buildTimeseriesObject(measureIRI, rdbConnection);
-
-                // Skip empty objects
-                if (tsObject == null || !tsObject.getTimes().isEmpty())
-                    tsObjectList.put(measureIRI, tsObject);
-            }
-        } catch (Exception exception) {
-            LOGGER.error("Exception when using Connection in try block!", exception);
-            return null;
+        if(endpoints.size() == 1) {
+            LOGGER.debug("Running non-federated measurement IRI query.");
+            kgClient.setQueryEndpoint(endpoints.get(0));
+            result = this.kgClient.executeQuery(query);
+            
+        } else {
+            LOGGER.debug("Running federated measurement IRI query.");
+            result = this.kgClient.executeFederatedQuery(endpoints, query);
         }
 
-        // Skip if all empty
-        if (tsObjectList.isEmpty())
-            return null;
+        // Parse results
+        List<Measurable> measurables = new ArrayList<>();
+        for(int i = 0; i < result.length(); i++) {
+            JSONObject obj = result.getJSONObject(i);
+            Measurable measurable = MeasurableBuilder.build(classMatch, obj);
 
-        // Extract measurement names and units
-        Map<String, String> names = new LinkedHashMap<>();
-        Map<String, String> units = new LinkedHashMap<>();
-
-        for (int i = 0; i < measurements.length(); i++) {
-            JSONObject entry = measurements.getJSONObject(i);
-
-            if (entry.has(MEASUREMENT)) {
-                String measurementIRI = entry.getString(MEASUREMENT);
-                names.put(measurementIRI, entry.optString("Name"));
-                units.put(measurementIRI, entry.optString("Unit"));
-
-            } else if (entry.has(FORECAST)) {
-                String forecastIRI = entry.getString(FORECAST);
-                names.put(forecastIRI, entry.optString("Name"));
-                units.put(forecastIRI, entry.optString("Unit"));
-
-            } else {
-                LOGGER.warn("No 'Measurement' or 'Forecast' property found, skipping this entry.");
+            if(measurable != null) {
+                LOGGER.debug("Discovered measurable with data IRI: {}", measurable.getEntityIRI());
+                if(measurable.getTimeSeriesIRI() != null) {
+                    LOGGER.debug("Measurable has parent time series: {}", measurable.getTimeSeriesIRI());
+                }
+                measurables.add(measurable);
             }
         }
 
-        try {
-            List<Integer> ids = Arrays.stream(
-                    IntStream.iterate(0, x -> x < tsObjectList.size(), x -> x + 1).toArray()).boxed().toList();
+        // Fill in timeseries IRI if missing
+        this.populateTimeSeriesIRIs(measurables);
+        return measurables;
+    }
 
-            // For some reason (unknown as there's insufficient documentation), the
-            // timeseries client requires a list of maps for the names and units of each
-            // IRI, with one map per IRI. As each IRI is a measurement and won't have more
-            // than a single name and unit, I don't see why this wasn't done as a single map
-            // containing all IRIs.
-            //
-            // Until this is resolved in the TimeSeriesClient, this fudge just copies the
-            // maps N times (where N is the number of measurement IRIs).
-            List<Map<String, String>> fudgeNames = Collections.nCopies(tsObjectList.size(), names);
-            List<Map<String, String>> fudgeUnits = Collections.nCopies(tsObjectList.size(), units);
-
-            // Convert to JSON
-            JSONArray timeseriesJSON = tsClient.convertToJSON(
-                    new ArrayList<>(tsObjectList.values()),
-                    ids,
-                    fudgeUnits,
-                    fudgeNames);
-
-            // Add additionally reported parameters
-            JSONArray properties = new JSONArray();
-
-            for (int i = 0; i < measurements.length(); i++) {
-                JSONObject oldEntry = measurements.getJSONObject(i);
-                JSONObject newEntry = new JSONObject();
-
-                oldEntry.keySet().forEach(key -> {
-                    if (!key.equals(MEASUREMENT) && !key.equals(FORECAST) && !key.equals("Name")
-                            && !key.equals("Unit")) {
-                        newEntry.put(key, oldEntry.get(key));
-                    }
-                });
-
-                properties.put(newEntry);
-            }
-
-            // Add the properties
-            timeseriesJSON.getJSONObject(0).put("properties", properties);
-
-            // Return JSON
-            return timeseriesJSON;
-
-        } catch (Exception exception) {
-            LOGGER.error("Could not produce JSON objects from TimeSeries instances!", exception);
-
+    /**
+     * For the input list of measurable objects, this method iterates through them an runs
+     * new queries to determine the IRI of the linked time series if that was not provided
+     * in the original KG query.
+     * 
+     * @param measurements configuration entry.
+     * @param classMatch discovered measurable objects.
+     */
+    private void populateTimeSeriesIRIs(List<Measurable> measurables) {
+        measurables.forEach(measurable -> {
             try {
-                response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-                response.getWriter()
-                        .write("{\"description\":\"Could not produce JSON objects from TimeSeries instances!\"}");
-            } catch (IOException ioException) {
-                LOGGER.error("Could not write to HTTP response!", ioException);
+                MeasurableBuilder.populateTimeSeriesIRIs(
+                    measurable,
+                    configStore,
+                    enforcedEndpoint,
+                    kgClient
+                );
+            } catch(Exception exception) {
+                LOGGER.error("Could not determine timeseries IRI for measurable object!", exception);
             }
-        }
+        });
+    }
 
+    /**
+     * For the input classMatch and discovered measurements, build and populate the 
+     * TimeSeries instances using the relational databases.
+     * 
+     * Note that this currently assumes all TimeSeries objects were created using the Instant
+     * class; this is a current limitation in the time series design.
+     * 
+     * @param classMatch configuration entry.
+     * @param connection cached DB connection.
+     * @param measurements discovered measurement objects.
+     * 
+     * @return List of populated TimeSeries objects.
+     */
+    private TimeSeries<Instant> getTimeSeries(ConfigEntry classMatch, Connection connection, List<Measurable> measurables) {
+        // Iterate through discovered measurements to get IRIs
+        List<String> measurableIRIs = measurables
+            .stream()
+            .map(measurable -> measurable.getEntityIRI())
+            .collect(Collectors.toList());
+        
+        // Calculate time bounds
+        Pair<Instant, Instant> bounds = calculateBounds(classMatch, connection, measurables);
+
+        // Call client to get TimeSeries object
+        if(bounds == null) {
+            LOGGER.debug("Calling TimeSeriesClient without time bounds.");
+
+            return this.tsClient.getTimeSeries(
+                measurableIRIs,
+                connection
+            );
+
+        } else {
+            Instant lowerBound = bounds.getLeft().isBefore(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
+            Instant upperBound = bounds.getLeft().isAfter(bounds.getRight()) ? bounds.getLeft() : bounds.getRight();
+
+            LOGGER.debug("Calculated lower time bound as: {}", lowerBound);
+            LOGGER.debug("Calculated upper time bound as: {}", upperBound);
+
+            return this.tsClient.getTimeSeriesWithinBounds(
+                measurableIRIs,
+                lowerBound,
+                upperBound,
+                connection
+            );
+        }
+    }
+
+    /**
+     * Given the configuration entry for a class match, and the resulting measurable IRIs,
+     * determine the time limit bounds to be given to the TimeSeriesClient when grabbing
+     * data for all measurable instances.
+     * 
+     * @param classMatch class match object.
+     * @param connection cached RDB connection.
+     * @param measurementIRI measurement IRI.
+     * 
+     * @return Pair of time bounds (not in order)
+     */
+    private Pair<Instant, Instant> calculateBounds(ConfigEntry classMatch, Connection connection, List<Measurable> measurables) {
+        TimeReference reference = classMatch.getTimeReference();
+        int timeLimit = classMatch.getTimeLimitValue();
+        TimeUnit timeUnit = classMatch.getTimeLimitUnit();
+        
+        // All these measurables should have the same bounds as they come from
+        // a single time series, so just use IRI of first measurable
+        String measureIRI = measurables.get(0).getEntityIRI();
+
+        switch(reference) {
+            case NOW: {
+                Instant boundOne = LocalDateTime.now().toInstant(ZoneOffset.UTC);
+                Instant boundTwo = offsetTime(timeLimit * -1, timeUnit, boundOne);
+                return new ImmutablePair<>(boundOne, boundTwo);
+            }
+
+            case LATEST: {
+                TimeSeries<Instant> latest = this.tsClient.getLatestData(measureIRI, connection);
+                Instant boundOne = latest.getTimes().get(0);
+                Instant boundTwo = offsetTime(timeLimit * -1, timeUnit, boundOne);
+                return new ImmutablePair<>(boundOne, boundTwo);
+            }
+
+            case FIRST: {
+                TimeSeries<Instant> first = this.tsClient.getOldestData(measureIRI, connection);
+                Instant boundOne = first.getTimes().get(0);
+                Instant boundTwo = offsetTime(timeLimit, timeUnit, boundOne);
+                return new ImmutablePair<>(boundOne, boundTwo);
+            }
+
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Returns a copy of the input Instant with the input offset.
+     * 
+     * @param offsetValue value to offset.
+     * @param unit time unit.
+     * @param toOffset Instant to copy.
+     * 
+     * @return copy of Instant with offset.
+     */
+    private Instant offsetTime(int offsetValue, TimeUnit unit, Instant toOffset) {
+        switch(unit) {
+            case NANOSECONDS:
+                return toOffset.plusNanos(offsetValue);
+            case MICROSECONDS:
+                return toOffset.plusMillis(offsetValue / 1000);
+            case MILLISECONDS:
+                return toOffset.plusMillis(offsetValue);
+            case SECONDS:
+                return toOffset.plusSeconds(offsetValue);
+            case MINUTES:
+                return toOffset.plusSeconds(offsetValue * 60);
+            case HOURS:
+                return toOffset.plusSeconds(offsetValue * 3600);
+            case DAYS: 
+                return toOffset.plusSeconds(offsetValue * 86_400);
+        }
         return null;
     }
 
     /**
-     * Builds a timeseries object for the input measurement IRI.
+     * Converts all timeseries instances into a single JSON representation.
      * 
-     * @param measureIRI    IRI of measurement
-     * @param rdbConnection connection to RDB
+     * @param allTimeSeries timeseries to convert.
      * 
-     * @return timeseries object
+     * @return JSON representation.
      */
-    private TimeSeries<Instant> buildTimeseriesObject(String measureIRI, Connection rdbConnection) {
+    private JSONArray convertTimeSeries(Map<TimeSeries<Instant>, List<Measurable>> allTimeSeries) {
+        JSONArray combinedArray = new JSONArray();
 
-        // Remove the brackets from the IRI as the timeseries client is shit and can't
-        // handle them
-        String fixedIRI = measureIRI;
-        if (fixedIRI.startsWith("<") && fixedIRI.endsWith(">")) {
-            fixedIRI = fixedIRI.substring(1, fixedIRI.length() - 1);
+        // Iterate through entries
+        for(Map.Entry<TimeSeries<Instant>, List<Measurable>> entry : allTimeSeries.entrySet()) {
+            TimeSeries<Instant> timeseries = entry.getKey();
+            List<Measurable> measurables = entry.getValue();
+
+            // Extract units and names for measurables
+            Map<String, String> unitsMap = new LinkedHashMap<>();
+            Map<String, String> namesMap = new LinkedHashMap<>();
+
+            measurables.forEach(measurable -> {
+                unitsMap.put(measurable.getEntityIRI(), measurable.getUnit());
+                namesMap.put(measurable.getEntityIRI(), measurable.getName());
+            });
+
+            // Convert to JSON
+            JSONArray jsonTime = TimeParser.convertToJSON(
+                timeseries,
+                unitsMap,
+                namesMap
+            );
+
+            if(jsonTime != null) {
+                // Append objects to combined array
+                for(int i = 0; i < jsonTime.length(); i++) {
+                    combinedArray.put(jsonTime.getJSONObject(i));
+                }
+            }
         }
+        return combinedArray;
+    }
 
-        // Build then return the object
-        TimeSeries<Instant> result = null;
-        if (this.hours < 0) {
-            // Get all data
-            LOGGER.debug("Getting timeseries without limit...");
-            result = this.tsClient.getTimeSeries(new ArrayList<>(Arrays.asList(fixedIRI)), rdbConnection);
+    /**
+     * Re-initialises the RDB client with a connection to the input database.
+     * 
+     * @param rdbEndpoint endpoint for postgres.
+     * @param database database name.
+     * 
+     * @throws SQLException if database cannot be connected to.
+     */
+    protected Connection connectToDatabase(StackEndpoint rdbEndpoint, String database) throws SQLException {
+        if(rdbEndpoint == null || database == null) return null;
 
-        } else {
-            LOGGER.debug("Getting timeseries with limit of last {} hours...", this.hours);
-
-            // Determine bounds
-            Instant lowerBound = LocalDateTime.now().minusHours(this.hours).toInstant(ZoneOffset.UTC);
-            Instant upperBound = LocalDateTime.now().toInstant(ZoneOffset.UTC);
-
-            result = this.tsClient.getTimeSeriesWithinBounds(
-                    new ArrayList<>(Arrays.asList(fixedIRI)),
-                    lowerBound,
-                    upperBound,
-                    rdbConnection);
-        }
-
-        LOGGER.debug("...call to TimeseriesClient completed.");
-        LOGGER.debug(
-                "Got a timeseries object with {} time values, and {} data values.",
-                result.getTimes().size(),
-                result.getValues(fixedIRI).size());
-        return result;
+        LOGGER.info("Making new connection to database: {}", database);
+        String postgresURL = StackInteractor.generatePostgresURL(database);
+        
+        // Create new connection
+        this.dbClient = new RemoteRDBStoreClient(
+            postgresURL,
+            rdbEndpoint.username(),
+            rdbEndpoint.password()
+        );
+        return this.dbClient.getConnection();
     }
 
 }

@@ -1,37 +1,33 @@
 package com.cmclinnovations.featureinfo.core.time;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
-import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.TestUtils;
+import com.cmclinnovations.featureinfo.config.ConfigEntry;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
-import com.cmclinnovations.featureinfo.config.EndpointType;
-import com.cmclinnovations.featureinfo.config.NamespaceGetterTest;
+import com.cmclinnovations.featureinfo.config.ConfigStoreTest;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -44,270 +40,477 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 public class TimeHandlerTest {
     
     /**
-     * Logger for reporting info/errors.
+     * Temporary directory to store test data.
      */
-    private static final Logger LOGGER = LogManager.getLogger(TimeHandlerTest.class);
+    private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
     /**
-     * Test config store.
-     */
-    private static final ConfigStore CONFIG = new ConfigStore();
-
-    /**
-     * Read in mock config file before running tests.
+     * Copy test data out from the resources directory so it can be loaded in the same
+     * manner that files are at runtime.
+     * 
+     * @throws IOException if temporary test data cannot be created.
      */
     @BeforeAll
-    public static void setup() {
-        try (InputStream is = NamespaceGetterTest.class.getResourceAsStream("/mock-config-file.json")) {
-            BufferedReader bufferReader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder stringBuilder = new StringBuilder();
+    public static void setup() throws IOException {
+        FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-01").toFile());
 
-            String eachStringLine;
-            while ((eachStringLine = bufferReader.readLine()) != null) {
-                stringBuilder.append(eachStringLine).append("\n");
-            }
-
-            CONFIG.loadFile(stringBuilder.toString());
-            FeatureInfoAgent.CONFIG = CONFIG;
-
-        } catch(Exception exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not read mock config file!");
-        }
-
-        // Add mock endpoints to the config
-        CONFIG.addEndpoint(new ConfigEndpoint("ONTOP", "http://my-fake-ontop.com/", null, null, EndpointType.ONTOP));
-        CONFIG.addEndpoint(new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
-        CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test", "http://fake-website.com/blazegraph/namespace/test/sparql", null, null, EndpointType.BLAZEGRAPH));
-
-        // Write a temporary query file
-        try {
-            String tmpdir = System.getProperty("java.io.tmpdir");
-            Path tmpQuery = Paths.get(tmpdir, "TimeHandlerTest.sparql");
-            Files.writeString(tmpQuery, "SAMPLE-QUERY");
-
-            // Add to the config
-            CONFIG.addTimeQueryForClass("SAMPLE-CLASS", tmpQuery.toString());
-            CONFIG.addTimeLimitForClass("SAMPLE-CLASS", 72);
-            LOGGER.info("Written temporary query file for testing (" + tmpQuery.toString() + ").");
-        } catch(IOException exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not write temporary query file!");
-        }
+        // Copy out test data sets to the temporary directory.
+        File mockDir01 = new File(ConfigStoreTest.class.getResource("/mock-config-01").getFile());
+        Assertions.assertTrue(
+            TestUtils.copyFilesRecusively(mockDir01, TEMP_DIR.toFile()),
+            "Could not export test data from within JAR to temporary directory!"
+        );
     }
 
     /**
-     * Clean up after all tests have executed.
+     * Clean up after tests finish.
      */
     @AfterAll
-    public static void cleanup() {
-          // Delete the temporary query file
-          try {
-            String tmpdir = System.getProperty("java.io.tmpdir");
-            Path tmpQuery = Paths.get(tmpdir, "MetaHandlerTest.sparql");
-            Files.deleteIfExists(tmpQuery);
-
-            LOGGER.info("Removed temporary query file (" + tmpQuery.toString() + ").");
-        } catch(IOException exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not delete temporary query file!");
-        }
+    public static void cleanUp() throws Exception {
+         FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-01").toFile());
     }
 
     /**
-     * Tests that a query can be submitted and the response parsed.
+     * Tests that time series can be discovered, parsed, and formatted using
+     * a single class match with a time query that returns measurable and parent
+     * time series IRIs.
+     * 
+     * @throws Exception if connections to KG or RDB fail.
      */
     @Test
-    @SuppressWarnings("unchecked")
-    public void testQuery() {
-        // Create a handler
-        TimeHandler handler = new TimeHandler(
-            "http://fake-sample-iri.com", 
-            "SAMPLE-CLASS",
-            CONFIG.getBlazegraphEndpoints()
+    public void testSingleMatchWithTimeSeries() throws Exception {
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
+
+        // Mock a config store based on the real config file
+        ConfigStore configStore = TestUtils.mockConfig(configFile);
+
+        // Initialise a TimeHandler instance
+        TimeHandler timeHandler = new TimeHandler(
+            "https://test-stack/features/feature-one",
+            Optional.empty(),
+            configStore
         );
 
-        try {
-            // Create mock KG client
-            RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-            when(rsClient.executeQuery(
-                ArgumentMatchers.anyString()))
-                .thenReturn(
-                    new org.json.JSONArray("[{\"Measurement\":\"http://fake-measurement-iri.com\",\"Name\":\"MeasurementOne\",\"Unit\":\"m/s\",\"PropertyOne\":\"ValueOne\",\"PropertyTwo\":\"ValueTwo\"}]")
-                );
+        // Need to return a null connection otherwise it'll fail to connect
+        // to a non-existant database
+        TimeHandler spiedHandler = spy(timeHandler);
+        doReturn(null).when(spiedHandler).connectToDatabase(
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any()
+        );
 
-            // Mock RDB client
-            RemoteRDBStoreClient rdbClient = mock(RemoteRDBStoreClient.class);
-            when(rdbClient.getConnection())
-            .thenReturn(null);
+        // Set clients for communication with KG and RDB
+        spiedHandler.setClients(
+            mockKGClient(true),
+            mockTSClient(),
+            mockRDBClient()
+        );
 
-            // Create mock Timeseries client
-            TimeSeriesClient<Instant> tsClient = mock(TimeSeriesClient.class);
+        // Attempt to get results
+        JSONArray result = spiedHandler.getData(
+            configStore.getConfigEntries().subList(1, 2),
+            TestUtils.mockResponse()
+        );
 
-            when(tsClient.convertToJSON(
-                ArgumentMatchers.anyList(),
-                ArgumentMatchers.anyList(), 
-                ArgumentMatchers.anyList(),
-                ArgumentMatchers.anyList())
-                ).thenCallRealMethod();
+        JSONArray expected = new JSONArray(
+            """
+                [
+                    {
+                        "data": ["Measurement One"],
+                        "values": [
+                            [1, 2, 3]
+                        ],
+                        "timeClass": "Instant",
+                        "valuesClass": ["Number"],
+                        "units": ["mph"],
+                        "id": "1",
+                        "time": [
+                            "1970-01-01T12:00:00Z",
+                            "1970-01-01T13:00:00Z",
+                            "1970-01-01T14:00:00Z"
+                        ]
+                    }
+                ]    
+            """
+        );
 
-            when(tsClient.getTimeSeries(
-                ArgumentMatchers.anyList(),
-                ArgumentMatchers.isNull()))
-                .thenReturn(
-                    new TimeSeries<Instant>(
-                        Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),
-                        Arrays.asList("http://fake-measurement-iri.com"),
-                        Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))
-                    )
-                );
-
-            when(tsClient.getTimeSeriesWithinBounds(
-                ArgumentMatchers.any(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.any()))
-                .thenReturn(
-                    new TimeSeries<Instant>(
-                        Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),
-                        Arrays.asList("http://fake-measurement-iri.com"),
-                        Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))
-                    )
-                );
-
-            // Set up a mock response
-            HttpServletResponse httpResponse = mock(HttpServletResponse.class);
-            StringWriter strWriter = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(strWriter);
-            when(httpResponse.getWriter()).thenReturn(printWriter);
-
-            // Handler setup
-            handler.setClients(rsClient, rdbClient, tsClient);
-
-            // Get the resulting JSON object
-            JSONArray result = handler.getData(httpResponse);
-            Assertions.assertNotNull(result, "Expected a non-null result!");
-
-            // Build the expected response
-            JSONArray expected = new JSONArray("""
-                [{\"data\":[\"MeasurementOne\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],
-                \"id\":0,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",
-                \"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{\"PropertyTwo\":\"ValueTwo\",\"PropertyOne\":\"ValueOne\"}]}]
-            """);
-
-            // Compare
-            Assertions.assertTrue(result.similar(expected), "Resulting JSON does not match expected result!");
-
-        } catch(Exception exception) {
-            exception.printStackTrace(System.out);
-            Assertions.fail("Unexpected exception thrown when trying to get timeseries data!");
-        }
+        Assertions.assertTrue(expected.similar(result), "Returned JSONArray did not match expected one!");
     }
 
     /**
-     * Tests that multiple measurements, with different time values, can be converted to JSON and
-     * correctly returned. This has been added as previous versions of the code contained a bug
-     * that would enforce the same time values for all measurements returned in a single query.
+     * Tests that time series can be discovered, parsed, and formatted using
+     * a single class match with a time query that does NOT return measurable
+     * with their parent time series IRIs.
+     * 
+     * @throws Exception if connections to KG or RDB fail.
      */
     @Test
-    public void testDifferentTimings() {
-        // Create a handler
-        TimeHandler handler = new TimeHandler(
-            "http://fake-sample-iri.com", 
-            "SAMPLE-CLASS",
-            CONFIG.getBlazegraphEndpoints()
+    public void testSingleMatch() throws Exception {
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
+
+        // Mock a config store based on the real config file
+        ConfigStore configStore = TestUtils.mockConfig(configFile);
+
+        // Initialise a TimeHandler instance
+        TimeHandler timeHandler = new TimeHandler(
+            "https://test-stack/features/feature-one",
+            Optional.empty(),
+            configStore
         );
 
-        try {
-            // Create mock KG client
-            RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-            when(rsClient.executeQuery(
-                ArgumentMatchers.anyString()))
-                .thenReturn(
-                    new org.json.JSONArray("""
-                        [{\"Measurement\":\"http://fake-measurement-iri.com/one\",\"Name\":\"MeasurementOne\",\"Unit\":\"m/s\"},{\"Measurement\":\"http://fake-measurement-iri.com/two\",\"Name\":\"MeasurementTwo\",\"Unit\":\"cm/s\"}]
-                    """)
-                );
+        // Need to return a null connection otherwise it'll fail to connect
+        // to a non-existant database
+        TimeHandler spiedHandler = spy(timeHandler);
+        doReturn(null).when(spiedHandler).connectToDatabase(
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any()
+        );
 
-            // Mock RDB connection
-            RemoteRDBStoreClient rdbClient = mock(RemoteRDBStoreClient.class);
-            when(rdbClient.getConnection())
-            .thenReturn(null);
+        // Set clients for communication with KG and RDB
+        spiedHandler.setClients(
+            mockKGClient(false),
+            mockTSClient(),
+            mockRDBClient()
+        );
 
-            // Create mock Timeseries client
-            TimeSeriesClient<Instant> tsClient = mock(TimeSeriesClient.class);
+        // Attempt to get results
+        JSONArray result = spiedHandler.getData(
+            configStore.getConfigEntries().subList(1, 2),
+            TestUtils.mockResponse()
+        );
 
-            when(tsClient.convertToJSON(
-                ArgumentMatchers.anyList(),
-                ArgumentMatchers.anyList(), 
-                ArgumentMatchers.anyList(),
-                ArgumentMatchers.anyList())
-                ).thenCallRealMethod();
+        JSONArray expected = new JSONArray(
+            """
+                [
+                    {
+                        "data": ["Measurement One"],
+                        "values": [
+                            [1, 2, 3]
+                        ],
+                        "timeClass": "Instant",
+                        "valuesClass": ["Number"],
+                        "units": ["mph"],
+                        "id": "1",
+                        "time": [
+                            "1970-01-01T12:00:00Z",
+                            "1970-01-01T13:00:00Z",
+                            "1970-01-01T14:00:00Z"
+                        ]
+                    }
+                ]    
+            """
+        );
 
-            // Mock response for first IRI
-            when(tsClient.getTimeSeriesWithinBounds(
-                ArgumentMatchers.argThat((ArrayList<String> arg) -> arg != null && arg.contains("http://fake-measurement-iri.com/one")),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.isNull()))
-                .thenReturn(
-                    new TimeSeries<Instant>(
-                        Arrays.asList(
-                            Instant.parse("1970-01-01T12:00:00Z"),
-                            Instant.parse("1970-01-01T13:00:00Z"),
-                            Instant.parse("1970-01-01T14:00:00Z")
-                        ),
-                        Arrays.asList("http://fake-measurement-iri.com/one"),
-                        Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))
-                    )
-                );
+        Assertions.assertTrue(expected.similar(result), "Returned JSONArray did not match expected one!");
+    }
 
-            // Mock response for second IRI
-            when(tsClient.getTimeSeriesWithinBounds(
-                ArgumentMatchers.argThat((ArrayList<String> arg) -> arg != null && arg.contains("http://fake-measurement-iri.com/two")),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.isNull()))
-                .thenReturn(
-                    new TimeSeries<Instant>(
-                        Arrays.asList(
-                            Instant.parse("1971-01-01T15:00:00Z"),
-                            Instant.parse("1971-01-01T16:00:00Z"),
-                            Instant.parse("1971-01-01T17:00:00Z")
-                        ),
-                        Arrays.asList("http://fake-measurement-iri.com/two"),
-                        Arrays.asList(Arrays.asList("4.0", "5.0", "6.0"))
-                    )
-                );
+    /**
+     * Tests that time series can be discovered, parsed, and formatted using
+     * multiple class matches with a time query that does NOT return measurable
+     * with their parent time series IRIs.
+     * 
+     * @throws Exception if connections to KG or RDB fail.
+     */
+    @Test
+    public void testMultipleMatch() throws Exception {
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
-            // Set up a mock response
-            HttpServletResponse httpResponse = mock(HttpServletResponse.class);
-            StringWriter strWriter = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(strWriter);
-            when(httpResponse.getWriter()).thenReturn(printWriter);
+        // Mock a config store based on the real config file
+        ConfigStore configStore = TestUtils.mockConfig(configFile);
 
-            // Handler setup
-            handler.setClients(rsClient, rdbClient, tsClient);
+        // Initialise a TimeHandler instance
+        TimeHandler timeHandler = new TimeHandler(
+            "https://test-stack/features/feature-one",
+            Optional.empty(),
+            configStore
+        );
 
-            // Get the resulting JSON object
-            JSONArray result = handler.getData(httpResponse);
-            Assertions.assertNotNull(result, "Expected a non-null result!");
+        // Need to return a null connection otherwise it'll fail to connect
+        // to a non-existant database
+        TimeHandler spiedHandler = spy(timeHandler);
+        doReturn(null).when(spiedHandler).connectToDatabase(
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any()
+        );
 
-             // Build the expected response
-             JSONArray expected = new JSONArray("""
-                [{\"data\":[\"MeasurementOne\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":0,\"units\":[\"m/s\"],\"time\":
-                [\"1970-01-01T12:00:00Z\",\"1970-01-01T13:00:00Z\",\"1970-01-01T14:00:00Z\"],\"properties\":[{},{}]},{\"data\":[\"MeasurementTwo\"],\"values\":[[\"4.0\",\"5.0\",\"6.0\"]],
-                \"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":1,\"units\":[\"cm/s\"],\"time\":[\"1971-01-01T15:00:00Z\",\"1971-01-01T16:00:00Z\",\"1971-01-01T17:00:00Z\"]}]
-            """);
+        // Set clients for communication with KG and RDB
+        spiedHandler.setClients(
+            mockKGClientForMultiple(),
+            mockTSClient(),
+            mockRDBClient()
+        );
 
-            // Compare
-            Assertions.assertTrue(result.similar(expected), "Resulting JSON does not match expected result!");
+        // Mock class matches
+        List<ConfigEntry> classMatches = new ArrayList<>();
+        classMatches.add(configStore.getConfigEntries().get(1));
+        classMatches.add(configStore.getConfigEntries().get(3));
 
+        // Attempt to get results
+        JSONArray result = spiedHandler.getData(
+            classMatches,
+            TestUtils.mockResponse()
+        );
 
-        } catch(Exception exception) {
-            exception.printStackTrace(System.out);
-            Assertions.fail("Unexpected exception thrown when trying to get timeseries data!");
+        JSONArray expected = new JSONArray(
+            """
+                [
+                    {"data":["Measurement Two","Measurement Three"],"values":[[10,20,30],[100,200,300]],"timeClass":"Instant",
+                    "valuesClass":["Number","Number"],"units":["kph","m/s"],"id":"1","time":["1970-01-02T15:00:00Z",
+                    "1970-01-02T16:00:00Z","1970-01-02T17:00:00Z"]},{"data":["Measurement One"],"values":[[1,2,3]],
+                    "timeClass":"Instant","valuesClass":["Number"],"units":["mph"],"id":"1","time":["1970-01-01T12:00:00Z",
+                    "1970-01-01T13:00:00Z","1970-01-01T14:00:00Z"]}
+                ]
+            """
+        );
+
+        Assertions.assertTrue(expected.similar(result), "Returned JSONArray did not match expected one!");
+    }
+
+    /**
+     * Returns a mocked RemoteStoreClient for mocked interaction with KGs.
+     * 
+     * @param boolean parentIRI include parent time series IRI in mock result.
+     * 
+     * @returns mocked RemoteStoreClient instance.
+     */
+    private RemoteStoreClient mockKGClient(boolean parentIRI) throws Exception {
+        RemoteStoreClient spiedClient = Mockito.mock(RemoteStoreClient.class);
+
+        // Create mock result from KG
+        JSONArray mockResult = new JSONArray(
+            """
+            [{
+                "Measurement": "https://test-stack/measurables/measurable-one",
+                "Time Series": "https://test-stack/time-series/time-series-one",
+                "Name": "Measurement One",
+                "Unit": "mph"
+            }]
+            """
+        );
+        if(!parentIRI) {
+            mockResult.getJSONObject(0).remove("Time Series");
         }
+
+        // Mock methods for getting measurable IRIs
+        Mockito.when(
+            spiedClient.executeQuery("classTwoTime")
+        ).thenReturn(
+            mockResult
+        );
+
+        Mockito.when(
+            spiedClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.eq("classTwoTime")
+            )
+        ).thenReturn(
+            mockResult
+        );
+
+        // Mock methods for determining missing parent time series IRIs
+        Mockito.when(
+            spiedClient.executeQuery(
+                ArgumentMatchers.contains("hasTimeSeries")
+            )
+        ).thenReturn(
+            new JSONArray(
+                """
+                [{
+                    "timeseries": "https://test-stack/time-series/time-series-one"
+                }]
+                """
+            )
+        );
+
+        Mockito.when(
+            spiedClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.contains("hasTimeSeries")
+            )
+        ).thenReturn(
+            new JSONArray(
+                """
+                [{
+                    "timeseries": "https://test-stack/time-series/time-series-one"
+                }]
+                """
+            )
+        );
+
+        return spiedClient;
+    }
+
+    /**
+     * Returns a mocked RemoteStoreClient for mocked interaction with KGs.
+     * 
+     * @returns mocked RemoteStoreClient instance.
+     */
+    private RemoteStoreClient mockKGClientForMultiple() throws Exception {
+        RemoteStoreClient spiedClient = Mockito.mock(RemoteStoreClient.class);
+
+        // Create mock result from KG
+        JSONArray mockResultOne = new JSONArray(
+            """
+            [{
+                "Measurement": "https://test-stack/measurables/measurable-one",
+                "Name": "Measurement One",
+                "Unit": "mph"
+            }]
+            """
+        );
+        JSONArray mockResultTwo = new JSONArray(
+            """
+            [
+                {
+                    "Measurement": "https://test-stack/measurables/measurable-two",
+                    "Name": "Measurement Two",
+                    "Unit": "kph"
+                },
+                {
+                    "Measurement": "https://test-stack/measurables/measurable-three",
+                    "Name": "Measurement Three",
+                    "Unit": "m/s"
+                }
+            ]
+            """
+        );
+
+        // Mock methods for getting measurable IRIs
+        Mockito.when(
+            spiedClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.eq("classTwoTime")
+            )
+        ).thenReturn(mockResultOne);
+
+        Mockito.when(
+            spiedClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.eq("classFourTime")
+            )
+        ).thenReturn(mockResultTwo);
+
+        // Mock methods for determining missing parent time series IRIs
+        Mockito.when(
+            spiedClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.contains("https://test-stack/measurables/measurable-one")
+            )
+        ).thenReturn(
+            new JSONArray(
+                """
+                [{"timeseries": "https://test-stack/time-series/time-series-one"}]
+                """
+            )
+        );
+
+        Mockito.when(
+            spiedClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.contains("https://test-stack/measurables/measurable-two")
+            )
+        ).thenReturn(
+            new JSONArray(
+                """
+                [{"timeseries": "https://test-stack/time-series/time-series-two"}]
+                """
+            )
+        );
+
+        Mockito.when(
+            spiedClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.contains("https://test-stack/measurables/measurable-three")
+            )
+        ).thenReturn(
+            new JSONArray(
+                """
+                [{"timeseries": "https://test-stack/time-series/time-series-two"}]
+                """
+            )
+        );
+
+        return spiedClient;
+    }
+
+    /**
+     * Returns a mocked TimeSeriesClient for mocked interaction with RDBs.
+     * 
+     * @returns mocked TimeSeriesClient instance.
+     */
+    private TimeSeriesClient<Instant> mockTSClient() throws Exception {
+        TimeSeriesClient<Instant> spiedClient = Mockito.mock(TimeSeriesClient.class);
+
+        List<String> inputOne = new ArrayList<>(Arrays.asList(
+            "https://test-stack/measurables/measurable-one"
+        ));
+        List<String> inputTwo = new ArrayList<>(Arrays.asList(
+            "https://test-stack/measurables/measurable-two",
+            "https://test-stack/measurables/measurable-three"
+        ));
+
+        Mockito.when(
+            spiedClient.getTimeSeriesWithinBounds(
+                ArgumentMatchers.eq(inputOne),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any()
+            )
+        ).thenReturn(
+            new TimeSeries<Instant>(
+                Arrays.asList(
+                    Instant.parse("1970-01-01T12:00:00Z"),
+                    Instant.parse("1970-01-01T13:00:00Z"),
+                    Instant.parse("1970-01-01T14:00:00Z")
+                ),
+                Arrays.asList("https://test-stack/measurables/measurable-one"),
+                Arrays.asList(Arrays.asList(1.0, 2.0, 3.0))
+            )
+        );
+
+         Mockito.when(
+            spiedClient.getTimeSeriesWithinBounds(
+                ArgumentMatchers.eq(inputTwo),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any()
+            )
+        ).thenReturn(
+            new TimeSeries<Instant>(
+                Arrays.asList(
+                    Instant.parse("1970-01-02T15:00:00Z"),
+                    Instant.parse("1970-01-02T16:00:00Z"),
+                    Instant.parse("1970-01-02T17:00:00Z")
+                ),
+                Arrays.asList(
+                    "https://test-stack/measurables/measurable-two",
+                    "https://test-stack/measurables/measurable-three"
+                ),
+                Arrays.asList(
+                    Arrays.asList(10.0, 20.0, 30.0),
+                    Arrays.asList(100.0, 200.0, 300.0)
+                )
+            )
+        );
+
+        return spiedClient;
+    }
+
+    /**
+     * Returns a mocked RemoteRDBStoreClient for mocked interaction with RDBs.
+     * 
+     * @returns mocked RemoteRDBStoreClient instance.
+     */
+    private RemoteRDBStoreClient mockRDBClient() throws Exception {
+        RemoteRDBStoreClient spiedClient = Mockito.mock(RemoteRDBStoreClient.class);
+
+        Mockito.when(
+            spiedClient.getConnection()
+        ).thenReturn(
+            Mockito.mock(Connection.class)
+        );
+
+        return spiedClient;
     }
 
 }

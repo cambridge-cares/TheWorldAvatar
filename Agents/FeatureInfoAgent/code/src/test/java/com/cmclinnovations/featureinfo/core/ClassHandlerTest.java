@@ -3,31 +3,29 @@ package com.cmclinnovations.featureinfo.core;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
-import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.TestUtils;
+import com.cmclinnovations.featureinfo.config.ConfigEntry;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
-import com.cmclinnovations.featureinfo.config.EndpointType;
-import com.cmclinnovations.featureinfo.config.NamespaceGetterTest;
+import com.cmclinnovations.featureinfo.config.ConfigStoreTest;
+import com.cmclinnovations.featureinfo.config.StackEndpoint;
+import com.cmclinnovations.featureinfo.config.StackEndpointType;
+import com.cmclinnovations.featureinfo.objects.Request;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -35,200 +33,104 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * Tests for the ClassHandler class.
  */
 public class ClassHandlerTest {
-
+    
     /**
-     * Logger for reporting info/errors.
+     * Temporary directory to store test data.
      */
-    private static final Logger LOGGER = LogManager.getLogger(ClassHandler.class);
+    private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
-    /**
-     * Test config store.
-     */
-    private static final ConfigStore CONFIG = new ConfigStore();
-
-    /**
-     * Read in mock config file before running tests.
+   /**
+     * Copy test data out from the resources directory so it can be loaded in the same
+     * manner that files are at runtime.
+     * 
+     * @throws IOException if temporary test data cannot be created.
      */
     @BeforeAll
-    public static void setup() {
-        try (InputStream is = NamespaceGetterTest.class.getResourceAsStream("/mock-config-file.json")) {
-            BufferedReader bufferReader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder stringBuilder = new StringBuilder();
+    public static void setup() throws IOException {
+        FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-01").toFile());
 
-            String eachStringLine;
-            while ((eachStringLine = bufferReader.readLine()) != null) {
-                stringBuilder.append(eachStringLine).append("\n");
-            }
-
-            CONFIG.loadFile(stringBuilder.toString());
-            FeatureInfoAgent.CONFIG = CONFIG;
-
-        } catch (Exception exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not read mock config file!");
-        }
-
-        // Add mock endpoints to the config
-        CONFIG.addEndpoint(new ConfigEndpoint("ONTOP", "http://my-fake-ontop.com/ontop/sparql", null, null, EndpointType.ONTOP));
-        CONFIG.addEndpoint(
-                new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
-        CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test",
-                "http://my-fake-blazegraph.com/namespace/blazegraph-test/sparql", null, null, EndpointType.BLAZEGRAPH));
-
-        // Write a temporary query file
-        try {
-            String tmpdir = System.getProperty("java.io.tmpdir");
-            Path tmpQuery = Paths.get(tmpdir, "MetaHandlerTest.sparql");
-            Files.writeString(tmpQuery, "SAMPLE-QUERY");
-
-            // Add to the config
-            CONFIG.addMetaQueryForClass("SAMPLE-QUERY-CLASS", tmpQuery.toString());
-            LOGGER.info("Written temporary query file for testing (" + tmpQuery.toString() + ").");
-        } catch (IOException exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not write temporary query file!");
-        }
+        // Copy out test data sets to the temporary directory.
+        File mockDir01 = new File(ConfigStoreTest.class.getResource("/mock-config-01").getFile());
+        Assertions.assertTrue(
+            TestUtils.copyFilesRecusively(mockDir01, TEMP_DIR.toFile()),
+            "Could not export test data from within JAR to temporary directory!"
+        );
     }
 
     /**
-     * Clean up after all tests have executed.
+     * Clean up after tests finish.
      */
     @AfterAll
-    public static void cleanup() {
-        // Delete the temporary query file
-        try {
-            String tmpdir = System.getProperty("java.io.tmpdir");
-            Path tmpQuery = Paths.get(tmpdir, "MetaHandlerTest.sparql");
-            Files.deleteIfExists(tmpQuery);
-
-            LOGGER.info("Removed temporary query file (" + tmpQuery.toString() + ").");
-        } catch (IOException exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not delete temporary query file!");
-        }
+    public static void cleanUp() throws Exception {
+         FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-01").toFile());
     }
 
     /**
-     * Tests that an array of class names can be determined for a given IRI.
-     * 
-     * Note that this does not test the functionality of the queries, simply that
-     * the MetaHandler class can handle sending the query and parsing the result.
      */
     @Test
-    public void getClasses() {
-        // Create a handler
-        ClassHandler handler = new ClassHandler("http://some-fake-iri/", new ArrayList<>());
+    public void getClasses() throws Exception {
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
-        try {
-            // Set up a mock RemoteStoreClient with a set response
-            RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-            handler.setClient(rsClient);
+        // Create store instance (skipping stack integration)
+        ConfigStore configStore = new ConfigStore(configFile.toString());
+        configStore.loadDetails(false);
 
-            // Respond to the non-ONTOP query with a fake class
-            when(rsClient.executeFederatedQuery(
-                    ArgumentMatchers.anyList(),
-                    ArgumentMatchers.anyString()))
-                    .thenReturn(new JSONArray("[{\"class\": \"com.cmclinnovations.kg.ClassOne\"}]"));
+        // Setup mocking for stack endpoints
+        ConfigStore spiedConfig = Mockito.spy(configStore);
 
-            // Ask the handler to query to determine the classes
-            List<String> classMatches = handler.getClasses();
+        Mockito.when(
+            spiedConfig.getStackEndpoints(
+                ArgumentMatchers.same(StackEndpointType.ONTOP)
+            )
+        ).thenReturn(
+            new ArrayList<>(Arrays.asList(
+                new StackEndpoint("https://test-stack/ontop", null, null, StackEndpointType.ONTOP)
+            ))
+        );
 
-            // Check result
-            Assertions.assertNotNull(classMatches, "Expected a non-null return result!");
-            Assertions.assertFalse(classMatches.isEmpty(), "Did not expect an empty String!");
-            Assertions.assertTrue(classMatches.contains("com.cmclinnovations.kg.ClassOne"),
-                    "Could not find expected class within collection!");
+        Mockito.when(
+            spiedConfig.getStackEndpoints(
+                ArgumentMatchers.same(StackEndpointType.BLAZEGRAPH)
+            )
+        ).thenReturn(
+            new ArrayList<>(Arrays.asList(
+                new StackEndpoint("https://test-stack/blazegraph-one", null, null, StackEndpointType.BLAZEGRAPH),
+                new StackEndpoint("https://test-stack/blazegraph-two", null, null, StackEndpointType.BLAZEGRAPH)
+            ))
+        );
 
-        } catch (Exception exception) {
-            exception.printStackTrace(System.out);
-            Assertions.fail("Unexpected exception thrown when trying to determine classes for mock IRI.");
-        }
-    }
+        // Mock a RemoteStoreClient instance
+        RemoteStoreClient kgClient = mock(RemoteStoreClient.class);
 
-    /**
-     * Tests that an array of class names can be determined for a given IRI; this
-     * differs from the previous test in that it intentionally fails the simple
-     * class query, and tests the functionality to run a second query that contains
-     * the ONTOP service.
-     * 
-     * Note that this does not test the functionality of the queries, simply that
-     * the MetaHandler class can handle sending the query and parsing the result.
-     */
-    @Test
-    public void getClassesOntop() {
-        // Create a handler
-        ClassHandler handler = new ClassHandler("http://some-fake-iri/", new ArrayList<>());
+        // Respond to the non-ONTOP query with nothing
+        when(
+            kgClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyString()
+            )
+        ).thenReturn(
+            new org.json.JSONArray("""
+                [
+                    { "class": "https://theworldavatar.io/mock-domain/ClassOne" },
+                    { "class": "https://theworldavatar.io/mock-domain/ClassTwo" },
+                    { "class": "https://theworldavatar.io/mock-domain/ClassThree" }
+                ]
+            """)
+        );
 
-        try {
-            // Set up a mock RemoteStoreClient with a set response
-            RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-            handler.setClient(rsClient);
+        // Create a ClassHandler instance
+        ClassHandler handler = new ClassHandler(spiedConfig, kgClient);
 
-            // Respond to the non-ONTOP query with nothing
-            when(rsClient.executeFederatedQuery(
-                    ArgumentMatchers.anyList(),
-                    AdditionalMatchers.not(ArgumentMatchers.contains("ontop"))))
-                    .thenReturn(new JSONArray());
+        // Run class determination logic
+        List<ConfigEntry> matchingEntries = handler.determineClassMatches(
+            new Request("https://test-stack/features/feature-one",null)
+        );
 
-            // Respond to the ONTOP query with a fake class
-            when(rsClient.executeFederatedQuery(
-                    ArgumentMatchers.anyList(),
-                    ArgumentMatchers.contains("ontop")))
-                    .thenReturn(new JSONArray("[{\"class\": \"com.cmclinnovations.kg.ClassOne\"}]"));
-
-            // Ask the handler to query to determine the classes
-            List<String> classMatches = handler.getClasses();
-
-            // Check result
-            Assertions.assertNotNull(classMatches, "Expected a non-null return result!");
-            Assertions.assertFalse(classMatches.isEmpty(), "Did not expect an empty String!");
-            Assertions.assertTrue(classMatches.contains("com.cmclinnovations.kg.ClassOne"),
-                    "Could not find expected class within collection!");
-
-        } catch (Exception exception) {
-            exception.printStackTrace(System.out);
-            Assertions.fail("Unexpected exception thrown when trying to determine classes for mock IRI.");
-        }
-    }
-
-    /**
-     * Tests that an actual query file can be determined and read into memory.
-     */
-    @Test
-    public void readQueryFile() {
-        // Create a handler
-        ClassHandler handler = new ClassHandler("http://some-fake-iri/", new ArrayList<>());
-
-        try {
-            // Set up a mock RemoteStoreClient with a set response
-            RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-            handler.setClient(rsClient);
-
-            // Respond to the non-ONTOP query with a fake class
-            when(rsClient.executeFederatedQuery(
-                    ArgumentMatchers.anyList(),
-                    ArgumentMatchers.anyString()))
-                    .thenReturn(new JSONArray("[{\"class\": \"SAMPLE-QUERY-CLASS\"}]"));
-
-            // Ask the handler to query to determine the classes
-            String classMatch = handler.getClassMatch();
-
-            // Check result
-            Assertions.assertNotNull(classMatch, "Expected a non-null return result!");
-            Assertions.assertFalse(classMatch.isEmpty(), "Did not expect an empty String!");
-            Assertions.assertEquals("SAMPLE-QUERY-CLASS", classMatch,
-                    "Could not find expected class within collection!");
-
-            // Get the query for that class
-            String queryContent = CONFIG.getMetaQuery(classMatch);
-            Assertions.assertNotNull(queryContent, "Expected a non-null return result!");
-            Assertions.assertFalse(queryContent.isEmpty(), "Did not expect an empty String!");
-            Assertions.assertEquals("SAMPLE-QUERY", queryContent, "Could not find expected class within collection!");
-
-        } catch (Exception exception) {
-            exception.printStackTrace(System.out);
-            Assertions.fail("Unexpected exception thrown when trying to read a sample query file!");
-        }
+        Assertions.assertEquals(
+            3,
+            matchingEntries.size(),
+            "Did not return the expected number of class matches!"
+        );
     }
 
 }

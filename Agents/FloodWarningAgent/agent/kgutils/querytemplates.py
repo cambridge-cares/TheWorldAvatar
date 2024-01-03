@@ -307,9 +307,11 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                 ?derivation_iri <{RDF_TYPE}> ?deriv_type ; 
                                 <{DERIV_DERIVED_FROM}> ?inputs ; 
                                 <{DERIV_DERIVED_USING}> ?agent ; 
-                                <{DERIV_HAS_STATUS}> ?status .  
+                                <{DERIV_HAS_STATUS}> ?status ;  
+                                <{DERIV_RETRIEVED_INPUTS_AT}> ?deriv_time .
                 ?outputs <{DERIV_BELONGS_TO}> ?derivation_iri . 
-                ?status <{RDF_TYPE}> ?status_type .
+                ?status <{RDF_TYPE}> ?status_type ;
+                        <{RDFS_COMMENT}> ?comment .
                 
             }} WHERE {{
                 <{warning_uri}> <{RDF_TYPE}> <{RT_FLOOD_ALERT_OR_WARNING}> ; 
@@ -349,10 +351,13 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                 OPTIONAL {{ <{warning_uri}> ^<{DERIV_DERIVED_FROM}> ?derivation_iri . 
                             OPTIONAL {{ ?derivation_iri <{RDF_TYPE}> ?deriv_type }} 
                             OPTIONAL {{ ?derivation_iri <{DERIV_DERIVED_FROM}> ?inputs }} 
-                            OPTIONAL {{ ?derivation_iri <{DERIV_DERIVED_USING}> ?agent }} 
+                            OPTIONAL {{ ?derivation_iri <{DERIV_DERIVED_USING}> ?agent }}
+                            OPTIONAL {{ ?derivation_iri <{DERIV_RETRIEVED_INPUTS_AT}> ?deriv_time }} 
                             OPTIONAL {{ ?outputs <{DERIV_BELONGS_TO}> ?derivation_iri }} 
                             OPTIONAL {{ ?derivation_iri <{DERIV_HAS_STATUS}> ?status . 
-                                        ?status <{RDF_TYPE}> ?status_type }}
+                                        ?status <{RDF_TYPE}> ?status_type . 
+                                        OPTIONAL {{ ?status <{RDFS_COMMENT}> ?comment }}
+                                    }}
                  }}
             }}
         """

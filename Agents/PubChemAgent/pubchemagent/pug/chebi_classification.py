@@ -28,7 +28,7 @@ def get_chebi_tree(chebiID):
                     parent_uuid, parent_flag = find_uuid('FunctionalGroup', typeIRI, parent, 'ChEBI classification')
                     tp = 'FunctionalGroup'
                 else:
-                    typeIRI = '<' + ONTOSPECIES_URL + 'hemicalClass>'
+                    typeIRI = '<' + ONTOSPECIES_URL + 'ChemicalClass>'
                     parent_uuid, parent_flag = find_uuid('ChemicalClass', typeIRI, parent, 'ChEBI classification')
                     tp = 'ChemicalClass'
                 print(child + ' (' + tc + ') is a (' + tp + ') ' + parent)

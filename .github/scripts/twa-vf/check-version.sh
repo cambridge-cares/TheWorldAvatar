@@ -25,14 +25,14 @@ echo "Does not match version on main, which is: $MAIN_VERSION"
 
 # Check that there's no -SNAPSHOT in the version
 TOKEN="-SNAPSHOT"
-if grep -q "$TOKEN" <<< "$VERSION"; then
+if [[ "$VERSION" == *"$TOKEN"* ]]; then
   echo "Version still contains the -SNAPSHOT qualifier!"
   exit -1
 fi
 echo "Version does not contain -SNAPSHOT qualifier."
 
 # Check that the change log contains an entry for that version
-CHANGELOG="./web/twa-vis-framework/CHANGELOG.md"
+CHANGELOG="./web/twa-vis-framework/library/CHANGELOG.md"
 TOKEN="# $VERSION"
 if ! grep -q "$TOKEN" "$CHANGELOG"; then
 	echo "Could not find corresponding node in CHANGELOG.md file!"

@@ -1,10 +1,9 @@
 /**
- * Sore manager class for DVTF visualisations.
+ * Sore manager class for TWA-VF visualisations.
  * 
  * An instance of this class should have been created and setup for global access
- * under the "manager" variable name.
- * 
- * TODO: Move out the feature finder functionality to a better (or new) class.
+ * under the "manager" variable name, within the <script> element of the visualisation's
+ * main HTML file.
  */
 class Manager {
 
@@ -34,12 +33,12 @@ class Manager {
     private mapHandler: MapHandler;
    
     /**
-     * Handles controls on left.
+     * Handles map controls (on the left).
      */
     private controlHandler: ControlHandler;
 
     /**
-     * Handles the side panel.
+     * Handles the side panel (on the right).
      */
     private panelHandler: PanelHandler;
 
@@ -49,10 +48,20 @@ class Manager {
     private searchHandler: SearchHandler;
 
     /**
-     * Currently in full screen mode?
+     * Handles scenario selection.
      */
-    private inFullscreen: boolean = false;
-    
+    private scenarioHandler: ScenarioHandler;
+
+    /**
+     * Optional callbacks to trigger once a singluar feature has been selected.
+     */
+    public selectionCallbacks = [];
+
+    /**
+     * Optional callbacks to trigger once a feature selection is cleared.
+     */
+    public unselectionCallbacks = [];
+
     /**
      * Optional callback to trigger once data definitions have been loaded.
      */
@@ -78,12 +87,11 @@ class Manager {
 
             default:
                 throw new Error("Unknown map provider specified!");
-            break;
         }
     }
 
     /**
-     * Reads credentials from files.
+     * Reads Mapbox credentials from files/docker secrets.
      */
     public async readCredentials() {
         // Enter Mapbox account name and API key here!
@@ -110,8 +118,6 @@ class Manager {
         this.mapHandler.initialiseMap(mapOptions);
 
         this.controlHandler.showControls();
-        this.controlHandler.rebuildTree(Manager.DATA_STORE);
-
         this.panelHandler.toggleMode();
 
         // Show attributions if present
@@ -125,7 +131,6 @@ class Manager {
         document.addEventListener("keydown", function(e){
             if ((e.ctrlKey || e.metaKey) && e.key === "f") {
                 if(self.searchHandler === null || self.searchHandler === undefined) {
-
 
                     // Initialise the seach handler instance
                     switch(Manager.PROVIDER) {
@@ -158,36 +163,35 @@ class Manager {
 
     }
 
-    private toggleFullscreen() {
-        if(this.inFullscreen) {
-            // Disable full screen
-            document.getElementById("controlsContainer").style.display = "block";
-            document.getElementById("sidePanel").style.display = "block";
+    /**
+     * Adds a callback that will fire with the selected feature once a 
+     * singular feature has been selected.
+     * 
+     * @param selectionCallback callback function.
+     */
+    public addSelectionCallback(selectionCallback) {
+        this.selectionCallbacks.push(selectionCallback);
+    }
 
-            let sidePanel =  document.getElementById("sidePanel");
+    /**
+     * Adds a callback that will fire with no parameters once the
+     * current feature selection is cleared.
+     * 
+     * @param unselectionCallback callback function.
+     */
+    public addUnselectionCallback(unselectionCallback) {
+        this.unselectionCallbacks.push(unselectionCallback);
+        this.panelHandler.addUnselectionCallback(unselectionCallback);
+    }
 
-            if(sidePanel.classList.contains("large")) {
-                document.getElementById("map").style.width = "100%";
-            } else if(sidePanel.classList.contains("collapsed")) {
-                document.getElementById("map").style.width = "calc(100% - 28px)";
-            } else {
-                document.getElementById("map").style.width = "calc(100% - 500px)";
-            }
-
-            this.inFullscreen = false;
-        } else {
-            // Enable full scrren
-            document.getElementById("controlsContainer").style.display = "none";
-            document.getElementById("sidePanel").style.display = "none";
-            document.getElementById("map").style.width = "100%";
-            this.inFullscreen = true;
-        }
-
-        if(Manager.PROVIDER === MapProvider.MAPBOX) {
-            MapHandler.MAP.resize();
-        } else {
-            MapHandler.MAP.scene.requestRender();
-        }
+    /**
+     * Adds a callback that will fire with two arrays of layerIDs (visible, hidden)
+     * when any selection state in the layer tree changes.
+     * 
+     * @param treeSelectionCallback callback function.
+     */
+    public addTreeSelectionCallback(treeSelectionCallback) {
+        this.controlHandler.addTreeSelectionCallback(treeSelectionCallback);
     }
 
     /**
@@ -203,6 +207,7 @@ class Manager {
             let enabled = (Manager.SETTINGS.getSetting("search") != null);
             let searchIcon = document.getElementById("searchIconContainer");
             if(searchIcon != null) searchIcon.style.display = (enabled) ? "block" : "none";
+            console.log("Map configuration settings have been loaded.");
         });
     }
 
@@ -216,9 +221,12 @@ class Manager {
      */
     public loadDefinitions() {
         let settingPromise = this.loadSettings();
-        let dataPromise = this.loadDefinitionsFromURL("./data.json");
-
-        return Promise.all([settingPromise, dataPromise]);
+    
+        return settingPromise.then(() => {
+            if(!this.checkForScenarios()) {
+                return this.loadDefinitionsFromURL("./data.json");
+            }
+        });
     }
 
     /**
@@ -229,11 +237,17 @@ class Manager {
      * @returns promise object
      */
     public loadDefinitionsFromObject(dataJSON) {
+        if(dataJSON == null) {
+            return Promise.resolve();
+        }
+
         // Initialise global settings
         Manager.DATA_STORE.reset();
 
         let promise =  Manager.DATA_STORE.loadDataGroups(dataJSON) as Promise<any>;
         return promise.then(() => {
+            // Rebuild the layer tree
+            this.controlHandler.rebuildTree(Manager.DATA_STORE);
             if(this.dataLoadCallback != null) this.dataLoadCallback();
         });
     }
@@ -250,31 +264,34 @@ class Manager {
         let promise = $.getJSON(dataURL, function(json) {
             return json;
         }).fail((error) => {
-            throw error;
+            console.log("Error reading data specification file from URL.");
+            console.log(error);
         });    
 
         return promise.then((response) => self.loadDefinitionsFromObject(response));
     }
 
     /**
+     * Loads custom image and link content.
      * 
+     * @returns Promise object, resolves when all loading is complete.
      */
     public loadImagesAndLinks() {
         let promises = [];
 
-            if(Manager.PROVIDER === MapProvider.MAPBOX) {
+        // Load images
+        if(Manager.PROVIDER === MapProvider.MAPBOX) {
             let iconFile = "./icons.json";
-                let iconPromise = (<MapHandler_Mapbox> this.mapHandler).addIcons(iconFile);
-                promises.push(iconPromise);
-            }
+            let iconPromise = (<MapHandler_Mapbox> this.mapHandler).addIcons(iconFile);
+            promises.push(iconPromise);
+        }
 
-        let linksFile = "./links.json"
-            promises.push(this.panelHandler.addLinks(linksFile));
+        // Load links
+        let linksFile = "./links.json";
+        promises.push(this.panelHandler.addLinks(linksFile));
 
-        let promise = Promise.all(promises).catch(function(err) {
-            console.warn("Loading icons and/or links has failed, these will be skipped."); 
-        });
-        return promise;
+        // Return combined promise
+        return Promise.allSettled(promises);
     }
     
     /**
@@ -305,7 +322,6 @@ class Manager {
      */
     public plotData() {
         this.mapHandler.plotData(Manager.DATA_STORE);
-        this.controlHandler.rebuildTree(Manager.DATA_STORE);
     }
 
     /**
@@ -359,8 +375,9 @@ class Manager {
             this.panelHandler.setContent("");
         }
 
-        // Retrieve and display meta and timeseries data
-        this.panelHandler.addSupportingData(feature, properties);
+        // Retrieve and display meta and time series data
+        let scenarioID = (this.scenarioHandler == null) ? null : this.scenarioHandler.selectedScenario;
+        this.panelHandler.addSupportingData(feature, properties, scenarioID);
 
         // Update buttons accordingly
         let metaTreeButton = document.getElementById("treeButton");
@@ -382,6 +399,11 @@ class Manager {
         
         // Store selected feature
         window.currentFeature = feature;
+
+        // Fire selection callbacks
+        this.selectionCallbacks.forEach(callback => {
+            callback(feature);
+        });
     }
 
     /**
@@ -692,5 +714,60 @@ class Manager {
         }
 
         return null;
+    }
+
+    /**
+     * Checks if scenarios have been enabled for this visualisation.
+     * 
+     * @returns true if scenarios enabled, false if not 
+     */
+    public checkForScenarios() {
+        let scenarioButton = document.getElementById("scenarioChangeContainer");
+
+        // If a scenario endpoint is specified, load the handler
+        let scenarioURL = Manager.SETTINGS.getSetting("scenarioAgent");
+        let scenarioDataset = Manager.SETTINGS.getSetting("scenarioDataset");
+
+        if(this.scenarioHandler == null && scenarioURL != null) {
+            this.scenarioHandler = new ScenarioHandler(scenarioURL, scenarioDataset);
+            scenarioButton.style.display = "block";
+            return true;
+        } 
+        return scenarioURL != null;
+    }
+
+    /**
+     * Displays the scenario selector component.
+     */
+    public showScenarioSelector() {
+        if(this.scenarioHandler != null) {
+            this.scenarioHandler.showSelector();
+        }
+    }
+
+    /**
+     * Selects and loads data from the input scenario.
+     * 
+     * @param scenarioID scenario id 
+     * @param scenarioName user facing name of the scenario
+     */
+    public selectScenario(scenarioID, scenarioName) {
+        if(this.scenarioHandler != null) {
+            if(scenarioID === this.scenarioHandler.selectedScenario) return;
+
+            // Set the selected scenario
+            this.scenarioHandler.selectScenario(scenarioID, scenarioName);
+
+            // Show the current name
+            let container = document.getElementById("currentScenarioName");
+            container.innerHTML = "Current: " + scenarioName;
+
+            // Load its data configuration file
+            let self = this;
+            this.scenarioHandler.getConfiguration(function(dataJSON) {
+                let promise = self.loadDefinitionsFromObject(dataJSON) as Promise<any>;
+                promise.then(() => self.plotData());
+            });
+        }
     }
 }

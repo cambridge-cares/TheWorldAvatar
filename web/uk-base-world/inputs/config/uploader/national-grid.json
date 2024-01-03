@@ -1,0 +1,192 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "national_grid",
+    "skip": false,
+    "namespace": {
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true
+        }
+    },
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "skip": false,
+            "table": "ng_styling",
+            "subdirectory": "styling"
+        },
+        {
+            "type": "tabular",
+            "skip": false,
+            "table": "ng_substation_styling",
+            "subdirectory": "substation_styling"
+        },
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "ng_towers",
+            "subdirectory": "vector/towers",
+            "sql": "@/inputs/config/sql/ng_towers.sql",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "sridOut": "EPSG:27700"
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ng_towers",
+                    "sql": "@/inputs/config/sql/virtualTables/ng_towers_geoserver.sql",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "point"
+            }
+        },
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "ng_poles",
+            "subdirectory": "vector/poles",
+            "sql": "@/inputs/config/sql/ng_poles.sql",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "sridOut": "EPSG:27700"
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ng_poles",
+                    "sql": "@/inputs/config/sql/virtualTables/ng_poles_geoserver.sql",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "point"
+            }
+        },
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "ng_underground_cables",
+            "sql": "@/inputs/config/sql/ng_cables.sql",
+            "subdirectory": "vector/cables",
+            "ogr2ogrOptions": {
+                "sridOut": "EPSG:27700",
+                "otherOptions": {
+                    "-nlt": [
+                        "LINESTRING"
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ng_underground_cables",
+                    "sql": "@/inputs/config/sql/virtualTables/ng_underground_geoserver.sql",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "LineString",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "twa:underground-cables"
+            }
+        },
+        {
+            "type": "Vector",
+            "skip": false,
+            "schema": "public",
+            "table": "ng_overhead_lines",
+            "sql": "@/inputs/config/sql/ng_ohls.sql",
+            "subdirectory": "vector/ohls",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "sridOut": "EPSG:27700",
+                "otherOptions": {
+                    "-nlt": [
+                        "MULTILINESTRING"
+                    ]
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ng_overhead_lines",
+                    "sql": "@/inputs/config/sql/virtualTables/ng_overhead_geoserver.sql",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiLineString",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "twa:overhead-lines"
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "ng_substations",
+            "subdirectory": "vector/substations",
+            "sql": "@/inputs/config/sql/ng_substations.sql",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "sridOut": "EPSG:27700"
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ng_substations",
+                    "sql": "@/inputs/config/sql/virtualTables/ng_substations_geoserver.sql",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "point"
+            }
+        },
+        {
+            "type": "rdf",
+            "subdirectory": "om",
+            "skip": false
+        },
+        {
+            "type": "tboxcsv",
+            "subdirectory": "ontology",
+            "skip": false
+        }
+    ],
+    "styles": [
+        {
+            "name": "poles-towers",
+            "file": "./sld/poles-towers.sld"
+        },
+        {
+            "name": "overhead-lines",
+            "file": "./sld/overhead-lines.sld"
+        },
+        {
+            "name": "underground-cables",
+            "file": "./sld/underground-cables.sld"
+        }
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    },
+    "mappings": [
+        "ng_ontop.obda"
+    ]
+}

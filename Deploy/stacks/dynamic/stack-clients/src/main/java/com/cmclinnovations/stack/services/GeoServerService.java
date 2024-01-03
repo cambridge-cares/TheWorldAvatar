@@ -144,7 +144,8 @@ public final class GeoServerService extends ContainerService {
         // through the reverse-proxy.
         settings.withObject("/global/settings")
                 .put("proxyBaseUrl", "${X-Forwarded-Proto}:\\/\\/${X-Forwarded-Host}\\/geoserver")
-                .put("useHeadersProxyURL", true);
+                .put("useHeadersProxyURL", true)
+                .put("numDecimals", 6);
 
         HttpRequest settingsPutRequest = settingsRequestBuilder
                 .PUT(BodyPublishers.ofString(settings.toString()))

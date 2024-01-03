@@ -1,5 +1,5 @@
 /**
- * Utilities specific to Mapbox implementations
+ * Utilities specific to CesiumJS implementations.
  */
 class CesiumUtils {
     
@@ -35,38 +35,41 @@ class CesiumUtils {
 	 * @param {boolean} visible desired visibility.
 	 */
     public static toggleLayer(layerID, visible) {
-        // Get sources of data for this layer
+        // Get the original layer definition
+        let layerObject = Manager.DATA_STORE.getLayerWithID(layerID);
+        if(layerObject == null) return;
+
+        // Skip if setting to the same value
+        if(layerObject.getVisibility() === visible) return;
+
+        // Get data source instances from Cesium
         let dataSources = MapHandler_Cesium.DATA_SOURCES[layerID];
 
-        if(dataSources !== null) {
+        if(dataSources != null) {
             for(let i = 0; i < dataSources.length; i++) {
                 let dataSource = dataSources[i];
 
                 if(dataSource instanceof Cesium.WebMapServiceImageryProvider) {
                     // 2D data, need to find imageryLayers using this provider
                     let layers = MapHandler.MAP.imageryLayers;
-                    
-                    for(let i = 0; i < layers.length; i++) {
-                        if(layers.get(i).imageryProvider === dataSource) {
-                            layers.get(i).show = visible;
+                    if(layers == null) continue;
+
+                    for(let j = 0; j < layers.length; j++) {
+                        if(layers.get(j).imageryProvider === dataSource) {
+                            layers.get(j).show = visible;
                         }
                     }
                 } else {
-                    // 3D data
+                    // 3D data, just update the source
                     dataSource.show = visible;
-
-                    if(dataSource instanceof Cesium.Cesium3DTileset) {
-                        let clippingPlanes = dataSource["clippingPlanes"];
-                        if(clippingPlanes == null) return;
-
-                        // clippingPlanes.enabled = visible;
-                        // let planeEntity = ClipHandler.PLANES[layerID];
-                        // planeEntity.show = visible;
-                    }
                 }
             }
         } 
+
+        // Update the cached state within the layer definition
+        layerObject.cacheVisibility(visible);
        
+        // Force re-render
         MapHandler.MAP.scene.requestRender();
     }
 
@@ -124,21 +127,11 @@ class CesiumUtils {
         let imagerySettings = {};
 
         // Add possible imagery options
-        imagerySettings["Light"] =
-            "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
-        imagerySettings["Dark"] =
-            "https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
-        imagerySettings["Outdoors"] =
-            "https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
-        imagerySettings["Satellite (Raw)"] =
-            "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
-        imagerySettings["Satellite (Labelled)"] =
-            "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
+        imagerySettings["Light"] = "https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/256/{z}/{x}/{y}?access_token=";
+        imagerySettings["Dark"] = "https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}?access_token=";
+        imagerySettings["Outdoors"] = "https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/tiles/256/{z}/{x}/{y}?access_token=";
+        imagerySettings["Satellite (Raw)"] = "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token=";
+        imagerySettings["Satellite (Labelled)"] = "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/256/{z}/{x}/{y}?access_token=";
 
         // Set default imagery to Dark
         imagerySettings["default"] = "Dark";
@@ -202,8 +195,19 @@ class CesiumUtils {
 
                 // Pick a new feature
                 const pickedFeature = MapHandler.MAP.scene.pick(movement.endPosition);
-
                 if (!Cesium.defined(pickedFeature)) return;
+
+
+                // Try to get the layer object for the feature
+                let layerID = pickedFeature?.tileset?.layerID;
+                if(layerID == null) layerID = pickedFeature?.imageryLayer?.imageryProvider?.layerID
+                let layer = Manager.DATA_STORE.getLayerWithID(layerID);
+
+                // Check if hovering is allowed on this layer
+                let hoverable = (layer == null) || (layer.interactions === "all" || layer.interactions === "hover-only");
+                if(!hoverable) {
+                    return;
+                }
 
                 // Highlight the feature if it's not already selected.
                 if (pickedFeature !== selected.feature) {
@@ -267,7 +271,6 @@ class CesiumUtils {
 
         // Find the first feature that isn't a clipping plane
         let feature = null;
-
         if(features != null) {
             features.forEach(f => {
                 if(f?.id?._name != null) {
@@ -290,8 +293,12 @@ class CesiumUtils {
                     if(features.length > 0) {
                         // Only return the first for now
                         callback(features[0]);
+                    } else {
+                        callback(null);
                     }
                 });
+            } else {
+                callback(null);
             }
         } else {
             callback(feature);
@@ -299,32 +306,19 @@ class CesiumUtils {
     }
 
     /**
-     * Generates content for pop-up box displayed on hover over.
+     * Generates and displays a descriptive popup on a Mapbox map.
+     * 
+     * @param feature selected feature
      */
-    public static getPopupContent(properties: Object) {
-        // Get feature details
-        let name = getName(properties);
-        let desc = getDescription(properties);
-
-        // Make HTML string
-        let html = "";
-        if(desc == null) {
-            html += "<h3 style='text-align: center !important;'>" + name + "</h3>";
-        } else {
-            html += "<h3>" + name + "</h3>";
-            if(desc.length > 100) {
-                html += "<div class='desc-popup long-popup'></br>" + desc + "</div>";
-            } else {
-                html += "<div class='desc-popup'></br>" + desc + "</div>";
-            }
+     public static showPopup(featureMetadata) {
+        if(featureMetadata == null) {
+            PopupHandler.setVisibility(false);
+            return;
         }
 
-        // Add thumbnail if present
-        if(properties["thumbnail"]) {
-            html += "<br/><br/>";
-            html += "<img class='thumbnail' src='" + properties["thumbnail"] + "'>";
-        }
-        return html;
+        // Update and show popup
+        PopupHandler.updatePopup(featureMetadata);
+        PopupHandler.setVisibility(true);
     }
 
     /**
@@ -463,7 +457,7 @@ class CesiumUtils {
     }
 
     /**
-     * 
+     * Returns lst of layer ID that support clipping planes.
      */
     public static getLayersWithClipping(dataStore: DataStore) {
         let matches = {};
@@ -475,6 +469,7 @@ class CesiumUtils {
     }
 
     /**
+     * Utility to recurse and find layer IDs that support clipping planes.
      * 
      * @param dataGroup 
      * @param matches 
@@ -501,6 +496,7 @@ class CesiumUtils {
     }
 
     /**
+     * Returns an array of Cesium primitives currently on the map.
      * 
      * @param layerID 
      * @returns 

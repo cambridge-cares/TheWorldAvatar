@@ -65,6 +65,7 @@ TIME_UNIT_SECOND = TIME + 'unitSecond'
 
 ### OM ###
 OM_QUANTITY = OM + "Quantity"
+OM_MEASURE = OM + 'Measure'
 OM_HASVALUE = OM + "hasValue"
 OM_HASUNIT = OM + "hasUnit"
 OM_MEGAWATTHOUR = OM + "megawattHour"

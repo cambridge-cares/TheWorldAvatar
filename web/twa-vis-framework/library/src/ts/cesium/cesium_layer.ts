@@ -4,16 +4,11 @@
 class CesiumLayer extends DataLayer {
 
     /**
-     * Initialise a new MapboxLayer instance.
+     * Initialise a new CesiumLayer instance.
      */
     constructor(id: string, name: string, source: DataSource) {
        super(id, name, source);
     }
 
-    /**
-     * Returns true if layer is currently visible.
-     */
-    public isVisible(): boolean {
-        return CesiumUtils.isVisible(this.id);
-    }
 }
+// End of class.

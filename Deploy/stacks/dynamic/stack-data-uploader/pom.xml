@@ -7,10 +7,10 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-data-uploader</artifactId>
-  <version>1.16.0-ontop-per-db-SNAPSHOT</version>
+  <version>1.22.0-ontop-per-db-SNAPSHOT</version>
 
   <name>Stack Data Uploader</name>
-  <url>https://www.cmclinnovations.com</url>
+  <url>https://theworldavatar.io</url>
 
   <parent>
     <groupId>uk.ac.cam.cares.jps</groupId>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <version>1.16.0-ontop-per-db-SNAPSHOT</version>
+      <version>1.22.0-ontop-per-db-SNAPSHOT</version>
     </dependency>
 
     <dependency>

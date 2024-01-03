@@ -1,8 +1,13 @@
 package com.cmclinnovations.stack.clients.postgis;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
@@ -16,7 +21,9 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
 
     public static final String DEFAULT_SCHEMA_NAME = "public";
 
-    private final PostGISEndpointConfig postgreSQLEndpoint;
+    private static final Logger logger = LoggerFactory.getLogger(PostGISClient.class);
+
+    protected final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static PostGISClient instance = null;
 
@@ -27,7 +34,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         return instance;
     }
 
-    private PostGISClient() {
+    protected PostGISClient() {
         postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
     }
 
@@ -53,6 +60,20 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                         + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL(DEFAULT_DATABASE_NAME)
                         + "'.", ex);
             }
+        }
+        createDefaultExtensions(databaseName);
+    }
+
+    private void createDefaultExtensions(String databaseName) {
+        try (Connection conn = getRemoteStoreClient(databaseName).getConnection();
+                Statement stmt = conn.createStatement()) {
+            String sql = "CREATE EXTENSION IF NOT EXISTS postgis; "
+                    + "CREATE EXTENSION IF NOT EXISTS postgis_topology; "
+                    + "CREATE EXTENSION IF NOT EXISTS fuzzystrmatch; ";
+            stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to create extensions in database '" + databaseName
+                    + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL("postgres") + "'.", ex);
         }
     }
 
@@ -81,4 +102,14 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 postgreSQLEndpoint.getUsername(),
                 postgreSQLEndpoint.getPassword());
     }
+
+    public void resetSchema(String database) {
+        try (InputStream is = PostGISClient.class.getResourceAsStream("postgis_reset_schema.sql")) {
+            String sqlQuery = new String(is.readAllBytes()).replace("{database}", database);
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file 'postgis_reset_schema.sql'.", ex);
+        }
+    }
+
 }

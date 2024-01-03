@@ -1,35 +1,25 @@
 package com.cmclinnovations.featureinfo.core.meta;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.TestUtils;
 import com.cmclinnovations.featureinfo.config.ConfigStore;
-import com.cmclinnovations.featureinfo.config.EndpointType;
-import com.cmclinnovations.featureinfo.config.NamespaceGetterTest;
+import com.cmclinnovations.featureinfo.config.ConfigStoreTest;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -39,119 +29,190 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class MetaHandlerTest {
     
     /**
-     * Logger for reporting info/errors.
+     * Temporary directory to store test data.
      */
-    private static final Logger LOGGER = LogManager.getLogger(MetaHandlerTest.class);
+    private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
     /**
-     * Test config store.
-     */
-    private static final ConfigStore CONFIG = new ConfigStore();
-
-    /**
-     * Read in mock config file before running tests.
+     * Copy test data out from the resources directory so it can be loaded in the same
+     * manner that files are at runtime.
+     * 
+     * @throws IOException if temporary test data cannot be created.
      */
     @BeforeAll
-    public static void setup() {
-        try (InputStream is = NamespaceGetterTest.class.getResourceAsStream("/mock-config-file.json")) {
-            BufferedReader bufferReader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder stringBuilder = new StringBuilder();
+    public static void setup() throws IOException {
+        FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-01").toFile());
 
-            String eachStringLine;
-            while ((eachStringLine = bufferReader.readLine()) != null) {
-                stringBuilder.append(eachStringLine).append("\n");
-            }
-
-            CONFIG.loadFile(stringBuilder.toString());
-            FeatureInfoAgent.CONFIG = CONFIG;
-
-        } catch(Exception exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not read mock config file!");
-        }
-
-        // Add mock endpoints to the config
-        CONFIG.addEndpoint(new ConfigEndpoint("ONTOP", "http://my-fake-ontop.com/", null, null, EndpointType.ONTOP));
-        CONFIG.addEndpoint(new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
-        CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test", "http://my-fake-blazegraph.com/namespace/blazegraph-test/sparql", null, null, EndpointType.BLAZEGRAPH));
-        
-        // Write a temporary query file
-        try {
-            String tmpdir = System.getProperty("java.io.tmpdir");
-            Path tmpQuery = Paths.get(tmpdir, "MetaHandlerTest.sparql");
-            Files.writeString(tmpQuery, "SAMPLE-QUERY");
-
-            // Add to the config
-            CONFIG.addMetaQueryForClass("SAMPLE-CLASS", tmpQuery.toString());
-            LOGGER.info("Written temporary query file for testing (" + tmpQuery.toString() + ").");
-        } catch(IOException exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not write temporary query file!");
-        }
+        // Copy out test data sets to the temporary directory.
+        File mockDir01 = new File(ConfigStoreTest.class.getResource("/mock-config-01").getFile());
+        Assertions.assertTrue(
+            TestUtils.copyFilesRecusively(mockDir01, TEMP_DIR.toFile()),
+            "Could not export test data from within JAR to temporary directory!"
+        );
     }
 
     /**
-     * Clean up after all tests have executed.
+     * Clean up after tests finish.
      */
     @AfterAll
-    public static void cleanup() {
-          // Delete the temporary query file
-          try {
-            String tmpdir = System.getProperty("java.io.tmpdir");
-            Path tmpQuery = Paths.get(tmpdir, "MetaHandlerTest.sparql");
-            Files.deleteIfExists(tmpQuery);
-
-            LOGGER.info("Removed temporary query file (" + tmpQuery.toString() + ").");
-        } catch(IOException exception) {
-            exception.printStackTrace(System.out);
-            throw new RuntimeException("Could not delete temporary query file!");
-        }
+    public static void cleanUp() throws Exception {
+         FileUtils.deleteDirectory(TEMP_DIR.resolve("mock-config-01").toFile());
     }
 
     /**
-     * Tests that a query can be submitted and the response parsed.
+     * Tests the MetaHandler by attempting to get data for a single matching
+     * configuration entry.
+     * 
+     * @throws Exception if SPARQL fails.
      */
     @Test
-    public void testQuery() {
-        // Create a handler
-        MetaHandler handler = new MetaHandler("http://some-fake-iri/", "SAMPLE-CLASS", CONFIG.getBlazegraphEndpoints());
+    public void testSingleMatchQuery() throws Exception {
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
-        try {
-            // Set up a mock RemoteStoreClient with a set response
-            RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-            handler.setClient(rsClient);
+        // Mock a config store based on the real config file
+        ConfigStore configStore = TestUtils.mockConfig(configFile);
+        
+        // Initialise a metahandler
+        MetaHandler metaHandler = new MetaHandler(
+            "https://test-stack/features/feature-one",
+            Optional.empty(),
+            configStore
+        );       
 
-            // Respond to the metadata query with some fake data
-            when(rsClient.executeQuery(
-                eq("SAMPLE-QUERY")))
-                .thenReturn(
-                    new org.json.JSONArray("[{\"Property\":\"PropertyOne\",\"Value\":\"ValueOne\"},{\"Property\":\"PropertyTwo\",\"Value\":\"ValueTwo\"}]")
-                );
+        // Set a mock KG client
+        metaHandler.setClient(mockClient());
 
-            // Set up a mock response
-            HttpServletResponse httpResponse = mock(HttpServletResponse.class);
-            StringWriter strWriter = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(strWriter);
-            when(httpResponse.getWriter()).thenReturn(printWriter);
+        // Attempt to get metadata
+        JSONObject result = metaHandler.getData(
+            configStore.getConfigEntries().subList(0, 1),
+            TestUtils.mockResponse()
+        );
 
-            // Create expected object
-            JSONArray expected = new JSONArray();
-            JSONObject object = new JSONObject();
-            object.put("PropertyOne", "ValueOne");
-            object.put("PropertyTwo", "ValueTwo");
-            expected.put(object);
+        // Expected response
+        JSONObject expected = new JSONObject(
+            """
+            {
+                "Name": "Art Vandelay",
+                "Job(s)": ["Architect","Importer-Exporter","Latex Manufacturer"]
+            }
+            """
+        );
+        JSONAssert.assertEquals(expected, result, false);
+    }
 
-            // Get the metadata result
-            JSONArray result = handler.getData(httpResponse);
+    /**
+     * Tests the MetaHandler by attempting to get data for a multiple matching
+     * configuration entries.
+     * 
+     * @throws Exception if SPARQL fails.
+     */
+    @Test
+    public void testMultipleMatchQuery() throws Exception {
+        Path configFile = TEMP_DIR.resolve("mock-config-01/config.json");
 
-            // Compare
-            Assertions.assertNotNull(result, "Null result encountered!");
-            Assertions.assertTrue(expected.similar(result), "Resulting JSONArray did not match expected one!");
-          
-        } catch(Exception exception) {
-            exception.printStackTrace(System.out);
-            Assertions.fail("Unexpected exception thrown when trying to run query!");
-        }
+        // Mock a config store based on the real config file
+        ConfigStore configStore = TestUtils.mockConfig(configFile);
+        
+        // Initialise a metahandler
+        MetaHandler metaHandler = new MetaHandler(
+            "https://test-stack/features/feature-one",
+            Optional.empty(),
+            configStore
+        );       
+
+        // Set a mock KG client
+        metaHandler.setClient(mockClient());
+
+        // Attempt to get metadata
+        JSONObject result = metaHandler.getData(
+            configStore.getConfigEntries().subList(0, 2),
+            TestUtils.mockResponse()
+        );
+
+        // Expected response
+        JSONObject expected = new JSONObject(
+            """
+            {
+                "Name": ["Art Vandelay", "Cosmo Kramer"],
+                "Job(s)": ["Architect", "Importer-Exporter", "Latex Manufacturer"],
+                "Nickname(s)": "The Assman"
+            }
+            """
+        );
+        JSONAssert.assertEquals(expected, result, false);
+    }
+
+    /**
+     * Returns a mocked RemoteStoreClient for mocked interaction with KGs.
+     * 
+     * @returns mocked RemoteStoreClient instance.
+     */
+    private RemoteStoreClient mockClient() throws Exception {
+        RemoteStoreClient spiedClient = Mockito.mock(RemoteStoreClient.class);
+
+        Mockito.when(
+            spiedClient.executeQuery("classOneMeta")
+        ).thenReturn(
+            new JSONArray(
+                """
+                [
+                    {\"Property\":\"Name\",\"Value\":\"Art Vandelay\"},
+                    {\"Property\":\"Job(s)\",\"Value\":\"Architect\"},
+                    {\"Property\":\"Job(s)\",\"Value\":\"Importer-Exporter\"},
+                    {\"Property\":\"Job(s)\",\"Value\":\"Latex Manufacturer\"}
+                ]
+                """
+            )
+        );
+
+        Mockito.when(
+            spiedClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.eq("classOneMeta")
+            )
+        ).thenReturn(
+            new JSONArray(
+                """
+                [
+                    {\"Property\":\"Name\",\"Value\":\"Art Vandelay\"},
+                    {\"Property\":\"Job(s)\",\"Value\":\"Architect\"},
+                    {\"Property\":\"Job(s)\",\"Value\":\"Importer-Exporter\"},
+                    {\"Property\":\"Job(s)\",\"Value\":\"Latex Manufacturer\"}
+                ]
+                """
+            )
+        );
+
+        Mockito.when(
+            spiedClient.executeQuery("classTwoMeta")
+        ).thenReturn(
+            new JSONArray(
+                """
+                [
+                    {\"Property\":\"Name\",\"Value\":\"Cosmo Kramer\"},
+                    {\"Property\":\"Nickname(s)\",\"Value\":\"The Assman\"}
+                ]
+                """
+            )
+        );
+
+        Mockito.when(
+            spiedClient.executeFederatedQuery(
+                ArgumentMatchers.anyList(),
+                 ArgumentMatchers.eq("classTwoMeta")
+            )
+        ).thenReturn(
+            new JSONArray(
+                """
+                [
+                    {\"Property\":\"Name\",\"Value\":\"Cosmo Kramer\"},
+                    {\"Property\":\"Nickname(s)\",\"Value\":\"The Assman\"}
+                ]
+                """
+            )
+        );
+
+        return spiedClient;
     }
 
 }

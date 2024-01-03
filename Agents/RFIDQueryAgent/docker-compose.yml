@@ -2,8 +2,12 @@ version: "3.8"
 
 services:
   rfid-query-agent:
-    image: rfid-query-agent:1.1.0
+    image: rfid-query-agent:1.2.0
     build: .
+    volumes:
+      - type: bind
+        source: C:/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/RFIDQueryAgent/config
+        target: /app/config
     container_name: rfid-query-agent
     pull_policy: if_not_present
     ports:

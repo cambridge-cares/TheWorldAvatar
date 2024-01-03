@@ -49,6 +49,8 @@ FILE_SERVER_USERNAME
 FILE_SERVER_PASSWORD
 ```
 
+For stack deployment, please replace `<REPLACE_WITH_PATH_TO_TWA_DIRECTORY>` in the bind mount path with the absolute path to your The World Avatar git repository.
+
 The `STACK_NAME` variable is used to identify the deployment mode of the agent: In case the `STACK_NAME` is left blank, Postgres and Blazegraph endpoint settings will be taken from the `docker-compose file` values. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
 
 Please note: 
@@ -58,13 +60,9 @@ Please note:
 
 ## 1.2 Miscellaneous
 
-**Only relevant** if you intend to build (and publish) the Docker image:
-
-- Ensure access to CMCL Docker registry: 
-    The required `stack-clients-*.jar` resource to be added to [py4jps] during building the Docker image is retrieved from the Stack-Clients docker image published on `docker.cmclinnovations.com`. Hence, access to the CMCL Docker registry is required from the machine building the agent image. For more information regarding the registry, see the [CMCL Docker registry wiki page].
-
-- Ensure access to Github container registry:
-    A `publish_docker_image.sh` convenience script is provided to build and publish the agent image to the [Github container registry]. To publish a new image, your github user name and [personal access token] (which must have a `scope` that [allows you to publish and install packages]) needs to be provided. 
+**Only relevant** if you intend to build (and publish) the Docker image: Ensure access to Github container registry as:
+- The required `stack-clients-*.jar` resource to be added to [py4jps] during building the Docker image is retrieved from the published Stack-Clients docker image
+- A `publish_docker_image.sh` convenience script is provided to build and publish the agent image to the [Github container registry]. To publish a new image, your github user name and [personal access token] (which must have a `scope` that [allows you to publish and install packages]) needs to be provided. 
 
 If you intend to use a forecasting model pre-trained with [Darts]: Please be aware of potential issues when loading the model, in case of version clashes between the current environment and the one used for training.
 
@@ -123,6 +121,14 @@ To use the default forecasting model (i.e., [Prophet] without covariates), the f
 <IRI_of_forecasting_model> rdf:type ts:ForecastingModel ; 
                            rdfs:label "Prophet" ;
                            ts:scaleData "False"^^xsd:boolean .
+```
+Covariates can be added to the model (i.e., [Prophet] with 2 covariates) by adding a triple for each covariate:
+```xml
+<IRI_of_forecasting_model> rdf:type ts:ForecastingModel ; 
+                           rdfs:label "Prophet" ;
+                           ts:scaleData "False"^^xsd:boolean ;
+                           ts:hasCovariate <IRI_of_covariate1> ; 
+                           ts:hasCovariate <IRI_of_covariate2> .
 ```
 
 Used namespaces:
@@ -190,7 +196,7 @@ The following UML diagram provides an overview of how the agent works:
 
 ## 2.2 Usage of Custom Forecasting Models
 
-To use pre-trained/custom models, both a model loading and covariate loading funtion need to be specified in the [model mapping] file, and referenced in the `FC_MODELS` dictionary. Specify any custom loading functions following the example of the `tft_pirmasens_heat_demand` model configuration.
+To use pre-trained/custom models, both a model loading and covariate loading function need to be specified in the [model mapping] file, and referenced in the `FC_MODELS` dictionary. Specify any custom loading functions following the example of the `tft_pirmasens_heat_demand` model configuration. [Building the agent](#31-building-the-agent) again after adding custom models is not necessary. However, for the agent to recognize and use these added models, the content of fcmodels must be available locally. This ensures it can be mapped correctly according to the bind mount paths, regardless of whether you're deploying the agent locally or using a pulled Docker image.
 
 
 ## 2.3 Forecast Error Evaluation
@@ -199,8 +205,8 @@ The agent also provides an HTTP endpoint to assess multiple error metrics of cre
 
 ```
 { "query": {
-      "tsIRI_target": <IRI of time series 1>,
-      "tsIRI_fc" : <IRI of time series 2>
+      "dataIRI_target": <dataIRI of time series 1>,
+      "dataIRI_fc" : <dataIRI of time series 2>
     }
 }
 ```
@@ -210,7 +216,7 @@ The agent also provides an HTTP endpoint to assess multiple error metrics of cre
 
 ## 3.1 Building the Agent
 
-To build and publish the agent Docker image (e.g., after implementing new model/covariate loading functions) please use the following commands. Please note that both commands are bundled in the  `publish_docker_image.sh` convenience script.
+To build and publish the agent Docker image (e.g., after changing the agent) please use the following commands. Please note that both commands are bundled in the  `publish_docker_image.sh` convenience script.
 
 ```bash
 # Building the (production) image
@@ -219,15 +225,13 @@ docker compose -f docker-compose.yml build
 docker image push ghcr.io/cambridge-cares/<image tag>:<version>
 ```
 
-Time out issues have been observed when building the image. If this happens, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`.
-
 ## 3.2 Deploying the Agent
 
 It is recommended to pull the published Docker image from [Github container registry] for sole deployment (i.e., in case no modifications to the agent are needed):
 
 ```bash
 # Pull published (production) image
-docker pull ghcr.io/cambridge-cares/forecasting-agent:2.0.0
+docker pull ghcr.io/cambridge-cares/forecasting-agent:2.2.1
 ```
 
 ###  **Standalone Deployment**
@@ -295,7 +299,6 @@ Magnus Mueller (mm2692@cam.ac.uk), November 2022
 <!-- Links -->
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
-[CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Using-Docker-images
 [py4jps]: https://pypi.org/project/py4jps/#description
 [TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [Darts]: https://unit8co.github.io/darts/index.html

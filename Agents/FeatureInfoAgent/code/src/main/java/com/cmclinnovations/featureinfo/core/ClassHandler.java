@@ -1,24 +1,38 @@
 package com.cmclinnovations.featureinfo.core;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
+import javax.ws.rs.InternalServerErrorException;
+
+import org.apache.jena.util.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
+import com.cmclinnovations.featureinfo.config.ConfigEntry;
+import com.cmclinnovations.featureinfo.config.ConfigStore;
+import com.cmclinnovations.featureinfo.config.StackEndpointType;
+import com.cmclinnovations.featureinfo.objects.Request;
+import com.cmclinnovations.featureinfo.utils.Utils;
+
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
  * This class handles querying Blazegraph endpoints to determine which
  * classes the current IRI belongs to.
  */
-public final class ClassHandler extends BaseHandler {
+public class ClassHandler {
 
     /**
      * Logger for reporting info/errors.
@@ -26,121 +40,158 @@ public final class ClassHandler extends BaseHandler {
     private static final Logger LOGGER = LogManager.getLogger(ClassHandler.class);
 
     /**
-     * SPARQL query to get list of classes for an IRI.
+     * Store of class mappings and endpoints
      */
-    public static final String CLASS_QUERY = """
-                prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                SELECT distinct ?class WHERE {
-                    [IRI] rdf:type ?class
-                }
-            """;
+    private final ConfigStore configStore;
+    
+    /**
+     * Cached connection to KG.
+     */
+    private final RemoteStoreClient kgClient;
 
     /**
-     * SPARQL query to get list of classes for an IRI with Ontop.
+     * Cached template query to determine classes.
      */
-    public static final String CLASS_QUERY_ONTOP = """
-                prefix owl: <http://www.w3.org/2002/07/owl#>
-                prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-                prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-
-                select distinct ?class {
-                    SERVICE [ONTOP] { [IRI] a ?x . }
-                    ?x rdfs:subClassOf* ?class .
-                    ?class rdf:type owl:Class .
-                }
-            """;
+    private String queryTemplate;
 
     /**
-     * Initialise a new ClassHandler.
+     * Initialise a new ClassHandler instance.
      * 
-     * @param iri      IRI of the asset.
-     * @param endpoint Endpoint for the KG.
+     * @param configStore Store of class mappings and endpoints.
+     * @param kgClient Cached connection to KG.
      */
-    public ClassHandler(String iri, ConfigEndpoint endpoint) {
-        this(iri, Arrays.asList(endpoint));
+    public ClassHandler(ConfigStore configStore, RemoteStoreClient kgClient) {
+        this.configStore = configStore;
+        this.kgClient = kgClient;
     }
 
     /**
-     * Initialise a new ClassHandler with multiple endpoints.
+     * Runs a class determination query to get the entire class tree of the input 
+     * A-Box IRI, then returns any configuration entries that use a class IRI returned
+     * by that query.
      * 
-     * @param iri       IRI of the asset.
-     * @param endpoints Endpoints for the KG.
+     * @param iri A-Box IRI of feature.
+     * @param enforcedEndpoint optional enforced Blazegraph URL.
+     * 
+     * @return List of configuration entries with a matching class (may be empty).
+     * 
+     * @throws IllegalStateException if class determination returns no matches.
+     * @throws InternalServerErrorException if class determination query cannot be executed.
      */
-    public ClassHandler(String iri, List<ConfigEndpoint> endpoints) {
-        super(iri, endpoints);
+    public List<ConfigEntry> determineClassMatches(Request request) throws IllegalStateException, InternalServerErrorException {
+        // Get the list of class IRIs from the KG
+        List<String> classIRIs = null;
+        try {
+            classIRIs = runClassQuery(request);
+            if(classIRIs == null || classIRIs.isEmpty()) {
+                throw new IllegalStateException("Class determination query has failed to return any results, cannot continue!");
+            }
+        } catch(Exception exception) {
+            LOGGER.error("Running class determination query has thrown an exception!", exception);
+            throw new InternalServerErrorException("Class determination query has thrown an exception, cannot continue!", exception);
+        }
+
+        // Find matches, in order returned from KG
+        List<ConfigEntry> matches = new ArrayList<>();
+        classIRIs.forEach(classIRI -> {
+            ConfigEntry match = configStore.getConfigWithClass(classIRI);
+            if(match != null) matches.add(match);
+        });
+
+        if(matches.isEmpty()) {
+            throw new IllegalStateException("Class determination query had results but there were no matching IRIs in the configuration, cannot continue!");
+        }
+        return matches;
     }
 
     /**
-     * Determines which classes the IRI belongs too, then returns the first
-     * match found within the queries specified in the configuration file.
+     * Run the class determination query and return the list of class IRIs resulting from it.
+     * 
+     * @param iri A-Box IRI of feature.
+     * @param enforcedEndpoint optional enforced Blazegraph URL.
+     * 
+     * @return List of class IRIs.
+     * 
+     * @throws Exception if KG query fails due to connection issues.
      */
-    public String getClassMatch() throws Exception {
-        List<String> classNames = this.getClasses();
-        if (classNames == null) {
-            LOGGER.error("Discovered class names array is null.");
-            return null;
-        }
-        if (classNames.isEmpty()) {
-            LOGGER.error("Discovered class names array is empty.");
-            return "";
+    private List<String> runClassQuery(Request request) throws Exception {
+        // Read the class determination SPARQL query
+        loadQuery();
+
+        // Get final query string (post injection)
+        String queryString = Utils.queryInject(
+                this.queryTemplate,
+                request.getIri(),
+                configStore.getStackEndpoints(StackEndpointType.ONTOP),
+                Utils.getBlazegraphEndpoints(configStore, request.getEndpoint()));
+
+        // Run query
+        List<String> endpoints = Utils.getBlazegraphURLs(configStore, request.getEndpoint());
+        JSONArray jsonResult = null;
+
+        if(endpoints.size() == 1) {
+            LOGGER.debug("Running non-federated class determination query.");
+            kgClient.setQueryEndpoint(endpoints.get(0));
+            jsonResult = kgClient.executeQuery(queryString);
+
+        } else {
+            LOGGER.debug("Running federated class determination query.");
+            jsonResult = kgClient.executeFederatedQuery(endpoints, queryString);
         }
 
-        Iterator<String> iter = classNames.iterator();
-        while (iter.hasNext()) {
-            try {
-                String className = iter.next();
-                String metaQuery = FeatureInfoAgent.CONFIG.getMetaQuery(className);
-                String timeQuery = FeatureInfoAgent.CONFIG.getTimeQuery(className);
-                if (metaQuery != null || timeQuery != null)
-                    return className;
-            } catch (IOException ioException) {
-                // Ignore and continue
+        // Parse and return class IRIs
+        return parseJSON(jsonResult);
+    }
+
+    /**
+     * Read and cache the class determination query.
+     */
+    private void loadQuery() {
+        if(this.queryTemplate == null) {
+
+            if(FeatureInfoAgent.CONTEXT != null) {
+                // Running as a servlet
+                try (InputStream inStream =  FeatureInfoAgent.CONTEXT.getResourceAsStream("WEB-INF/class-query.sparql")) {
+                    this.queryTemplate = FileUtils.readWholeFileAsUTF8(inStream);
+                } catch(Exception exception) {
+                    LOGGER.error("Could not read the class determination query from its file!", exception);
+                }
+            } else {
+                // Running as application/as tests
+                try {
+                    Path queryFile = Paths.get("WEB-INF/class-query.sparql");
+                    this.queryTemplate = Files.readString(queryFile);
+                } catch(IOException ioException) {
+                    LOGGER.error("Could not read the class determination query from its file!", ioException);
+                }
             }
         }
-        return null;
     }
 
     /**
-     * Determine the classes the object represented by the
-     * current IRI inherits from.
+     * Parse the JSON Array from the KG into a list of distinct strings.
      * 
-     * @return list of full qualified classes (or null).
+     * @param rawResult raw JSON results from KG.
+     * 
+     * @return list of unique class IRIs.
      */
-    protected List<String> getClasses() throws Exception {
-        List<String> classes = this.runClassQuery(CLASS_QUERY);
-        if (classes == null || classes.isEmpty()) {
-            // None returned, try the Ontop query
-            LOGGER.info("No classes returned from simple query, using advanced ONTOP one...");
-            classes = this.runClassQuery(CLASS_QUERY_ONTOP);
-        }
+    private List<String> parseJSON(JSONArray rawResult) {
+        List<String> classIRIs = new ArrayList<>();
 
-        return classes;
-    }
+        for(int i = 0; i < rawResult.length(); i++) {
+            JSONObject entry = rawResult.getJSONObject(i);
+            
+            if(entry.has("class")) {
+                String classIRI = entry.getString("class");
+                classIRI = classIRI.replaceAll(Pattern.quote("<"), "");
+                classIRI = classIRI.replaceAll(Pattern.quote(">"), "");
 
-    /**
-     * Query the KG to determine the classes that the object represented by
-     * the IRI inherits from.
-     * 
-     * @param queryTemplate template SPARQL query
-     * 
-     * @return array of fully qualified class names
-     */
-    private List<String> runClassQuery(String queryTemplate) throws Exception {
-
-        // Run the class determination query
-        JSONArray jsonResult = runQuery(queryTemplate, "class determination");
-
-        if (jsonResult != null) {
-            List<String> classes = new ArrayList<>(jsonResult.length());
-
-            for (int i = 0; i < jsonResult.length(); i++) {
-                JSONObject entry = jsonResult.optJSONObject(i);
-                String clazz = entry.optString("class");
-                classes.add(clazz);
+                if(classIRI.toLowerCase().startsWith("http")) {
+                    classIRIs.add(classIRI);
+                }
             }
-            return classes;
         }
-        return null;
+        return classIRIs;
     }
 
 }

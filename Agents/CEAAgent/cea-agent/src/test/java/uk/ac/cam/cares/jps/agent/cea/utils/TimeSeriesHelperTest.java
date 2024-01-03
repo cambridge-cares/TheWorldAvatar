@@ -5,12 +5,14 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import org.mockito.MockedStatic;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
@@ -28,17 +30,24 @@ public class TimeSeriesHelperTest {
 
         TimeSeriesHelper timeSeriesHelper = new TimeSeriesHelper(mockStoreClient, mockRDBClient);
 
-        try (MockedConstruction<TimeSeriesClient> timeseriesClientMock = mockConstruction(TimeSeriesClient.class,
-                (mock, context) -> {
-                    doReturn(false).when(mock).checkDataHasTimeSeries(anyString(), any());
-                })) {
+        String content = "uri.ontology.ontocitygml=test/\nuri.ontology.om=test/\nuri.ontology.ontoubemmp=test/\nuri.ontology.rdf=test/\nuri.ontology.owl=test/\n" +
+                "uri.ontology.bot=test/\nuri.ontology.ontobuiltenv=test/\nuri.ontology.ontobuiltstructure=test/\nuri.ontology.ontotimeseries=test/\nuri.ontology.ontoems=test/\n" +
+                "uri.ontology.geo=test/\nuri.ontology.geofunction=test/\nuri.ontology.bldg=test/\nuri.ontology.grp=test/\nuri.ontology.gml=test/\n" +
+                "uri.ontology.geoliteral=test/\nuri.ontology.geofunction=test/\nuri.opengis.epsg=test/\nuri.service.geo=test/";
+        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
+        try (MockedStatic<FileReader> fileReaderMock = mockStatic(uk.ac.cam.cares.jps.agent.cea.utils.FileReader.class)) {
+            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
+            try (MockedConstruction<TimeSeriesClient> timeseriesClientMock = mockConstruction(TimeSeriesClient.class,
+                    (mock, context) -> {
+                        doReturn(false).when(mock).checkDataHasTimeSeries(anyString(), any());
+                    })) {
 
-            timeSeriesHelper.createTimeSeries(new LinkedHashMap<>(), "", new OntologyURIHelper("CEAAgentConfig"));
+                timeSeriesHelper.createTimeSeries(new LinkedHashMap<>());
 
-            verify(timeseriesClientMock.constructed().get(0), times(1)).checkDataHasTimeSeries(anyString(), any());
-            verify(timeseriesClientMock.constructed().get(0), times(1)).initTimeSeries(anyList(), anyList(), anyString(), any(), any(), any(), any());
+                verify(timeseriesClientMock.constructed().get(0), times(1)).checkDataHasTimeSeries(anyString(), any());
+                verify(timeseriesClientMock.constructed().get(0), times(1)).initTimeSeries(anyList(), anyList(), anyString(), any(), any(), any(), any());
+            }
         }
-
     }
 
     @Test

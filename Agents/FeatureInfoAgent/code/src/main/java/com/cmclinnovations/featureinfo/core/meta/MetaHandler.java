@@ -1,25 +1,27 @@
 package com.cmclinnovations.featureinfo.core.meta;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cmclinnovations.featureinfo.FeatureInfoAgent;
-import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
-import com.cmclinnovations.featureinfo.core.BaseHandler;
+import com.cmclinnovations.featureinfo.config.ConfigEntry;
+import com.cmclinnovations.featureinfo.config.ConfigStore;
+import com.cmclinnovations.featureinfo.config.StackEndpointType;
+import com.cmclinnovations.featureinfo.utils.Utils;
+
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * This class handles querying a Blazegraph endpoint to run a predetermined
- * SPARQL query.
+ * This class handles querying the Knowledge Graph to get meta data.
  */
-public final class MetaHandler extends BaseHandler {
+public class MetaHandler {
 
     /**
      * Logger for reporting info/errors.
@@ -27,122 +29,104 @@ public final class MetaHandler extends BaseHandler {
     private static final Logger LOGGER = LogManager.getLogger(MetaHandler.class);
 
     /**
-     * Allowable names for colun one of query results.
+     * IRI of the asset.
      */
-    private static final List<String> COLUMN_ONE = List.of("property", "Property", "label", "Label");
+    private final String iri;
 
     /**
-     * Allowable names for colun two of query results.
+     * Optional enforced Blazegraph URL.
      */
-    private static final List<String> COLUMN_TWO = List.of("value", "Value");
+    private final Optional<String> enforcedEndpoint;
+    
+    /**
+     * Configuration store.
+     */
+    private final ConfigStore configStore;
 
     /**
-     * Allowable names for colun three of query results.
+     * Connection to KG.
      */
-    private static final List<String> COLUMN_THREE = List.of("unit", "Unit");
+    private RemoteStoreClient kgClient;
 
     /**
-     * Name of matching class.
-     */
-    private final String classMatch;
-
-    /**
-     * Initialise a new MetaHandler.
+     * Initialise a new MetaHandler instance.
      * 
-     * @param iri        IRI of the asset.
-     * @param classMatch name of class for asset.
-     * @param endpoint   Blazegraph endpoint for the KG.
+     * @param iri IRI of the asset.
+     * @param enforcedEndpoint optional enforced Blazegraph URL.
+     * @param configStore Store of class mappings and stack endpoints.
      */
-    public MetaHandler(String iri, String classMatch, ConfigEndpoint endpoint) {
-        this(iri, classMatch, Arrays.asList(endpoint));
+    public MetaHandler(String iri, Optional<String> enforcedEndpoint, ConfigStore configStore) {
+        this.iri = iri;
+        this.enforcedEndpoint = enforcedEndpoint;
+        this.configStore = configStore;
     }
 
     /**
-     * Initialise a new MetaHandler with multiple endpoints.
+     * Sets the remote store client used to connect to the KG.
      * 
-     * @param iri        IRI of the asset.
-     * @param classMatch name of class for asset.
-     * @param endpoints  Blazegraph endpoints for the KG.
+     * @param kgClient KG connection client.
      */
-    public MetaHandler(String iri, String classMatch, List<ConfigEndpoint> endpoints) {
-        super(iri, endpoints);
-        this.classMatch = classMatch;
+    public void setClient(RemoteStoreClient kgClient) {
+        this.kgClient = kgClient;
     }
 
     /**
-     * Queries the KG to determine the classes representing the current IRI, then
-     * finds
+     * Queries the KG to determine the classes representing the current IRI, then finds
      * the first linked SPARQL query before executing it and returning the result.
      * 
-     * @param response HttpServletResponse object.
+     * @param classMatches configuration entries that contain class matches.
+     * @param response HTTP response to write to.
      * 
      * @return JSONArray of query result.
-     * 
-     * @throws Exception if anything goes wrong.
      */
-    public JSONArray getData(HttpServletResponse response) throws Exception {
-        if (!this.hasEndpoints()) {
-            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            response.getWriter().write("{\"description\":\"Could not determine any Blazegraph endpoints.\"}");
-            throw new IllegalStateException("Could not determine any Blazegraph endpoints.");
-        }
-
-        // Lookup queries attached to classes
-        String queryTemplate = FeatureInfoAgent.CONFIG.getMetaQuery(this.classMatch);
-        if (queryTemplate == null) {
-            LOGGER.debug("No metadata query registered for class, will skip this phase.");
-            return null;
-        }
-        LOGGER.info("Found and read the matching SPARQL query file.");
-
-        try {
-            // Run matching query
-            return runQuery(queryTemplate, "class determination");
-        } catch (IllegalStateException ex) {
-            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            response.getWriter().write("{\"description\":\"Could not determine the Ontop endpoint.\"}");
-            throw ex;
-        }
-    }
-
-    /**
-     * Formats the raw JSON result into something the visualisation can use.
-     * 
-     * @param rawResult
-     * @return
-     */
-    @Override
-    protected JSONArray formatJSON(JSONArray rawResult) {
-        JSONObject jsonObject = new JSONObject();
-
-        for (int i = 0; i < rawResult.length(); i++) {
-            JSONObject entry = rawResult.getJSONObject(i);
-
-            String key = findFirstKey(entry, COLUMN_ONE);
-            String value = findFirstKey(entry, COLUMN_TWO);
-
-            String unit = findFirstKey(entry, COLUMN_THREE);
-            if (unit != null && !unit.isBlank()) {
-                value += " [" + unit + "]";
+    public JSONObject getData(List<ConfigEntry> classMatches, HttpServletResponse response) {
+        List<JSONArray> rawResults = new ArrayList<>();
+        
+        // Iterate through each matching query
+        classMatches.forEach(classMatch -> {
+            try {
+                JSONArray rawResult = runQuery(classMatch);
+                rawResults.add(rawResult);
+            } catch(Exception exception) {
+                LOGGER.error("Execution for meta data query has failed!", exception);
             }
+        });
 
-            jsonObject.put(key, value);
-        }
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.put(jsonObject);
-
-        LOGGER.info("Meta data content has been formatted for visualisation.");
-        return jsonArray;
+        // Format and combine meta data
+        return MetaParser.formatData(rawResults);  
     }
 
     /**
+     * Performs a meta data query for the input class match.
      * 
-     * @param entry
-     * @return
+     * @param classMatch configuration entry containing query details.
+     * 
+     * @return Resulting JSONArray of meta data.
+     * 
+     * @throws Exception if SPARQL execution fails.
      */
-    private String findFirstKey(JSONObject entry, List<String> colNames) {
-        return colNames.stream().filter(entry::has).map(entry::getString).findFirst().orElse(null);
-    }
+    private JSONArray runQuery(ConfigEntry classMatch) throws Exception {
+        String templateQuery = classMatch.getMetaQueryContent();
+        String query = Utils.queryInject(
+            templateQuery,
+            this.iri,
+            configStore.getStackEndpoints(StackEndpointType.ONTOP),
+            Utils.getBlazegraphEndpoints(configStore, enforcedEndpoint)
+        );
 
+        // Run query
+        List<String> endpoints = Utils.getBlazegraphURLs(configStore, enforcedEndpoint);
+
+        if(endpoints.size() == 1) {
+            LOGGER.debug("Running non-federated meta data query.");
+            kgClient.setQueryEndpoint(endpoints.get(0));
+            return kgClient.executeQuery(query);
+
+        } else {
+            LOGGER.debug("Running federated meta data query.");
+            return kgClient.executeFederatedQuery(endpoints, query);
+        }
+    }
+    
 }
 // End of class.

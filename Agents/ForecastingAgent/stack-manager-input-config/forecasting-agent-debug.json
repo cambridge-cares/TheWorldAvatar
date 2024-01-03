@@ -3,7 +3,14 @@
         "Name": "forecasting-agent-debug",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.0.0",
+                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.2.1",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "/<REPLACE_WITH_PATH_TO_TWA_DIRECTORY>/Agents/ForecastingAgent/forecastingagent/fcmodels",
+                        "Target": "/app/forecastingagent/fcmodels"
+                    }
+                ],
                 "Command": [
                     "tail", "-f",  "/dev/null"
                 ],

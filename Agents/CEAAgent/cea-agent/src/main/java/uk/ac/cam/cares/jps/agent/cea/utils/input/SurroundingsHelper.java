@@ -1,157 +1,111 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
+import org.locationtech.jts.geom.*;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEABuildingData;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import org.apache.jena.sparql.syntax.ElementGroup;
-import org.apache.jena.sparql.syntax.ElementService;
 import org.json.JSONArray;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SurroundingsHelper {
-    public String customDataType = "<http://localhost/blazegraph/literals/POLYGON-3-15>";
-    public String customField = "X0#Y0#Z0#X1#Y1#Z1#X2#Y2#Z2#X3#Y3#Z3#X4#Y4#Z4";
-    public static final String CITY_OBJECT = "cityobject";
-
-    private OntologyURIHelper ontologyUriHelper;
-
-    public SurroundingsHelper(OntologyURIHelper uriHelper) {
-        this.ontologyUriHelper = uriHelper;
-    }
-
     /**
      * Retrieves the surrounding buildings
-     * @param uriString city object id
-     * @param route route to pass to access agent
-     * @param unique array list of unique surrounding buildings
-     * @param surroundingCoordinates list of coordinates that form bounding box for surrounding query, used for terrain calculation
-     * @return the surrounding buildings as an ArrayList of CEAInputData
+     * @param endpoint SPARQL endpoint
+     * @return the surrounding buildings as a list of CEAGeometryData
      */
-    public ArrayList<CEAInputData> getSurroundings(String uriString, String route, List<String> unique, List<Coordinate> surroundingCoordinates) {
+    public static List<CEAGeometryData> getSurroundings(ArrayList<CEABuildingData> ceaBuildingDataList, ArrayList<String> buildingIRIs, String endpoint) {
         try {
-            CEAInputData temp;
             String uri;
-            ArrayList<CEAInputData> surroundings = new ArrayList<>();
-            GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
-            String envelopeCoordinates = geometryQueryHelper.getValue(uriString, "envelope", route);
+            List<CEAGeometryData> surroundings = new ArrayList<>();
 
-            Double buffer = 100.00;
+            Double buffer = 50.0;
 
-            Polygon envelopePolygon = (Polygon) GeometryHandler.toPolygon(envelopeCoordinates);
+            List<Geometry> geometries = new ArrayList<>();
 
-            Geometry boundingBoxGeometry = ((Polygon) GeometryHandler.inflatePolygon(envelopePolygon, buffer)).getExteriorRing();
-
-            Coordinate[] boundingBoxCoordinates = boundingBoxGeometry.getCoordinates();
-
-            String boundingBox = GeometryHandler.coordinatesToString(boundingBoxCoordinates);
-
-            String[] points = boundingBox.split("#");
-
-            String lowerPoints= points[0] + "#" + points[1] + "#" + 0 + "#";
-
-            String lowerBounds = lowerPoints + lowerPoints + lowerPoints + lowerPoints + lowerPoints;
-            lowerBounds = lowerBounds.substring(0, lowerBounds.length() - 1 );
-
-            Double maxZ;
-
-            if (points[8].equals("NaN")) {
-                // highest elevation on Earth is 8848
-                maxZ = 8850.0;
-            }
-            else{
-                maxZ = Double.parseDouble(points[8])+200;
+            for (CEABuildingData ceaBuildingData : ceaBuildingDataList) {
+                for (Geometry geometry : ceaBuildingData.getGeometry().getFootprint()) {
+                    geometries.add(geometry);
+                }
             }
 
-            String upperPoints = points[6] + "#" + points[7] + "#" + maxZ + "#";
+            String crs = ceaBuildingDataList.get(0).getGeometry().getCrs();
 
-            String upperBounds = upperPoints + upperPoints + upperPoints + upperPoints + upperPoints;
-            upperBounds = upperBounds.substring(0, upperBounds.length() - 1);
+            GeometryFactory geometryFactory = new GeometryFactory();
 
-            Query query = getBuildingsWithinBoundsQuery(uriString, lowerBounds, upperBounds);
+            GeometryCollection geoCol = geometryFactory.createGeometryCollection(geometries.toArray(new Polygon[0]));
 
-            String queryString = query.toString().replace("PLACEHOLDER", "");
+            Geometry envelope = geoCol.getEnvelope();
 
-            JSONArray queryResultArray = AccessAgentCaller.queryStore(route, queryString);
+            Polygon boundingBoxGeometry = (Polygon) GeometryHandler.bufferPolygon(envelope, "EPSG:" + crs, buffer);
+
+
+            String boundingBox = boundingBoxGeometry.toText();
+
+            Query query = getBuildingsWithinBoundsQuery(boundingBox);
+
+            RemoteStoreClient storeClient = new RemoteStoreClient(endpoint);
+
+            // Execute SPARQL query
+            JSONArray queryResultArray = storeClient.executeQuery(query.toString());
 
             for (int i = 0; i < queryResultArray.length(); i++) {
-                uri = queryResultArray.getJSONObject(i).get("cityObject").toString();
+                uri = queryResultArray.getJSONObject(i).get("building").toString();
 
-                if (!unique.contains(uri)) {
-                    String height = geometryQueryHelper.getBuildingGeometry(uri, route, "height");
-                    String footprint = geometryQueryHelper.getBuildingGeometry(uri, route, "footprint");
-
-                    temp = new CEAInputData(footprint, height, null, null, null, null, null);
-                    unique.add(uri);
+                if (!buildingIRIs.contains(uri)) {
+                    CEAGeometryData temp = GeometryQueryHelper.getBuildingGeometry(uri, endpoint, false);
                     surroundings.add(temp);
                 }
             }
-            surroundingCoordinates.addAll(Arrays.asList(boundingBoxCoordinates));
+
             return surroundings;
         }
-        catch (ParseException e) {
-            e.printStackTrace();
+        catch (Exception e) {
+            System.out.println("No surroundings retrieved, agent will run CEA with CEA's default surroundings retrieved from OpenStreetMap.");
             return null;
         }
     }
 
     /**
      * Builds a SPARQL geospatial query for city object id of buildings whose envelope are within lowerBounds and upperBounds
-     * @param uriString city object id of the target building
-     * @param lowerBounds coordinates of customFieldsLowerBounds as a string
-     * @param upperBounds coordinates of customFieldsUpperBounds as a string
-     * @return returns a query string
+     * @param boundingBox WKT string that define the boundary of surroundings query
+     * @return returns a query object for the geospatial query
      */
-    private Query getBuildingsWithinBoundsQuery(String uriString, String lowerBounds, String upperBounds) throws ParseException {
-        // where clause for geospatial search
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
-                .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
-                .addWhere("?cityObject", "geo:searchDatatype", customDataType)
-                .addWhere("?cityObject", "geo:customFields", customField)
-                // PLACEHOLDER because lowerBounds and upperBounds would be otherwise added as doubles, not strings
-                .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
-                .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
+    private static Query getBuildingsWithinBoundsQuery(String boundingBox) throws ParseException {
+        boundingBox = "\"" + boundingBox + "\"^^geo:wktLiteral";
 
-        // where clause to check that the city object is a building
-        WhereBuilder wb2 = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
-                .addFilter("?id=26");
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("ocgml", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                .addPrefix("geof", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geof))
+                .addPrefix("bldg", OntologyURIHelper.getOntologyUri(OntologyURIHelper.bldg))
+                .addPrefix("grp", OntologyURIHelper.getOntologyUri(OntologyURIHelper.grp))
+                .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo));
+
+        wb.addWhere("?building", "bldg:lod0FootPrint", "?Lod0FootPrint")
+                .addWhere("?geometry", "grp:parent" , "?Lod0FootPrint")
+                .addWhere("?geometry", "geo:asWKT", "?wkt")
+                .addFilter("geof:sfIntersects(?wkt, ?box)");
 
         SelectBuilder sb = new SelectBuilder()
-                .addVar("?cityObject");
+                .addPrefix("geo", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geo))
+                .addBind(boundingBox, "box")
+                .addWhere(wb)
+                .addVar("?building")
+                .addVar("?geometry");
 
         Query query = sb.build();
-        // add geospatial service
-        ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo) + "search", wb.build().getQueryPattern()));
-        body.addElement(wb2.build().getQueryPattern());
-        query.setQueryPattern(body);
 
-        WhereHandler wh = new WhereHandler(query.cloneQuery());
-
-        // add city object graph
-        WhereHandler wh2 = new WhereHandler(sb.build());
-        wh2.addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, CITY_OBJECT)), wh);
-
-        return wh2.getQuery();
+        return query;
     }
 }
