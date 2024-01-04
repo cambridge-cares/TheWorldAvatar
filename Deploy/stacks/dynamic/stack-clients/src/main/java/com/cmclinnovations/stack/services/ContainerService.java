@@ -146,6 +146,10 @@ public class ContainerService extends AbstractService {
         }
     }
 
+    public boolean endpointConfigExists(String configName) {
+        return dockerClient.configExists(configName);
+    }
+
     private <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         dockerClient.writeEndpointConfig(endpointConfig);
     }
