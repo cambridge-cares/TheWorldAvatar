@@ -135,9 +135,9 @@ public class HeatEmissionAgentTest {
         String CO2 = "80";
         JSONArray expected = new JSONArray().put(new JSONObject().put("CO2", CO2).put("IRI", IRI));
 
-        try (MockedStatic<HeatEmissionAgent> heq = Mockito.mockStatic(HeatEmissionAgent.class)) {
-            heq.when(() -> HeatEmissionAgent.IRIandCO2Query()).thenReturn(expected);
-            JSONArray actual = (JSONArray) HeatEmissionAgent.IRIandCO2Query();
+        try (MockedStatic<JurongIsland> heq = Mockito.mockStatic(JurongIsland.class)) {
+            heq.when(() -> JurongIsland.IRIandCO2Query()).thenReturn(expected);
+            JSONArray actual = (JSONArray) JurongIsland.IRIandCO2Query();
             assertEquals(expected, actual);
         }
     }
@@ -150,9 +150,9 @@ public class HeatEmissionAgentTest {
         String Effi = "50";
         JSONArray expected = new JSONArray().put(new JSONObject().put("Effi", Effi).put("CEI", CEI));
 
-        try (MockedStatic<HeatEmissionAgent> heq = Mockito.mockStatic(HeatEmissionAgent.class)) {
-            heq.when(() -> HeatEmissionAgent.FuelCEIEfficiency(ChemicalPlant)).thenReturn(expected);
-            JSONArray actual = (JSONArray) HeatEmissionAgent.FuelCEIEfficiency(ChemicalPlant);
+        try (MockedStatic<JurongIsland> heq = Mockito.mockStatic(JurongIsland.class)) {
+            heq.when(() -> JurongIsland.FuelCEIEfficiency(ChemicalPlant)).thenReturn(expected);
+            JSONArray actual = (JSONArray) JurongIsland.FuelCEIEfficiency(ChemicalPlant);
             assertEquals(expected, actual);
         }
     }
@@ -168,9 +168,9 @@ public class HeatEmissionAgentTest {
         JSONArray expected = new JSONArray()
                 .put(new JSONObject().put(geometricIRI_1, polygonData_1).put(geometricIRI_2, polygonData_2));
 
-        try (MockedStatic<HeatEmissionAgent> heq = Mockito.mockStatic(HeatEmissionAgent.class)) {
-            heq.when(() -> HeatEmissionAgent.CoordinateQuery(CityFurnitureIRI)).thenReturn(expected);
-            JSONArray actual = (JSONArray) HeatEmissionAgent.CoordinateQuery(CityFurnitureIRI);
+        try (MockedStatic<JurongIsland> heq = Mockito.mockStatic(JurongIsland.class)) {
+            heq.when(() -> JurongIsland.CoordinateQuery(CityFurnitureIRI)).thenReturn(expected);
+            JSONArray actual = (JSONArray) JurongIsland.CoordinateQuery(CityFurnitureIRI);
             assertEquals(expected, actual);
         }
     }
@@ -191,7 +191,7 @@ public class HeatEmissionAgentTest {
     // Test sparqlUpdate (String Plant_item, String Heat_value)
     @Test
     public void testSparqlUpdate() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        HeatEmissionAgent Query = spy(new HeatEmissionAgent());
+        JurongIsland Query = spy(new JurongIsland());
         Method sparqlUpdate = Query.getClass().getDeclaredMethod("sparqlUpdate", String.class, String.class);
         assertNotNull(sparqlUpdate);
 
