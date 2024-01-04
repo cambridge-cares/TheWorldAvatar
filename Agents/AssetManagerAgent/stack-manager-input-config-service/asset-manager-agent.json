@@ -1,0 +1,39 @@
+{
+  "ServiceSpec": {
+    "Name": "asset-manager-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "docker.io/library/asset-manager-agent:1.0.1",
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/home/astoria-cares/Documents/AssetManagerAgent/TheWorldAvatar-1645-dev-assetmanageragent-2/Agents/AssetManagerAgent/manuals",
+            "Target": "/root/manuals"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+              "ConfigName": "postgis"
+          }
+      ],
+      "Secrets": [
+          {
+              "SecretName": "blazegraph_password"
+          },
+          {
+              "SecretName": "postgis_password"
+          }
+      ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/asset-manager-agent/",
+      "externalPath": "/asset-manager-agent/"
+    }
+  }
+}
