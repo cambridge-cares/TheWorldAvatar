@@ -79,8 +79,8 @@ A detailed installation list (without Microsoft Mixed Reality Feature Tool) can 
     Acquire the following features from Microsoft Mixed Reality Feature Tool:
 
     - MRTK3
-        - MRTK Graphics Tools (0.6.5)
-        - MRTK Core Definitions (3.0.1)
+        - MRTK Graphics Tools (0.6.2)
+        - MRTK Core Definitions (3.0.0)
         - MRTK Extended Assets (3.0.0)
         - MRTK Input (3.0.0)
         - MRTK Spatial Manipulation (3.0.0)
@@ -89,7 +89,7 @@ A detailed installation list (without Microsoft Mixed Reality Feature Tool) can 
         - MRTK UX Components (3.1.0)
         - MRTK UX Core Scripts (3.1.0)
     - Platform SUpport
-        - Mixed Reality OpenXR Plugin (1.10.0)
+        - Mixed Reality OpenXR Plugin (1.9.0)
         - Mixed Reality Scene Understanding (0.6.0)
     - Spatial Audio 
         - Microsoft Spatializer (2.0.47)
