@@ -108,9 +108,11 @@ public class LayoutTemplateTest {
             if (jsonResult.length() != 0) jsonResult.append(",");
             TemplatePanel[] panels = results.poll();
             String pieChartJson = panels[0].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber);
-            String barChartJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
-            jsonResult.append(pieChartJson).append(",").append(barChartJson);
-            rowNumber++;
+            String currentMonthChartJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
+            String lastPeriodChartJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber + 1);
+            String currentPeriodChartJson = panels[3].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber + 1);
+            jsonResult.append(pieChartJson).append(",").append(currentMonthChartJson).append(",").append(lastPeriodChartJson).append(",").append(currentPeriodChartJson);
+            rowNumber += 2;
         }
         // Verify results
         assertEquals(expectedOutput, jsonResult.toString());
@@ -192,13 +194,23 @@ public class LayoutTemplateTest {
                 int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber};
                 List<String[]> systemTimeSeries = systemMeasures.get(measure);
                 Collections.sort(systemTimeSeries, Comparator.comparing(data -> data[1]));
-                // For the pie chart
+                // Charts will be positioned as follows: Row1: Pie Chart, Current Month Bar; Row 2: Last Period Bar Chart, Current Period Bar Chart
                 builder.append(PieChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries))
                         .append(",");
-                // For the bar chart, only the x position will change
+                // Current month bar will be found at the chart_width x position
+                expectedGeometryPosition[2] = TestUtils.CHART_WIDTH;
+                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 1))
+                        .append(",");
+                // Increment the row number as the system should generate 2 rows in total
+                expectedGeometryPosition[3] = rowNumber + 1;
+                // First update the x position for last period bar chart
+                expectedGeometryPosition[2] = 0;
+                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 2))
+                        .append(",");
+                // Reupdate the chart width for current period bar chart
                 expectedGeometryPosition[2] = TestUtils.CHART_WIDTH;
                 builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 3));
-                rowNumber++;
+                rowNumber += 2;
             }
         }
         return builder.toString();

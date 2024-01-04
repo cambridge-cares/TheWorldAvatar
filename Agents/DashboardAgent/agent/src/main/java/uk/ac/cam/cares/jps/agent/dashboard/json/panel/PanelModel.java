@@ -138,12 +138,19 @@ public class PanelModel {
             if (builder.length() != 0) builder.append(",");
             // Retrieve the panel and remove it from the queue
             TemplatePanel[] currentPanelArr = panelQueue.poll();
-            // For a two panel row
-            if (currentPanelArr.length == 2) {
-                // They should have the same height, width and y-position but different xPosition
-                builder.append(currentPanelArr[0].construct(CHART_HEIGHT, CHART_WIDTH, 0, rowNumber + 1))
-                        .append(",")
-                        .append(currentPanelArr[1].construct(CHART_HEIGHT, CHART_WIDTH, CHART_WIDTH, rowNumber + 1));
+            // For a panel row with even numbers of panel, each row should have 2 panels max
+            if (currentPanelArr.length % 2 == 0) {
+                StringBuilder evenPanelArray = new StringBuilder();
+                // Iterate over the array and for every 2 panel, append them into a new row
+                for (int i = 0; i < currentPanelArr.length; i += 2) {
+                    if (evenPanelArray.length() != 0) evenPanelArray.append(",");
+                    // They should have the same height, width and y-position but different xPosition
+                    evenPanelArray.append(currentPanelArr[i].construct(CHART_HEIGHT, CHART_WIDTH, 0, rowNumber + 1))
+                            .append(",")
+                            .append(currentPanelArr[i + 1].construct(CHART_HEIGHT, CHART_WIDTH, CHART_WIDTH, rowNumber + 1));
+                    rowNumber++;
+                }
+                builder.append(evenPanelArray);
                 // For a three panel row, they should fit in 4-8-12 format
             } else if (currentPanelArr.length == 3) {
                 int firstChartWidth = 4;
@@ -152,8 +159,8 @@ public class PanelModel {
                         .append(currentPanelArr[1].construct(CHART_HEIGHT, 8, firstChartWidth, rowNumber + 1))
                         .append(",")
                         .append(currentPanelArr[2].construct(CHART_HEIGHT, CHART_WIDTH, CHART_WIDTH, rowNumber + 1));
+                rowNumber++;
             }
-            rowNumber++;
         }
         return builder;
     }
