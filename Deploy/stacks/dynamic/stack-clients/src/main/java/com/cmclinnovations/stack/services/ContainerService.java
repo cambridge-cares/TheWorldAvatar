@@ -3,6 +3,7 @@ package com.cmclinnovations.stack.services;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,8 +166,13 @@ public class ContainerService extends AbstractService {
      * @param secretName
      */
     protected boolean ensureOptionalSecret(String secretName) {
+        // Check whether the secret exists in Docker/Podman
         boolean secretExists = dockerClient.secretExists(secretName);
-        if (!secretExists) {
+        if (secretExists) {
+            // Check to see if the secret also exists in this container
+            secretExists = Files.exists(Path.of("/run/secrets", secretName));
+        } else {
+            // Add a dummy secret to Docker/Podman
             dockerClient.addSecret(secretName, "UNUSED");
         }
         return secretExists;
