@@ -20,6 +20,7 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.ModelInput;
 import com.cmclinnovations.mods.modssimpleagent.utils.SimulationLoader;
 import com.cmclinnovations.mods.modssimpleagent.utils.SimulationSaver;
 import com.google.common.collect.Streams;
@@ -72,6 +73,7 @@ class SampleSRM extends Simulation {
     protected void generateFiles() throws FileGenerationException {
         generateInitialFileFromMetaData();
         generateSamplingAlgDataFiles();
+        generateSpecialInputFiles();
         super.generateFiles();
     }
 
@@ -80,6 +82,13 @@ class SampleSRM extends Simulation {
         populateInputFile();
         generateFiles();
         getModsBackend().run();
+    }
+
+    private void generateSpecialInputFiles() throws FileGenerationException {
+        for (ModelInput modelinput : getRequest().modelinputs()) {
+            modelinput.marshal(getModsBackend().getSimDir());
+        }
+
     }
 
     @Override
