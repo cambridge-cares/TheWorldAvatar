@@ -185,7 +185,7 @@ Other resources:
     <img  width="80%" height="80%" src="./Img/setup_instruction/package_manager_error.png"/>
     </p>
 
-    Occurred when MRTK3 features not added properly. Please check whether all the packages stated in [Project Setup](###project-setup) have been added.
+    Occurred when MRTK3 features not added properly. Please check whether all the packages stated in [Project Setup](#project-setup) have been added.
 
 - Prefab file missing error
     <p style="text-align:center">
