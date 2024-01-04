@@ -1,0 +1,132 @@
+{
+  "name": "Pirmasens",
+  "groups": [
+    {
+      "name": "CEA",
+      "stack": "http://localhost:3838",
+      "sources": [
+        {
+          "id": "cea",
+          "type": "geojson",
+          "cluster": false,
+          "clusterMaxZoom": 14,
+          "clusterRadius": 100,
+          "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Ascaled&outputFormat=application%2Fjson"
+        },
+        {
+          "id": "not_cea",
+          "type": "geojson",
+          "cluster": false,
+          "clusterMaxZoom": 14,
+          "clusterRadius": 100,
+          "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Anot_cea&outputFormat=application%2Fjson"
+        }
+      ],
+      "layers": [
+        {
+          "id": "heat",
+          "name": "Heating demand",
+          "source": "cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "visible"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "interpolate", ["linear"],
+              ["number", ["get", "scaled_heat"]],
+              0, "#ffffb2",
+              1, "#bd0026"
+            ],
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "height"],
+              ["get", "height"],
+              8
+            ]
+          }
+        },
+        {
+          "id": "electricity",
+          "name": "Electricity demand",
+          "source": "cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "visible"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "interpolate", ["linear"],
+              ["number", ["get", "scaled_electricity"]],
+              0, "#d4e5f4",
+              1, "#0c2952"
+            ],
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "height"],
+              ["get", "height"],
+              8
+            ]
+          }
+        },
+        {
+          "id": "pv",
+          "name": "Roof potential PV supply",
+          "source": "cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "visible"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "interpolate", ["linear"],
+              ["number", ["get", "scaled_pv"]],
+              0, "#d9f0d3",
+              1, "#023415"
+            ],
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "height"],
+              ["get", "height"],
+              8
+            ]
+          }
+        },
+        {
+          "id": "no_cea",
+          "name": "Buildings without CEA results",
+          "source": "not_cea",
+          "type": "fill-extrusion",
+          "minzoom": 8,
+          "order": 23,
+          "layout": {
+            "visibility": "visible"
+          },
+          "paint": {
+            "fill-extrusion-color": "#A9A9A9",
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": [
+              "case",
+              ["has", "height"],
+              ["get", "height"],
+              8
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
