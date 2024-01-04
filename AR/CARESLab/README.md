@@ -147,7 +147,7 @@ Completed guide of setting up **new** MRTK3 project can be found at [here](https
     <img  width="80%" height="80%" src="./Img/setup_instruction/tmp_import.png"/>
     </p>
 
-7. Add `bmsUpdateAgentUrl`, `canopyhoodAirflowIri` and `canopyhoodControlModeIri` in Assets/Scripts/ModelScene/AirflowInputControl.cs
+7. Add `bmsUpdateAgentUrl`, `canopyhoodAirflowIri` and `canopyhoodControlModeIri` in Assets/Scripts/ModelScene/AirflowInputControl.cs. This function may break if authorization setup in BMSUpdateAgent is done.
     
     Due to security consideration, the url and iri in this file are removed. To be able to use the change airflow function, please add the correct url and iri.
 
