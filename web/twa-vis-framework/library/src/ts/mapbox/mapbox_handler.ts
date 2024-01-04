@@ -61,34 +61,28 @@ class MapHandler_Mapbox extends MapHandler {
 
         // Get all visible features under the mouse click
         let features = [];
-        if(feature !== null && feature !== undefined) {
+        if(feature != null) {
             features.push(feature);
         } else {
             features = MapHandler.MAP.queryRenderedFeatures(event.point);
         }
 
-        // Filter out non-CMCL layers
+        // Filter out non-clickable layers & non-CMCL layers
         features = features.filter(feature => {
-            return MapboxUtils.isCMCLLayer(feature);
+            return MapboxUtils.isCMCLLayer(feature) && MapboxUtils.isLayerClickable(feature);
         });
 
         // Filter out duplicates (Mapbox can return these if a feature is split across a tile boundary)
         features = MapboxUtils.deduplicate(features);
 
         if(features.length > 1) {
-            // Click on overlapping, individual features/clusters
+            // Click on overlapping, individual features or clusters
             this.clickMultiple(features);
 
         } else if (features.length === 1) {
+            // Click on a single, non-overlapping, feature or cluster
             let feature = features[0];
-            let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
             
-            let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
-            if(!clickable) {
-                // No mouse interaction
-                return;
-            }
-
             if(MapboxUtils.isCluster(feature)) {
                 // Clicked on a clustered feature, handle as if multiple
                 this.clickMultiple(features);
@@ -122,16 +116,10 @@ class MapHandler_Mapbox extends MapHandler {
         let sortedLeafs = {};
 
         // Group the features by layer
-        for(let i = 0; i < leafs.length; i++) {
-            let leaf = leafs[i];
+        for(const element of leafs) {
+            let leaf = element;
             let layerID = leaf["layer"]["id"];
             let layer = Manager.DATA_STORE.getLayerWithID(layerID);
-
-            let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
-            if(clickable !== null && clickable === false) {
-                // No mouse interaction
-                continue;
-            }
 
             if(sortedLeafs[layer.name] === null || sortedLeafs[layer.name] === undefined) {
                 sortedLeafs[layer.name] = [];
@@ -301,13 +289,13 @@ class MapHandler_Mapbox extends MapHandler {
             let options = {...source.definition};
 
             // Remove properties not expected by Mapbox
-            if(options["id"]) delete options["id"];
-            if(options["metaFiles"]) delete options["metaFiles"];
-            if(options["timeseriesFiles"]) delete options["timeseriesFiles"];
+            if(options.hasOwnProperty("id")) delete options["id"];
+            if(options.hasOwnProperty("metaFiles")) delete options["metaFiles"];
+            if(options.hasOwnProperty("timeseriesFiles")) delete options["timeseriesFiles"];
 
             // Add attributions if missing
             if(source.type !== "video" && source.type !== "image") {
-                if(!options["attribution"]) {
+                if(!options.hasOwnProperty("attribution")) {
                     options["attribution"] = "CMCL";
                 }
             }
@@ -325,51 +313,48 @@ class MapHandler_Mapbox extends MapHandler {
      */
     private addLayer(layer: DataLayer) {
         let collision = MapHandler.MAP.getLayer(layer.id);
+        if(collision != null) return;
 
-        if(collision === null || collision === undefined) {
-            // Clone the original layer definition
-            let options = {...layer.definition};
+        // Clone the original layer definition
+        let options = {...layer.definition};
 
-            // Add attributions if missing
-            if(!options["metadata"]) {
-                options["metadata"] = {};
-            }
-            if(!options["metadata"]["attribution"]) {
-                options["metadata"]["attribution"] = "CMCL";
-            }
-
-            // Remove 'interactions' and 'clickable' if specified
-            if(options["interactions"]) {
-                delete options["interactions"]
-            } else if(options["clickable"]) {
-                delete options["clickable"]
-            }
-
-            // Remove 'treeable' if specified
-            if(options["treeable"]) {
-                options["metadata"]["treeable"] = options["treeable"]
-                delete options["treeable"]
-            } else {
-                options["metadata"]["treeable"] = true
-            }
-
-            // Use the cached visibility, not the one from the original definition
-            if(!options.hasOwnProperty("layout")) {
-                options["layout"] = {};
-            }
-            options["layout"]["visibility"] = (layer.getVisibility()) ? "visible" : "none";
-            
-            // Update to unique ID
-            options["id"] = layer.id;
-
-            // Remove fields not strictly required by Mapbox
-            delete options["name"];
-            delete options["order"];
-
-            // Add to the map
-            MapHandler.MAP.addLayer(options);
-            console.info("Added data layer to map '" + layer.id + "'.");
+        // Add attributions if missing
+        if(!options.hasOwnProperty("metadata")) {
+            options["metadata"] = {};
         }
+        if(!options["metadata"].hasOwnProperty("attribution")) {
+            options["metadata"]["attribution"] = "CMCL";
+        }
+
+        // Remove 'interactions' and 'clickable' if specified
+        if(options.hasOwnProperty("interactions")) {
+            delete options["interactions"]
+        }
+        if(options.hasOwnProperty("clickable")) {
+            delete options["clickable"]
+        }
+
+        // Remove 'treeable' if specified
+        if(options.hasOwnProperty("treeable")) {
+            delete options["treeable"]
+        } 
+
+        // Use the cached visibility, not the one from the original definition
+        if(!options.hasOwnProperty("layout")) {
+            options["layout"] = {};
+        }
+        options["layout"]["visibility"] = layer.getVisibility() ? "visible" : "none";
+        
+        // Update to unique ID
+        options["id"] = layer.id;
+
+        // Remove fields not strictly required by Mapbox
+        delete options["name"];
+        delete options["order"];
+
+        // Add to the map
+        MapHandler.MAP.addLayer(options);
+        console.info("Added data layer to map '" + layer.id + "'.");
     }
 
     /**

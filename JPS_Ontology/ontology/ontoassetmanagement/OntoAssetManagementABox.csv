@@ -10,3 +10,9 @@ UnitedParcelService,Instance,https://spec.edmcouncil.org/fibo/ontology/FND/Organ
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,UnitedParcelService,,UPS,String
 FederalExpress,Instance,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/FormalOrganization,,,
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,FederalExpress,,FedEx,String
+LabEquipment,Instance,https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory,,,
+Laptop,Instance,https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory,,,
+OtherIT,Instance,https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory,,,
+Workstation,Instance,https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory,,,
+Monitor,Instance,https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory,,,
+Printer,Instance,https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory,,,
