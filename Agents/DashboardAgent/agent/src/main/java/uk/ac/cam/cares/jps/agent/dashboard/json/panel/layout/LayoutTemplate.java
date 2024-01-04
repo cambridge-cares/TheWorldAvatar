@@ -137,7 +137,7 @@ public class LayoutTemplate {
                 String unit = systemTimeSeries.get(0)[4];
                 // Generate related panels
                 PieChart distributionPanel = new PieChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries);
-                BarChart barChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries);
+                BarChart barChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 3);
                 TemplatePanel[] panelArr = new TemplatePanel[]{distributionPanel, barChart};
                 panelQueue.offer(panelArr);
             }

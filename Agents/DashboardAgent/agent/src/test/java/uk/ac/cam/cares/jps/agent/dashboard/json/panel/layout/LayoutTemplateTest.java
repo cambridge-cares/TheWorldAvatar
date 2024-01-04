@@ -197,7 +197,7 @@ public class LayoutTemplateTest {
                         .append(",");
                 // For the bar chart, only the x position will change
                 expectedGeometryPosition[2] = TestUtils.CHART_WIDTH;
-                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries));
+                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 3));
                 rowNumber++;
             }
         }
