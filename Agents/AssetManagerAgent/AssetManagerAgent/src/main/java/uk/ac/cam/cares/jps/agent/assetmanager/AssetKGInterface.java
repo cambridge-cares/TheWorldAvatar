@@ -764,6 +764,7 @@ public class AssetKGInterface {
         String nextService = maintenanceData.getString("NextService");
         String interval = maintenanceData.getString("Interval");
         String serviceProvider = maintenanceData.getString("ServiceProvider");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/yyyy");
 
         LocalDate lastServiceDate, nextServiceDate;
 
@@ -782,8 +783,8 @@ public class AssetKGInterface {
             throw new JPSRuntimeException(String.format("Device is unregistered for ID:%s", ID));
         }
         try {
-            lastServiceDate = LocalDate.parse(lastService);
-            nextServiceDate = LocalDate.parse(nextService);
+            lastServiceDate = LocalDate.parse(lastService, dtf);
+            nextServiceDate = LocalDate.parse(nextService, dtf);
             if(nextServiceDate.isBefore(lastServiceDate)){
                 throw new JPSRuntimeException("Next service date is before last service date. We don't allow time travel agencies when servicing assets.");
             }
@@ -819,7 +820,6 @@ public class AssetKGInterface {
             durationIRI = genIRIString("DurationDescription", Pref_TIME);
             if((nextService.isBlank() || nextService==null) && !(lastService.isBlank() || lastService==null)){
                 nextServiceDate = lastServiceDate.plusMonths(Long.valueOf(interval));
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/yyyy");
                 nextService = dtf.format(nextServiceDate);
             }
         }
