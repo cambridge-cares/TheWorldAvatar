@@ -766,7 +766,8 @@ public class AssetKGInterface {
         String serviceProvider = maintenanceData.getString("ServiceProvider");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/yyyy");
 
-        LocalDate lastServiceDate, nextServiceDate;
+        LocalDate lastServiceDate = null;
+        LocalDate nextServiceDate = null;
 
         String lastServiceIRI = "";
         String nextServiceIRI = "";
@@ -782,19 +783,15 @@ public class AssetKGInterface {
         if (deviceIRI.isBlank()){
             throw new JPSRuntimeException(String.format("Device is unregistered for ID:%s", ID));
         }
-        try {
-            lastServiceDate = LocalDate.parse(lastService, dtf);
-            nextServiceDate = LocalDate.parse(nextService, dtf);
-            if(nextServiceDate.isBefore(lastServiceDate)){
-                throw new JPSRuntimeException("Next service date is before last service date. We don't allow time travel agencies when servicing assets.");
-            }
-        } catch (DateTimeParseException e) {
-            throw new JPSRuntimeException("Failed to parse service times, ensure the format is correct: dd/mm/yyyy", e);
-        }
         
         //preprocessing
         if(!(lastService.isBlank() || lastService==null)){
             lastServiceIRI = genIRIString("ServiceTime", Pref_TIME);
+            try {
+                lastServiceDate = LocalDate.parse(lastService, dtf);
+            } catch (DateTimeParseException e) {
+                throw new JPSRuntimeException("Failed to parse service times, ensure the format is correct: dd/mm/yyyy", e);
+            }
         }
 
         JSONObject existingServiceIRIs = existenceChecker.getPersonTriples(serviceProvider, false);
@@ -818,7 +815,7 @@ public class AssetKGInterface {
         if(!(interval.isBlank() || interval==null)){
             intervalIRI = genIRIString("Interval", Pref_TIME);
             durationIRI = genIRIString("DurationDescription", Pref_TIME);
-            if((nextService.isBlank() || nextService==null) && !(lastService.isBlank() || lastService==null)){
+            if((nextService.isBlank() || nextService==null) && lastServiceDate!=null){
                 nextServiceDate = lastServiceDate.plusMonths(Long.valueOf(interval));
                 nextService = dtf.format(nextServiceDate);
             }
@@ -826,6 +823,17 @@ public class AssetKGInterface {
 
         if(!(nextService.isBlank() || nextService==null)){
             nextServiceIRI = genIRIString("ServiceTime", Pref_TIME);
+            try {
+                nextServiceDate = LocalDate.parse(nextService, dtf);
+            } catch (DateTimeParseException e) {
+                throw new JPSRuntimeException("Failed to parse service times, ensure the format is correct: dd/mm/yyyy", e);
+            }
+        }
+
+        if(nextServiceDate!= null && lastServiceDate!= null){
+            if(nextServiceDate.isBefore(lastServiceDate)){
+                throw new JPSRuntimeException("Next service date is before last service date. We don't allow time travel agencies when servicing assets.");
+            }
         }
         
         int year = Integer.valueOf(interval)/12;
