@@ -776,8 +776,6 @@ public class AssetKGInterface {
         String maintenanceScheduleIRI = genIRIString("MaintenanceSchedule", Pref_ASSET);
         String maintenanceTaskIRI = genIRIString("MaintenanceTask", Pref_ASSET);
 
-        RemoteStoreClient preferredClient = existenceChecker.getNameSpaceByID(ID);
-
         //Validation
         String deviceIRI = existenceChecker.getIRIStringbyID(ID);
         if (deviceIRI.isBlank()){
@@ -864,8 +862,7 @@ public class AssetKGInterface {
             query.insert(iri(durationIRI).isA(DurationDescription));
         }
         
-        
-        preferredClient.executeUpdate(query.getQueryString());
+        storeClientAsset.executeUpdate(query.getQueryString());
 
     }
 
