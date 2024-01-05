@@ -226,8 +226,11 @@ public class DockerService extends AbstractService
     }
 
     public void doPostStartUpConfiguration(ContainerService service) {
-        service.setDockerClient(dockerClient);
         service.doPostStartUpConfiguration();
+    }
+
+    public void writeEndpointConfigs(ContainerService service){
+        service.writeEndpointConfigs();
     }
 
     public boolean startContainer(ContainerService service) {
