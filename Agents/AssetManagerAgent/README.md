@@ -183,6 +183,8 @@ The request at least has to have either/both LastService or NextService. ID and 
 
 All time data regarding maintenance will be stored in scale of days (`yyyy-MM-dd`) and for interval in months. In case the next service is not given, but the interval and last service time is given, the next service time will automatically be inferred as `last service time + interval`.
 
+If the asset already has a maintenance shcedule, **the previous data will be overwritten** instead.
+
 
 ##### - `/addmanual`
 For instantiating manual instances to the assets.

@@ -13,6 +13,8 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.google.gson.JsonObject;
+
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -497,6 +499,75 @@ public class AssetExistenceChecker {
                 //TODO Properly handle multiple cases 
                 result.put("DocIRI", reqResult.getJSONObject(0).getString("Subject"));
                 return result;
+        }
+    }
+
+    public JSONObject getMaintenanceIRI (String deviceIRI, Boolean generate){ 
+        return getMaintenanceIRI(iri(deviceIRI), generate);
+    }
+
+    public JSONObject getMaintenanceIRI (Iri deviceIRI, Boolean generate){
+        JSONObject result = new JSONObject();
+        SelectQuery query = Queries.SELECT();
+        Variable maintenanceScheduleIRI = SparqlBuilder.var("maintenanceScheduleIRI");
+        Variable maintenanceTaskIRI = SparqlBuilder.var("maintenanceTaskIRI");
+        Variable lastServiceIRI = SparqlBuilder.var("lastServiceIRI");
+        Variable nextServiceIRI = SparqlBuilder.var("nextServiceIRI");
+        Variable intervalIRI = SparqlBuilder.var("intervalIRI");
+        Variable durationIRI = SparqlBuilder.var("durationIRI");
+        Variable performerIRI = SparqlBuilder.var("performerIRI");
+
+        query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
+        query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
+        query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
+        query.where(GraphPatterns.optional(maintenanceTaskIRI.has(performedAt, lastServiceIRI)));
+        query.where(GraphPatterns.optional(maintenanceTaskIRI.has(scheduledFor, nextServiceIRI)));
+        query.where(GraphPatterns.optional(
+            maintenanceTaskIRI.has(hasInterval, intervalIRI),
+            intervalIRI.has(hasDurationDescription, durationIRI)
+            ));
+
+        JSONArray reqResult = storeClientAsset.executeQuery(query.getQueryString());
+        switch (reqResult.length()) {
+            case 0:
+                if (generate){
+                    result.put("maintenanceScheduleIRI", genIRIString("MaintenanceSchedule", Pref_ASSET));
+                    result.put("maintenanceTaskIRI", genIRIString("MaintenanceTask", Pref_ASSET));
+                    result.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                    result.put("nextServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                    result.put("intervalIRI", genIRIString("Interval", Pref_TIME));
+                    result.put("durationIRI", genIRIString("DurationDescription", Pref_TIME));
+                    //Performer IRI is not generated as it is supposed to be updated as requested
+                    //Hence it does not matter if its retrieved or not
+                    return result;
+                }
+                return null;
+                
+            case 1:
+                result.put("maintenanceScheduleIRI", reqResult.getJSONObject(0).getString("maintenanceScheduleIRI"));
+                result.put("maintenanceTaskIRI", reqResult.getJSONObject(0).getString("maintenanceTaskIRI"));
+                result.put("lastServiceIRI", reqResult.getJSONObject(0).getString("lastServiceIRI"));
+                result.put("nextServiceIRI", reqResult.getJSONObject(0).getString("nextServiceIRI"));
+                result.put("intervalIRI", reqResult.getJSONObject(0).getString("intervalIRI"));
+                result.put("durationIRI", reqResult.getJSONObject(0).getString("durationIRI"));
+                //In case some of the maintenance component does not exist before, create new IRI here:
+                if (generate){
+                    if (result.getString("lastServiceIRI").isBlank() || result.getString("lastServiceIRI") == null){
+                        result.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                    }
+
+                    if (result.getString("nextServiceIRI").isBlank() || result.getString("nextServiceIRI") == null){
+                        result.put("nextServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                    }
+                    if (result.getString("intervalIRI").isBlank() || result.getString("intervalIRI") == null){
+                        result.put("intervalIRI", genIRIString("Interval", Pref_TIME));
+                        result.put("durationIRI", genIRIString("DurationDescription", Pref_TIME));
+                    }
+                }
+
+                return result;
+            default:
+                throw new JPSRuntimeException("Multiple maintenance data found. Currently multiple maintenance data is not supported.");
         }
     }
 

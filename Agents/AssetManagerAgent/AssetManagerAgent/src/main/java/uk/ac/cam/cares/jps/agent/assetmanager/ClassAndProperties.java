@@ -146,6 +146,7 @@ public class ClassAndProperties {
     public static final Iri HomeTotalDiscountedAfterTaxPrice = Pref_ASSET.iri("HomeTotalDiscountedAfterTaxPrice");
     public static final Iri MaintenanceSchedule = Pref_ASSET.iri("MaintenanceSchedule");
     public static final Iri MaintenanceTask = Pref_ASSET.iri("MaintenanceTask");
+    public static final Iri hasInterval = Pref_ASSET.iri("hasInterval");
 
     public static final Iri Person = Pref_FIBO_AAP.iri("Person");
     public static final Iri PersonName = Pref_FIBO_AAP.iri("PersonName");

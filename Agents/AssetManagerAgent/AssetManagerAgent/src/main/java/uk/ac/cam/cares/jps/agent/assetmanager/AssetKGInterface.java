@@ -790,22 +790,25 @@ public class AssetKGInterface {
         String durationIRI = "";
         String serviceProviderIRI = "";
         Iri serviceProviderTypeIRI;
-        String maintenanceScheduleIRI = genIRIString("MaintenanceSchedule", Pref_ASSET);
-        String maintenanceTaskIRI = genIRIString("MaintenanceTask", Pref_ASSET);
 
         //Validation
         String deviceIRI = existenceChecker.getIRIStringbyID(ID);
         if (deviceIRI.isBlank()){
             throw new JPSRuntimeException(String.format("Device is unregistered for ID:%s", ID));
         }
+        JSONObject maintenanceIRI = existenceChecker.getMaintenanceIRI(deviceIRI, true);
+
+        String maintenanceScheduleIRI = maintenanceIRI.getString("maintenanceScheduleIRI");
+        String maintenanceTaskIRI = maintenanceIRI.getString("maintenanceTaskIRI");
         
         //preprocessing
+        //TODO Figure out what to do with multiple maintenance schedule.Currently interpreted as the last time te asset is maintained, so only 1 shoudl exist and update the data instead
         if(!(lastService.isBlank() || lastService==null)){
-            lastServiceIRI = genIRIString("ServiceTime", Pref_TIME);
+            lastServiceIRI = maintenanceIRI.getString("lastServiceIRI");
             try {
                 lastServiceDate = LocalDate.parse(lastService, dtf);
             } catch (DateTimeParseException e) {
-                throw new JPSRuntimeException("Failed to parse service times, ensure the format is correct: dd/mm/yyyy", e);
+                throw new JPSRuntimeException("Failed to parse service times, ensure the format is correct: yyyy-mm-dd", e);
             }
         }
 
@@ -813,7 +816,7 @@ public class AssetKGInterface {
         if (existingServiceIRIs == null) {
             existingServiceIRIs = existenceChecker.getOrganizationTriples(serviceProvider);
             if (existingServiceIRIs == null){
-                serviceProviderIRI = genIRIString("ServiceProvider", Pref_ASSET);
+                serviceProviderIRI = maintenanceIRI.getString("serviceProviderIRI");
                 serviceProviderTypeIRI = IndependentParty;
             }
             else{
@@ -828,8 +831,8 @@ public class AssetKGInterface {
 
         // Transport data in months?
         if(!(interval.isBlank() || interval==null)){
-            intervalIRI = genIRIString("Interval", Pref_TIME);
-            durationIRI = genIRIString("DurationDescription", Pref_TIME);
+            intervalIRI = maintenanceIRI.getString("intervalIRI");
+            durationIRI = maintenanceIRI.getString("durationIRI");
             if((nextService.isBlank() || nextService==null) && lastServiceDate!=null){
                 nextServiceDate = lastServiceDate.plusMonths(Long.valueOf(interval));
                 nextService = dtf.format(nextServiceDate);
@@ -837,11 +840,11 @@ public class AssetKGInterface {
         }
 
         if(!(nextService.isBlank() || nextService==null)){
-            nextServiceIRI = genIRIString("ServiceTime", Pref_TIME);
+            nextServiceIRI = maintenanceIRI.getString("nextServiceIRI");
             try {
                 nextServiceDate = LocalDate.parse(nextService, dtf);
             } catch (DateTimeParseException e) {
-                throw new JPSRuntimeException("Failed to parse service times, ensure the format is correct: dd/mm/yyyy", e);
+                throw new JPSRuntimeException("Failed to parse service times, ensure the format is correct: yyyy-mm-dd", e);
             }
         }
 
@@ -880,6 +883,7 @@ public class AssetKGInterface {
         if(!(interval.isBlank() || interval==null)){
             year = Integer.valueOf(interval)/12;
             month = Integer.valueOf(interval)%12;
+            query.insert(iri(maintenanceTaskIRI).has(hasInterval, iri(nextServiceIRI)));
             query.insert(iri(intervalIRI).has(hasDurationDescription, iri(durationIRI)));
             query.insert(iri(durationIRI).has(months, Rdf.literalOf(month)).andHas(years, Rdf.literalOf(year)));
             query.insert(iri(intervalIRI).isA(Interval));
