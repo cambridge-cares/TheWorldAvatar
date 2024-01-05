@@ -517,6 +517,11 @@ public class AssetExistenceChecker {
         Variable durationIRI = SparqlBuilder.var("durationIRI");
         Variable performerIRI = SparqlBuilder.var("performerIRI");
 
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
+            Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE,
+            Pref_TIME
+        );
         query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
         query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
         query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
