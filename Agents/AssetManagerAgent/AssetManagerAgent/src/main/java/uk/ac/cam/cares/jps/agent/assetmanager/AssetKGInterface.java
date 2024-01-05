@@ -764,7 +764,7 @@ public class AssetKGInterface {
         String nextService = maintenanceData.getString("NextService");
         String interval = maintenanceData.getString("Interval");
         String serviceProvider = maintenanceData.getString("ServiceProvider");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         LocalDate lastServiceDate = null;
         LocalDate nextServiceDate = null;
