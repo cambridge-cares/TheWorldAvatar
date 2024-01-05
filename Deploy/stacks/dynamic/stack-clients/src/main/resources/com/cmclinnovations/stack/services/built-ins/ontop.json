@@ -4,11 +4,12 @@
         "Name": "ontop",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ontop/ontop-endpoint:4.2.1",
+                "Image": "ontop/ontop:5.1.0",
                 "Env": [
                     "ONTOP_MAPPING_FILE=/ontop/ontop.obda",
                     "ONTOP_DB_NAME=postgres",
-                    "ONTOP_DEV_MODE=true"
+                    "ONTOP_DEV_MODE=true",
+                    "ONTOP_LAZY_INIT=true"
                 ],
                 "Configs": [
                     {

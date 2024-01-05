@@ -41,12 +41,12 @@ public final class PostGISService extends ContainerService {
         endpointConfig = new PostGISEndpointConfig(
                 EndpointNames.POSTGIS, getHostName(), DEFAULT_PORT,
                 getEnvironmentVariable(POSTGRES_USER_KEY), getEnvironmentVariable("POSTGRES_PASSWORD_FILE"));
+
+        addEndpointConfig(endpointConfig);
     }
 
     @Override
     public void doPostStartUpConfiguration() {
-        writeEndpointConfig(endpointConfig);
-
         writePGPASSFile();
 
         copyJDBCDriverToVolume();

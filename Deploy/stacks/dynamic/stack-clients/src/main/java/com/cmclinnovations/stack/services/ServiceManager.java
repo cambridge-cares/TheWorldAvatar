@@ -168,6 +168,7 @@ public final class ServiceManager {
             if (dockerService.startContainer(newContainerService)) {
                 dockerService.doPostStartUpConfiguration(newContainerService);
             }
+            dockerService.writeEndpointConfigs(newContainerService);
 
             if (!NginxService.TYPE.equals(serviceName)) {
                 ReverseProxyService reverseProxyService = getOrInitialiseService(stackName, NginxService.TYPE);

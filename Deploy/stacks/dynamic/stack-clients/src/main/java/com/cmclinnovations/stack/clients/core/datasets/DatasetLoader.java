@@ -178,6 +178,12 @@ public class DatasetLoader {
 
                 OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
                 ontopMappings.forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
+
+                if (PostGISClient.DEFAULT_DATABASE_NAME.equals(dataset.getDatabase())) {
+                    OntopClient defaultOntopClient = OntopClient.getInstance();
+                    dataset.getOntopMappings()
+                            .forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
+                }
             }
 
             // record added datasets in the default kb namespace

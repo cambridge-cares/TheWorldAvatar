@@ -41,6 +41,7 @@ import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 public class Dataset {
     protected static final Logger LOGGER = LoggerFactory.getLogger(Dataset.class);
     static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
+    static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/";
 
     public static final String NAME_KEY = "name";
 
@@ -63,7 +64,7 @@ public class Dataset {
     private final boolean skip;
     private String rdfType;
 
-    private String baseIRI = DEFAULT_NAMESPACE;
+    private final String baseIRI;
 
     // for dcat cataloging
     private boolean exists; // used to determine whether this dataset exists in the catalog
@@ -81,7 +82,8 @@ public class Dataset {
             @JsonProperty(value = "mappings") List<String> ontopMappings,
             @JsonProperty(value = "skip") boolean skip,
             @JsonProperty(value = "staticGeoServerData") StaticGeoServerData staticGeoServerData,
-            @JsonProperty(value = "rdfType") String rdfType) {
+            @JsonProperty(value = "rdfType") String rdfType,
+            @JsonProperty(value = "baseIRI") String baseIRI) {
         this.name = name;
         this.datasetDirectory = datasetDirectory;
         this.database = database;
@@ -94,6 +96,7 @@ public class Dataset {
         this.staticGeoServerData = staticGeoServerData;
         this.skip = skip;
         this.rdfType = rdfType;
+        this.baseIRI = (null == baseIRI) ? DEFAULT_BASE_IRI : baseIRI;
     }
 
     public String getName() {
