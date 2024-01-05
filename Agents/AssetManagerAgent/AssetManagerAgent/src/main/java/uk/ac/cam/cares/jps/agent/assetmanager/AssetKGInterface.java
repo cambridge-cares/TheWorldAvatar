@@ -764,10 +764,11 @@ public class AssetKGInterface {
         String nextService = maintenanceData.getString("NextService");
         String interval = maintenanceData.getString("Interval");
         String serviceProvider = maintenanceData.getString("ServiceProvider");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/mm/yyyy");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         LocalDate lastServiceDate = null;
         LocalDate nextServiceDate = null;
+        int year, month;
 
         String lastServiceIRI = "";
         String nextServiceIRI = "";
@@ -835,9 +836,6 @@ public class AssetKGInterface {
                 throw new JPSRuntimeException("Next service date is before last service date. We don't allow time travel agencies when servicing assets.");
             }
         }
-        
-        int year = Integer.valueOf(interval)/12;
-        int month = Integer.valueOf(interval)%12;
 
         //instantiate
         ModifyQuery query = Queries.MODIFY();
@@ -849,12 +847,12 @@ public class AssetKGInterface {
         query.insert(iri(maintenanceScheduleIRI).has(hasTask, iri(maintenanceTaskIRI)));
         query.insert(iri(maintenanceScheduleIRI).isA(MaintenanceSchedule));
         query.insert(iri(maintenanceTaskIRI).isA(MaintenanceTask));
-        if(!(lastService.isBlank() || lastService==null)) {
+        if(lastServiceDate!= null) {
             query.insert(iri(maintenanceTaskIRI).has(performedAt, iri(lastServiceIRI)));
             query.insert(iri(lastServiceIRI).isA(Instant));
             query.insert(iri(lastServiceIRI).has(inXSDDateTimeStamp, Rdf.literalOfType(lastService, XSD.DATE)));
         }
-        if(!(nextService.isBlank() || nextService==null)) {
+        if(nextServiceDate!= null) {
             query.insert(iri(maintenanceTaskIRI).has(scheduledFor, iri(nextServiceIRI)));
             query.insert(iri(nextServiceIRI).isA(Instant));
             query.insert(iri(nextServiceIRI).has(inXSDDateTimeStamp, Rdf.literalOfType(nextService, XSD.DATE)));
@@ -864,6 +862,8 @@ public class AssetKGInterface {
         query.insert(iri(serviceProviderIRI).isA(serviceProviderTypeIRI));
 
         if(!(interval.isBlank() || interval==null)){
+            year = Integer.valueOf(interval)/12;
+            month = Integer.valueOf(interval)%12;
             query.insert(iri(intervalIRI).has(hasDurationDescription, iri(durationIRI)));
             query.insert(iri(durationIRI).has(months, Rdf.literalOf(month)).andHas(years, Rdf.literalOf(year)));
             query.insert(iri(intervalIRI).isA(Interval));
