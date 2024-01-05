@@ -551,24 +551,31 @@ public class AssetExistenceChecker {
             case 1:
                 result.put("maintenanceScheduleIRI", reqResult.getJSONObject(0).getString("maintenanceScheduleIRI"));
                 result.put("maintenanceTaskIRI", reqResult.getJSONObject(0).getString("maintenanceTaskIRI"));
-                result.put("lastServiceIRI", reqResult.getJSONObject(0).getString("lastServiceIRI"));
-                result.put("nextServiceIRI", reqResult.getJSONObject(0).getString("nextServiceIRI"));
-                result.put("intervalIRI", reqResult.getJSONObject(0).getString("intervalIRI"));
-                result.put("durationIRI", reqResult.getJSONObject(0).getString("durationIRI"));
+                
                 //In case some of the maintenance component does not exist before, create new IRI here:
-                if (generate){
-                    if (result.getString("lastServiceIRI").isBlank() || result.getString("lastServiceIRI") == null){
-                        result.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
-                    }
-
-                    if (result.getString("nextServiceIRI").isBlank() || result.getString("nextServiceIRI") == null){
-                        result.put("nextServiceIRI", genIRIString("ServiceTime", Pref_TIME));
-                    }
-                    if (result.getString("intervalIRI").isBlank() || result.getString("intervalIRI") == null){
-                        result.put("intervalIRI", genIRIString("Interval", Pref_TIME));
-                        result.put("durationIRI", genIRIString("DurationDescription", Pref_TIME));
-                    }
+                if (!result.has("lastServiceIRI")){
+                    result.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
                 }
+                else{
+                    result.put("lastServiceIRI", reqResult.getJSONObject(0).getString("lastServiceIRI"));
+                }
+
+                if (!result.has("nextServiceIRI")){
+                    result.put("nextServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                }
+                else{
+                    result.put("nextServiceIRI", reqResult.getJSONObject(0).getString("nextServiceIRI"));
+                }
+
+                if (result.has("intervalIRI")){
+                    result.put("intervalIRI", genIRIString("Interval", Pref_TIME));
+                    result.put("durationIRI", genIRIString("DurationDescription", Pref_TIME));
+                }
+                else{
+                    result.put("intervalIRI", reqResult.getJSONObject(0).getString("intervalIRI"));
+                    result.put("durationIRI", reqResult.getJSONObject(0).getString("durationIRI"));
+                }
+                
 
                 return result;
             default:
