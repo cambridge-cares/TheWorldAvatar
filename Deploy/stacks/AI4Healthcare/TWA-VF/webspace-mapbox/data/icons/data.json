@@ -1,0 +1,211 @@
+{
+    "name": "All Layers",
+    "groups": [
+        {
+            "name": "Cam-Ely-Wisbech",
+            "stack": "http://174.138.27.240:3838",
+            "sources": [
+                {
+                    "id": "cambridge-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://174.138.27.240:3838/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Acambridge_gsl&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "cambridge-layer",
+                    "name": "Cambridge",
+                    "treeable": false,
+                    "source": "cambridge-source",
+                    "source-layer": "cambridge_gsl",
+                    "type": "fill-extrusion",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "step",
+                            ["get", "building_height"],
+                            "#FF0000",       
+                            3.57, "#FF6347", 
+                            7.14, "#FFA500", 
+                            10.71, "#FFD700",
+                            14.28, "#FFFF00",
+                            17.85, "#9ACD32",
+                            21.42, "#32CD32"
+                        ],
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["*", 1.0, ["to-number", ["get", "building_height"]]],
+                            200
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Reporting Stations",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "metoffice",  
+                    "type": "geojson",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=stations%3Ametoffice&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "ea-stations",  
+                    "type": "geojson",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=stations%3Ariverstations&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "aq-stations",  
+                    "type": "geojson",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=airquality%3Aairquality&outputFormat=application%2Fjson"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "airquality",
+                    "name": "Airquality Stations", 
+                    "source": "aq-stations",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 4,
+                    "order": 32,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "air_airquality", 
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
+                },
+                {
+                    "id": "airquality_cluster",
+                    "name":  "Airquality Stations",
+                    "source": "aq-stations",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "ukair",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
+                        "text-anchor": "center",
+                        "text-offset": [0, 0]
+                    }
+                },
+                {
+                    "id": "metoffice",
+                    "name": "Weather Stations", 
+                    "source": "metoffice",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 4,
+                    "order": 31,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": [
+                            "match",
+                            ["get", "subtype"],
+                            "observation", "met_weather-obs",
+                            "forecast", "met_weather-for",
+                            "met_weather"
+                        ],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
+                },
+                {
+                    "id": "metoffice_cluster",
+                    "name":  "Weather Stations",
+                    "source": "metoffice",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "metoffice",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
+                        "text-anchor": "center",
+                        "text-offset": [0, 0]
+                    }
+                },
+                {
+                    "id": "ea-stations",
+                    "name": "Flood Monitoring Stations", 
+                    "source": "ea-stations",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 4,
+                    "order": 30,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": [
+                            "match",
+                            ["get", "type"],
+                            "ea-flow", "ea_flow",
+                            "ea-rainfall", "ea_rainfall",
+                            "ea-temperature", "ea_temperature",
+                            "ea-water-level", "ea_water-level",
+                            "ea-wind", "ea_wind",
+                            "floodmonitoring"
+                        ],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
+                },
+                {
+                    "id": "ea-stations_cluster",
+                    "name":  "Flood Monitoring Stations",
+                    "source": "ea-stations",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "floodmonitoring",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
+                        "text-anchor": "center",
+                        "text-offset": [0, 0]
+                    }
+                }
+            ]
+        }
+        
+    ]
+}

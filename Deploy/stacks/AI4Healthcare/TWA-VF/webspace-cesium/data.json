@@ -1,0 +1,38 @@
+{
+	"name": "Sample Data",
+    "stack": "http://174.138.27.240",
+	"sources": [
+		{
+			"id": "LOD1",
+			"type": "tiles",
+			"uri": "http://174.138.27.240:3840/3dtiles/postgres/citydb/lod1_lod2-buildings/tileset.json"
+		},
+		{
+			"id": "LOD2B",
+			"type": "tiles",
+			"uri": "http://174.138.27.240:3840/3dtiles/postgres/citydb/lod2-buildings/tileset.json"
+		},
+		{
+			"id": "LOD2F",
+			"type": "tiles",
+			"uri": "http://174.138.27.240:3840/3dtiles/postgres/citydb/lod2-features/tileset.json"
+		}
+	],
+	"layers": [
+		{
+            "id": "LOD1-layer",
+			"name": "LOD1-LOD2 Buildings of Cambridge", 
+            "source": "LOD1"
+        },
+		{
+            "id": "LOD2B-layer",
+			"name": "LOD2 Buildings of Cambridge", 
+            "source": "LOD2B"
+        },
+		{
+            "id": "LOD2F-layer",
+			"name": "LOD2 features of Cambridge", 
+            "source": "LOD2F"
+        }
+	]
+}

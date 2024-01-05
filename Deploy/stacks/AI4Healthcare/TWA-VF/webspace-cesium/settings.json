@@ -1,0 +1,12 @@
+{
+    "start": {
+        "center": [0.12,52.2,800],
+        "pitch": -60,
+        "roll": -0,
+        "heading": 0
+    },
+	"terrain": {
+		"url": "https://api.maptiler.com/tiles/terrain-quantized-mesh-v2/?key=WyRJihH2ARLqwbcvBPFL",
+		"requestVertexNormals": true
+	}
+}

@@ -1,0 +1,16 @@
+{
+    "start": {
+        "center": [0.121,52.203],
+        "zoom": 16,
+        "bearing": -0,
+        "pitch":30
+    },
+    "imagery": {
+        "Light": "mapbox://styles/mapbox/light-v10?optimize=true",
+        "Dark": "mapbox://styles/mapbox/dark-v10?optimize=true",
+        "Outdoors": "mapbox://styles/mapbox/outdoors-v11?optimize=true",
+        "Satellite (Raw)": "mapbox://styles/mapbox/satellite-v9?optimize=true",
+        "Satellite (Labelled)": "mapbox://styles/mapbox/satellite-streets-v11?optimize=true",
+        "default": "Dark"
+    }
+}
