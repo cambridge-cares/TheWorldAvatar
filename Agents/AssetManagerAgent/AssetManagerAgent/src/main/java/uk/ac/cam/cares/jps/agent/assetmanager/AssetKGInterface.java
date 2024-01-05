@@ -854,7 +854,9 @@ public class AssetKGInterface {
         //instantiate
         ModifyQuery query = Queries.MODIFY();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
+            Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE,
+            Pref_TIME
         );
 
         query.insert(iri(deviceIRI).has(hasMaintenanceSchedule, iri(maintenanceScheduleIRI)));
