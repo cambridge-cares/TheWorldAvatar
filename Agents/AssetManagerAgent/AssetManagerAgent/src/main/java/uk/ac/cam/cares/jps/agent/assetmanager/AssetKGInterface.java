@@ -131,10 +131,24 @@ public class AssetKGInterface {
         AssetData.put("deviceIRI", deviceIRIString);
         AssetData.put("deviceTypeIRI", deviceTypeIRI);
         String id = AssetDataRaw.getString("ID");
+        String deliveryDate = AssetDataRaw.getString("deliveryDate");
         if (id.isBlank()){
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");  
-            LocalDateTime now = LocalDateTime.now();
-            String date = dtf.format(now);
+            String date;
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            if (deliveryDate.isBlank() || deliveryDate == null){
+                LocalDateTime now = LocalDateTime.now();
+                date = dtf.format(now);
+            }
+            else{
+                try {
+                    deliveryDate = dtf.format(LocalDate.parse(deliveryDate, dtf));
+                } catch (Exception e) {
+                    // TODO: handle exception
+                    throw new JPSRuntimeException("Failed to parse deliveryDate", e);
+                }
+                date = deliveryDate;
+            }
+            
 
             String idNum = String.valueOf(getLatestIDNum() +  1);
             id = date +"/"+ idNum;

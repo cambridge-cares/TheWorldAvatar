@@ -92,7 +92,8 @@ Takes in asset data in the request parameter. **If any data is missing please us
 |:----------------:|:---------------------------------------:|
 | Prefix           |                                         |             
 | AssetClass       | Y                                       |             
-| ID               | Y                                       |             
+| ID               | Y                                       |
+| deliveryDate     |                                         |            
 | Name             | Y                                       |
 | serialNum        |                                         |
 | modelNumber      |                                         |
@@ -128,11 +129,12 @@ The parameters:
     The prefix can be left blank on request and the asset instantiated will have the prefix mapped from `.\config\ontologyMap.properties`
 - AssetClass : The class of the asset type.
 
-- ID : Asset ID. The format accepted for the ID is `YYYY-MM-DD/[ID#]`, where the `ID#` is an integer. If an asset is part of another asset the format for `ID#` of `[int].[int].[int]. ...` is also accepted, where the hierarchy of the item is suggested by the point. This is usually used for systems of devices. When left blank, the date when the command was sent will be used and the largest number of `ID# + 1` will be used.
+- ID : Asset ID. The format accepted for the ID is `YYYY-MM-DD/[ID#]`, where the `ID#` is an integer. If an asset is part of another asset the format for `ID#` of `[int].[int].[int]. ...` is also accepted, where the hierarchy of the item is suggested by the point. This is usually used for systems of devices. When left blank, the delivery date  will be used as provided in `deliveryDate` and the largest number of `ID# + 1` will be used. If `deliveryDate` is left blank, then the date of when the command was sent will be used instead.
 
 If field is to be left empty, please use `""`.
 
 - Name : The name of the asset or a brief description of the asset
+- deliveryDate: The date of delivery of the assets. To be used when generating ID..
 
 - serialNum : The serial number of the asset
 - modelNumber : The model number of the asset

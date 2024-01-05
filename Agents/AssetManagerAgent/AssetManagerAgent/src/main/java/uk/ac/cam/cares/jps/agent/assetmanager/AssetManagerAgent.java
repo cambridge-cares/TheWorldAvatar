@@ -264,6 +264,10 @@ public class AssetManagerAgent extends JPSAgent{
         JSONObject message = new JSONObject();
         // handle input
         if (validateAssetData(assetData)){
+            if (!(assetData.has("deliveryDate"))){
+                assetData.put("deliveryDate", "");
+            }
+
             try {
                 JSONObject iriResult = instanceHandler.instantiate(assetData);
                 message.accumulate("Result", iriResult);
