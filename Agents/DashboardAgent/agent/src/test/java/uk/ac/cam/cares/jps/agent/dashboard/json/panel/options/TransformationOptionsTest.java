@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
+package uk.ac.cam.cares.jps.agent.dashboard.json.panel.options;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TransformationOptionsTest {
+public class TransformationOptionsTest {
     private static TransformationOptions options;
     private static final String SAMPLE_FIRST_ASSET_NAME = "asset one";
     private static final String SAMPLE_FIRST_ASSET_COL_NAME = "column7";

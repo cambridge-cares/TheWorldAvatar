@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
+package uk.ac.cam.cares.jps.agent.dashboard.json.panel.options;
 
 import java.util.*;
 

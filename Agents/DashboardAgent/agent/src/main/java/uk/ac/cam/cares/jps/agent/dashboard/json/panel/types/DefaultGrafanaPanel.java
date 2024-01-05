@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.options.TransformationOptions;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.List;

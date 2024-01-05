@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.TemporalInterval;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.UnitMapper;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.options.TransformationOptionsTest;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.ArrayList;
