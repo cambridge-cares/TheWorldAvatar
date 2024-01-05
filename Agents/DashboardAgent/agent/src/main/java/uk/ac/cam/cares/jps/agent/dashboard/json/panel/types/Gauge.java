@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author qhouyee
  */
-public class Gauge extends TemplatePanel {
+public class Gauge extends DefaultGrafanaPanel {
     private boolean showThresholdMarkers = false;
     private String colorMode = "palette-classic";
     private String colorSteps = "{\"color\":\"red\",\"value\":80}";

@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.panel;
 
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.layout.LayoutTemplate;
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.DefaultGrafanaPanel;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.types.TemplatePanel;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
@@ -72,16 +73,16 @@ public class PanelModel {
      * will have a separate row for improved organisation.
      *
      * @param panelQueue A collection containing all the required charts to be appended to these rows.
-     * @return row number.
      */
     private void separateRoomMeasurePerRow(Queue<TemplatePanel[]> panelQueue) {
         while (!panelQueue.isEmpty()) {
             // Retrieve the current room panels and their measure names
             TemplatePanel[] roomPanels = panelQueue.poll();
-            String measureName = roomPanels[0].getMeasure();
+            DefaultGrafanaPanel firstPanel = (DefaultGrafanaPanel) roomPanels[0];
+            String measureName = firstPanel.getMeasure();
             // Generate a row title, which may include unit if available
             String title = StringHelper.addSpaceBetweenCapitalWords(measureName);
-            title = roomPanels[2].getUnit().equals("null") ? title : title + "[" + roomPanels[2].getUnit() + "]";
+            title = firstPanel.getUnit().equals("null") ? title : title + "[" + firstPanel.getUnit() + "]";
             // Populate a new empty queue with only one array for this measure
             Queue<TemplatePanel[]> intermediateQueue = new ArrayDeque<>();
             intermediateQueue.offer(roomPanels);

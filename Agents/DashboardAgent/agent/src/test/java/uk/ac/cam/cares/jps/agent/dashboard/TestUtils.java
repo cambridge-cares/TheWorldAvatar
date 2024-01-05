@@ -365,6 +365,10 @@ public class TestUtils {
         results.append("\"id\": null,")
                 .append("\"title\": \"").append(title).append("\",")
                 .append("\"description\": \"").append(description).append("\",")
+                .append("\"gridPos\":{\"h\":").append(geometryPositions[0]).append(",")
+                .append("\"w\":").append(geometryPositions[1]).append(",")
+                .append("\"x\":").append(geometryPositions[2]).append(",")
+                .append("\"y\":").append(geometryPositions[3]).append("},")
                 .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(metadata[3]).append("\"},")
                 .append("\"targets\": [")
                 .append("{\"datasource\":{\"type\":\"postgres\",\"uid\":\"").append(metadata[3]).append("\"}, ")
@@ -373,10 +377,6 @@ public class TestUtils {
                 .append("\"groupBy\": [{\"property\":{\"type\":\"string\"},\"type\":\"groupBy\"}],\"limit\":50},")
                 .append("\"rawSql\":\"").append(rawSql).append("\"")
                 .append("}],")
-                .append("\"gridPos\":{\"h\":").append(geometryPositions[0]).append(",")
-                .append("\"w\":").append(geometryPositions[1]).append(",")
-                .append("\"x\":").append(geometryPositions[2]).append(",")
-                .append("\"y\":").append(geometryPositions[3]).append("},")
                 .append("\"transformations\":").append(transformations);
         return results.toString();
     }

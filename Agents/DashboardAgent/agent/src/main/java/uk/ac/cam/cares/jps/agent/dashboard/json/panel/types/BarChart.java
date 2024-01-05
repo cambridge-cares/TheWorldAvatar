@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author qhouyee
  */
-public class BarChart extends TemplatePanel {
+public class BarChart extends DefaultGrafanaPanel {
     // Default options
     private String orientationOption = "auto";
     private String stackingOption = "normal";

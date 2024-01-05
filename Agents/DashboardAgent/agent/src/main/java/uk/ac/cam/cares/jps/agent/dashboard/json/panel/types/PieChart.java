@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author qhouyee
  */
-public class PieChart extends TemplatePanel {
+public class PieChart extends DefaultGrafanaPanel {
     /**
      * Standard Constructor.
      *

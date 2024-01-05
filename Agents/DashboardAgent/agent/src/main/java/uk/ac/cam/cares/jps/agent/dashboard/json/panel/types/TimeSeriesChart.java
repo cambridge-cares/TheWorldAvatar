@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author qhouyee
  */
-public class TimeSeriesChart extends TemplatePanel {
+public class TimeSeriesChart extends DefaultGrafanaPanel {
     private String thresholdStyle = "off";
     private String thresholdKeyValue = "";
 
