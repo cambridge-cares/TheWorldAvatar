@@ -45,8 +45,8 @@ public class ClassAndProperties {
     public static final Prefix Pref_SAREF = SparqlBuilder.prefix("saref", iri(P_SAREF));
     public static final Prefix Pref_OM = SparqlBuilder.prefix("om2", iri(P_OM));
     public static final Prefix Pref_FIBO_AAP = SparqlBuilder.prefix("FIBOaap", iri(P_FIBO_AAP));
-    public static final Prefix Pref_FIBO_ORG_FORMAL = SparqlBuilder.prefix("FIBOorgFormal",iri(P_FIBO_ORG+"/FormalOrganizations/"));
-    public static final Prefix Pref_FIBO_ORG_ORGS = SparqlBuilder.prefix("FIBOorgOrg",iri(P_FIBO_ORG+"/Organizations/"));
+    public static final Prefix Pref_FIBO_ORG_FORMAL = SparqlBuilder.prefix("FIBOorgFormal",iri(P_FIBO_ORG+"FormalOrganizations/"));
+    public static final Prefix Pref_FIBO_ORG_ORGS = SparqlBuilder.prefix("FIBOorgOrg",iri(P_FIBO_ORG+"Organizations/"));
     public static final Prefix Pref_BOT = SparqlBuilder.prefix("bot", iri(P_BOT));
     public static final Prefix Pref_P2P_ITEM = SparqlBuilder.prefix("P2Pitem", iri(P_P2P_ITEM)); 
     public static final Prefix Pref_P2P_DOCLINE = SparqlBuilder.prefix("P2Pdocline", iri(P_P2P_DOCLINE)); 
@@ -144,7 +144,7 @@ public class ClassAndProperties {
     public static final Iri InvoiceLine = Pref_ASSET.iri("InvoiceLine");
     public static final Iri PriceDetails = Pref_ASSET.iri("PriceDetails");
     public static final Iri HomeTotalDiscountedAfterTaxPrice = Pref_ASSET.iri("HomeTotalDiscountedAfterTaxPrice");
-    public static final Iri MaintenanceSchedule = Pref_ASSET.iri("MainetenanceSchedule");
+    public static final Iri MaintenanceSchedule = Pref_ASSET.iri("MaintenanceSchedule");
     public static final Iri MaintenanceTask = Pref_ASSET.iri("MaintenanceTask");
 
     public static final Iri Person = Pref_FIBO_AAP.iri("Person");
