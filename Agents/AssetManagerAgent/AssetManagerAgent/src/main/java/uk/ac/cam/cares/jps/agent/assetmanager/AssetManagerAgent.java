@@ -269,6 +269,7 @@ public class AssetManagerAgent extends JPSAgent{
                 message.accumulate("Result", iriResult);
             } catch (Exception e) {
                 message.accumulate("Result", "Instantiation failed: " + e);
+                throw new JPSRuntimeException("Instantiation failed: ", e);
             }
             
         }
@@ -277,6 +278,9 @@ public class AssetManagerAgent extends JPSAgent{
                 "Asset data is invalid. "+
                 "Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and ontology prefix and class."
             );
+            throw new JPSRuntimeException("Instantiation failed: " + 
+                "Asset data is invalid. "+
+                "Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and ontology prefix and class.");
         }
         return message;
     }
@@ -291,6 +295,9 @@ public class AssetManagerAgent extends JPSAgent{
                 "Maintenance data is invalid. "+
                 "Input requires minimum of ID (yyyy-mm-dd/id), service provider, and last OR next service date"
             );
+            throw new JPSRuntimeException("Instantiation failed: " + 
+                "Maintenance data is invalid. "+
+                "Input requires minimum of ID (yyyy-mm-dd/id), service provider, and last OR next service date");
         }
 
         return message;
@@ -368,6 +375,7 @@ public class AssetManagerAgent extends JPSAgent{
         }
         catch(Exception e) {
             message.accumulate("Result", "Failed to print qr codes: " + e);
+            throw new JPSRuntimeException("Failed to print qrcodes:", e);
         }
         return message;
     }
@@ -564,6 +572,7 @@ public class AssetManagerAgent extends JPSAgent{
                 message.accumulate("Result", "PDF saved successfully");
             } catch (Exception e) {
                 message.accumulate("Result","Failed to save PDF:"+ e);
+                throw new JPSRuntimeException("Failed to save PDF", e);
             }
         }
         //Create manual instance
