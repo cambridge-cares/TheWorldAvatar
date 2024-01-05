@@ -14,6 +14,7 @@ import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.iri.impl.Main;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,12 +68,18 @@ public class HeatEmissionAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (validateInput(requestParams)) {
-
 			if (requestParams.getString("location").equalsIgnoreCase("ji")) {
 				JurongIsland ji = new JurongIsland();
 				return ji.calculateHeat(requestParams);
-			} else
-				return requestParams;
+			} else {
+				Mainland ml = null;
+				if (requestParams.has("endpoint")) {
+					String endpoint = requestParams.getString("endpoint");
+					ml = new Mainland(endpoint, endpoint);
+				} else
+					ml = new Mainland();
+				return ml.calculateHeat();
+			}
 
 		} else {
 			System.out.println("bad input.\n");

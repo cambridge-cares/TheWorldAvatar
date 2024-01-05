@@ -8,4 +8,4 @@ services:
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     ports:
-      - "8084:8080"
+      - "8082:8082"
