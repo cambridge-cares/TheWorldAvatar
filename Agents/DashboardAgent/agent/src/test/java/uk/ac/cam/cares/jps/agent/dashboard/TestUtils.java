@@ -376,6 +376,25 @@ public class TestUtils {
     }
 
     /**
+     * Generates the common template panel json model with the default data source.
+     *
+     * @return The partial json model in string format.
+     */
+    public static String genExpectedCommonTemplatePanelJson(String title, String description, String panelType, int[] geometryPositions) {
+        StringBuilder results = new StringBuilder();
+        results.append("\"id\": null,")
+                .append("\"title\": \"").append(title).append("\",")
+                .append("\"description\": \"").append(description).append("\",")
+                .append("\"type\": \"").append(panelType).append("\",")
+                .append(DataSourceTest.genExpectedDataSource())
+                .append("\"gridPos\":{\"h\":").append(geometryPositions[0]).append(",")
+                .append("\"w\":").append(geometryPositions[1]).append(",")
+                .append("\"x\":").append(geometryPositions[2]).append(",")
+                .append("\"y\":").append(geometryPositions[3]).append("},");
+        return results.toString();
+    }
+
+    /**
      * Generates the common template panel json model.
      *
      * @return The partial json model in string format.
