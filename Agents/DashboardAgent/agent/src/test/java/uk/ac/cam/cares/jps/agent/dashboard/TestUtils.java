@@ -348,8 +348,8 @@ public class TestUtils {
      *
      * @return The partial json model in string format.
      */
-    public static String genExpectedCommonDefaultGrafanaPanelJson(String title, String description, String panelType, String transformations, String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
-        return genExpectedCommonDefaultGrafanaPanelJson(title, description, panelType, transformations, metadata, geometryPositions, itemDetails, "");
+    public static String genExpectedCommonDefaultGrafanaPanelJson(String title, String description, String panelType, String transformations, String[] metadata, int[] geometryPositions) {
+        return genExpectedCommonDefaultGrafanaPanelJson(title, description, panelType, transformations, metadata, geometryPositions, "");
     }
 
     /**
@@ -357,7 +357,7 @@ public class TestUtils {
      *
      * @return The partial json model in string format.
      */
-    public static String genExpectedCommonDefaultGrafanaPanelJson(String title, String description, String panelType, String transformations, String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
+    public static String genExpectedCommonDefaultGrafanaPanelJson(String title, String description, String panelType, String transformations, String[] metadata, int[] geometryPositions, String query) {
         String formattedMeasure = metadata[0].toLowerCase().replaceAll("\\s", "");
         String formattedItemGroup = metadata[1].toLowerCase().replaceAll("\\s", "");
         String rawSql = query.isEmpty() ? "SELECT time AS \\\"time\\\", ${" + formattedMeasure + formattedItemGroup + ":csv} FROM \\\"" + metadata[2] + "\\\" WHERE $__timeFilter(time)"
