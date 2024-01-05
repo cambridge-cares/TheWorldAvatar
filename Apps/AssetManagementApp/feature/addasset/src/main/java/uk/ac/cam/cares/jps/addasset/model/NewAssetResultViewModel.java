@@ -29,7 +29,8 @@ public class NewAssetResultViewModel extends ViewModel {
         this.qrPrintRepository = qrPrintRepository;
     }
 
-    public void addNewAsset(AssetInfo assetInfo) {
+    public void addNewAsset() {
+        AssetInfo assetInfo = assetInfoRepository.getAssetInfo();
         assetInfoRepository.createNewAsset(assetInfo, new RepositoryCallback<JSONObject>() {
             @Override
             public void onSuccess(JSONObject result) {

@@ -6,8 +6,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -102,7 +100,7 @@ public class AssetNetworkSource {
                     result.put(PURCHASE_PRICE, rawInput.get(key) + " S$");
                     break;
                 case "itemComment":
-                    result.put(ITEM_DESCRIPTION, rawInput.get(key));
+                    result.put(COMMENTS, rawInput.get(key));
                     break;
                 case "serialNum":
                     result.put(SERIAL_NUMBER, rawInput.get(key));

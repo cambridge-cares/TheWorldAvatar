@@ -4,7 +4,6 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.IRI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.REFERENCE_LABEL;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.TYPE;
-import static uk.ac.cam.cares.jps.utils.SerializationUtils.deserializeStringToObject;
 import static uk.ac.cam.cares.jps.utils.SerializationUtils.serializeObjectToString;
 
 import android.content.Intent;
@@ -12,12 +11,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -69,30 +65,22 @@ public class AssetInfoFragment extends Fragment {
         if (uri.getPath().contains("/info_page")) {
             showAssetInfoForGivenUri(view, getArguments().getString("uri"));
         } else if (uri.getPath().contains("/asset_summary")) {
-            try {
-                AssetInfo assetInfo = (AssetInfo) deserializeStringToObject(getArguments().getString("assetinfo"));
-                String operation = getArguments().getString("operation");
+            AssetInfo assetInfo = viewModel.assetInfo.getValue();
+            String operation = getArguments().getString("operation");
 
-                int appBarTitle = 0;
-                if (operation.equals("add")) {
-                    appBarTitle = R.string.add_asset;
-                } else if (operation.equals("edit")) {
-                    appBarTitle = R.string.edit_asset;
-                }
-
-                NavDeepLinkRequest request = null;
-                try {
-                    request = NavDeepLinkRequest.Builder
-                            .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/new_asset_result?assetinfo=" + serializeObjectToString(assetInfo) + "&operation=" + operation))
-                            .build();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                showAssetSummary(view, assetInfo, appBarTitle, request);
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
+            int appBarTitle = 0;
+            if (operation.equals("add")) {
+                appBarTitle = R.string.add_asset;
+            } else if (operation.equals("edit")) {
+                appBarTitle = R.string.edit_asset;
             }
+
+            NavDeepLinkRequest request = null;
+            request = NavDeepLinkRequest.Builder
+                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/new_asset_result?operation=" + operation))
+                    .build();
+
+            showAssetSummary(view, appBarTitle, request);
         }
 
     }
@@ -115,6 +103,10 @@ public class AssetInfoFragment extends Fragment {
         binding.topAppBar.inflateMenu(R.menu.asset_info_menu);
 
         viewModel.assetInfo.observe(getViewLifecycleOwner(), assetInfo -> {
+            if (assetInfo == null) {
+                return;
+            }
+
             if (!binding.topAppBar.hasOnClickListeners()) {
                 binding.topAppBar.setOnMenuItemClickListener(menuItem -> {
                     if (menuItem.getItemId() == R.id.edit) {
@@ -154,13 +146,9 @@ public class AssetInfoFragment extends Fragment {
     private void editItemClicked() {
         AssetInfo assetInfo = viewModel.getAssetInfo().getValue();
         NavDeepLinkRequest request = null;
-        try {
-            request = NavDeepLinkRequest.Builder
-                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/edit_asset?assetinfo=" + serializeObjectToString(assetInfo)))
-                    .build();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        request = NavDeepLinkRequest.Builder
+                .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/edit_asset"))
+                .build();
         NavHostFragment.findNavController(this).navigate(request);
     }
 
@@ -204,9 +192,8 @@ public class AssetInfoFragment extends Fragment {
         }
     }
 
-    private void showAssetSummary(View view, AssetInfo assetInfo, int appBarTitle, NavDeepLinkRequest request) {
-        // NOTICE: assetinfo is not hosted in ViewModel
-        assetInfoAdapter = new AssetInfoAdapter(assetInfo, false);
+    private void showAssetSummary(View view, int appBarTitle, NavDeepLinkRequest request) {
+        assetInfoAdapter = new AssetInfoAdapter(viewModel.assetInfo.getValue(), false);
         binding.assetInfoRv.setLayoutManager(new LinearLayoutManager(view.getContext()));
         binding.assetInfoRv.setAdapter(assetInfoAdapter);
         hideShimmer();

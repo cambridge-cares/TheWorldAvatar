@@ -35,7 +35,6 @@ public class TabAdapter extends FragmentStateAdapter {
         } else if (position == 1) {
             return new TabFragment(Arrays.asList(PURCHASE_SECTION_TITLE, ITEM_SECTION_TITLE), viewModel);
         } else {
-            // todo: maybe need a separate fragment for datasheet, because the section items look very different from other input fields
             return new TabFragment(Arrays.asList(SPEC_SHEET_SECTION_TITLE, MANUAL_SECTION_TITLE), viewModel);
         }
     }

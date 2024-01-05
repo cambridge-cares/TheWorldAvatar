@@ -21,13 +21,14 @@ public class AssetInfoViewModel extends ViewModel {
 
     AssetInfoRepository assetInfoRepository;
 
-    MutableLiveData<AssetInfo> assetInfo = new MutableLiveData<>();
+    MutableLiveData<AssetInfo> assetInfo;
     MutableLiveData<Integer> errorMessage = new MutableLiveData<>();
 
     @Inject
     AssetInfoViewModel(AssetInfoRepository assetInfoRepository) {
         BasicConfigurator.configure();
         this.assetInfoRepository = assetInfoRepository;
+        assetInfo = new MutableLiveData<>(assetInfoRepository.getAssetInfo());
     }
 
     void getAssetInfoByIri(String assetUri) {

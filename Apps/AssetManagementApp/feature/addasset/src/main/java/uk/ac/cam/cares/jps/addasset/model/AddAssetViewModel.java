@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import uk.ac.cam.cares.jps.data.assetinfo.AssetInfoRepository;
 import uk.ac.cam.cares.jps.model.AssetInfo;
 import uk.ac.cam.cares.jps.data.otherinfo.OtherInfoRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
@@ -29,6 +30,7 @@ public class AddAssetViewModel extends ViewModel {
 
     private final Logger LOGGER = Logger.getLogger(AddAssetViewModel.class);
     OtherInfoRepository otherInfoRepository;
+    AssetInfoRepository assetInfoRepository;
     private String editMode = "add";
 
 
@@ -51,14 +53,15 @@ public class AddAssetViewModel extends ViewModel {
     private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_FILE, MANUAL_FILE);
     private final List<String> disallowNewInstanceInputForDropDown = Arrays.asList(TYPE, FACILITY, ROOM, WORKSPACE, STORED_IN);
     private final List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
-    private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SPEC_SHEET_COMMENT, MANUAL_COMMENT);
+    private final List<String> multiLineInputFieldKeys = Arrays.asList(COMMENTS, SPEC_SHEET_COMMENT, MANUAL_COMMENT);
 
     @Inject
-    AddAssetViewModel(OtherInfoRepository otherInfoRepository) {
+    AddAssetViewModel(OtherInfoRepository otherInfoRepository, AssetInfoRepository assetInfoRepository) {
         BasicConfigurator.configure();
         initInputFieldsDataModel();
 
         this.otherInfoRepository = otherInfoRepository;
+        this.assetInfoRepository = assetInfoRepository;
     }
 
     private void initInputFieldsDataModel() {
@@ -146,7 +149,6 @@ public class AddAssetViewModel extends ViewModel {
             }
         }
 
-        // todo: redesign LocationDropDown and DropDown
         if (((LocationDropDownDataModel)inputFieldModels.get(BUILDING)).getMatched() != null) {
             if (inputFieldModels.get(FACILITY).getFieldValue().isEmpty()) {
                 inputFieldModels.get(FACILITY).getIsMissingField().setValue(true);
@@ -179,7 +181,7 @@ public class AddAssetViewModel extends ViewModel {
         return hasError;
     }
 
-    public AssetInfo getAssetInfo(Context context) {
+    public AssetInfo collectAssetInfoFromUI(Context context) {
         AssetInfo assetInfo = new AssetInfo();
         for (AssetPropertyDataModel field : inputFieldModels.values()) {
             if (field instanceof DataFileDataModel) {
@@ -215,5 +217,13 @@ public class AddAssetViewModel extends ViewModel {
 
     public void setEditMode(String editMode) {
         this.editMode = editMode;
+    }
+
+    public void setAssetInfoToRepo(AssetInfo assetInfo) {
+        assetInfoRepository.setAssetInfo(assetInfo);
+    }
+
+    public AssetInfo getAssetInfoFromRepo() {
+        return assetInfoRepository.getAssetInfo();
     }
 }

@@ -1,8 +1,5 @@
 package uk.ac.cam.cares.jps.addasset;
 
-import static uk.ac.cam.cares.jps.utils.SerializationUtils.deserializeStringToObject;
-import static uk.ac.cam.cares.jps.utils.SerializationUtils.serializeObjectToString;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,7 +22,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,19 +60,15 @@ public class AddAssetFragment extends Fragment {
             loadUIComponent();
         } else if (uri.getPath().contains("/edit_asset")) {
             ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.edit_asset);
-            try {
-                AssetInfo assetInfo = (AssetInfo) deserializeStringToObject(getArguments().getString("assetinfo"));
-                viewModel.initFieldsWithAssetInfo(assetInfo);
-                viewModel.setEditMode("edit");
-                loadUIComponent();
+            AssetInfo assetInfo = viewModel.getAssetInfoFromRepo();
+            viewModel.initFieldsWithAssetInfo(assetInfo);
+            viewModel.setEditMode("edit");
+            loadUIComponent();
 
-                binding.doneBt.setOnClickListener(view1 -> {
-                    // todo: the check may not pass for edit function. Some mandatory fields are missing from the existing data, and in test phase the drop down list is not completed
-                    UiUtils.showNotImplementedDialog(requireContext());
-                });
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            binding.doneBt.setOnClickListener(view1 -> {
+                // todo: the check may not pass for edit function. Some mandatory fields are missing from the existing data, and in test phase the drop down list is not completed
+                UiUtils.showNotImplementedDialog(requireContext());
+            });
 
         }
 
@@ -104,6 +96,7 @@ public class AddAssetFragment extends Fragment {
                 return;
             }
 
+            viewModel.setAssetInfoToRepo(viewModel.collectAssetInfoFromUI(requireContext()));
             // show summary page
             NavHostFragment.findNavController(this).navigate(getRequest());
         });
@@ -111,14 +104,10 @@ public class AddAssetFragment extends Fragment {
 
     private NavDeepLinkRequest getRequest() {
         NavDeepLinkRequest request = null;
-        try {
-            request = NavDeepLinkRequest.Builder
-                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/asset_summary?assetinfo=" + serializeObjectToString(viewModel.getAssetInfo(requireContext()))  + "&operation=" + viewModel.getEditMode()))
-                    .build();
-            return request;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        request = NavDeepLinkRequest.Builder
+                .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/asset_summary?operation=" + viewModel.getEditMode()))
+                .build();
+        return request;
     }
 
 }

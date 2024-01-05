@@ -6,7 +6,7 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.DELIVERY_ORDER_NUMBER;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.FACILITY;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.INVOICE_NUMBER;
-import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.ITEM_DESCRIPTION;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.COMMENTS;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_COMMENT;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_FILE_URI;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_URL;
@@ -28,7 +28,6 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.VENDOR;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.WORKSPACE;
 
 import com.android.volley.ServerError;
-import com.android.volley.VolleyError;
 
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -56,7 +55,7 @@ import uk.ac.cam.cares.jps.network.datasheet.DataSheetNetworkSource;
 public class AssetInfoRepository {
     private final Logger LOGGER = Logger.getLogger(AssetInfoRepository.class);
 
-    AssetNetworkSource assetInfoNetworkSource;
+    AssetNetworkSource assetNetworkSource;
     DataSheetNetworkSource dataSheetNetworkSource;
     SettingRepository settingRepository;
     List<String> visibleProperties = new ArrayList<>();
@@ -64,14 +63,14 @@ public class AssetInfoRepository {
     Map<String, String> keyConversionTable = getKeyConversionTable();
 
     @Inject
-    public AssetInfoRepository(AssetNetworkSource assetInfoNetworkSource, SettingRepository settingRepository, DataSheetNetworkSource dataSheetNetworkSource) {
-        this.assetInfoNetworkSource = assetInfoNetworkSource;
+    public AssetInfoRepository(AssetNetworkSource assetNetworkSource, SettingRepository settingRepository, DataSheetNetworkSource dataSheetNetworkSource) {
+        this.assetNetworkSource = assetNetworkSource;
         this.settingRepository = settingRepository;
         this.dataSheetNetworkSource = dataSheetNetworkSource;
     }
 
     public void getAssetInfoByIri(String iri, RepositoryCallback<AssetInfo> callback) {
-        Completable assetNetworkCall = Completable.create(emitter -> assetInfoNetworkSource.getAssetInfoByIri(iri, asset -> {
+        Completable assetNetworkCall = Completable.create(emitter -> assetNetworkSource.getAssetInfoByIri(iri, asset -> {
             assetInfo = new AssetInfo(asset.getProperties());
             emitter.onComplete();
         }, emitter::onError));
@@ -156,7 +155,7 @@ public class AssetInfoRepository {
 
             assetData.put(keyConversionTable.get(ASSIGNED_TO), assetInfo.getProperty(ASSIGNED_TO));
 
-            assetData.put(keyConversionTable.get(ITEM_DESCRIPTION), assetInfo.getProperty(ITEM_DESCRIPTION));
+            assetData.put(keyConversionTable.get(COMMENTS), assetInfo.getProperty(COMMENTS));
             assetData.put(keyConversionTable.get(INVOICE_NUMBER), assetInfo.getProperty(INVOICE_NUMBER));
             assetData.put(keyConversionTable.get(DELIVERY_ORDER_NUMBER), assetInfo.getProperty(DELIVERY_ORDER_NUMBER));
             assetData.put(keyConversionTable.get(PURCHASE_ORDER_NUMBER), assetInfo.getProperty(PURCHASE_ORDER_NUMBER));
@@ -167,7 +166,7 @@ public class AssetInfoRepository {
             JSONObject param = new JSONObject();
             param.put("assetData", assetData);
 
-            assetInfoNetworkSource.addAsset(param, response -> addDataSheet(assetInfo, response, callback), callback::onFailure);
+            assetNetworkSource.addAsset(param, response -> addDataSheet(assetInfo, response, callback), callback::onFailure);
 
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -201,7 +200,7 @@ public class AssetInfoRepository {
 
         table.put(ASSIGNED_TO, "AssignedTo");
 
-        table.put(ITEM_DESCRIPTION, "ItemComment");
+        table.put(COMMENTS, "ItemComment");
         table.put(INVOICE_NUMBER, "invoiceNum");
         table.put(DELIVERY_ORDER_NUMBER, "DeliveryOrderNum");
         table.put(PURCHASE_ORDER_NUMBER, "PurchaseOrderNum");
@@ -256,5 +255,13 @@ public class AssetInfoRepository {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void setAssetInfo(AssetInfo assetInfo) {
+        this.assetInfo = assetInfo;
+    }
+
+    public AssetInfo getAssetInfo() {
+        return this.assetInfo;
     }
 }

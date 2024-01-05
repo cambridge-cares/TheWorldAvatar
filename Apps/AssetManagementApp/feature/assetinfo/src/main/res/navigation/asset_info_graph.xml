@@ -20,11 +20,7 @@
 
 
         <deepLink
-            app:uri="android-app://uk.ac.cam.cares.jps.app/asset_summary?assetinfo={assetinfo}&amp;operation={operation}">
-            <argument
-                android:name="assetinfo"
-                app:argType="string"
-                />
+            app:uri="android-app://uk.ac.cam.cares.jps.app/asset_summary?operation={operation}">
             <argument
                 android:name="operation"
                 app:argType="string"

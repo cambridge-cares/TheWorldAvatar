@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.addasset;
 
 import static uk.ac.cam.cares.jps.ui.UiUtils.showNotImplementedDialog;
-import static uk.ac.cam.cares.jps.utils.SerializationUtils.deserializeStringToObject;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -69,19 +68,12 @@ public class NewAssetResultFragment extends Fragment {
             }
         });
 
-        try {
-            AssetInfo assetInfo = (AssetInfo) deserializeStringToObject(getArguments().getString("assetinfo"));
-            if (getArguments().getString("operation").equals("add")) {
-                viewModel.addNewAsset(assetInfo);
-            } else if (getArguments().getString("operation").equals("edit")) {
-                // todo: not implemented yet
-                showNotImplementedDialog(requireContext());
-            }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        if (getArguments().getString("operation").equals("add")) {
+            viewModel.addNewAsset();
+        } else if (getArguments().getString("operation").equals("edit")) {
+            // todo: not implemented yet
+            showNotImplementedDialog(requireContext());
         }
 
     }

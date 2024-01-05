@@ -32,7 +32,7 @@ public class AssetInfoConstant {
     // ITEM KEYS
     static public final String ITEM_SECTION_TITLE = "Item";
     static public final String PURCHASE_PRICE = "Purchase Price";
-    static public final String ITEM_DESCRIPTION = "Comments";
+    static public final String COMMENTS = "Comments";
     static public final String SERVICE_CATEGORY = "Service Category";
     static public final String SERVICE_CODE = "Service Code";
 
@@ -56,6 +56,12 @@ public class AssetInfoConstant {
     static public final String MANUAL_FILE_URI = "Manual File Uri"; // no view related to this field, served as a data holder only
     static public final String MANUAL_COMMENT = "Manual Comment";
 
+    static public final String INVOICE_PHOTO_SECTION = "Invoice Photo";
+    static public final String INVOICE_PHOTO_FILE = "Invoice File";
+
+    static public final String DO_PHOTO_SECTION = "Invoice Photo";
+    static public final String DO_PHOTO_FILE = "Invoice File";
+
     // MAINTENANCE KEYS
     static public final String MAINTENANCE_SECTION_TITLE = "Maintenance";
     static public final String MAINTENANCE_SCHEDULE_FOR = "Maintenance scheduled for";
@@ -68,7 +74,7 @@ public class AssetInfoConstant {
     static public final List<String> basicInfoOrder = new ArrayList<>(Arrays.asList(REFERENCE_LABEL, TYPE, ASSIGNED_TO, IRI, INVENTORY_ID));
     static public final List<String> locationInfoOrder = new ArrayList<>(Arrays.asList(BUILDING, FACILITY, ROOM, WORKSPACE, STORED_IN));
     static public final List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList(VENDOR, MANUFACTURER, MANUFACTURE_URL, SERIAL_NUMBER, MODEL_NUMBER));
-    static public final List<String> itemInfoOrder = new ArrayList<>(Arrays.asList(ITEM_DESCRIPTION, PURCHASE_PRICE, SERVICE_CATEGORY, SERVICE_CODE));
+    static public final List<String> itemInfoOrder = new ArrayList<>(Arrays.asList(COMMENTS, PURCHASE_PRICE, SERVICE_CATEGORY, SERVICE_CODE));
     static public final List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER));
     static public final List<String> maintenanceInfoOrder = new ArrayList<>(Arrays.asList(MAINTENANCE_SCHEDULE_FOR, MAINTENANCE_MAINTAINED_BY, MAINTENANCE_INTERVAL));
     static public final List<String> manualInfoOrder = new ArrayList<>(Arrays.asList(MANUAL_URL, MANUAL_COMMENT, MANUAL_FILE));

@@ -5,23 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-<!--    <com.google.android.material.textfield.TextInputLayout-->
-<!--        xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-<!--        android:id="@+id/input_layout"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:paddingBottom="@dimen/component_margin_small"-->
-<!--        android:hint="@string/file_name">-->
-
-<!--        <com.google.android.material.textfield.TextInputEditText-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:id="@+id/edit_text"-->
-<!--            />-->
-
-<!--    </com.google.android.material.textfield.TextInputLayout>-->
-
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
