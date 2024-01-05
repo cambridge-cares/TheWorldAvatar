@@ -1,0 +1,35 @@
+{
+    "ServiceSpec": {
+        "Name": "heatemissionagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "heatemissionagent:2.0.0",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "heat_emission_agent": {
+            "url": "http://localhost:8080/heatemissionagent/",
+            "externalPath": "/heatemissionagent/"
+        }
+    }
+}
