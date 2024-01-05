@@ -148,8 +148,7 @@ public class GaugeTest {
             double maxValue = Float.parseFloat(thresholds[1]) + 1.0;
             minMax = "\"min\":" + minValue + ",\"max\":" + maxValue + ",";
         }
-        return "{" + TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, query) +
-                ",\"type\": \"gauge\"," +
+        return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "gauge", expectedTransformations, metadata, geometryPositions, itemDetails, query) +
                 "\"fieldConfig\":{" +
                 "\"defaults\":{\"color\":{\"mode\": \"" + colorMode + "\"}," +
                 "\"thresholds\":{\"mode\": \"absolute\"," +

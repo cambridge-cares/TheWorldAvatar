@@ -343,32 +343,26 @@ public class TestUtils {
     }
 
     /**
-     * An overloaded method to generate the common template panel json model with no query.
+     * An overloaded method to generate the common default grafana panel json model with no query.
      *
      * @return The partial json model in string format.
      */
-    public static String genExpectedCommonTemplatePanelJson(String title, String description, String transformations, String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
-        return genExpectedCommonTemplatePanelJson(title, description, transformations, metadata, geometryPositions, itemDetails, "");
+    public static String genExpectedCommonDefaultGrafanaPanelJson(String title, String description, String panelType, String transformations, String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
+        return genExpectedCommonDefaultGrafanaPanelJson(title, description, panelType, transformations, metadata, geometryPositions, itemDetails, "");
     }
 
     /**
-     * Generates the common template panel json model.
+     * Generates the common default grafana panel json model.
      *
      * @return The partial json model in string format.
      */
-    public static String genExpectedCommonTemplatePanelJson(String title, String description, String transformations, String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
+    public static String genExpectedCommonDefaultGrafanaPanelJson(String title, String description, String panelType, String transformations, String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
         String formattedMeasure = metadata[0].toLowerCase().replaceAll("\\s", "");
         String formattedItemGroup = metadata[1].toLowerCase().replaceAll("\\s", "");
         String rawSql = query.isEmpty() ? "SELECT time AS \\\"time\\\", ${" + formattedMeasure + formattedItemGroup + ":csv} FROM \\\"" + metadata[2] + "\\\" WHERE $__timeFilter(time)"
                 : query;
         StringBuilder results = new StringBuilder();
-        results.append("\"id\": null,")
-                .append("\"title\": \"").append(title).append("\",")
-                .append("\"description\": \"").append(description).append("\",")
-                .append("\"gridPos\":{\"h\":").append(geometryPositions[0]).append(",")
-                .append("\"w\":").append(geometryPositions[1]).append(",")
-                .append("\"x\":").append(geometryPositions[2]).append(",")
-                .append("\"y\":").append(geometryPositions[3]).append("},")
+        results.append(genExpectedCommonTemplatePanelJson(title, description, panelType, geometryPositions))
                 .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(metadata[3]).append("\"},")
                 .append("\"targets\": [")
                 .append("{\"datasource\":{\"type\":\"postgres\",\"uid\":\"").append(metadata[3]).append("\"}, ")
@@ -377,7 +371,25 @@ public class TestUtils {
                 .append("\"groupBy\": [{\"property\":{\"type\":\"string\"},\"type\":\"groupBy\"}],\"limit\":50},")
                 .append("\"rawSql\":\"").append(rawSql).append("\"")
                 .append("}],")
-                .append("\"transformations\":").append(transformations);
+                .append("\"transformations\":").append(transformations).append(",");
+        return results.toString();
+    }
+
+    /**
+     * Generates the common template panel json model.
+     *
+     * @return The partial json model in string format.
+     */
+    public static String genExpectedCommonTemplatePanelJson(String title, String description, String panelType, int[] geometryPositions) {
+        StringBuilder results = new StringBuilder();
+        results.append("\"id\": null,")
+                .append("\"title\": \"").append(title).append("\",")
+                .append("\"description\": \"").append(description).append("\",")
+                .append("\"type\": \"").append(panelType).append("\",")
+                .append("\"gridPos\":{\"h\":").append(geometryPositions[0]).append(",")
+                .append("\"w\":").append(geometryPositions[1]).append(",")
+                .append("\"x\":").append(geometryPositions[2]).append(",")
+                .append("\"y\":").append(geometryPositions[3]).append("},");
         return results.toString();
     }
 }

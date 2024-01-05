@@ -32,7 +32,7 @@ public class BarChart extends DefaultGrafanaPanel {
      * @param chartType          An integer option to create a specific bar chart panel. 1: measure for the current month; 2: measure trends over last period; 3: measure trends over current period.
      */
     public BarChart(String measure, String itemGroup, String unit, String databaseId, List<String[]> timeSeriesMetadata, int chartType) {
-        super(measure, databaseId);
+        super("barchart", measure, databaseId);
         // Sets the unit for retrieval
         super.setUnit(unit);
         // Set up the title content as well as the empty description and query as an initialisation step
@@ -123,8 +123,6 @@ public class BarChart extends DefaultGrafanaPanel {
     @Override
     public String construct(int height, int width, int xPosition, int yPosition) {
         return "{" + super.genCommonJson(height, width, xPosition, yPosition) +
-                // Chart type must be set to time series
-                ",\"type\": \"barchart\"," +
                 // Plugin version
                 "\"pluginVersion\": \"10.0.3\"," +
                 // Field Configuration

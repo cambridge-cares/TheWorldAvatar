@@ -115,8 +115,7 @@ public class TimeSeriesChartTest {
         String thresholdSteps = thresholds.length == 0 ? "" : "\"thresholds\":{\"mode\": \"absolute\", \"steps\": [" +
                 "{\"color\":\"red\",\"value\":null},{\"color\":\"green\",\"value\":" + thresholds[0] + "}," +
                 "{\"color\":\"red\",\"value\":" + thresholds[1] + "}]},";
-        return "{" + TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails) +
-                ",\"type\": \"timeseries\"," +
+        return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "timeseries", expectedTransformations, metadata, geometryPositions, itemDetails) +
                 "\"fieldConfig\": { " +
                 "\"defaults\": {\"color\": {\"mode\": \"palette-classic\"}," +
                 "\"custom\":{" + "\"axisCenteredZero\":false,\"axisColorMode\":\"text\"," +

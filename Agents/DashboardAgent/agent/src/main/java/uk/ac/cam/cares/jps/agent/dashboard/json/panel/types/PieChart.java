@@ -22,7 +22,7 @@ public class PieChart extends DefaultGrafanaPanel {
      * @param timeSeriesMetadata A list of items and their metadata for the specified measure.
      */
     public PieChart(String measure, String itemGroup, String unit, String databaseId, List<String[]> timeSeriesMetadata) {
-        super(measure, itemGroup, databaseId, timeSeriesMetadata);
+        super("piechart", measure, itemGroup, databaseId, timeSeriesMetadata);
         // Sets the unit for retrieval
         super.setUnit(unit);
         // Title is: Latest Measure Distribution [Unit]
@@ -46,7 +46,6 @@ public class PieChart extends DefaultGrafanaPanel {
     @Override
     public String construct(int height, int width, int xPosition, int yPosition) {
         return "{" + super.genCommonJson(height, width, xPosition, yPosition) +
-                ",\"type\":\"piechart\"," +
                 // Plugin version
                 "\"pluginVersion\":\"10.0.3\"," +
                 // Field Configuration

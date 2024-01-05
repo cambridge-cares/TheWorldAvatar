@@ -9,11 +9,15 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.panel.types;
 public abstract class TemplatePanel {
     private String title;
     private String description;
+    private final String panelType;
 
     /**
      * A constructor that sets up common aspects of the panels.
+     *
+     * @param panelType The panel type that has to be included for the dashboard.
      */
-    protected TemplatePanel() {
+    protected TemplatePanel(String panelType) {
+        this.panelType = panelType;
     }
 
     /**
@@ -43,6 +47,7 @@ public abstract class TemplatePanel {
                 "\"title\": \"" + this.title + "\"," +
                 // Description for this panel
                 "\"description\": \"" + this.description + "\"," +
+                "\"type\": \"" + this.panelType + "\"," +
                 // Grid position: Two panels of height:4 and width:6 will be found at (0,0), (6,4) coordinates
                 // Height and width are dimensions of the panel
                 "\"gridPos\":{\"h\":" + height + ",\"w\":" + width +

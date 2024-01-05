@@ -43,7 +43,7 @@ public class Gauge extends DefaultGrafanaPanel {
      * @param calcAggregate      A boolean indicator that will generate a gauge chart displaying the current aggregate value within the group.
      */
     public Gauge(String measure, String itemGroup, String unit, String databaseId, List<String[]> timeSeriesMetadata, String[] thresholds, boolean calcAggregate) {
-        super(measure, itemGroup, databaseId, timeSeriesMetadata);
+        super("gauge", measure, itemGroup, databaseId, timeSeriesMetadata);
         // Sets the unit for retrieval
         super.setUnit(unit);
         // Title and description depends on requirements
@@ -110,8 +110,6 @@ public class Gauge extends DefaultGrafanaPanel {
     @Override
     public String construct(int height, int width, int xPosition, int yPosition) {
         return "{" + super.genCommonJson(height, width, xPosition, yPosition) +
-                // Chart type must be set to gauge
-                ",\"type\": \"gauge\"," +
                 // Field Configuration
                 "\"fieldConfig\":{" +
                 // Default field configuration

@@ -27,7 +27,7 @@ public class TimeSeriesChart extends DefaultGrafanaPanel {
      * @param thresholds         An array of threshold: Position 1 - min threshold; Position 2- max threshold.
      */
     public TimeSeriesChart(String measure, String itemGroup, String unit, String databaseId, List<String[]> timeSeriesMetadata, String[] thresholds) {
-        super(measure, itemGroup, databaseId, timeSeriesMetadata);
+        super("timeseries", measure, itemGroup, databaseId, timeSeriesMetadata);
         // Sets the unit for retrieval
         super.setUnit(unit);
         // Set Title for panel
@@ -60,8 +60,6 @@ public class TimeSeriesChart extends DefaultGrafanaPanel {
     @Override
     public String construct(int height, int width, int xPosition, int yPosition) {
         return "{" + super.genCommonJson(height, width, xPosition, yPosition) +
-                // Chart type must be set to time series
-                ",\"type\": \"timeseries\"," +
                 // Field Configuration
                 "\"fieldConfig\": { " +
                 // Default field configuration

@@ -180,8 +180,7 @@ public class BarChartTest {
         String expectedTransformations = "[" +
                 TransformationOptionsTest.genExpectedGroupByTransformation("range", itemDetails) + "," +
                 TransformationOptionsTest.genExpectedOrganizeTransformation(itemDetails, " (range)") + "]";
-        return "{" + TestUtils.genExpectedCommonTemplatePanelJson(titleContent, description, expectedTransformations, metadata, geometryPositions, itemDetails, query) +
-                ",\"type\": \"barchart\"," +
+        return "{" + TestUtils.genExpectedCommonDefaultGrafanaPanelJson(titleContent, description, "barchart", expectedTransformations, metadata, geometryPositions, itemDetails, query) +
                 "\"pluginVersion\": \"10.0.3\"," +
                 // Field Configuration
                 "\"fieldConfig\": { " +
