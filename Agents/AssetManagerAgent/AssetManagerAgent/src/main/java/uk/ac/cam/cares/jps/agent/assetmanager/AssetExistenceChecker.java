@@ -567,7 +567,7 @@ public class AssetExistenceChecker {
                     result.put("nextServiceIRI", reqResult.getJSONObject(0).getString("nextServiceIRI"));
                 }
 
-                if (result.has("intervalIRI")){
+                if (!result.has("intervalIRI")){
                     result.put("intervalIRI", genIRIString("Interval", Pref_TIME));
                     result.put("durationIRI", genIRIString("DurationDescription", Pref_TIME));
                 }
