@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.options.DataSourceTest;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.io.File;
@@ -362,10 +363,9 @@ public class TestUtils {
         String rawSql = query.isEmpty() ? "SELECT time AS \\\"time\\\", ${" + formattedMeasure + formattedItemGroup + ":csv} FROM \\\"" + metadata[2] + "\\\" WHERE $__timeFilter(time)"
                 : query;
         StringBuilder results = new StringBuilder();
-        results.append(genExpectedCommonTemplatePanelJson(title, description, panelType, geometryPositions))
-                .append("\"datasource\": {\"type\": \"postgres\", \"uid\": \"").append(metadata[3]).append("\"},")
-                .append("\"targets\": [")
-                .append("{\"datasource\":{\"type\":\"postgres\",\"uid\":\"").append(metadata[3]).append("\"}, ")
+        results.append(genExpectedCommonTemplatePanelJson(title, description, panelType, metadata[3], geometryPositions))
+                .append("\"targets\": [{")
+                .append(DataSourceTest.genExpectedDataSource(metadata[3]))
                 .append("\"editorMode\":\"code\",\"format\":\"table\",\"rawQuery\":true,\"refId\":\"A\",")
                 .append("\"sql\":{\"columns\": [{\"parameters\": [],\"type\":\"function\"}], ")
                 .append("\"groupBy\": [{\"property\":{\"type\":\"string\"},\"type\":\"groupBy\"}],\"limit\":50},")
@@ -380,12 +380,13 @@ public class TestUtils {
      *
      * @return The partial json model in string format.
      */
-    public static String genExpectedCommonTemplatePanelJson(String title, String description, String panelType, int[] geometryPositions) {
+    public static String genExpectedCommonTemplatePanelJson(String title, String description, String panelType, String databaseConnectionId, int[] geometryPositions) {
         StringBuilder results = new StringBuilder();
         results.append("\"id\": null,")
                 .append("\"title\": \"").append(title).append("\",")
                 .append("\"description\": \"").append(description).append("\",")
                 .append("\"type\": \"").append(panelType).append("\",")
+                .append(DataSourceTest.genExpectedDataSource(databaseConnectionId))
                 .append("\"gridPos\":{\"h\":").append(geometryPositions[0]).append(",")
                 .append("\"w\":").append(geometryPositions[1]).append(",")
                 .append("\"x\":").append(geometryPositions[2]).append(",")
