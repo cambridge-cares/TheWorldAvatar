@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="map">Map</string>
+    <string name="fail_to_get_location_permission">Fail to Get Permission</string>
+    <string name="retry">Do you want to grant location permission?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/app_navigation"
+    app:startDestination="@id/routingFragment">
+
+    <include app:graph="@navigation/location_tracking_graph"/>
+    <include app:graph="@navigation/routing_graph"/>
+    <fragment
+        android:id="@+id/mapFragment2"
+        android:name="uk.ac.cam.cares.jps.locationtracking.MapFragment"
+        android:label="MapFragment" />
+    <fragment
+        android:id="@+id/routingFragment"
+        android:name="uk.ac.cam.cares.jps.routing.RoutingFragment"
+        android:label="RoutingFragment" >
+        <action
+            android:id="@+id/action_routingFragment_to_mapFragment2"
+            app:destination="@id/mapFragment2" />
+    </fragment>
+
+</navigation>

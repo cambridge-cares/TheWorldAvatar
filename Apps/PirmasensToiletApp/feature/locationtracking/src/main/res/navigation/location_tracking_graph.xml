@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map_location_tracking"
+    app:startDestination="@id/location_tracking_fragment"
+    >
+    <fragment
+        android:id="@+id/location_tracking_fragment"
+        android:name="uk.ac.cam.cares.jps.locationtracking.MapFragment"
+        android:label="@string/map"
+        tools:layout="@layout/fragment_location_tracking">
+        <deepLink
+            app:uri="android-app://uk.ac.cam.cares.jps.app/location_tracking" />
+    </fragment>
+</navigation>
