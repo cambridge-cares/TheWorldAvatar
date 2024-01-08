@@ -29,6 +29,11 @@ This agent requires the following tools, which **MUST** run on the same stack. P
   - include `grafana` as a service following the [stack-manager configuration file](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#stack-configuration)
   - include a `grafana_password` with your password as a Docker Secret in the `stack-manager/inputs/secrets` directory.
 - Once deployed, the service can be accessed at the `/analytics` route with a default username of admin. 
+- The following Plugin must be installed:
+  - [Variable Panel](https://grafana.com/grafana/plugins/volkovlabs-variable-panel/) - >= v2.3.1
+- Users may install plugins via:
+  - Grafana UI in the `Administration` -> `Plugins` tab
+  - Grafana CLI in the container `grafana cli plugins install <plugin name>`
 
 (2) PostGIS database
 - Contains the time series data
