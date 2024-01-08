@@ -793,7 +793,7 @@ public class AssetKGInterface {
 
         //Validation
         String deviceIRI = existenceChecker.getIRIStringbyID(ID);
-        if (deviceIRI.isBlank()){
+        if (deviceIRI == null || deviceIRI.isBlank()){
             throw new JPSRuntimeException(String.format("Device is unregistered for ID:%s", ID));
         }
         JSONObject maintenanceIRI = existenceChecker.getMaintenanceIRI(deviceIRI, true);
@@ -802,7 +802,8 @@ public class AssetKGInterface {
         String maintenanceTaskIRI = maintenanceIRI.getString("maintenanceTaskIRI");
         
         //preprocessing
-        //TODO Figure out what to do with multiple maintenance schedule.Currently interpreted as the last time te asset is maintained, so only 1 shoudl exist and update the data instead
+        //TODO Figure out what to do with multiple maintenance schedule. Currently multiple is allowed
+        //TODO When figured out, also change in ExistenceChecker
         if(!(lastService.isBlank() || lastService==null)){
             lastServiceIRI = maintenanceIRI.getString("lastServiceIRI");
             try {

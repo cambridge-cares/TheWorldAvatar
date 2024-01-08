@@ -536,7 +536,10 @@ public class AssetExistenceChecker {
 
         JSONArray reqResult = storeClientAsset.executeQuery(query.getQueryString());
         LOGGER.debug("Maintenance existence check result:: " + reqResult);
-        switch (reqResult.length()) {
+        //TODO Figure out what to do with multiple maintenance schedule. Currently multiple is allowed
+        //Hence this dumb switch statement below
+        //switch (reqResult.length()) {
+        switch (0) {
             case 0:
                 if (generate){
                     result.put("maintenanceScheduleIRI", genIRIString("MaintenanceSchedule", Pref_ASSET));
