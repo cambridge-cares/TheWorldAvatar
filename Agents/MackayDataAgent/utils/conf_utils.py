@@ -4,13 +4,14 @@ import os
 def load_conf(fullfilepath) -> configparser.ConfigParser:
     config = configparser.ConfigParser()
     config.read(fullfilepath)
+    print(config)
     return config
 
 
 def load_confs_from_dir(fulldirpath) -> list:
     filepaths = []
     data_conf_list = []
-    for filename in os.listdir():  # Construct lists of config objects for all data points
+    for filename in os.listdir(fulldirpath):  # Construct lists of config objects for all data points
         if filename.endswith(".cfg"):
             filepaths.append(os.path.join(fulldirpath, filename))
     for confpath in filepaths:

@@ -48,3 +48,7 @@ def query_all(querylist):
         except Exception as e:
             raise e
     return results
+
+#TODO call dataagent
+def get_updated_data():
+    pass

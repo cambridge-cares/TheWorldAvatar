@@ -3,19 +3,18 @@ data reader from API
 '''
 import requests
 from data_types import ts_data_classes
-import jsonpath_ng
+import jsonpath_ng.ext
 import configparser
 import importlib
 import string
 
-
 def create_data_reader(conf: configparser.ConfigParser):
     # Create a TS data reader from the properites specified in a configParser object
     reader_type = conf['source']['type']
-    m_name, c_name = "readers.{}_reader".format(reader_type), "{}Reader".format(string.capitalize(reader_type))
+    m_name, c_name = "readers.readers", "{}Reader".format(reader_type.capitalize())
     try:
         reader_class = getattr(importlib.import_module(m_name), c_name)
-        reader = reader_class()
+        reader = reader_class(conf)
         return reader
     except:
         raise ValueError('{} is not a valid reader class.'.format(reader_type))
@@ -36,7 +35,8 @@ class ApiReader:
 
     def get_tsmeta(self) -> ts_data_classes.TimeSeriesMeta:
         src_iri = self.conf['output']['srcIri']
-        return ts_data_classes.TimeSeriesMeta(src_iri=src_iri)
+        timeUnit = self.conf['output']['timeUnit']
+        return ts_data_classes.TimeSeriesMeta(time_unit=timeUnit,src_iri=src_iri)
 
     def download_tsinstance(self) -> ts_data_classes.TimeSeriesInstance:
         ##A magic header to bypass some server forbidden issues
@@ -45,8 +45,8 @@ class ApiReader:
             "Upgrade-Insecure-Requests": "1", "DNT": "1",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.5", "Accept-Encoding": "gzip, deflate"}
-        conf = self.conf
-        response = requests.request(conf.method, conf.url, headers=magic_header, params=conf.querystring)
+        conf = self.conf['source']
+        response = requests.request(conf['method'], conf['url'], headers=magic_header, params=dict(self.conf['sourceparams']))
         raw_data = response.json()
         # Add switch of parser types later
         return self.json_parser(raw_data)

@@ -16,6 +16,7 @@ class MackayDataAgent:
         # Download and Parse each TS from data source
         self.data_readers = [ create_data_reader(dataconf) for dataconf in self.data_confs]
         self.property_files_dict = self._create_property_files()
+        print(self.data_confs)
 
 
     # Generate Java property files to call TSClient for each TS instance (each needs a new one as sparql ep is different)
@@ -24,13 +25,14 @@ class MackayDataAgent:
         sqlcfg = self.base_conf['postgresql']
         outpaths = {}
         for datacfg in self.data_confs:
-            dataname = datacfg['name']
+            dataname = datacfg['source']['name']
             props = PropertiesFileProtytype.copy()
-            allcfg = datacfg.copy().update(sqlcfg)
+            allcfg = dict(datacfg['kg']).copy()
+            allcfg.update(dict(sqlcfg))
             updated_props = match_properties(props, allcfg)
             outpath = os.path.abspath(os.path.join(Path(__file__).parent, outdir, "{}.properties".format(dataname)))
             write_java_properties_conf(updated_props, outpath )
-            outpath[dataname] = outpath
+            outpaths[dataname] = outpath
         return outpaths
 
 
@@ -39,7 +41,11 @@ class MackayDataAgent:
     # Create postgresql tables and meta info triples of all timeseries data
     def instantiate_timeseries(self):
         # connection set up
-        tsclient_wrapper.create_postgres_db_if_not_exists()
+        sqlcfg = self.base_conf['postgresql']
+        dburls = sqlcfg['url'].split(':')
+        db_name = dburls[-1]
+        host_name = (':').join(dburls[:-1])
+        tsclient_wrapper.create_postgres_db_if_not_exists(db_name,sqlcfg['user'],sqlcfg['password'])
         # loop through each configuration object, one for each data source
         for reader in self.data_readers:
             timeseries_meta = reader.get_tsmeta()
