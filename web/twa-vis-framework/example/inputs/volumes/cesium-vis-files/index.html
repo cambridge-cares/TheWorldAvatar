@@ -99,11 +99,30 @@
                     </div>
                 </div>
 
-                <!-- Help icon -->
-                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
-                    <div class="tooltip" id="coordEditor">
-                        <i class="fas fa-question fa-lg"></i>
-                        <span class="tooltiptext right">Help</span>
+                 <!-- Scenario change control -->
+				<div id="scenarioChangeContainer" class="controlBlock expanded" onclick="manager.showScenarioSelector()">
+                    <div class="tooltip">
+                        <p><b>Change scenario</b></p>
+                        <span class="tooltiptext right" style="width: 225px !important;">Change the current scenario</span>
+						<div id="currentScenarioName" style="font-style: italic; font-size: 8.5pt;"></div>
+                    </div>
+                </div>
+
+                <div id="helpandsearch">
+                    <!-- Search icon -->
+                    <div id="searchIconContainer" class="controlBlock expanded" onclick="manager.openSearch()">
+                        <div class="tooltip" id="coordEditor">
+                            <i class="fas fa-search fa-lg"></i>
+                            <span class="tooltiptext right" style="width: 100px !important;">Feature search</span>
+                        </div>
+                    </div>
+
+                    <!-- Help icon -->
+                    <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                        <div class="tooltip" id="coordEditor">
+                            <i class="fas fa-question fa-lg"></i>
+                            <span class="tooltiptext right">Help</span>
+                        </div>
                     </div>
                 </div>
 
@@ -201,8 +220,17 @@
 
                 // Load registered images and linked files
                 manager.loadImagesAndLinks().then(() => {
-                    // Plot the data
-                    manager.plotData();
+
+                    // Check if the settings contains a scenarios endpoint
+                    let scenariosEnabled = manager.checkForScenarios();
+                    if(scenariosEnabled) {
+                        // Show the scenario selection pane
+                        manager.showScenarioSelector();
+
+                    } else {
+                        // Plot the default visible data
+                        manager.plotData();
+                    }
                 });
             }
         </script>

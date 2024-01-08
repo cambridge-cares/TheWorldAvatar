@@ -147,8 +147,8 @@ public class WeatherHelper extends JPSAgent {
                 longitude = lat_lon.get(1);
             }
             else {
-                latitude = coordinate.getX();
-                longitude = coordinate.getY();
+                latitude = coordinate.getY();
+                longitude = coordinate.getX();
             }
 
             // if the timestamps of the instantiated weather data does not meet CEA requirements,

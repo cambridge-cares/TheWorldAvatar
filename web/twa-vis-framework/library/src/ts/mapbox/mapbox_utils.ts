@@ -141,8 +141,8 @@ class MapboxUtils {
      * @returns true if any layers present
      */
     public static anyLayersAdded(layerIDs) {
-        for(let i = 0; i < layerIDs.length; i++) {
-            let layerID = layerIDs[i];
+        for(const element of layerIDs) {
+            let layerID = element;
 
             if(MapHandler.MAP.getLayer(layerID) != null) {
                 return true;
@@ -154,15 +154,28 @@ class MapboxUtils {
     /**
      * True if any layers are currently visible
      */
-    public static anyLayersVisible(layerIDs: Array<String>) {
-        for(let i = 0; i < layerIDs.length; i++) {
-            let layerID = layerIDs[i];
+    public static anyLayersVisible(layerIDs: Array<string>) {
+        for(const element of layerIDs) {
+            let layerID = element;
             let prop = MapHandler.MAP.getLayoutProperty(layerID, "visibility");
             if(prop === "visible") return true;
         }
         return false;
     }
 
+    /**
+     * Returns true if the layer hosting the input feature is considered
+     * clickable.
+     * 
+     * @param feature feature within layer.
+     */
+    public static isLayerClickable(feature) {
+        let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
+        if(layer == null) return false;
+
+        let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
+        return clickable;
+    }
 
     /**
      * Change the underlying Mapbox imagery style.
@@ -360,8 +373,9 @@ class MapboxUtils {
      * Given a list of features, this returns a new list without any
      * duplicates (as defined by matching IDs).
      * 
-     * @param features 
-     * @returns 
+     * @param features input feature list.
+     * 
+     * @returns deduplicated feature list.
      */
     public static deduplicate(features: Object[]) {
         let result = [];
