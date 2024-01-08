@@ -1004,6 +1004,27 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasImage -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasImage">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
+                    <rdf:Description rdf:about="https://purl.org/p2p-o/item#Item"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The URI where the image of an asset is located at.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has image</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasInternalRemarks -->
 
 
