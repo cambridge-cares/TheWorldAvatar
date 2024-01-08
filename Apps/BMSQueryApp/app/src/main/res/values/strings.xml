@@ -37,4 +37,6 @@
     <string name="session_expired">Your session has expired. Please login again.</string>
     <string name="session_expired_title">Session Expired</string>
     <string name="login_canceled">Login canceled</string>
+    <string name="setpoint_out_of_range">Setpoint Out of Range</string>
+    <string name="setpoint_should_be_within_1100_to_400">The safety airflow range is between 400-1100 m3/h. Please enter a value within the range.</string>
 </resources>
