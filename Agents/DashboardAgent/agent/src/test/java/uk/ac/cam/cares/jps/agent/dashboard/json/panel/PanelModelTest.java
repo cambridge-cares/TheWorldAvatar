@@ -115,7 +115,7 @@ public class PanelModelTest {
                     // General row syntax for rooms
                     builder.append("{\"id\":null, \"type\":\"row\", \"collapsed\":true,")
                             .append("\"title\": \"").append(title).append("\",")
-                            .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.CHART_WIDTH * 2)
+                            .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.ROW_WITH_TWO_CHART_WIDTH * 2)
                             // The row header should start at 0, and then increment the number after
                             .append(",\"x\": 0,\"y\": ").append(rowNumber++).append("},")
                             // Row contents should start at +1 from the header
@@ -133,7 +133,7 @@ public class PanelModelTest {
             // General row syntax for system
             builder.append("{\"id\":null, \"type\":\"row\", \"collapsed\":true,")
                     .append("\"title\": \"").append(title).append("\",")
-                    .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.CHART_WIDTH * 2)
+                    .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.ROW_WITH_TWO_CHART_WIDTH * 2)
                     // The row header should start on a separate position (-1) before the row contents
                     .append(",\"x\": 0,\"y\": ").append(rowNumber).append("},")
                     .append("\"panels\": [").append(LayoutTemplateTest.genExpectedSystemLayoutJson(++rowNumber, systemMetadata, databaseConnectionMap))
@@ -148,7 +148,7 @@ public class PanelModelTest {
             // General row syntax for assets
             builder.append("{\"id\":null, \"type\":\"row\", \"collapsed\":true,")
                     .append("\"title\": \"").append(title).append("\",")
-                    .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.CHART_WIDTH * 2)
+                    .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(TestUtils.ROW_WITH_TWO_CHART_WIDTH * 2)
                     // The row header should start on a separate position (-1) before the row contents
                     .append(",\"x\": 0,\"y\": ").append(rowNumber).append("},")
                     .append("\"panels\": [").append(LayoutTemplateTest.genExpectedAssetLayoutJson(++rowNumber, assetType, assetMetadata, databaseConnectionMap))

@@ -18,7 +18,9 @@ public class PanelModel {
     private int rowNumber;
     private final StringBuilder panelSyntax = new StringBuilder();
     private static final int CHART_HEIGHT = 8;
-    private static final int CHART_WIDTH = 12;
+    private static final int ROW_WITH_TWO_CHART_WIDTH = 12;
+    private static final int ROW_OF_THREE_FIRST_CHART_WIDTH = 4;
+    private static final int ROW_OF_THREE_DUAL_CHART_WIDTH = 10;
 
     /**
      * Constructor that process customisable options for the panels in Grafana's JSON model.
@@ -93,7 +95,7 @@ public class PanelModel {
                     .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
                     // Title should be the measure name of these rooms
                     .append("\"title\": \"").append(title).append("\",")
-                    .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
+                    .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(ROW_WITH_TWO_CHART_WIDTH * 2)
                     .append(",\"x\": 0,\"y\": ").append(this.rowNumber).append("},")
                     .append("\"panels\": [").append(genPanelSyntax(this.rowNumber, intermediateQueue))
                     .append("]}");
@@ -116,7 +118,7 @@ public class PanelModel {
         this.panelSyntax.append("{")
                 .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
                 .append("\"title\": \"").append(title).append("\",")
-                .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
+                .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(ROW_WITH_TWO_CHART_WIDTH * 2)
                 .append(",\"x\": 0,\"y\": ").append(this.rowNumber).append("},")
                 .append("\"panels\": [").append(genPanelSyntax(this.rowNumber, panelQueue))
                 .append("]}");
@@ -146,20 +148,19 @@ public class PanelModel {
                 for (int i = 0; i < currentPanelArr.length; i += 2) {
                     if (evenPanelArray.length() != 0) evenPanelArray.append(",");
                     // They should have the same height, width and y-position but different xPosition
-                    evenPanelArray.append(currentPanelArr[i].construct(CHART_HEIGHT, CHART_WIDTH, 0, rowNumber + 1))
+                    evenPanelArray.append(currentPanelArr[i].construct(CHART_HEIGHT, ROW_WITH_TWO_CHART_WIDTH, 0, rowNumber + 1))
                             .append(",")
-                            .append(currentPanelArr[i + 1].construct(CHART_HEIGHT, CHART_WIDTH, CHART_WIDTH, rowNumber + 1));
+                            .append(currentPanelArr[i + 1].construct(CHART_HEIGHT, ROW_WITH_TWO_CHART_WIDTH, ROW_WITH_TWO_CHART_WIDTH, rowNumber + 1));
                     rowNumber++;
                 }
                 builder.append(evenPanelArray);
-                // For a three panel row, they should fit in 4-8-12 format
+                // For a three panel row, they should fit in 4-10-10 format
             } else if (currentPanelArr.length == 3) {
-                int firstChartWidth = 4;
-                builder.append(currentPanelArr[0].construct(CHART_HEIGHT, firstChartWidth, 0, rowNumber + 1))
+                builder.append(currentPanelArr[0].construct(CHART_HEIGHT, ROW_OF_THREE_FIRST_CHART_WIDTH, 0, rowNumber + 1))
                         .append(",")
-                        .append(currentPanelArr[1].construct(CHART_HEIGHT, 8, firstChartWidth, rowNumber + 1))
+                        .append(currentPanelArr[1].construct(CHART_HEIGHT, ROW_OF_THREE_DUAL_CHART_WIDTH, ROW_OF_THREE_FIRST_CHART_WIDTH, rowNumber + 1))
                         .append(",")
-                        .append(currentPanelArr[2].construct(CHART_HEIGHT, CHART_WIDTH, CHART_WIDTH, rowNumber + 1));
+                        .append(currentPanelArr[2].construct(CHART_HEIGHT, ROW_OF_THREE_DUAL_CHART_WIDTH, ROW_OF_THREE_FIRST_CHART_WIDTH + ROW_OF_THREE_DUAL_CHART_WIDTH, rowNumber + 1));
                 rowNumber++;
             }
         }

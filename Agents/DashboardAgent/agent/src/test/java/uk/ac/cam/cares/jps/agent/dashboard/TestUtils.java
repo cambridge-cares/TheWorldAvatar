@@ -48,7 +48,9 @@ public class TestUtils {
     public static final String TABLE_THERMAL = "21497ash1-a71n7";
     public static final String COLUMN_THERMAL_SYSTEM_ONE = "column1";
     public static final int CHART_HEIGHT = 8;
-    public static final int CHART_WIDTH = 12;
+    public static final int ROW_WITH_TWO_CHART_WIDTH = 12;
+    public static final int ROW_OF_THREE_FIRST_CHART_WIDTH = 4;
+    public static final int ROW_OF_THREE_DUAL_CHART_WIDTH = 10;
     public static final String[] LAMP_ONE_COMMON_MEASURE_METADATA = new String[]{ASSET_LAMP_ONE, COLUMN_ELEC_LAMP_ONE, TABLE_ELEC, DATABASE_ELEC, "null"};
     public static final String[] LAMP_TWO_COMMON_MEASURE_METADATA = new String[]{ASSET_LAMP_TWO, COLUMN_ELEC_LAMP_TWO, TABLE_ELEC, DATABASE_ELEC, "null"};
     public static final String[] OVEN_COMMON_MEASURE_METADATA = new String[]{ASSET_OVEN, COLUMN_ELEC_OVEN, TABLE_ELEC, DATABASE_ELEC, "null"};

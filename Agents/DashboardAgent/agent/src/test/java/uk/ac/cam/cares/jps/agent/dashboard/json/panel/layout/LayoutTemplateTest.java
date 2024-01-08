@@ -33,8 +33,8 @@ public class LayoutTemplateTest {
         while (!results.isEmpty()) {
             if (jsonResult.length() != 0) jsonResult.append(",");
             TemplatePanel[] panels = results.poll();
-            String gaugePanelJson = panels[0].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber);
-            String timeSeriesPanelJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
+            String gaugePanelJson = panels[0].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, 0, rowNumber);
+            String timeSeriesPanelJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, TestUtils.ROW_WITH_TWO_CHART_WIDTH, rowNumber);
             jsonResult.append(gaugePanelJson).append(",").append(timeSeriesPanelJson);
             rowNumber++;
         }
@@ -57,9 +57,9 @@ public class LayoutTemplateTest {
         while (!results.isEmpty()) {
             if (jsonResult.length() != 0) jsonResult.append(",");
             TemplatePanel[] panels = results.poll();
-            String averageGaugePanelJson = panels[0].construct(TestUtils.CHART_HEIGHT, 4, 0, rowNumber);
-            String gaugePanelJson = panels[1].construct(TestUtils.CHART_HEIGHT, 8, 4, rowNumber);
-            String timeSeriesPanelJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
+            String averageGaugePanelJson = panels[0].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH, 0, rowNumber);
+            String gaugePanelJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH, rowNumber);
+            String timeSeriesPanelJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH + TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH, rowNumber);
             jsonResult.append(averageGaugePanelJson).append(",").append(gaugePanelJson).append(",").append(timeSeriesPanelJson);
             rowNumber++;
         }
@@ -82,9 +82,9 @@ public class LayoutTemplateTest {
         while (!results.isEmpty()) {
             if (jsonResult.length() != 0) jsonResult.append(",");
             TemplatePanel[] panels = results.poll();
-            String averageGaugePanelJson = panels[0].construct(TestUtils.CHART_HEIGHT, 4, 0, rowNumber);
-            String gaugePanelJson = panels[1].construct(TestUtils.CHART_HEIGHT, 8, 4, rowNumber);
-            String timeSeriesPanelJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
+            String averageGaugePanelJson = panels[0].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH, 0, rowNumber);
+            String gaugePanelJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH, rowNumber);
+            String timeSeriesPanelJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH + TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH, rowNumber);
             jsonResult.append(averageGaugePanelJson).append(",").append(gaugePanelJson).append(",").append(timeSeriesPanelJson);
             rowNumber++;
         }
@@ -100,19 +100,24 @@ public class LayoutTemplateTest {
         // Execute method
         Queue<TemplatePanel[]> results = LayoutTemplate.genSystemsLayoutTemplate(systemMeasures, sampleDbConnectionIdMap);
         // Verify number of results
-        assertEquals(2, results.size()); // Two system measures are available
+        assertEquals(4, results.size()); // Two system measures are available with two sets of array each
         // Process results for testing
         StringBuilder jsonResult = new StringBuilder();
         int rowNumber = 0;
         while (!results.isEmpty()) {
             if (jsonResult.length() != 0) jsonResult.append(",");
             TemplatePanel[] panels = results.poll();
-            String pieChartJson = panels[0].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber);
-            String currentMonthChartJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber);
-            String lastPeriodChartJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber + 1);
-            String currentPeriodChartJson = panels[3].construct(TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, TestUtils.CHART_WIDTH, rowNumber + 1);
-            jsonResult.append(pieChartJson).append(",").append(currentMonthChartJson).append(",").append(lastPeriodChartJson).append(",").append(currentPeriodChartJson);
-            rowNumber += 2;
+            if (panels.length % 2 == 0) {
+                String pieChartJson = panels[0].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, 0, rowNumber);
+                String currentMonthChartJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, TestUtils.ROW_WITH_TWO_CHART_WIDTH, rowNumber);
+                jsonResult.append(pieChartJson).append(",").append(currentMonthChartJson);
+            } else {
+                String VariablePanelJson = panels[0].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH, 0, rowNumber);
+                String lastPeriodChartJson = panels[1].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH, rowNumber);
+                String currentPeriodChartJson = panels[2].construct(TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH + TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH, rowNumber);
+                jsonResult.append(VariablePanelJson).append(",").append(lastPeriodChartJson).append(",").append(currentPeriodChartJson);
+            }
+            rowNumber++;
         }
         // Verify results
         assertEquals(expectedOutput, jsonResult.toString());
@@ -126,12 +131,12 @@ public class LayoutTemplateTest {
                 if (builder.length() != 0) builder.append(",");
                 String[] metadata = assetMeasures.get(measure).get(0);
                 String[] expectedConfigItems = new String[]{measure, assetType, metadata[2], databaseConnectionMap.get(metadata[3]), metadata[4]};
-                int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber};
+                int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, 0, rowNumber};
                 // For the generic Gauge chart
                 builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, assetMeasures.get(measure)))
                         .append(",");
                 // For the time series chart, only the x position will change
-                expectedGeometryPosition[2] = TestUtils.CHART_WIDTH;
+                expectedGeometryPosition[2] = TestUtils.ROW_WITH_TWO_CHART_WIDTH;
                 builder.append(TimeSeriesChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, assetMeasures.get(measure)));
                 rowNumber++;
             }
@@ -163,19 +168,18 @@ public class LayoutTemplateTest {
                 String[] metadata = roomMeasures.get(measure).get(0);
                 String[] thresholds = thresholdMap.containsKey(measure) ? thresholdMap.get(measure) : new String[]{};
                 String[] expectedConfigItems = new String[]{measure, StringHelper.ROOM_KEY, metadata[2], databaseConnectionMap.get(metadata[3]), metadata[4]};
-                int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, 4, 0, rowNumber};
+                int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH, 0, rowNumber};
                 // For the overall average Gauge chart
                 String query = GaugeTest.genAggregateQuery(roomMeasures.get(measure), true);
                 builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, roomMeasures.get(measure), thresholds, query))
                         .append(",");
                 // For the generic Gauge chart
-                expectedGeometryPosition[1] = 8;  // New width
-                expectedGeometryPosition[2] = 4;  // New x position
+                expectedGeometryPosition[1] = TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH;  // new chart width
+                expectedGeometryPosition[2] = TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH; // new x position
                 builder.append(GaugeTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, roomMeasures.get(measure), thresholds))
                         .append(",");
-                // For the time series chart
-                expectedGeometryPosition[1] = TestUtils.CHART_WIDTH; // Original Width
-                expectedGeometryPosition[2] = TestUtils.CHART_WIDTH; // New x position
+                // For the time series chart, new x position
+                expectedGeometryPosition[2] = TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH + TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH;
                 builder.append(TimeSeriesChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, roomMeasures.get(measure), thresholds));
                 rowNumber++;
             }
@@ -191,24 +195,30 @@ public class LayoutTemplateTest {
                 if (builder.length() != 0) builder.append(",");
                 String[] metadata = systemMeasures.get(measure).get(0);
                 String[] expectedConfigItems = new String[]{measure, StringHelper.SYSTEM_KEY, metadata[2], databaseConnectionMap.get(metadata[3]), metadata[4]};
-                int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.CHART_WIDTH, 0, rowNumber};
+                int[] expectedGeometryPosition = new int[]{TestUtils.CHART_HEIGHT, TestUtils.ROW_WITH_TWO_CHART_WIDTH, 0, rowNumber};
                 List<String[]> systemTimeSeries = systemMeasures.get(measure);
                 Collections.sort(systemTimeSeries, Comparator.comparing(data -> data[1]));
-                // Charts will be positioned as follows: Row1: Pie Chart, Current Month Bar; Row 2: Last Period Bar Chart, Current Period Bar Chart
+                // Charts will be positioned as follows: Row1: Pie Chart, Current Month Bar; Row 2: Time Interval Variable Panel, Last Period Bar Chart, Current Period Bar Chart
                 builder.append(PieChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries))
                         .append(",");
                 // Current month bar will be found at the chart_width x position
-                expectedGeometryPosition[2] = TestUtils.CHART_WIDTH;
+                expectedGeometryPosition[2] = TestUtils.ROW_WITH_TWO_CHART_WIDTH;
                 builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 1))
                         .append(",");
                 // Increment the row number as the system should generate 2 rows in total
                 expectedGeometryPosition[3] = rowNumber + 1;
-                // First update the x position for last period bar chart
+                // Reassign x position and chart width for variable panel
+                expectedGeometryPosition[1] = TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH;
                 expectedGeometryPosition[2] = 0;
+                builder.append(VariablePanelTest.genExpectedResults(StringHelper.INTERVAL_VARIABLE_NAME, VariablePanelTest.INTERVAL_DESCRIPTION, expectedGeometryPosition))
+                        .append(",");
+                // Reassign the x position and chart width for the last period bar chart
+                expectedGeometryPosition[1] = TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH;
+                expectedGeometryPosition[2] = TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH;
                 builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 2))
                         .append(",");
-                // Reupdate the chart width for current period bar chart
-                expectedGeometryPosition[2] = TestUtils.CHART_WIDTH;
+                // Reassign the x position for the current period bar chart
+                expectedGeometryPosition[2] = TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH + TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH;
                 builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 3));
                 rowNumber += 2;
             }

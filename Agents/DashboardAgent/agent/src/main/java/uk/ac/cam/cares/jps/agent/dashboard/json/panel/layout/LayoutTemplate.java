@@ -109,9 +109,10 @@ public class LayoutTemplate {
     }
 
     /**
-     * Generates the layout template for the systems/smart meters and all their associated measures. One gauge chart, one pie chart, and one bar chart
-     * will be generated per measure of systems. The first gauge chart displays the average latest value of all available systems. The second pie chart
-     * displays the distribution of the systems for that measures. And the last bar chart displays the trends of the measure across systems.
+     * Generates the layout template for the systems/smart meters and all their associated measures. One pie chart, three bar charts, and one variable panel
+     * will be generated per measure of systems. The first pie chart displays the distribution of the systems for that measures. The second bar chart displays the current month measure.
+     * The third variable panel enables users to select the interval periods for the fourth and fifth charts. The fourth chart displays the trends of the measures for the last period.
+     * The fifth displays the current period trends.
      *
      * @param systemMeasures        A map containing all measures and their metadata to construct the panels for systems.
      * @param databaseConnectionMap A map linking each database to its connection ID.
@@ -119,8 +120,8 @@ public class LayoutTemplate {
      */
     public static Queue<TemplatePanel[]> genSystemsLayoutTemplate(Map<String, List<String[]>> systemMeasures, Map<String, String> databaseConnectionMap) {
         // Generate an empty queue of arrays for generating panels (at most three to accommodate screen resolutions)
-        // At the moment, one horizontal row (encapsulated by one array) is designed to contain only at most have 3 panels
         Queue<TemplatePanel[]> panelQueue = new ArrayDeque<>();
+        String intervalVarChartDescription = "Select the required time interval for the current and last period trends on the right.";
         // For each of the measures, create a set of chart
         for (Map.Entry<String, List<String[]>> entry : systemMeasures.entrySet()) {
             String measure = entry.getKey();
@@ -138,9 +139,12 @@ public class LayoutTemplate {
                 // Generate related panels
                 PieChart distributionPanel = new PieChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries);
                 BarChart currentMonthMeasureChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 1);
+                TemplatePanel[] panelArr = new TemplatePanel[]{distributionPanel, currentMonthMeasureChart};
+                panelQueue.offer(panelArr);
+                VariablePanel timeIntervalChart = new VariablePanel(StringHelper.INTERVAL_VARIABLE_NAME, intervalVarChartDescription);
                 BarChart lastPeriodMeasureChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 2);
                 BarChart currentPeriodMeasureChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 3);
-                TemplatePanel[] panelArr = new TemplatePanel[]{distributionPanel, currentMonthMeasureChart, lastPeriodMeasureChart, currentPeriodMeasureChart};
+                panelArr = new TemplatePanel[]{timeIntervalChart, lastPeriodMeasureChart, currentPeriodMeasureChart};
                 panelQueue.offer(panelArr);
             }
         }

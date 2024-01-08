@@ -7,8 +7,8 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class VariablePanelTest {
-    private static final String INTERVAL_DESCRIPTION = "Select the required time interval for the current and last period trends on the right.";
+public class VariablePanelTest {
+    public static final String INTERVAL_DESCRIPTION = "Select the required time interval for the current and last period trends on the right.";
     private static final int SAMPLE_PANEL_HEIGHT = 8;
     private static final int SAMPLE_PANEL_WIDTH = 12;
     private static final int SAMPLE_PANEL_X_POSITION = 1;

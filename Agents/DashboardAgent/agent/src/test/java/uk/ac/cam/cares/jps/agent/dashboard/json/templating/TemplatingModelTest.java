@@ -90,7 +90,7 @@ public class TemplatingModelTest {
 
     private static void genTrendFilter(StringBuilder tempBuilder) {
         String[] temporalIntervals = new String[]{TemporalInterval.DAILY_OVER_WEEK, TemporalInterval.DAILY_OVER_MONTH, TemporalInterval.WEEKLY_OVER_MONTH, TemporalInterval.MONTHLY};
-        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 0, false, false))
+        tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 2, false, false))
                 .append(",");
     }
 
