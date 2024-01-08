@@ -107,7 +107,7 @@ public class CEAAgent extends JPSAgent {
             JSONArray uriArray = new JSONArray(uriArrayString);
 
             if (requestUrl.contains(URI_ACTION)) {
-                ArrayList<CEABuildingData> testData = new ArrayList<>();
+                ArrayList<CEABuildingData> buildingData = new ArrayList<>();
                 ArrayList<String> uriStringArray = new ArrayList<>();
                 String crs = new String();
                 String terrainDb = defaultTerrainDb;
@@ -145,12 +145,12 @@ public class CEAAgent extends JPSAgent {
 
                     // Get building usage, set default usage of MULTI_RES if not available in knowledge graph
                     Map<String, Double> usage = BuildingUsageHelper.getBuildingUsages(uri, usageRoute);
-                    testData.add(new CEABuildingData(footprint, usage));
+                    buildingData.add(new CEABuildingData(footprint, usage));
                 }
 
-                crs = testData.get(0).getGeometry().getCrs();
+                crs = buildingData.get(0).getGeometry().getCrs();
 
-                List<CEAGeometryData> surrounding = SurroundingsHelper.getSurroundings(testData, uriStringArray, ontopUrl);
+                List<CEAGeometryData> surrounding = SurroundingsHelper.getSurroundings(buildingData, uriStringArray, ontopUrl);
 
                 List<Object> weather = new ArrayList<>();
 
@@ -158,11 +158,11 @@ public class CEAAgent extends JPSAgent {
 
                 TerrainHelper terrainHelper = new TerrainHelper(terrainUrl, dbUser, dbPassword);
 
-                byte[] terrain = terrainHelper.getTerrain(testData, surrounding, terrainTable);
+                byte[] terrain = terrainHelper.getTerrain(buildingData, surrounding, terrainTable);
 
                 CEAMetaData ceaMetaData;
 
-                if (weatherHelper.getWeather(testData.get(0).getGeometry(), surrounding, weatherRoute, crs, weather)) {
+                if (weatherHelper.getWeather(buildingData.get(0).getGeometry(), surrounding, weatherRoute, crs, weather)) {
                     ceaMetaData = new CEAMetaData(surrounding, (List<OffsetDateTime>) weather.get(0), (Map<String, List<Double>>) weather.get(1), (List<Double>) weather.get(2), terrain);
                 }
                 else {
@@ -171,7 +171,7 @@ public class CEAAgent extends JPSAgent {
 
                 // Manually set thread number to 0 - multiple threads not working so needs investigating
                 // Potentially issue is CEA is already multi-threaded
-                runCEA(testData, ceaMetaData, uriStringArray, 0, crs);
+                runCEA(buildingData, ceaMetaData, uriStringArray, 0, crs);
             }
             else if (requestUrl.contains(URI_UPDATE)) {
                 // parse times
