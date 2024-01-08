@@ -36,7 +36,7 @@ public class Factory {
         switch (facility) {
             case ChemicalPlant:
                 heatEmission = specificEnergy < 0.0 ? -1.0 * productionVolume * specificEnergy
-                        : productionVolume * specificEnergy * thermalEfficiency;
+                        : productionVolume * specificEnergy * (1.0 - thermalEfficiency);
                 break;
             case BeveragePlant:
                 heatEmission = 0.0;
