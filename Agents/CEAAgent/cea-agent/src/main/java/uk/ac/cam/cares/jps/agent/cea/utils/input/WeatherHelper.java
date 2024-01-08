@@ -61,20 +61,19 @@ public class WeatherHelper extends JPSAgent {
     private static final String API_OFFSET = "utc_offset_seconds";
     private static final String CRS_4326 = "EPSG:4326";
 
-    private OntologyURIHelper ontologyUriHelper;
     private String openmeteoagentUrl;
     private String dbUser;
     private String dbPassword;
     private String weatherRoute;
 
-    public WeatherHelper(String url, String user, String password, String route, OntologyURIHelper uriHelper) {
+    public WeatherHelper(String url, String user, String password, String route) {
         this.openmeteoagentUrl = url;
         this.dbUser = user;
         this.dbPassword = password;
         this.weatherRoute = route;
-        this.ontologyUriHelper = uriHelper;
 
     }
+
     /**
      * Retrieves weather data
      * @param weatherRoute route to weather data
@@ -148,8 +147,8 @@ public class WeatherHelper extends JPSAgent {
                 longitude = lat_lon.get(1);
             }
             else {
-                latitude = coordinate.getX();
-                longitude = coordinate.getY();
+                latitude = coordinate.getY();
+                longitude = coordinate.getX();
             }
 
             // if the timestamps of the instantiated weather data does not meet CEA requirements,
@@ -237,9 +236,9 @@ public class WeatherHelper extends JPSAgent {
     private String getWeatherStation(Coordinate center, Double radius, String route) {
         String result = "";
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("geoservice", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoservice))
-                .addPrefix("geoliteral", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoliteral))
-                .addPrefix("ontoems", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems));
+                .addPrefix("geoservice", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geoservice))
+                .addPrefix("geoliteral", OntologyURIHelper.getOntologyUri(OntologyURIHelper.geoliteral))
+                .addPrefix("ontoems", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoems));
 
         wb.addWhere("?station", "geoservice:search", "inCircle")
                 .addWhere("?station", "geoservice:searchDatatype", "geoliteral:lat-lon")
@@ -255,7 +254,7 @@ public class WeatherHelper extends JPSAgent {
 
         // add geoservicespatial service
         ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoservice) + "search", wb.build().getQueryPattern()));
+        body.addElement(new ElementService(OntologyURIHelper.getOntologyUri(OntologyURIHelper.geoservice) + "search", wb.build().getQueryPattern()));
         query.setQueryPattern(body);
 
         String queryString = query.toString().replace("PLACEHOLDER", "#");
@@ -277,8 +276,8 @@ public class WeatherHelper extends JPSAgent {
      */
     private String getStationElevation(String stationIRI, String route) {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoEMS", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))
-                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf));
+                .addPrefix("ontoEMS", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoems))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf));
 
         wb.addWhere(NodeFactory.createURI(stationIRI), "ontoEMS:hasObservationElevation", "?elevation");
 
@@ -305,8 +304,8 @@ public class WeatherHelper extends JPSAgent {
      */
     private List<Double> getStationCoordinate(String stationIRI, String route) {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoEMS", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))
-                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf));
+                .addPrefix("ontoEMS", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoems))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf));
 
         wb.addWhere(NodeFactory.createURI(stationIRI), "ontoEMS:hasObservationLocation", "?coordinate");
 
@@ -402,10 +401,10 @@ public class WeatherHelper extends JPSAgent {
     private Map<String, List<String>> getWeatherIRI(String stationIRI, String route) {
         Map<String, List<String>> result = new HashMap<>();
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoems", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))
-                .addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("ontotimeseries", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontotimeseries));
+                .addPrefix("ontoems", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoems))
+                .addPrefix("om", OntologyURIHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("ontotimeseries", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontotimeseries));
 
         wb.addWhere("?station", "ontoems:reports", "?quantity")
                 .addWhere("?quantity", "rdf:type", "?weatherParameter")
@@ -426,7 +425,7 @@ public class WeatherHelper extends JPSAgent {
 
         if (!queryResultArray.isEmpty()) {
             for (int i = 0; i < queryResultArray.length(); i++) {
-                result.put(queryResultArray.getJSONObject(i).getString("weatherParameter").split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))[1], Arrays.asList(queryResultArray.getJSONObject(i).getString("measure"), queryResultArray.getJSONObject(i).getString("rdb")));
+                result.put(queryResultArray.getJSONObject(i).getString("weatherParameter").split(OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoems))[1], Arrays.asList(queryResultArray.getJSONObject(i).getString("measure"), queryResultArray.getJSONObject(i).getString("rdb")));
             }
         }
 

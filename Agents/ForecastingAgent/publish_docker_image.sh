@@ -61,7 +61,7 @@ build_agent_docker_image() {
     echo "$STEP_NR. Building the $AGENT_NAME docker image and tagging it as $IMAGE_TAG"
     echo "-------------------------------------------------------------------------"
     echo ; echo
-    docker-compose -f $SPATH/$DOCKER_COMPOSE_FILE build
+    docker compose -f $SPATH/$DOCKER_COMPOSE_FILE build
 
     STEP_NR=$((STEP_NR+1))
 }

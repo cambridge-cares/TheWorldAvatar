@@ -1,8 +1,8 @@
 #######################################
 ## The World Avatar related packages ##
 #######################################
-py4jps==1.0.37
-pyderivationagent==1.5.0
+py4jps==1.0.38
+pyderivationagent==1.6.0
 
 ##########################
 ## Third-party packages ##
@@ -10,7 +10,7 @@ pyderivationagent==1.5.0
 configobj==5.0.8
 fire==0.4.0
 Flask==2.1.0
-werkzeug==2.3.6
+werkzeug==2.2.2
 darts==0.21.0
 pandas==1.5.3
 pytorch-lightning==1.7.7

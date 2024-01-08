@@ -3,7 +3,7 @@
         "Name": "file-server",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/file-server:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/fileserver:1.1.0",
                 "Mounts": [
                     {
                         "Type": "volume",

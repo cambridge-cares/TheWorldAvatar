@@ -1,0 +1,32 @@
+{
+    "entries": [
+        {
+			"id": "Station",
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+			"meta": {
+				"queryFile": "ReportingStations_Meta.sparql"
+			},
+			"time": {
+				"queryFile": "ReportingStations_Time.sparql",
+                "limit": 24,
+			    "unit": "hours",
+			    "reference": "latest",
+                "database": "postgres"
+			}
+        },
+		{
+			"id": "Dispersion polygons",
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/DispersionPolygon",
+			"meta": {
+				"queryFile": "dispersion_polygon.sparql"
+			}
+        },
+		{
+			"id": "Ships",
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/Ship",
+			"meta": {
+				"queryFile": "ship_meta.sparql"
+			}
+        }
+    ]
+}
