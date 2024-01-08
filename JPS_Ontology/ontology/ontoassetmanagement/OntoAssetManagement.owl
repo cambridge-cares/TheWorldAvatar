@@ -1004,10 +1004,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasImage -->
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasImageURI -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasImage">
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasImageURI">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -1020,7 +1020,7 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The URI where the image of an asset is located at.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/"/>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has image</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has image uri</rdfs:label>
     </owl:DatatypeProperty>
     
 
