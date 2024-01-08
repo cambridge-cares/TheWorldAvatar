@@ -1,10 +1,17 @@
+/**
+ * Single page used to show static, user-generated content pulled
+ * from a markdown file.
+ */
+
 "use client";
 
-import { ReactNode } from "react";
-import Link from "next/link";
+import styles from "./static-content-page.module.css";
 import "github-markdown-css/github-markdown.css";
 
-import styles from "./static-content-page.module.css";
+import Link from "next/link";
+import React from "react";
+import { ReactNode } from "react";
+
 import MaterialIconButton from "ui/buttons/icon-button";
 
 // Interface for properties with react nodes
@@ -22,10 +29,10 @@ interface Props {
  */
 export default function StaticContentPage({ childNodes, childString }: Readonly<Props>) {
     // CSS class names
-    let classNames = ["markdown-body", styles.contentInner].join(" ");
+    const classNames = ["markdown-body", styles.contentInner].join(" ");
 
     // Return to landing button
-    let returnButton = (
+    const returnButton = (
         <Link href="/" className={styles.button}>
             <MaterialIconButton
                 iconName="arrow_circle_left"

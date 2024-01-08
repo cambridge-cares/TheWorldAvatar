@@ -1,11 +1,13 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 import contextMenuReducer from "state/context-menu-slice";
+import ribbonComponentReducer from "state/ribbon-component-slice";
 
 // Initialise and export store
 export const reduxStore = configureStore({
     reducer: {
-        contextMenu: contextMenuReducer
+        contextMenu: contextMenuReducer,
+        ribbonComponents: ribbonComponentReducer
     }
 });
 

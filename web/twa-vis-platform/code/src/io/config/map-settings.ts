@@ -1,26 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * Server side code to read and cache map-settings.json file.
+ */
 
 import fs from "fs";
 import path from "path";
 
-/**
- * Interface for map settings object.
- */
-interface SettingsInterface {
-    [key: string]: string | number | boolean | object;
-}
+import { MapSettings } from "types/map-settings";
 
 /**
  * This class reads and stores non-data specific map settings from the user
  * provided "map-settings.json" file.
  */
-export default class MapSettings {
+export default class MapSettingsStore {
 
     // Location of module settings file
     private static readonly DEFAULT_FILE = "../uploads/config/map-settings.json";
 
     // Cached settings
-    private static SETTINGS: SettingsInterface;
+    private static SETTINGS: MapSettings;
 
     /**
     * Reads the settings file.
@@ -30,10 +27,10 @@ export default class MapSettings {
     * @throws {IllegalArgumentError} if configuration file is invalid.
     */
     public static readSettings(file?: string) {
-        if(MapSettings.SETTINGS == null) {
+        if(MapSettingsStore.SETTINGS == null) {
             const configFile = path.join(process.cwd(), file ?? this.DEFAULT_FILE);
             const contents = JSON.parse(fs.readFileSync(configFile, "utf8"));
-            MapSettings.SETTINGS = contents;
+            MapSettingsStore.SETTINGS = contents;
 
             console.info("Map configuration settings have been read and cached.");
         }
@@ -42,12 +39,11 @@ export default class MapSettings {
     /**
      * Returns the map configuration settings.
      * 
-     * @param key optional key to return sub-object in settings.
      * @returns JSON settings object.
      */
-    public static getSettings(key?: string) {
-        MapSettings.readSettings();
-        return (key != null) ? MapSettings.SETTINGS[key] : MapSettings.SETTINGS;
+    public static getSettings() {
+        MapSettingsStore.readSettings();
+        return MapSettingsStore.SETTINGS;
     }   
 
     /**
@@ -56,7 +52,7 @@ export default class MapSettings {
      */
     public static invalidate() {
         console.log("Invalidating cached map configuration settings, will be re-read upon next request.");
-        MapSettings.SETTINGS = null;
+        MapSettingsStore.SETTINGS = null;
     }
 
 }

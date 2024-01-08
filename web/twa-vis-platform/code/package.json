@@ -30,7 +30,7 @@
     "golden-layout": "^2.6.0",
     "gray-matter": "^4.0.3",
     "jquery": "^3.7.1",
-    "mapbox-gl": "^2.15.0",
+    "mapbox-gl": "^3.0.1",
     "markdown-it": "^13.0.2",
     "next": "^14.0.0",
     "react": "^18",
@@ -47,10 +47,13 @@
     "react-router-dom": "^6.20.0",
     "redux-persist": "^6.0.0",
     "remark-gfm": "^4.0.0",
-    "simplebar-react": "^3.2.4"
+    "request": "^2.88.2",
+    "simplebar-react": "^3.2.4",
+    "ts-typed-json": "^0.3.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.7",
+    "@types/markdown-it": "^13.0.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

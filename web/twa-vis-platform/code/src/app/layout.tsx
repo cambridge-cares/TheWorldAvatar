@@ -1,3 +1,6 @@
+/**
+ * Sets a template for all generated HTML files.
+ */
 
 import "ui/css/globals.css"
 
@@ -23,9 +26,11 @@ function initialise() {
 }
 
 /**
+ * Define a root layout template to be used for all generated HTML files.
  * 
- * @param param0 
- * @returns 
+ * @param children React child elements to add to generated page.
+ * 
+ * @returns generated React nodes.
  */
 export default function RootLayout({ children, }: { children: React.ReactNode }) {
     // Initialise static content

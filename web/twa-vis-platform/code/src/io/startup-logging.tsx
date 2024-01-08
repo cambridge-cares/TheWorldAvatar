@@ -1,4 +1,10 @@
+/**
+ * Provides some logging at startup.
+ */
+
 "use client";
+
+import React from "react";
 
 // Prevent logging multiple times
 let done: boolean = false;

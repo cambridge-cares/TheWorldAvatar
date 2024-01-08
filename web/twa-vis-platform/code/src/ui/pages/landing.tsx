@@ -1,16 +1,20 @@
+/**
+ * Optional landing page.
+ */
+
 import styles from "./landing.module.css";
 import "github-markdown-css/github-markdown.css";
 
 import React from "react";
 import Link from "next/link";
 import { Tooltip } from "@mui/material";
+import markdownit from "markdown-it";
 
 import StaticPageThumbnail from "ui/content/static-page-thumbnail";
 import { OptionalPage, OptionalPages } from "io/config/optional-pages";
 
 // Utilities to render markdown into HTML
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const markdowner = require("markdown-it")({
+const markdowner = markdownit({
     html: true,
     typographer: true,
     breaks: true,
@@ -34,6 +38,7 @@ export default function LandingPage() {
     // Get thumbnails for static content pages
     const thumbnails = getThumbnails();
 
+    // Button to open map page.
     const mapButton = buildButton(
         "Geospatial map",
         "Explore assets, connections, and failures visually.",
@@ -41,6 +46,7 @@ export default function LandingPage() {
         "/visualisation"
     );
 
+    // Button to open dashboard page.
     const dashButton = buildButton(
         "Analytics dashboard",
         "Investigate all data across all scenarios.",
@@ -72,6 +78,16 @@ export default function LandingPage() {
     )
 }
 
+/**
+ * Build a custom button to navigate to another page.
+ * 
+ * @param title page title. 
+ * @param description page description.
+ * @param icon image icon.
+ * @param url page URL.
+ * 
+ * @returns generated React element.
+ */
 function buildButton(title: string, description: string, icon: string, url: string): React.ReactElement {
     const tooltipText = "Open the '" + title + "' page.";
 

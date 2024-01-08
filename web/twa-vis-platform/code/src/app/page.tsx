@@ -1,12 +1,14 @@
+/**
+ * Handles the default (i.e. "/") route.
+ */
+
 import React from "react";
-import { Metadata } from "next";
 
 import LandingPage from "ui/pages/landing";
 import UISettings from "io/config/ui-settings";
-
 import MapContainer from "./visualisation/page";
+import { Metadata } from "next";
 import { OptionalPages } from "io/config/optional-pages";
-
 
 /**
  * Set page metadata.
@@ -27,7 +29,6 @@ export async function generateMetadata(): Promise<Metadata> {
         title: "Welcome"
     }
 }
-
 
 /**
  * Handles the default route (i.e. "/") to display a home page

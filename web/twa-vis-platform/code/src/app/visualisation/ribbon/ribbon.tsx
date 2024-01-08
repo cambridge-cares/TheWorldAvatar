@@ -1,8 +1,14 @@
 import styles from "./ribbon.module.css"
-import React from "react";
+import React, { useRef } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import RibbonPanel from "./ribbon-panel";
-import RibbonComponent from "./ribbon-component";
+import RibbonComponentClick from "./components/ribbon-component-click";
+import RibbonComponentToggle from "./components/ribbon-component-toggle";
+import { closeFullscreen, getMapSettings, openFullscreen } from "utils/client-utils";
+import { set3DTerrain, resetCamera } from "map/mapbox/mapbox-camera-utils";
+import RibbonComponentCombo from "./components/ribbon-component-combo";
+import MapSettingsStore from "../../../io/config/map-settings";
+import { CameraPosition } from "../../../types/map-settings";
 
 // Type definition for Ribbon parameters
 export type RibbonProps = {
@@ -11,7 +17,20 @@ export type RibbonProps = {
 
 // Type definition for Ribbon state.
 type RibbonState = {
-    activeIndex: number
+    activeIndex: number,
+    cameraNames: string[],
+    cameraDefault: string
+}
+
+async function getCameraPositions() {
+    const settings = await getMapSettings();
+    const camera = settings.camera;
+    return camera.positions.map((position: CameraPosition) => position.name);
+}
+
+async function getDefaultCameraPosition() {
+    const settings = await getMapSettings();
+    return settings.camera.default;
 }
 
 /**
@@ -21,8 +40,11 @@ export default class Ribbon extends React.Component<RibbonProps, RibbonState> {
 
     // Initialise a new state
     state: RibbonState = {
-        activeIndex: this.props.startingIndex
+        activeIndex: this.props.startingIndex,
+        cameraNames: [""],
+        cameraDefault: ""
     }
+
 
     handleChange = (event: React.SyntheticEvent, newValue: number) => {
         this.setState({
@@ -32,6 +54,13 @@ export default class Ribbon extends React.Component<RibbonProps, RibbonState> {
 
     getClass = (isActive: boolean) => {
         return isActive ? styles.ribbonTabActive : styles.ribbonTab
+    }
+
+    async componentDidMount() {
+        this.setState({
+            cameraNames: await getCameraPositions(),
+            cameraDefault: await getDefaultCameraPosition()
+        });
     }
 
     // Return renderable element
@@ -66,25 +95,43 @@ export default class Ribbon extends React.Component<RibbonProps, RibbonState> {
                     </Box>
 
                     <RibbonPanel activeIndex={this.state.activeIndex} index={0}>
-                        <RibbonComponent
+                        <RibbonComponentClick
                             icon="/img/icons/imagery.svg"
                             text="Imagery"
                             tooltip="Change map imagery"
                         />
-                        <RibbonComponent
+                        <RibbonComponentCombo
                             icon="/img/icons/camera.svg"
                             text="Reset Camera"
                             tooltip="Reset camera to default position."
+                            options={this.state.cameraNames}
+                            initialOption={this.state.cameraDefault}
+                            action={() => {
+                                resetCamera();
+                                console.log("CAMERA HAS BEEN RESET?");
+                            }}
                         />
-                        <RibbonComponent
+                        <RibbonComponentToggle
                             icon="/img/icons/terrain.svg"
                             text="3D Terrain"
                             tooltip="Toggle 3D terrain."
+                            initialState={false}
+                            action={state => {
+                               set3DTerrain(state);
+                            }}
                         />
-                        <RibbonComponent
+                        <RibbonComponentToggle
                             icon="/img/icons/maximise.svg"
-                            text="Maximise"
+                            text="Full Screen"
                             tooltip="Toggle fullscreen mode."
+                            initialState={false}
+                            action={state => {
+                                if(state) {
+                                    openFullscreen();
+                                } else {
+                                    closeFullscreen();
+                                }
+                            }}
                         />
                     </RibbonPanel>
                     <RibbonPanel activeIndex={this.state.activeIndex} index={1}>
