@@ -13,7 +13,11 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 public class WeatherGeospatialClient {
-	private static final Logger LOGGER = LogManager.getLogger(WeatherGeospatialClient.class);
+	/**
+     * Logger for reporting info/errors.
+     */
+
+	private static final Logger LOGGER = LogManager.getLogger(CARESWeatherStationInputAgentLauncher.class);
 
 	/**
 	 * Create geospatial information in the servers such as geoserver, postGIS etc
@@ -22,7 +26,7 @@ public class WeatherGeospatialClient {
 	 * @param name user defined name for the weather station
 	 * @param reportingStationIRI IRI of the weather station instance
 	 */
-	private void createGeospatialInformation(double lat, double lon, String name, String reportingStationIRI) {
+	public void createGeospatialInformation(double lat, double lon, String name, String reportingStationIRI) {
 		String geomUuid = "geometry_" + UUID.randomUUID();
 
         // create geojson object for PostGIS
@@ -44,14 +48,14 @@ public class WeatherGeospatialClient {
         geojson.put("type", "Feature").put("properties", properties).put("geometry", geometry);
 
         LOGGER.info("Uploading GeoJSON to PostGIS");
-        GDALClient gdalclient = new GDALClient();
+        GDALClient gdalclient = GDALClient.getInstance();
         gdalclient.uploadVectorStringToPostGIS(CARESWeatherStationInputAgentLauncher.DATABASE, CARESWeatherStationInputAgentLauncher.LAYERNAME, geojson.toString(),
                 new Ogr2OgrOptions(), true);
 
         LOGGER.info("Creating layer in Geoserver");
-        GeoServerClient geoserverclient = new GeoServerClient();
+        GeoServerClient geoserverclient = new GeoServerClient(null, null, null);
         geoserverclient.createWorkspace(CARESWeatherStationInputAgentLauncher.GEOSERVER_WORKSPACE);
-        geoserverclient.createPostGISLayer(null, CARESWeatherStationInputAgentLauncher.GEOSERVER_WORKSPACE, CARESWeatherStationInputAgentLauncher.DATABASE, CARESWeatherStationInputAgentLauncher.LAYERNAME,
+        geoserverclient.createPostGISLayer(CARESWeatherStationInputAgentLauncher.GEOSERVER_WORKSPACE, CARESWeatherStationInputAgentLauncher.DATABASE, CARESWeatherStationInputAgentLauncher.LAYERNAME,
                 new GeoServerVectorSettings());
 	}
 
