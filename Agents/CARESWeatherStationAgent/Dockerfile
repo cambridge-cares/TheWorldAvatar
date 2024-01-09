@@ -44,7 +44,7 @@ ENV DATABASE="postgres"
 
 ENV GEOSERVER_WORKSPACE="weatherstations"
 
-COPY --from=builder /root/CARESWeatherStationInputAgent/output/caresweatherstation-agent##1.4.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/CARESWeatherStationInputAgent/output/caresweatherstation-agent##1.5.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
