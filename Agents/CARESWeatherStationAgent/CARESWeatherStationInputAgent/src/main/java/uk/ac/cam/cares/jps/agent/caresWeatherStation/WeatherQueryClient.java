@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.caresWeatherStation;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 import java.io.File;
@@ -10,7 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
+import java.nio.file.Path;
+import java.sql.Connection;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
@@ -28,14 +27,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.core.io.ClassPathResource;
 
+import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
-import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOfType;
 
 
 /**
- * Class to construct queries for SPARQL stores
+ * Class to construct queries
  * @author Wilson */
-public class WeatherSparqlHandler {
+public class WeatherQueryClient extends ContainerClient{
 	/**
      * Logger for reporting info/errors.
      */
@@ -46,6 +48,8 @@ public class WeatherSparqlHandler {
      */
     private static final String UPDATEORQUERY_ERROR_MSG = "Unable to run the following Update/Query the following: ";
     private static final String UPDATE_SUCCESS_MSG = "Successfully inserted the following triples: ";
+    private static final String CREATEGEOSPATIAL_ERROR_MSG = "Unable to create geospatial information!";
+    private static final String RETRIEVE_LATLONG_ERROR_MSG = "Error retrieving latitude and longitude values from JSONObject!" ;
 
     /**
      * Namespaces for ontologies
@@ -63,9 +67,7 @@ public class WeatherSparqlHandler {
 	private static final Prefix PREFIX_ONTOEMS = SparqlBuilder.prefix("ontoems", iri(ONTOEMS_NS));
     private static final Prefix PREFIX_RDFS = SparqlBuilder.prefix("rdfs", iri(RDFS_NS));
     private static final Prefix PREFIX_OM = SparqlBuilder.prefix("om", iri(OM_NS));
-    private static final Prefix PREFIX_ONTODEVICE = SparqlBuilder.prefix("ontodevice", iri(ONTODEVICE_NS));
-    private static final Prefix PREFIX_SF = SparqlBuilder.prefix("sf", iri(SF_NS));
-    private static final Prefix PREFIX_GEO = SparqlBuilder.prefix("geo", iri(GEO_NS));
+
 	/**
      * Relationships
      */ 
@@ -75,13 +77,10 @@ public class WeatherSparqlHandler {
     private static final Iri hasAggregateFunction = PREFIX_OM.iri("hasAggregateFunction");
     private static final Iri hasUnit = PREFIX_OM.iri("hasUnit");
     private static final Iri symbol = PREFIX_OM.iri("symbol");
-    private static final Iri hasGeoLocation = PREFIX_ONTODEVICE.iri("hasGeoLocation");
-    private static final Iri asWKT = PREFIX_GEO.iri("asWKT");
 
     /**
      * Classes
      */
-    private static final Iri point = PREFIX_SF.iri("Point");
     private static final Iri reportingStation = PREFIX_ONTOEMS.iri("ReportingStation");
     private static final Iri uvIndex = PREFIX_ONTOEMS.iri("UVIndex"); //degree celsius
     private static final Iri windDirection = PREFIX_ONTOEMS.iri("WindDirection"); //degree
@@ -107,9 +106,6 @@ public class WeatherSparqlHandler {
     private static final Iri unitDivision = PREFIX_OM.iri("UnitDivision");
     private static final Iri prefixedUnit = PREFIX_OM.iri("PrefixedUnit");
 
-    //data type
-    private static final Iri wktLiteral = PREFIX_GEO.iri("wktLiteral");
-
     //units instances
     private static final Iri percent  = PREFIX_OM.iri("percent"); //unit and singular unit
     private static final Iri degreeCelsius = PREFIX_OM.iri("degreeCelsius"); //unit and singular unit
@@ -129,11 +125,16 @@ public class WeatherSparqlHandler {
 
 	private WeatherPostGISClient postgisClient;
 
+    private PostGISEndpointConfig postGISEndpointConfig = null;
+
     //endpoints and credentials
     String sparqlQueryEndpoint;
     String sparqlUpdateEndpoint;
     String sparqlUser;
     String sparqlPassword;
+    String dbUrl;
+    String dbUser;
+    String dbPassword;
 
     //weather station ID
     private String stationId;
@@ -143,7 +144,7 @@ public class WeatherSparqlHandler {
      * @param agentPropertiesFile the filepath of the agent.properties file
      * @param clientPropertiesFile the filepath of the client.properties file
      */
-    public WeatherSparqlHandler(String agentPropertiesFile, String clientPropertiesFile, String apiPropertiesFile) throws IOException {
+    public WeatherQueryClient(String agentPropertiesFile, String clientPropertiesFile, String apiPropertiesFile) throws IOException {
         try (InputStream input = new FileInputStream(agentPropertiesFile)) {
             // Load properties file from specified path
             Properties prop = new Properties();
@@ -166,7 +167,7 @@ public class WeatherSparqlHandler {
         }
         try {
             //load configs from client.properties file for setting up remote store client
-            loadRSClientConfigs(clientPropertiesFile);
+            loadClientConfigs(clientPropertiesFile);
         } catch (Exception e) {
             throw new JPSRuntimeException ("Unable to load properties from the timeseries config file!");
         }
@@ -222,7 +223,7 @@ public class WeatherSparqlHandler {
                 quantityIRIs.add(quantityIRI);
             }
             String reportingStationIRI = InstantiateReportingStationIfNotExist(quantityIRIs);
-            InstantiateGeoLocationIfNotExist(reportingStationIRI, weatherReadings);
+            InstantiateGeoSpatialInfoIfNotExist(reportingStationIRI, weatherReadings);
         }
         
     }
@@ -592,21 +593,49 @@ public class WeatherSparqlHandler {
     }
 
     /**
-     * Check for sf:point instance linked to ReportingStation, if it does not exist, instantiate it and update the lat long values
-     * change to this, follow the weatherAgent createStation path
-     * already have sparqlHandler which has the same function as WeatherQueryClient
+     * Instantiate the latitude and longitude of the weather station if it does not exist
      * @param reportingStationIRI the ReportingStation IRI to check for
      * @param weatherReadings weather readings retrieved via API
+     * @throws IOException
      */
-    private void InstantiateGeoLocationIfNotExist(String reportingStationIRI, JSONObject weatherReadings) {
+    private void InstantiateGeoSpatialInfoIfNotExist(String reportingStationIRI, JSONObject weatherReadings) {
         //retrieve long lat from JSONObject weatherReadings
+        Double longitude;
+        Double latitude;
         try {
-            Double longitude = Double.parseDouble(weatherReadings.getJSONArray("observations").getJSONObject(weatherReadings.getJSONArray("observations").length() - 1).get("lon").toString());
-            Double latitude = Double.parseDouble(weatherReadings.getJSONArray("observations").getJSONObject(weatherReadings.getJSONArray("observations").length() - 1).get("lat").toString());
+            longitude = Double.parseDouble(weatherReadings.getJSONArray("observations").getJSONObject(weatherReadings.getJSONArray("observations").length() - 1).get("lon").toString());
+            latitude = Double.parseDouble(weatherReadings.getJSONArray("observations").getJSONObject(weatherReadings.getJSONArray("observations").length() - 1).get("lat").toString());
+
 		} catch (Exception e) {
-			LOGGER.error("Error retrieving latitude and longitude values from JSONObject!");
-			LOGGER.error(e.getMessage());
-			throw new RuntimeException(e);
+			LOGGER.error(RETRIEVE_LATLONG_ERROR_MSG, e);
+			throw new JPSRuntimeException(e);
+		}
+        postGISEndpointConfig = this.readEndpointConfig("postgis",PostGISEndpointConfig.class);
+
+        postgisClient = new WeatherPostGISClient(postGISEndpointConfig.getJdbcURL(CARESWeatherStationInputAgentLauncher.DATABASE), postGISEndpointConfig.getUsername(), postGISEndpointConfig.getPassword());
+
+        try (Connection conn = postgisClient.getConnection()) {
+            JSONObject response = new JSONObject();
+            WeatherGeospatialClient geospatialClient = new WeatherGeospatialClient();
+			if (!postgisClient.checkTableExists(CARESWeatherStationInputAgentLauncher.LAYERNAME, conn)) {
+				// add ontop mapping file
+				Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
+                OntopClient ontopClient = OntopClient.getInstance();
+				ontopClient.updateOBDA(obda_file);
+                geospatialClient.createGeospatialInformation(latitude, longitude, "Weather Station " + stationId, reportingStationIRI);
+				response.put("message", "Geospatial information instantiated for the following: Weather Station " + stationId);
+			} else {
+				// table exists, check table contents for an equivalent point
+				if (!postgisClient.checkPointExists(latitude, longitude, conn)) {
+                    geospatialClient.createGeospatialInformation(latitude, longitude, "Weather Station " + stationId, reportingStationIRI);
+					response.put("message", "Geospatial information instantiated for the following: Weather Station " + stationId);
+				} else {
+					response.put("message", "There is already a station at the given coordinates");
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error(CREATEGEOSPATIAL_ERROR_MSG, e);
+            throw new JPSRuntimeException(CREATEGEOSPATIAL_ERROR_MSG);
 		}
     }
 
@@ -615,7 +644,7 @@ public class WeatherSparqlHandler {
      * @param filepath filepath of client.properties file
      * @throws IOException
      */
-    private void loadRSClientConfigs(String filepath) throws IOException {
+    private void loadClientConfigs(String filepath) throws IOException {
         // Check whether properties file exists at specified location
         File file = new File(filepath);
         if (!file.exists()) {
@@ -643,6 +672,21 @@ public class WeatherSparqlHandler {
             }
             if (prop.containsKey("sparql.password")) {
                 this.sparqlPassword = prop.getProperty("sparql.password");
+            }
+            if (prop.containsKey("db.url")) {
+                dbUrl = prop.getProperty("db.url");
+            } else {
+                throw new IOException("Properties file is missing \"db.url=<db_url>\"");
+            }
+            if (prop.containsKey("db.user")) {
+                dbUser = prop.getProperty("db.user");
+            } else {
+                throw new IOException("Properties file is missing \"db.user=<db_user>\"");
+            }
+            if (prop.containsKey("db.password")) {
+                dbPassword = prop.getProperty("db.password");
+            } else {
+                throw new IOException("Properties file is missing \"db.password=<db_password>\"");
             }
 
             kbClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint, sparqlUser, sparqlPassword);
