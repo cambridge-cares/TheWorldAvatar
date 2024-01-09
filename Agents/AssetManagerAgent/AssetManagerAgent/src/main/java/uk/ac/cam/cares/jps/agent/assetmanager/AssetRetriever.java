@@ -699,4 +699,97 @@ public class AssetRetriever {
 
     }
 
+    public JSONArray getAllMaintenanceScheduleIRI(){
+        SelectQuery query = Queries.SELECT();
+        Variable deviceIRI = SparqlBuilder.var("deviceIRI");
+        Variable maintenanceScheduleIRI = SparqlBuilder.var("maintenanceScheduleIRI");
+        Variable maintenanceTaskIRI = SparqlBuilder.var("maintenanceTaskIRI");
+        Variable lastServiceIRI = SparqlBuilder.var("lastServiceIRI");
+        Variable lastServiceTime = SparqlBuilder.var("lastServiceTime");
+        Variable nextServiceIRI = SparqlBuilder.var("nextServiceIRI");
+        Variable nextServiceTime = SparqlBuilder.var("nextServiceTime");
+        Variable intervalIRI = SparqlBuilder.var("intervalIRI");
+        Variable durationIRI = SparqlBuilder.var("durationIRI");
+        Variable durationMonth = SparqlBuilder.var("durationMonth");
+        Variable durationYear = SparqlBuilder.var("durationYear");
+        Variable performerIRI = SparqlBuilder.var("performerIRI");
+
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
+            Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE,
+            Pref_TIME
+        );
+        query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
+        query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
+        query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
+        query.where(GraphPatterns.optional(
+            maintenanceTaskIRI.has(performedAt, lastServiceIRI),
+            lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime)
+            ));
+        query.where(GraphPatterns.optional(
+            maintenanceTaskIRI.has(scheduledFor, nextServiceIRI),
+            nextServiceIRI.has(inXSDDateTimeStamp, nextServiceTime)
+            ));
+        query.where(GraphPatterns.optional(
+            maintenanceTaskIRI.has(hasInterval, intervalIRI),
+            intervalIRI.has(hasDurationDescription, durationIRI),
+            durationIRI.has(months, durationMonth).andHas(years, durationYear)
+            ));
+
+        LOGGER.debug("Maintenance retireval check query:: " + query.getQueryString());
+
+        JSONArray reqResult = storeClientAsset.executeQuery(query.getQueryString());
+        LOGGER.debug("Maintenance retrieval check result:: " + reqResult);
+
+        return reqResult;
+    }
+
+    public JSONObject getAssetMaintenanceIRI (String maintenanceScheduleIRI){
+        return getAssetMaintenanceIRI(iri(maintenanceScheduleIRI));
+    }
+    
+    public JSONObject getAssetMaintenanceIRI (Iri maintenanceScheduleIRI){
+        //TODO Resolve with existence checker as the code is generally the same, should be able to be compressed to 1 method
+        //TODO Find a better stuff to use as args here. Using IRI is not user friendly from the app, unless the app retrieve all IRI for each device maintenance, which is quite inefficient
+        JSONObject result = new JSONObject();
+        SelectQuery query = Queries.SELECT();
+        Variable deviceIRI = SparqlBuilder.var("deviceIRI");
+        Variable maintenanceTaskIRI = SparqlBuilder.var("maintenanceTaskIRI");
+        Variable lastServiceIRI = SparqlBuilder.var("lastServiceIRI");
+        Variable nextServiceIRI = SparqlBuilder.var("nextServiceIRI");
+        Variable intervalIRI = SparqlBuilder.var("intervalIRI");
+        Variable durationIRI = SparqlBuilder.var("durationIRI");
+        Variable performerIRI = SparqlBuilder.var("performerIRI");
+
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
+            Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE,
+            Pref_TIME
+        );
+        query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
+        query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
+        query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
+        query.where(GraphPatterns.optional(maintenanceTaskIRI.has(performedAt, lastServiceIRI)));
+        query.where(GraphPatterns.optional(maintenanceTaskIRI.has(scheduledFor, nextServiceIRI)));
+        query.where(GraphPatterns.optional(
+            maintenanceTaskIRI.has(hasInterval, intervalIRI),
+            intervalIRI.has(hasDurationDescription, durationIRI)
+            ));
+
+        LOGGER.debug("Maintenance existence check query:: " + query.getQueryString());
+
+        JSONArray reqResult = storeClientAsset.executeQuery(query.getQueryString());
+        LOGGER.debug("Maintenance existence check result:: " + reqResult);
+        //Hence this dumb switch statement below
+        switch (reqResult.length()) {
+            case 0:
+                return null;
+            case 1:
+                return result;
+            default:
+                throw new JPSRuntimeException("Multiple maintenance data found. Currently multiple maintenance data is not supported.");
+        }
+    }
+    
+
 }

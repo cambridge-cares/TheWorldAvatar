@@ -895,6 +895,46 @@ public class AssetKGInterface {
 
     }
 
+    public JSONArray updateMaintenanceTimeData(){
+        JSONArray maintenanceList = assetRetriever.getAllMaintenanceScheduleIRI();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate callTime = LocalDate.now();
+        JSONArray result = new JSONArray();
+        for (int i = 0; i < maintenanceList.length(); i ++){
+            JSONObject maintenanceData = maintenanceList.getJSONObject(i);
+            if (maintenanceData.has("nextServiceIRI")){
+                LocalDate nextService = LocalDate.parse(maintenanceData.getString("nextServiceIRI"));
+                if (callTime.isAfter(nextService)){
+
+                    maintenanceData.put("lastServiceTime", dtf.format(nextService));
+                    if (!maintenanceData.has("lastServiceIRI")){
+                        maintenanceData.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                    }
+
+                    if (maintenanceData.has("intervalIRI")){
+                        Long totalIntervalMonth = Long.valueOf(maintenanceData.getString("durationYear")) * 12 + 
+                                                    Long.valueOf(maintenanceData.getString("durationMonth"));
+                        maintenanceData.put("nextServiceTime", dtf.format(nextService.plusMonths(totalIntervalMonth)));
+                    }
+                }
+            }
+
+            LOGGER.info("New maintenance time for maintenance schedule::" + maintenanceData);
+            result.put(maintenanceData);
+            //updateGeneralMaintenanceData(maintenanceData, maintenanceList.getJSONObject(i));
+            assetDeleter.deleteMaintenanceData(maintenanceList.getJSONObject(i));
+            addMaintenanceData(maintenanceData);
+        }
+        return result;
+    }
+    public void deleteMaintenance(String maintenanceScheduleIRI){
+        JSONObject maintenanceData = assetRetriever.getAssetMaintenanceIRI(maintenanceScheduleIRI);
+        if (maintenanceData == null){
+            throw new JPSRuntimeException("Maintenance schedule data does not exist for IRI" + maintenanceScheduleIRI);
+        }
+        assetDeleter.deleteMaintenanceData(maintenanceData);
+    }
+
     public void addDataSheet(String docFilename, String docType, String docComment, String deviceID) {
         String deviceIRI = existenceChecker.getIRIStringbyID(deviceID);
         String documentIRI = "";

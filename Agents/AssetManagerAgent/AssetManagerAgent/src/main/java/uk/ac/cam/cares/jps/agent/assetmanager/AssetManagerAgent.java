@@ -32,6 +32,8 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
     "/getuidata", 
     "/instantiate",
     "/addmaintenance",
+    "/updatetime",
+    "/deletemaintenance",
     "/print", 
     "/printbulk",
     "/addmanual",
@@ -186,8 +188,14 @@ public class AssetManagerAgent extends JPSAgent{
             else if(urlPath.contains("addmaintenance")){
                 jsonMessage = addMantainanceData(args, assetData);
             }
+            else if(urlPath.contains("updatetime")){
+                jsonMessage = updateMaintenanceTime();
+            }
             else if(urlPath.contains("delete")){
                 jsonMessage = deleteAsset(args, assetData.getString("ID"));
+            }
+            else if(urlPath.contains("deletemaintenance")){
+                jsonMessage = deleteMaintenanceSchedule(args, assetData.getString("ID"));
             }
 
             jsonMessage.accumulate("Result", "Command Success");
@@ -598,6 +606,24 @@ public class AssetManagerAgent extends JPSAgent{
             throw new JPSRuntimeException("Failed to delete asset:" + ID,e);
         }
         
+        return message;
+    }
+
+    public JSONObject deleteMaintenanceSchedule (String[] args, String scheduleIRI){
+        JSONObject message = new JSONObject();
+        
+        try {
+            instanceHandler.deleteMaintenance(scheduleIRI);
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Failed to delete maintenance schedule:" + scheduleIRI,e);
+        }
+        
+        return message;
+    }
+
+    public JSONObject updateMaintenanceTime(){
+        JSONObject message = new JSONObject();
+        message.put("updatedData", instanceHandler.updateMaintenanceTimeData());
         return message;
     }
 

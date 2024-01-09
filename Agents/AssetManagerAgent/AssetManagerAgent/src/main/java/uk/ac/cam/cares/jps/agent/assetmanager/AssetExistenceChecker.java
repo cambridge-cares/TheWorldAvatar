@@ -563,14 +563,18 @@ public class AssetExistenceChecker {
                     result.put("lastServiceIRI", reqResult.getJSONObject(0).getString("lastServiceIRI"));
                 }
                 else{
-                    result.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                    if (generate){
+                        result.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                    }
                 }
 
                 if (reqResult.getJSONObject(0).has("nextServiceIRI")){
                     result.put("nextServiceIRI", reqResult.getJSONObject(0).getString("nextServiceIRI"));
                 }
                 else{
-                    result.put("nextServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                    if (generate){
+                        result.put("nextServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                    }
                 }
 
                 if (reqResult.getJSONObject(0).has("intervalIRI")){
@@ -578,8 +582,10 @@ public class AssetExistenceChecker {
                     result.put("durationIRI", reqResult.getJSONObject(0).getString("durationIRI"));
                 }
                 else{
-                    result.put("intervalIRI", genIRIString("Interval", Pref_TIME));
-                    result.put("durationIRI", genIRIString("DurationDescription", Pref_TIME));
+                    if (generate){
+                        result.put("intervalIRI", genIRIString("Interval", Pref_TIME));
+                        result.put("durationIRI", genIRIString("DurationDescription", Pref_TIME));
+                    }
                 }
                 
 

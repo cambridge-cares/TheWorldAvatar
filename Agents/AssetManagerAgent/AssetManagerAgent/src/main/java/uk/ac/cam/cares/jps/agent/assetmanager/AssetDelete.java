@@ -49,6 +49,79 @@ public class AssetDelete {
         DelLogFileLoc = deleteLogFile;
     }
 
+    public void deleteMaintenanceData (JSONObject maintenanceData){
+        ModifyQuery query = Queries.DELETE();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
+            Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE,
+            Pref_TIME
+        );
+        //MandatoryIRI
+        Iri deviceIRI = iri(maintenanceData.getString("deviceIRI"));
+        Iri maintenanceScheduleIRI = iri(maintenanceData.getString("maintenanceScheduleIRI"));
+        Iri maintenanceTaskIRI = iri(maintenanceData.getString("maintenanceTaskIRI"));
+        Iri performerIRI = iri(maintenanceData.getString("performerIRI"));
+        
+        query.delete(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
+        query.delete(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
+        query.delete(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
+        query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
+        query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
+        query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
+
+        //OptionalIRI and literals
+        Iri lastServiceIRI, nextServiceIRI, intervalIRI, durationIRI;
+        String lastServiceTime, nextServiceTime, durationMonth, durationYear;
+        if (maintenanceData.has("lastServiceIRI")){
+            lastServiceIRI = iri(maintenanceData.getString("lastServiceIRI"));
+            lastServiceTime = maintenanceData.getString("lastServiceTime");
+            query.delete(
+                maintenanceTaskIRI.has(performedAt, lastServiceIRI),
+                lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime)
+            );
+            query.where(
+                maintenanceTaskIRI.has(performedAt, lastServiceIRI),
+                lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime)
+            );
+        }
+
+        if (maintenanceData.has("nextServiceIRI")){
+            nextServiceIRI = iri(maintenanceData.getString("nextServiceIRI"));
+            nextServiceTime = maintenanceData.getString("nexttServiceTime");
+            query.delete(
+                maintenanceTaskIRI.has(scheduledFor, nextServiceIRI),
+                nextServiceIRI.has(inXSDDateTimeStamp, nextServiceTime)
+            );
+            query.where(
+                maintenanceTaskIRI.has(scheduledFor, nextServiceIRI),
+                nextServiceIRI.has(inXSDDateTimeStamp, nextServiceTime)
+            );
+        }
+
+        if (maintenanceData.has("nextServiceIRI")){
+            intervalIRI = iri(maintenanceData.getString("intervalIRI"));
+            durationIRI = iri(maintenanceData.getString("durationIRI"));
+            durationMonth = maintenanceData.getString("durationMonth");
+            durationYear = maintenanceData.getString("durationYear");
+            query.delete(
+                maintenanceTaskIRI.has(hasInterval, intervalIRI),
+                intervalIRI.has(hasDurationDescription, durationIRI),
+                durationIRI.has(months, durationMonth).andHas(years, durationYear)
+            );
+            query.where(
+                maintenanceTaskIRI.has(hasInterval, intervalIRI),
+                intervalIRI.has(hasDurationDescription, durationIRI),
+                durationIRI.has(months, durationMonth).andHas(years, durationYear)
+            );
+        }
+        
+        
+
+        LOGGER.debug("Maintenance delete query:: " + query.getQueryString());
+        //storeClientAsset.executeUpdate(query.getQueryString());
+
+    }
+
     public void deleteByLiteral (String literal, String predicate, RemoteStoreClient storeClient){
         deleteByLiteral (literal, iri(predicate), storeClient);
     }
