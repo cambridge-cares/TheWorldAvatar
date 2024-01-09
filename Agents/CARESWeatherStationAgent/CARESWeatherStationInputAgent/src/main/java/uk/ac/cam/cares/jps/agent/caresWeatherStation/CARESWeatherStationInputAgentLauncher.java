@@ -59,7 +59,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
     public static String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
 	public static String DATABASE = System.getenv("DATABASE");
 	public static String LAYERNAME = System.getenv("LAYERNAME");
-    
+
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         return processRequestParameters(requestParams);
@@ -192,9 +192,8 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         LOGGER.info("API connector object initialized.");
         jsonMessage.accumulate("Result", "API connector object initialized.");
 
-
         // Retrieve readings
-        JSONObject weatherDataReadings;
+        JSONObject weatherDataReadings = new JSONObject();
 
         try {
             weatherDataReadings = connector.getWeatherReadings();
@@ -207,6 +206,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
                 weatherDataReadings.length()));
         jsonMessage.accumulate("Result", "Retrieved " + weatherDataReadings.getJSONArray("observations").length() +
                 " weather station readings.");
+
         // If readings are not empty there is new data
         if(!weatherDataReadings.isEmpty()) {
             // Update the data
@@ -221,8 +221,8 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         }
 
         try {
-            WeatherSparqlHandler sparqlHandler = new WeatherSparqlHandler(args[0], args[1], args[2]);
-            sparqlHandler.instantiateIfNotExist(weatherDataReadings);
+            WeatherQueryClient weatherQueryClient = new WeatherQueryClient(args[0], args[1], args[2]);
+            weatherQueryClient.instantiateIfNotExist(weatherDataReadings);
         } catch (Exception e) {
             throw new JPSRuntimeException("Unable to carry out queries or insert data into the sparql store!", e);
         }
