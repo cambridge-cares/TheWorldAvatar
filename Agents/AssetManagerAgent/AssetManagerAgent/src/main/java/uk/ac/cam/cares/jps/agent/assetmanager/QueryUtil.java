@@ -216,9 +216,7 @@ public class QueryUtil {
         return iri(genIRIString(ID, prefix));
     }
 
-    public static String genIRIString (String ID, Prefix prefix) {
-        return genIRI(ID, prefix).getQueryString();
-    }
+
     public static String genIRIString (String ID, String prefix) {
         return prefix + ID + "_" + UUID.randomUUID();
     }

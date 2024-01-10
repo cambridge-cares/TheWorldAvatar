@@ -817,7 +817,7 @@ public class AssetKGInterface {
         if (existingServiceIRIs == null) {
             existingServiceIRIs = existenceChecker.getOrganizationTriples(serviceProvider);
             if (existingServiceIRIs == null){
-                serviceProviderIRI = maintenanceIRI.getString("serviceProviderIRI");
+                serviceProviderIRI = genIRIString("ServiceProvider", P_ASSET);
                 serviceProviderTypeIRI = IndependentParty;
             }
             else{
@@ -908,7 +908,7 @@ public class AssetKGInterface {
 
                     maintenanceData.put("lastServiceTime", dtf.format(nextService));
                     if (!maintenanceData.has("lastServiceIRI")){
-                        maintenanceData.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                        maintenanceData.put("lastServiceIRI", genIRIString("ServiceTime", P_TIME));
                     }
 
                     if (maintenanceData.has("intervalIRI")){

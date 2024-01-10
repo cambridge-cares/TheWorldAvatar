@@ -542,12 +542,12 @@ public class AssetExistenceChecker {
         switch (0) {
             case 0:
                 if (generate){
-                    result.put("maintenanceScheduleIRI", genIRIString("MaintenanceSchedule", Pref_ASSET));
-                    result.put("maintenanceTaskIRI", genIRIString("MaintenanceTask", Pref_ASSET));
-                    result.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
-                    result.put("nextServiceIRI", genIRIString("ServiceTime", Pref_TIME));
-                    result.put("intervalIRI", genIRIString("Interval", Pref_TIME));
-                    result.put("durationIRI", genIRIString("DurationDescription", Pref_TIME));
+                    result.put("maintenanceScheduleIRI", genIRIString("MaintenanceSchedule", P_ASSET));
+                    result.put("maintenanceTaskIRI", genIRIString("MaintenanceTask", P_ASSET));
+                    result.put("lastServiceIRI", genIRIString("ServiceTime", P_TIME));
+                    result.put("nextServiceIRI", genIRIString("ServiceTime", P_TIME));
+                    result.put("intervalIRI", genIRIString("Interval", P_TIME));
+                    result.put("durationIRI", genIRIString("DurationDescription", P_TIME));
                     //Performer IRI is not generated as it is supposed to be updated as requested
                     //Hence it does not matter if its retrieved or not
                     return result;
@@ -564,7 +564,7 @@ public class AssetExistenceChecker {
                 }
                 else{
                     if (generate){
-                        result.put("lastServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                        result.put("lastServiceIRI", genIRIString("ServiceTime", P_TIME));
                     }
                 }
 
@@ -573,7 +573,7 @@ public class AssetExistenceChecker {
                 }
                 else{
                     if (generate){
-                        result.put("nextServiceIRI", genIRIString("ServiceTime", Pref_TIME));
+                        result.put("nextServiceIRI", genIRIString("ServiceTime", P_TIME));
                     }
                 }
 
@@ -583,8 +583,8 @@ public class AssetExistenceChecker {
                 }
                 else{
                     if (generate){
-                        result.put("intervalIRI", genIRIString("Interval", Pref_TIME));
-                        result.put("durationIRI", genIRIString("DurationDescription", Pref_TIME));
+                        result.put("intervalIRI", genIRIString("Interval", P_TIME));
+                        result.put("durationIRI", genIRIString("DurationDescription", P_TIME));
                     }
                 }
                 
