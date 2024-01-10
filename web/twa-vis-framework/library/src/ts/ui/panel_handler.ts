@@ -460,13 +460,19 @@ class PanelHandler {
             }
 
             if(json["links"]) {
-                container.innerHTML += "<ul>";
+                let ul = document.createElement('ul');
 
                 for(let i = 0; i < json["links"].length; i++) {
                     let entry = json["links"][i];
-                    container.innerHTML += "<li><a href='" + entry["url"] + "' target='_blank'>" + entry["text"] + "</a></li>";
+                    let li = document.createElement('li');
+                    let a = document.createElement('a');
+                    a.href = entry["url"];
+                    a.target = '_blank';
+                    a.textContent = entry["text"];
+                    li.appendChild(a);
+                    ul.appendChild(li);
                 }
-                container.innerHTML += "</ul>";
+                container.appendChild(ul);
             }
         });
     }
