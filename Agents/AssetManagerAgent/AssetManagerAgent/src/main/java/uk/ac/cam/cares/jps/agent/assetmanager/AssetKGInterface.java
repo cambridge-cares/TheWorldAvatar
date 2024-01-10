@@ -884,7 +884,7 @@ public class AssetKGInterface {
         if(!(interval.isBlank() || interval==null)){
             year = Integer.valueOf(interval)/12;
             month = Integer.valueOf(interval)%12;
-            query.insert(iri(maintenanceTaskIRI).has(hasInterval, iri(nextServiceIRI)));
+            query.insert(iri(maintenanceTaskIRI).has(hasInterval, iri(intervalIRI)));
             query.insert(iri(intervalIRI).has(hasDurationDescription, iri(durationIRI)));
             query.insert(iri(durationIRI).has(months, Rdf.literalOf(month)).andHas(years, Rdf.literalOf(year)));
             query.insert(iri(intervalIRI).isA(Interval));
