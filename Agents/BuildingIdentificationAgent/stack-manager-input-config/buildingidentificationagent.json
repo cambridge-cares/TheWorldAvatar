@@ -3,7 +3,7 @@
         "Name": "buildingidentificationagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "buildingidentificationagent:1.0.0-SNAPSHOT",
+                "Image": "buildingidentificationagent:2.0.0-SNAPSHOT",
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"

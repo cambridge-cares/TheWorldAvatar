@@ -1,16 +1,12 @@
 package uk.ac.cam.cares.jps.agent.buildingidentification;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
-import org.apache.jena.sparql.function.library.print;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
@@ -18,19 +14,13 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
 import java.sql.*;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -111,7 +101,6 @@ public class BuildingIdentificationAgent extends JPSAgent {
             getFactoryProperties();
             linkBuildings();
             createFactoriesTable();
-            createGeoServerLayers();
         }
 
         JSONObject responseObject = new JSONObject();
@@ -283,10 +272,14 @@ public class BuildingIdentificationAgent extends JPSAgent {
             feature.put("type", "Feature");
             feature.put("geometry", geometry);
             JSONObject properties = new JSONObject();
-            properties.put("iri", fac.factoryIri);
+            String[] iriSplit = fac.factoryIri.split("/");
+            String facIri = iriSplit[iriSplit.length - 1];
+            properties.put("iri", facIri);
             properties.put("height", fac.buildingHeight);
             properties.put("heat", fac.heatEmission);
-            properties.put("factory_type", fac.factoryClass);
+            String[] facSplit = fac.factoryClass.split("/");
+            String facType = facSplit[facSplit.length - 1];
+            properties.put("factory_type", facType);
             properties.put("name", fac.companyName);
             properties.put("building_id", fac.buildingId);
             feature.put("properties", properties);
@@ -300,34 +293,6 @@ public class BuildingIdentificationAgent extends JPSAgent {
         gdalClient.uploadVectorStringToPostGIS(dbName, "citydb.factories",
                 featureCollection.toString(), new Ogr2OgrOptions(), false);
         LOGGER.info("Created factories table with {} records.", numberBuildingsIdentified);
-
-    }
-
-    /**
-     * Creates Geoserver layers for all industries
-     */
-
-    private void createGeoServerLayers() {
-
-        String geoserverWorkspace = "heat";
-        GeoServerClient geoServerClient = GeoServerClient.getInstance();
-        geoServerClient.deleteWorkspace(geoserverWorkspace);
-        geoServerClient.createWorkspace(geoserverWorkspace);
-
-        for (String facType : factoryTypes) {
-            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-            virtualTable.setSql(String.format(
-                    "select * from citydb.factories where factory_type = \'%s\'", facType));
-            virtualTable.setEscapeSql(true);
-            String[] facSplit = facType.split("/");
-            String tableName = facSplit[facSplit.length - 1];
-            virtualTable.setName(tableName);
-            virtualTable.addVirtualTableGeometry("wkb_geometry", "Polygon", String.valueOf(dbSrid));
-            geoServerVectorSettings.setVirtualTable(virtualTable);
-            geoServerClient.createPostGISLayer(geoserverWorkspace, dbName, tableName, geoServerVectorSettings);
-
-        }
 
     }
 

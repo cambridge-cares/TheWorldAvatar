@@ -3,7 +3,7 @@
         "Name": "buildingidentificationagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "buildingidentificationagent:1.0.0-SNAPSHOT",
+                "Image": "buildingidentificationagent:2.0.0-SNAPSHOT",
                 "Env": [
                     "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
                 ],
