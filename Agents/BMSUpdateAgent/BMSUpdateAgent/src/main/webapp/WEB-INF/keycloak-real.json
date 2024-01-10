@@ -1,0 +1,14 @@
+{
+  "realm": "lab_automation",
+  "auth-server-url": "http://test-stack-keycloak:8080/keycloak/",
+  "ssl-required": "external",
+  "resource": "bms-update-agent",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "xpp0L8oJvmD7FTaj6HgnR8bk7BmZjbw8"
+  },
+  "confidential-port": 0,
+  "policy-enforcer": {
+    "credentials": {}
+  }
+}
