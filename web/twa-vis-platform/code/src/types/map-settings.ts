@@ -1,4 +1,17 @@
 
+// Imagery settings object
+export interface ImagerySettings {
+    default: string,
+    options: ImageryOption[]
+}
+
+// Imagery option object
+export interface ImageryOption {
+    name: string,
+    url: string,
+    time?: string
+}
+
 // Camera settings object
 export interface CameraSettings {
     default: string,
@@ -18,6 +31,7 @@ export interface CameraPosition {
 export interface MapSettings {
     type: string,
     camera: CameraSettings,
+    imagery: ImagerySettings,
     credentials: {
         user: string,
         key: string

@@ -13,7 +13,7 @@
 
 .ribbonComponentInner {
     width: 100%;
-    min-height: 80px;
+    min-height: 82px;
     flex-grow: 1;
     cursor: pointer;
     
@@ -22,22 +22,34 @@
     border-radius: 6px;
 }
 .ribbonComponentInner:hover {
-    background-color: var(--background-tertiary);
+    background-color: var(--background-secondary);
 }
 .ribbonComponentInner.toggled {
-    background-color: var(--background-primary);
-}
-.ribbonComponentInner.toggled:hover {
-    background-color: var(--background-tertiary);
+    background-color: var(--background-secondary);
 }
 .ribbonComponentInner:active {
     outline: 1px solid var(--border-tertiary);
+}
+
+.ribbonComponentInnerDisabled {
+    width: 100%;
+    min-height: 82px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .ribbonComponentIcon {
     position: relative;
     width: 100%;
     flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.ribbonComponentIcon span {
+    font-size: 44pt !important;
+    text-align: center;
 }
 .ribbonComponentIcon svg {
     position: absolute;
@@ -48,10 +60,9 @@
     fill: var(--text-color-primary) !important;
 }
 
-
 .ribbonComponentText {
     width: 100%;
-    height: 25px;
+    height: 16px;
     text-align: center;
     font-size: 9pt;
 
@@ -62,7 +73,7 @@
 
 .ribbonComponentArrow {
     width: 100%;
-    height: 12px;
+    height: 10px;
     flex-grow: 0;
     cursor: pointer;
 
@@ -70,15 +81,16 @@
     line-height: 10pt !important;
 }
 .ribbonComponentArrow:hover {
-    background-color: var(--background-tertiary);
+    background-color: var(--background-secondary);
 }
 
 .ribbonDropdown {
-    margin-top: 5px;
+    margin-top: 10px;
     flex-grow: 1;
     width: 100%;
+    border: 1px solid var(--background-primary);
 
-    background-color: var(--background-secondary);
+    background-color: var(--background-tertiary);
 }
 .ribbonOption {
     width: 100%;
@@ -93,7 +105,7 @@
     vertical-align: middle;
 }
 .ribbonOption:hover {
-    background-color: var(--background-tertiary);
+    background-color: var(--background-secondary);
 }
 .ribbonOption.active {
     background-color: var(--background-primary);

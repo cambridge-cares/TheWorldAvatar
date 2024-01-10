@@ -2,7 +2,7 @@
 
 import styles from "./ribbon-component.module.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SVG from 'react-inlinesvg';
 import { Icon, Tooltip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +15,8 @@ type Props = {
     tooltip: string,
     initialOption: string,
     options: string[],
-    action: () => void
+    action: () => void,
+    iconClickable?: boolean
 }
 
 export default function RibbonComponentCombo(props: Props) {
@@ -38,12 +39,48 @@ export default function RibbonComponentCombo(props: Props) {
         setExpanded(!expanded);
     }
 
+    const closeAction = (event: MouseEvent) => {
+        const target = event.target as HTMLElement;
+        if(!target.classList.contains("material-icons")) {
+            setExpanded(false);
+        }
+    }
+
     // Create dropdown options
     const dropdown = createOptions(
         props.options, 
         (option == null) ? props.initialOption : option.selection,
         selectAction
     )
+
+    // On mount, add LMB listener
+    useEffect(() => {
+        document.addEventListener("click", closeAction);
+    }, []);
+    // On unmount, remove LMB listener
+    useEffect(() => () => {
+        document.removeEventListener("click", closeAction);
+    }, []);
+
+    let iconElement;
+    if(props.icon.endsWith(".svg")) {
+        // Image file
+        iconElement = (
+            <SVG src={props.icon}/>
+        );
+    } else {
+        // Name of Google material icon
+        iconElement = (
+            <Icon className="material-symbols-outlined">
+                {props.icon}
+            </Icon>
+        );
+    }
+
+    let innerClass = styles.ribbonComponentInner;
+    if(props.iconClickable != null && !props.iconClickable) {
+        innerClass = styles.ribbonComponentInnerDisabled;
+    }
 
     return (
         <div className={styles.ribbonComponent}>
@@ -54,11 +91,9 @@ export default function RibbonComponentCombo(props: Props) {
                 placement="bottom-start">
                 
                 <>
-                    <div className={styles.ribbonComponentInner} onClick={props.action}>
+                    <div className={innerClass} onClick={props.action}>
                         <div className={styles.ribbonComponentIcon}>
-                            <SVG
-                                src={props.icon}
-                            />
+                            {iconElement}
                         </div>
                         <div className={styles.ribbonComponentText}>
                             {props.text}
@@ -90,7 +125,7 @@ function createOptions(
     selectAction: (selection: string) => void) {
 
     return (
-        <div className={styles.ribbonDropdown}>
+        <div id="ribbonDropdown" className={styles.ribbonDropdown}>
             {options.map((option) => {
             
                 const classNames = [styles.ribbonOption];

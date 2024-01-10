@@ -21,6 +21,7 @@ import { addItem, selectItem } from 'state/context-menu-slice';
 import { ContextItemDefinition } from 'ui/context-menu/context-item';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
 import { getMapSettings } from 'utils/client-utils';
+import FloatingPanelContainer from '../../ui/tree/floating-panel';
 
 
 // Definition of context menu item used to toggle map ribbon.
@@ -54,6 +55,8 @@ export default function MapContainer() {
         
         getMapSettings().then((json) => {
             mapSettings.current = json;
+
+            window.type = mapSettings?.current?.["type"];
             setIsFetching(false);
         })
     }, []);
@@ -68,7 +71,7 @@ export default function MapContainer() {
                         width="500px"
                         height="500px"
                     />
-                    <h1>Loading visualisation...</h1>
+                    <h1>Loading visualisation, please wait...</h1>
                 </div>
             }
 
@@ -80,27 +83,26 @@ export default function MapContainer() {
             }
 
             {/* Cesium map */}
-            {!isFetching && mapSettings?.current?.["type"] === "cesium" &&
+            {!isFetching &&mapSettings?.current?.["type"] === "cesium" &&
                 <div></div>
             }
-            
+    
             {/* Container elements */}
-            <div className={styles.componentContainer}>
+            {!isFetching &&
+                <div className={styles.componentContainer}>
 
-                {/* Map controls ribbon */}
-                {ribbonState?.toggled != null && ribbonState.toggled &&
-                    <Ribbon startingIndex={0}/>
-                }
+                    {/* Map controls ribbon */}
+                    {ribbonState?.toggled != null && ribbonState.toggled &&
+                        <Ribbon startingIndex={0}/>
+                    }
 
-                {/* Containers for upcoming components (layer tree, metadata, time series charts etc.) */}
-                <div className={styles.upperContainer}>
-                    <div className={styles.leftUpperContainer}/>
-                    <div className={styles.middleUpperContainer}/>
-                    <div className={styles.rightUpperContainer}/>
+                    {/* Containers for upcoming components (layer tree, metadata, time series charts etc.) */}
+                    <div className={styles.upperContainer}>
+                        <FloatingPanelContainer/>
+                    </div>
+                    <div className={styles.lowerContainer}/>
                 </div>
-                <div className={styles.lowerContainer}/>
-
-            </div>
+            }
         </>
     )
 }

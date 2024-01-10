@@ -13,16 +13,32 @@
  */
 "use client";
 
-import 'mapbox-gl/dist/mapbox-gl.css';
+import "mapbox-gl/dist/mapbox-gl.css";
+import "./mapbox.css";
 
 import mapboxgl from 'mapbox-gl';
 import React, { useRef, useEffect } from 'react';
 import { getDefaultCameraPosition } from './mapbox-camera-utils';
 import { MapSettings } from '../../types/map-settings';
+import { getDefaultImageryOption, getImageryOption } from './mapbox-imagery-utils';
 
 // Type definition of incoming properties
 interface MapProperties {
     settings: MapSettings
+}
+
+// Return the default style URL
+function getDefaultStyle(mapSettings: MapSettings) {
+    if(mapSettings.imagery.default.toLowerCase() == "auto") {
+        // Auto detect browser theme
+        if (window?.matchMedia && window?.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return getImageryOption("3D (Night)", mapSettings.imagery);
+        } else {
+            return getImageryOption("3D (Day)", mapSettings.imagery);
+        }
+    } else {
+        return getDefaultImageryOption(mapSettings);
+    }
 }
 
 /**
@@ -51,16 +67,23 @@ export default function MapboxMapComponent(props: MapProperties) {
 
         // Get default camera position
         const defaultPosition = getDefaultCameraPosition(settings);
-
+        const defaultStyle = getDefaultStyle(settings);
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-            style: "mapbox://styles/mapbox/standard",
+            style: defaultStyle.url,
             center: defaultPosition["center"],
             zoom: defaultPosition["zoom"],
             bearing: defaultPosition["bearing"],
             pitch: defaultPosition["pitch"]
         });
 
+        if(defaultStyle.time != null) {
+            map.current.on('style.load', () => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (map.current as any).setConfigProperty('basemap', 'lightPreset', defaultStyle.time);
+            });
+        }
+ 
         // Store map object globally.
         // Note that setting a globally accessible variable for the map probably isn't wise. However,
         // we know this shouldn't be re-initialised, and the alternative is to pass the map object into

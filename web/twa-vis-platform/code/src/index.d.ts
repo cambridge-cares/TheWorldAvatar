@@ -7,5 +7,8 @@ declare global {
 
         // Map object from provider library
         map: Map;
+
+        // "mapbox" or "cesium"
+        type: string;
     }
 }

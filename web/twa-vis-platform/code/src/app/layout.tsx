@@ -12,6 +12,7 @@ import UISettings from "io/config/ui-settings";
 import StartupLogging from "io/startup-logging";
 import { OptionalPages } from "io/config/optional-pages";
 import GlobalContainer from "../ui/global-container";
+import { ToastContainer } from "react-toastify";
 
 /**
  * Performs initialisation when the platform is
@@ -59,6 +60,8 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
                 <GlobalContainer settings={uiSettings}>
                     {children}
                 </GlobalContainer>
+
+                <ToastContainer />
             </body>
         </html>
     );

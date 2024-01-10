@@ -29,6 +29,9 @@ const toolbarItem: ContextItemDefinition = {
     toggled: true
 }
 
+// Time the RMB was pressed down
+let rmbDownTime: number;
+
 /**
  * Represents a component for a custom right-click menu, containing instances of the
  * ContextItem class to representing individual items. 
@@ -48,14 +51,25 @@ class ContextMenu extends React.Component<ContextMenuProps, ContextMenuState> {
     // On render
     componentDidMount() {
         document.addEventListener("click", this.handleLeftClick);
-        document.addEventListener("contextmenu", this.handleRightClick);
         this.props.addItem(toolbarItem);
+
+        document.onmousedown = (event) => {
+            if(event.button === 2) rmbDownTime = Date.now();
+        }
+
+        document.onmouseup = (event) => {
+            if(event.button === 2) {
+                const duration = Date.now() - rmbDownTime;
+                if(duration < 500) {
+                    this.handleRightClick(event);
+                }
+            }
+        }
     }
 
     // On dispose
     componentWillUnmount() {
         document.removeEventListener("click", this.handleLeftClick);
-        document.removeEventListener("contextmenu", this.handleRightClick);
     }
 
     // On left-click

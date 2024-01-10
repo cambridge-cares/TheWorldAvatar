@@ -2,9 +2,10 @@
  * Utilities methods related to camera operations on Mapbox maps.
  */
 
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
+
 import { CameraPosition, CameraSettings, MapSettings } from "types/map-settings";
-import { getOption } from "../../state/ribbon-component-slice";
-import { useSelector } from "react-redux";
 import { getMapSettings } from "../../utils/client-utils";
 import { reduxStore } from "../../app/store";
 
@@ -59,9 +60,11 @@ export function set3DTerrain(state: boolean) {
 
 }
 
+/**
+ * Reset the camera to the current position (as defined in Redux state).
+ */
 export async function resetCamera() {
     const mapSettings = await getMapSettings();
-
     const reduxState = reduxStore.getState();
     const items = reduxState.ribbonComponents.items;
 
@@ -78,4 +81,29 @@ export async function resetCamera() {
         ...position,
         essential: true
     });
+}
+
+/**
+ * If given permission by browser alert, this moves the map to the user's location.
+ */
+export async function locateUser() {
+    navigator.geolocation.getCurrentPosition(
+        (geolocation) => {
+            const long = geolocation["coords"]["longitude"];
+            const lat = geolocation["coords"]["latitude"];
+
+            // Move the map
+            window.map.flyTo({
+                center: [long, lat],
+                zoom: 12,
+                essential: true
+            });
+        },
+        (err) => {
+            toast.warning(
+                "Cannot read user's location without browser authorisation.",
+                { position: toast.POSITION.BOTTOM_LEFT }
+            )
+        }
+    );
 }
