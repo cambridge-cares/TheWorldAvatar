@@ -880,6 +880,7 @@ public class AssetKGInterface {
 
         query.insert(iri(maintenanceTaskIRI).has(isPerformedBy, iri(serviceProviderIRI)));
         query.insert(iri(serviceProviderIRI).isA(serviceProviderTypeIRI));
+        query.insert(iri(serviceProviderIRI).has(RDFS.LABEL, Rdf.literalOf(serviceProvider)));
 
         if(!(interval.isBlank() || interval==null)){
             year = Integer.valueOf(interval)/12;
@@ -903,7 +904,7 @@ public class AssetKGInterface {
         for (int i = 0; i < maintenanceList.length(); i ++){
             JSONObject maintenanceData = maintenanceList.getJSONObject(i);
             if (maintenanceData.has("nextServiceIRI")){
-                LocalDate nextService = LocalDate.parse(maintenanceData.getString("nextServiceIRI"));
+                LocalDate nextService = LocalDate.parse(maintenanceData.getString("nextServiceTime"));
                 if (callTime.isAfter(nextService)){
 
                     maintenanceData.put("lastServiceTime", dtf.format(nextService));

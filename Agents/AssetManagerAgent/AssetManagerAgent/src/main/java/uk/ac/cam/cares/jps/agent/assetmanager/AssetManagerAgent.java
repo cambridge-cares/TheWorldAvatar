@@ -191,11 +191,11 @@ public class AssetManagerAgent extends JPSAgent{
             else if(urlPath.contains("updatetime")){
                 jsonMessage = updateMaintenanceTime();
             }
-            else if(urlPath.contains("delete")){
-                jsonMessage = deleteAsset(args, assetData.getString("ID"));
-            }
             else if(urlPath.contains("deletemaintenance")){
                 jsonMessage = deleteMaintenanceSchedule(args, assetData.getString("ID"));
+            }
+            else if(urlPath.contains("delete")){
+                jsonMessage = deleteAsset(args, assetData.getString("ID"));
             }
 
             jsonMessage.accumulate("Result", "Command Success");

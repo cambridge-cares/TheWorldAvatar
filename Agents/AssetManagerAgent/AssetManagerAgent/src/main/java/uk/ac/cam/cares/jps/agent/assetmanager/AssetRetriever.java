@@ -756,10 +756,14 @@ public class AssetRetriever {
         Variable deviceIRI = SparqlBuilder.var("deviceIRI");
         Variable maintenanceTaskIRI = SparqlBuilder.var("maintenanceTaskIRI");
         Variable lastServiceIRI = SparqlBuilder.var("lastServiceIRI");
+        Variable lastServiceTime = SparqlBuilder.var("lastServiceTime");
         Variable nextServiceIRI = SparqlBuilder.var("nextServiceIRI");
+        Variable nextServiceTime = SparqlBuilder.var("nextServiceTime");
         Variable intervalIRI = SparqlBuilder.var("intervalIRI");
         Variable durationIRI = SparqlBuilder.var("durationIRI");
         Variable performerIRI = SparqlBuilder.var("performerIRI");
+        Variable durationMonth = SparqlBuilder.var("durationMonth");
+        Variable durationYear = SparqlBuilder.var("durationYear");
 
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
@@ -769,11 +773,18 @@ public class AssetRetriever {
         query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
         query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
         query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
-        query.where(GraphPatterns.optional(maintenanceTaskIRI.has(performedAt, lastServiceIRI)));
-        query.where(GraphPatterns.optional(maintenanceTaskIRI.has(scheduledFor, nextServiceIRI)));
+        query.where(GraphPatterns.optional(
+            maintenanceTaskIRI.has(performedAt, lastServiceIRI),
+            lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime)
+            ));
+        query.where(GraphPatterns.optional(
+            maintenanceTaskIRI.has(scheduledFor, nextServiceIRI),
+            nextServiceIRI.has(inXSDDateTimeStamp, nextServiceTime)
+            ));
         query.where(GraphPatterns.optional(
             maintenanceTaskIRI.has(hasInterval, intervalIRI),
-            intervalIRI.has(hasDurationDescription, durationIRI)
+            intervalIRI.has(hasDurationDescription, durationIRI),
+            durationIRI.has(months, durationMonth).andHas(years, durationYear)
             ));
 
         LOGGER.debug("Maintenance existence check query:: " + query.getQueryString());
@@ -785,6 +796,31 @@ public class AssetRetriever {
             case 0:
                 return null;
             case 1:
+                String maintenanceScheduleIRIString = maintenanceScheduleIRI.getQueryString();
+                //Apparently this includes the `<` and `>`, need to strip the ends
+                result.put("maintenanceScheduleIRI", maintenanceScheduleIRIString.substring(1, maintenanceScheduleIRIString.length()-1));
+                result.put("deviceIRI", reqResult.getJSONObject(0).getString("deviceIRI"));
+                result.put("maintenanceTaskIRI", reqResult.getJSONObject(0).getString("maintenanceTaskIRI"));
+                result.put("performerIRI", reqResult.getJSONObject(0).getString("performerIRI"));
+
+                //In case some of the maintenance component does not exist before:
+                if (reqResult.getJSONObject(0).has("lastServiceIRI")){
+                    result.put("lastServiceIRI", reqResult.getJSONObject(0).getString("lastServiceIRI"));
+                    result.put("lastServiceTime", reqResult.getJSONObject(0).getString("lastServiceTime"));
+                }
+
+                if (reqResult.getJSONObject(0).has("nextServiceIRI")){
+                    result.put("nextServiceIRI", reqResult.getJSONObject(0).getString("nextServiceIRI"));
+                    result.put("nextServiceTime", reqResult.getJSONObject(0).getString("nextServiceTime"));
+                }
+                
+                if (reqResult.getJSONObject(0).has("intervalIRI")){
+                    result.put("intervalIRI", reqResult.getJSONObject(0).getString("intervalIRI"));
+                    result.put("durationIRI", reqResult.getJSONObject(0).getString("durationIRI"));
+                    result.put("durationMonth", reqResult.getJSONObject(0).getString("durationMonth"));
+                    result.put("durationYear", reqResult.getJSONObject(0).getString("durationYear"));
+                }
+                
                 return result;
             default:
                 throw new JPSRuntimeException("Multiple maintenance data found. Currently multiple maintenance data is not supported.");

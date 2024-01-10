@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.assetmanager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
@@ -65,9 +66,8 @@ public class AssetDelete {
         query.delete(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
         query.delete(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
         query.delete(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
-        query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
-        query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
-        query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
+        query.delete(maintenanceScheduleIRI.isA(MaintenanceSchedule));
+        query.delete(maintenanceTaskIRI.isA(MaintenanceTask));
 
         //OptionalIRI and literals
         Iri lastServiceIRI, nextServiceIRI, intervalIRI, durationIRI;
@@ -77,28 +77,24 @@ public class AssetDelete {
             lastServiceTime = maintenanceData.getString("lastServiceTime");
             query.delete(
                 maintenanceTaskIRI.has(performedAt, lastServiceIRI),
-                lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime)
-            );
-            query.where(
-                maintenanceTaskIRI.has(performedAt, lastServiceIRI),
-                lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime)
+                lastServiceIRI.isA(Instant),
+                //lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime),
+                lastServiceIRI.has(inXSDDateTimeStamp, Rdf.literalOfType(lastServiceTime, XSD.DATE))
             );
         }
 
         if (maintenanceData.has("nextServiceIRI")){
             nextServiceIRI = iri(maintenanceData.getString("nextServiceIRI"));
-            nextServiceTime = maintenanceData.getString("nexttServiceTime");
+            nextServiceTime = maintenanceData.getString("nextServiceTime");
             query.delete(
                 maintenanceTaskIRI.has(scheduledFor, nextServiceIRI),
-                nextServiceIRI.has(inXSDDateTimeStamp, nextServiceTime)
-            );
-            query.where(
-                maintenanceTaskIRI.has(scheduledFor, nextServiceIRI),
-                nextServiceIRI.has(inXSDDateTimeStamp, nextServiceTime)
+                nextServiceIRI.isA(Instant),
+                //nextServiceIRI.has(inXSDDateTimeStamp, nextServiceTime)
+                nextServiceIRI.has(inXSDDateTimeStamp, Rdf.literalOfType(nextServiceTime, XSD.DATE))
             );
         }
 
-        if (maintenanceData.has("nextServiceIRI")){
+        if (maintenanceData.has("intervalIRI")){
             intervalIRI = iri(maintenanceData.getString("intervalIRI"));
             durationIRI = iri(maintenanceData.getString("durationIRI"));
             durationMonth = maintenanceData.getString("durationMonth");
@@ -106,19 +102,19 @@ public class AssetDelete {
             query.delete(
                 maintenanceTaskIRI.has(hasInterval, intervalIRI),
                 intervalIRI.has(hasDurationDescription, durationIRI),
-                durationIRI.has(months, durationMonth).andHas(years, durationYear)
+                //durationIRI.has(months, Rdf.literalOf(durationMonth)).andHas(years, Rdf.literalOf(durationYear)),
+                durationIRI.has(SparqlBuilder.var("timePred"), SparqlBuilder.var("timeDuration")),
+                intervalIRI.isA(Interval),
+                durationIRI.isA(DurationDescription)
             );
-            query.where(
-                maintenanceTaskIRI.has(hasInterval, intervalIRI),
-                intervalIRI.has(hasDurationDescription, durationIRI),
-                durationIRI.has(months, durationMonth).andHas(years, durationYear)
-            );
+            //Does not recognise the literal somehow
+            query.where(durationIRI.has(SparqlBuilder.var("timePred"), SparqlBuilder.var("timeDuration")));
         }
         
         
 
         LOGGER.debug("Maintenance delete query:: " + query.getQueryString());
-        //storeClientAsset.executeUpdate(query.getQueryString());
+        storeClientAsset.executeUpdate(query.getQueryString());
 
     }
 
