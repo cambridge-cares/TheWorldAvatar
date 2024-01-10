@@ -3,14 +3,9 @@
     "Name": "keycloak",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "quay.io/keycloak/keycloak:21.1.1",
-        "Env": [
-          "KEYCLOAK_ADMIN=admin",
-          "KEYCLOAK_ADMIN_PASSWORD=admin"
-        ],
+        "Image": "quay.io/keycloak/keycloak",
         "Command": [
-          "/opt/keycloak/bin/kc.sh",
-          "start"
+          "./keycloak_start.sh"
         ],
         "Mounts": [
           {
@@ -19,9 +14,14 @@
             "Target": "/opt/keycloak/themes"
           },
           {
+            "Type": "volume",
+            "Source": "database",
+            "Target": "/opt/keycloak/data"
+          },
+          {
             "Type": "bind",
-            "Source": "server.keystore",
-            "Target": "/opt/keycloak/conf/server.keystore"
+            "Source": "keycloak_start.sh",
+            "Target": "/keycloak_start.sh"
           }
         ],
         "Secrets": [
@@ -30,7 +30,26 @@
             "File": {
               "Name":"/opt/keycloak/conf/keycloak.conf"
             }
+          },
+          {
+            "SecretName": "keycloak.pem",
+            "File": {
+              "Name":"/opt/keycloak/conf/keycloak.pem"
+            }
+          },
+          {
+            "SecretName": "keycloak.key",
+            "File": {
+              "Name":"/opt/keycloak/conf/keycloak.key"
+            }
+          },
+          {
+            "SecretName": "keycloak_admin_username"
+          },
+          {
+            "SecretName": "keycloak_admin_password"
           }
+
         ]
       }
     }

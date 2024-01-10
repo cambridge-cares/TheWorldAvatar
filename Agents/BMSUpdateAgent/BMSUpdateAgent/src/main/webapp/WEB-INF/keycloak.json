@@ -1,6 +1,6 @@
 {
   "realm": "<REALM_NAME>",
-  "auth-server-url": "http://test-stack-keycloak:8080/keycloak/",
+  "auth-server-url": "http://<STACK_NAME>-keycloak:8080/keycloak/",
   "ssl-required": "external",
   "resource": "<CLIENT_NAME>",
   "verify-token-audience": true,
