@@ -18,13 +18,10 @@ This folder contains example keycloak configuration.
 2. Copy files from /secret to [stack manager secret folder](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/secrets).
 3. Copy `keycloak.json` (located at Deploy/stacks/dynamic/stack-clients/src/main/resources/com/cmclinnovations/stack/services/built-ins/keycloak.json) to [stack manager inputs service config folder](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services)
 4. Update `hostname-url` and `hostname-admin-url` in `stack-manager/inputs/secrets/keycloak.conf`
-4. PEM Certificate Set up
-   1. Generate PEM certificate files for Keycloak TLS setup. This step will result in a certificate file and a key file.
+5. PEM Certificate Set up
+   1. Generate PEM certificate files `keycloak.pem` and `keycloak.key` for Keycloak TLS setup. 
    2. Copy the PEM certificate files to stack manger secret folder
-   3. Update the secret names in the stack client configuration file `keycloak.json` in the stack manager inputs service config folder, so they match the generated file names in step 3.
-   4. Update `https-certificate-key-file` and `https-certificate-file` in `keycloak.conf` if needed.
-5. Create `keycloak_admin_username` and `keycloak_admin_password` in stack manger secret folder. This will be the credential for the Keycloak Admin Portal.
-7. todo: check whether volume really work for theme and database...
+6. Create `keycloak_admin_username` and `keycloak_admin_password` in stack manger secret folder. This will be the credential for the Keycloak Admin Portal.
 
 ## Additional Resources
 The above steps will set up the Keycloak container in stack. To configure authorization on individual agent, please refer to the following resources:
