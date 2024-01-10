@@ -35,7 +35,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 
 /**
- * Class to construct queries
+ * Client to construct queries and instantiations
  * @author Wilson */
 public class WeatherQueryClient extends ContainerClient{
 	/**
@@ -140,7 +140,7 @@ public class WeatherQueryClient extends ContainerClient{
     private String stationId;
 
     /**
-     * Standard constructor
+     * Weather query client constructor
      * @param agentPropertiesFile the filepath of the agent.properties file
      * @param clientPropertiesFile the filepath of the client.properties file
      */
@@ -428,6 +428,7 @@ public class WeatherQueryClient extends ContainerClient{
      * Check for existence of quantity IRI linked to each data IRI and if they do not exist, create the IRIs and instantiate them
      * @param IRI the data IRI to check for
      * @param jsonKey a key used to identify what type of quantity does each data IRI represents
+     * @return quantity IRI
      */
     private String instantiateQuantityIfNotExist(String IRI, String jsonKey) {
         final String quantityIRI;
@@ -540,10 +541,11 @@ public class WeatherQueryClient extends ContainerClient{
         }
     }
 
-    /**
-     * Check for reporting station instance and instantiate it if it does not exist
-     * @param quantityIRIs a list of quantity IRIs that should be linked to the reporting station instance via ontoems:reports
-     */
+	/**
+	 * Check for reporting station instance and instantiate it if it does not exist
+	 * @param quantityIRIs a list of quantity IRIs that should be linked to the reporting station instance via ontoems:reports
+	 * @return reporting station IRI
+	 */
     private String InstantiateReportingStationIfNotExist(List<String> quantityIRIs) {
         SelectQuery query = Queries.SELECT();
         Variable reportingStationVar = SparqlBuilder.var("reportingStation");
@@ -573,8 +575,6 @@ public class WeatherQueryClient extends ContainerClient{
                 // <reportingStationIRI> rdf:type ontoems:ReportingStation ;
                 //                       ontoems:reports <quantityIRI 01> ;
                 //                       ontoems:reports <quantityIRI 02> ;
-                //                       ontoems:reports <quantityIRI 03> ;
-                //                            .
                 //                            .
                 //                            .
                 queryPattern = iri(reportingStationIRI).isA(reportingStation).andHas(reports, iri(quantityIRIs.get(0))).andHas(label, "Weather Station " + stationId);
@@ -611,7 +611,7 @@ public class WeatherQueryClient extends ContainerClient{
 			throw new JPSRuntimeException(e);
 		}
         postGISEndpointConfig = this.readEndpointConfig("postgis",PostGISEndpointConfig.class);
-
+        //postgisClient is used to interact with the database that will store the geolocation information
         postgisClient = new WeatherPostGISClient(postGISEndpointConfig.getJdbcURL(CARESWeatherStationInputAgentLauncher.DATABASE), postGISEndpointConfig.getUsername(), postGISEndpointConfig.getPassword());
 
         try (Connection conn = postgisClient.getConnection()) {

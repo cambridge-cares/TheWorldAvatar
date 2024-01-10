@@ -17,7 +17,7 @@ import org.jooq.impl.DSL;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 /**
- * mainly to create a new database, there is a weird driver issue using PostGISClient from stack-clients
+ * Client to interact with postGIS and carry out custom queries
  */
 public class WeatherPostGISClient {
 	/**
@@ -30,14 +30,31 @@ public class WeatherPostGISClient {
 
 	private RemoteRDBStoreClient remoteRDBStoreClient;
 
+	/**
+	 * Weather postGIS client constructor
+	 * @param dburl url of postGIS database
+	 * @param dbuser username to access postGIS database
+	 * @param dbpassword password to access postGIS database
+	 */
 	WeatherPostGISClient(String dburl, String dbuser, String dbpassword) {
 		remoteRDBStoreClient = new RemoteRDBStoreClient(dburl, dbuser, dbpassword);
 	}
 
+	/**
+	 * To create a connection session with a database
+	 * @return connection session
+	 * @throws SQLException
+	 */
 	Connection getConnection() throws SQLException {
 		return remoteRDBStoreClient.getConnection();
 	}
 
+	/**
+	 * Check whether a table exist in a database
+	 * @param table name of table
+	 * @param conn connection session
+	 * @return True or False
+	 */
     boolean checkTableExists(String table, Connection conn) {
         try {
 			String condition = String.format("table_name = '%s'", table);
@@ -48,6 +65,13 @@ public class WeatherPostGISClient {
         }
     }
 
+	/**
+	 * Check whether a (long, lat) point exist in the database
+	 * @param lat latitude
+	 * @param lon longitude
+	 * @param conn connection session
+	 * @return True or False
+	 */
 	boolean checkPointExists(double lat, double lon, Connection conn) {
 		String sql = String.format("SELECT ST_Equals(wkb_geometry, ST_SetSRID(ST_POINT(%f,%f),4326)) from %s",lon,lat, CARESWeatherStationInputAgentLauncher.LAYERNAME);
 		try (Statement stmt = conn.createStatement()) {
@@ -65,11 +89,7 @@ public class WeatherPostGISClient {
 			return true; // to stop the code from proceeding
 		}
 	}
-
-	void deleteRow(String iri, Connection conn) {
-		getContext(conn).deleteFrom(table).where(DSL.field("iri").eq(iri)).execute();
-	}
-
+	
 	DSLContext getContext(Connection conn) {
 		return DSL.using(conn, SQLDialect.POSTGRES);
 	}

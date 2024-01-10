@@ -12,6 +12,9 @@ import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
+/**
+ * Client to instantiate geolocation data (lat, long etc) to postGIS and geoserver
+ */
 public class WeatherGeospatialClient {
 	/**
      * Logger for reporting info/errors.
