@@ -59,13 +59,13 @@ The agent supports POST requests and is reachable at http://localhost:3838/build
 - ```dbName```: Name of the database in the stack from which to query the buildings data. This database must contain the buildings data in the 'citydb' schema.
 - ```namespace```: A namespace in the stack blazegraph containing the factories' coordinates, heat emissions and other data.
 
-The following is an example POST request :
+The following is an example POST request, which assumes that the blazegraph namespace is called "sgbusinesunits" and the database name is called "sg_lod3" :
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","dbName":"test","namespace":"sgbusinessunits"}'  "localhost:3838/buildingidentificationagent/run"
+curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","dbName":"sg_lod3","namespace":"sgbusinessunits"}'  "localhost:3838/buildingidentificationagent/run"
 ```
 
-
+Upon successful completion, the number of factories queried and the number of buidings matched will be printed as output.
 
 ### 2.7. Debugging
 To debug, put ```./stack-manager-input-config/buildingidentificationagent-debug.json``` instead of ```./stack-manager-input-config/openmeteo-agent.json```  in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
