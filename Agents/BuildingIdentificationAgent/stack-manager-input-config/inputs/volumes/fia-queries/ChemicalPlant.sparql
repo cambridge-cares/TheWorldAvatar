@@ -1,0 +1,38 @@
+prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: 	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ocp:     <http://www.theworldavatar.com/kg/ontochemplant/>
+prefix ocy:     <http://www.theworldavatar.com/kg/ontocompany/>
+prefix om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?Property ?Value ?Unit Where {
+    {
+        BIND ("Heat Emissions Rate" AS ?Property)
+        BIND("Megawatts" AS ?Unit)
+        [IRI] ocy:hasGeneratedHeat/om:hasValue/om:hasNumericalValue ?Value.
+    } UNION {
+        BIND("Production Volume" AS ?Property)
+        BIND("Tons per Year" AS ?Unit)
+        [IRI] ocy:hasDesignCapacity/om:hasValue/om:hasNumericalValue ?Value.
+    } UNION {
+        BIND("Specific Energy Consumption" AS ?Property)
+        BIND("MegaJoules per Kilogram" AS ?Unit)
+        [IRI] ocy:hasSpecificEnergyConsumption/om:hasValue/om:hasNumericalValue ?Value.
+    } UNION {
+        BIND("Company Name" AS ?Property)
+        ?cy ocy:isOwnerOf [IRI].
+        ?cy rdfs:label ?Value.
+    } UNION {
+        BIND("Business Activity" AS ?Property)
+        ?cy ocy:isOwnerOf [IRI].
+        ?cy ocy:hasBusinessActivity ?Value.
+    } UNION {
+        BIND("SSIC Code" AS ?Property)
+        ?cy ocy:isOwnerOf [IRI].
+        ?cy ocy:hasSSICCode ?Value.
+    } UNION {
+        BIND("Year of Establishment" AS ?Property)
+        ?cy ocy:isOwnerOf [IRI].
+        ?cy ocy:hasYearOfEstablishment ?Value.
+    } 
+ 
+} 

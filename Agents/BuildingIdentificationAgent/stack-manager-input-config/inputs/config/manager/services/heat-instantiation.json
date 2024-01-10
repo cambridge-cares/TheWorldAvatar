@@ -1,0 +1,38 @@
+{
+    "ServiceSpec": {
+        "Name": "heat-instantiation",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "heat-instantiation:1.0.0-SNAPSHOT",
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "heat_instantiation": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/heat-instantiation/"
+        }
+    }
+}

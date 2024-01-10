@@ -1,0 +1,19 @@
+{
+    "services": {
+        "includes": [
+            "mapbox-vis",
+            "heat-instantiation",
+            "heatemissionagent",
+            "buildingidentificationagent",
+            "feature-info-agent"
+        ],
+        "excludes": [
+            "citytiler",
+            "citydbimpexp"
+        ]
+    },
+    "volumes": {
+        "mapbox-vis-files": "mapbox-vis-files",
+        "fia-queries": "fia-queries"
+    }
+}

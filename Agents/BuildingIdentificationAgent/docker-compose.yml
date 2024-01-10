@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  building-identification-agent:
+    container_name: buildingidentificationagent
+    image: buildingidentificationagent:1.0.0-SNAPSHOT
+    build: .
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - "10101:8080"

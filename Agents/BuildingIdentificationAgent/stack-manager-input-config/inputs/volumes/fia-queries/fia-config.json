@@ -1,0 +1,11 @@
+{
+    "entries": [
+        {
+            "id": "Feature",
+            "class": "http://www.theworldavatar.com/kg/ontochemplant/ChemicalPlant",
+            "meta": {
+                "queryFile": "ChemicalPlant.sparql"
+            }
+        }
+    ]
+}

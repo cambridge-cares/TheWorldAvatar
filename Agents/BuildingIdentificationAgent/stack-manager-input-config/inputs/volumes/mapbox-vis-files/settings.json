@@ -1,0 +1,29 @@
+{
+    "start": {
+        "center": [
+            103.8198,
+            1.3521
+        ],
+        "zoom": 14,
+        "bearing": 0,
+        "pitch": 45
+    },
+    "search": [
+        {
+            "description": "Name",
+            "property": "name",
+            "type": "string"
+        },
+        {
+            "description": "Year Founded",
+            "property": "founded",
+            "type": "number"
+        },
+        {
+            "description": "Undergraduates Admitted?",
+            "property": "undergraduates",
+            "type": "boolean"
+        }
+    ],
+    "attribution": "<div style='padding: 10px; text-align: left;'>Building footprint data taken from <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> under the Open Database License.<br><br>All sample other data has been generated specifically for this visualisation.</div>"
+}
