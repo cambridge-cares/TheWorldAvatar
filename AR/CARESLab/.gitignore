@@ -84,6 +84,7 @@ WSATestCertificate*
 
 # Models
 *.blend
+*.fbx
 
 # Unity generate file for manifest backup
 *.backup*
