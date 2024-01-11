@@ -67,7 +67,7 @@ The following is an example POST request :
 curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","dbName":"test","namespace":"sgbusinessunits"}'  "localhost:3838/buildingidentificationagent/run"
 ```
 
-Upon successful completion, the agent returns a JSON object indicating the number of factories queries from the Blazegraph namespace and the number of buildings matched. Both numbers should be equal. A table called 'factories' will be created in the 'citydb' schema of the user-specified database with the columns mentioned above.
+Upon successful completion, the agent returns a JSON object indicating the number of factories queries from the Blazegraph namespace and the number of buildings matched. Both numbers should be equal. A table called 'factories' will be created in the 'citydb' schema of the user-specified database with the columns mentioned above. This table will create one record for each factory queried from the blazegraph namespace. 
 
 
 
