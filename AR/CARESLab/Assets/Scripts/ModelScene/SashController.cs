@@ -45,7 +45,7 @@ public class SashController : MonoBehaviour
 
     IEnumerator GetSashOpening()
     {
-        string url = "http://137.132.22.165:3838/fh-sash-and-occupancy-agent/latestsash?deviceIri=" + selectedFumeHood.Iri;
+        string url = Config.FhSashAndOccupancyAgentUrl + "?deviceIri=" + selectedFumeHood.Iri;
         using UnityWebRequest www = UnityWebRequest.Get(url);
         yield return www.SendWebRequest();
 

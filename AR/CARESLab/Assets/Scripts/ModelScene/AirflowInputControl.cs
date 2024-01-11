@@ -16,9 +16,9 @@ public class AirflowInputControl : MonoBehaviour
     private NonNativeKeyboard NonNativeKeyboard;
 
     // NOTICE: Change the following endpoint and iris to valid string for this function to work properly.
-    private string bmsUpdateAgentUrl = "ENDPOINT-TO-CHANGE-AIRFLOW";
-    private string canopyhoodAirflowIri = "CANOPY-HOOD-AIRFLOW-IRI";
-    private string canopyhoodControlModeIri = "CANOPY-HOOD-CONTROL-MODE-IRI";
+    private string bmsUpdateAgentUrl = Config.BmsUpdateAgentUrl;
+    private string canopyhoodAirflowIri = Config.CanopyhoodAirflowIri;
+    private string canopyhoodControlModeIri = Config.CanopyhoodControlModeIri;
 
     /// <summary>
     /// Open keyboard to symbol layout.

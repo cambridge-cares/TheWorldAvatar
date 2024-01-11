@@ -3,6 +3,10 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
+using System;
+using System.Configuration;
+using System.Collections.Specialized;
+
 /// <summary>
 /// Room information data class
 /// </summary>
@@ -63,9 +67,9 @@ public class RoomInfoHandler : MonoBehaviour
         infoDisplayPanel.Spinner.SetActive(true);
         infoDisplayPanel.BodyText.SetActive(false);
 
-        string url = "https://www.theworldavatar.com:1010/careslab/feature-info-agent/get?iri=" + Iri;
-        using UnityWebRequest www = UnityWebRequest.Get(url);
+        string url = Config.FIAGetUrl + "?iri=" + Iri;
         Debug.Log("Request sent to " + url);
+        using UnityWebRequest www = UnityWebRequest.Get(url);
         yield return www.SendWebRequest();
 
         if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
