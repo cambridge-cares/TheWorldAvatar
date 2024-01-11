@@ -75,6 +75,13 @@ public class BarChart extends DefaultGrafanaPanel {
                         WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_MONTH + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'2 month' AND DATE_TRUNC('DAY', TO_TIMESTAMP(${__to}/1000))-interval'1 month'" +
                         WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.WEEKLY_OVER_MONTH + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'2 month' AND DATE_TRUNC('WEEK', TO_TIMESTAMP(${__to}/1000))-interval'1 month'" +
                         WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.MONTHLY + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'2 year' AND DATE_TRUNC('MONTH', TO_TIMESTAMP(${__to}/1000))-interval'1 year'" +
+                        " END " +
+                        // Arrange results starting from the latest interval and go backwards
+                        "ORDER BY CASE" +
+                        WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_WEEK + "' OR '${" +
+                        timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_MONTH + "' THEN (EXTRACT(DOY FROM time)-EXTRACT(DOY FROM TO_TIMESTAMP(${__to}/1000))+365)%366" +
+                        WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.WEEKLY_OVER_MONTH + "' THEN (EXTRACT(WEEK FROM time)-EXTRACT(WEEK FROM TO_TIMESTAMP(${__to}/1000))+51)%52" +
+                        WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.MONTHLY + "' THEN (EXTRACT(MONTH FROM time)-EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))+11)%12" +
                         " END;";
                 break;
             case 3:
@@ -95,6 +102,13 @@ public class BarChart extends DefaultGrafanaPanel {
                         WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_MONTH + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month' AND TO_TIMESTAMP(${__to}/1000)" +
                         WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.WEEKLY_OVER_MONTH + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 month' AND TO_TIMESTAMP(${__to}/1000)" +
                         WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.MONTHLY + "' THEN time BETWEEN TO_TIMESTAMP(${__to}/1000)-interval'1 year' AND TO_TIMESTAMP(${__to}/1000)" +
+                        " END " +
+                        // Arrange results starting from the latest interval and go backwards
+                        "ORDER BY CASE" +
+                        WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_WEEK + "' OR '${" +
+                        timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.DAILY_OVER_MONTH + "' THEN (EXTRACT(DOY FROM time)-EXTRACT(DOY FROM TO_TIMESTAMP(${__to}/1000))+365)%366" +
+                        WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.WEEKLY_OVER_MONTH + "' THEN (EXTRACT(WEEK FROM time)-EXTRACT(WEEK FROM TO_TIMESTAMP(${__to}/1000))+51)%52" +
+                        WHEN_SQL_START + timeIntervalVariableName + WHEN_SQL_END + TemporalInterval.MONTHLY + "' THEN (EXTRACT(MONTH FROM time)-EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))+11)%12" +
                         " END;";
                 break;
             default:
