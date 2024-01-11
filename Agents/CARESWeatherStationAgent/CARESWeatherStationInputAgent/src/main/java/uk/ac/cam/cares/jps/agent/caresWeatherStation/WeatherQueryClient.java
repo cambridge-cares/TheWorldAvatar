@@ -222,8 +222,8 @@ public class WeatherQueryClient extends ContainerClient{
                 String quantityIRI = instantiateQuantityIfNotExist(iris.get(i), mapping.getJSONKey(iris.get(i)));
                 quantityIRIs.add(quantityIRI);
             }
-            String reportingStationIRI = InstantiateReportingStationIfNotExist(quantityIRIs);
-            InstantiateGeoSpatialInfoIfNotExist(reportingStationIRI, weatherReadings);
+            String reportingStationIRI = instantiateReportingStationIfNotExist(quantityIRIs);
+            instantiateGeoSpatialInfoIfNotExist(reportingStationIRI, weatherReadings);
         }
         
     }
@@ -231,6 +231,7 @@ public class WeatherQueryClient extends ContainerClient{
     /**
      * Check whether all data IRIs has a rdf:type om:Measure and if not, add the data to the remote store
      * @param IRI the data IRI to check for
+     * @param jsonKey a key used to identify what type of measure does each data IRI represents
      */
     private void instantiateMeasureIfNotExist(String IRI, String jsonKey) {
         //this is based on the variables retrievable via the API
@@ -546,7 +547,7 @@ public class WeatherQueryClient extends ContainerClient{
 	 * @param quantityIRIs a list of quantity IRIs that should be linked to the reporting station instance via ontoems:reports
 	 * @return reporting station IRI
 	 */
-    private String InstantiateReportingStationIfNotExist(List<String> quantityIRIs) {
+    private String instantiateReportingStationIfNotExist(List<String> quantityIRIs) {
         SelectQuery query = Queries.SELECT();
         Variable reportingStationVar = SparqlBuilder.var("reportingStation");
         //create triple pattern:
@@ -598,7 +599,7 @@ public class WeatherQueryClient extends ContainerClient{
      * @param weatherReadings weather readings retrieved via API
      * @throws IOException
      */
-    private void InstantiateGeoSpatialInfoIfNotExist(String reportingStationIRI, JSONObject weatherReadings) {
+    private void instantiateGeoSpatialInfoIfNotExist(String reportingStationIRI, JSONObject weatherReadings) {
         //retrieve long lat from JSONObject weatherReadings
         Double longitude;
         Double latitude;
