@@ -1,29 +1,11 @@
 package uk.ac.cam.cares.jps.agent.heat;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.UUID;
-
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.iri.impl.Main;
-import org.apache.jena.update.UpdateRequest;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
-
 import com.jayway.jsonpath.JsonPath;
 
 /** 
@@ -72,12 +54,7 @@ public class HeatEmissionAgent extends JPSAgent {
 				JurongIsland ji = new JurongIsland();
 				return ji.calculateHeat(requestParams);
 			} else {
-				Mainland ml = null;
-				if (requestParams.has("endpoint")) {
-					String endpoint = requestParams.getString("endpoint");
-					ml = new Mainland(endpoint, endpoint);
-				} else
-					ml = new Mainland();
+				Mainland ml = new Mainland(requestParams);
 				return ml.calculateHeat();
 			}
 
@@ -94,14 +71,22 @@ public class HeatEmissionAgent extends JPSAgent {
 		if (requestParams.isEmpty()) {
 			throw new BadRequestException();
 		}
-		String UPPER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.upper_bounds");
-		if (UPPER_LIMITS == null || UPPER_LIMITS.trim().isEmpty()) {
-			throw new BadRequestException("Upper limits for the bounding box are missing.\n");
+
+		if (requestParams.getString("location").equalsIgnoreCase("ji")) {
+			String UPPER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.upper_bounds");
+			if (UPPER_LIMITS == null || UPPER_LIMITS.trim().isEmpty()) {
+				throw new BadRequestException("Upper limits for the bounding box are missing.\n");
+			}
+			String LOWER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.lower_bounds");
+			if (LOWER_LIMITS == null || LOWER_LIMITS.trim().isEmpty()) {
+				throw new BadRequestException("Lower limits for the bounding box are missing.\n");
+			}
+		} else if (!requestParams.has("endpoint") && !requestParams.has("namespace")) {
+			throw new BadRequestException(
+					"Either a blazegraph namespace or endpoint must be specified when running the heat emisson agent for mailand industries.\n");
+
 		}
-		String LOWER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.lower_bounds");
-		if (LOWER_LIMITS == null || LOWER_LIMITS.trim().isEmpty()) {
-			throw new BadRequestException("Lower limits for the bounding box are missing.\n");
-		}
+
 		return true;
 	}
 

@@ -114,8 +114,7 @@ public class HeatEmissionAgentTest {
 
     @Test
     public void testAgentMainland() {
-        String inputBounds = "{\"job\":{\"lower_bounds\":\"8464#23588#0\",\"upper_bounds\":\"17619#30520#105\"}}\r\n";
-        JSONObject requestInput = new JSONObject(inputBounds);
+        JSONObject requestInput = new JSONObject();
         requestInput.put("endpoint", "http://localhost:48889/blazegraph/namespace/sgbusinessunits/sparql");
         requestInput.put("location", "random_place");
         JSONObject result = new HeatEmissionAgent().processRequestParameters(requestInput);

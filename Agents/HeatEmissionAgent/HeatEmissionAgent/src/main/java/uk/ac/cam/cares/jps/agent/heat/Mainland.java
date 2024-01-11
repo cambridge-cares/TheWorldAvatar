@@ -15,7 +15,6 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.agent.heat.objects.Factory;
 import uk.ac.cam.cares.jps.agent.heat.objects.FactoryType;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class Mainland {
@@ -50,15 +49,16 @@ public class Mainland {
 
         private RemoteStoreClient storeClient;
 
-        public Mainland() {
-                EndpointConfig endpointConfig = new EndpointConfig("sgbusinessunits");
-                queryEndpoint = endpointConfig.getKgurl();
-                updateEndpoint = queryEndpoint;
-        }
-
-        public Mainland(String queryEndpoint, String updateEndpoint) {
-                this.queryEndpoint = queryEndpoint;
-                this.updateEndpoint = updateEndpoint;
+        public Mainland(JSONObject request) {
+                if (request.has("endpoint")) {
+                        this.queryEndpoint = request.getString("endpoint");
+                        this.updateEndpoint = queryEndpoint;
+                } else {
+                        String namespace = request.getString("namespace");
+                        EndpointConfig endpointConfig = new EndpointConfig(namespace);
+                        queryEndpoint = endpointConfig.getKgurl();
+                        updateEndpoint = queryEndpoint;
+                }
         }
 
         public JSONObject calculateHeat() {
