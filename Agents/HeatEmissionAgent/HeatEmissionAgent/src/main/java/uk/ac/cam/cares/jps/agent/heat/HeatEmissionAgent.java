@@ -50,7 +50,7 @@ public class HeatEmissionAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (validateInput(requestParams)) {
-			if (requestParams.getString("location").equalsIgnoreCase("ji")) {
+			if (requestParams.getString("ontology").equalsIgnoreCase("ontochemplant")) {
 				JurongIsland ji = new JurongIsland();
 				return ji.calculateHeat(requestParams);
 			} else {
@@ -72,18 +72,27 @@ public class HeatEmissionAgent extends JPSAgent {
 			throw new BadRequestException();
 		}
 
-		if (requestParams.getString("location").equalsIgnoreCase("ji")) {
-			String UPPER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.upper_bounds");
+		if (!requestParams.has("ontology"))
+			throw new BadRequestException(
+					"Either ontochemplant or ontocompany must be specified as the value of the ontology parameter.");
+
+		if (requestParams.getString("ontology").equalsIgnoreCase("ontochemplant")) {
+			String UPPER_LIMITS = JsonPath.read(requestParams.toString(), "$.upper_bounds");
 			if (UPPER_LIMITS == null || UPPER_LIMITS.trim().isEmpty()) {
 				throw new BadRequestException("Upper limits for the bounding box are missing.\n");
 			}
-			String LOWER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.lower_bounds");
+			String LOWER_LIMITS = JsonPath.read(requestParams.toString(), "$.lower_bounds");
 			if (LOWER_LIMITS == null || LOWER_LIMITS.trim().isEmpty()) {
 				throw new BadRequestException("Lower limits for the bounding box are missing.\n");
 			}
-		} else if (!requestParams.has("endpoint") && !requestParams.has("namespace")) {
+		} else if (!requestParams.getString("ontology").equalsIgnoreCase("ontocompany")) {
 			throw new BadRequestException(
-					"Either a blazegraph namespace or endpoint must be specified when running the heat emisson agent for mailand industries.\n");
+					"The value of the ontology parameter must be either ontocompany or ontochemplant");
+		}
+
+		if (!requestParams.has("endpoint") && !requestParams.has("namespace")) {
+			throw new BadRequestException(
+					"Either a blazegraph namespace or endpoint must be specified when running the heat emisson agent.\n");
 
 		}
 
