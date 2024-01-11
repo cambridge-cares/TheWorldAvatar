@@ -27,15 +27,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
- * This test class is to test the SparqlHandler with a running blazegraph triple store
+ * This test class is to test the WeatherQueryClient with a running blazegraph triple store
  */
 @Ignore("Requires triple store set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 
 @Testcontainers
-public class SparqlHandlerIntegrationTest {
+public class WeatherQueryClientIntegrationTest {
 
     // Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
     // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
@@ -69,11 +71,10 @@ public class SparqlHandlerIntegrationTest {
     // IRIs corresponding to the keys
     private ArrayList<String> IRIs;
 
-    //SparqlHandler
-    private WeatherSparqlHandler sparqlHandler;
+    WeatherQueryClient weatherQueryClient;
 
     @Before
-    public void initialize() throws IOException {
+    public void initialize() throws Exception {
         // Start the containers
         try {
             // Start Blazegraph container
@@ -109,21 +110,16 @@ public class SparqlHandlerIntegrationTest {
 
         // Create and write content to temporary client.properties file
         String clientPropertiesFile = Paths.get(folder.getRoot().toString(), "cient.properties").toString();
-        writePropertyFile(clientPropertiesFile, Arrays.asList("sparql.query.endpoint=" + endpoint, "sparql.update.endpoint=" + endpoint));
+        writePropertyFile(clientPropertiesFile, Arrays.asList("sparql.query.endpoint=" + endpoint, "sparql.update.endpoint=" + endpoint, "db.url=test", "db.user=testUser", "db.password=testPassword"));
         
         // Create and write content to temporary client.properties file
         String apiPropertiesFile = Paths.get(folder.getRoot().toString(), "api.properties").toString();
         writePropertyFile(apiPropertiesFile, Arrays.asList("weather.stationId=12345"));
 
-        //create SparqlHandler
-        try {
-            SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                sparqlHandler = new WeatherSparqlHandler(agentPropertiesFile, clientPropertiesFile, apiPropertiesFile);
-            });
-        }
-        catch (Exception e) {
-            //no exception should be thrown here
-        }
+        SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
+            weatherQueryClient = new WeatherQueryClient(agentPropertiesFile, clientPropertiesFile, apiPropertiesFile);
+        });
+
     }
 
     @Before
@@ -168,13 +164,13 @@ public class SparqlHandlerIntegrationTest {
     }
 
     @Test
-    public void testMeasureForInstantiateIfNotExist() {
-        //first run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
-
-        //second run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
-
+    public void testInstantiateMeasureIfNotExist() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        // Set private method to be accessible
+        Method instantiateMeasureIfNotExist = WeatherQueryClient.class.getDeclaredMethod("instantiateMeasureIfNotExist", String.class, String.class);
+        instantiateMeasureIfNotExist.setAccessible(true);
+        for (int i = 0; i < IRIs.size(); i++) {
+            instantiateMeasureIfNotExist.invoke(weatherQueryClient, IRIs.get(i), keys[i]);
+        }
         //test for correct instantiation and presence of duplicates
         Variable var = SparqlBuilder.var("var");
         TriplePattern queryPattern = var.isA(iri("http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"));
@@ -216,13 +212,13 @@ public class SparqlHandlerIntegrationTest {
     }
 
     @Test
-    public void testQuantityForInstantiateIfNotExist() {
-        //first run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
-
-        //second run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
-
+    public void testInstantiateQuantityIfNotExist() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        // Set private method to be accessible
+        Method instantiateQuantityIfNotExist = WeatherQueryClient.class.getDeclaredMethod("instantiateQuantityIfNotExist", String.class, String.class);
+        instantiateQuantityIfNotExist.setAccessible(true);
+        for (int i = 0; i < IRIs.size(); i++) {
+            instantiateQuantityIfNotExist.invoke(weatherQueryClient, IRIs.get(i), keys[i]);
+        }
         //check whether a quantity IRI has been created for each data IRI and linked via om:hasValue
         Variable var = SparqlBuilder.var("var");
 
@@ -259,12 +255,13 @@ public class SparqlHandlerIntegrationTest {
     }
 
     @Test
-    public void testAggregateFunctionForInstantiateIfNotExist() {
-        //first run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
-
-        //second run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
+    public void testInstantiateAggregateFunctionIfNotExist() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        // Set private method to be accessible
+        Method instantiateQuantityIfNotExist = WeatherQueryClient.class.getDeclaredMethod("instantiateQuantityIfNotExist", String.class, String.class);
+        instantiateQuantityIfNotExist.setAccessible(true);
+        for (int i = 0; i < IRIs.size(); i++) {
+            instantiateQuantityIfNotExist.invoke(weatherQueryClient, IRIs.get(i), keys[i]);
+        }
 
         Variable var = SparqlBuilder.var("var");
         Variable var2 = SparqlBuilder.var("var2");
@@ -299,13 +296,21 @@ public class SparqlHandlerIntegrationTest {
     }
 
     @Test
-    public void testReportingStationForInstantiateIfNotExist() {
-        //first run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
+    public void testInstantiateReportingStationIfNotExist() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        List<String> quantityIRIs;
+        quantityIRIs = new ArrayList<>();
+        // Set private method to be accessible
+        Method instantiateQuantityIfNotExist = WeatherQueryClient.class.getDeclaredMethod("instantiateQuantityIfNotExist", String.class, String.class);
+        instantiateQuantityIfNotExist.setAccessible(true);
+        for (int i = 0; i < IRIs.size(); i++) {
+            String quantityIRI = instantiateQuantityIfNotExist.invoke(weatherQueryClient, IRIs.get(i), keys[i]).toString();
+            quantityIRIs.add(quantityIRI);
+        }
 
-        //second run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
-
+        // Set private method to be accessible
+        Method instantiateReportingStationIfNotExist = WeatherQueryClient.class.getDeclaredMethod("instantiateReportingStationIfNotExist", List.class);
+        instantiateReportingStationIfNotExist.setAccessible(true);
+        instantiateReportingStationIfNotExist.invoke(weatherQueryClient, quantityIRIs);
         Variable var = SparqlBuilder.var("var");
         Variable var2 = SparqlBuilder.var("var2");
 
@@ -341,43 +346,5 @@ public class SparqlHandlerIntegrationTest {
         queryResult = kbClient.executeQuery();
         Assert.assertEquals("Weather Station 12345", queryResult.getJSONObject(0).getString("var2"));
 
-    }
-
-    @Test
-    public void testGeoLocationForInstantiateIfNotExist() {
-        //first run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
-
-        //second run of instantiateIfNotExist()
-        sparqlHandler.instantiateIfNotExist(weatherDataReadings);
-
-        Variable var = SparqlBuilder.var("var");
-        Variable var2 = SparqlBuilder.var("var2");
-
-        //check for number of triples that has ontodevice:hasGeoLocation as the predicate
-        TriplePattern queryPattern = var.has(iri("https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation"), var2);
-        SelectQuery query = Queries.SELECT();
-        query.select(var2).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        JSONArray queryResult = kbClient.executeQuery();
-        Assert.assertTrue(queryResult != null);
-        Assert.assertEquals(1, queryResult.length());
-
-        //check rdf:type of GeoLocation Instance
-        String geoLocationIRI = queryResult.getJSONObject(0).getString("var2");
-        queryPattern = iri(geoLocationIRI).isA(var2);
-        query = Queries.SELECT();
-        query.select(var2).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        queryResult = kbClient.executeQuery();
-        Assert.assertEquals("http://www.opengis.net/ont/sf#Point", queryResult.getJSONObject(0).getString("var2"));
-        
-        //check for wktLiteral
-        queryPattern = iri(geoLocationIRI).has(iri("http://www.opengis.net/ont/geosparql#asWKT"), var2);
-        query = Queries.SELECT();
-        query.select(var2).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        queryResult = kbClient.executeQuery();
-        Assert.assertEquals("POINT(103.774 1.304)", queryResult.getJSONObject(0).getString("var2"));
     }
 }
