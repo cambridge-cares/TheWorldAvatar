@@ -69,7 +69,7 @@ class PanelHandler {
 		document.getElementById("sidePanel").style.visibility = "visible";
 		document.getElementById("contentContainer").innerHTML = contentHTML;
 		
-		var sidePanel = document.getElementById("sidePanel");
+		const sidePanel = document.getElementById("sidePanel");
 		if(sidePanel.classList.contains("large")) {
 			document.getElementById("controlsParent").style.visibility = "hidden";
 		}
@@ -140,10 +140,10 @@ class PanelHandler {
 	 * Changes the mode of the side panel.
 	 */
 	public toggleMode() {
-		var sidePanel = document.getElementById("sidePanel");
-		var leftButton = document.getElementById("slideButton");
-		var rightButton = document.getElementById("expandButton");
-        var attributions = document.getElementById("attributionContainer");
+		const sidePanel = document.getElementById("sidePanel");
+		const leftButton = document.getElementById("slideButton");
+		const rightButton = document.getElementById("expandButton");
+    const attributions = document.getElementById("attributionContainer");
 
         // Container for Cesium clipping plane slider
         let sliderParent = document.getElementById("sliderParent");
@@ -183,12 +183,12 @@ class PanelHandler {
 	 * Updates the visibility of the side panel.
 	 */
 	public toggleExpansion() {
-		var sidePanel = document.getElementById("sidePanel");
-		var sidePanelInner = document.getElementById("sidePanelInner");
-		var leftButton = document.getElementById("slideButton");
-        var rightButton = document.getElementById("expandButton");
+		const sidePanel = document.getElementById("sidePanel");
+		const sidePanelInner = document.getElementById("sidePanelInner");
+		const leftButton = document.getElementById("slideButton");
+    const rightButton = document.getElementById("expandButton");
 
-        var finderContainer = document.getElementById("finderContainer");
+    const finderContainer = document.getElementById("finderContainer");
 
         // Container for Cesium clipping plane slider
         let sliderParent = document.getElementById("sliderParent");
@@ -462,12 +462,12 @@ class PanelHandler {
             if(json["links"]) {
                 let ul = document.createElement('ul');
 
-                for(let i = 0; i < json["links"].length; i++) {
-                    let entry = json["links"][i];
-                    let li = document.createElement('li');
-                    let a = document.createElement('a');
+                for (const element of json["links"]) {
+                    let entry = element;
+                    let li = document.createElement("li");
+                    let a = document.createElement("a");
                     a.href = entry["url"];
-                    a.target = '_blank';
+                    a.target = "_blank";
                     a.textContent = entry["text"];
                     li.appendChild(a);
                     ul.appendChild(li);
@@ -476,4 +476,47 @@ class PanelHandler {
             }
         });
     }
+
+  public addWaveAnimation() {
+    let container = document.getElementById("sidePanelInner");
+
+    let div = document.createElement("div");
+    div.id = "waveAnimationContainer";
+    
+    let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("version", "1.1");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+    svg.setAttribute("x", "0px");
+    svg.setAttribute("y", "0px");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("viewBox", "0 0 1600 900");
+
+    svg.innerHTML = `
+        <defs>
+            <linearGradient id="bg" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color: #18677a"></stop>
+                <stop offset="100%" style="stop-color: #18677a"></stop>
+            </linearGradient>
+            <path id="wave" fill="url(#bg)" d="M-363.852,502.589c0,0,236.988-41.997,505.475,0 s371.981,38.998,575.971,0s293.985-39.278,505.474,5.859s493.475,48.368,716.963-4.995v560.106H-363.852V502.589z"/>
+        </defs>
+        <g id="wave-animation">
+            <use xlink:href="#wave" opacity=".3">
+                <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="32s" calcMode="spline" values="270 230; -334 180; 270 230" keyTimes="0; .5; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite"/>
+            </use>
+            <use xlink:href="#wave" opacity=".6">
+                <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="24s" calcMode="spline" values="-270 230;243 220;-270 230" keyTimes="0; .6; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite"/>
+            </use>
+            <use xlink:href="#wave" opacty=".9">
+                <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="16s" calcMode="spline" values="0 230;-140 200;0 230" keyTimes="0; .4; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite"/>
+            </use>
+        </g>
+    `;
+
+    div.appendChild(svg);
+
+    container.appendChild(div);
+}
+
 }
