@@ -1,13 +1,12 @@
 # BuildingIdentification agent
 
-## 1. Agent Description
 
 The BuildingIdentificationAgent queries factories' coordinates and heat emissions from a blazegraph namespace. It then queries buildings data from a user-specified 
 POSTGRES database and assigns a building to each factory whose footprint polygon is closest to its coordinates.  
 
 The agent will create a POSTGRES table called 'factories' with the following columns in the user-specified database and the 'citydb' schema : iri, height, heat, factory_type, name, building_id. The meanings of these names are as follows:
 
-building ID, building geometry, building height, factory IRI, factory heat emissions and factory class.
+
 
 | Column name                      |            Meaning                                                  | 
 |:--------------------------------:|:-------------------------------------------------------------------:|
@@ -16,42 +15,45 @@ building ID, building geometry, building height, factory IRI, factory heat emiss
 |    ```heat```                    |       Heat emissions of this building in megawatts.                 |
 |    ```factory_type```            |       Type of factory                                               |
 |    ```name```                    |       Name of company operating this factory                        |
-|    ```building_id```             |       ID of building as given in buildings and cityobject tables.   |
+|    ```building_id```             |       ID of building as given in building and cityobject tables.    |
 
 
-## 2. Build Instructions
+## 1. Agent Deployment
 
-### 2.1. Required credentials
-The docker image uses TheWorldAvatar maven repository (https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/). You'll need to provide your credentials (github username/personal access token) in single-word text files located:
+The agent is designed to be run within a Docker container as part of a stack.
+
+### 1.1 Preparation
+#### Maven repository credentials
+This agent is set up to use this [Maven repository](https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/) (in addition to Maven central). You'll need to provide your credentials (github username/personal access token) in single-word text files located:
 ```
 ./credentials/
         repo_username.txt
         repo_password.txt
 ```
 
-### 2.2. Stack Set Up
-The agent is designed to run in the stack. To start the stack, spin up the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager).
+repo_username.txt should contain your Github username. repo_password.txt should contain your Github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
+which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-### 2.3. Blazegraph Set Up
-The agent is designed to use the stack Blazegraph. There must be an existing namespace in the stack blazegraph which contains the heat emissions data of various companies. These triples must be instantiated according to the OntoCompany (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocompany) ontology. 
+#### Stack containers
 
-
-### 2.5. PostgreSQL Set Up
-The agent is designed to use the stack PostgreSQL. It requires the buildings data to be stored in a schema called 'citydb' in the user-specified database. This schema must have three tables called 'database_srs', 'building' and 'cityobject'. The building height is retrieved from the 'measured_height' column of the 'building' table. The building footprint is obtained from the 'wkb' column of the 'cityobject' table. 
+This agent requires the following tools, which **MUST** run on the same stack. The details for setting them up are explained at [stack manager page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
 
+(1) SPARQL endpoint
 
-### 2.6. Build and Run
-In the same directory as this README, first build the Docker image by running
-```
-docker-compose build
-```
+There must be an existing namespace in the stack blazegraph which contains the heat emissions and coordinates data of various companies. The coordinates must be in the EPSG:4326 CRS. These are converted internally to the CRS used in the PostgreSQL database. These triples must be instantiated according to the [OntoCompany](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocompany) ontology. This can be done by running the [heat instantiation agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1690-add-heat-instantiation-agent/Agents/HeatInstantiationAgent) followed by the [heat emission agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1683-update-heat-agent-queries/Agents/HeatEmissionAgent).
 
-After the image is built, copy ```./stack-manager-input-config/buildingidentificationagent.json``` and place it in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
-```
-./stack.sh start <STACK NAME>
-```
-Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager.
+(2) PostgreSQL database
+
+The agent is designed to use the stack PostgreSQL. It requires the buildings data to be stored in a schema called 'citydb' in the user-specified database. This schema must have three tables called 'database_srs', 'building' and 'cityobject'. The building height is retrieved from the 'measured_height' column of the 'building' table. The building footprint is obtained from the 'wkb' column of the 'cityobject' table. The EPSG coordinate reference system used in the database is retrieved from the 'database_srs' table. The record for a single building must have identical values for the 'id' column in the 'building' and 'cityobject' tables. This id will appear in the 'building_id' column of the 'factories' table created by this agent.
+
+### 1.2 Docker deployment
+
+- Build this agent's image by executing `docker compose build` within this folder. Do not start the container.
+- Copy the `buildingidentificationagent.json` file from the `stack-manager-input-config` folder into the `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services` folder of the stack manager.
+- Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+
+## 2. Agent Routes
 
 The agent supports POST requests and is reachable at http://localhost:3838/buildingidentificationagent, where 3838 is the default port number used by stack manager. If another port number was specified when spinning up the stack, please replace 3838 with the specified port number. The agent provides a single endpoint at http://localhost:3838/buildingidentificationagent/run, which accepts the following POST request parameters :
 
@@ -59,21 +61,13 @@ The agent supports POST requests and is reachable at http://localhost:3838/build
 - ```dbName```: Name of the database in the stack from which to query the buildings data. This database must contain the buildings data in the 'citydb' schema.
 - ```namespace```: A namespace in the stack blazegraph containing the factories' coordinates, heat emissions and other data.
 
-The following is an example POST request, which assumes that the blazegraph namespace is called "sgbusinesunits" and the database name is called "sg_lod3" :
+The following is an example POST request :
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","dbName":"sg_lod3","namespace":"sgbusinessunits"}'  "localhost:3838/buildingidentificationagent/run"
+curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","dbName":"test","namespace":"sgbusinessunits"}'  "localhost:3838/buildingidentificationagent/run"
 ```
 
-Upon successful completion, the number of factories queried and the number of buidings matched will be printed as output.
-
-### 2.7. Debugging
-To debug, put ```./stack-manager-input-config/buildingidentificationagent-debug.json``` instead of ```./stack-manager-input-config/openmeteo-agent.json```  in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
-```
-./stack.sh start <STACK NAME>
-```
-Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager. The debugger port will be available at 5005.
-
+Upon successful completion, the agent returns a JSON object indicating the number of factories queries from the Blazegraph namespace and the number of buildings matched. Both numbers should be equal. A table called 'factories' will be created in the 'citydb' schema of the user-specified database with the columns mentioned above.
 
 
 
