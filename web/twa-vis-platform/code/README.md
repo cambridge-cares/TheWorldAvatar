@@ -47,7 +47,7 @@ Installation on the host machine can be carried out from the `code` directory by
 
 ## Execution
 
-Once installed, the project can be run in development mode by using the `npm run dev` command, again from within the `code` directory. 
+Once installed, and the required configuration files provided (see [here](#runtime-resources)), the project can be run in development mode by using the `npm run dev` command, again from within the `code` directory. 
 
 Running the code in development mode will additionally add watches to source code files, automatically triggering the server to refresh/rerender pages when changes are made (this is known as "hot-loading").
 
@@ -87,8 +87,8 @@ By default, Next.js offers the `public` directory for housing resources such as 
 Uploads content provided by the deploying developer should match the below directory structure.
 
 * `config/`: Should contain config/settings files.
-  * `map-settings.json`: Non-data specific configuration for maps.
-  * `ui-settings.json`: UI configuration settings.
+  * `map-settings.json`: Non-data specific configuration for maps, format is documented [here](../docs/map-settings.md)
+  * `ui-settings.json`: UI configuration settings, format is documented [here](../docs/ui-settings.json).
 * `images/`: Custom image files.
 * `optional-pages/`: Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
 * `style-overrides.css`: Optional CSS overrides.
