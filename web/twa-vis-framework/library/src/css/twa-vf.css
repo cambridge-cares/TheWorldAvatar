@@ -252,7 +252,7 @@ p {
     bottom: 0;
     right: 10;
     text-align: right;
-    display: table
+    display: none
 }
 
 #innerReturnContainer {
