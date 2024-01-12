@@ -29,7 +29,6 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
-import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
@@ -37,7 +36,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 /**
  * Client to construct queries and instantiations
  * @author Wilson */
-public class WeatherQueryClient extends ContainerClient{
+public class WeatherQueryClient {
 	/**
      * Logger for reporting info/errors.
      */
@@ -124,8 +123,6 @@ public class WeatherQueryClient extends ContainerClient{
     private List<JSONKeyToIRIMapper> mappings;
 
 	private WeatherPostGISClient postgisClient;
-
-    private PostGISEndpointConfig postGISEndpointConfig = null;
 
     //endpoints and credentials
     String sparqlQueryEndpoint;
@@ -611,18 +608,17 @@ public class WeatherQueryClient extends ContainerClient{
 			LOGGER.error(RETRIEVE_LATLONG_ERROR_MSG, e);
 			throw new JPSRuntimeException(e);
 		}
-        postGISEndpointConfig = this.readEndpointConfig("postgis",PostGISEndpointConfig.class);
-        //postgisClient is used to interact with the database that will store the geolocation information
-        postgisClient = new WeatherPostGISClient(postGISEndpointConfig.getJdbcURL(CARESWeatherStationInputAgentLauncher.DATABASE), postGISEndpointConfig.getUsername(), postGISEndpointConfig.getPassword());
+        //postgisClient is used to interact with the stack's database that will store the geolocation information
+        postgisClient = new WeatherPostGISClient();
 
         try (Connection conn = postgisClient.getConnection()) {
             JSONObject response = new JSONObject();
             WeatherGeospatialClient geospatialClient = new WeatherGeospatialClient();
+            // add ontop mapping file
+			Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
+            OntopClient ontopClient = OntopClient.getInstance();
+			ontopClient.updateOBDA(obda_file);
 			if (!postgisClient.checkTableExists(CARESWeatherStationInputAgentLauncher.LAYERNAME, conn)) {
-				// add ontop mapping file
-				Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
-                OntopClient ontopClient = OntopClient.getInstance();
-				ontopClient.updateOBDA(obda_file);
                 geospatialClient.createGeospatialInformation(latitude, longitude, "Weather Station " + stationId, reportingStationIRI);
 				response.put("message", "Geospatial information instantiated for the following: Weather Station " + stationId);
 			} else {

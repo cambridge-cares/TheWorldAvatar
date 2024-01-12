@@ -14,12 +14,15 @@ import org.jooq.Table;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 /**
  * Client to interact with postGIS and carry out custom queries
  */
-public class WeatherPostGISClient {
+public class WeatherPostGISClient extends ContainerClient {
 	/**
      * Logger for reporting info/errors.
      */
@@ -29,6 +32,7 @@ public class WeatherPostGISClient {
 	private Table<Record> table = DSL.table(DSL.name(CARESWeatherStationInputAgentLauncher.LAYERNAME));
 
 	private RemoteRDBStoreClient remoteRDBStoreClient;
+	private PostGISEndpointConfig postGISEndpointConfig = null;
 
 	/**
 	 * Weather postGIS client constructor
@@ -36,8 +40,10 @@ public class WeatherPostGISClient {
 	 * @param dbuser username to access postGIS database
 	 * @param dbpassword password to access postGIS database
 	 */
-	WeatherPostGISClient(String dburl, String dbuser, String dbpassword) {
-		remoteRDBStoreClient = new RemoteRDBStoreClient(dburl, dbuser, dbpassword);
+	WeatherPostGISClient() {
+		//geolocation data will be instantiated in the stack's postgres database
+        postGISEndpointConfig = this.readEndpointConfig("postgis",PostGISEndpointConfig.class);
+		remoteRDBStoreClient = new RemoteRDBStoreClient(postGISEndpointConfig.getJdbcURL(CARESWeatherStationInputAgentLauncher.DATABASE), postGISEndpointConfig.getUsername(), postGISEndpointConfig.getPassword());
 	}
 
 	/**
