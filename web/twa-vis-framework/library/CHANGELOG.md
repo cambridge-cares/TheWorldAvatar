@@ -1,5 +1,15 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 4.4.0
+### Features
+* New colours in side panel including CMCL blue and more modern grey on off-white text
+* Add animated wave above footer in sidebar
+* Rich link hover effects in side panel
+
+### Bug Fixes
+* fixed scroll bars appearing automatically in layer tree
+
+
 # 4.3.0
 ### Features
 * Initial support for "parallel-world" scenarios (not yet supported by TWA backend).
