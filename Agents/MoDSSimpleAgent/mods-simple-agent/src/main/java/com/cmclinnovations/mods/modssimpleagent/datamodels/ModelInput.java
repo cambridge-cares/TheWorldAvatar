@@ -20,20 +20,20 @@ public class ModelInput {
     private final String path;
 
     @JsonCreator
-    public ModelInput(@JsonProperty("data") Data data,@JsonProperty("path") String path){
-        this.data=data;
-        this.path=path;
+    public ModelInput(@JsonProperty("data") Data data, @JsonProperty("path") String path) {
+        this.data = data;
+        this.path = path;
     }
 
     public void marshal(Path dirPath) throws FileGenerationException {
         Path filePath = dirPath.resolve(path);
         try (CSVPrinter printer = new CSVPrinter(Files.newBufferedWriter(filePath), CSVFormat.RFC4180)) {
             printer.printRecord(data.getHeaders());
-            printer.printRecords(data.getRows());
-        } catch (IOException ex) {
-            throw new FileGenerationException("Filed to write out a Data object to the CSV file '" + filePath + "'.",
+            printer.printRecords(data.getAllRows());
+        } catch (Exception ex) {
+            throw new FileGenerationException("Failed to write out a Data object to the CSV file '" + filePath + "'.",
                     ex);
         }
     }
-    
+
 }
