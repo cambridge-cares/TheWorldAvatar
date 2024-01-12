@@ -9,9 +9,6 @@ public class FloorMapModelController : MonoBehaviour
     private SelectedModel selectedModel;
 
     [SerializeField]
-    private string dashboardUri = "";
-
-    [SerializeField]
     private string iri = "";
 
     [SerializeField]
@@ -27,7 +24,7 @@ public class FloorMapModelController : MonoBehaviour
     {
         selectedModel.ModelName = gameObject.name;
         selectedModel.Iri = iri;
-        selectedModel.DashboardUri = dashboardUri;
+        selectedModel.DashboardUri = GetDashboardUri();
         selectedModel.SelectedModelTransform = gameObject.transform;
         selectedModel.Position = gameObject.transform.position;
         selectedModel.Rotation = gameObject.transform.rotation;
@@ -42,5 +39,33 @@ public class FloorMapModelController : MonoBehaviour
         sceneTransition.NavigateToScene("ModelScene");
     }
 
-
+    private string GetDashboardUri()
+    {
+        if (gameObject.name.Contains("Fumehood"))
+        {
+            try
+            {
+                return Config.FumehoodDashboardUrl.ToString() + "&var-fumehood=" + gameObject.name.Replace("Fumehood", "FH-");
+            } catch
+            {
+                Debug.LogError("Config FumehoodDashboardUrl not init. Please check endpoints.properties file and start from Home scene.");
+                return "";
+            }
+            
+        } else if (gameObject.name.Contains("PIPS Robot"))
+        {
+            try
+            {
+                return Config.CanopyhoodDashboardUrl.ToString() + "&var-canopyhood=" + "CH-7-7-CAV_E7_07";
+            }
+            catch
+            {
+                Debug.LogError("Config CanopyhoodDashboardUrl not init. Please check endpoints.properties file and start from Home scene.");
+                return "";
+            }
+        } else
+        {
+            return "";
+        }
+    }
 }

@@ -45,6 +45,12 @@ public class SashController : MonoBehaviour
 
     IEnumerator GetSashOpening()
     {
+        if (Config.FhSashAndOccupancyAgentUrl == null)
+        {
+            Debug.LogError("Config FhSashAndOccupancyAgentUrl not init. Please check endpoints.properties file and start from Home scene.");
+            yield break;
+        }
+
         string url = Config.FhSashAndOccupancyAgentUrl + "?deviceIri=" + selectedFumeHood.Iri;
         using UnityWebRequest www = UnityWebRequest.Get(url);
         yield return www.SendWebRequest();

@@ -2157,7 +2157,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedModel: {fileID: 11400000, guid: 0a4f0a810e3b86e45afd4bfc3f525448, type: 2}
-  spatialMeshManager: {fileID: 1478246796}
 --- !u!4 &1910686621
 Transform:
   m_ObjectHideFlags: 0

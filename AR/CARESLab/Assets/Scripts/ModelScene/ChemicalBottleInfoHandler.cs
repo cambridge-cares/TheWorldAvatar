@@ -40,7 +40,13 @@ public class ChemicalBottleInfoHandler : MonoBehaviour
         infoDisplayPanel.Spinner.SetActive(true);
         infoDisplayPanel.BodyText.SetActive(false);
 
-        string url = "https://www.theworldavatar.com:1010/careslab/rfid-query-agent/retrieveData";
+        if (Config.RfidQueryAgentUrl == null)
+        {
+            Debug.LogError("Config RfidQueryAgentUrl not init. Please check endpoints.properties file and start from Home scene.");
+            yield break;
+        }
+
+        string url = Config.RfidQueryAgentUrl;
         WWWForm form = new();
         form.AddField("timeSeriesClientProperties", "CLIENT_PROPERTIES");
         form.AddField("taggedObjectIRI", chemicalContainerIRI);

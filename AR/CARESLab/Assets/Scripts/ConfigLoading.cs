@@ -36,8 +36,14 @@ public class ConfigLoading : MonoBehaviour
                     case "FIAGetUrl":
                         Config.FIAGetUrl = attrVal;
                         break;
-                    case "DashboardUrl":
-                        Config.DashboardUrl = attrVal;
+                    case "RfidQueryAgentUrl":
+                        Config.RfidQueryAgentUrl = attrVal;
+                        break;
+                    case "FumehoodDashboardUrl":
+                        Config.FumehoodDashboardUrl = attrVal;
+                        break;
+                    case "CanopyhoodDashboardUrl":
+                        Config.CanopyhoodDashboardUrl = attrVal;
                         break;
                     case "BmsUpdateAgentUrl":
                         Config.BmsUpdateAgentUrl = attrVal;
