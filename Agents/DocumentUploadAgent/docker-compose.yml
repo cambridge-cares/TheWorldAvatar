@@ -1,0 +1,15 @@
+version: "1.0"
+
+services:
+  document-upload-agent:
+    image: document-upload-agent:1.0.0
+    build: .
+    container_name: document-upload-agent_1_0_0
+    pull_policy: if_not_present
+    ports:
+      - "1015:8080"
+    volumes:
+    - type: bind 
+      source: ./documents 
+      target: /root/documents/
+
