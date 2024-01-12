@@ -35,7 +35,7 @@ Once you have an container ready to go, you'll need to ensure that your `index.h
 Before this version, the compiled JS and CSS files were not stored within the Docker image itself, but hosted on a remote server provided by CMCL. Whilst this gave the ability to easily change the version of the library used, it meant that if the server at CMCL went offline, visualisations were broken. An example JS import statement for v3.7.0 of the DTVF (previous name for the TWA-VF) is shown below.
 
 ```html
-<script src="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.js"></script>
+<script src="https://kg.cmclinnovations.com/cdn/twa-vf/4.4.0/dtvf.min.js"></script>
 ```
 
 **Version 3.8.0 and after:**<br/>
