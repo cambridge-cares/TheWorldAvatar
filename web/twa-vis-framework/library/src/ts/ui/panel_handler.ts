@@ -491,7 +491,7 @@ class PanelHandler {
     svg.setAttribute("y", "0px");
     svg.setAttribute("width", "100%");
     svg.setAttribute("height", "100%");
-    svg.setAttribute("viewBox", "0 0 1600 900");
+    svg.setAttribute("viewBox", "0 0 499 150");
 
     svg.innerHTML = `
         <defs>
@@ -499,17 +499,34 @@ class PanelHandler {
                 <stop offset="0%" style="stop-color: #18677a"></stop>
                 <stop offset="100%" style="stop-color: #18677a"></stop>
             </linearGradient>
-            <path id="wave" fill="url(#bg)" d="M-363.852,502.589c0,0,236.988-41.997,505.475,0 s371.981,38.998,575.971,0s293.985-39.278,505.474,5.859s493.475,48.368,716.963-4.995v560.106H-363.852V502.589z"/>
+            <path id="wave" fill="url(#bg)" 
+            d="M -363.852, 0
+            c 0, 0, 236.988 -41.997, 505.475, 0 
+            s 371.981, 38.998, 575.971, 0
+            s 293.985 -39.278, 505.474, 5.859
+            s 493.475, 48.368, 716.963 -4.995
+            s 493.475, 48.368, 716.963 -4.995
+            s 293.985 -39.278, 505.474, 5.859
+            v 560.106
+            H -363.852
+            V 502.589
+            z"/>
         </defs>
         <g id="wave-animation">
             <use xlink:href="#wave" opacity=".3">
-                <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="32s" calcMode="spline" values="270 230; -334 180; 270 230" keyTimes="0; .5; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite"/>
+                <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="24s" calcMode="spline" 
+                values="-180 0; 0 30; -180 0" 
+                keyTimes="0; .5; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite"/>
             </use>
             <use xlink:href="#wave" opacity=".6">
-                <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="24s" calcMode="spline" values="-270 230;243 220;-270 230" keyTimes="0; .6; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite"/>
+                <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="18s" calcMode="spline" 
+                values="-170 0; 0 30; -170 0"
+                keyTimes="0; .6; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite"/>
             </use>
             <use xlink:href="#wave" opacty=".9">
-                <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="16s" calcMode="spline" values="0 230;-140 200;0 230" keyTimes="0; .4; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite"/>
+                <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="12s" calcMode="spline" 
+                values="-160 0; -0 20; -160 0"
+                keyTimes="0; .4; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite"/>
             </use>
         </g>
     `;
