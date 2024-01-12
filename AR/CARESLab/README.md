@@ -43,7 +43,13 @@ A detailed installation list (without Microsoft Mixed Reality Feature Tool) can 
 ### Project Setup
 
 1. Clone this project to local
-2. Copy `*.blend` model files from dropbox `IRP3 CAPRICORN shared folder\SDENG\ar project\CARESLab\Assets\Model` to `\CARESLab\Assets\Model`
+
+2. Copy files from dropbox [CARESLab-AR folder](https://www.dropbox.com/scl/fo/9z7lwem3gu7g4217s8sh0/h?rlkey=26ldly70xd2p8y069f3d6s4nq&dl=0) 
+    - `Assets\Model\*.blend` model to `\CARESLab\Assets\Model`
+    - `Assets\Prefabs\HandCoach\HandRig` to `\CARESLab\Assets\Prefabs\HandCoach\HandRig`
+
+        These files are for HandCoach feature in this project. A detailed description of this feature can be found at [HandCoach](#HandCoach) section.
+
 3. Install MRTK3 features with Microsoft Mixed Reality Feature Tool
 
     Acquire the following features from Microsoft Mixed Reality Feature Tool:
@@ -86,13 +92,11 @@ A detailed installation list (without Microsoft Mixed Reality Feature Tool) can 
 
     e. Check `Player > Resolution and Presentation > Run In Background` is ticked.
 
-Completed guide of setting up **new** MRTK3 project can be found at [here](https://learn.microsoft.com/en-us/windows/mixed-reality/mrtk-unity/mrtk3-overview/getting-started/setting-up/setup-new-project).
+A complete guide of setting up **new** MRTK3 project can be found at [here](https://learn.microsoft.com/en-us/windows/mixed-reality/mrtk-unity/mrtk3-overview/getting-started/setting-up/setup-new-project).
 
 6. If TMP Importer is prompt, choose to import TMP Essentials.
 
-7. Add `bmsUpdateAgentUrl`, `canopyhoodAirflowIri` and `canopyhoodControlModeIri` in Assets/Scripts/ModelScene/AirflowInputControl.cs. This function may break if authorization setup in BMSUpdateAgent is done.
-    
-    Due to security consideration, the url and iri in this file are removed. To be able to use the change airflow function, please add the correct url and iri.
+7. Replace `<STACK-ADDR>` and `<ONTOLOGY-ADDR>` in `endpoints.properties`.
 
 ### Run in Unity
 
@@ -134,3 +138,30 @@ Other resources:
     Error message: Problem detected while importing the Prefab file: 'Assets/Prefabs/<PREFAB-NAME>'. The file might be corrupt or have missing nested Prefabs.
 
     Occurred when `*.blend` model files are not added before opening the project in Unity. This will also remove the `*.asset` files in `Assets/Model/`. Please add the `*.blend` model files **and** pull the project again.
+
+## MRTK2 Features
+This project is built with MRTK3 library which is generally available in October 2023. Therefore, some of MRTK2 features haven't been fully migrated to MRTK3. This section lists the MRTK2 features which have been modified to integrate with the MRTK3 library.
+
+### HandCoach
+
+[HandCoach](https://learn.microsoft.com/en-us/windows/mixed-reality/mrtk-unity/mrtk2/features/ux-building-blocks/hand-coach?view=mrtkunity-2022-05) is implemented as a "teaching" component that helps guide the user what operations to perform. 
+
+The feature is included in MRTK2 foundation package. To acquire the original files and set up **from scratch**, one can follow the steps below. These steps have already been completed and saved to this repo. Developer doesn't need to redo them. The only operation that is needed is to import the `*.fbx` hand model files as described in [Project Setup](#project-setup) section.
+
+1. Create a new 3D project with Unity Hub
+2. Add `Mixed Reality Toolkit > Mixed Reality Toolkit Foundation (2.8.3)` to the 3D project with Microsoft Mixed Reality Feature Tool.
+3. Search for `HandCoach` in the MRTK2 3D project, and copy the following folders to your MRTK3 Unity project
+    
+    a. Packages/com.microsoft.mixedreality.toolkit.foundation/SDK/Editor/Inspectors/UX/HandCoach
+
+    b. Packages/com.microsoft.mixedreality.toolkit.foundation/SDK/Features/UX/Animations/HandCoach
+
+    c. Packages/com.microsoft.mixedreality.toolkit.foundation/SDK/Features/UX/Materials/HandCoach
+
+    d. Packages/com.microsoft.mixedreality.toolkit.foundation/SDK/Features/UX/Meshes/HandCoach
+
+    e. Packages/com.microsoft.mixedreality.toolkit.foundation/SDK/Features/UX/Prefabs/HandCoach
+
+    f. Packages/com.microsoft.mixedreality.toolkit.foundation/SDK/Features/UX/Scripts/HandCoach
+4. Manually fix the links between the HandCoach components.
+5. Modify `private bool IsHandTracked()` `Scripts/HandCoach/HandInteractionHint.cs` using MRTK3 `HandsAggregatorSubsystem`
