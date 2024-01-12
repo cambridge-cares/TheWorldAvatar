@@ -18,7 +18,6 @@ import com.github.stefanbirkner.systemlambda.SystemLambda;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,9 +31,10 @@ import java.lang.reflect.Method;
 
 /**
  * This test class is to test the WeatherQueryClient with a running blazegraph triple store
+ * test for instantiateGeoSpatialInfoIfNotExist will require support from the "stack" before it can be properly written
  */
 @Ignore("Requires triple store set up and running (using testcontainers)\n" +
-        "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
+       "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 
 @Testcontainers
 public class WeatherQueryClientIntegrationTest {
@@ -77,7 +77,6 @@ public class WeatherQueryClientIntegrationTest {
     public void initialize() throws Exception {
         // Start the containers
         try {
-            // Start Blazegraph container
             blazegraph.start();
         } catch (Exception e) {
             throw new AssertionError("IntegrationTest: Docker container startup failed. Please try running tests again");
@@ -95,10 +94,10 @@ public class WeatherQueryClientIntegrationTest {
             weatherMappings.add(key + "="+examplePrefix+key);
             IRIs.add(examplePrefix+key);
         }
-        writePropertyFile(weatherMappingFile, weatherMappings);
+        writeToFile(weatherMappingFile, weatherMappings);
         // Create and write content to temporary agent.properties file
         String agentPropertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
-        writePropertyFile(agentPropertiesFile, Collections.singletonList("caresWeatherStation.mappingfolder=TEST_MAPPINGS"));
+        writeToFile(agentPropertiesFile, Collections.singletonList("caresWeatherStation.mappingfolder=TEST_MAPPINGS"));
 
         // Set endpoint to the triple store. The host and port are read from the container
         String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
@@ -110,11 +109,11 @@ public class WeatherQueryClientIntegrationTest {
 
         // Create and write content to temporary client.properties file
         String clientPropertiesFile = Paths.get(folder.getRoot().toString(), "cient.properties").toString();
-        writePropertyFile(clientPropertiesFile, Arrays.asList("sparql.query.endpoint=" + endpoint, "sparql.update.endpoint=" + endpoint, "db.url=test", "db.user=testUser", "db.password=testPassword"));
+        writeToFile(clientPropertiesFile, Arrays.asList("sparql.query.endpoint=" + endpoint, "sparql.update.endpoint=" + endpoint, "db.url=test", "db.user=testUser", "db.password=testPassword"));
         
         // Create and write content to temporary client.properties file
         String apiPropertiesFile = Paths.get(folder.getRoot().toString(), "api.properties").toString();
-        writePropertyFile(apiPropertiesFile, Arrays.asList("weather.stationId=12345"));
+        writeToFile(apiPropertiesFile, Arrays.asList("weather.stationId=12345"));
 
         SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
             weatherQueryClient = new WeatherQueryClient(agentPropertiesFile, clientPropertiesFile, apiPropertiesFile);
@@ -152,8 +151,7 @@ public class WeatherQueryClientIntegrationTest {
         }
     }
 
-    private void writePropertyFile(String filepath, List<String> properties) throws IOException {
-        // Overwrite potentially existing properties file
+    private void writeToFile(String filepath, List<String> properties) throws IOException {
         FileWriter writer = new FileWriter(filepath, false);
         // Populate file
         for (String s : properties) {
@@ -345,6 +343,5 @@ public class WeatherQueryClientIntegrationTest {
         kbClient.setQuery(query.getQueryString());
         queryResult = kbClient.executeQuery();
         Assert.assertEquals("Weather Station 12345", queryResult.getJSONObject(0).getString("var2"));
-
     }
 }
