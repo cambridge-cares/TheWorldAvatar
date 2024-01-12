@@ -36,6 +36,8 @@ ENV CARESWeatherStation_CLIENTPROPERTIES="/root/config/client.properties"
 # Set the required environment variable
 ENV CARESWeatherStation_AGENT_MAPPINGS="/root/config/mappings"
 
+#Variables that determines where the geolocation information will be uploaded to
+
 # also name of the table in PostGIS
 ENV LAYERNAME="weatherstations"
 
