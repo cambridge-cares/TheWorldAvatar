@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project is to showcase the CARES lab and apply knowledge graph in AR. It is built with Unity and MRTK3 library for Hololens2 devices. The project consists of 3 scenes, home scene, floor plan scene and model scene.
+This project is to showcase the CARES lab and apply knowledge graph in AR. It is built with [Unity](https://unity.com/) and [MRTK3 library](https://learn.microsoft.com/en-us/windows/mixed-reality/mrtk-unity/mrtk3-overview/) for [Hololens2](https://www.microsoft.com/en-us/hololens) devices. The project consists of 3 scenes, home scene, floor plan scene and model scene.
 
 ### Home Scene
 
