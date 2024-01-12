@@ -15,19 +15,19 @@ public class AirflowInputControl : MonoBehaviour
     [SerializeField]
     private NonNativeKeyboard NonNativeKeyboard;
 
-    // NOTICE: Change the following endpoint and iris to valid string for this function to work properly.
-    private string bmsUpdateAgentUrl = Config.BmsUpdateAgentUrl;
-    private string canopyhoodAirflowIri = Config.CanopyhoodAirflowIri;
-    private string canopyhoodControlModeIri = Config.CanopyhoodControlModeIri;
+    public void SetupKeyboard()
+    {
+        SetupKeyboard("Please enter the new airflow setpoint (between 400-1100)", new Color(255, 255, 255, 255));
+    }
 
     /// <summary>
     /// Open keyboard to symbol layout.
     /// </summary>
-    public void SetupKeyboard()
+    private void SetupKeyboard(string text, Color color)
     {
         NonNativeKeyboard.Open(NonNativeKeyboard.LayoutType.Symbol);
-        titleTMP.SetText("Please enter the new airflow setpoint (between 400-1100)");
-        titleTMP.color = new Color(255, 255, 255, 255);
+        titleTMP.SetText(text);
+        titleTMP.color = color;
     }
 
     /// <summary>
@@ -35,28 +35,42 @@ public class AirflowInputControl : MonoBehaviour
     /// </summary>
     public void SubmitNewSetPoint()
     {
-        // NOTICE: This text is not shown because the keyboard is closed.
         if (!double.TryParse(NonNativeKeyboard.Text, out double result))
         {
-            titleTMP.SetText("Please enter a valid number.");
-            titleTMP.color = new Color(255, 0, 0, 255);
+            Debug.LogError("Invalid number, cannot be parsed to double.");
+            StartCoroutine(ReopenKeyboardDueToInvalidInput("Please enter a valid number."));
             return;
         }
 
         if (result < 400 || result > 1100)
         {
-            titleTMP.SetText("Please enter a value between 400-1100 m3/h.");
-            titleTMP.color = new Color(255, 0, 0, 255);
+            Debug.LogError("Value out of range.");
+            StartCoroutine(ReopenKeyboardDueToInvalidInput("Please enter a value between 400-1100 m3/h."));
+            return;
+        }
+
+        if (Config.BmsUpdateAgentUrl == null || Config.CanopyhoodAirflowIri == null || Config.CanopyhoodControlModeIri == null)
+        {
+            Debug.LogError("Config BmsUpdateAgentUrl or CanopyhoodAirflowIri or CanopyhoodControlModeIri not init. Please check endpoints.properties file and start from Home scene.");
             return;
         }
         StartCoroutine(SendSetPointRequest());
     }
 
+    private IEnumerator ReopenKeyboardDueToInvalidInput(string text)
+    {
+        if (NonNativeKeyboard.isActiveAndEnabled)
+        {
+            yield return null;
+        }
+        SetupKeyboard(text, new Color(255, 0, 0, 255));
+    }
+
     private IEnumerator SendSetPointRequest()
     {
-        string url = bmsUpdateAgentUrl;
+        string url = Config.BmsUpdateAgentUrl;
         WWWForm form = new();
-        form.AddField("dataIRI", canopyhoodAirflowIri);
+        form.AddField("dataIRI", Config.CanopyhoodAirflowIri);
         form.AddField("value", NonNativeKeyboard.Text);
         form.AddField("clientProperties", "WRITE_CLIENT_PROPERTIES");
 
@@ -77,9 +91,9 @@ public class AirflowInputControl : MonoBehaviour
 
     private IEnumerator SendChangeModeRequest()
     {
-        string url = bmsUpdateAgentUrl;
+        string url = Config.BmsUpdateAgentUrl;
         WWWForm form = new();
-        form.AddField("dataIRI", canopyhoodControlModeIri);
+        form.AddField("dataIRI", Config.CanopyhoodControlModeIri);
         form.AddField("value", "1.0");
         form.AddField("clientProperties", "WRITE_CLIENT_PROPERTIES");
 
