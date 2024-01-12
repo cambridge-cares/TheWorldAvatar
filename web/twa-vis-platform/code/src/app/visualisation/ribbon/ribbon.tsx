@@ -4,7 +4,7 @@ import { Box, Tabs, Tab } from "@mui/material";
 import RibbonPanel from "./ribbon-panel";
 import RibbonComponentClick from "./components/ribbon-component-click";
 import RibbonComponentToggle from "./components/ribbon-component-toggle";
-import { closeFullscreen, getMapSettings, openFullscreen } from "utils/client-utils";
+import { closeFullscreen, getMapSettings, openFullscreen } from "../../../utils/client-utils";
 import { set3DTerrain, resetCamera, locateUser } from "map/mapbox/mapbox-camera-utils";
 import RibbonComponentCombo from "./components/ribbon-component-combo";
 import MapSettingsStore from "../../../io/config/map-settings";

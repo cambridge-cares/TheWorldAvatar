@@ -18,18 +18,11 @@ export async function GET(request: NextRequest) {
     }
 
     // See if a sub-node key is present
-    let result;
-
-    if(urlParams.get("key") != null) {
-        // Only return that sub-node within settings
-        result = MapSettings.getSettings(urlParams.get("key"));
-    } else {
-        result = MapSettings.getSettings();
-    }
+    const result = MapSettings.getSettings();
 
     // Read Mapbox credentials from Docker secrets
     const credentials = getCredentials();
-    result["credentials"] = credentials;
+    result.credentials = credentials;
 
     return Response.json(result);
 }

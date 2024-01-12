@@ -4,7 +4,7 @@ import React from "react";
 import Konami from 'react-konami-code';
 import {  Provider } from "react-redux";
 
-import Trex from "utils/trex";
+import Trex from "../utils/trex";
 import Toolbar from "./toolbar/toolbar";
 import ContextMenu from "./context-menu/context-menu";
 import { reduxStore } from "../app/store";

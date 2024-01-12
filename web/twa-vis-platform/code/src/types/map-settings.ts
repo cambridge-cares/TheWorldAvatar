@@ -33,7 +33,7 @@ export interface MapSettings {
     camera: CameraSettings,
     imagery: ImagerySettings,
     credentials: {
-        user: string,
+        username: string,
         key: string
     }
 }

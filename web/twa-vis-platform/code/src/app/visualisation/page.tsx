@@ -20,7 +20,7 @@ import Ribbon from './ribbon/ribbon';
 import { addItem, selectItem } from 'state/context-menu-slice';
 import { ContextItemDefinition } from 'ui/context-menu/context-item';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
-import { getMapSettings } from 'utils/client-utils';
+import { getMapSettings } from '../../utils/client-utils';
 import FloatingPanelContainer from '../../ui/tree/floating-panel';
 
 

@@ -87,6 +87,7 @@ By default, Next.js offers the `public` directory for housing resources such as 
 Uploads content provided by the deploying developer should match the below directory structure.
 
 * `config/`: Should contain config/settings files.
+  * `data.json`: Specifies data sources and layers to be mapped.
   * `map-settings.json`: Non-data specific configuration for maps, format is documented [here](../docs/map-settings.md)
   * `ui-settings.json`: UI configuration settings, format is documented [here](../docs/ui-settings.json).
 * `images/`: Custom image files.

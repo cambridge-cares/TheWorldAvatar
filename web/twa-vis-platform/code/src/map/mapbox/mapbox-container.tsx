@@ -21,6 +21,8 @@ import React, { useRef, useEffect } from 'react';
 import { getDefaultCameraPosition } from './mapbox-camera-utils';
 import { MapSettings } from '../../types/map-settings';
 import { getDefaultImageryOption, getImageryOption } from './mapbox-imagery-utils';
+import { getAndParseDataSettings } from "../../utils/client-utils";
+import { DataStoreCache } from "../../io/data/data-store-cache";
 
 // Type definition of incoming properties
 interface MapProperties {
@@ -91,6 +93,12 @@ export default function MapboxMapComponent(props: MapProperties) {
         // to access the map too. Would recommend revisiting this choice later though.
         window.map = map.current;
         console.info("Initialised a new Mapbox map object.");
+
+        // Now we can get the contents of the data.json file from the server
+        getAndParseDataSettings().then(() => {
+            // Once that is done and completed...
+            console.log("GOT DATA OBJECTS, " + Object.keys(DataStoreCache.STORES).length);
+        });
     }
 
     return (
