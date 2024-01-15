@@ -34,7 +34,20 @@ return <div>
                 </p>
 
                 <h2 id='secMackay'>The Singapore MacKay Carbon Calculator</h2>
-                 <p>You select your level of ambition of decarbonisation effort using the levers, ranging from Level 1 - minimal effort, to Level 4 - maximum effort. Popup descriptions explain what the levels represent in terms of behavioural change or infrastructure investment.</p>
+                <h4> What is a MacKay Carbon Calculator?</h4>
+                <p> The MacKay Carbon Calculator, named after the late Professor Sir David MacKay, was originally developed for the UK as part of its efforts to address climate change challenges.</p>
+                 <p>This innovative tool enables users to explore different energy and emissions scenarios, helping to explore how various choices impact a nation's carbon footprint. The success of the UK model has inspired several countries to adopt and adapt the MacKay Carbon Calculator to their specific national contexts. These adaptations have provided valuable insights into national energy strategies, assisting in policy formation geared towards sustainable energy use and carbon reduction.</p>
+                 <h4>What is the Singapore-MacKay Carbon Calculator?</h4>
+                 <p> Our Singapore-MacKay Carbon Calculator, while closely mirroring the UK version in terms of underlying modelling approaches and assumptions, has been specifically adapted to reflect Singapore’s unique context through the update of various input variables. These modifications include demographic factors such as population and housing projections, local environmental conditions like external ambient temperature, and sector-specific elements such as fuel consumption and CO2 emissions profiles. Additionally, adjustments account for Singapore's specific characteristics in areas like travel modes, domestic forestry, farming, waste management, and electricity generation.</p>
+                <p> On the other hand, certain aspects of the calculator remain unchanged, consistent with the original UK model. These include emission factors, efficiencies of technologies and processes, energy intensities, and scrappage decisions, among others.</p>
+                 <p>As part of our research and as a proof-of-concept, the Singapore-MacKay Carbon Calculator is augmented with The World Avatar to better incorporate selected data from diverse sources, thereby improving its modelling capabilities.
+                 Where does the data come from? </p>
+                 <p> Data for these modifications are sourced from various sources, including the Singapore Department of Statistics, National Communications Reports, and other relevant government and industry data sources.  </p>
+                 <h4> What are its limitations? </h4>
+                 <p> Our Singapore-MacKay Carbon Calculator inherits certain assumptions and priorities from the UK model, such as levels of ambition and the base year definition. Discrepancies in data availability for specific years and assumptions about fuel types also introduce variations in CO2 emission estimations. Furthermore, the model does not yet incorporate cost considerations and has specific approaches to accounting for emissions from the sale of international aviation and marine bunker fuels, reflecting Singapore's unique position as a major transportation hub. These limitations highlight areas where the model may deviate from Singapore's specific realities and indicate potential avenues for further refinement. </p>
+                 <h4>  How do I use it? </h4>
+                <p> The calculator is designed to be intuitive and user-friendly, allowing the general public to engage with complex energy and climate-related issues in an accessible way. Each sector comprises adjustable parameters related to energy consumption and carbon emissions. To modify a parameter, use the sliders for the input fields provided. As you adjust parameters, experiment with different scenarios to see how changes in one sector affect overall emissions. Observe the feedback on emissions projections and energy mix displayed by the calculator.</p>
+
 
 
                 <h2 id="secProject">The project</h2>

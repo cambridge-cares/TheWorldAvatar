@@ -1,11 +1,14 @@
 import configparser
 import os
 
-def load_conf(fullfilepath) -> configparser.ConfigParser:
+def load_conf(fullfilepath:str) -> configparser.ConfigParser:
     config = configparser.ConfigParser()
     config.read(fullfilepath)
     print(config)
     return config
+
+
+
 
 
 def load_confs_from_dir(fulldirpath) -> list:
