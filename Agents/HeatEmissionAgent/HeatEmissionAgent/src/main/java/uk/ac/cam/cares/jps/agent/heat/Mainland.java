@@ -65,6 +65,10 @@ public class Mainland {
 
                 storeClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 
+                // Reset all variables
+                factories.clear();
+                facilityType.clear();
+
                 facilityType.put(ChemicalPlant, FactoryType.ChemicalPlant);
                 facilityType.put(DataCentre, FactoryType.DataCenter);
                 facilityType.put(BeveragePlant, FactoryType.BeveragePlant);

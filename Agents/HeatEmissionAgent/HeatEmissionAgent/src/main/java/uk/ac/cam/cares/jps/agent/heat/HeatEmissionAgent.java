@@ -51,8 +51,8 @@ public class HeatEmissionAgent extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (validateInput(requestParams)) {
 			if (requestParams.getString("ontology").equalsIgnoreCase("ontochemplant")) {
-				JurongIsland ji = new JurongIsland();
-				return ji.calculateHeat(requestParams);
+				JurongIsland ji = new JurongIsland(requestParams);
+				return ji.calculateHeat();
 			} else {
 				Mainland ml = new Mainland(requestParams);
 				return ml.calculateHeat();
