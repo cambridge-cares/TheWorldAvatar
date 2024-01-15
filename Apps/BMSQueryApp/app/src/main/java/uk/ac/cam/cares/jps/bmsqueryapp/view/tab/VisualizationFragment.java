@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.view.tab;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,12 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,7 +21,6 @@ import org.apache.log4j.Logger;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.R;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.FragmentVisualizationBinding;
-import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
 
 public class VisualizationFragment extends Fragment {
 
@@ -43,7 +38,7 @@ public class VisualizationFragment extends Fragment {
             this.fragment = fragment;
 
             this.hostAddr = context.getString(R.string.host);
-            this.fiaPath = context.getString(R.string.feature_info_agent_get);
+            this.fiaPath = context.getString(R.string.feature_info_agent_get_path);
         }
 
         /**

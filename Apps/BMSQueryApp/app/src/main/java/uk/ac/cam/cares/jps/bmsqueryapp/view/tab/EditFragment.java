@@ -75,8 +75,8 @@ public class EditFragment extends Fragment {
         binding = FragmentEditBinding.inflate(inflater, container, false);
         BasicConfigurator.configure();
 
-        ESPHOME_CONTROL_URL = Constants.constructUrlBuilder(requireContext().getString(R.string.lab_host), getResources().getString(R.string.bms_update_agent_set));
-        WACNET_WRITE_URL = Constants.constructUrlBuilder(requireContext().getString(R.string.bms_update_agent_wacnet_write), requireContext());
+        ESPHOME_CONTROL_URL = Constants.constructUrlBuilder(requireContext().getString(R.string.lab_host), getResources().getString(R.string.bms_update_agent_set_path));
+        WACNET_WRITE_URL = Constants.constructUrlBuilder(requireContext().getString(R.string.bms_update_agent_wacnet_write_path), requireContext());
 
         // the applicationContext is only used to show update success or failure after fragment detached
         applicationContext = requireActivity().getApplicationContext();
