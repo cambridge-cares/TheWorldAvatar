@@ -24,7 +24,7 @@ import java.io.*;
  */
 
 public class UsageShareCalculator {
-        private static final String LANDUSE_PATH = "/usr/local/tomcat/resources/dlm_landuse.csv";
+        private static final String RESOURCES_PATH = "/resources";
 
         private RemoteRDBStoreClient rdbStoreClient;
 
@@ -48,7 +48,7 @@ public class UsageShareCalculator {
                 String assignUsageShare =
                         "UPDATE " + usageTable + " AS p\n" +
                                 "SET UsageShare = c.instances / c.total_instances::float,\n" +
-                                "    propertyusage_iri = 'https://www.theworldavatar.com/kg/' || c.ontobuilt || '_' || uuid_generate_v4()::text\n"
+                                "    propertyusage_iri = c.ontobuilt || '_' || uuid_generate_v4()::text\n"
                                 +
                                 "FROM (\n" +
                                 "    SELECT building_iri,\n" +
@@ -96,8 +96,8 @@ public class UsageShareCalculator {
          * @param usageTable centralised table to store usage information
          * @param landUseTable table containing DLM land use data
          */
-        public void updateLandUse(String usageTable, String landUseTable) {
-                try (InputStream input = FileReader.getStream(LANDUSE_PATH)) {
+        public void updateLandUse(String usageTable, String landUseTable, String csv) {
+                try (InputStream input = FileReader.getStream(RESOURCES_PATH + "/" + csv)) {
                         InputStreamReader inputStreamReader = new InputStreamReader(input);
                         CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
                         String[] line;
@@ -136,5 +136,19 @@ public class UsageShareCalculator {
                         e.printStackTrace();
                         throw new JPSRuntimeException(e);
                 }
+        }
+
+        public void addMaterializedView(String usageTable){
+                String materializedView ="-- Drop the materialized view if it exists\n" +
+                        "DROP MATERIALIZED VIEW IF EXISTS usage.buildingusage_osm;\n" +
+                        "\n" +
+                        "-- Create a new materialized view named \"buildingusage_osm\" in the \"usage\" schema\n" +
+                        "CREATE MATERIALIZED VIEW usage.buildingusage_osm AS\n" +
+                        "SELECT DISTINCT u.*, COALESCE(p.name, o.name) AS name\n" +
+                        "FROM "+usageTable+" AS u\n" +
+                        "LEFT JOIN public.points AS p ON u.building_iri = p.building_iri\n" +
+                        "LEFT JOIN public.polygons AS o ON u.building_iri = o.building_iri;";
+
+                rdbStoreClient.executeUpdate(materializedView);
         }
 }

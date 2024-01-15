@@ -1,0 +1,18 @@
+{
+    "entries": [
+        {
+            "id": "Feature",
+            "class": "http://www.opengis.net/citygml/building/2.0/Building",
+            "meta" : {
+                "queryFile": "cea-meta.sparql"
+            },
+            "time": {
+                "queryFile": "cea-timeseries.sparql",
+                "limit": 24,
+                "unit": "hours",
+                "reference": "latest",
+                "database": "CEAAgent"
+            }
+        }
+    ]
+}

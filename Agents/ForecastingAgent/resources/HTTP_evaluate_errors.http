@@ -1,8 +1,8 @@
 # This file shows a sample HTTP request to evaluate the (forecasting) errors between two time series
 
-# The endpoind requires two time series IRIs (i.e., IRIs of rdf:type 'ts:TimeSeries')
-# - tsIRI_target: IRI of the (historical) target time series
-# - tsIRI_fc: IRI of the forecast time series
+# The endpoint requires two time series data IRIs (i.e., IRIs with attached 'ts:hasTimeSeries' relationships)
+# - dataIRI_target: dataIRI of the (historical) target time series
+# - dataIRI_fc: dataIRI of the forecast time series
 
 # Docker deployment:
 POST http://localhost:5001/evaluate_errors
@@ -11,7 +11,7 @@ POST http://localhost:5001/evaluate_errors
 Content-Type: application/json
 
 { "query": {
-      "tsIRI_target": "https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_6e1a8e98-2b5a-46a7-ba0b-6a586419958e",
-      "tsIRI_fc" : "https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_6e1a8e98-2b5a-46a7-ba0b-6a586419958e"
+      "dataIRI_target": "https://www.theworldavatar.com/kg/HistoricalMeasure_uuid",
+      "dataIRI_fc" : "https://www.theworldavatar.com/kg/Forecast_uuid"
     }
 }

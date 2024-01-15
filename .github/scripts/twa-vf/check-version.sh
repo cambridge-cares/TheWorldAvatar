@@ -32,7 +32,7 @@ fi
 echo "Version does not contain -SNAPSHOT qualifier."
 
 # Check that the change log contains an entry for that version
-CHANGELOG="./web/twa-vis-framework/CHANGELOG.md"
+CHANGELOG="./web/twa-vis-framework/library/CHANGELOG.md"
 TOKEN="# $VERSION"
 if ! grep -q "$TOKEN" "$CHANGELOG"; then
 	echo "Could not find corresponding node in CHANGELOG.md file!"

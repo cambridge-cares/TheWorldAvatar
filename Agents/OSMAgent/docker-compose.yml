@@ -2,9 +2,9 @@ version: "3.8"
 
 services:
   osmagent:
-    image: osmagent:1.0.0
+    image: ghcr.io/cambridge-cares/osmagent:1.3.0
     build: .
     ports:
       - "10104:8080"
     volumes:
-      - ./osmagent/src/main/resources:/usr/local/tomcat/data
+      - ./osmagent/src/main/resources:/resources

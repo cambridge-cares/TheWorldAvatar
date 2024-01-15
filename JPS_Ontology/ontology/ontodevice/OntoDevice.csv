@@ -53,6 +53,8 @@ http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration,Class,htt
 http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
 https://saref.etsi.org/core/Meter,Class,Device,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,
 https://saref.etsi.org/core/Sensor,Class,Device,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,
+Mode,Class,,,,,,An option allowing a change in the method of operation of a device.,https://www.theworldavatar.com/kg/ontodevice/,Mode
+services,Object Property,,,Device UNION http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,https://w3id.org/bot#Zone,,A relationship between a device or technical system and the zone it is servicing or providing a service for.,https://www.theworldavatar.com/kg/ontodevice/,services
 observes,Object Property,,,Device,https://saref.etsi.org/core/State,,A relationship between a device and the state that it is observing.,https://www.theworldavatar.com/kg/ontodevice/,observes
 measures,Object Property,,,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity UNION Vector,,A relationship between a device and a quantity or vector that it is measuring.,https://www.theworldavatar.com/kg/ontodevice/,measures
 measures,Object Property,,,Magnetometer,MagneticFluxDensityVector,only,A relationship between a device and a quantity or vector that it is measuring.,https://www.theworldavatar.com/kg/ontodevice/,measures
@@ -95,4 +97,5 @@ hasZComponent,Object Property,,,MagneticFluxDensityVector,http://www.ontology-of
 hasMinThreshold,Object Property,,,https://w3id.org/bot#Zone,Threshold,,A relationship that defines a minimum threshold applied to a zone (e.g. temperature of a room).,https://www.theworldavatar.com/kg/ontodevice/,has min threshold
 hasMaxThreshold,Object Property,,,https://w3id.org/bot#Zone,Threshold,,A relationship that defines a maximum threshold applied to a zone (e.g. temperature of a room).,https://www.theworldavatar.com/kg/ontodevice/,has max threshold
 hasCumulativeEnergyConsumption,Object Property,hasQuantity,IS-A,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange UNION Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Energy,,A relationship that describes the amount of cumulative energy used or consumed during a process or by a device.,https://www.theworldavatar.com/kg/ontodevice/,has cumulative energy consumption
+hasMode,Object Property,,,Device,Mode,,A relationship that describes the mode that a device is operating in.,https://www.theworldavatar.com/kg/ontodevice/,has mode
 hasID,Data Property,,,Device,String,,A relationship that describes the ID assigned to a device.,https://www.theworldavatar.com/kg/ontodevice/,has ID

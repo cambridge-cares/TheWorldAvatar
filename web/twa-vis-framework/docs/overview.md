@@ -12,44 +12,30 @@ Once displayed, a number of standard interaction handlers are also added. These 
 
 ## Mapping providers
 
-At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/) and [CesiumJS](https://cesium.com/platform/cesiumjs/). The core differences between providers is as follows:
+At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/) and [Cesium](https://cesium.com/platform/Cesium/). The core differences between providers is as follows:
 
-* Mapbox can only handle 2D data (with the option to extrude 2D polygons into basic 3D polyhedrons) from local files or from [WMS endpoints](https://en.wikipedia.org/wiki/Web_Map_Service). Unlike CesiumJS (see below), Mapbox can display 2D vector data (including use of SVGs for icons, under certain conditions) if the data is hosted using the [Mapbox Vector Tiles](https://docs.mapbox.com/data/tilesets/guides/vector-tiles-introduction/) format. It is however quite customisable and has relatively small performance overhead. Unless you're plotting 3D building data, it's advised to use this mapping provider.
+* Mapbox can only handle 2D data (with the option to extrude 2D polygons into basic 3D polyhedrons) from local files or from [WMS endpoints](https://en.wikipedia.org/wiki/Web_Map_Service). Unlike Cesium (see below), Mapbox can display 2D vector data (including use of SVGs for icons, under certain conditions) if the data is hosted using the [Mapbox Vector Tiles](https://docs.mapbox.com/data/tilesets/guides/vector-tiles-introduction/) format. It is however quite customisable and has relatively small performance overhead. Unless you're plotting 3D building data, it's advised to use this mapping provider.
 
-* CesiumJS can handle 2D raster data as well as 3D data. 2D data must be provided via a WMS endpoint and can only be styled on the server hosting it (rather than the client-side styling Mapbox provides); at the time of writing we have not implemented functionality to support the _display_ of 2D vector data (GeoServer can host vector data, but Cesium will rasterise this as a PNG upon visualisation). This provider also has a large performance overhead, a decent GPU is required for a smooth visualisation; we recommend only using it if 3D data is required.
+* Cesium can handle 2D raster data as well as 3D data. 2D data must be provided via a WMS endpoint and can only be styled on the server hosting it (rather than the client-side styling Mapbox provides); at the time of writing we have not implemented functionality to support the _display_ of 2D vector data (GeoServer can host vector data, but Cesium will rasterise this as a PNG upon visualisation). This provider also has a large performance overhead, a decent GPU is required for a smooth visualisation; we recommend only using it if 3D data is required.
 
 <br/>
 
-## Creating an image
+## Creating a container
 
-Before we can start specifying the data to be hosted within the visualisation, we need to create a Docker container that can host the web files the visualisation uses. This can easily be done by setting up a `docker-compose.yml` file that uses the `twa-vf` image; and image that contains the pre-built TWA-VF libraries (available from the `/var/www/html/twa-vf` directory) and a webserver.
+Before we can start specifying the data to be hosted within the visualisation, we need to create a Docker container that can host the web files the visualisation uses. This can be done by running a container based on the `twa-vf` image; an image that contains the pre-built TWA-VF libraries (available from the `/var/www/html/twa-vf` directory) and a webserver.
 
-Both the example Mapbox and Cesium visualisations show an example of this, feel free to use them as a starting point. Note that the `docker-compose.yml` files used in the committed examples should only be used in conjunction with the provided `run.sh` scripts, as this will inject the current version of the TWA-VF into the image tag.
-
-```yaml
-version: "3.8"
-
-services:
-
-  example-vis:
-    image: ghcr.io/cambridge-cares/twa-vf:${TAG}
-    container_name: "example-vis"
-    ports:
-      - "80:80"
-    volumes:
-      - ./webspace:/var/www/html
-```
+Users can either write their own `docker-compose.yml` file to run a standalone visualisation (i.e. outside of a TWA Stack environment), or use the TWA Stack to create a standard visualisation integrated within a stack instance (see the [TWA Stack Manager documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for more details on the latter).
 
 ### Importing the library
 
-Once you have an container ready to go, you'll need to ensure that your `index.html` correctly imports the required TWA-VF JS and CSS file. Whilst the example visualisations show how to do this, a breakdown of how this is currently done, compared to previous methods, is detailed below.
+Once you have an container ready to go, you'll need to ensure that your `index.html` correctly imports the required TWA-VF JS and CSS file, along with the required external libraries. Whilst the example visualisations show how to do this, a breakdown of how this is currently done, compared to previous methods, is detailed below.
 
 **Before version 3.8.0:**<br/>
 
-Before this version, the compiled JS and CSS files were not stored within the Docker image itself, but hosted on a remote server provided by CMCL. Whilst this gave the ability to easily change the version of the library used, it meant that if the server at CMCL went offline, visualisations were broken. Additionally, before version `4.0.0`, the TWA-VF was known as the Digital Twin Visualisation Framework (DTVF); an example JS import statement for v3.7.0 of the DTVF is shown below.
+Before this version, the compiled JS and CSS files were not stored within the Docker image itself, but hosted on a remote server provided by CMCL. Whilst this gave the ability to easily change the version of the library used, it meant that if the server at CMCL went offline, visualisations were broken. An example JS import statement for v3.7.0 of the DTVF (previous name for the TWA-VF) is shown below.
 
 ```html
-<script src="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.js"></script>
+<script src="https://kg.cmclinnovations.com/cdn/twa-vf/4.4.0/dtvf.min.js"></script>
 ```
 
 **Version 3.8.0 and after:**<br/>
@@ -57,17 +43,16 @@ Before this version, the compiled JS and CSS files were not stored within the Do
 To remove the reliance on remote servers, the TWA-VF docker image is now versioned (rather than just using `:latest`) and contains a copy of the compiled JS and CSS files within it. This means that users can import a local file (as shown below); not the addition of a character encoding, this has been shown to resolve some character rending issues we've seen.
 
 ```html
-<script src="./twa-vf/twa-vf.min.js" charset="utf-8"></script>
+<script src="./lib/twa-vf.min.js" charset="utf-8"></script>
 ```
+
 ##  Writing the data configuration file
 
 The first step for any prospective user of the TWA-VF is to understand how to structure the configuration file. At the time of writing, this file must be named `data.json` and reside within the root webspace (i.e. next to your visualisation's `index.html` file).
 
-The TWA-VF configuration file is a [JSON](https://en.wikipedia.org/wiki/JSON) file that specified the data sources (where and how the data is loaded) and data layers (how that data is visualised). These sources and layers are contained within hierarchal data groups, how these groups are nested is up to the writer of the configuration file.
+The TWA-VF configuration file is a [JSON](https://en.wikipedia.org/wiki/JSON) file that specifies the data sources (where and how the data is loaded) and data layers (how that data is visualised). These sources and layers are contained within hierarchal data groups, how these groups are nested is up to the writer of the configuration file.
 
 The following subsections detail how to generate your own configuration file. Please note however that whilst the majority of the config format is the same across all mapping library providers, some parameters are only supported for specific libraries (these are detailed in other documentation).
-
-<br/>
 
 ### Defining a group
 
@@ -97,8 +82,6 @@ Definitions of data sources and layers is optional within a data group so that g
 }
 ```
 
-<br/>
-
 ### Defining a source
 
 Each group can contain a number of sources, representing individual data files or endpoints that will be loaded into memory by the chosen mapping library. Sources can also be defined in top-level groups, then utilised by layers further down the hierarchy.
@@ -115,8 +98,6 @@ Definitions of sources vary depending on which mapping provider is chosen (as th
     "data": "./my-example-data.geojson"
 }
 ```
-
-<br/>
 
 ### Defining a layer
 
@@ -136,8 +117,6 @@ As with sources, definitions of layers vary depending on which mapping provider 
 }
 ```
 
-<br/>
-
 ## Writing the settings configuration file
 
 Whilst the `data.json` configuration file defines the data to be loaded into the visualisation, the `settings.json` configuration file defines global settings. These are often linked to the behaviour of the visualisation itself rather than the data present within it.
@@ -145,8 +124,6 @@ Whilst the `data.json` configuration file defines the data to be loaded into the
 The most common use of the settings configuration file is to define the state of the map when the visualisation first loads. This is done through the `start` parameter, the exact format for each mapping provider can be see in their respective "Working with..." documentation pages.
 
 More complex features can also be setup and configured using the settings file, these are detailed within the [Advanced features](./advanced.md) documentation.
-
-<br/>
 
 ## Additional configuration
 
@@ -158,37 +135,30 @@ In addition to the main `data.json` and `settings.json` configuration files, two
 * `links.json`:
   * This optional file is used to provide links to additional resources; if present these are shown in the side panel of the visualisation.
 
-<br/>
-
 ## Setting up the webspace
 
 The TWA-VF provides a base image that can be used to host visualisations (`ghcr.io/cambridge-cares/TWA-VF-base-image:latest`). Once pulled, the image simply needs to be connected to a bind mount at the `/var/www/html` location within the container.
 
 This webspace should house all the files needed to display your visualisation. This includes the `data.json` file as well as the main `index.html` file, any local data files, and any required images. Custom CSS and JS files can be added to provide bespoke functionality as needed.
 
-The example Mapbox and CesiumJS visualisation show how to create a container using the TWA-VF base image and a webspace bind mount.
-
-<br/>
+The example Mapbox and Cesium visualisation show how to create a container using the TWA-VF base image and a webspace bind mount, all within the context of a single TWA Stack instance.
 
 ## Editing the HTML file
 
 Within the webspace, an `index.html` file should be provided to display the UI elements and import the required JS libraries (including which version of the TWA-VF is used).
 
-The `index.html` file of the example Mapbox & CesiumJS visualisations has been produced to act as a template for users creating their own visualisations. Once the template is copied, certain areas of it can be adjusted to add custom content; these sections are marked with "CUSTOMISABLE" comments.
+The `index.html` file of the example Mapbox & Cesium visualisations has been produced to act as a template for users creating their own visualisations. Once the template is copied, certain areas of it can be adjusted to add custom content; these sections are marked within "CUSTOMISABLE" comment sections.
 
-<br/>
 
 ## Setting credentials 
 
-In addition to the aforementioned configuration files, two additional files are required to house a Mapbox username and associated API key. Note these are required, even in CesiumJS visualisations, as the base map imagery is still provided by Mapbox.
+In addition to the aforementioned configuration files, two additional files are required to house a Mapbox username and associated API key. Note these are required, even in Cesium visualisations, as the base map imagery is still provided by Mapbox.
 
-To set these two files, either create and populate `mapbox_username`, and `mapbox-api-key` files within the hosted webspace, or use the stack infrastructure to provide these as Docker secrets. You can learn more about the latter by reading [the stack's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+To set these two files, either create and populate `mapbox_username`, and `mapbox_api_key` files within the hosted webspace, or use the stack infrastructure to provide these as Docker secrets. You can learn more about the latter by reading [the stack's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
 Once present, these files are queried by the TWA-VF, loading in the required credentials. Note that previous versions of the TWA-VF required these parameters to be set within each visualisation's `index.html` file, this is no longer required (see the example visualisations to learn about the new format).
 
 It's worth noting that these credential files should **not** be committed; to that end, a `.gitignore` file has been added to prevent this.
-
-<br/>
 
 ## Dynamic meta data
 

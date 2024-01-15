@@ -9,19 +9,17 @@ from PVLibAgent.kg_utils.utils import create_sparql_prefix
 from PVLibAgent.data_retrieval.query_data import QueryData
 
 
-@pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in /kg_utils/resources/ts_client.properties file.\
-                        Default settings in /kg_utils/resources/ts_client.properties match provided `docker-compose.test.yml`")
 class TestQueryData:
     def test_query_air_temperature_fails(self):
         # test non existing sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_air_temperature('', 'http://localhost:2714/blazegraph/namespace/kb/sparql', 'http://localhost:2714/blazegraph/namespace/kb/sparql')
+            QueryData.query_air_temperature('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any air temperature data IRI!' in str(excinfo.value)
 
         # test valid and empty sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_air_temperature('', 'http://localhost:27149/blazegraph/namespace/kb/sparql', 'http://localhost:27149/blazegraph/namespace/kb/sparql')
+            QueryData.query_air_temperature('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any air temperature data IRI!' in str(excinfo.value)
 
@@ -38,8 +36,8 @@ class TestQueryData:
                                  <http://test_parameter> om:hasValue <http://test_airTemp> }'''
         kg_client.performUpdate(query)
 
-        value = QueryData.query_air_temperature('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                                'http://localhost:27149/blazegraph/namespace/kb/sparql')
+        value = QueryData.query_air_temperature('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                                'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # clear blazegraph namespace after test
         query = create_sparql_prefix('rdf') + \
                 create_sparql_prefix('ontoems') + \
@@ -57,15 +55,15 @@ class TestQueryData:
     def test_query_wind_speed_fails(self):
         # test non existing sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_wind_speed('', 'http://localhost:2714/blazegraph/namespace/kb/sparql',
-                                            'http://localhost:2714/blazegraph/namespace/kb/sparql')
+            QueryData.query_wind_speed('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                            'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any wind speed data IRI!' in str(excinfo.value)
 
         # test valid and empty sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_wind_speed('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                            'http://localhost:27149/blazegraph/namespace/kb/sparql')
+            QueryData.query_wind_speed('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                            'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any wind speed data IRI!' in str(excinfo.value)
 
@@ -82,8 +80,8 @@ class TestQueryData:
                                  <http://test_parameter> om:hasValue <http://test_data_iri> }'''
         kg_client.performUpdate(query)
 
-        value = QueryData.query_wind_speed('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                           'http://localhost:27149/blazegraph/namespace/kb/sparql')
+        value = QueryData.query_wind_speed('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                           'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # clear blazegraph namespace after test
         query = create_sparql_prefix('rdf') + \
                 create_sparql_prefix('ontoems') + \
@@ -101,15 +99,15 @@ class TestQueryData:
     def test_query_irradiance_fails(self):
         # test non existing sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_irradiance('', 'http://localhost:2714/blazegraph/namespace/kb/sparql',
-                                            'http://localhost:2714/blazegraph/namespace/kb/sparql')
+            QueryData.query_irradiance('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                            'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any irradiance data IRI!' in str(excinfo.value)
 
         # test valid and empty sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_irradiance('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                            'http://localhost:27149/blazegraph/namespace/kb/sparql')
+            QueryData.query_irradiance('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                            'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any irradiance data IRI!' in str(excinfo.value)
 
@@ -128,8 +126,8 @@ class TestQueryData:
                                  <http://test_property> om:hasValue <http://test_data_iri> }'''
         kg_client.performUpdate(query)
 
-        value = QueryData.query_irradiance('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                           'http://localhost:27149/blazegraph/namespace/kb/sparql')
+        value = QueryData.query_irradiance('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                           'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # clear blazegraph namespace after test
         query = create_sparql_prefix('rdf') + \
                 create_sparql_prefix('ontoems') + \
@@ -149,15 +147,15 @@ class TestQueryData:
     def test_query_global_horizontal_irradiance_fails(self):
         # test non existing sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_global_horizontal_irradiance('', 'http://localhost:2714/blazegraph/namespace/kb/sparql',
-                                                         'http://localhost:2714/blazegraph/namespace/kb/sparql')
+            QueryData.query_global_horizontal_irradiance('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                                         'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any global horizontal irradiance data IRI!' in str(excinfo.value)
 
         # test valid and empty sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_global_horizontal_irradiance('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                                         'http://localhost:27149/blazegraph/namespace/kb/sparql')
+            QueryData.query_global_horizontal_irradiance('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                                         'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any global horizontal irradiance data IRI!' in str(excinfo.value)
 
@@ -174,8 +172,8 @@ class TestQueryData:
                                  <http://test_parameter> om:hasValue <http://test_data_iri> }'''
         kg_client.performUpdate(query)
 
-        value = QueryData.query_global_horizontal_irradiance('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                                             'http://localhost:27149/blazegraph/namespace/kb/sparql')
+        value = QueryData.query_global_horizontal_irradiance('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                                             'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # clear blazegraph namespace after test
         query = create_sparql_prefix('rdf') + \
                 create_sparql_prefix('ontoems') + \
@@ -193,15 +191,15 @@ class TestQueryData:
     def test_query_latitude_fails(self):
         # test non existing sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_latitude('', 'http://localhost:2714/blazegraph/namespace/kb/sparql',
-                                                         'http://localhost:2714/blazegraph/namespace/kb/sparql')
+            QueryData.query_latitude('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                                         'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any latitude value!' in str(excinfo.value)
 
         # test valid and empty sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_latitude('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                                         'http://localhost:27149/blazegraph/namespace/kb/sparql')
+            QueryData.query_latitude('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                                         'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any latitude value!' in str(excinfo.value)
 
@@ -218,8 +216,8 @@ class TestQueryData:
                                  <http://test_Measure> om:hasNumericalValue '10' }'''
         kg_client.performUpdate(query)
 
-        value = QueryData.query_latitude('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                         'http://localhost:27149/blazegraph/namespace/kb/sparql')
+        value = QueryData.query_latitude('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                         'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # clear blazegraph namespace after test
         query = create_sparql_prefix('rdf') + \
                 create_sparql_prefix('ontoems') + \
@@ -237,15 +235,15 @@ class TestQueryData:
     def test_query_longitude_fails(self):
         # test non existing sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_longitude('', 'http://localhost:2714/blazegraph/namespace/kb/sparql',
-                                                         'http://localhost:2714/blazegraph/namespace/kb/sparql')
+            QueryData.query_longitude('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                                         'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any longitude value!' in str(excinfo.value)
 
         # test valid and empty sparql endpoint
         with pytest.raises(KGException) as excinfo:
-            QueryData.query_longitude('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                      'http://localhost:27149/blazegraph/namespace/kb/sparql')
+            QueryData.query_longitude('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                      'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # Check correct exception message
         assert 'Unable to query for any longitude value!' in str(excinfo.value)
 
@@ -262,8 +260,8 @@ class TestQueryData:
                                  <http://test_Measure> om:hasNumericalValue '10' }'''
         kg_client.performUpdate(query)
 
-        value = QueryData.query_longitude('', 'http://localhost:27149/blazegraph/namespace/kb/sparql',
-                                          'http://localhost:27149/blazegraph/namespace/kb/sparql')
+        value = QueryData.query_longitude('', 'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql',
+                                          'http://host.docker.internal:27149/blazegraph/namespace/kb/sparql')
         # clear blazegraph namespace after test
         query = create_sparql_prefix('rdf') + \
                 create_sparql_prefix('ontoems') + \

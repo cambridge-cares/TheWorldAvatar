@@ -26,7 +26,7 @@ WORKDIR /root/osmagent
 
 # #==================================================================================================
 # Copy the compiled jar from the builder
-COPY --from=builder /root/osmagent/output/osmagent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/osmagent/output/osmagent##1.3.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 

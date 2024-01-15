@@ -79,9 +79,9 @@ clean_and_build_jps_base_lib() {
     cd $SPATH/..
     mvn clean install -DskipTests
     if [ $? -ne 0 ]; then
-        echo "Couldnt build JPS_BASE_LIB. Aborting the release."
+        echo "Couldn't build JPS_BASE_LIB. Aborting the release."
         read -n 1 -s -r -p "Press any key to continue"
-        exit -1
+        exit 1
     fi
     cd $SPATH/
     STEP_NR=$((STEP_NR+1))
@@ -125,7 +125,7 @@ run_py4jps_tests() {
     else
         echo "Aborting the release. Some tests have failed. Please check the pytest detailed output for more details."
         read -n 1 -s -r -p "Press any key to continue"
-        exit -1
+        exit 2
     fi
 }
 
@@ -160,12 +160,12 @@ build_py4jps_for_release() {
         if [ $? -ne 0 ]; then
             echo "Problem with distribution artifacts. Aborting the release."
             read -n 1 -s -r -p "Press any key to continue"
-            exit -1
+            exit 3
         fi
     else
         echo "Building $PROJECT_NAME has failed. Aborting the release."
         read -n 1 -s -r -p "Press any key to continue"
-        exit -1
+        exit 4
     fi
     STEP_NR=$((STEP_NR+1))
 }
@@ -191,7 +191,7 @@ release_to_pypi() {
         echo "Couldnt upload artifacts to $1. Have you forgotten to increse the $PROJECT_NAME version number?"
         echo "Aborting the release."
         read -n 1 -s -r -p "Press any key to continue"
-        exit -1
+        exit 5
     fi
     STEP_NR=$((STEP_NR+1))
 }
@@ -248,7 +248,7 @@ if [[ $# = 0 ]]
 then
    usage
 fi
-while [[ $# > 0 ]]
+while [[ $# -gt 0 ]]
 do
     key="$1"
     case $key in
