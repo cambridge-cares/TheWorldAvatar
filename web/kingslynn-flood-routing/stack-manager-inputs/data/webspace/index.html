@@ -706,8 +706,6 @@
                     Promise.all([promise_10, promise_30, promise_90, tsp_normal, tsp_30, tsp_90, tsp_normal_seq, tsp_30_seq, tsp_90_seq,]).then(() => { populateDistanceContainer() });
                 }
                 dataPromise.then(() => initialRoute());
-                // Add a scale control to the map
-                MapHandler.MAP.addControl(new mapboxgl.ScaleControl());
             }
         });
     </script>
