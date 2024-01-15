@@ -614,11 +614,12 @@ public class WeatherQueryClient {
         try (Connection conn = postgisClient.getConnection()) {
             JSONObject response = new JSONObject();
             WeatherGeospatialClient geospatialClient = new WeatherGeospatialClient();
-            // add ontop mapping file
-			Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
-            OntopClient ontopClient = OntopClient.getInstance();
-			ontopClient.updateOBDA(obda_file);
 			if (!postgisClient.checkTableExists(CARESWeatherStationInputAgentLauncher.LAYERNAME, conn)) {
+                // add ontop mapping file
+			    Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
+                OntopClient ontopClient = OntopClient.getInstance();
+			    ontopClient.updateOBDA(obda_file);
+                
                 geospatialClient.createGeospatialInformation(latitude, longitude, "Weather Station " + stationId, reportingStationIRI);
 				response.put("message", "Geospatial information instantiated for the following: Weather Station " + stationId);
 			} else {

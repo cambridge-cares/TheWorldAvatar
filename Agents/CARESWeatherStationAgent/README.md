@@ -155,7 +155,7 @@ In the `Dockerfile`, there are three variables that affects where the geolocatio
 
 Open up the command prompt in the same directory as this README, run the command below to build the docker image:
 ```
-docker-compose build
+docker compose build
 ```
 Open `stack-manager-input-config-service/cares-weather-station-agent.json` and under the `Mounts` section, modify the `Source` and insert the filepath of where the `config` folder is located at (For Windows users using WSL on Docker, the file path should start with `/mnt/c/`, which is equivalent to `C://`).
 
