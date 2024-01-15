@@ -52,9 +52,9 @@ public class EditFragment extends Fragment {
 
     private FragmentEditBinding binding;
 
-    private final HttpUrl.Builder ESPHOME_CONTROL_URL = Constants.constructUrlBuilder(Constants.HOST_LAB_WIFI, 3839, "bms-update-agent/set");
+    private HttpUrl.Builder ESPHOME_CONTROL_URL;
 
-    private final HttpUrl.Builder WACNET_WRITE_URL = Constants.constructUrlBuilder(Constants.HOST_PROD, 3838, "bms-update-agent/wacnet/write");
+    private HttpUrl.Builder WACNET_WRITE_URL;
     private List<EditableAttribute> editableAttributes = new ArrayList<>();
 
     private AuthorizationHelper authHelper;
@@ -74,6 +74,9 @@ public class EditFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentEditBinding.inflate(inflater, container, false);
         BasicConfigurator.configure();
+
+        ESPHOME_CONTROL_URL = Constants.constructUrlBuilder(requireContext().getString(R.string.lab_host), getResources().getString(R.string.bms_update_agent_set));
+        WACNET_WRITE_URL = Constants.constructUrlBuilder(requireContext().getString(R.string.bms_update_agent_wacnet_write), requireContext());
 
         // the applicationContext is only used to show update success or failure after fragment detached
         applicationContext = requireActivity().getApplicationContext();
@@ -101,9 +104,9 @@ public class EditFragment extends Fragment {
                 String dataIRI = editableAttributes.get(0).getIri();
                 if (dataIRI.equals("https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature")) {
                     authHelper.performActionWithFreshTokens(this::createEditTemperatureRequest);
-                } else if (dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-1_FlowSP_CARES")
-                        || dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_VAV_E-7-2_FlowSP_CARES")
-                        || dataIRI.equals("https://www.theworldavatar.com/kg/ontobms/V_CAV_E-7-7_FlowSP_CARES")) {
+                } else if (dataIRI.equals(requireContext().getString(R.string.VAV_E7_1_flow_sp))
+                        || dataIRI.equals(requireContext().getString(R.string.VAV_E7_2_flow_sp))
+                        || dataIRI.equals(requireContext().getString(R.string.CH_7_7_CAV_flow_sp))) {
                     sendUpdateAirFlowCheckpointRequest(dataIRI);
                 }
                 hideKeyboardFrom(view.getContext(), view);
@@ -136,7 +139,7 @@ public class EditFragment extends Fragment {
             //create control params
             JSONObject controlParams = new JSONObject();
             try {
-                IRIMapping iriMapping = new IRIMapping();
+                IRIMapping iriMapping = new IRIMapping(requireContext());
                 controlParams.put("dataIRI", iriMapping.getControlIRIFromEditableDataIRI(dataIRI));
                 controlParams.put("value", 1.0);
                 controlParams.put("clientProperties", "WRITE_CLIENT_PROPERTIES");

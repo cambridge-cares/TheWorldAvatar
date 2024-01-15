@@ -1,4 +1,4 @@
-var stack = "http://137.132.22.165:3838/";
+var stack = jsObject.getHostAddr();
 
 function visualiseTimeSeriesData(rawJSON) {
     $("#loaderAnimationWrapper").hide();
@@ -60,7 +60,7 @@ function timeZoneConversion(timeStamp) {
 
 function loadSelectedEquipment() {
 
-    var FIAUri = stack + "feature-info-agent/get";
+    var FIAUri = stack + '/' + jsObject.getFiaPath();
     var params = {
             "iri": jsObject.getEquipmentIri()
     };

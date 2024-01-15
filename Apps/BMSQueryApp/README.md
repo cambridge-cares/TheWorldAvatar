@@ -21,8 +21,8 @@ Create `FeatureInfoAgent/queries/fia-config.json` if not exsits. Then append the
 
 More information about FeatureInfoAgent configuration can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#configuration).
 
-### Connect to the Local Stack
-Change `HOST` in [Constansts.java](app/src/main/java/uk/ac/cam/cares/jps/bmsqueryapp/utils/Constants.java) to the address of the local stack.
+### Endpoints configuration
+Update the endpoints and IRIs in `Apps/BMSQueryApp/app/src/main/res/values/configs.xml`. The host configuration should contains scheme, domain amd port number.
 
 ### Authentication
 This app uses [AppAuth](https://github.com/openid/AppAuth-Android) to communicate with OpenID Connect providers.

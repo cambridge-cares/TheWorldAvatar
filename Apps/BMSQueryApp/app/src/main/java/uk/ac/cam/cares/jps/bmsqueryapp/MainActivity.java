@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private static final Logger LOGGER = LogManager.getLogger(MainActivity.class);
     private ActivityMainBinding binding;
 
-    private final String BMS_RETRIEVE_ZONES = "bms-query-agent/retrieve/lab";
-    private final String BMS_RETRIEVE_EQUIPMENT = "bms-query-agent/retrieve/equipment";
+    private String BMS_RETRIEVE_ZONES;
+    private String BMS_RETRIEVE_EQUIPMENT;
 
     final ArrayList<Building> buildings = new ArrayList<>();
     ArrayList<Spinner> spinners = new ArrayList<>();
@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         BasicConfigurator.configure();
+
+        BMS_RETRIEVE_ZONES = getBaseContext().getString(R.string.bms_query_agent_retrieve_lab_path);
+        BMS_RETRIEVE_EQUIPMENT = getBaseContext().getString(R.string.bms_query_agent_retrieve_equipment_path);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -106,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getZonesFromAgent() {
-        String requestUri = Constants.constructUrlBuilder(BMS_RETRIEVE_ZONES)
+        String requestUri = Constants.constructUrlBuilder(BMS_RETRIEVE_ZONES, getBaseContext())
                 .build().toString();
 
         StringRequest jsonRequest = new StringRequest(Request.Method.GET, requestUri,
@@ -241,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getListOfEquipInstances(Room currentRoom) {
 
-        String requestUri = Constants.constructUrlBuilder(BMS_RETRIEVE_EQUIPMENT)
+        String requestUri = Constants.constructUrlBuilder(BMS_RETRIEVE_EQUIPMENT, getBaseContext())
                 .addQueryParameter("roomIRI", currentRoom.getIri())
                 .build().toString();
 

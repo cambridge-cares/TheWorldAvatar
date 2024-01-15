@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.view.tab;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import uk.ac.cam.cares.jps.bmsqueryapp.R;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.FragmentVisualizationBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
 
@@ -32,11 +34,16 @@ public class VisualizationFragment extends Fragment {
      */
     static class JsObject {
         public String equipmentIri;
+        public final String hostAddr;
+        public final String fiaPath;
         private VisualizationFragment fragment;
 
-        public JsObject(String equipmentIri, VisualizationFragment fragment) {
+        public JsObject(String equipmentIri, VisualizationFragment fragment, Context context) {
             this.equipmentIri = equipmentIri;
             this.fragment = fragment;
+
+            this.hostAddr = context.getString(R.string.host);
+            this.fiaPath = context.getString(R.string.feature_info_agent_get);
         }
 
         /**
@@ -51,6 +58,16 @@ public class VisualizationFragment extends Fragment {
         @JavascriptInterface
         public void notifyChartReady() {
             fragment.finishLoading();
+        }
+
+        @JavascriptInterface
+        public String getHostAddr() {
+            return hostAddr;
+        }
+
+        @JavascriptInterface
+        public String getFiaPath() {
+            return fiaPath;
         }
     }
 
@@ -95,7 +112,7 @@ public class VisualizationFragment extends Fragment {
 
         WebView dtvfViz = binding.dtvfViz;
 
-        JsObject jsObject = new JsObject(equipmentIri, this);
+        JsObject jsObject = new JsObject(equipmentIri, this, requireContext());
 
         dtvfViz.getSettings().setJavaScriptEnabled(true);
         binding.dtvfViz.addJavascriptInterface(jsObject, "jsObject");

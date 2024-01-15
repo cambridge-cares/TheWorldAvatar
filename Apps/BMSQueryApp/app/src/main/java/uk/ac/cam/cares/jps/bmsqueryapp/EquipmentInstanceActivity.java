@@ -115,7 +115,7 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
     }
 
     private List<EditableAttribute> getEditableAttributeList(String type, String equipmentIRI) {
-        IRIMapping iriMapping = new IRIMapping();
+        IRIMapping iriMapping = new IRIMapping(getBaseContext());
         // determine the list of editable attribute based on the equipment type
         if (type.equals("https://www.theworldavatar.com/kg/ontobms/WalkInFumeHood")) {
             return new ArrayList<>();
