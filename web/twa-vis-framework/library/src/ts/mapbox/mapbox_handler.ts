@@ -40,6 +40,7 @@ class MapHandler_Mapbox extends MapHandler {
       MapHandler.MAP.on("mousemove", (event) => this.handleMouse(event));
       this.addScaleControl();
       this.addNavigationControl();
+      this.addGeolocateControl();
     } else {
       // Reinitialise state of existing map
       MapHandler.MAP.setStyle(newOptions["style"]);
@@ -418,7 +419,7 @@ class MapHandler_Mapbox extends MapHandler {
     const mySetting = Manager.SETTINGS.getSetting("showMapScale");
 
     if (mySetting !== false) {
-      MapHandler.MAP.addControl(new mapboxgl.ScaleControl());
+      MapHandler.MAP.addControl(new mapboxgl.ScaleControl(), "bottom-right");
     }
   }
 
@@ -426,8 +427,28 @@ class MapHandler_Mapbox extends MapHandler {
   public addNavigationControl(): void {
     const mySetting = Manager.SETTINGS.getSetting("showNavigationControl");
 
+    const navigationControl = new mapboxgl.NavigationControl({
+      visualizePitch: true
+    });
+    
     if (mySetting !== false) {
-      MapHandler.MAP.addControl(new mapboxgl.NavigationControl());
+      MapHandler.MAP.addControl(navigationControl, "top-right");
+    }
+  }
+
+  public addGeolocateControl(): void {
+    const mySetting = Manager.SETTINGS.getSetting("showGeolocateControl");
+
+    const geolocateControl = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+      showUserHeading: true,
+    });
+
+    if (mySetting !== false) {
+      MapHandler.MAP.addControl(geolocateControl, "bottom-right");
     }
   }
 }

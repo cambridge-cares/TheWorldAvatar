@@ -1706,3 +1706,8 @@ li {
     -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent);
     mask-image: linear-gradient(to bottom, black 50%, transparent);
 }
+
+/* zoom and compass element shifted down below the mapbox logo */
+.mapboxgl-ctrl-top-right{
+    top: 30px
+}
