@@ -258,9 +258,6 @@
             <div id="sidePanelGeneral">
                 <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
                 <div id="contentContainer"></div>
-                <div id="footerContainer">
-                    <div id="footerContent"></div>
-                </div>
             </div>
             <div id="sidePanelLinks">
                 <p>Contains OS data &copy; Crown copyright and database rights 2022 (100025252)<br><br>
@@ -268,6 +265,9 @@
                     This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"
                 </p>
             </div>
+        </div>
+        <div id="footerContainer">
+            <div id="footerContent"></div>
         </div>
         <div id="returnContainer" style="display: none;">
             <div id="innerReturnContainer">
@@ -326,7 +326,7 @@
                 `);
 
                 manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
-
+                manager.getPanelHandler().addWaveAnimation();
                 // Save general tab state as default
                 manager.getPanelHandler().storeDefault();
 
