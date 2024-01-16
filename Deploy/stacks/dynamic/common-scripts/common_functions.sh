@@ -25,11 +25,18 @@ get_executables(){
                         if [[ "$installed_version" != "$desired_version" ]]; then
                             echo "ERROR: Installed version of $package_name is $installed_version, but the desired version is $desired_version. Please either remove the incompatible version or (better) use a different virtual environment."
                             exit 1
+                        else
+                            echo "Info: Found $package_name version $desired_version."
                         fi
                     else
                         echo "Info: $package_name not found. Installing version $desired_version..."
                         $pip_executable install -q "$package_name==$desired_version"
                     fi
+
+                    sitepackage_path=$(python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')
+                    filename="$sitepackage_path/podman_compose.py"
+                    # NB The -N argument ensures the patch is applied only in forward direction, i.e. reverse or re-application will be ignored. This makes it idempotent!
+                    patch -u -N $filename -i "${SCRIPTS_DIR}/podman/podman_compose_v$desired_version.patch"
 
                 else
                     echo "ERROR: $pip_executable not found."
