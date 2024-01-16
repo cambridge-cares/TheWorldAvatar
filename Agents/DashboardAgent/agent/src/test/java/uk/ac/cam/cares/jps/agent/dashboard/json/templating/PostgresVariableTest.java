@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PostgresVariableTest {
     private static final String EXPECTED_ASSET_TYPE = "Fridge";
     private static final String EXPECTED_MEASURE = "Energy Consumption";
+    private static final String EXPECTED_VARIABLE = "Reference Month";
     private static final String DATABASE_ID = "nhsaf781rh";
     private static final Map<String, List<String>> FACILITY_ITEM_MAPPING = new HashMap<>();
     private static final String FACILITY_ONE = "Home";
@@ -22,6 +23,11 @@ class PostgresVariableTest {
     private static final String[] TEST_SET1 = new String[]{"F1", "column1"};
     private static final String[] TEST_SET2 = new String[]{"F2", "column2"};
     private static final String[] TEST_SET3 = new String[]{"F3", "column3"};
+    private static final Map<String, String> SAMPLE_KEY_VALUE_PAIRS = new HashMap<>();
+    private static final String PAIR_ONE_KEY = "Jan";
+    private static final String PAIR_ONE_VALUE = "1";
+    private static final String PAIR_TWO_KEY = "Feb";
+    private static final String PAIR_TWO_VALUE = "2";
 
     @BeforeAll
     static void genTestAssetMeasureList() {
@@ -30,6 +36,18 @@ class PostgresVariableTest {
         ASSET_TS_COL_LIST.add(TEST_SET1);
         ASSET_TS_COL_LIST.add(TEST_SET2);
         ASSET_TS_COL_LIST.add(TEST_SET3);
+        SAMPLE_KEY_VALUE_PAIRS.put(PAIR_ONE_KEY, PAIR_ONE_VALUE);
+        SAMPLE_KEY_VALUE_PAIRS.put(PAIR_TWO_KEY, PAIR_TWO_VALUE);
+    }
+
+    @Test
+    void testConstruct_GenericFilter() {
+        // Construct the object through the alternate constructor
+        PostgresVariable variable = new PostgresVariable(EXPECTED_VARIABLE, DATABASE_ID, SAMPLE_KEY_VALUE_PAIRS);
+        // Execute the method
+        String result = variable.construct();
+        // Test outputs
+        assertEquals(genExpectedPostgresVarSyntaxForGenericFilter(EXPECTED_VARIABLE, DATABASE_ID, SAMPLE_KEY_VALUE_PAIRS), result);
     }
 
     @Test
@@ -72,6 +90,23 @@ class PostgresVariableTest {
         assertEquals(genExpectedPostgresVarSyntaxForMeasureFilter(EXPECTED_MEASURE, EXPECTED_ASSET_TYPE, DATABASE_ID, ASSET_TS_COL_LIST), result);
     }
 
+    public static String genExpectedPostgresVarSyntaxForGenericFilter(String varName, String databaseID, Map<String, String> keyValuePairs) {
+        String formattedName = varName.toLowerCase().replaceAll("\\s", "");
+        String description = "A hidden filter that displays the " + StringHelper.addSpaceBetweenCapitalWords(varName).toLowerCase()
+                + " as requested by the user";
+        StringBuilder temp = new StringBuilder();
+        for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
+            // Only append a comma at the start if it is not the first value
+            if (temp.length() != 0) temp.append(", ");
+            // Append the name and the corresponding column name
+            temp.append("('").append(entry.getKey()).append("', '")
+                    .append(entry.getValue()).append("')");
+        }
+        String query = "SELECT k AS \\\"__text\\\", v AS \\\"__value\\\" FROM (values " +
+                temp + ") AS v(k,v)  WHERE k IN (${" + formattedName + "});";
+        return genExpectedPostgresVarSyntax(formattedName, varName, description, databaseID, query, 2, false, false);
+    }
+
     public static String genExpectedPostgresVarSyntaxForItemFilter(String itemType, String databaseID, Map<String, List<String>> facilityItemMapping) {
         String formattedItemType = itemType.toLowerCase().replaceAll("\\s", "");
         String label = itemType.equals(StringHelper.ROOM_KEY) ? "Rooms" :
@@ -90,7 +125,7 @@ class PostgresVariableTest {
         }
         String query = "SELECT v AS \\\"__value\\\" FROM (values " +
                 genValueQueryForListOfArrays(parsedMappings) + ") AS v(k,v)  WHERE k IN (${" + StringHelper.FACILITY_KEY + "});";
-        return genExpectedPostgresVarSyntax(formattedItemType, label, description, databaseID, query, 0);
+        return genExpectedPostgresVarSyntax(formattedItemType, label, description, databaseID, query, 0, true, true);
     }
 
     public static String genExpectedPostgresVarSyntaxForMeasureFilter(String measure, String assetType, String databaseID, List<String[]> assetMeasureMap) {
@@ -100,11 +135,11 @@ class PostgresVariableTest {
                 + " for " + StringHelper.addSpaceBetweenCapitalWords(assetType).toLowerCase();
         String query = "SELECT k AS \\\"__text\\\", v AS \\\"__value\\\" FROM (values " +
                 genValueQueryForListOfArrays(assetMeasureMap) + ") AS v(k,v)  WHERE k IN (${" + formattedAssetType + "});";
-        return genExpectedPostgresVarSyntax(formattedMeasure + formattedAssetType, "", description, databaseID, query, 2);
+        return genExpectedPostgresVarSyntax(formattedMeasure + formattedAssetType, "", description, databaseID, query, 2, true, true);
     }
 
-    private static String genExpectedPostgresVarSyntax(String title, String label, String description, String databaseID, String query, int displayOption) {
-        return TemplateVariableTest.genExpectedCommonJsonBase(title, "", displayOption, true, true) +
+    private static String genExpectedPostgresVarSyntax(String title, String label, String description, String databaseID, String query, int displayOption, boolean multiVal, boolean includeAll) {
+        return TemplateVariableTest.genExpectedCommonJsonBase(title, "", displayOption, multiVal, includeAll) +
                 "\"label\": \"" + label + "\"," +
                 "\"datasource\": {\"type\": \"postgres\", \"uid\": \"" + databaseID + "\"}," +
                 "\"description\": \"" + description + "\"," +
