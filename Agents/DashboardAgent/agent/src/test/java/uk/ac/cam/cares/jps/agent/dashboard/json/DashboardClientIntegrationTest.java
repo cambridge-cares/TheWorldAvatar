@@ -295,6 +295,6 @@ class DashboardClientIntegrationTest {
         // Verify the number of templating variables generated
         Map<String, Object> templatingMap = (Map<String, Object>) jsonModel.get("templating");
         List<Object> templateVarList = (List<Object>) templatingMap.get("list");
-        assertEquals(6, templateVarList.size()); // Six variables should be generated
+        assertEquals(7, templateVarList.size()); // Seven variables should be generated
     }
 }

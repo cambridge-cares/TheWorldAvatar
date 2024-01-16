@@ -69,8 +69,9 @@ public class TemplatingModelTest {
         builder.append("{\"enable\": true,\"list\": [");
         // Only generate these variables if there are values
         if (!organisationMapping.isEmpty()) {
-            genTrendFilter(tempBuilder);
-            genFacilityItemTypeVariables(tempBuilder, organisationMapping, databaseConnectionMap.values().iterator().next());
+            String connectionID = databaseConnectionMap.values().iterator().next();
+            genTemporalSelectors(tempBuilder, connectionID);
+            genFacilityItemTypeVariables(tempBuilder, organisationMapping, connectionID);
         }
         for (String itemType : organisationMapping.keySet()) {
             Map<String, List<String[]>> itemMeasures = organisationMapping.get(itemType);
@@ -88,9 +89,11 @@ public class TemplatingModelTest {
         return builder.toString();
     }
 
-    private static void genTrendFilter(StringBuilder tempBuilder) {
+    private static void genTemporalSelectors(StringBuilder tempBuilder, String connectionID) {
         String[] temporalIntervals = new String[]{TemporalInterval.DAILY_OVER_WEEK, TemporalInterval.DAILY_OVER_MONTH, TemporalInterval.WEEKLY_OVER_MONTH, TemporalInterval.MONTHLY};
         tempBuilder.append(CustomVariableTest.genExpectedCustomVariableSyntax(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION, temporalIntervals, 2, false, false))
+                .append(",");
+        tempBuilder.append(PostgresVariableTest.genExpectedPostgresVarSyntaxForGenericFilter(StringHelper.REF_MONTH_VARIABLE_NAME, connectionID ,TemporalInterval.getMonthMap()))
                 .append(",");
     }
 

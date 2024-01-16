@@ -27,10 +27,11 @@ public class TemplatingModel {
         // Initialise a queue to store these template variables
         Queue<TemplateVariable> variableQueue = new ArrayDeque<>();
         if (!timeSeries.isEmpty()) {
-            genTrendFilter();
             // If there are values, retrieve the first connection ID, as the postgres variables in Grafana requires a connection ID to function
             // But for processing facility items, any ID will do and does not matter
-            genFacilityItemFilters(timeSeries, databaseConnectionMap.values().iterator().next());
+            String connectionID = databaseConnectionMap.values().iterator().next();
+            genTemporalSelectors(connectionID);
+            genFacilityItemFilters(timeSeries, connectionID);
         }
         // For each asset type or rooms available
         for (Map.Entry<String, Map<String, List<String[]>>> entry : timeSeries.entrySet()) {
@@ -71,13 +72,17 @@ public class TemplatingModel {
     }
 
     /**
-     * Generate the filter for daily, weekly, or monthly intervals that the trends-related chart should display.
+     * Generate all temporal-related selectors, allowing the related chart to display according to the selected option.
+     * The first selector is for daily, weekly, or monthly intervals that the trends-related chart should display.
+     * The second selector is for comparing the reference month with the current month trends.
      */
-    private void genTrendFilter() {
+    private void genTemporalSelectors(String connectionID) {
         String[] temporalIntervals = new String[]{TemporalInterval.DAILY_OVER_WEEK, TemporalInterval.DAILY_OVER_MONTH, TemporalInterval.WEEKLY_OVER_MONTH, TemporalInterval.MONTHLY};
-        CustomVariable intervalFilterOptions = new CustomVariable(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION,
+        CustomVariable intervalSelector = new CustomVariable(StringHelper.INTERVAL_VARIABLE_NAME, TIME_INTERVAL_FILTER_DESCRIPTION,
                 temporalIntervals, 2, false, false);
-        addVariable(intervalFilterOptions);
+        addVariable(intervalSelector);
+        PostgresVariable refMonthSelector = new PostgresVariable(StringHelper.REF_MONTH_VARIABLE_NAME, connectionID,TemporalInterval.getMonthMap());
+        addVariable(refMonthSelector);
     }
 
     /**
