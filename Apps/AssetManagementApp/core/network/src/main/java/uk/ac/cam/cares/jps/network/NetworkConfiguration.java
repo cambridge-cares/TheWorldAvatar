@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.network;
 import okhttp3.HttpUrl;
 
 public class NetworkConfiguration {
-    public static final String HOST_DEV = "192.168.1.16";
+    public static final String HOST_DEV = "192.168.1.115";
     public static final String HOST_LOCALHOST = "10.0.2.2";
 
     public static final String HOST_LAB_WIFI = "192.168.51.103";
@@ -22,7 +22,7 @@ public class NetworkConfiguration {
     }
 
     public static HttpUrl.Builder constructPublicUrlBuilder(String path) {
-        HttpUrl.Builder builder = new HttpUrl.Builder().scheme("https").host("www.theworldavatar.com").port(1010).addPathSegments("careslab");
+        HttpUrl.Builder builder = HttpUrl.get("https://www.theworldavatar.com:1010/careslab").newBuilder();
         return builder.addPathSegments(path);
     }
 }

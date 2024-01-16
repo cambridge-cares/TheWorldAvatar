@@ -59,12 +59,12 @@ public class AssetInfoConstant {
     static public final String INVOICE_PHOTO_SECTION = "Invoice Photo";
     static public final String INVOICE_PHOTO_FILE = "Invoice File";
 
-    static public final String DO_PHOTO_SECTION = "Invoice Photo";
-    static public final String DO_PHOTO_FILE = "Invoice File";
+    static public final String DO_PHOTO_SECTION = "Delivery Order Photo";
+    static public final String DO_PHOTO_FILE = "Delivery Order File";
 
     // MAINTENANCE KEYS
     static public final String MAINTENANCE_SECTION_TITLE = "Maintenance";
-    static public final String MAINTENANCE_SCHEDULE_FOR = "Maintenance scheduled for";
+    static public final String MAINTENANCE_SCHEDULE_FOR = "Maintenance Scheduled for";
     static public final String MAINTENANCE_MAINTAINED_BY = "Maintained by";
     static public final String MAINTENANCE_INTERVAL = "Maintenance Interval";
 
