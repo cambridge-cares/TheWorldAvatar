@@ -12,7 +12,7 @@ In the commands below placeholders are shown as `<STACK NAME>`, you will need to
 ### Software
 * Building and running a stack has been tested in Microsoft Windows and to some degree Linux, it has not been tested within a MacOS environment.
 * Install [Git](https://git-scm.com/downloads).
-* Install [Docker Desktop, or the Docker Engine and the Docker Compose plugin](https://docs.docker.com/engine/install).
+* Install [Docker Desktop, or the Docker Engine and the Docker Compose plugin](https://docs.docker.com/engine/install). On Linux systems where Docker is not available, [podman](https://podman.io/) can also be used. See [here](./README-podman.md) for further details. Other container systems are currently not supported.
 * Preferably also install [VSCode](https://code.visualstudio.com/Download), required for development.
 #### For development
 * Install a [Java 11+ SDK](https://adoptium.net).
