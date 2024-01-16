@@ -332,6 +332,19 @@ public class AssetExistenceChecker {
         return result;
     }
 
+    public JSONObject getSpecificPurchaseDocsTriples(String docNum, String docType) {
+        switch (docType) {
+            case "Invoice":
+                return queryDocumentFromDocNum(docNum, invoiceNumber, hasInvoiceLine);
+            case "DO":
+                return queryDocumentFromDocNum(docNum, deliveryOrderNumber, hasDeliveryOrderLine);
+            case "PO":
+                return queryDocumentFromDocNum(docNum, purchaseOrderNumber, hasPurchaseOrderLine);
+            default:
+                throw new JPSRuntimeException("DocType unrecognized.", null);
+        }
+    }
+
 
     private JSONObject queryDocumentFromDocNum (String DocNum, Iri predicateToID, Iri predicateToDocLine) {
         JSONObject result = new JSONObject();

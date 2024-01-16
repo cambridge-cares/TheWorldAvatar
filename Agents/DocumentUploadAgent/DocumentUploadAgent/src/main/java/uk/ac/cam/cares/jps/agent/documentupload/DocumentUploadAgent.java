@@ -95,18 +95,20 @@ public class DocumentUploadAgent extends JPSAgent{
                 if (requestParams.has("documentIRI")){
                     jsonMessage = addDocument(
                         requestParams.getString("documentIRI"), 
-                        requestParams.getString("comments"), 
                         requestParams.getString("documentType"), 
                         requestParams.getString("encoded"), 
-                        requestParams.getString("fileName")
+                        requestParams.getString("fileName"),
+                        requestParams.getBoolean("overwrite"),
+                        requestParams.getBoolean("instantiate")
                     );
                 }
                 else{
                     jsonMessage = addDocument(
-                        requestParams.getString("comments"), 
                         requestParams.getString("documentType"), 
                         requestParams.getString("encoded"), 
-                        requestParams.getString("fileName")
+                        requestParams.getString("fileName"),
+                        requestParams.getBoolean("overwrite"),
+                        requestParams.getBoolean("instantiate")
                     );
                 }
                 
@@ -161,15 +163,16 @@ public class DocumentUploadAgent extends JPSAgent{
         
         return validate;
     }
-    public JSONObject addDocument(String comments, String documentType, String encoded, String fileName) {
-        return addDocument("", comments, documentType, encoded, fileName);
+    public JSONObject addDocument( String documentType, String encoded, String fileName, Boolean overwrite, Boolean instantiate) {
+        return addDocument("", documentType, encoded, fileName, overwrite, instantiate);
     }
 
-    public JSONObject addDocument(String documentIRI, String comments, String documentType, String encoded, String fileName) {
+    public JSONObject addDocument(String documentIRI, String documentType, String encoded, String fileName, Boolean overwrite, Boolean instantiate) {
         JSONObject message = new JSONObject();
         if(!(encoded.isBlank() || encoded == null)){
             File file = new File(FOLDER_DOCS+fileName);
             LOGGER.debug("FILENAME::"+FOLDER_DOCS+fileName);
+            /*
             if(!file.exists()) { 
                 try {
                     //file.getParentFile().mkdirs();
@@ -180,7 +183,25 @@ public class DocumentUploadAgent extends JPSAgent{
                 }
                 
             }
-            try ( FileOutputStream fos = new FileOutputStream(file); ) {
+            */
+            try{
+                if (file.createNewFile()){
+                    LOGGER.debug("Created empty file...");
+                }
+                else{
+                    if (!overwrite){
+                        throw new JPSRuntimeException("File exists. Please use a different name or set 'overwrite' to true to overwrite the file");
+                        //message.accumulate("Result", "File exists. Please use a different name or set 'overwrite' to true to overwrite the file");
+                    }
+                }
+            }
+            catch(Exception e){
+                message.accumulate("Result", "Failed to create file:"+ e);
+                return message;
+            }
+            
+
+            try ( FileOutputStream fos = new FileOutputStream(file, false); ) {
                 byte[] decoder = Base64.getDecoder().decode(encoded);
                 fos.write(decoder);
                 message.accumulate("Result", "File saved successfully");
@@ -190,14 +211,19 @@ public class DocumentUploadAgent extends JPSAgent{
         }
         //Create manual instance
         String fileURL = URL_DOCS + fileName;
-        if (documentIRI.isBlank() || documentIRI == null) {
-            instanceHandler.addDocument(fileURL, documentType, comments);
-        }
-        else{
-            instanceHandler.addDocument(documentIRI, fileURL, documentType, comments);
+        if (instantiate){
+            if (documentIRI.isBlank() || documentIRI == null) {
+                documentIRI = instanceHandler.addDocument(fileURL, documentType);
+            }
+            else{
+                instanceHandler.addDocument(documentIRI, fileURL, documentType);
+            }
         }
         
-    
+        JSONObject docData = new JSONObject();
+        docData.put("documentIRI", documentIRI);
+        docData.put("documentURL", fileURL);
+        message.put("documentData", docData);
         return message;
     }
 

@@ -7,7 +7,7 @@ services:
     container_name: document-upload-agent_1_0_0
     pull_policy: if_not_present
     ports:
-      - "1015:8080"
+      - "1016:8080"
     volumes:
     - type: bind 
       source: ./documents 

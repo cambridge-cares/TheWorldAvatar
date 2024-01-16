@@ -69,13 +69,12 @@ public class KGInterface {
         }
     }
 
-    public void addDocument(String docFilename, String docType, String docComment){
+    public String addDocument(String docFilename, String docType){
         String documentIRI = genIRIString("Document", P_FOAF);
-        addDocument(documentIRI, docFilename, docType, docComment);
+        return addDocument(documentIRI, docFilename, docType);
     }
 
-    public void addDocument(String documentIRI, String docFilename, String docType, String docComment) {
-        
+    public String addDocument(String documentIRI, String docFilename, String docType) {
         if (docType.isBlank() || docType==null){
             docType = DocumentString;
         }
@@ -86,10 +85,9 @@ public class KGInterface {
         );
         query.insert(iri(documentIRI).isA(iri(docType)));
         query.insert(iri(documentIRI).has(availableAt, docFilename));
-        if (!docComment.isBlank()){
-            query.insert(iri(documentIRI).has(RDFS.COMMENT, Rdf.literalOf(docComment)));
-        }
         storeClient.executeUpdate(query.getQueryString());
+        
+        return documentIRI;
     }
 
 

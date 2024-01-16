@@ -955,6 +955,58 @@ public class AssetKGInterface {
         storeClientAsset.executeUpdate(query.getQueryString());
     }
 
+    public void addAssetImage(String docFileURL, String deviceID) {
+        String deviceIRI = existenceChecker.getIRIStringbyID(deviceID);
+        
+        ModifyQuery query = Queries.MODIFY();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        query.insert(iri(deviceIRI).has(hasImageURI, docFileURL));
+        storeClientAsset.executeUpdate(query.getQueryString());
+    }
+
+    /*TODO is this one neccesarry? Should the document exist before the asset? This opens to possiblity that the asset has more than 1 of the same purch doc type which doesn make sense
+    Currently it is considered to exist before hand and if it doesn't throw an error, as the feature is only for adding file to the docs, not adding one to asset.
+    */
+    public void addPurchaseDocFile(String documentIRI, String docFilename, String docTypeIRI, String docComment) {
+        ModifyQuery query = Queries.MODIFY();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        //TODO proper purchase docs instantiation
+        query.insert(iri(documentIRI).isA(iri(docTypeIRI)));
+        query.insert(iri(documentIRI).has(availableAt, docFilename));
+        storeClientAsset.executeUpdate(query.getQueryString());
+    }
+
+    public String[] getPurchaseDocumentIRI (String docNum, String docType){
+        String documentIRI = "";
+        String documentType = "";
+        String documentTypeIRI = "";
+        if (docType.contains("Invoice")){
+            documentType = "Invoice";
+            documentTypeIRI = E_Invoice.getQueryString();
+        } else if (docType.contains("PurchaseOrder")){
+            documentType = "PO";
+            documentTypeIRI = PurchaseOrder.getQueryString();
+        } else if (docType.contains("DeliveryOrder")){
+            documentType = "DO";
+            documentTypeIRI = DeliveryOrder.getQueryString();
+        }
+        else{
+            throw new JPSRuntimeException("Invalid DocType! Only accepts: Invoice, PurchaseOrder and DeliveryOrder.", null);
+        }
+        documentTypeIRI = documentTypeIRI.substring(1, documentTypeIRI.length()-1);
+        documentIRI = existenceChecker.getSpecificPurchaseDocsTriples(docNum, documentType).getString("InvoiceIRI");
+        if (documentIRI.isBlank()){
+            throw new JPSRuntimeException("Purchase document is not recorded."+
+            " Please ensure the purchase document exist before adding file.", null);
+        }
+
+        return new String[]{documentIRI, documentTypeIRI};
+    }
+
 
     /*
      * =============================================================================================================================================================

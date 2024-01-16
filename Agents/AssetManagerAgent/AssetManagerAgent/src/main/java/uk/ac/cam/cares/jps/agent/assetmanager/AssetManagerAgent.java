@@ -7,17 +7,26 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.io.FileOutputStream;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
@@ -37,6 +46,8 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
     "/print", 
     "/printbulk",
     "/addmanual",
+    "/addassetimage",
+    "/addpurchdocfile",
     "/delete"
 })
 public class AssetManagerAgent extends JPSAgent{
@@ -57,6 +68,7 @@ public class AssetManagerAgent extends JPSAgent{
     public Double TARGET_QR_SIZE;
     public String URL_MANUAL;
     public String KG_USERNAME, KG_PASSWORD;
+    public String URL_DOCUPLOAD;
 
     /**
      * Logger for reporting info/errors.
@@ -100,7 +112,8 @@ public class AssetManagerAgent extends JPSAgent{
                 FOLDER_QR,  //5
                 FOLDER_MANUAL, //6
                 URL_MANUAL, //7
-                ENDPOINT_KG_BMS //8
+                ENDPOINT_KG_BMS, //8
+                URL_DOCUPLOAD //9
             };
             
             try {
@@ -174,8 +187,33 @@ public class AssetManagerAgent extends JPSAgent{
                 jsonMessage = instantiateAsset(args, assetData);
             }
             else if (urlPath.contains("addmanual")){
-                jsonMessage = addManual(args, assetData.getString("targetID"), assetData.getString("comments"), assetData.getString("documentType"), assetData.getString("encoded"), assetData.getString("fileName"));
+                jsonMessage = addManual(args, 
+                    assetData.getString("targetID"), 
+                    assetData.getString("comments"), 
+                    assetData.getString("documentType"), 
+                    assetData.getString("encoded"), 
+                    assetData.getString("fileName"),
+                    assetData.getBoolean("overwrite")
+                );
             }
+            else if (urlPath.contains("addassetimage")){
+                jsonMessage = addAssetImage(args, 
+                    assetData.getString("targetID"), 
+                    assetData.getString("encoded"), 
+                    assetData.getString("fileName"),
+                    assetData.getBoolean("overwrite")
+                );
+            }
+            
+            else if (urlPath.contains("addpurchdocfile")){
+                jsonMessage = addDocument(args,
+                    assetData.getString("documentNumber"), 
+                    assetData.getString("documentType"), 
+                    assetData.getString("encoded"), 
+                    assetData.getString("fileName"),
+                    assetData.getBoolean("overwrite")
+                );
+            }          
             
             else if (urlPath.contains("printbulk")){
                 String[] IRI = assetData.getJSONArray("IRI").toList().toArray(new String[0]);
@@ -227,6 +265,7 @@ public class AssetManagerAgent extends JPSAgent{
                 ENDPOINT_PRINTER = prop.getProperty("endpoint.printer");
                 TARGET_QR_SIZE = Double.parseDouble(prop.getProperty("target_qr_size"));
                 URL_MANUAL = prop.getProperty("url.manual");
+                URL_DOCUPLOAD = prop.getProperty("url.docupload");
             }
             catch (Exception e) {
                 throw new IOException ("The endpoint keys cannot be retrieved from the properties file: ", e);
@@ -555,7 +594,10 @@ public class AssetManagerAgent extends JPSAgent{
         }
     }
 
-    public JSONObject addManual(String[] arg, String targetID, String comments, String documentType, String encoded, String fileName) {
+    //Document saving to be migrated to the DocumentUploadAgent
+    //Kept here as backward compatilibility
+    @Deprecated
+    public JSONObject addManualDeprecated(String[] arg, String targetID, String comments, String documentType, String encoded, String fileName) {
         JSONObject message = new JSONObject();
         if(!(encoded.isBlank() || encoded == null)){
             File file = new File(arg[6]+fileName);
@@ -583,6 +625,223 @@ public class AssetManagerAgent extends JPSAgent{
         instanceHandler.addDataSheet(fileURL, documentType, comments, targetID);
     
         return message;
+    }
+
+    public JSONObject addManual(String[] arg, String targetID, String comments, String documentType, String encoded, String fileName, Boolean overwrite) {
+        JSONObject message = new JSONObject();
+        //Contact DocUpload agent
+        String agentURL = arg[9];
+        JSONObject body = new JSONObject();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(agentURL);
+        String documentIRI = null;
+        String documentURL = null;
+        
+        body.put("kgEndpoint", ENDPOINT_KG_ASSET);
+        if(!(KG_USERNAME.isBlank() && KG_PASSWORD.isBlank())){
+            body.put("kgUser", KG_USERNAME);
+            body.put("kgPass", KG_PASSWORD);
+        }
+        //body.put("documentIRI", documentIRI); 
+        body.put("documentType", documentType); 
+        body.put("encoded", encoded); 
+        body.put("fileName", fileName);
+        body.put("overwrite", overwrite);
+        body.put("instantiate", true);
+
+        JSONObject responseJSON = null;
+
+        try {
+            StringEntity bodyEntity = new StringEntity(body.toString());
+            post.setEntity(bodyEntity);
+            post.setHeader("Content-type", "application/json");
+            HttpResponse response = httpClient.execute(post);
+            HttpEntity entity = response.getEntity();
+
+            if (entity != null) {
+    
+                // A Simple JSON Response Read
+                InputStream instream = entity.getContent();
+                String result = convertStreamToString(instream);
+                responseJSON = new JSONObject(result);
+                // now you have the string representation of the HTML request
+                System.out.println("RESPONSE: " + result);
+                instream.close();
+                if (response.getStatusLine().getStatusCode() != 200) {
+                    throw new JPSRuntimeException("Failed to save or instantiate data in DocUploadAgent. ");
+                }
+            }
+            LOGGER.debug("DocUploadAgent response::" + responseJSON);
+            //return value should have key "documentIRI", otherwise upload failed; throw error
+            if(responseJSON!=null){
+                documentURL = responseJSON.getJSONObject("documentData").getString("documentURL");
+            }else{
+                throw new JPSRuntimeException("Failed to save or instantiate data in DocUploadAgent.");
+            }
+        } catch (Exception e) {
+            message.accumulate("Result", "Failed to create/send document to DocUploadAgent" + e);
+            return message;
+        }
+
+        //Create manual instance
+        instanceHandler.addDataSheet(documentURL, documentType, comments, targetID);
+    
+        return message;
+    }
+
+    public JSONObject addDocument (String[] arg, String docNum, String documentType, String encoded, String fileName, Boolean overwrite){
+        JSONObject message = new JSONObject();
+        String[] documentdata = instanceHandler.getPurchaseDocumentIRI(docNum, documentType);
+        String documentIRI = documentdata[0];
+        documentType = documentdata[1];
+        //Contact DocUpload agent
+        String agentURL = arg[9];
+        JSONObject body = new JSONObject();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(agentURL);
+
+        JSONObject responseJSON = null;
+
+        body.put("kgEndpoint", ENDPOINT_KG_PURCHASEDOC);
+        if(!(KG_USERNAME.isBlank() && KG_PASSWORD.isBlank())){
+            body.put("kgUser", KG_USERNAME);
+            body.put("kgPass", KG_PASSWORD);
+        }
+        body.put("documentIRI", documentIRI); 
+        body.put("documentType", documentType); 
+        body.put("encoded", encoded); 
+        body.put("fileName", fileName);
+        body.put("overwrite", overwrite);
+        body.put("instantiate", true);
+
+        try {
+            StringEntity bodyEntity = new StringEntity(body.toString());
+            post.setEntity(bodyEntity);
+            post.setHeader("Content-type", "application/json");
+            HttpResponse response = httpClient.execute(post);
+            HttpEntity entity = response.getEntity();
+
+            if (entity != null) {
+    
+                // A Simple JSON Response Read
+                InputStream instream = entity.getContent();
+                String result = convertStreamToString(instream);
+                responseJSON = new JSONObject(result);
+                // now you have the string representation of the HTML request
+                System.out.println("RESPONSE: " + result);
+                instream.close();
+                if (response.getStatusLine().getStatusCode() != 200) {
+                    throw new JPSRuntimeException("Failed to save or instantiate data in DocUploadAgent. ");
+                }
+            }
+            LOGGER.debug("DocUploadAgent response::" + responseJSON);
+            //return value should have key "documentIRI", otherwise upload failed; throw error
+            if(responseJSON == null){
+                throw new JPSRuntimeException("Failed to save or instantiate data in DocUploadAgent. " + responseJSON);
+            }
+        } catch (Exception e) {
+            message.accumulate("Result", "Failed to create/send document to DocUploadAgent" + e);
+            return message;
+        }
+        //instantiate if success
+        /*TODO Check todo in AssetKGInterface.addPurchaseDocFile #969 */
+        /*
+        try {
+            instanceHandler.addPurchaseDocFile(documentIRI, fileName, documentIRI, agentURL);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        */
+
+        return message;
+    }
+
+    public JSONObject addAssetImage (String[] arg, String assetID, String encoded, String fileName, Boolean overwrite){
+        JSONObject message = new JSONObject();
+        //Contact DocUpload agent
+        String agentURL = arg[9];
+        JSONObject body = new JSONObject();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(agentURL);
+        String fileURL = null;
+        JSONObject responseJSON = null;
+        
+        body.put("kgEndpoint", ENDPOINT_KG_ASSET);
+        if(!(KG_USERNAME.isBlank() && KG_PASSWORD.isBlank())){
+            body.put("kgUser", KG_USERNAME);
+            body.put("kgPass", KG_PASSWORD);
+        } 
+        //body.put("documentIRI", documentIRI); 
+        body.put("documentType", ""); 
+        body.put("encoded", encoded); 
+        body.put("fileName", fileName);
+        body.put("overwrite", overwrite);
+        body.put("instantiate", false);
+
+        try {
+            StringEntity bodyEntity = new StringEntity(body.toString());
+            LOGGER.debug("RequestBody::" + body.toString());
+            post.setEntity(bodyEntity);
+            post.setHeader("Content-type", "application/json");
+            LOGGER.info("Contacting DocUploadAgent...");
+            HttpResponse response = httpClient.execute(post);
+            //JSONObject responseJSON = new JSONObject(response);
+            HttpEntity entity = response.getEntity();
+            
+
+            if (entity != null) {
+    
+                // A Simple JSON Response Read
+                InputStream instream = entity.getContent();
+                String result = convertStreamToString(instream);
+                responseJSON = new JSONObject(result);
+                // now you have the string representation of the HTML request
+                System.out.println("RESPONSE: " + responseJSON);
+                instream.close();
+                if (response.getStatusLine().getStatusCode() != 200) {
+                    throw new JPSRuntimeException("Failed to save or instantiate data in DocUploadAgent. ");
+                }
+            }
+            LOGGER.debug("DocUploadAgent response::" + responseJSON);
+            //return value should have key "documentIRI", otherwise upload failed; throw error
+            if(responseJSON!=null){
+                fileURL = responseJSON.getJSONObject("documentData").getString("documentURL");
+            } else{
+                throw new JPSRuntimeException("Failed to save or instantiate data in DocUploadAgent. " + responseJSON);
+            }
+        } catch (Exception e) {
+            message.accumulate("Result", "Failed to create/send document to DocUploadAgent" + e);
+            return message;
+        }
+        try {
+            instanceHandler.addAssetImage(fileURL, assetID);
+        } catch (Exception e) {
+            message.accumulate("Result", "Failed to instantiate document:" + e);
+            return message;
+        }
+
+        return message;
+    }
+
+    private static String convertStreamToString(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
     }
 
     public JSONObject deleteAsset (String[] args, String ID){
