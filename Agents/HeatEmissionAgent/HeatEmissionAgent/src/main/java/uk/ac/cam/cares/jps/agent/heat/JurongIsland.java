@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.jps.agent.heat;
 
+import java.beans.Expression;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +20,7 @@ import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.arq.querybuilder.clauses.ValuesClause;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.expr.Expr;
@@ -27,16 +30,29 @@ import org.json.JSONArray;
 import com.jayway.jsonpath.JsonPath;
 
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 
 import uk.ac.cam.cares.jps.agent.heat.objects.Factory;
 import uk.ac.cam.cares.jps.agent.heat.objects.FactoryType;
 import uk.ac.cam.cares.jps.agent.heat.objects.HeatSource;
 import uk.ac.cam.cares.jps.agent.heat.objects.HeatSourceType;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class JurongIsland {
+
+        // Logger
+        private static final Logger LOGGER = LogManager.getLogger(JurongIsland.class);
 
         // Store client to query SPARQL endpoint
         private String queryEndpoint = null;
@@ -67,6 +83,12 @@ public class JurongIsland {
         private static final String rdfType = rdf + "type";
         private static final String plantItem = "http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/plantitem";
         private static final String building = "http://www.purl.org/oema/infrastructure/Building";
+
+        // Store Client to query OntoCityGML endpoint
+        String ontoCityGmlEndpoint = "http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql";
+        RemoteStoreClient storeClientOcgml = new RemoteStoreClient(ontoCityGmlEndpoint);
+
+        private int numberBuildings = 0, numberPlantItems = 0;
 
         public JurongIsland(JSONObject request) {
                 if (request.has("endpoint")) {
@@ -207,18 +229,151 @@ public class JurongIsland {
 
         }
 
-        private void setLocations() {
-                String ontoCityGmlEndpoint = "http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql";
-                RemoteStoreClient storeClient2 = new RemoteStoreClient(ontoCityGmlEndpoint);
+        Geometry convertStringToGeometry(String geomString) {
+                String[] geomSplit = geomString.split("#");
+                int nc = geomSplit.length / 3;
+                Coordinate[] coordinates = new Coordinate[nc];
 
-                List<String> buildingIris = heatSources.stream().filter(hs -> hs.sourceType == HeatSourceType.Building)
-                                .map(hs -> hs.iri).collect(Collectors.toList());
+                for (int i = 0; i < geomSplit.length; i += 3) {
+                        Double xc = Double.parseDouble(geomSplit[i]);
+                        Double yc = Double.parseDouble(geomSplit[i + 1]);
+                        Double zc = Double.parseDouble(geomSplit[i + 1]);
+                        int index = i / 3;
+                        coordinates[index] = new Coordinate(xc, yc, zc);
+                }
+
+                Geometry buildingFootprint = new GeometryFactory().createPolygon(coordinates);
+                buildingFootprint.setSRID(24500);
+
+                return buildingFootprint;
+        }
+
+        /**
+         * Quries ontoCityGmlEndpoint to obtain building footprints
+         */
+
+        private void setBuildingFootprints() {
+
+                ExprFactory exprFactory = new ExprFactory();
+                Expr expr = exprFactory.not(exprFactory.isBlank("polygon"));
+
+                Map<String, HeatSource> iriToBuilding = new HashMap<>();
+
+                heatSources.stream().filter(hs -> hs.sourceType == HeatSourceType.Building)
+                                .forEach(hs -> iriToBuilding.put(hs.iri, hs));
+
+                List<String> buildingIris = new ArrayList<>(iriToBuilding.keySet());
+                numberBuildings = buildingIris.size();
 
                 WhereBuilder wb = new WhereBuilder().addPrefix("ocgml", ontoCityGmlPrefix)
+                                .addWhere("?surface", "ocgml:GeometryType", "?polygon")
+                                .addWhere("?geom", "ocgml:lod2MultiSurfaceId", "?surface")
+                                .addWhere("?geom", "ocgml:objectClassId",
+                                                NodeFactory.createLiteral(String.valueOf(35), XSDDatatype.XSDint))
                                 .addWhere("?surface", "ocgml:buildingId", "?building_iri")
-                                .addWhere("?surface", "ocgml:objectClassId", "?classId")
-                                .addValueVar("building_iri", buildingIris)
-                                .addValueVar("?classId", 35);
+                                .addFilter(expr);
+                buildingIris.stream().forEach(bi -> wb.addValueVar("building_iri", bi));
+
+                SelectBuilder sb = new SelectBuilder().addVar("building_iri").addVar("polygon").addWhere(wb);
+
+                JSONArray queryResult = storeClientOcgml.executeQuery(sb.buildString());
+
+                for (int i = 0; i < queryResult.length(); i++) {
+                        String footPrintString = queryResult.getJSONObject(i).getString("polygon");
+                        String iri = queryResult.getJSONObject(i).getString("building_iri");
+                        Geometry buildingFootPrint = convertStringToGeometry(footPrintString);
+                        iriToBuilding.get(iri).footPrint = buildingFootPrint;
+                }
+
+        }
+
+        private Map<String, List<Geometry>> cityFurnitureQuery(Map<String, HeatSource> iriToCityFurniture) {
+
+                ExprFactory exprFactory = new ExprFactory();
+                Expr expr = exprFactory.not(exprFactory.isBlank("polygon"));
+
+                List<String> cityFurnitureIris = new ArrayList<>(iriToCityFurniture.keySet());
+
+                WhereBuilder wb = new WhereBuilder().addPrefix("ocgml", ontoCityGmlPrefix)
+                                .addWhere("?geom", "ocgml:GeometryType", "?polygon")
+                                .addWhere("?geom", "ocgml:cityObjectId", "?city_furniture_iri")
+                                .addFilter(expr);
+                cityFurnitureIris.stream().forEach(cfi -> wb.addValueVar("city_furniture_iri", cfi));
+
+                SelectBuilder sb = new SelectBuilder().addVar("city_furniture_iri").addVar("polygon").addWhere(wb);
+
+                JSONArray queryResult = storeClientOcgml.executeQuery(sb.buildString());
+
+                Map<String, List<Geometry>> iriToPolygonMap = new HashMap<>();
+
+                for (int i = 0; i < queryResult.length(); i++) {
+                        String cityFurnitureIri = queryResult.getJSONObject(i)
+                                        .getString("city_furniture_iri");
+                        String polygonString = queryResult.getJSONObject(i)
+                                        .getString("polygon");
+                        if (iriToPolygonMap.containsKey(cityFurnitureIri)) {
+                                List<Geometry> polyList = iriToPolygonMap.get(cityFurnitureIri);
+                                polyList.add(convertStringToGeometry(polygonString));
+                                iriToPolygonMap.put(cityFurnitureIri, polyList);
+                        } else {
+                                List<Geometry> polyList = new ArrayList<>();
+                                polyList.add(convertStringToGeometry(polygonString));
+                                iriToPolygonMap.put(cityFurnitureIri, polyList);
+                        }
+                }
+
+                return iriToPolygonMap;
+
+        }
+
+        private void setCityFurnitureFootprints() {
+
+                Map<String, HeatSource> iriToCityFurniture = new HashMap<>();
+
+                heatSources.stream().filter(hs -> hs.sourceType == HeatSourceType.PlantItem)
+                                .forEach(hs -> iriToCityFurniture.put(hs.iri, hs));
+
+                Map<String, List<Geometry>> iriToPolygonMap = cityFurnitureQuery(iriToCityFurniture);
+                List<String> cityFurnitureIriList = new ArrayList<>(iriToPolygonMap.keySet());
+
+                numberPlantItems = cityFurnitureIriList.size();
+
+                for (String ocgmlIRI : cityFurnitureIriList) {
+                        List<Geometry> polygonData = iriToPolygonMap.get(ocgmlIRI);
+                        // Go through the set of polygons to retrieve the following:
+                        // 1. maximum and minimum z-coordinates of all vertices across all polygons
+                        // (minZ & maxZ).
+                        // 2. base polygon
+
+                        Geometry basePolygon = null;
+                        final double minZ = polygonData.stream()
+                                        .flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
+                                        .mapToDouble(Coordinate::getZ).min().orElse(0.0);
+                        final double maxZ = polygonData.stream()
+                                        .flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
+                                        .mapToDouble(Coordinate::getZ).max().orElse(0.0);
+
+                        List<Geometry> basePolygons = polygonData.stream().filter(polygon -> {
+                                double polyMinZ = Arrays.stream(polygon.getCoordinates()).mapToDouble(Coordinate::getZ)
+                                                .min()
+                                                .orElse(minZ);
+                                double polyMaxZ = Arrays.stream(polygon.getCoordinates()).mapToDouble(Coordinate::getZ)
+                                                .max()
+                                                .orElse(maxZ);
+                                return (polyMinZ == polyMaxZ) && (minZ == polyMinZ);
+                        }).collect(Collectors.toList());
+
+                        if (basePolygons.size() == 1)
+                                basePolygon = basePolygons.get(0);
+                        else {
+                                LOGGER.error("Could not identify base polygon for city furniture object with OCGML IRI {}",
+                                                ocgmlIRI);
+                                throw new JPSRuntimeException("Error in BuildingsData class.");
+                        }
+
+                        iriToCityFurniture.get(ocgmlIRI).footPrint = basePolygon;
+
+                }
 
         }
 
@@ -229,12 +384,23 @@ public class JurongIsland {
                 String hasLongitudeEPSG24500 = ontoCompanyPrefix + "hasLongitudeEPSG24500";
                 String hasLatitudeEPSG24500 = ontoCompanyPrefix + "hasLatitudeEPSG24500";
 
+                String hasLongitudeEPSG4326 = ontoCompanyPrefix + "hasLongitudeEPSG4326";
+                String hasLatitudeEPSG4326 = ontoCompanyPrefix + "hasLatitudeEPSG4326";
+
                 heatSources.stream().forEach(hs -> {
                         ub.addInsert(NodeFactory.createURI(hs.iri), NodeFactory.createURI(hasLongitudeEPSG24500),
                                         NodeFactory.createLiteral(Double.toString(hs.location.getX()),
                                                         XSDDatatype.XSDdouble));
                         ub.addInsert(NodeFactory.createURI(hs.iri), NodeFactory.createURI(hasLatitudeEPSG24500),
                                         NodeFactory.createLiteral(Double.toString(hs.location.getY()),
+                                                        XSDDatatype.XSDdouble));
+                        double[] xyOriginal = { hs.location.getX(), hs.location.getY() };
+                        double[] xyTransformed = CRSTransformer.transform("EPSG:24500", "EPSG:4326", xyOriginal);
+                        ub.addInsert(NodeFactory.createURI(hs.iri), NodeFactory.createURI(hasLongitudeEPSG4326),
+                                        NodeFactory.createLiteral(Double.toString(xyTransformed[0]),
+                                                        XSDDatatype.XSDdouble));
+                        ub.addInsert(NodeFactory.createURI(hs.iri), NodeFactory.createURI(hasLatitudeEPSG4326),
+                                        NodeFactory.createLiteral(Double.toString(xyTransformed[1]),
                                                         XSDDatatype.XSDdouble));
 
                 });
@@ -243,284 +409,35 @@ public class JurongIsland {
 
         }
 
+        private void setHeatSourceLocations() {
+                heatSources.stream().forEach(hs -> {
+                        hs.location = hs.footPrint.getCentroid();
+                        hs.location.setSRID(hs.footPrint.getSRID());
+                });
+        }
+
         public JSONObject calculateHeat() {
 
                 storeClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
                 heatSources.clear();
+                numberBuildings = 0;
+                numberPlantItems = 0;
                 getHeatSourceProperties();
                 deleteHeat();
                 updateHeat();
                 deleteLocations();
-                setLocations();
+                setBuildingFootprints();
+                setCityFurnitureFootprints();
+                setHeatSourceLocations();
                 updateLocations();
 
-                JSONArray heatresult = new JSONArray();
-                JSONObject heatresult1 = new JSONObject();
-                JSONArray IRIandCO2QueryResult = IRIandCO2Query();
-                StringBuffer Combined = new StringBuffer("{\r\n" +
-                                "\"type\": \"FeatureCollection\",\r\n" +
-                                "\"features\": [\n");
+                JSONObject result = new JSONObject();
+                result.put("number_plant_items", numberPlantItems);
+                result.put("number_buildings", numberBuildings);
+                result.put("success", "true");
 
-                double heat_data = 0;
-
-                for (int i = 0; i < IRIandCO2QueryResult.length(); i++) {
-                        String IRI = IRIandCO2QueryResult.getJSONObject(i).getString("IRI");
-                        String CO2 = IRIandCO2QueryResult.getJSONObject(i).getString("CO2");
-                        String Plant_item = IRIandCO2QueryResult.getJSONObject(i).getString("plant_item");
-                        String ChemPlant = IRIandCO2QueryResult.getJSONObject(i).getString("chemical_plant");
-                        String ChemPlantName = "<" + ChemPlant + ">";
-
-                        JSONArray plantInfoQueryResult = FuelCEIEfficiency(ChemPlantName);
-                        String CEI = plantInfoQueryResult.getJSONObject(0).getString("CEI");
-                        String Efficiency = plantInfoQueryResult.getJSONObject(0).getString("efficiency");
-
-                        JSONArray coordiSpatialQueryResult = CoordinateQuery(IRI);
-                        String heatcoordi = HeatEmissionCoordinate(coordiSpatialQueryResult);
-                        String[] heatcoordi_split = heatcoordi.split("#");
-                        Double x_coordinate = Double.parseDouble(heatcoordi_split[0]);
-                        Double y_coordinate = Double.parseDouble(heatcoordi_split[1]);
-
-                        // Calculate the heat emission amount in the unit of MW within the indicated
-                        // region boundary
-                        double[] region_boundary = Boundary(requestParams);
-                        if (region_boundary[0] < x_coordinate && region_boundary[2] > x_coordinate
-                                        && region_boundary[1] < y_coordinate && region_boundary[3] > y_coordinate) {
-                                double heatamount = Double.parseDouble(CO2) / Double.parseDouble(CEI) * 1e12 / 365 / 24
-                                                / 3600 / 1e6
-                                                * Double.parseDouble(Efficiency);
-                                JSONObject row = new JSONObject();
-                                row.put("Coordinate", heatcoordi);
-                                row.put("Heat Emission", heatamount);
-                                heatresult.put(row);
-                                // sparqlUpdate(Plant_item, Double.toString(heatamount));
-                                heat_data = heatamount;
-                        }
-
-                        String inputCRS = "EPSG:24500";
-                        String outputCRS = "EPSG:4326";
-                        double[] xyOriginal = { x_coordinate, y_coordinate };
-                        double[] xyTransformed = CRSTransformer.transform(inputCRS, outputCRS, xyOriginal);
-
-                        String z_coordi = heatcoordi_split[2];
-                        String x_coordi = Double.toString(xyTransformed[0]);
-                        String y_coordi = Double.toString(xyTransformed[1]);
-
-                        StringBuffer heatemission = new StringBuffer("{\n\"type\": \"Feature\",\n");
-                        heatemission.append("\"properties\": {\n\"height:m\":").append(z_coordi + "," + "\n");
-                        heatemission.append("\"AH_type\":").append("\"SH\",\n");
-                        heatemission.append("\"AH_0:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_1:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_2:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_3:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_4:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_5:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_6:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_7:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_8:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_9:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_10:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_11:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_12:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_13:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_14:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_15:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_16:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_17:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_18:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_19:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_20:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_21:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_22:MW\":").append(heat_data).append(",\n");
-                        heatemission.append("\"AH_23:MW\":").append(heat_data).append("\n").append("},\n");
-                        heatemission.append("\"geometry\": {\n" + "\"type\": \"Point\",\n" + "\"coordinates\": [\n")
-                                        .append(x_coordi + ",\n").append(y_coordi + "\n]\n}\n},\n");
-                        Combined.append(heatemission);
-
-                }
-
-                // Output heat emission data in GeoJSON format for DUCT
-
-                String outputFP = Paths.get(System.getProperty("user.dir"), "output", "base.geojson").toString();
-                String output = Combined.substring(0, Combined.length() - 2) + "\n]\n}";
-                File file1 = new File(outputFP);
-                FileWriter fw;
-                try {
-                        fw = new FileWriter(file1);
-                        PrintWriter pw = new PrintWriter(fw);
-                        pw.println(output);
-                        pw.close();
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
-
-                heatresult1.put("result", heatresult);
-                return heatresult1;
-        }
-
-        // Set up the region boundary
-        public static double[] Boundary(JSONObject inputBounds) {
-                String upper_limits = JsonPath.read(inputBounds.toString(), "$.upper_bounds");
-                String lower_limits = JsonPath.read(inputBounds.toString(), "$.lower_bounds");
-                String[] upper_split = upper_limits.split("#");
-                String[] lower_split = lower_limits.split("#");
-                double[] result = new double[4];
-                result[0] = Double.parseDouble(lower_split[0]);
-                result[1] = Double.parseDouble(lower_split[1]);
-                result[2] = Double.parseDouble(upper_split[0]);
-                result[3] = Double.parseDouble(upper_split[1]);
                 return result;
+
         }
 
-        // Query all the chemical plants, plant items and respective IRI as well as CO2
-        // emissions
-        public static JSONArray IRIandCO2Query() {
-                StringBuffer IRIandCO2Query = new StringBuffer(
-                                "PREFIX ns2: <https://www.theworldavatar.com/kg/ontobuiltenv/>\n");
-                IRIandCO2Query.append("PREFIX geo: <http://www.opengis.net/ont/geosparql#>\n");
-                IRIandCO2Query.append("PREFIX ocp: <http://www.theworldavatar.com/kg/ontochemplant/>\n");
-                IRIandCO2Query.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
-                IRIandCO2Query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
-                IRIandCO2Query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
-                IRIandCO2Query.append("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n");
-                IRIandCO2Query.append("SELECT ?chemical_plant ?plant_item ?IRI ?CO2 ?unit WHERE { \n");
-                IRIandCO2Query.append("?chemical_plant ocp:hasFuelType ?ft. \n");
-                IRIandCO2Query.append("?chemical_plant rdfs:label ?plant_name. \n");
-                IRIandCO2Query.append("?ft rdfs:label ?ftl. \n");
-                IRIandCO2Query.append("?chemical_plant geo:ehContains ?plant_item . \n");
-                IRIandCO2Query.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI . \n");
-                IRIandCO2Query.append(
-                                "?plant_item rdf:type <http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/plantitem>. \n");
-                IRIandCO2Query.append("?plant_item ocp:hasIndividualCO2Emission ?x .  \n");
-                IRIandCO2Query.append("?x om:hasNumericalValue ?CO2 . \n");
-                IRIandCO2Query.append("?x om:hasUnit ?a . \n");
-                IRIandCO2Query.append("?a om:symbol ?unit . \n");
-                IRIandCO2Query.append(
-                                "FILTER (str(?plant_name) not in (\"Chemical_plant_of_Sembcorp Integrated Wastewater Treatment Plant\","
-                                                +
-                                                "\"Chemical_plant_of_SembCorp EFW (Energy from Waste)\"," +
-                                                "\"Chemical_plant_of_SembCorp Industries Ltd\"," +
-                                                "\"Chemical_plant_of_SembCorp Utilities\"," +
-                                                "\"Chemical_plant_of_YTL PowerSeraya Pte. Limited\", " +
-                                                "\"Chemical_plant_of_Tuas Power Utilities\", " +
-                                                "\"Chemical_plant_of_Sembcorp Cogen Pte Ltd@Sakra\")) \n");
-                IRIandCO2Query.append("}");
-                JSONArray IRIandCO2QueryResult = AccessAgentCaller.queryStore("jibusinessunits",
-                                IRIandCO2Query.toString());
-                return IRIandCO2QueryResult;
-        }
-
-        // Chemical plant fuel, CEI and thermal efficiency query
-        public static JSONArray FuelCEIEfficiency(String ChemialPlant) {
-                StringBuffer FuelCEIEffiQuery = new StringBuffer(
-                                "PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
-                FuelCEIEffiQuery.append("PREFIX ocp: <http://www.theworldavatar.com/kg/ontochemplant/>\n");
-                FuelCEIEffiQuery.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
-                FuelCEIEffiQuery.append("SELECT ?fuel ?CEI ?unit ?efficiency WHERE {");
-                FuelCEIEffiQuery.append(ChemialPlant).append(" ocp:hasThermalEfficiency ?efficiency .");
-                FuelCEIEffiQuery.append(ChemialPlant).append(" ocp:hasFuelType ?fuel .");
-                FuelCEIEffiQuery.append("?fuel ocp:hasCarbonEmissionIndex ?cei .");
-                FuelCEIEffiQuery.append("?cei om:hasNumericalValue ?CEI .");
-                FuelCEIEffiQuery.append("?cei om:hasUnit ?a .");
-                FuelCEIEffiQuery.append("?a om:symbol ?unit .}");
-                JSONArray plantInfoQueryResult = AccessAgentCaller.queryStore("jibusinessunits",
-                                FuelCEIEffiQuery.toString());
-                return plantInfoQueryResult;
-        }
-
-        // Geometric coordination query
-        public static JSONArray CoordinateQuery(String CityFurnitureIRI) {
-                StringBuffer coordinateQuery = new StringBuffer(
-                                "PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
-                coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");
-                coordinateQuery.append(
-                                "GRAPH <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry/> {?geometricIRI ocgml:GeometryType ?polygonData.\n");
-                coordinateQuery.append("?geometricIRI ocgml:cityObjectId <").append(CityFurnitureIRI).append(">.}}");
-                JSONArray coordiSpatialQueryResult = AccessAgentCaller.queryStore("jriEPSG24500",
-                                coordinateQuery.toString());
-                return coordiSpatialQueryResult;
-        }
-
-        // Calculate heat emission in xyz coordinate
-        public static String HeatEmissionCoordinate(JSONArray coordiSpatialQueryResult) {
-                String buildingX = "0";
-                String buildingY = "0";
-                String buildingZ = "0";
-
-                for (int i = 0; i < coordiSpatialQueryResult.length(); i++) {
-                        JSONObject coordiS = coordiSpatialQueryResult.getJSONObject(i);
-                        String coordiData = coordiS.getString("polygonData");
-                        ArrayList<String> z_values = new ArrayList<>();
-                        String[] split = coordiData.split("#");
-                        double sum_x = 0;
-                        double sum_y = 0;
-                        double sum_z = 0;
-                        double min_z = 0;
-
-                        for (Integer j = 1; j <= split.length; j++) {
-                                if (j % 3 == 0) {
-                                        z_values.add(split[j - 1]);
-                                        sum_x = sum_x + Double.parseDouble(split[j - 3]);
-                                        sum_y = sum_y + Double.parseDouble(split[j - 2]);
-                                        sum_z = sum_z + Double.parseDouble(split[j - 1]);
-                                        min_z = Math.min(min_z, Double.parseDouble(split[j - 1]));
-                                }
-                        }
-                        if (min_z == sum_z / (split.length / 3) && !z_values.isEmpty()) {
-                                buildingX = String.valueOf(sum_x / (split.length / 3));
-                                buildingY = String.valueOf(sum_y / (split.length / 3));
-                        }
-                        if (!z_values.isEmpty() && Double.parseDouble(buildingZ) < Double
-                                        .parseDouble(Collections.max(z_values))) {
-                                buildingZ = Collections.max(z_values);
-                        }
-                }
-                StringBuffer coordinate = new StringBuffer();
-                coordinate.append(buildingX).append("#").append(buildingY).append("#").append(buildingZ);
-                return coordinate.toString();
-        }
-
-        // Put the heat emssion data into the blazegraph via SPARQL update
-        public void sparqlUpdate(String Plant_item, String heatValue) {
-                String Heat_of_plantitem = Plant_item + "_Heat";
-                String heat_label = Heat_of_plantitem.substring(47);
-                String hasGeneratedHeat = "http://www.theworldavatar.com/kg/ontochemplant/hasGeneratedHeat";
-                String genHeat = "http://www.theworldavatar.com/kg/ontochemplant/GeneratedHeat";
-                String heatIri = genHeat + "_" + UUID.randomUUID();
-                String measure = "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure";
-                String measureIri = measure + "_" + UUID.randomUUID();
-                String measure_label = "Measure_" + heat_label;
-
-                UpdateBuilder ub = new UpdateBuilder()
-                                .addPrefix("rdf", "https://www.w3.org/1999/02/22-rdf-syntax-ns")
-                                .addPrefix("rdfs", "https://www.w3.org/2000/01/rdf-schema#")
-                                .addInsert(NodeFactory.createURI(Plant_item),
-                                                NodeFactory.createURI(
-                                                                "http://theworldavatar.com/kg/ontochemplant/hasGeneratedHeat"),
-                                                NodeFactory.createURI(heatIri))
-                                .addInsert(NodeFactory.createURI(heatIri), "rdf:type",
-                                                NodeFactory.createURI(
-                                                                genHeat))
-                                .addInsert(NodeFactory.createURI(heatIri), "rdfs:label", heat_label)
-                                .addInsert(NodeFactory.createURI(heatIri),
-                                                NodeFactory.createURI(
-                                                                "http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"),
-                                                NodeFactory.createURI(measureIri))
-                                .addInsert(NodeFactory.createURI(measureIri), "rdf:type",
-                                                NodeFactory.createURI(measure))
-                                .addInsert(NodeFactory.createURI(measureIri), "rdfs:label", measure_label)
-                                .addInsert(NodeFactory.createURI(measureIri), NodeFactory.createURI(
-                                                "http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"),
-                                                heatValue)
-                                .addInsert(NodeFactory.createURI(measureIri),
-                                                NodeFactory.createURI(
-                                                                "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"),
-                                                NodeFactory.createURI(
-                                                                "http://www.theworldavatar.com/kg/ontochemplant/MegaWatt"));
-
-                UpdateRequest ur = ub.buildRequest();
-                System.out.println(ur);
-                AccessAgentCaller.updateStore("http://localhost:48888/ontochemplant", ur.toString());
-                // This line below is for update the data in Claudius
-                // AccessAgentCaller.updateStore("jibusinessunits", ur.toString());
-        }
 }

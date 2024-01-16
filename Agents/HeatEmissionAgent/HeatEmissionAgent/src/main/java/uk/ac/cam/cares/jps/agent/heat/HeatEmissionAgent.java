@@ -76,16 +76,8 @@ public class HeatEmissionAgent extends JPSAgent {
 			throw new BadRequestException(
 					"Either ontochemplant or ontocompany must be specified as the value of the ontology parameter.");
 
-		if (requestParams.getString("ontology").equalsIgnoreCase("ontochemplant")) {
-			String UPPER_LIMITS = JsonPath.read(requestParams.toString(), "$.upper_bounds");
-			if (UPPER_LIMITS == null || UPPER_LIMITS.trim().isEmpty()) {
-				throw new BadRequestException("Upper limits for the bounding box are missing.\n");
-			}
-			String LOWER_LIMITS = JsonPath.read(requestParams.toString(), "$.lower_bounds");
-			if (LOWER_LIMITS == null || LOWER_LIMITS.trim().isEmpty()) {
-				throw new BadRequestException("Lower limits for the bounding box are missing.\n");
-			}
-		} else if (!requestParams.getString("ontology").equalsIgnoreCase("ontocompany")) {
+		if (!requestParams.getString("ontology").equalsIgnoreCase("ontochemplant")
+				&& !requestParams.getString("ontology").equalsIgnoreCase("ontocompany")) {
 			throw new BadRequestException(
 					"The value of the ontology parameter must be either ontocompany or ontochemplant");
 		}
