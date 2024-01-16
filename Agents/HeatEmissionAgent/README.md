@@ -52,11 +52,11 @@ If the agent is being run as part of a stack, the user can opt to use a namespac
 The agent has a single API route which requires a POST request. It accepts the following input parameters:
 
 - ```namespace```: The name of the Blazegraph namespace from which the companies' properties are queried. This parameter should be included for cases in which this data is stored in a namespace in the stack blazegraph.
--```endpoint```: The full endpoint of the Blazegraph namespace from which the companies' properties are queried. This parameter should be used if this data is stored in a blzegraph namespace outside the stack.
+- ```endpoint```: The full endpoint of the Blazegraph namespace from which the companies' properties are queried. This parameter should be used if this data is stored in a blzegraph namespace outside the stack.
 - ```ontology```: The ontology used to instantiate the triples in the SPARQL endpoint. This must be either 'ontocompany' or 'ontochemplant'. The agent executes different SPARQL queries in the Blazegraph endpoint dpeending upon the value of this parameter. 
 
-- ```lower_bounds```: The lower bounds of the bounding box. This must be specified as three floating point values separated by a '#' symbol. It is only applicable for the ontocompany case and has no effect otherwise. If run for a namespace with OntoChemPlant triples, the agent only calculates heat emissions and instantiates the triples for heat sources located within this bounding box.
--```upper_bounds```: The upper bounds of the bounding box. This must be specified as three floating point values separated by a '#' symbol. It is only applicable for the ontocompany case.
+- ```lower_bounds```: The lower bounds of the bounding box. This must be specified as three floating point values separated by a '#' symbol. It is only applicable for the ontochemplant case and has no effect otherwise. If run for a namespace with OntoChemPlant triples, the agent only calculates heat emissions and instantiates the triples for heat sources located within this bounding box.
+-```upper_bounds```: The upper bounds of the bounding box. This must be specified as three floating point values separated by a '#' symbol. It is only applicable for the ontochemplant case.
 
 Some example POST request for different values of input parameters are listed below.
 
