@@ -3,15 +3,17 @@ package uk.ac.cam.cares.jps.qrscan.ui;
 import android.graphics.Rect;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import org.apache.log4j.Logger;
 
-public class ScanViewModel extends ViewModel {
+import uk.ac.cam.cares.jps.camera.CameraViewModel;
+
+public class ScanViewModel extends CameraViewModel {
 
     private final Logger LOGGER = Logger.getLogger(ScanViewModel.class);
     private final MutableLiveData<Rect> bBox = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> isFlashOn = new MutableLiveData<>(false);
+    int imageWidth;
+    int imageHeight;
 
     final Object lock = new Object();
     private String tentativeUrl = "";
@@ -44,21 +46,14 @@ public class ScanViewModel extends ViewModel {
         }
     }
 
-    public void setBBox(Rect rect) {
+    public void setBBoxAndResolution(Rect rect, int imageWidth, int imageHeight) {
         this.bBox.setValue(rect);
+        this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
     }
 
     public MutableLiveData<Rect> getBBox() {
         return bBox;
-    }
-
-
-    public MutableLiveData<Boolean> getIsFlashOn() {
-        return isFlashOn;
-    }
-
-    public void toggleFlashState() {
-        this.isFlashOn.setValue(!this.isFlashOn.getValue());
     }
 
     public MutableLiveData<String> getConfirmedUrl() {

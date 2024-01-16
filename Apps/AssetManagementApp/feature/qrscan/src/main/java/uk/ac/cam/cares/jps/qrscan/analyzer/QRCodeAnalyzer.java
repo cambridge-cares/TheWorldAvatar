@@ -49,7 +49,7 @@ public class QRCodeAnalyzer implements ImageAnalysis.Analyzer {
                         if (barcodes.size() == 0) {
                             // clear current overlay
                             viewModel.setUrl("");
-                            viewModel.setBBox(null);
+                            viewModel.setBBoxAndResolution(null, imageProxy.getWidth(), imageProxy.getHeight());
                         } else {
                             for (Barcode barcode : barcodes) {
                                 if (barcode.getUrl() != null) {
@@ -57,7 +57,7 @@ public class QRCodeAnalyzer implements ImageAnalysis.Analyzer {
                                     if (barcode.getBoundingBox() != null) {
                                         LOGGER.info(barcode.getBoundingBox().left + " "+ barcode.getBoundingBox().top+ " "+barcode.getBoundingBox().right+ " "+barcode.getBoundingBox().bottom);
                                         LOGGER.info(barcode.getBoundingBox().toShortString());
-                                        viewModel.setBBox(barcode.getBoundingBox());
+                                        viewModel.setBBoxAndResolution(barcode.getBoundingBox(), imageProxy.getWidth(), imageProxy.getHeight());
                                         viewModel.setUrl(barcode.getUrl().getUrl());
                                     }
 
@@ -69,7 +69,7 @@ public class QRCodeAnalyzer implements ImageAnalysis.Analyzer {
                         imageProxy.close();
                     })
                     .addOnFailureListener(e -> {
-                        viewModel.setBBox(null);
+                        viewModel.setBBoxAndResolution(null, imageProxy.getWidth(), imageProxy.getHeight());
                         LOGGER.error(e.getMessage());
                         image.close();
                         imageProxy.close();

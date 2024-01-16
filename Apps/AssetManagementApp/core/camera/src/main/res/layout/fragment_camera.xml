@@ -2,19 +2,27 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:keepScreenOn="true">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <uk.ac.cam.cares.jps.camera.FocusCircleView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/focusCircleView"/>
+
 
     <include
-        layout="@layout/fragment_camera"
+        layout="@layout/top_action_bar_in_live_camera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/camera"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/topActionBar"
         />
 
-    <uk.ac.cam.cares.jps.qrscan.ui.BoxOverlayView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/box_overlay_view"
-        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

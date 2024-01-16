@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.qrscan.ui;
+package uk.ac.cam.cares.jps.camera;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,8 +8,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
-
-import uk.ac.cam.cares.jps.qrscan.R;
 
 public class FocusCircleView extends View {
     private Paint paint;
