@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  # Blazegraph
+  blazegraph:
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    container_name: "blazegraph_cofs"
+    ports:
+      - 48082:8080
+    # environment:
+      # BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    # secrets:
+    #   - blazegraph_password
