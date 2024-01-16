@@ -10,6 +10,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:skos="http://www.w3.org/2004/02/skos/core#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontocompmat/">
+        <owl:imports rdf:resource="http://emmo.info/emmo/1.0.0-beta/domain"/>
         <dc:date>12 January 2024</dc:date>
         <rdfs:comment xml:lang="en">An ontology that describes composite materials, their manufacturing processes, advantages of composite materials over bulk materials, structural damages that can occur at different manufacturing phases and the corresponding repair mechanisms.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
@@ -165,6 +166,14 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontocompmat/susceptibleTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompmat/susceptibleTo">
+        <rdfs:label xml:lang="en">susceptible to</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontocompmat/underCondition -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontocompmat/underCondition"/>
@@ -203,6 +212,12 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://emmo.info/emmo#EMMO_ec7464a9_d99d_45f8_965b_4e9230ea8356 -->
+
+    <owl:Class rdf:about="http://emmo.info/emmo#EMMO_ec7464a9_d99d_45f8_965b_4e9230ea8356"/>
     
 
 
@@ -245,6 +260,12 @@
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocompmat/susceptibleTo"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocompmat/LowEnergyImpactDamage"/>
+            </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -429,10 +450,19 @@
     <!-- http://www.theworldavatar.com/kg/ontocompmat/CompositeMaterial -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontocompmat/CompositeMaterial">
+        <rdfs:subClassOf rdf:resource="http://emmo.info/emmo#EMMO_ec7464a9_d99d_45f8_965b_4e9230ea8356"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontocompmat/exposesTo"/>
-                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontocompmat/Vulnerability"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocompmat/BrittleNatureOfFibre"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocompmat/HeterogeneousBuiltUpNature"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontocompmat/LowFractureToughnessOfMatrix"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>A material consisting of two or more distinct phases bonded together (Comprehensive Composite Materials, 2000). A composite material is composed from at least two materials, where one is the reinforcing material and other is the matrix material (Advanced Composite Materials for Automotive Applications, 2013).</rdfs:comment>
