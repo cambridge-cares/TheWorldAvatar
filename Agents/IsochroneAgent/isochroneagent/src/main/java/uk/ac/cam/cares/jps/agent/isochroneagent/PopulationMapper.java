@@ -25,7 +25,7 @@ public class PopulationMapper {
                         String mapPopulation_sql="UPDATE isochrone_aggregated\n" +
                                                 "SET "+populationTable+" = subquery.sum\n" +
                                                 "FROM (\n" +
-                                                "SELECT isochrone_aggregated.geom, SUM((ST_SummaryStats(ST_Clip("+populationTable+".rast, isochrone_aggregated.geom, TRUE))).sum) \n" +
+                                                "SELECT isochrone_aggregated.geom, SUM((ST_SummaryStats(ST_Clip("+populationTable+".rast, ST_MakeValid(isochrone_aggregated.geom), TRUE))).sum) \n" +
                                                 "FROM "+populationTable+", isochrone_aggregated\n" +
                                                 "GROUP BY isochrone_aggregated.geom\n" +
                                                 ") AS subquery\n" +

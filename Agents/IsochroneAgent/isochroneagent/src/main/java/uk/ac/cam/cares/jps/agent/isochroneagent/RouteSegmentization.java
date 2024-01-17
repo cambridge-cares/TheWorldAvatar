@@ -23,7 +23,7 @@ public class RouteSegmentization {
      */
     public void segmentize(RemoteRDBStoreClient remoteRDBStoreClient, double segmentization_length){
 
-        if (segmentization_length!=0.0){
+        if (segmentization_length==0.0){
             String duplicate_table =
                     "CREATE TABLE routing_ways_segment AS\n" +
                     "SELECT * FROM routing_ways;" +
@@ -34,7 +34,7 @@ public class RouteSegmentization {
 
             try (Connection connection = remoteRDBStoreClient.getConnection()) {
                 executeSql(connection, duplicate_table);
-                System.out.println("Duplicated route in a new table. (1/4)");
+                System.out.println("Route segmentization ignored, duplicate route in a new table.");
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -146,13 +146,6 @@ public class RouteSegmentization {
                 }
 
         }
-
-
-
-
-
-
-
     }
 
     /**
