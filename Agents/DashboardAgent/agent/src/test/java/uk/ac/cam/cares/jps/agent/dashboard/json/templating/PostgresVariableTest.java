@@ -103,7 +103,7 @@ class PostgresVariableTest {
                     .append(entry.getValue()).append("')");
         }
         String query = "SELECT k AS \\\"__text\\\", v AS \\\"__value\\\" FROM (values " +
-                temp + ") AS v(k,v)  WHERE k IN (${" + formattedName + "});";
+                temp + ") AS v(k,v);";
         return genExpectedPostgresVarSyntax(formattedName, varName, description, databaseID, query, 2, false, false);
     }
 

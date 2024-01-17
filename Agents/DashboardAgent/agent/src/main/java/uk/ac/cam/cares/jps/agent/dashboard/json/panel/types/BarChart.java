@@ -159,24 +159,24 @@ public class BarChart extends DefaultGrafanaPanel {
                 // To get start of reference month, get current month from specified timestamp and deduct the required number of months as interval
                 "DATE_TRUNC('MONTH',TO_TIMESTAMP(${__to}/1000))-" +
                 // Interval to be subtracted from current month to get reference month
-                "CAST(CASE WHEN EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "}<=0 THEN EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "}+12" +
-                "ELSE EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))${" + refMonthVar + "} END||' month' AS Interval)" +
-                "AND " +
+                "CAST(CASE WHEN EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "}<=0 THEN EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "}+12 " +
+                "ELSE EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "} END||' month' AS Interval)" +
+                " AND " +
                 // Similar query to above but this gets the end of the month by adding INTERVAL '1 month'
                 "DATE_TRUNC('MONTH',TO_TIMESTAMP(${__to}/1000))+INTERVAL '1 month'-" +
                 // Interval to be subtracted from current month to get reference month
-                "CAST(CASE WHEN EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "}<=0 THEN EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "}+12" +
-                "ELSE EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))${" + refMonthVar + "} END||' month' AS Interval)" +
+                "CAST(CASE WHEN EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "}<=0 THEN EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "}+12 " +
+                "ELSE EXTRACT(MONTH FROM TO_TIMESTAMP(${__to}/1000))-${" + refMonthVar + "} END||' month' AS Interval)" +
                 // END of the first case when
-                "THEN " + measureSummationSyntax +
-                "END AS " + StringHelper.formatEscapeQuoteSQL(REF_MONTH_SQL_VARIABLE) +
+                " THEN " + measureSummationSyntax +
+                " END AS " + StringHelper.formatEscapeQuoteSQL(REF_MONTH_SQL_VARIABLE) + "," +
                 // For current month, get from start of month to current time
                 " CASE WHEN time BETWEEN DATE_TRUNC('MONTH',TO_TIMESTAMP(${__to}/1000)) AND TO_TIMESTAMP(${__to}/1000) THEN " + measureSummationSyntax +
-                "END AS " + StringHelper.formatEscapeQuoteSQL(CURR_MONTH_SQL_VARIABLE) +
-                "FROM " + StringHelper.formatEscapeQuoteSQL(tableName) +
+                " END AS " + StringHelper.formatEscapeQuoteSQL(CURR_MONTH_SQL_VARIABLE) +
+                " FROM " + StringHelper.formatEscapeQuoteSQL(tableName) +
                 // These comparisons will only be available up to a year ago
                 " WHERE time BETWEEN TO_TIMESTAMP(${__to}/1000)-INTERVAL '1 year' AND TO_TIMESTAMP(${__to}/1000)" +
-                "ORDER BY " + INTERVAL_VAR_NAME + ";";
+                " ORDER BY " + INTERVAL_VAR_NAME + ";";
     }
 
     /**
@@ -184,8 +184,8 @@ public class BarChart extends DefaultGrafanaPanel {
      */
     private void applyTransformations() {
         List<String[]> comparisonFrames = List.of(
-                new String[]{"doesntmatter", CURR_MONTH_SQL_VARIABLE},
-                new String[]{"doesntmatter", REF_MONTH_SQL_VARIABLE}
+                new String[]{"Current Month", CURR_MONTH_SQL_VARIABLE},
+                new String[]{StringHelper.REF_MONTH_VARIABLE_NAME, REF_MONTH_SQL_VARIABLE}
         );
         applyTransformations(comparisonFrames);
     }

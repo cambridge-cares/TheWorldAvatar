@@ -45,7 +45,7 @@ class PostgresVariable extends TemplateVariable {
             temp.append("('").append(entry.getKey()).append("', '")
                     .append(entry.getValue()).append("')");
         }
-        this.querySyntax.append(temp).append(REPEAT_SQL_QUERY_PART).append(StringHelper.formatVariableName(variableName)).append("});");
+        this.querySyntax.append(temp).append(") AS v(k,v);");
     }
 
     /**
