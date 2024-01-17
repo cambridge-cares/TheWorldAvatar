@@ -292,7 +292,7 @@ public class BarChartTest {
         String measureSummationSyntax = timeSeriesMetadata.stream()
                 .map(meterMetadata -> meterMetadata[1])
                 .collect(Collectors.joining("+"));
-        String intervalSyntax = isDaily ? "TO_CHAR(time,'DD')" : "'Week ' || TO_CHAR(time,'W')";
+        String intervalSyntax = isDaily ? "'Day ' || TO_CHAR(time,'DD')" : "'Week ' || TO_CHAR(time,'W')";
         return "SELECT " + intervalSyntax + " AS " + StringHelper.formatEscapeQuoteSQL(INTERVAL_VAR_NAME) + "," +
                 // For reference month, we must query and ensure data is from the start of the month to the end relative from the current time
                 "CASE WHEN time BETWEEN " +
