@@ -122,6 +122,7 @@ public class LayoutTemplate {
         // Generate an empty queue of arrays for generating panels (at most three to accommodate screen resolutions)
         Queue<TemplatePanel[]> panelQueue = new ArrayDeque<>();
         String intervalVarChartDescription = "Select the required time interval for the current and last period trends on the right.";
+        String refMonthChartDescription = "Select the reference month for comparison with the current month through the charts on the right.";
         // For each of the measures, create a set of chart
         for (Map.Entry<String, List<String[]>> entry : systemMeasures.entrySet()) {
             String measure = entry.getKey();
@@ -145,6 +146,11 @@ public class LayoutTemplate {
                 BarChart lastPeriodMeasureChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 2);
                 BarChart currentPeriodMeasureChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 3);
                 panelArr = new TemplatePanel[]{timeIntervalChart, lastPeriodMeasureChart, currentPeriodMeasureChart};
+                panelQueue.offer(panelArr);
+                VariablePanel refMonthChart = new VariablePanel(StringHelper.REF_MONTH_VARIABLE_NAME, refMonthChartDescription);
+                BarChart dailyComparisonChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 4);
+                BarChart weeklyComparisonChart = new BarChart(measure, StringHelper.SYSTEM_KEY, unit, databaseID, systemTimeSeries, 5);
+                panelArr = new TemplatePanel[]{refMonthChart, dailyComparisonChart, weeklyComparisonChart};
                 panelQueue.offer(panelArr);
             }
         }

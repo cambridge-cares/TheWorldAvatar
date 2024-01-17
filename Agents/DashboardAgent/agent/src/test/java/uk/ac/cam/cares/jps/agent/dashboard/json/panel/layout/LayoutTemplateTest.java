@@ -100,7 +100,7 @@ public class LayoutTemplateTest {
         // Execute method
         Queue<TemplatePanel[]> results = LayoutTemplate.genSystemsLayoutTemplate(systemMeasures, sampleDbConnectionIdMap);
         // Verify number of results
-        assertEquals(4, results.size()); // Two system measures are available with two sets of array each
+        assertEquals(6, results.size()); // Two system measures are available with three sets of array each
         // Process results for testing
         StringBuilder jsonResult = new StringBuilder();
         int rowNumber = 0;
@@ -219,8 +219,24 @@ public class LayoutTemplateTest {
                         .append(",");
                 // Reassign the x position for the current period bar chart
                 expectedGeometryPosition[2] = TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH + TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH;
-                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 3));
-                rowNumber += 2;
+                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 3))
+                        .append(",");
+                // Increment the row number as the system should generate 3 rows in total
+                expectedGeometryPosition[3] = rowNumber + 2;
+                // Reassign x position and chart width for variable panel
+                expectedGeometryPosition[1] = TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH;
+                expectedGeometryPosition[2] = 0;
+                builder.append(VariablePanelTest.genExpectedResults(StringHelper.REF_MONTH_VARIABLE_NAME, VariablePanelTest.REF_MONTH_DESCRIPTION, expectedGeometryPosition))
+                        .append(",");
+                // Reassign the x position and chart width for the daily comparison bar chart
+                expectedGeometryPosition[1] = TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH;
+                expectedGeometryPosition[2] = TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH;
+                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 4))
+                        .append(",");
+                // Reassign the x position for the weekly comparison bar chart
+                expectedGeometryPosition[2] = TestUtils.ROW_OF_THREE_FIRST_CHART_WIDTH + TestUtils.ROW_OF_THREE_DUAL_CHART_WIDTH;
+                builder.append(BarChartTest.genExpectedResults(expectedConfigItems, expectedGeometryPosition, systemTimeSeries, 5));
+                rowNumber += 3;
             }
         }
         return builder.toString();

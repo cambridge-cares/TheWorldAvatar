@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class VariablePanelTest {
     public static final String INTERVAL_DESCRIPTION = "Select the required time interval for the current and last period trends on the right.";
+    public static final String REF_MONTH_DESCRIPTION = "Select the reference month for comparison with the current month through the charts on the right.";
     private static final int SAMPLE_PANEL_HEIGHT = 8;
     private static final int SAMPLE_PANEL_WIDTH = 12;
     private static final int SAMPLE_PANEL_X_POSITION = 1;
