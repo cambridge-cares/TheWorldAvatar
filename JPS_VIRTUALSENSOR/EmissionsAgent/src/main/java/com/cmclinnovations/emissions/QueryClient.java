@@ -115,9 +115,9 @@ public class QueryClient {
             throw new RuntimeException("Incorrect number of ships queried");
         }
 
-        int shipSpeed;
+        double shipSpeed;
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            shipSpeed = tsClient.getLatestData(speedMeasure, conn).getValuesAsInteger(speedMeasure).get(0);
+            shipSpeed = tsClient.getLatestData(speedMeasure, conn).getValuesAsDouble(speedMeasure).get(0);
             Ship ship = new Ship();
             ship.setSpeed(shipSpeed);
             ship.setShipType(shipTypeInt);
