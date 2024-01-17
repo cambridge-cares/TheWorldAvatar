@@ -457,9 +457,9 @@ public class QueryClient {
                         return;
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Error in obtaining location time series of a ship");
-                    LOGGER.error("Measure IRI: <{}>", measure);
-                    LOGGER.error(e.getMessage());
+                    LOGGER.warn("Error in obtaining location time series of a ship");
+                    LOGGER.warn("Measure IRI: <{}>", measure);
+                    LOGGER.warn(e.getMessage());
                     return;
                 }
 
