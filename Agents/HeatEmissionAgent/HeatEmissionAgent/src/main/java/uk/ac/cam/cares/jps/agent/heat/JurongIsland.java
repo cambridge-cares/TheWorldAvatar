@@ -425,11 +425,14 @@ public class JurongIsland {
                 getHeatSourceProperties();
                 deleteHeat();
                 updateHeat();
-                deleteLocations();
-                setBuildingFootprints();
-                setCityFurnitureFootprints();
-                setHeatSourceLocations();
-                updateLocations();
+                /*
+                 * Buildings coordinates already exist.
+                 * deleteLocations();
+                 * setBuildingFootprints();
+                 * setCityFurnitureFootprints();
+                 * setHeatSourceLocations();
+                 * updateLocations();
+                 */
 
                 JSONObject result = new JSONObject();
                 result.put("number_plant_items", numberPlantItems);
