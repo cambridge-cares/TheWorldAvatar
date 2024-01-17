@@ -12,6 +12,7 @@ class StringHelperTest {
     private static final String VAR_FORMAT_TEST_CASE3 = "nochangerequired";
     private static final String VAR_FORMAT_TEST_CASE4 = "TEST-dash-removal";
     private static final String VAR_FORMAT_TEST_CASE5 = "tESt_under_score_";
+    private static final String VAR_FORMAT_TEST_CASE6 = "tESt/ForwaRd/slASH";
     private static final String CAPITAL_TEST_CASE1 = "ThisIsTest";
     private static final String CAPITAL_TEST_CASE2 = "ThisisTest";
     private static final String CAPITAL_TEST_CASE3 = "thisisatest";
@@ -33,6 +34,7 @@ class StringHelperTest {
         assertEquals(VAR_FORMAT_TEST_CASE3, StringHelper.formatVariableName(VAR_FORMAT_TEST_CASE3));
         assertEquals("testdashremoval", StringHelper.formatVariableName(VAR_FORMAT_TEST_CASE4));
         assertEquals("testunderscore", StringHelper.formatVariableName(VAR_FORMAT_TEST_CASE5));
+        assertEquals("testforwardslash", StringHelper.formatVariableName(VAR_FORMAT_TEST_CASE6));
     }
 
     @Test

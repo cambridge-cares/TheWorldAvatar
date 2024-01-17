@@ -31,7 +31,7 @@ public class StringHelper {
      * Formats the variable names to remove white spaces, dashes, and underscores and use only lower cases for Grafana syntax.
      */
     public static String formatVariableName(String variable) {
-        return variable.toLowerCase().replaceAll("[\\s\\-_]", "");
+        return variable.toLowerCase().replaceAll("[\\s\\-_/]", "");
     }
 
     /**
