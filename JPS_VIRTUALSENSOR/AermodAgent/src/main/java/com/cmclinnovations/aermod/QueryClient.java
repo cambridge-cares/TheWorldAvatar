@@ -449,11 +449,17 @@ public class QueryClient {
         List<Ship> ships = new ArrayList<>();
         try (Connection conn = rdbStoreClient.getConnection()) {
             measures.stream().forEach(measure -> {
-                TimeSeries<Long> ts = tsClientLong.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
-                        simTimeUpperBound, conn);
-                if (ts.getValuesAsPoint(measure).size() > 1) {
-                    LOGGER.warn("More than 1 point within this time inverval");
-                } else if (ts.getValuesAsPoint(measure).isEmpty()) {
+                TimeSeries<Long> ts;
+                try {
+                    ts = tsClientLong.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
+                            simTimeUpperBound, conn);
+                    if (ts.getValuesAsPoint(measure).isEmpty()) {
+                        return;
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Error in obtaining location time series of a ship");
+                    LOGGER.error("Measure IRI: <{}>", measure);
+                    LOGGER.error(e.getMessage());
                     return;
                 }
 
@@ -532,7 +538,8 @@ public class QueryClient {
         return locationMeasureToShipMap;
     }
 
-    void setEmissions(List<PointSource> allSources) {
+    /** removes sources without emissions */
+    List<PointSource> setEmissions(List<PointSource> allSources) {
         // create a look up map to get point source object based on IRI
         Map<String, PointSource> iriToSourceMap = new HashMap<>();
         allSources.stream().forEach(s -> iriToSourceMap.put(s.getIri(), s));
@@ -578,6 +585,15 @@ public class QueryClient {
 
         String[] gasPhaseEmissions = { CO2, NO_X, SO2, CO, UHC };
 
+        List<PointSource> sourcesWithEmissions = new ArrayList<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            String psIRI = queryResult.getJSONObject(i).getString(ps.getQueryString().substring(1));
+
+            if (!sourcesWithEmissions.contains(iriToSourceMap.get(psIRI))) {
+                sourcesWithEmissions.add(iriToSourceMap.get(psIRI));
+            }
+        }
+
         for (int i = 0; i < queryResult.length(); i++) {
             String psIRI = queryResult.getJSONObject(i).getString(ps.getQueryString().substring(1));
             String pollutantID = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
@@ -613,6 +629,8 @@ public class QueryClient {
                 pointSource.setFlowrateInKgPerS(Pollutant.getPollutantType(pollutantID), emission);
             }
         }
+
+        return sourcesWithEmissions;
     }
 
     private boolean checkUnits(String temperatureUnitString, String densityUnitString, String massFlow) {

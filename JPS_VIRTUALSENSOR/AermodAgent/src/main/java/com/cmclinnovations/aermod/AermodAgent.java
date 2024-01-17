@@ -161,7 +161,9 @@ public class AermodAgent extends DerivationAgent {
 
         // get emissions and set the values in the ships
         LOGGER.info("Querying emission values");
-        queryClient.setEmissions(allSources);
+
+        // filter out sources without emissions due to ships with ongoing calculations
+        List<PointSource> sourcesWithEmissions = queryClient.setEmissions(allSources);
 
         // update weather station with simulation time
         updateWeatherStation(weatherStationIri, simulationTime);
@@ -178,7 +180,7 @@ public class AermodAgent extends DerivationAgent {
         boolean usesElevation = false;
         if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE) && queryClient.hasElevationData(scope)) {
             usesElevation = true;
-            queryClient.setElevation(allSources, buildings, srid);
+            queryClient.setElevation(sourcesWithEmissions, buildings, srid);
 
             // queries elevation data for each receptor point from PostGIS
             aermod.createAERMODReceptorInput(scope, nx, ny, srid,
@@ -189,7 +191,7 @@ public class AermodAgent extends DerivationAgent {
 
         // produces buildings input for aermod main code
         if (!buildings.isEmpty()) {
-            aermod.createBPIPPRMInput(allSources, buildings, srid);
+            aermod.createBPIPPRMInput(sourcesWithEmissions, buildings, srid);
             aermod.runBPIPPRM();
         }
 
@@ -224,12 +226,12 @@ public class AermodAgent extends DerivationAgent {
         List<JSONObject> elevationJson = new ArrayList<>();
 
         Pollutant.getPollutantList().parallelStream()
-                .filter(pollutantType -> allSources.stream().allMatch(p -> p.hasPollutant(pollutantType)))
+                .filter(pollutantType -> sourcesWithEmissions.stream().allMatch(p -> p.hasPollutant(pollutantType)))
                 .forEach(pollutantType -> zIriList.parallelStream().forEach(zIri -> {
                     aermod.createSimulationSubDirectory(pollutantType, zMap.get(zIri));
 
                     // create emissions input
-                    aermod.createPointsFile(allSources, srid, pollutantType, zMap.get(zIri));
+                    aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
                     aermod.runAermod(pollutantType, zMap.get(zIri));
 
                     // Upload files used by scripts within Python Service to file server.
