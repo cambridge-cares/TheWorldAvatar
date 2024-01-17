@@ -8,7 +8,6 @@ from utils.kg_access.KGClient import KGClient
 
 
 
-
 # convert heat value unit
 def unit_convert_hv(hv):
     return hv/1e6
@@ -17,6 +16,8 @@ def unit_convert_hv(hv):
 def unit_convert_ppl(ppl):
     return ppl/1000
 
+def query_data_agent(agent_url):
+    return requests.get(agent_url).json()
 
 
 #Read in a query object, returns the result of query if success
@@ -48,7 +49,3 @@ def query_all(querylist):
         except Exception as e:
             raise e
     return results
-
-#TODO call dataagent
-def get_updated_data():
-    pass

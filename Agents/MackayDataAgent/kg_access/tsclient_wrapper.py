@@ -3,7 +3,7 @@ This module wraps all function regarding timeseries Client of JPS_BASE_LIB
 '''
 import psycopg2
 from .java_gateway import jpsBaseLibView
-from data_types.ts_data_classes import *
+from data_classes.ts_data_classes import *
 import logging
 import datetime
 from typing import List
@@ -24,6 +24,8 @@ def get_java_time_object(data_class_name:str='Instant'):
     JavaTimeClass = getattr(jpsBaseLibView().getView().java.time, data_class_name)
     data_class = JavaTimeClass.now().getClass()
     return data_class
+
+
 class TSClient():
     def __init__(self, property_file_path:str, time_class:str='Instant'):
         self.client = get_ts_client(property_file_path,time_class)
@@ -46,6 +48,9 @@ class TSClient():
         timeseries = jpsBaseLibView().getView().TimeSeries(times, dataIRIs, values)
         # Add data
         self.client.addTimeSeriesData(timeseries)
+
+    def check_timeseries_exist(self, iri):
+        return self.client.checkDataHasTimeSeries(iri)
 
     def update_timeseries_if_new(self,tsinstance: TimeSeriesInstance) -> bool:
         new_times = tsinstance.times
@@ -73,7 +78,7 @@ class TSClient():
         values = ts.getValues(ts_iri)
         # Unwrap Java time objects
         times = [t.toString() for t in times]
-        return times, values
+        return times, list(values)
 
 
 

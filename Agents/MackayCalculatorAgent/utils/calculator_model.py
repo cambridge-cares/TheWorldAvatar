@@ -94,8 +94,12 @@ class CalculatorModel(XLSVModel):
     def updateFromKG(self, new_values):
         for k in self.updateList:
             cell = self.updateList[k]
+            print(cell)
             new_value = new_values[k]
-            self.updateValue(cell, [new_value],pagename='model',transpose=False)
+            print(new_value)
+            if type(new_value) != list:
+                new_value = [new_value]
+            self.updateValue(cell, new_value,pagename='model',transpose=False)
 
     # read a particular value in the single value list by value name
     def readSingles(self, singlename):

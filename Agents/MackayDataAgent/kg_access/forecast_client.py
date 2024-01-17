@@ -1,7 +1,7 @@
 #This serves as a wrapper to call forcast Agent
 from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATIONWITHTIMESERIES
 from pyderivationagent.kg_operations import PyDerivationClient
-from data_types.ts_data_classes import *
+from data_classes.ts_data_classes import *
 from pyderivationagent.kg_operations import PySparqlClient
 DELETE_STR = "DELETE WHERE"
 INSERT_STR = "INSERT DATA"
@@ -57,14 +57,30 @@ class ForcastAgentClient:
         self.forcastagent_iri = agent_iri
         self.sparql_client = PySparqlClient(kg_info.endpoint,kg_info.endpoint,kg_user=kg_info.user,kg_password=kg_info.password)
 
-    def run(self, input_iri_list) -> str:
+
+    def call_predict(self, forecast_meta: ForecastMeta):
+        predict_input = self.insert_forcast_meta(forecast_meta)# Meta definition of forecast instance needs to be inserted before run forecast agent
+        self.create_forecast(predict_input)
+
+
+    def create_forecast(self, input_iri_list) -> str:
         derivation = self.deriv_client.createSyncDerivationForNewInfo(self.forcastagent_iri, input_iri_list, ONTODERIVATION_DERIVATIONWITHTIMESERIES)
         derivation_iri = derivation.getIri()
         # Update existing forecast derivation
         self.deriv_client.unifiedUpdateDerivation(derivation_iri)
         return derivation_iri
 
-    def update_forcast_meta(self, fmeta:ForecastMeta) -> list:
+    def get_forecast_iri(self, src_iri):
+        q = '''
+        SELECT * where {{
+        <{}> <https://www.theworldavatar.com/kg/ontotimeseries/hasForecast>	?forecast
+        }}
+        '''
+        r = self.sparql_client.performQuery(q.format(src_iri))
+        return r[0]['forecast']
+
+
+    def insert_forcast_meta(self, fmeta:ForecastMeta) -> list:
         self._delete_forecast_meta(fmeta.iri, fmeta.name)
         self._insert_forecast_meta(fmeta)
         input_list = [ fmeta.iri,
@@ -74,6 +90,7 @@ class ForcastAgentClient:
                        FORECAST_META_BASE_IRI+"Duration{}".format(fmeta.name)
                        ]
         return input_list
+
 
     def _delete_forecast_meta(self, src_iri, name):
         delete_str = META_UPDATE_QUERY.format(action=DELETE_STR, name=name, ts_iri=src_iri, model = '?m', start='?s',end='?e',frequency='?f', unit='?u',duration="?d")

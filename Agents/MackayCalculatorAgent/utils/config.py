@@ -14,6 +14,9 @@ ONEPAGERPATH = 'frontend/onepagers'#folder of the one-pagers
 
 #CONNECTION TO KG
 #location for the json that contains info of the all queries to send to the KG to get up-to-date data
-QUERYFILEPATH = './model/queries.json'
-KG_UPDATE_LIST = {"hhv":"I5009", "lhv":"I5010","dwellingunit":"J1276","population":"J1257"}
+QUERYFILEPATH = './model/queries_data_agent.json'
+KG_UPDATE_LIST_STATIC = {"hhv":"I5009", "lhv":"I5010","population":"J1257"}
+KG_UPDATE_LIST = {"dwellingunit":"J1276:N1276"}
 NAME_NETZERO = "reduction2100" # as correspond to the single_values.csv
+
+DATA_AGENT_URL = 'http://localhost:3000/data'
