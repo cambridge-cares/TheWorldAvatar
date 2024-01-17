@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mods xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd" xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <algorithms>
+        <algorithm name="Initial" display_name="HIDDEN">
+            <details>
+                <detail name="algorithm_type">Initial</detail>
+                <detail name="optimisable_param_subtypes"></detail>
+                <detail name="response_param_subtypes"></detail>
+                <detail name="global">false</detail>
+            </details>
+        </algorithm>
+        <algorithm name="GenSurrogateAlg" display_name="Surrogate model">
+            <details>
+                <detail name="algorithm_type">Surrogate</detail>
+                <detail name="global">false</detail>
+                <detail name="surrogate_type">HDMR</detail>
+                <detail name="fit_to_coded_responses">false</detail>
+                <detail name="order">6</detail>
+                <detail name="HDMRorder">2</detail>
+                <detail name="r_squared_tol">0.99999</detail>
+                <detail name="previous_algorithm">Initial</detail>
+            </details>
+        </algorithm>
+        <algorithm name="SamplingAlg" display_name="Surrogate model [Evaluations]">
+            <details>
+                <detail name="algorithm_type">Read_previous</detail>
+                <detail name="model_name">GenSurrogateAlg</detail>
+                <detail name="objective_function">SumOfSquares</detail>
+                <detail name="output_by_case">false</detail>
+                <detail name="output_values">true</detail>
+                <detail name="global">false</detail>
+                <detail name="evaluate_models">true</detail>
+                <detail name="previous_algorithm">SamplingAlg_data</detail>
+            </details>
+        </algorithm>
+    </algorithms>
+    <models></models>
+    <cases></cases>
+    <files></files>
+    <parameters></parameters>
+</mods>

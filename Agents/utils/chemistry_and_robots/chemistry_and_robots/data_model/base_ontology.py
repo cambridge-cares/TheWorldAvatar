@@ -1,5 +1,5 @@
 import pydantic
-from typing import Any, Dict
+from typing import Any, Optional
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF
 
@@ -41,6 +41,7 @@ class BaseOntology(pydantic.BaseModel):
     instance_iri: str = None
     clz: str = None
     namespace_for_init: str = None
+    rdfs_comment: Optional[str] = None
 
     def __init__(__pydantic_self__, **data: Any) -> None:
         _instance_iri = data['instance_iri'] if 'instance_iri' in data else None
@@ -125,7 +126,8 @@ class OM_Measure(BaseOntology):
 
 class OM_Quantity(BaseOntology):
     clz: str = OM_QUANTITY
-    hasValue: OM_Measure
+    hasValue: Optional[OM_Measure]
+    hasUnit: Optional[str]
 
 class OM_Volume(OM_Quantity):
     clz: str = OM_VOLUME
@@ -156,3 +158,6 @@ class OM_SpecificAmountOfMoney(OM_Quantity):
 
 class OM_AmountOfSubstance(OM_Quantity):
     clz: str = OM_AMOUNTOFSUBSTANCE
+
+class OM_VolumetricFlowRate(OM_Quantity):
+    clz: str = OM_VOLUMETRICFLOWRATE

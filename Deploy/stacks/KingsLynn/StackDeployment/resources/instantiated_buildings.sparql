@@ -1,0 +1,131 @@
+#
+### Queries to be run in OntoCityGml namespace ###
+#
+
+# Total number of instantiated buildings in OntoCityGml
+
+PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
+SELECT (count(DISTINCT ?bldg) as ?count)
+WHERE
+  { GRAPH <http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/building/>
+      { ?bldg  ocgml:objectClassId  26}
+  }
+
+# Total number of instantiated UPRNs in OntoCityGml
+
+PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
+PREFIX  osid: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#>
+
+SELECT (count(?uprn) as ?count)
+WHERE
+  { GRAPH <http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/identifiers>
+      { ?cityobj ^osid:intersectsFeature/osid:hasValue ?uprn}
+    BIND(iri(replace(str(?cityobj), "cityobject", "building")) AS ?bldg)
+    GRAPH <http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/building/>
+      { ?bldg  ocgml:objectClassId  26}
+  }
+
+# Total number of (unique) OntoCityGml buildings with UPRN information
+
+PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
+PREFIX  osid: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#>
+
+SELECT (count(distinct ?bldg) as ?count)
+WHERE
+  { GRAPH <http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/identifiers>
+      { ?cityobj ^osid:intersectsFeature/osid:hasValue ?uprn}
+    BIND(iri(replace(str(?cityobj), "cityobject", "building")) AS ?bldg)
+    GRAPH <http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/building/>
+      { ?bldg  ocgml:objectClassId  26}
+  }
+
+#
+### Queries to be run in OntoBuiltEnv namespace ###
+#
+
+# Total number of instantiated properties in OntoBuiltEnv (i.e. properties with UPRN info in OntoCityGml)
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+
+select (count(?property) as ?count)
+where { ?property  rdf:type/rdfs:subClassOf* obe:Property }
+
+
+# Total number of properties with genuine EPC information (i.e. excluding parent buildings with "summarised" EPCs)
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+
+select (count(?property) as ?count)
+where { ?property  rdf:type/rdfs:subClassOf* obe:Property .
+      	?property obe:hasLatestEPC ?epc .
+      }
+
+
+# Number of buildings / flats with genuine EPC information
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dabgeo:	  <http://www.purl.org/oema/infrastructure/>
+
+select (count(?property) as ?count)
+where { # Buildings
+        ?property  rdf:type dabgeo:Building .
+        # Flats
+        #?property  rdf:type obe:Flat .
+      	?property obe:hasLatestEPC ?epc .
+      }
+
+
+# Total number of buildings with EPC information (i.e. genuine and summarised)
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dabgeo:	  <http://www.purl.org/oema/infrastructure/>
+
+select (count(?property) as ?count)
+where { ?property  rdf:type dabgeo:Building .
+      }
+
+
+# Total number of buildings with OCGML representation (should be the same as buildings with EPC information)
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dabgeo:	  <http://www.purl.org/oema/infrastructure/>
+
+select (count(?property) as ?count)
+where { ?property  obe:hasOntoCityGMLRepresentation ?ocgml_iri
+      }
+
+
+# Total number of properties with sales information, i.e. previous transaction record
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+
+select (count(?property) as ?count)
+where { ?property  rdf:type/rdfs:subClassOf* obe:Property .
+      	?property obe:hasLatestTransactionRecord ?tx .
+      }
+
+
+# Total number of properties with EPC and sales information
+
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
+
+select (count(?property) as ?count)
+where { ?property  rdf:type/rdfs:subClassOf* obe:Property .
+        ?property obe:hasLatestEPC ?epc .
+       	FILTER NOT EXISTS {?property ^obe:isIn ?flat}
+      	?property obe:hasLatestTransactionRecord ?tx .
+      }

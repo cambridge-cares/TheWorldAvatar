@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  sewagedataengineering:
+    image: sewagedataengineering
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - type: bind
+        source: ./Data
+        target: /src/Data

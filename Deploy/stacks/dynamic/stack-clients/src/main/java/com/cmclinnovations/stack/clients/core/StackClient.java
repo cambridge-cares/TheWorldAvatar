@@ -1,28 +1,27 @@
 package com.cmclinnovations.stack.clients.core;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DirectedAcyclicGraph;
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
-import com.cmclinnovations.stack.clients.core.datasets.Dataset;
-import com.cmclinnovations.stack.clients.utils.FileUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 public final class StackClient {
 
+    public static final String EXECUTABLE_KEY = "EXECUTABLE";
     public static final String STACK_NAME_KEY = "STACK_NAME";
+    private static final String STACK_BASE_DIR_KEY = "STACK_BASE_DIR";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
+    public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
     public static final String SCRATCH_DIR = "/stack_scratch";
     public static final String GEOTIFFS_DIR = "/geotiffs";
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    public static final Path STACK_CONFIG_DIR = Path.of("/inputs/config");
 
     private static final String stackName;
 
@@ -34,7 +33,7 @@ public final class StackClient {
         String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
         stackName = (null != envVarStackName) ? envVarStackName : "Test_Stack";
 
-        stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName);
+        stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName, PROJECT_NAME_LABEL, stackName);
     }
 
     private StackClient() {
@@ -44,8 +43,16 @@ public final class StackClient {
         return stackName;
     }
 
+    public static String getStackNameForRegex() {
+        return stackName.replace("_", "(?:-|_)");
+    }
+
     public static String prependStackName(String name) {
         return stackName + "_" + name;
+    }
+
+    public static String removeStackName(String name) {
+        return name.replaceFirst("^/?" + StackClient.getStackNameForRegex() + "(?:-|_)", "");
     }
 
     public static Map<String, String> getStackNameLabelMap() {
@@ -60,58 +67,68 @@ public final class StackClient {
         StackClient.inStack = inStack;
     }
 
-    public static void uploadInputDatasets() {
-        DirectedAcyclicGraph<Dataset, DefaultEdge> graph = new DirectedAcyclicGraph<>(
-                DefaultEdge.class);
-        try (Stream<Path> files = Files.list(Path.of("/inputs/config"))) {
-            // Add Datasets to a DAG as vertices
-            files.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".json"))
-                    .map(StackClient::readInputDataset)
-                    .forEach(graph::addVertex);
-
-            // Check to see if there is a Dataset with the same name as the Stack.
-            Optional<Dataset> stackSpecificDataset = graph.vertexSet().stream()
-                    .filter(dataset -> dataset.getName().equals(StackClient.getStackName()))
-                    .findAny();
-
-            if (stackSpecificDataset.isPresent()) {
-                // if so only load that one and its children.
-
-                // Add an edge when one Dataset references another in its "externalDatasets"
-                // node. Throw an exception if the referenced Dataset doesn't exist.
-                graph.vertexSet().forEach(parentDataset -> parentDataset.getExternalDatasets()
-                        .forEach(referencedDatasetName -> graph.vertexSet().stream()
-                                .filter(dataset -> dataset.getName().equals(referencedDatasetName))
-                                .findFirst().ifPresentOrElse(
-                                        childDataset -> graph.addEdge(parentDataset, childDataset),
-                                        () -> {
-                                            throw new RuntimeException("Failed to find external dataset '"
-                                                    + referencedDatasetName + "' referenced in dataset '"
-                                                    + parentDataset.getName() + "'.");
-                                        })));
-
-                stackSpecificDataset.get().loadData();
-                graph.getDescendants(stackSpecificDataset.get()).forEach(Dataset::loadData);
-            } else {
-                // Otherwise load all of the Datasets.
-                graph.vertexSet().forEach(Dataset::loadData);
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read in dataset config file(s).", ex);
-        }
+    public static String getContainerEngineName() {
+        return System.getenv().getOrDefault(EXECUTABLE_KEY, "docker");
     }
 
-    public static Dataset readInputDataset(Path configFile) {
-        try {
-            Dataset dataset = objectMapper.readValue(configFile.toFile(), Dataset.class);
-            if (null == dataset.getName()) {
-                dataset.setName(FileUtils.getFileNameWithoutExtension(configFile));
-            }
-            return dataset;
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
-        }
+    private static Path getStackBaseDir() {
+        return Path.of(System.getenv(STACK_BASE_DIR_KEY));
+    }
+
+    public static Path getAbsDataPath() {
+        return getStackBaseDir().resolve("inputs").resolve("data");
+    }
+
+    /**
+     * Get a RemoteRDBStoreClient for the named Postgres RDB running in this stack.
+     *
+     * @param database the name of the Postgres database, if the database doesn't
+     *                 already exist it will be created
+     * @return a RemoteRDBStoreClient attached to the named Postgres RDB running in
+     *         this stack
+     */
+    public static RemoteRDBStoreClient getRemoteRDBStoreClient(String database) {
+        PostGISClient postgisClient = PostGISClient.getInstance();
+        postgisClient.createDatabase(database);
+        return postgisClient.getRemoteStoreClient(database);
+    }
+
+    /**
+     * Get a RemoteRDBStoreClient for the default Postgres RDB running in this
+     * stack.
+     *
+     * @return a RemoteRDBStoreClient attached to the default Postgres RDB running
+     *         in this stack
+     */
+    public static RemoteRDBStoreClient getRemoteRDBStoreClient() {
+        return PostGISClient.getInstance().getRemoteStoreClient();
+    }
+
+    /**
+     * Get a RemoteStoreClient for the Blazegraph triplestore running in this stack.
+     * 
+     * @param namespace the name of the Blazegraph namespace, if the namespace
+     *                  doesn't already exist it will be created with the default
+     *                  properties
+     * @param database  the name of the Postgres database, if the database doesn't
+     *                  already exist it will be created
+     * @param timeClass see description from this
+     *                  {@link TimeSeriesClient#TimeSeriesClient(TripleStoreClientInterface, Class, String, String, String)
+     *                  TimeSeriesClient} constructor
+     * @return a RemoteStoreClient attached to the Blazegraph triplestore running in
+     *         this stack
+     */
+    public static <T> TimeSeriesClient<T> getTimeSeriesClient(String namespace, String database, Class<T> timeClass) {
+        BlazegraphClient blazegraphClient = BlazegraphClient.getInstance();
+        blazegraphClient.createNamespace(namespace);
+        RemoteStoreClient remoteStoreClient = blazegraphClient.getRemoteStoreClient(namespace);
+
+        PostGISClient postgisClient = PostGISClient.getInstance();
+        postgisClient.createDatabase(database);
+        PostGISEndpointConfig postgisConfig = postgisClient.getEndpoint();
+
+        return new TimeSeriesClient<>(remoteStoreClient, timeClass,
+                postgisConfig.getJdbcURL(database), postgisConfig.getUsername(), postgisConfig.getPassword());
     }
 
 }

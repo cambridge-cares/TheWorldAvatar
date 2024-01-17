@@ -1,0 +1,70 @@
+{
+    "name": "Flood Routing Tool",
+    "groups": [
+        {
+        "name": "Transport Network Criticality Analysis",
+        "stack": "http://localhost:3838",
+        "sources": [
+            {
+                "id": "trip_centrality",
+                "type": "geojson",
+                "cluster": false,
+                "clusterMaxZoom": 14,
+                "clusterRadius": 100,
+                "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atripcentrality_drive_flooded_30cm&outputFormat=application%2Fjson"
+            }
+        ],
+        "layers": [
+            {
+                "id": "trip_centrality_layer",
+                "name": "Road from Hospital (Flooded 30cm)",
+                "treeable": true,
+                "source": "trip_centrality",
+                "type": "line",
+                "order": 50,
+                "layout": {
+                    "visibility": "none"
+                },
+                "paint": {
+                    "line-color": [
+                        "case", 
+                        ["==", ["get", "count_difference_percentage"], null], "#FFFFFF", [
+                        "interpolate", ["linear"],
+                        ["number", ["get", "count_difference_percentage"]],
+                        -0.5, "#FF0000",
+                        0,"#FFFFFF",
+                        0.5, "#006400"
+                    ]],
+                    "line-width": 5,
+                    "line-opacity": 1
+                }
+            },
+            {
+                "id": "trip_centrality_fix",
+                "name": "Road unusable (Flooded 30cm)",
+                "treeable": true,
+                "source": "trip_centrality",
+                "type": "line",
+                "filter": ["==", ["to-number",["get", "flooded_count"]],0],
+                "order": 50,
+                "layout": {
+                    "visibility": "none"
+                },
+                "paint": {
+                    "line-color": [
+                        "case", 
+                        ["==", ["get", "count_difference_percentage"], null], "#FFFFFF", [
+                        "interpolate", ["linear"],
+                        ["number", ["get", "count_difference_percentage"]],
+                        -0.5, "#FF0000",
+                        0,"#ffe6e6"
+                    ]],
+                    "line-width": 5,
+                    "line-opacity": 1
+                }
+            }
+        ]
+    }
+        
+    ]
+}

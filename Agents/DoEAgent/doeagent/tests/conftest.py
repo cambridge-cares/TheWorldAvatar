@@ -1,7 +1,7 @@
 from testcontainers.core.container import DockerContainer
 from pathlib import Path
 from flask import Flask
-import logging
+import requests
 import pytest
 import shutil
 import time
@@ -9,12 +9,11 @@ import uuid
 import os
 
 from pyderivationagent.conf import config_derivation_agent
+from pyderivationagent import PyDerivationClient
 
 from doeagent.kg_operations import ChemistryAndRobotsSparqlClient
 from doeagent.agent import DoEAgent
 from doeagent.data_model import *
-
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 
 # ----------------------------------------------------------------------------------
@@ -27,6 +26,7 @@ SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
+TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
@@ -40,6 +40,8 @@ DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOEAGENT_ENV).DERIVATION_
 DOE_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1'
 DERIVATION_INPUTS = [DOE_IRI]
 
+DOE_NO_PRIOR_EXPERIMENT_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_no_prior_data/DoE_1'
+DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_Template/DoE_1'
 
 # ----------------------------------------------------------------------------------
 # Pytest session related functions
@@ -73,13 +75,22 @@ def get_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://localhost:{service.host_port}/{url_route}"
-        return service_url
 
-    # this will run only once per entire test session and ensures that all the services
-    # in docker containers are ready. Increase the sleep value in case services need a bit
-    # more time to run on your machine.
-    time.sleep(8)
+        # this will run only once per entire test session
+        # it ensures that the services requested in docker containers are ready
+        # e.g. the blazegraph service is ready to accept SPARQL query/update
+        service_available = False
+        while not service_available:
+            try:
+                response = requests.head(service_url)
+                if response.status_code != requests.status_codes.codes.not_found:
+                    service_available = True
+            except requests.exceptions.ConnectionError:
+                time.sleep(3)
+
+        return service_url
     return _get_service_url
+
 
 @pytest.fixture(scope="session")
 def get_service_auth():
@@ -123,9 +134,9 @@ def initialise_clients(get_service_url, get_service_auth):
     sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
     # Create DerivationClient for creating derivation instances
-    derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-        sparql_client.kg_client,
-        DERIVATION_INSTANCE_BASE_URL
+    derivation_client = PyDerivationClient(
+        DERIVATION_INSTANCE_BASE_URL,
+        sparql_endpoint, sparql_endpoint,
     )
 
     yield sparql_client, derivation_client
@@ -150,14 +161,20 @@ def create_doe_agent():
             agent_iri=doe_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=doe_agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=doe_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=doe_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=doe_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(doe_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(doe_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=doe_agent_config.KG_USERNAME,
             kg_password=doe_agent_config.KG_PASSWORD,
-            fs_url=doe_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(doe_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=doe_agent_config.FILE_SERVER_USERNAME,
             fs_password=doe_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=doe_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            agent_endpoint=doe_agent_config.ONTOAGENT_OPERATION_HTTP_URL, # we keep this as it is for now (start with http://host.docker.internal)
+            max_thread_monitor_async_derivations=doe_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=doe_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=doe_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=doe_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=doe_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
             app=Flask(__name__)
         )
         return doe_agent
@@ -167,6 +184,10 @@ def create_doe_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
+
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer

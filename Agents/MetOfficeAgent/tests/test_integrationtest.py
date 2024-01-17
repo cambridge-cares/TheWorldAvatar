@@ -1,37 +1,34 @@
-###############################################
-# Authors: Markus Hofmeister (mh807cam.ac.uk) #    
-# Date: 08 Apr 2022                           #
-###############################################
+################################################
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Date: 08 Apr 2022                            #
+################################################
 
 import copy
 import pytest
 from math import nan
 
-from metoffice.dataretrieval.stations import *
-from metoffice.dataretrieval.readings import *
-from metoffice.utils.properties import QUERY_ENDPOINT
-from metoffice.flaskapp import create_app
-from tests.utils import *
+from agent.dataretrieval.stations import *
+from agent.dataretrieval.readings import *
 
-# Import modules under test from gasgridagent
-from metoffice.datainstantiation.stations import *
-from metoffice.datainstantiation.readings import *
+from tests.conftest import *
 
-
-@pytest.fixture
-def client():
-    app = create_app({'TESTING': True})
-    with app.test_client() as client:
-        yield client
+# Import module(s) under test from agent
+from agent.datainstantiation.stations import *
+from agent.datainstantiation.readings import *
 
 
-@pytest.mark.skip(reason="only works as integration test with blank namespace in local blazegraph \
-                          as well as blank RDB as TimeSeriesClient reads required inputs directly \
-                          from properties file")
-def test_update_all_stations_webapp(client, mocker):
-    # Integration test for expected behavior of updating all stations and readings
-    # via webapp (requires (local) blazegraph running at endpoints specified
-    # in 'metoffice.properties'; namespace MUST be empty)
+@pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in `stack_configs_mock.py` file.\
+                          Default settings in `stack_configs_mock.py` match provided `docker-compose.test.yml`")
+def test_update_all_stations_webapp(clear_triple_store, clear_database, create_testing_agent, mocker):
+    # Integration test for expected behavior of updating all stations and readings via Flask App
+    
+    # Mock Stack client initialisations
+    mocker.patch('agent.kgutils.stackclients.PostGISClient.__init__', return_value=None)
+    mocker.patch('agent.kgutils.stackclients.GdalClient.__init__', return_value=None)
+    mocker.patch('agent.kgutils.stackclients.GeoserverClient.__init__', return_value=None)
+    # Mock PostGIS client methods
+    mocker.patch('agent.kgutils.stackclients.PostGISClient.check_table_exists', return_value=True)
+    mocker.patch('agent.kgutils.stackclients.PostGISClient.check_point_feature_exists', return_value=True)
 
     # Read test station data
     sites_data = read_readings_locations()
@@ -63,7 +60,7 @@ def test_update_all_stations_webapp(client, mocker):
    
     # Update all stations and readings
     route = '/api/metofficeagent/update/all'
-    response = client.get(route)
+    response = create_testing_agent.get(route)
     updated = response.json
     assert updated['stations'] == 6
     assert updated['readings'] == 50
@@ -76,7 +73,7 @@ def test_update_all_stations_webapp(client, mocker):
 
     # Update all stations and readings
     route = '/api/metofficeagent/update/all'
-    response = client.get(route)
+    response = create_testing_agent.get(route)
     updated = response.json
     assert updated['stations'] == 0
     assert updated['readings'] == 1
@@ -89,7 +86,7 @@ def test_update_all_stations_webapp(client, mocker):
 
     # Update all stations and readings
     route = '/api/metofficeagent/update/all'
-    response = client.get(route)
+    response = create_testing_agent.get(route)
     updated = response.json
     assert updated['stations'] == 0
     assert updated['readings'] == 0

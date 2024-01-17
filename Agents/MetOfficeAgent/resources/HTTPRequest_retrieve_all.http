@@ -11,7 +11,7 @@
 //                         (i.e. observation types as defined by OntoEMS, either as full IRIs or shorthands)
 //    splitObsFcs ... Boolean flag whether to create joint or separate file sets for observations
 //                    and forecasts (default: single file for observations and forecasts)
-//    circleCenter ... Circle center as "latitude#longitude" for geospatial search within Blazegraph
+//    circleCenter ... Circle center as "latitude#longitude" in EPSG:4326 for geospatial search (via PostGIS)
 //                     (default: No geospatial search, retrieve all data)
 //    circleRadius ... Circle radius around center in km (default: None)
 //                     (circleCenter and circleRadius are only considered to retrieve data within
@@ -22,7 +22,7 @@
 // Output directory path depends on whether agent is deployed ...
 //    ... locally: "<path to Agents folder>/MetOfficeAgent/output"
 //    ... in Docker container: "/app/output"
-GET http://localhost:5001/api/metofficeagent/retrieve/all
+GET http://165.232.172.16:5000/api/metofficeagent/retrieve/all
 Content-Type: application/json
 
 { "query": {
@@ -36,7 +36,7 @@ Content-Type: application/json
 // Retrieve only selected stations and time series data as of 14 days back
 // Please NOTE that circleCenter and circleRadius require geospatially enabled Blazegraph namespace
 
-# GET http://localhost:5001/api/metofficeagent/retrieve/all
+# GET http://165.232.172.16:5000/api/metofficeagent/retrieve/all
 # Content-Type: application/json
 
 # { "query": {

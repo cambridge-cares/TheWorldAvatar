@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 
-@Ignore("Requires sample data excel files in xlsx format for both gas and particle readings to be in the data folder")
+@Ignore("Requires sample data excel files in xlsx format for both gas and particle readings to be in the data folder, check data.txt for more information")
 
 public class HistoricalAQMeshAgentXLSXConnectorTest {
 

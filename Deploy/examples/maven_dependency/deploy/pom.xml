@@ -9,11 +9,11 @@
     <!-- Repository locations to deploy to (the IDs should match a server ID in your ~/.m2/settings.xml -->
     <distributionManagement>
         <snapshotRepository>
-            <id>worldavatar-github</id>
+            <id>repo</id>
             <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
         </snapshotRepository>
         <repository>
-            <id>worldavatar-github</id>
+            <id>repo</id>
             <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
         </repository>
     </distributionManagement>

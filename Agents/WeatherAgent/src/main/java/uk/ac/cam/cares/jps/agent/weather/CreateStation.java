@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.weather;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Instant;
 
 import javax.servlet.ServletException;
@@ -66,27 +68,32 @@ public class CreateStation extends HttpServlet {
 		}
 
 		String station;
-		String response;
-		if (!postgisClient.checkTableExists(Config.LAYERNAME)) {
-			// add ontop mapping file
-			Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
-			new OntopClient().updateOBDA(obda_file);
-
-			station = weatherClient.createStation(lat,lon,req.getParameter("name"));
-			JSONObject response_jo = new JSONObject();
-			response_jo.put("station", station);
-			response = response_jo.toString();
-		} else {
-			// table exists, check table contents for an equivalent point
-			if (!postgisClient.checkPointExists(lat, lon)) {
+		String response = "";
+		try (Connection conn = postgisClient.getConnection()) {
+			if (!postgisClient.checkTableExists(Config.LAYERNAME, conn)) {
+				// add ontop mapping file
+				Path obda_file = new ClassPathResource("ontop.obda").getFile().toPath();
+				new OntopClient().updateOBDA(obda_file);
+	
 				station = weatherClient.createStation(lat,lon,req.getParameter("name"));
 				JSONObject response_jo = new JSONObject();
 				response_jo.put("station", station);
 				response = response_jo.toString();
-				resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
 			} else {
-				response = "There is already a station at the given coordinates";
+				// table exists, check table contents for an equivalent point
+				if (!postgisClient.checkPointExists(lat, lon, conn)) {
+					station = weatherClient.createStation(lat,lon,req.getParameter("name"));
+					JSONObject response_jo = new JSONObject();
+					response_jo.put("station", station);
+					response = response_jo.toString();
+					resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
+				} else {
+					response = "There is already a station at the given coordinates";
+				}
 			}
+		} catch (SQLException e) {
+			LOGGER.error("Probably failed to disconnect");
+			LOGGER.error(e.getMessage());
 		}
 
 		LOGGER.info(response);

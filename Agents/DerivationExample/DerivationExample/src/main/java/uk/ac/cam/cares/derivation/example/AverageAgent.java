@@ -49,30 +49,30 @@ public class AverageAgent extends DerivationAgent {
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 		Config.initProperties();
-		
+
 		// set up remote store client to point to triple store
-        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-    	SparqlClient sparqlClient = new SparqlClient(storeClient);
-    	
+		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+		SparqlClient sparqlClient = new SparqlClient(storeClient);
+
 		if (validateInput(derivationInputs, sparqlClient)) {
 			String inputdata_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.InputData)).get(0);
-			
+
 			if (InstancesDatabase.Average == null) {
 				InstancesDatabase.Average = sparqlClient.getAverageIRI();
 			}
-			
+
 			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-			
+
 			// get average from input
 			double average = tsClient.getAverage(inputdata_iri);
-			
+
 			// update average table
 			List<Instant> time_column = Arrays.asList(Instant.now());
-	    	List<List<?>> values = new ArrayList<>();
-	    	List<Double> value_column = Arrays.asList(average);
-	    	values.add(value_column);
+			List<List<?>> values = new ArrayList<>();
+			List<Double> value_column = Arrays.asList(average);
+			values.add(value_column);
 			TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(InstancesDatabase.Average), values);
-			
+
 			tsClient.addTimeSeriesData(ts);
 
 			// nothing need to be provided to the derivationOutputs as this agent deals with
@@ -81,7 +81,7 @@ public class AverageAgent extends DerivationAgent {
 			throw new BadRequestException("Input validation failed.");
 		}
 	}
-	
+
 	private boolean validateInput(DerivationInputs derivationInputs, SparqlClient sparqlClient) {
 		boolean valid = false;
 

@@ -1,0 +1,19 @@
+{
+    "name": "elevation",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "elevation",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "elevation",
+            "subdirectory": "elevation",
+            "skip": false,
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        }
+    ]
+}

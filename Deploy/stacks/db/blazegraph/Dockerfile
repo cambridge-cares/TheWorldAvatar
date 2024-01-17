@@ -4,7 +4,7 @@ FROM tomcat:9.0
 RUN wget -O /usr/local/tomcat/webapps/blazegraph.war https://github.com/blazegraph/database/releases/download/BLAZEGRAPH_2_1_6_RC/blazegraph.war
 
 # Install zip in order to modify .war file
-RUN apt-get update && apt-get install zip && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install zip -y && rm -rf /var/lib/apt/lists/*
 
 # Overwrite tomcat-users.xml to add blazegraph role
 COPY tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml

@@ -1,0 +1,10 @@
+// Example HTTP request to match building instances in the OntoBuiltEnv and OntoCityGml SPARQL
+
+PUT http://localhost:58085/BuildingMatchingAgent/match
+Content-Type: application/json
+
+{ 
+  "ocgml": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql",
+  "obe": "http://165.232.172.16:3838/blazegraph/namespace/buildings/sparql",
+  "prefixIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
+}

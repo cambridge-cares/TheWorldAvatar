@@ -41,7 +41,13 @@ public class Config {
 	public static String derivationInstanceBaseURL;
 
 	public static long delayAgentDiffReverse;
-	
+
+	// ExceptionThrowAgent
+	public static String agentIriExceptionThrow;
+	public static String agentHttpUrlExceptionThrow;
+	public static long initDelayAgentExceptionThrow;
+	public static long periodAgentExceptionThrow;
+
 	public static String sparqlEndpoint;
 	public static String kgUser;
 	public static String kgPassword;
@@ -84,7 +90,12 @@ public class Config {
 				Config.derivationInstanceBaseURL = Config.props.getProperty("derivation.instance.base.url");
 
 				Config.delayAgentDiffReverse = Long.parseLong(Config.props.getProperty("delay.agent.diffreverse"));
-				
+
+				Config.agentIriExceptionThrow = Config.props.getProperty("agent.iri.exceptionthrow");
+				Config.agentHttpUrlExceptionThrow = Config.props.getProperty("deploy.host.base.url") + ExceptionThrowAgent.API_PATTERN;
+				Config.initDelayAgentExceptionThrow = Long.parseLong(Config.props.getProperty("initial.delay.agent.exceptionthrow"));
+				Config.periodAgentExceptionThrow = Long.parseLong(Config.props.getProperty("period.agent.exceptionthrow"));
+
 				Config.sparqlEndpoint = Config.props.getProperty("kg.url");
 				Config.kgUser = Config.props.getProperty("kg.user");
 				Config.kgPassword = Config.props.getProperty("kg.password");

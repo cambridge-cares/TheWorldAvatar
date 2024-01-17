@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class WeatherAPIConnectorTest {
 	@Test
     public void testAPI() {
-        String apikey = "REPLACE WITH API KEY";
-    	WeatherAPIConnector.getWeatherDataFromOpenWeather(0, 0, apikey);
+        Config.apikey = "REPLACE WITH API KEY";
+    	WeatherAPIConnector.getCurrentWeatherDataFromOpenWeather(0, 0);
     }
 }

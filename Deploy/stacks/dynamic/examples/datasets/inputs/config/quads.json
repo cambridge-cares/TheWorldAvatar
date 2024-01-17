@@ -1,0 +1,17 @@
+{
+    "datasetDirectory": "rdf",
+    "namespace": {
+        "name": "quads",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.quadsMode": true,
+            "com.bigdata.rdf.sail.truthMaintenance": false
+        }
+    },
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "subdirectory": "quads",
+            "skip": false
+        }
+    ]
+}

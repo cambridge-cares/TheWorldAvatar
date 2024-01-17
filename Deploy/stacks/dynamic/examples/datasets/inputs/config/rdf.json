@@ -1,0 +1,8 @@
+{
+    "externalDatasets": [
+        "triples",
+        "quads",
+        "triples_with_inference",
+        "triples_using_properties_file"
+    ]
+}

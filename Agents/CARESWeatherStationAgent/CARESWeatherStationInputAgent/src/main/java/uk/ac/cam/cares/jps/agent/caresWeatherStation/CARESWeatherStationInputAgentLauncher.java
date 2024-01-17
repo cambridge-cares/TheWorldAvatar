@@ -1,12 +1,20 @@
 package uk.ac.cam.cares.jps.agent.caresWeatherStation;
 
 import org.json.JSONObject;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
+import java.util.Properties;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -24,6 +32,13 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
     public static final String KEY_AGENTPROPERTIES = "agentProperties";
     public static final String KEY_APIPROPERTIES = "apiProperties";
     public static final String KEY_CLIENTPROPERTIES = "clientProperties";
+    private static String sparqlUpdateEndpoint;
+    private static String sparqlQueryEndpoint;
+    private static String sparqlUser;
+    private static String sparqlPassword;
+    private static String dbUrl;
+    private static String dbUser;
+    private static String dbPassword;
 
 
     /**
@@ -39,12 +54,16 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the CARES weather station API connector needed to interact with the API!";
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
+    private static final String LOADTSCONFIG_ERROR_MSG = "Unable to load configs from timeseries client properties file";
+
+    public static String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
+	public static String DATABASE = System.getenv("DATABASE");
+	public static String LAYERNAME = System.getenv("LAYERNAME");
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         return processRequestParameters(requestParams);
     }
-
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -54,6 +73,11 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
             String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
             String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
             String apiProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
+            try {
+            loadTSClientConfigs(clientProperties);
+            } catch (IOException e) {
+                throw new JPSRuntimeException(LOADTSCONFIG_ERROR_MSG, e);
+            }
             String[] args = new String[] {agentProperties,clientProperties,apiProperties};
             jsonMessage = initializeAgent(args);
             jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
@@ -72,6 +96,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         String agentProperties;
         String apiProperties;
         String clientProperties;
+
         if (requestParams.isEmpty()) {
             validate = false;
         }
@@ -105,16 +130,15 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         return validate;
     }
 
-    // TODO: Use proper argument parsing
     /**
      * Main method that runs through all steps to update the data received from the CARES weather station API.
      * defined in the provided properties file.
      * @param args The command line arguments. Three properties files should be passed here in order: 1) input agent
      *             2) time series client 3) API connector.
+     * @throws IOException
      */
 
     public static JSONObject initializeAgent(String[] args) {
-
         // Ensure that there are three properties files
         if (args.length != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
@@ -136,10 +160,13 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
 
         // Create and set the time series client
         TimeSeriesClient<OffsetDateTime> tsClient;
+        RemoteStoreClient kbClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint, sparqlUser, sparqlPassword);
+        
         try {
-            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
+            tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class);
+            tsClient.setRDBClient(dbUrl, dbUser, dbPassword);
             agent.setTsClient(tsClient);
-        } catch (IOException | JPSRuntimeException e) {
+        } catch (JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
             throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
         }
@@ -165,9 +192,8 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
         LOGGER.info("API connector object initialized.");
         jsonMessage.accumulate("Result", "API connector object initialized.");
 
-
         // Retrieve readings
-        JSONObject weatherDataReadings;
+        JSONObject weatherDataReadings = new JSONObject();
 
         try {
             weatherDataReadings = connector.getWeatherReadings();
@@ -180,6 +206,7 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
                 weatherDataReadings.length()));
         jsonMessage.accumulate("Result", "Retrieved " + weatherDataReadings.getJSONArray("observations").length() +
                 " weather station readings.");
+
         // If readings are not empty there is new data
         if(!weatherDataReadings.isEmpty()) {
             // Update the data
@@ -192,7 +219,68 @@ public class CARESWeatherStationInputAgentLauncher extends JPSAgent {
             LOGGER.info("No new readings are available.");
             jsonMessage.accumulate("Result", "No new readings are available.");
         }
+
+        try {
+            WeatherQueryClient weatherQueryClient = new WeatherQueryClient(args[0], args[1], args[2]);
+            weatherQueryClient.instantiateIfNotExist(weatherDataReadings);
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Unable to carry out queries or insert data into the sparql store!", e);
+        }
+
+
         return jsonMessage;
     }
 
+    /**
+     * Reads the parameters needed for the timeseries client
+     * @param filepath Path to the properties file from which to read the parameters
+     */
+    private void loadTSClientConfigs(String filepath) throws IOException {
+        // Check whether properties file exists at specified location
+        File file = new File(filepath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
+        }
+
+        // Try-with-resource to ensure closure of input stream
+        try (InputStream input = new FileInputStream(file)) {
+
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+
+            // Get timeseries client parameters from properties file
+            if (prop.containsKey("db.url")) {
+                dbUrl = prop.getProperty("db.url");
+            } else {
+                throw new IOException("Properties file is missing \"db.url=<db_url>\"");
+            }
+            if (prop.containsKey("db.user")) {
+                dbUser = prop.getProperty("db.user");
+            } else {
+                throw new IOException("Properties file is missing \"db.user=<db_user>\"");
+            }
+            if (prop.containsKey("db.password")) {
+                dbPassword = prop.getProperty("db.password");
+            } else {
+                throw new IOException("Properties file is missing \"db.password=<db_password>\"");
+            }
+            if (prop.containsKey("sparql.query.endpoint")) {
+                sparqlQueryEndpoint = prop.getProperty("sparql.query.endpoint");
+            } else {
+                throw new IOException("Properties file is missing \"sparql.query.endpoint=<sparql_query_endpoint>\"");
+            }
+            if (prop.containsKey("sparql.update.endpoint")) {
+                sparqlUpdateEndpoint = prop.getProperty("sparql.update.endpoint");
+            } else {
+                throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
+            }
+            if (prop.containsKey("sparql.username")) {
+                sparqlUser = prop.getProperty("sparql.username");
+            }
+            if (prop.containsKey("sparql.password")) {
+                sparqlPassword = prop.getProperty("sparql.password");
+            }
+        }
+    }
 }

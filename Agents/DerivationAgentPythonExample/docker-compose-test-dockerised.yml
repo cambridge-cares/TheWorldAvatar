@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  derivation_agent_python_example:
+    image: ghcr.io/cambridge-cares/derivation_agent_python_example:1.0.0-SNAPSHOT
+    container_name: derivation_agent_python_example
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    build:
+      context: .
+      target: test_dockerised
+      args:
+        # Build argument used to construct paths in Dockerfile (needs to match name in setup.py)
+        agentdir: derivationagentpythonexample
+    ports:
+      - 7000:5000
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    env_file:
+      - ./tests/agent.env.test
+    secrets:
+      - email_auth
+    volumes:
+      # To run docker inside docker, mount default Unix socket docker.sock as a volume
+      # (https://devopscube.com/run-docker-in-docker/)
+      - /var/run/docker.sock:/var/run/docker.sock
+
+# Secrets used to set runtime passwords
+secrets:
+  email_auth:
+    file: ./tests/dummy_services_secrets/email_auth.json

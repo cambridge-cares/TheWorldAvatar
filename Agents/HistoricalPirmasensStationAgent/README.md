@@ -130,12 +130,20 @@ to their location thus you do not need to shift the properties files and mapping
 
 One csv file with the name "data.csv" needs to be placed under the `config` folder. An example csv file "testData.csv" can be found in the `testData` folder at HistoricalPirmasensStationAgent\testData\testData.csv.
 
+#### Docker deployment
+
 To build and start the agent, open up the command prompt in the same directory as this README, run
 ```
 docker-compose up -d
 ```
-The agent is reachable at "historical-pirmasens-station-agent/retrieve" on localhost port 1027.
 
+#### Stack deployment
+
+If you want to spin up this agent as part of a stack, instead of `docker-compose up -d`, do the following:
+- Copy the contents of `config/client.properties_stack` into `config/client.properties`, inserting the name of your stack.
+- Build the image via `docker-compose build`. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config` folder of the stack manager.
+- Start the stack manager as usual. This should start the container.
 
 #### Run the agent
 To run the agent, a POST request must be sent to http://localhost:1027/historical-pirmasens-station-agent/retrieve with a correct JSON Object.
@@ -150,6 +158,8 @@ In curl syntax
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"HISTORICAL_AGENTPROPERTIES\",\"connectorProperties\":\"HISTORICAL_CONNECTORPROPERTIES\",\"clientProperties\":\"HISTORICAL_CLIENTPROPERTIES\"}" localhost:1027/historical-pirmasens-station-agent/retrieve
 ```
+
+If the agent is part of a stack, you will most likely need to use a different port number in the above requests, e.g. 3838.
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 ```

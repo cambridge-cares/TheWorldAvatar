@@ -1,0 +1,52 @@
+{
+"numerical_settings":{
+	"seed": 1
+},
+"dataset":{
+	"src": "./data/Structured/KWL-GPPDdeu/tableA_full.csv",
+	"tgt": "./data/Structured/KWL-GPPDdeu/tableB.csv"
+},
+"pre_processing":{
+	"add_knowledge": null
+},
+"blocking":{
+	"name": "TokenBasedPairIterator",
+	"model_specific": {
+		"min_token_length": 3,
+		"max_token_occurrences_src": 50,
+		"max_token_occurrences_tgt": 50,
+		"blocking_properties": ["name", "owner", "locality"],
+		"reset_index": false
+	}
+},
+"mapping": {
+	"mode": "fixed",
+	"similarity_functions": [
+		{"name": "dist_absolute", "cut_off_mode": "fixed", "cut_off_value": 10},
+		{"name": "dist_relative", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_equal", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1, "maxidf": 30},
+		{"name": "dist_cosine_embedding", "cut_off_mode": "fixed", "cut_off_value": 1}
+	],
+	"triples": [
+		{"prop1": "year", "prop2": "year", "sim": 0, "pos": 0},
+		{"prop1": "capacity", "prop2": "capacity", "sim": 1, "pos": 1},
+		{"prop1": "fuel", "prop2": "fuel", "sim": 2, "pos": 2},
+		{"prop1": "name", "prop2": "name", "sim": 3, "pos": 3},
+		{"prop1": "name", "prop2": "name", "sim": 4, "pos": 4},
+		{"prop1": "owner", "prop2": "owner", "sim": 3, "pos": 5},
+		{"prop1": "owner", "prop2": "owner", "sim": 4, "pos": 6}
+	],
+	"similarity_file": null
+},
+"matching":{
+	"name": "instancematching.InstanceMatcherWithAutoCalibration",
+	"model_specific": {
+		"delta": 0.025
+	}
+},
+"post_processing":{
+	"test_file": "./data/Structured/KWL-GPPDdeu/test.csv",
+	"evaluation_file": null
+}
+}

@@ -19,6 +19,7 @@ public interface DerivationAgentInterface {
 	 * Shall implement logic transforming derivationInputs to derivationOutputs.
 	 * 
 	 * @param derivationInputs
+	 * @param derivationOutputs
 	 * @return
 	 */
 	void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs);

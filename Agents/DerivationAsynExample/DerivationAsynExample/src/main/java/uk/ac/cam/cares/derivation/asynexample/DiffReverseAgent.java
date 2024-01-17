@@ -52,7 +52,7 @@ public class DiffReverseAgent extends DerivationAgent {
 
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("DiffReverseAgent received derivationInputs: " + derivationInputs.toString());
+		LOGGER.debug("DiffReverseAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 		LOGGER.debug("DiffReverseAgent will sleep for (" + Config.delayAgentDiffReverse + ") seconds before it runs.");
 		try {
 			TimeUnit.SECONDS.sleep(Config.delayAgentDiffReverse);
@@ -60,6 +60,12 @@ public class DiffReverseAgent extends DerivationAgent {
 			e.printStackTrace();
 		}
 		LOGGER.debug("DiffReverseAgent is running now.");
+
+		if (!derivationInputs.containsRdfType(SparqlClient.getRdfTypeString(SparqlClient.MaxValue)) ||
+				!derivationInputs.containsRdfType(SparqlClient.getRdfTypeString(SparqlClient.MinValue))) {
+			LOGGER.info("DifferenceAgent did not receive enough information.");
+			return;
+		}
 
 		// get the input from the KG
 		String maxvalue_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue)).get(0);

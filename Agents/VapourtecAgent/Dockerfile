@@ -1,25 +1,22 @@
 # This Dockerfile has been adapted from the VS Code example at https://code.visualstudio.com/docs/containers/quickstart-python
 
 # Base image is a lightweight version of Python
-FROM python:3.7-slim-buster
+FROM python:3.8-slim-buster
 
-# Install required software
-RUN apt update && apt install -y git
+# Meta data
+LABEL authors = "jb2197@cam.ac.uk"
+LABEL description = "Execute the requested reaction experiment."
 
-# Install Java openjdk-8 to enable py4jps
-# (See https://github.com/puckel/docker-airflow/issues/182#issuecomment-594906148)
+# Install required software: git and openjdk-11
 USER root
-RUN echo "deb http://security.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list
-RUN mkdir -p /usr/share/man/man1 && \
-    apt-get update -y && \
-    apt-get install -y openjdk-8-jdk
+RUN apt update && apt install -y git openjdk-11-jdk-headless
 
 # Required to install, otherwise will thorw below error when install Mono:
 # #8 0.390 E: gnupg, gnupg2 and gnupg1 do not seem to be installed, but one of them is required for this operation
 RUN apt-get update && apt-get install -y gnupg
 
 # Mono and pythonnet install bit taken from:
-# https://github.com/jonemo/pythonnet-docker/blob/master/archived-dockerfiles/python3.7.7-mono5.20-pythonnet2.5.0
+# https://github.com/jonemo/pythonnet-docker/blob/master/archived-dockerfiles/python3.8.3-mono5.20-pythonnet2.5.0
 # Mono: 5.20
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
   && echo "deb http://download.mono-project.com/repo/debian stretch/snapshots/5.20 main" > /etc/apt/sources.list.d/mono-official.list \

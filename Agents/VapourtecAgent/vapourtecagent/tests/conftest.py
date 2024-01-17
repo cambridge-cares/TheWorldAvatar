@@ -1,5 +1,5 @@
 from flask import Flask
-import logging
+import requests
 import pytest
 import shutil
 import time
@@ -10,8 +10,6 @@ from vapourtecagent.kg_operations import ChemistryAndRobotsSparqlClient
 from vapourtecagent.data_model import *
 from vapourtecagent.agent import VapourtecAgent
 from vapourtecagent.conf import config_vapourtec_agent
-
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 
 # ----------------------------------------------------------------------------------
@@ -33,7 +31,7 @@ FS_ROUTE = "FileServer/"
 
 VAPOURTEC_AGENT_ENV = os.path.join(THIS_DIR,'agent.vapourtec.env.test')
 
-DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
+DUMMY_LAB_BASE_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab/'
 VAPOURTECRS400_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecRS400_Dummy'
 VAPOURTECR4REACTOR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Dummy'
 VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Another_Dummy'
@@ -74,12 +72,20 @@ def get_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://localhost:{service.host_port}/{url_route}"
-        return service_url
 
-    # this will run only once per entire test session and ensures that all the services
-    # in docker containers are ready. Increase the sleep value in case services need a bit
-    # more time to run on your machine.
-    time.sleep(8)
+        # this will run only once per entire test session
+        # it ensures that the services requested in docker containers are ready
+        # e.g. the blazegraph service is ready to accept SPARQL query/update
+        service_available = False
+        while not service_available:
+            try:
+                response = requests.head(service_url)
+                if response.status_code != requests.status_codes.codes.not_found:
+                    service_available = True
+            except requests.exceptions.ConnectionError:
+                time.sleep(3)
+
+        return service_url
     return _get_service_url
 
 @pytest.fixture(scope="session")
@@ -173,15 +179,21 @@ def create_vapourtec_agent():
             agent_iri=vapourtec_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=vapourtec_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
             derivation_instance_base_url=vapourtec_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=vapourtec_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=vapourtec_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(vapourtec_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(vapourtec_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=vapourtec_agent_config.KG_USERNAME,
             kg_password=vapourtec_agent_config.KG_PASSWORD,
-            fs_url=vapourtec_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(vapourtec_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=vapourtec_agent_config.FILE_SERVER_USERNAME,
             fs_password=vapourtec_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=vapourtec_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
+            max_thread_monitor_async_derivations=vapourtec_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=vapourtec_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=vapourtec_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=vapourtec_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=vapourtec_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return vapourtec_agent
     return _create_vapourtec_agent
@@ -190,6 +202,9 @@ def create_vapourtec_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
 
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873
 def clear_loggers():

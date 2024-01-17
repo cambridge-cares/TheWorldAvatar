@@ -1,0 +1,47 @@
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix om:         <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix dabgeo:     <http://www.purl.org/oema/infrastructure/> .
+@prefix rt:         <http://environment.data.gov.uk/flood-monitoring/def/core/> . 
+@prefix envo:       <http://purl.obolibrary.org/obo/> . 
+@prefix obe:	    <https://www.theworldavatar.com/kg/ontobuiltenv/> .
+@prefix flood:      <https://www.theworldavatar.com/kg/ontoflood/> . 
+
+#################################
+## Flood Assessment TESTS TBox ##
+#################################
+
+dabgeo:Building rdfs:subClassOf obe:Property .
+
+obe:Property obe:hasMarketValue om:AmountOfMoney .
+
+om:AmountOfMoney om:hasValue om:Measure . 
+om:Measure om:hasUnit om:Unit ; 
+           om:hasNumericalValue xsd:float . 
+om:Unit om:symbol xsd:string . 
+om:poundSterling rdfs:subClassOf om:Unit ; 
+                 om:symbol "£"^^xsd:string . 
+
+rt:FloodAlertOrWarning flood:hasSeverity flood:Severity ; 
+                       flood:warnsAbout envo:ENVO_01000710 . 
+
+flood:SevereFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b rdfs:subClassOf flood:Severity . 
+flood:FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b rdfs:subClassOf flood:Severity . 
+flood:FloodAlert_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b rdfs:subClassOf flood:Severity . 
+flood:InactiveFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b rdfs:subClassOf flood:Severity . 
+
+envo:ENVO_01000711 rdfs:subClassOf envo:ENVO_01000710 . 
+envo:ENVO_01000712 rdfs:subClassOf envo:ENVO_01000710 . 
+envo:ENVO_01000713 rdfs:subClassOf envo:ENVO_01000710 . 
+
+envo:ENVO_01000710 flood:resultsIn flood:Impact ; 
+                   flood:affects flood:Population ; 
+                   flood:affects flood:Buildings . 
+
+flood:Impact flood:hasClassification xsd:string ; 
+             flood:hasMonetaryValue om:AmountOfMoney . 
+
+flood:Population flood:hasTotalCount xsd:integer . 
+flood:Buildings flood:hasTotalCount xsd:integer ; 
+                flood:hasTotalMonetaryValue om:AmountOfMoney . 

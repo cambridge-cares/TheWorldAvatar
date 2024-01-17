@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-8-slim as builder
+FROM maven:3.6-openjdk-11-slim as builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 ADD . /root
@@ -26,7 +26,7 @@ WORKDIR /app
 COPY ./config/client.properties /root/client.properties
 # Set the required environment variable
 ENV RFID_PROPERTIES="/root/client.properties"
-COPY --from=builder /root/RFIDAgentCode/output/rfid-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/RFIDAgentCode/output/rfid-agent##1.3.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

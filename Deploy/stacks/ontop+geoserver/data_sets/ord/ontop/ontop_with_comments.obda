@@ -1,0 +1,154 @@
+[PrefixDeclaration]
+:		http://example.org/crops/
+os:           http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#
+op:           http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#
+kb:           http://www.theworldavatar.com/kb/ontospecies/
+gc:           http://purl.org/gc/
+ex:		http://example.org/
+sio:          http://semanticscience.org/resource/
+pubchem:      http://rdf.ncbi.nlm.nih.gov/pubchem/
+compound:	http://rdf.ncbi.nlm.nih.gov/pubchem/compound/
+descriptor:	http://rdf.ncbi.nlm.nih.gov/pubchem/descriptor/
+inchikey:	http://rdf.ncbi.nlm.nih.gov/pubchem/inchikey/
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:		http://www.w3.org/XML/1998/namespace
+xsd:		http://www.w3.org/2001/XMLSchema#
+foaf:		http://xmlns.com/foaf/0.1/
+obda:		https://w3id.org/obda/vocabulary#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+geo:		http://www.opengis.net/ont/geosparql#
+skos:         http://www.w3.org/2004/02/skos/core#
+om:           http://www.ontology-of-units-of-measure.org/resource/om-2/
+OntoRxn:	https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#
+OntoCAPEMat:	http://www.theworldavatar.com/ontology/ontocape/material/material.owl#
+OntoCAPEUpp:	http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#
+OntoCAPEPha:	http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#
+exp:     https://www.example.com/triplestore/ontorxn/ReactionExperiment/
+SinglePhase:  https://www.example.com/triplestore/ontorxn/SinglePhase/
+
+[MappingDeclaration] @collection [[
+mappingId input_mole
+# chemical entity
+target exp:RxnExp_{"Reaction ID"} rdf:type OntoRxn:ReactionExperiment ;           
+              OntoRxn:hasInputChemical exp:InputChemical_{"ReactionInput_ID"} .
+              exp:InputChemical_{"ReactionInput_ID"} rdf:type OntoRxn:InputChemical ;
+              OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_{"ReactionInput_ID"} .
+              # Phase definition
+              SinglePhase:Phase_{"ReactionInput_ID"} rdf:type OntoCAPEPha:SinglePhase;
+              OntoCAPEMat:representsThermodynamicBehavior exp:InputChemical_{"ReactionInput_ID"};
+              OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:Liquid;
+              OntoCAPEPha:has_composition SinglePhase:Composition_{"ReactionInput_ID"};
+              OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_{"Compound_ID"} .
+              # Composition definition
+              SinglePhase:Composition_{"ReactionInput_ID"} rdf:type OntoCAPEPha:Composition;
+              OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_{"Compound_ID"}_Property.
+              # Phase Component
+              SinglePhase:PhaseComponent_{"Compound_ID"} rdf:type OntoCAPEPha:PhaseComponent ;
+              OntoCAPEPha:representsOccurenceOf {"Identifier"} ;
+              OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Mole ;
+              OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Volume .
+              # Phase Component Property
+              SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Mole rdf:type OntoCAPEPha:Mole;
+              OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Mole .
+              SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Volume rdf:type OntoCAPEPha:Volume;
+              OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Volume .
+              # Scalar value
+              SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Mole rdf:type OntoCAPEUpp:ScalarValue;
+              OntoCAPEUpp:hasUnitOfMeasure {"Mole unit"};
+              OntoCAPEUpp:numericalValue {"Mole value"}.
+# define the SQL query
+source     SELECT "Reaction"."ID" AS "Reaction ID",
+          "Reaction_inputs_ReactionInput"."ID" as "ReactionInput_ID",
+          "Reaction_inputs_ReactionInput"."key_or_index" as "ReactionInput_key",
+          "ReactionInput_components_Compound"."ID" as "Compound_ID",
+          "CompoundIdentifier"."value" as "Identifier",
+          "Moles"."value" as "Mole value",
+          "Moles"."units" as "Mole unit" 
+          FROM "Reaction"
+          INNER JOIN "Reaction_identifiers_ReactionIdentifier"
+          ON "Reaction"."ID"= "Reaction_identifiers_ReactionIdentifier"."Reaction_ID"
+          INNER JOIN "Reaction_inputs_ReactionInput"
+          ON "Reaction"."ID"= "Reaction_inputs_ReactionInput"."Reaction_ID"
+          INNER JOIN "ReactionInput_components_Compound"
+          ON "Reaction_inputs_ReactionInput"."ID"= "ReactionInput_components_Compound"."ReactionInput_ID"
+          INNER JOIN "Compound_identifiers_CompoundIdentifier"
+          ON "ReactionInput_components_Compound"."ID"= "Compound_identifiers_CompoundIdentifier"."Compound_ID"
+          INNER JOIN "CompoundIdentifier"
+          ON "CompoundIdentifier"."ID"= "Compound_identifiers_CompoundIdentifier"."CompoundIdentifier_ID"
+          INNER JOIN "Compound_amount_Amount"
+          ON "Compound_amount_Amount"."Compound_ID"= "ReactionInput_components_Compound"."ID"
+          #FULL OUTER JOIN "Amount"
+          #ON "Compound_amount_Amount"."Amount_ID"= "Amount"."ID"
+          # Moles
+          INNER JOIN "Amount_moles_Moles"
+          ON "Compound_amount_Amount"."ID"= "Amount_moles_Moles"."Amount_ID"
+          INNER JOIN "Moles"
+          ON "Moles"."ID"= "Amount_moles_Moles"."Moles_ID"
+          WHERE "CompoundIdentifier"."type" = 'SMILES'
+]]
+[MappingDeclaration] @collection [[
+mappingId input_volume
+# chemical entity
+target exp:RxnExp_{"Reaction ID"} rdf:type OntoRxn:ReactionExperiment ;           
+              OntoRxn:hasInputChemical exp:InputChemical_{"ReactionInput_ID"} .
+              exp:InputChemical_{"ReactionInput_ID"} rdf:type OntoRxn:InputChemical ;
+              OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_{"ReactionInput_ID"} .
+              # Phase definition
+              SinglePhase:Phase_{"ReactionInput_ID"} rdf:type OntoCAPEPha:SinglePhase;
+              OntoCAPEMat:representsThermodynamicBehavior exp:InputChemical_{"ReactionInput_ID"};
+              OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:Liquid;
+              OntoCAPEPha:has_composition SinglePhase:Composition_{"ReactionInput_ID"};
+              OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_{"Compound_ID"} .
+              # Composition definition
+              SinglePhase:Composition_{"ReactionInput_ID"} rdf:type OntoCAPEPha:Composition;
+              OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_{"Compound_ID"}_Property.
+              # Phase Component
+              SinglePhase:PhaseComponent_{"Compound_ID"} rdf:type OntoCAPEPha:PhaseComponent ;
+              OntoCAPEPha:representsOccurenceOf {"Identifier"} ;
+              OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Mole ;
+              OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Volume .
+              # Phase Component Property
+              SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Mole rdf:type OntoCAPEPha:Mole;
+              OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Mole .
+              SinglePhase:PhaseComponent_{"Compound_ID"}_Property_Volume rdf:type OntoCAPEPha:Volume;
+              OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Volume .
+              # Scalar value
+              SinglePhase:PhaseComponent_{"Compound_ID"}_Property_ScalarValue_Volume rdf:type OntoCAPEUpp:ScalarValue;
+              OntoCAPEUpp:hasUnitOfMeasure {"Volume unit"};
+              OntoCAPEUpp:numericalValue {"Volume value"}.
+# define the SQL query
+source     SELECT "Reaction"."ID" AS "Reaction ID",
+          "Reaction_inputs_ReactionInput"."ID" as "ReactionInput_ID",
+          "Reaction_inputs_ReactionInput"."key_or_index" as "ReactionInput_key",
+          "ReactionInput_components_Compound"."ID" as "Compound_ID",
+          "CompoundIdentifier"."value" as "Identifier",
+          "Volume"."value" as "Volume value",
+          "Volume"."units" as "Volume unit" 
+          FROM "Reaction"
+          INNER JOIN "Reaction_identifiers_ReactionIdentifier"
+          ON "Reaction"."ID"= "Reaction_identifiers_ReactionIdentifier"."Reaction_ID"
+          INNER JOIN "Reaction_inputs_ReactionInput"
+          ON "Reaction"."ID"= "Reaction_inputs_ReactionInput"."Reaction_ID"
+          INNER JOIN "ReactionInput_components_Compound"
+          ON "Reaction_inputs_ReactionInput"."ID"= "ReactionInput_components_Compound"."ReactionInput_ID"
+          INNER JOIN "Compound_identifiers_CompoundIdentifier"
+          ON "ReactionInput_components_Compound"."ID"= "Compound_identifiers_CompoundIdentifier"."Compound_ID"
+          INNER JOIN "CompoundIdentifier"
+          ON "CompoundIdentifier"."ID"= "Compound_identifiers_CompoundIdentifier"."CompoundIdentifier_ID"
+          INNER JOIN "Compound_amount_Amount"
+          ON "Compound_amount_Amount"."Compound_ID"= "ReactionInput_components_Compound"."ID"
+          #FULL OUTER JOIN "Amount"
+          #ON "Compound_amount_Amount"."Amount_ID"= "Amount"."ID"
+          # Moles
+          #INNER JOIN "Amount_moles_Moles"
+          #ON "Compound_amount_Amount"."ID"= "Amount_moles_Moles"."Amount_ID"
+          #INNER JOIN "Moles"
+          #ON "Moles"."ID"= "Amount_moles_Moles"."Moles_ID"
+          # Volume
+          INNER JOIN "Amount_volume_Volume"
+          ON "Compound_amount_Amount"."ID"= "Amount_volume_Volume"."Amount_ID"
+          INNER JOIN "Volume"
+          ON "Volume"."ID"= "Amount_volume_Volume"."Volume_ID"
+          WHERE "CompoundIdentifier"."type" = 'SMILES'
+]]
