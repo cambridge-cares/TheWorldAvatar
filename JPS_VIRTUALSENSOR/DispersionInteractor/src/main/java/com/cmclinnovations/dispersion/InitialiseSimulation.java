@@ -44,6 +44,11 @@ public class InitialiseSimulation extends HttpServlet {
     private QueryClient queryClient;
     private DispersionPostGISClient dispersionPostGISClient;
 
+    // hack, used by StartScheduledDispersion
+    public InitialiseSimulation() throws ServletException {
+        init();
+    }
+
     @Override
     public void init() throws ServletException {
         EndpointConfig endpointConfig = Config.ENDPOINT_CONFIG;
@@ -66,6 +71,16 @@ public class InitialiseSimulation extends HttpServlet {
         String scopeLabel = req.getParameter("label");
         String[] zArray = req.getParameterValues("z");
         String simulationTimeIri = req.getParameter("simulationTimeIri"); // optional
+
+        String derivation = createSimulation(ewkt, nx, ny, citiesNamespace, scopeLabel, zArray, simulationTimeIri);
+        resp.getWriter().print(new JSONObject().put("derivation", derivation));
+        resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
+        resp.setCharacterEncoding("UTF-8");
+    }
+
+    String createSimulation(String ewkt, int nx, int ny, String citiesNamespace, String scopeLabel,
+            String[] zArray, String simulationTimeIri) {
+        String derivation = null;
 
         List<Integer> zList = new ArrayList<>();
         if (zArray == null) {
@@ -113,7 +128,6 @@ public class InitialiseSimulation extends HttpServlet {
 
                 // returns null if there are no matches
                 scopeIri = dispersionPostGISClient.getScopeIri(polygon4326, conn);
-                String derivation = null;
 
                 if (scopeIri == null) {
                     scopeIri = dispersionPostGISClient.addScope(polygon4326, conn);
@@ -125,10 +139,6 @@ public class InitialiseSimulation extends HttpServlet {
                 } else {
                     derivation = queryClient.getDerivationWithScope(scopeIri);
                 }
-
-                resp.getWriter().print(new JSONObject().put("derivation", derivation));
-                resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
-                resp.setCharacterEncoding("UTF-8");
 
             } catch (SQLException e) {
                 LOGGER.error("SQL state {}", e.getSQLState());
@@ -142,6 +152,7 @@ public class InitialiseSimulation extends HttpServlet {
             }
         }
 
+        return derivation;
     }
 
     /**
