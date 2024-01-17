@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -217,7 +218,7 @@ public class GeoServerClient extends ContainerClient {
     }
 
     public void createGeoTiffLayer(String workspaceName, String name, String database, String schema,
-            GeoServerRasterSettings geoServerSettings) {
+            GeoServerRasterSettings geoServerSettings, MultidimSettings mdimSettings) {
 
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
             logger.info("GeoServer coverage store '{}' already exists.", name);
@@ -244,11 +245,33 @@ public class GeoServerClient extends ContainerClient {
 
             Path geotiffDir = GDALClient.generateRasterOutDirPath(database, schema, name);
             try {
-                datastoreProperties.store(stringWriter, "");
 
-                sendFilesContent(containerId, Map.of("datastore.properties", stringWriter.toString().getBytes(),
-                        "indexer.properties",
-                        "Schema=location:String,*the_geom:Polygon\nPropertyCollectors=".getBytes()),
+                Map<String, byte[]> files = new HashMap<>();
+
+                datastoreProperties.store(stringWriter, "");
+                files.put("datastore.properties", stringWriter.toString().getBytes());
+                String indexerProperties = "Schema=location:String,*the_geom:Polygon\nPropertyCollectors=";
+
+                if (null != mdimSettings) {
+                    TimeOptions timeOptions = mdimSettings.getTimeOptions();
+                    if (null != timeOptions) {
+                        String regex = timeOptions.getRegex();
+                        String format = timeOptions.getFormat();
+
+                        indexerProperties = "TimeAttribute=time\nSchema=location:String,time:java.util.Date,*the_geom:Polygon\nPropertyCollectors=TimestampFileNameExtractorSPI[timeregex](time)";
+                        files.put("timeregex.properties", ("regex=" + regex + ",format=" + format).getBytes());
+
+                    }
+
+                    //TODO coverageconfig.json may need timeoptions.getarrayname()
+
+
+                }
+
+                files.put("indexer.properties",
+                        indexerProperties.getBytes());
+
+                sendFilesContent(containerId, files,
                         geotiffDir.toString());
             } catch (IOException ex) {
                 throw new RuntimeException(

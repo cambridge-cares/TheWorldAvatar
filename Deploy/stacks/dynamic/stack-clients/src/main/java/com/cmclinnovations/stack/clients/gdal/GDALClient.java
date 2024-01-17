@@ -22,6 +22,7 @@ import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.MultidimSettings;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
@@ -133,7 +134,7 @@ public class GDALClient extends ContainerClient {
     }
 
     public void uploadRasterFilesToPostGIS(String database, String schema, String layerName,
-            String dirPath, GDALTranslateOptions options, boolean append) {
+            String dirPath, GDALTranslateOptions gdalOptions, MultidimSettings mdimSettings, boolean append) {
 
         String gdalContainerId = getContainerId("gdal");
         String postGISContainerId = getContainerId("postgis");
@@ -142,8 +143,7 @@ public class GDALClient extends ContainerClient {
 
             tempDir.copyFrom(Path.of(dirPath));
 
-            List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, database, schema, layerName, tempDir,
-                    options);
+            List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, database, schema, layerName, tempDir, gdalOptions, mdimSettings);
 
             ensurePostGISRasterSupportEnabled(postGISContainerId, database);
 
@@ -243,11 +243,11 @@ public class GDALClient extends ContainerClient {
         return outputStream.toString();
     }
 
-    private JSONArray getTimeFromGdalmdiminfo(String arrayName, String filePath) {
+    private JSONArray getTimeFromGdalmdiminfo(String timeArrayName, String filePath) {
         String gdalContainerId = getContainerId("gdal");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        String execId = createComplexCommand(gdalContainerId, "gdalmdiminfo", "-detailed", "-array", arrayName,
+        String execId = createComplexCommand(gdalContainerId, "gdalmdiminfo", "-detailed", "-array", timeArrayName,
                 filePath)
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
@@ -287,7 +287,7 @@ public class GDALClient extends ContainerClient {
     }
 
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
-            String layerName, TempDir tempDir, GDALTranslateOptions options) {
+            String layerName, TempDir tempDir, GDALTranslateOptions options, MultidimSettings mdimSettings) {
 
         Multimap<String, String> foundRasterFiles = findGeoFiles(gdalContainerId, tempDir.toString());
 
@@ -326,12 +326,13 @@ public class GDALClient extends ContainerClient {
                     execId = createComplexCommand(gdalContainerId, "cp",
                             filePath,
                             outputPath)
+                            // TODO make sure that outputpath is set here and doesn't override the location of geotiffs
                             .withOutputStream(outputStream)
                             .withErrorStream(errorStream)
                             .withEvaluationTimeout(300)
                             .exec();
                     handleErrors(errorStream, execId, logger);
-                    multipleRastersFromMultiDim("yyyymmddhh", "tas", filePath, directoryPath);
+                    multipleRastersFromMultiDim(mdimSettings.getTimeOptions().getArrayName(), mdimSettings.getLayerArrayName(), filePath, directoryPath);
                 } else {
                     execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
                             "-if", inputFormat,
