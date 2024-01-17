@@ -196,7 +196,7 @@ public class QueryClient {
                 modify.insert(iri(speedMeasure).isA(MEASURE));
 
                 dataWithTimeSeries.add(speedMeasure);
-                classes.add(Integer.class);
+                classes.add(Double.class);
 
                 // course time series
                 Iri courseProperty = P_DISP.iri(shipName + "Course");
