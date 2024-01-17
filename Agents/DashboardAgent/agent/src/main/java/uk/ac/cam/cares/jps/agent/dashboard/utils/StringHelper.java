@@ -63,4 +63,11 @@ public class StringHelper {
         }
         return result.toString();
     }
+
+    /**
+     * Formats the input string with an escape quote to ensure compliance with SQL queries.
+     */
+    public static String formatEscapeQuoteSQL(String input) {
+        return "\\\"" + input + "\\\"";
+    }
 }

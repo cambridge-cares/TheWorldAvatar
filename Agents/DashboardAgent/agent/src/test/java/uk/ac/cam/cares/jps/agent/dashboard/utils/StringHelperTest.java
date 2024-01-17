@@ -52,4 +52,9 @@ class StringHelperTest {
         assertEquals(CAPITAL_TEST_CASE3, StringHelper.addCharacterEscapingForSingleQuotes(CAPITAL_TEST_CASE3));
         assertEquals("Hughes'' room", StringHelper.addCharacterEscapingForSingleQuotes(SINGLE_QUOTE_CASE));
     }
+
+    @Test
+    void testFormatEscapeQuoteSQL() {
+        assertEquals("\\\"" + SPARQL_VAR_FORMAT_TEST_CASE1 + "\\\"", StringHelper.formatEscapeQuoteSQL(SPARQL_VAR_FORMAT_TEST_CASE1));
+    }
 }
