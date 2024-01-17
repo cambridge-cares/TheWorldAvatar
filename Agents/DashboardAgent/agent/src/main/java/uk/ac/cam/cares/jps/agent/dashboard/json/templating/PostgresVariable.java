@@ -2,8 +2,10 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A Java representation of a JSON-like model that encapsulates and enforces information
@@ -38,7 +40,12 @@ class PostgresVariable extends TemplateVariable {
         this.querySyntax.append("SELECT k AS \\\"__text\\\", v AS \\\"__value\\\" FROM (values ");
         StringBuilder temp = new StringBuilder();
         this.databaseConnectionId = databaseId;
-        for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
+        // Sort the key value pairs
+        List<Map.Entry<String, String>> sortedEntries = keyValuePairs.entrySet()
+                .stream()
+                .sorted(Comparator.comparingInt(entry -> Integer.parseInt(entry.getValue())))
+                .collect(Collectors.toList());
+        for (Map.Entry<String, String> entry : sortedEntries) {
             // Only append a comma at the start if it is not the first value
             if (temp.length() != 0) temp.append(", ");
             // Append the name and the corresponding column name

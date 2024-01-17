@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -95,7 +96,11 @@ class PostgresVariableTest {
         String description = "A hidden filter that displays the " + StringHelper.addSpaceBetweenCapitalWords(varName).toLowerCase()
                 + " as requested by the user";
         StringBuilder temp = new StringBuilder();
-        for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
+        List<Map.Entry<String, String>> sortedEntries = keyValuePairs.entrySet()
+                .stream()
+                .sorted(Comparator.comparingInt(entry -> Integer.parseInt(entry.getValue())))
+                .collect(Collectors.toList());
+        for (Map.Entry<String, String> entry : sortedEntries) {
             // Only append a comma at the start if it is not the first value
             if (temp.length() != 0) temp.append(", ");
             // Append the name and the corresponding column name
