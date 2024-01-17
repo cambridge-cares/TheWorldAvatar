@@ -152,6 +152,15 @@ public class APIConnector
             {
                 throw new IOException("The file is missing: \"carpark.accountKey=<accountKey>\"");
             }
+
+            if(prop.containsKey("carpark.pricing_url"))
+            {
+                this.PRICING_API_URL = prop.getProperty("carpark.pricing_url");
+            }
+            else
+            {
+                throw new IOException("The file is missing: \"carpark.pricing_url=<pricing_url>\"");
+            }
             
 
         }
