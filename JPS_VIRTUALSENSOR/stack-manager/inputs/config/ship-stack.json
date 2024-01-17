@@ -1,17 +1,17 @@
 {
 	"services": {
 		"includes": [
+		    "emissions-agent",
 			"file-server",
 			"weather-agent",
-			"ship-input-agent",
 			"dispersion-interactor",
 			"aermod-agent",
 			"python-service",
-			"emissions-agent",
 			"virtual-sensor-agent",
 			"jurong-island-input-agent",
 			"visualisation",
 			"feature-info-agent"
+			"ship-input-agent"
 		]
 	},
 	"volumes": {
