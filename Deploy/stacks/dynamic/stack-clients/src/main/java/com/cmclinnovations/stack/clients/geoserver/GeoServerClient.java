@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
@@ -243,7 +243,7 @@ public class GeoServerClient extends ContainerClient {
             datastoreProperties.putIfAbsent("preparedStatements", "true");
             StringWriter stringWriter = new StringWriter();
 
-            Path geotiffDir = GDALClient.generateRasterOutDirPath(database, schema, name);
+            Path geotiffDir = Path.of(StackClient.GEOTIFFS_DIR, database, schema, name);
             try {
 
                 Map<String, byte[]> files = new HashMap<>();
