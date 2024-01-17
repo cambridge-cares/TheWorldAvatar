@@ -1,5 +1,7 @@
 package com.cmclinnovations.ship;
 
+import org.json.JSONArray;
+
 public class EnvConfig {
     public static final String DATABASE = System.getenv("DATABASE");
     public static final String DATA_DIR = System.getenv("DATA_DIR");
@@ -12,6 +14,9 @@ public class EnvConfig {
     public static final String PARALLELISE_CALCULATIONS = System.getenv("PARALLELISE_CALCULATIONS");
     public static final String SHIP_IRI_LOOKUP_TABLE = System.getenv("SHIP_IRI_LOOKUP_TABLE");
     public static final String SHIPS_LAYER_NAME = System.getenv("SHIPS_LAYER_NAME");
+    public static final boolean USE_LIVE_DATA = Boolean.parseBoolean(System.getenv("USE_LIVE_DATA"));
+    public static final String API_KEY = System.getenv("API_KEY");
+    public static final JSONArray BOUNDING_BOXES = new JSONArray(System.getenv("BOUNDING_BOXES"));
 
     private EnvConfig() {
         throw new IllegalStateException();

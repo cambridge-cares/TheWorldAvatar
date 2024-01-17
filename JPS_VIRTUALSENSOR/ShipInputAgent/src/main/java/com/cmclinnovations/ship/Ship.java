@@ -14,9 +14,9 @@ public class Ship {
     private String courseMeasureIri;
     private String speedMeasureIri;
     private int mmsi;
-    private int speed;
+    private double speed;
     private int course;
-    private int shipType;
+    private int shipType = 0;
     private double lat;
     private double lon;
     private Instant timestamp; // timestamp when data was obtained
@@ -45,6 +45,10 @@ public class Ship {
         }
     }
 
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public Instant getTimestamp() {
         return this.timestamp;
     }
@@ -65,7 +69,7 @@ public class Ship {
         return this.mmsi;
     }
 
-    public void setSpeed(int speed) {
+    public void setSpeed(double speed) {
         this.speed = speed;
     }
 
@@ -136,6 +140,10 @@ public class Ship {
 
     public String getSpeedMeasureIri() {
         return this.speedMeasureIri;
+    }
+
+    public void setShipName(String shipName) {
+        this.shipName = "Ship: " + shipName;
     }
 
     public String getShipName() {

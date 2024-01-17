@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.rmi.Remote;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -76,6 +77,10 @@ public class QueryClient {
         this.tsClient = tsClient;
         this.derivationClient = derivationClient;
         this.remoteRDBStoreClient = remoteRDBStoreClient;
+    }
+
+    public RemoteRDBStoreClient getRemoteRDBStoreClient() {
+        return remoteRDBStoreClient;
     }
 
     /**
