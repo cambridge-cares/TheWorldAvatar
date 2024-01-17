@@ -143,7 +143,8 @@ public class GDALClient extends ContainerClient {
 
             tempDir.copyFrom(Path.of(dirPath));
 
-            List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, database, schema, layerName, tempDir, gdalOptions, mdimSettings);
+            List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, database, schema, layerName, tempDir,
+                    gdalOptions, mdimSettings);
 
             ensurePostGISRasterSupportEnabled(postGISContainerId, database);
 
@@ -267,7 +268,8 @@ public class GDALClient extends ContainerClient {
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
         for (int index = 0; index < arrayList.length(); index++) {
-            String outputRasterFilePath = outputDirectory.resolve(variableArrayName + "_" + arrayList.getString(index) + ".tif").toString();
+            String outputRasterFilePath = outputDirectory
+                    .resolve(variableArrayName + "_" + arrayList.getString(index) + ".tif").toString();
             String execId = createComplexCommand(gdalContainerId, "gdalwarp", "-srcband", Integer.toString(index + 1),
                     "-t_srs", "EPSG:4326", "-r", "cubicspline", "-wo", "OPTIMIZE_SIZE=YES", "-multi", "-wo",
                     "NUM_THREADS=ALL_CPUS", "NETCDF:" + filePath + ":" + variableArrayName,
@@ -303,13 +305,9 @@ public class GDALClient extends ContainerClient {
             String inputFormat = fileTypeEntry.getKey();
             for (String filePath : fileTypeEntry.getValue()) {
 
-                String outputPath;
-                if (inputFormat.equals("netCDF")) {
-                    outputPath = generateOutFilePath(tempDir.toString(), databaseName, schemaName, layerName, filePath);
-                } else {
-                    outputPath = generateRasterOutFilePath(tempDir.toString(), databaseName, schemaName, layerName,
-                            filePath);
-                }
+                String outputPath = generateRasterOutFilePath(tempDir.toString(), databaseName, schemaName, layerName,
+                        filePath);
+
                 geotiffFiles.add(outputPath);
                 String postGISContainerId = getContainerId("postgis");
                 addCustomCRStoPostGis(geoserverContainerId, postGISContainerId, gdalContainerId, filePath, databaseName,
@@ -325,14 +323,14 @@ public class GDALClient extends ContainerClient {
                     logger.info("netCDF found, uploading without translate");
                     execId = createComplexCommand(gdalContainerId, "cp",
                             filePath,
-                            outputPath)
-                            // TODO make sure that outputpath is set here and doesn't override the location of geotiffs
+                            generateOutFilePath(tempDir.toString(), databaseName, schemaName, layerName, filePath, "multidim_geospatial"))
                             .withOutputStream(outputStream)
                             .withErrorStream(errorStream)
                             .withEvaluationTimeout(300)
                             .exec();
                     handleErrors(errorStream, execId, logger);
-                    multipleRastersFromMultiDim(mdimSettings.getTimeOptions().getArrayName(), mdimSettings.getLayerArrayName(), filePath, directoryPath);
+                    multipleRastersFromMultiDim(mdimSettings.getTimeOptions().getArrayName(),
+                            mdimSettings.getLayerArrayName(), filePath, directoryPath);
                 } else {
                     execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
                             "-if", inputFormat,
@@ -389,33 +387,29 @@ public class GDALClient extends ContainerClient {
         handleErrors(errorStream, execId, logger);
     }
 
-    public static String generateRasterOutFilePath(String basePathIn, String databaseName, String schemaName,
-            String layerName,
-            String filePath) {
+    // add .tif extension on files in geotiffs directory
+    public static String generateRasterOutFilePath(String basePathIn, String databaseName, String schemaName, String layerName, String filePath) {
         return FileUtils.replaceExtension(
-                generateOutFilePath(basePathIn, databaseName, schemaName, layerName, filePath),
+                generateOutFilePath(basePathIn, databaseName, schemaName, layerName, filePath, "geotiffs"),
                 ".tif");
     }
 
+    // return filePath for any file to either "geotiffs" or "multidim_geospatial"
     private static String generateOutFilePath(String basePathIn, String databaseName, String schemaName,
-            String layerName,
-            String filePath) {
-        if (filePath.endsWith(".nc")) {
-            return generateMultiDimOutDirPath(databaseName, schemaName, layerName)
-                    .resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
+            String layerName, String filePath, String destinationDirectory) {
+        if (destinationDirectory.equals("multidim_geospatial")) {
+        // the Path object of multidim_geospatial
+            Path multiDimOutDirPath = Path.of(StackClient.MULTIDIM_GEOSPATIAL_DIR, databaseName, schemaName, layerName);
+            return multiDimOutDirPath.resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
                     .toString();
-        } else {
-            return generateRasterOutDirPath(databaseName, schemaName, layerName)
-                    .resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
+        } 
+        else {
+            // alternative should be destinationDirectory.equals("geotiffs"), and this shall be default
+            // returns the Path object of geotiffs
+            Path rasterOutDirPath = Path.of(StackClient.GEOTIFFS_DIR, databaseName, schemaName, layerName);
+            return rasterOutDirPath.resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
                     .toString();
         }
     }
 
-    public static Path generateRasterOutDirPath(String databaseName, String schemaName, String layerName) {
-        return Path.of(StackClient.GEOTIFFS_DIR, databaseName, schemaName, layerName);
-    }
-
-    public static Path generateMultiDimOutDirPath(String databaseName, String schemaName, String layerName) {
-        return Path.of(StackClient.MULTIDIM_GEOSPATIAL_DIR, databaseName, schemaName, layerName);
-    }
 }
