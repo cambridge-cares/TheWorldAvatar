@@ -49,11 +49,38 @@ def get_input_files( inDir, pathOut ):
     pass # get_input_files()
 
 
-def isSingleton( entity ):
+def is_singleton( wordsIn, singletons ):
     #print( "is singleton?", entity )
-    if entity.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
-        #print( "In merger found om-2" )
+    #if entity.startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
+    #    return True
+    line = [x.strip() for x in wordsIn]
+    words = [x.strip() for x in wordsIn]
+
+    for s in singletons:
+        if line[0] == s[0] and line[1] == s[1] and line[2] == s[2] and \
+           line[3] == s[3] and line[4] == s[4] and line[5] == s[5]:
+            return True
+
+    if "source" == words[0].lower() and "type"      == words[1].lower() and \
+       "target" == words[2].lower() and "relation"  == words[3].lower() and \
+       "value"  == words[4].lower() and "data type" == words[5].lower(): 
+        singletons.append( line )
         return True
+ 
+    if line[0].startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ) and \
+       line[1] == "Instance" and \
+       line[2].startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
+        #print( "In merger found om-2" )
+        singletons.append( line )
+        #return True
+
+    if line[0].startswith( "rdfs:label" ) and \
+       line[1] == "Data Property" and \
+       line[2].startswith( "http://www.ontology-of-units-of-measure.org/resource/om-2/" ):
+        #print( "In merger found om-2" )
+        singletons.append( line )
+        #return True
+
 
     return False
 
@@ -62,7 +89,8 @@ def merge_files( pathsIn, pathOut ):
     pathOut = os.path.abspath( pathOut )
 
     singletons = []
-    for count,f in enumerate( pathsIn ):
+    count = 0
+    for f in pathsIn:
         if not os.path.isfile( f ):
             logging.error( "Failed to open file '" + str(f) + "'." ) 
             continue
@@ -71,30 +99,44 @@ def merge_files( pathsIn, pathOut ):
             # Don't include the output file to the list of inputs
             continue
 
-        #print( "file = ", f )
+        #print( "fileIn = ", f )
         with open(f) as fIn:
             for il,line in enumerate(fIn):
                 #print( "line ", il )
                 words = line.split( "," )
                 # Skip the header line of all except the first file:
                 #if count > 0 and line.lower().startswith("source,type,target,relation") :
+                #print("count =",  count )
                 if len(words) > 1:
-                    if count > 0 and "source"   == words[0].lower() \
-                                 and "type"     == words[1].lower() \
-                                 and "target"   == words[2].lower() \
-                                 and "relation" == words[3].lower(): 
+                    if count > 0 and "source"    == words[0].strip().lower() \
+                                 and "type"      == words[1].strip().lower() \
+                                 and "target"    == words[2].strip().lower() \
+                                 and "relation"  == words[3].strip().lower() \
+                                 and "value"     == words[4].strip().lower() \
+                                 and "data type" == words[5].strip().lower(): 
                         continue
                     if count > 0 and "ontology" == words[1].lower():
                         continue
-                    if isSingleton( words[0] ):
-                        if words[0] in singletons:
-                            continue
-                        else:
-                            singletons.append( words[0] )
+                    if is_singleton( words, singletons ):
+                        continue
+                        #if words[0] in singletons:
+                        #    continue
+                        #else:
+                        #    singletons.append( words[0] )
+                    #else:
+                        #singletons.append( words[0] )
 
                     fOut.write( line )
+                    #if il > 30:
+                    #    print(">>>>>>>>>scv_merger break <<<<<<<<<<<<<<<<<<<<<")
+                    #    break
+            count += 1
 
     fOut.close()
+
+    #print( "singletons", )
+    #for s in singletons:
+    #    print("   ", s)
 
 
 if __name__ == "__main__":
