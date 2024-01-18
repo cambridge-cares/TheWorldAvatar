@@ -1,0 +1,15 @@
+{
+  "name": "NTU_ClassSchedules",
+  "database": "postgres",
+  "workspace": "the_world_avatar",
+  "datasetDirectory": "NTU_ClassSchedules",
+  "skip": false,
+  "dataSubsets": [
+    {
+      "type": "tabular",
+      "name": "NTU_ClassSchedules",
+      "skip": false,
+      "schema": "public"
+    }
+  ]
+}1
