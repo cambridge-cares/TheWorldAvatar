@@ -35,7 +35,8 @@ public class HeatSource {
         double efficiency = 0.5;
         double carbonEmissionIndex = 63.0;
         heatEmission = carbonEmission * (1.0 - efficiency) * (1e3) * (1e9)
-                / (carbonEmissionIndex * numberOfSecondsPerYear);
+                / (carbonEmissionIndex * numberOfSecondsPerYear * (1e6));
+        heatEmission = Math.min(heatEmission, 510.0);
     }
 
 }
