@@ -20,9 +20,13 @@ import mapboxgl from 'mapbox-gl';
 import React, { useRef, useEffect } from 'react';
 import { getDefaultCameraPosition } from './mapbox-camera-utils';
 import { MapSettings } from '../../types/map-settings';
-import { getDefaultImageryOption, getImageryOption } from './mapbox-imagery-utils';
+import { getCurrentImageryOption, getDefaultImageryOption, getImageryOption } from './mapbox-imagery-utils';
 import { getAndParseDataSettings } from "../../utils/client-utils";
 import { DataStoreCache } from "../../io/data/data-store-cache";
+import { DataStore } from "../../io/data/data-store";
+import { addAllSources } from "./mapbox-source-utils";
+import { addAllLayers } from "./mapbox-layer-utils";
+import { addIcons } from "./mapbox-icon-loader";
 
 // Type definition of incoming properties
 interface MapProperties {
@@ -65,27 +69,22 @@ export default function MapboxMapComponent(props: MapProperties) {
     const initialiseMap = async () => {
         if(map.current) return;
 
+        // Set credentials
         mapboxgl.accessToken = settings["credentials"]["key"];
 
         // Get default camera position
         const defaultPosition = getDefaultCameraPosition(settings);
-        const defaultStyle = getDefaultStyle(settings);
+        let styleObject = getCurrentImageryOption(settings);
+
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-            style: defaultStyle.url,
+            style: styleObject.url,
             center: defaultPosition["center"],
             zoom: defaultPosition["zoom"],
             bearing: defaultPosition["bearing"],
             pitch: defaultPosition["pitch"]
         });
 
-        if(defaultStyle.time != null) {
-            map.current.on('style.load', () => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (map.current as any).setConfigProperty('basemap', 'lightPreset', defaultStyle.time);
-            });
-        }
- 
         // Store map object globally.
         // Note that setting a globally accessible variable for the map probably isn't wise. However,
         // we know this shouldn't be re-initialised, and the alternative is to pass the map object into
@@ -93,11 +92,29 @@ export default function MapboxMapComponent(props: MapProperties) {
         // to access the map too. Would recommend revisiting this choice later though.
         window.map = map.current;
         console.info("Initialised a new Mapbox map object.");
+        
+        window.map.on('style.load', function() {
+            // Update time if using new v3 standard style
+            styleObject = getCurrentImageryOption(settings);
+            if(styleObject.time != null) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (window.map as any).setConfigProperty('basemap', 'lightPreset', styleObject.time);
+            }
 
-        // Now we can get the contents of the data.json file from the server
-        getAndParseDataSettings().then(() => {
-            // Once that is done and completed...
-            console.log("GOT DATA OBJECTS, " + Object.keys(DataStoreCache.STORES).length);
+            // Parse data configuration and load icons
+            const dataPromise = getAndParseDataSettings();
+            const iconPromise = addIcons(settings.icons);
+            
+            Promise.all([dataPromise, iconPromise]).then((responses) => {
+                const dataStore = responses[0];
+
+                // Once that is done and completed...
+                console.log("Data definitions fetched and parsed.");
+
+                // Plot data
+                addAllSources(dataStore);
+                addAllLayers(dataStore);
+            });
         });
     }
 

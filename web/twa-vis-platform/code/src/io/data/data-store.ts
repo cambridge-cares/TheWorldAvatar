@@ -2,6 +2,7 @@ import { JsonObject } from "../../types/json";
 import { DataGroup } from "./data-group";
 import { DataLayer } from "./data-layer";
 import { DataParser } from "./data-parser";
+import { DataSource } from "./data-source";
 
 /**
  * This class handles storage of all data groups and their sources. Definitions of data sources,
@@ -38,6 +39,15 @@ export class DataStore {
         });
 
         return (results.length !== 0) ? results[0] : null;
+    }
+
+    /**
+     * Returns the top level data groups.
+     * 
+     * @returns top level data groups.
+     */
+    public getGroups(): DataGroup[] {
+        return this._dataGroups;
     }
 
     /**
@@ -107,7 +117,7 @@ export class DataStore {
     }
 
     /**
-     * Gets a flatten list of all MapLayer instances defined across the entire
+     * Gets a flattened list of all DataLayer instances defined across the entire
      * group hierarchy.
      */
     public getLayerList(): DataLayer[] {
@@ -123,7 +133,7 @@ export class DataStore {
      * flattened layerList parameter.
      * 
      * @param currentGroup current data group in hierarchy.
-     * @param results collector for flatten layers.
+     * @param results collector for flattened layers.
      */
     private collectLayers(currentGroup: DataGroup, results: DataLayer[]) {
         if(currentGroup != null) {
@@ -131,6 +141,35 @@ export class DataStore {
     
             currentGroup.subGroups.forEach(subGroup => {
                 this.collectLayers(subGroup, results);
+            });
+        }
+    }
+
+    /**
+     * Gets a flattened list of all DataSource instances defined across the entire
+     * group hierarchy.
+     */
+    public getSourceList(): DataSource[] {
+        const results: DataSource[] = [];
+        this._dataGroups.forEach(topGroup => {
+            this.collectSources(topGroup, results);
+        })
+        return results;
+    }
+
+    /**
+     * Recurse through group hierarchy, adding any present source objects to the
+     * flattened results parameter.
+     * 
+     * @param currentGroup current data group in hierarchy.
+     * @param results collector for flattened sources.
+     */
+    private collectSources(currentGroup: DataGroup, results: DataSource[]) {
+        if(currentGroup != null) {
+            results.push(...currentGroup.dataSources);
+    
+            currentGroup.subGroups.forEach(subGroup => {
+                this.collectSources(subGroup, results);
             });
         }
     }

@@ -1,3 +1,7 @@
+// Icon settings object
+export interface IconSettings {
+    [key: string]: string
+}
 
 // Imagery settings object
 export interface ImagerySettings {
@@ -32,6 +36,7 @@ export interface MapSettings {
     type: string,
     camera: CameraSettings,
     imagery: ImagerySettings,
+    icons: IconSettings,
     credentials: {
         username: string,
         key: string

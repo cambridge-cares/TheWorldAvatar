@@ -52,8 +52,7 @@ export function getImageryOption(name: string, imageryOptions: ImagerySettings):
  * 
  * @returns ImageryOption for current selection.
  */
-async function getCurrentImageryOption() {
-    const mapSettings = await getMapSettings();
+export function getCurrentImageryOption(mapSettings: MapSettings) {
     const reduxState = reduxStore.getState();
     const items = reduxState.ribbonComponents.items;
     
@@ -73,7 +72,8 @@ async function getCurrentImageryOption() {
  * Set the base map imagery to the current option (as defined in Redux state).
  */
 export async function setImagery() {
-    const imageryOption: ImageryOption = await getCurrentImageryOption();
+    const mapSettings = await getMapSettings();
+    const imageryOption: ImageryOption = getCurrentImageryOption(mapSettings);
     
     // Update map
     window.map.setStyle(imageryOption.url);
@@ -96,15 +96,16 @@ export async function setImagery() {
  * Toggle the display of all placenames on the map.
  */
 export async function togglePlacenames() {
+    const mapSettings = await getMapSettings();
     const reduxState = reduxStore.getState();
     const items = reduxState.ribbonComponents.items;
 
     let shouldHide = true;
     if(items != null && items.length > 0) {
-        shouldHide = items.find(option => option.name === "Hide Placenames")?.selection;
+        shouldHide = items.find(option => option.name === "Hide Labels")?.selection;
     }
 
-    const imageryOption: ImageryOption = await getCurrentImageryOption();
+    const imageryOption: ImageryOption = getCurrentImageryOption(mapSettings);
     if(imageryOption.time != null) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window.map as any).setConfigProperty('basemap', 'showPlaceLabels', !shouldHide);
@@ -166,9 +167,9 @@ const defaultImageryOptions = {
 
 // Mapbox layer names to adjust when toggling placenames
 const placenameLayers = [
-    "road-number-shield", "road-label", "road-intersection", "waterway-label", "natural-line-label",
+    "road-number-shield", "road-label", "road-label-simple", "road-intersection", "waterway-label", 
     "natural-point-label", "water-line-label", "water-point-label", "poi-label", "airport-label", 
     "settlement-subdivision-label", "settlement-minor-label", "settlement-major-label", "settlement-label",
     "state-label", "country-label", "road-oneway-arrow-blue", "road-oneway-arrow-white", "transit-label",
-    "path-pedestrian-label", "golf-hole-label", "gate-label"
+    "path-pedestrian-label", "golf-hole-label", "gate-label", "natural-line-label"
 ]

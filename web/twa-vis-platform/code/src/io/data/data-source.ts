@@ -1,3 +1,5 @@
+import { JsonObject } from "../../types/json";
+
 /**
  * This class represents a single source of geographical data within the visualisation.
  */
@@ -16,7 +18,7 @@ export class DataSource {
     /**
      * The JSON object that originally defined this source.
      */
-    public readonly definition: object;
+    public readonly definition: JsonObject;
    
     /**
      * Initialise a new DataSource instance based on a JSON object.
@@ -28,7 +30,7 @@ export class DataSource {
     constructor(id: string, type: string, definition: object) {
         this.id = id;
         this.type = type;
-        this.definition = definition;
+        this.definition = (definition as JsonObject);
 
         console.info("Created DataSource instance '" + this.id + "'.");
     }    

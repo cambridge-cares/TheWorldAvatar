@@ -20,7 +20,7 @@ import Ribbon from './ribbon/ribbon';
 import { addItem, selectItem } from 'state/context-menu-slice';
 import { ContextItemDefinition } from 'ui/context-menu/context-item';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
-import { getMapSettings } from '../../utils/client-utils';
+import { getAndParseDataSettings, getMapSettings } from '../../utils/client-utils';
 import FloatingPanelContainer from '../../ui/tree/floating-panel';
 
 
@@ -47,18 +47,24 @@ export default function MapContainer() {
     const ribbonState = useSelector(selectItem("Show Controls Ribbon"));
 
     const mapSettings = useRef(null);
+    const dataStore = useRef(null);
 
     // Run when component loaded
     useEffect(() => {
         setIsFetching(true);
         dispatch(addItem(ribbonContextItem));   // Add context menu item
         
-        getMapSettings().then((json) => {
-            mapSettings.current = json;
-
+        const settingsPromise = getMapSettings();
+        settingsPromise.then((settingsObj) => {
+            mapSettings.current = settingsObj;
             window.type = mapSettings?.current?.["type"];
-            setIsFetching(false);
-        })
+
+            const dataPromise = getAndParseDataSettings();
+            dataPromise.then((dataObj) => {
+                dataStore.current = dataObj;
+                setIsFetching(false);
+            });
+        });
     }, []);
 
     return (
@@ -98,7 +104,7 @@ export default function MapContainer() {
 
                     {/* Containers for upcoming components (layer tree, metadata, time series charts etc.) */}
                     <div className={styles.upperContainer}>
-                        <FloatingPanelContainer/>
+                        <FloatingPanelContainer dataStore={dataStore.current}/>
                     </div>
                     <div className={styles.lowerContainer}/>
                 </div>

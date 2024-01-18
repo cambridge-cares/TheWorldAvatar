@@ -5,9 +5,12 @@ import styles from "./floating-panel.module.css";
 import React from "react";
 import { getIndex, setIndex } from "../../state/floating-panel-slice";
 import { useDispatch, useSelector } from "react-redux";
+import { DataStore } from "../../io/data/data-store";
+import LayerTree from "./layer-tree";
 
 // Incoming parameters for component.
 type FloatingPanelContainerProps = {
+    dataStore: DataStore,
     hideLegend?: boolean,
     hideInfo?: boolean
 }
@@ -93,7 +96,7 @@ export default function FloatingPanelContainer(props: FloatingPanelContainerProp
             </div>
 
             <div className={styles.floatingPanelBody}>
-
+                <LayerTree dataStore={props.dataStore}/>
             </div>
         </div>
     )

@@ -8,9 +8,18 @@
     flex-grow: 1;
 }
 
-@media only screen and (max-height: 1000px) {
+@media only screen and (max-height: 1090px) {
     .introOuter {
-        flex: 80%;
+        flex: 7.5 !important;
+    }
+    .thumbnailContainer {
+        flex: 2.5 !important;
+    }
+    .introInner h2 {
+        font-size: 14pt !important;
+    }
+    .introInner p {
+        font-size: 11pt !important;
     }
 }
 

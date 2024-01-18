@@ -5,6 +5,7 @@
 import { json } from "express";
 import { DataStoreCache } from "../io/data/data-store-cache";
 import { DataStore } from "../io/data/data-store";
+import { MapSettings } from "../types/map-settings";
 
 /**
  * Open full screen mode.
@@ -28,7 +29,7 @@ export function closeFullscreen() {
 /**
  * Query the server to get the map-settings.json file.
  */
-export async function getMapSettings() {
+export async function getMapSettings(): Promise<MapSettings> {
     return fetch("/api/visualisation/settings", { cache: "force-cache" })
             .then((result) => result.json())
             .catch((err) => console.log(err));
@@ -54,14 +55,21 @@ export async function getDataSettings(jsonFileURL?: string) {
  * 
  * @returns promise that resolves after fetch and parse.
  */
-export async function getAndParseDataSettings(jsonFileURL?: string) {
+export async function getAndParseDataSettings(jsonFileURL?: string): Promise<DataStore> {
+    const key = jsonFileURL ?? "local";
+
+    // Return cached version if present
+    if(DataStoreCache.STORES[key] != null) {
+        return Promise.resolve(DataStoreCache.STORES[key]);
+    }
+
+    // Fetch and parse from data.json
     const fetchPromise = getDataSettings(jsonFileURL);
+    
     return fetchPromise.then((json) => {
-        
         const dataStore = new DataStore();
         dataStore.loadDataGroups(json);
-
-        const key = jsonFileURL ?? "local";
         DataStoreCache.STORES[key] = dataStore;
+        return dataStore;
     });
 }

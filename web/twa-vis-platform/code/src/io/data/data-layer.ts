@@ -1,3 +1,4 @@
+import { JsonObject } from "../../types/json";
 import { DataSource } from "./data-source";
 
 /**
@@ -21,9 +22,9 @@ export abstract class DataLayer {
     public readonly source: DataSource;
 
     /**
-     * The JSON object that originally defined this layer.
+     * The JSON object that originally defined this layer (unadjusted).
      */
-    public readonly definition: object;
+    public readonly definition: JsonObject;
 
     /**
      * Zero-based display order.
@@ -54,7 +55,7 @@ export abstract class DataLayer {
         this.id = id;
         this.name = name;
         this.source = source;
-        this.definition = definition;
+        this.definition = definition as JsonObject;
 
         console.info("Created DataLayer instance '" + this.id + "'.");
     }

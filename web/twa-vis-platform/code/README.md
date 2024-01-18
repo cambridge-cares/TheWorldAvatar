@@ -10,6 +10,10 @@ The TWA Visualisation Platform takes the form of a [Next.js](https://nextjs.org/
 Before attempting local development with the platform, the below software needs to be installed and configured. Note that it is recommended that development takes place locally (rather than within WSL or in a Docker container), as the fast-refresh functionality encounters issues if file changes do not take place directly on the host OS.
 
 * Node.js & npm
+* `MAPBOX_USERNAME` environment variable
+* `MAPBOX_API_KEY` environment variable
+
+Note that the environment variables listed above are only needed during local development. In production, Docker secrets within The Stack will handle these.
 
 In addition to the above software requirements, it is also recommended that developers bring themselves up to date with the basics of the core technologies being utilised. The most critical of these for basic understanding of the code are listed below.
 
@@ -48,6 +52,12 @@ Installation on the host machine can be carried out from the `code` directory by
 ## Execution
 
 Once installed, and the required configuration files provided (see [here](#runtime-resources)), the project can be run in development mode by using the `npm run dev` command, again from within the `code` directory. 
+
+On some Windows machines, this may causes the below error to appear, if this does happen, simply run the `npm install -g win-node-env` command to address it.
+
+```
+"NODE_ENV" is not recognized as an internal or external command, operable command or batch file.
+```
 
 Running the code in development mode will additionally add watches to source code files, automatically triggering the server to refresh/rerender pages when changes are made (this is known as "hot-loading").
 

@@ -148,8 +148,8 @@ export default class Ribbon extends React.Component<RibbonProps, RibbonState> {
                             />
                             <RibbonComponentToggle
                                 icon="glyphs"
-                                text="Hide Placenames"
-                                tooltip="Toggle display of placenames."
+                                text="Hide Labels"
+                                tooltip="Toggle display of place names."
                                 initialState={false}
                                 action={state => {
                                     togglePlacenames();

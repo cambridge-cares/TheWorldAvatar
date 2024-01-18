@@ -3,13 +3,15 @@ import { configureStore } from '@reduxjs/toolkit';
 import contextMenuReducer from "state/context-menu-slice";
 import ribbonComponentReducer from "state/ribbon-component-slice";
 import floatingPanelReducer from "state/floating-panel-slice";
+import layerTreeReducer from "state/layer-tree-slice";
 
 // Initialise and export store
 export const reduxStore = configureStore({
     reducer: {
         contextMenu: contextMenuReducer,
         ribbonComponents: ribbonComponentReducer,
-        floatingPanel: floatingPanelReducer
+        floatingPanel: floatingPanelReducer,
+        layerTree: layerTreeReducer
     }
 });
 

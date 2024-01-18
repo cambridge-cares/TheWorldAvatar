@@ -42,6 +42,11 @@ export class DataGroup {
     public defaultExpanded: boolean = true; 
 
     /**
+     * Optional icon for display in layer tree.
+     */
+    public treeIcon: string;
+
+    /**
      * Initialise a new DataGroup object.
      * 
      * @param name public facing name.

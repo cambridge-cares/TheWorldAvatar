@@ -70,6 +70,11 @@ export class DataParser {
             this.parseDataLayers(current["layers"] as JsonArray, dataGroup);
         }
 
+        // Add tree icon (if set)
+        if(current["tree-icon"]) {
+            dataGroup.treeIcon = current["tree-icon"] as string;
+        }
+
         // Recurse into sub groups (if present)
         if(current["groups"]) {
             const groupArray = current["groups"] as JsonArray;
@@ -114,8 +119,10 @@ export class DataParser {
             const elementID = element["id"] as string;
 
             // Get matching source, ensure exists
-            const sourceID = dataGroup.id + "." + (element["source"] as string);
-            const sourceObj = dataGroup.getFirstSourceWithID(sourceID);
+            const originalSourceID = (element["source"] as string);
+            const uniqueSourceID = this.recurseUpForSource(dataGroup, originalSourceID);
+            
+            const sourceObj = dataGroup.getFirstSourceWithID(uniqueSourceID);
             if(sourceObj == null) {
                 console.error("Layer with ID '" + elementID + "' references a source that is not defined, will skip it!");
                 continue;
@@ -161,7 +168,7 @@ export class DataParser {
      * @param element 
      * @param layer 
      */
-     private setVisibility(element: JsonObject, layer: DataLayer) {
+    private setVisibility(element: JsonObject, layer: DataLayer) {
         const layoutObj = element["layout"] as JsonObject;
         if(layoutObj?.["visibility"] != null) {
             layer.cachedVisibility = (layoutObj["visibility"] == "visible");
@@ -183,6 +190,20 @@ export class DataParser {
             // Support older format of this property
             layer.interactions = (element["clickable"]) ? "all" : "none";
         }
+    }
+
+    /**
+     * 
+     * @param dataGroup 
+     * @param sourceID original source ID (before prefix)
+     * @returns 
+     */
+    private recurseUpForSource(dataGroup: DataGroup, sourceID: string): string {
+        for(const source of dataGroup.dataSources) {
+            const sourceDef = source.definition;
+            if((sourceDef["id"] as string) === sourceID) return source.id;
+        }
+        return this.recurseUpForSource(dataGroup.parentGroup, sourceID);
     }
 
 }

@@ -1,6 +1,19 @@
 import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, RasterSource, VectorSource, VideoSourceRaw } from "mapbox-gl";
 import { DataSource } from "../../io/data/data-source";
 import { JsonObject } from "../../types/json";
+import { DataStore } from "../../io/data/data-store";
+
+/**
+ * Given a DataStore instance housing parsed DataSource instances,
+ * this function adds them all to the Mapbox map object.
+ * 
+ * @param dataStore Store containing parsed DataSource instances.
+ */
+export function addAllSources(dataStore: DataStore) {
+    const sourceArray: DataSource[] = dataStore.getSourceList();
+    sourceArray.forEach((source) => addSource(source));
+    console.log("Added all registered sources to the map object.");
+}
 
 /**
  * Adds the input data source to the Mapbox map object.
@@ -10,7 +23,7 @@ import { JsonObject } from "../../types/json";
 export function addSource(source: DataSource) {
     const collision = window.map.getSource(source.id);
     if(collision != null) {
-        console.warn("Attempting to add source that's already on map: '" + source.id + "'.");
+        console.warn("Attempting to add a source that's already on map: '" + source.id + "'.");
         return;
     }
 
