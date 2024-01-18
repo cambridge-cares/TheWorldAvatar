@@ -24,7 +24,8 @@
 					"STATIC_SOURCE_TABLE=static",
 					"ELEVATION_CONTOURS_TABLE=elevation_contours",
 					"PARALLELISE_EMISSIONS_UPDATE=true",
-					"TARGET_EMISSION_VOLUME_FRACTION=0.001"
+					"TARGET_EMISSION_VOLUME_FRACTION=0.001",
+					"SHIPS_LAYER_NAME=ships"
 				],
 				"Configs": [
 					{

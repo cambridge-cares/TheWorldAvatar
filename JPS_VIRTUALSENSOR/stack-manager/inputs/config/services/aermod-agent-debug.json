@@ -25,6 +25,7 @@
 					"ELEVATION_CONTOURS_TABLE=elevation_contours",
 					"PARALLELISE_EMISSIONS_UPDATE=true",
 					"TARGET_EMISSION_VOLUME_FRACTION=0.001",
+					"SHIPS_LAYER_NAME=ships",
 					"JPDA_ADDRESS=0.0.0.0:5005",
 					"JPDA_TRANSPORT=dt_socket",
 					"DEBUG=ON"
