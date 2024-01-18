@@ -463,11 +463,18 @@ public class QueryClient {
                     return;
                 }
 
-                try {
-                    // this is to convert from org.postgis.Point to the Geometry class
-                    org.postgis.Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
-                    String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
+                // this is to convert from org.postgis.Point to the Geometry class
+                org.postgis.Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
+                if (ts.getValuesAsPoint(measure).size() > 1) {
+                    int i = 0;
+                    while (i < ts.getTimes().size() && ts.getTimes().get(i) < simulationTime) {
+                        postgisPoint = ts.getValuesAsPoint(measure).get(i);
+                        i++;
+                    }
+                }
 
+                String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
+                try {
                     Point point = (Point) new org.locationtech.jts.io.WKTReader().read(wktLiteral);
                     point.setSRID(4326);
 
