@@ -82,37 +82,95 @@ class SubunitBuilder:
 
         return lfr_atoms
 
-    def find_bs_and_update(self, json_file_path, ref_atom_uuid, ref_atom_data, bs_type):
-        if bs_type == "MDNH2":
-            target_atom = "N"
-        elif bs_type == "MDCO":
-            target_atom = "C"
-        elif bs_type == "NHOH":
-            target_atom = "N"
-        elif bs_type == "C3X3CH3":
-            target_atom = "C"
-        elif bs_type == "CCN":
-            target_atom = "C"     
-        elif bs_type == "ter-C":
-            target_atom = "C"   
-        elif bs_type == "CO2R":
-            target_atom = "C"      
-        elif bs_type == "MDOH":
-            target_atom = "O"    
-        elif bs_type == "MDCOCl":
-            target_atom = "C"
-        elif bs_type == "CNRC":
-            target_atom = "N"            
-        else:
-            logging.warning("Unsupported bs_type")
-            #print("Unsupported bs_type")
-            return
+    def find_bs_and_update(self, json_file_path, ref_atom_uuid, ref_atom_data, bs_type, core_json_path):
+        target_atoms_scenario_1 = {
+            "MDNH2": "N", "MDCO": "C", "NHOH": "N", "C3X3CH3": "C",
+            "CCN": "C", "ter-C": "C", "CO2R": "C", "MDOH": "O",
+            "MDCOCl": "C", "CNRC": "N"
+        }
+        target_atoms_scenario_2 = {
+            "BDNH2": ["N","N"],"BDO": ["O","O"]
+            }
+        try:
+            if bs_type in target_atoms_scenario_1:
+                target_atom = self.target_atoms_scenario_1[bs_type]
+                self.process_scenario_1(json_file_path, ref_atom_uuid, ref_atom_data, target_atom)
+            elif bs_type in target_atoms_scenario_2:
+                print("NEEE")
+                print(bs_type)
+                target_atoms = target_atoms_scenario_2[bs_type]
+                print(target_atoms)
+                self.process_scenario_2(json_file_path, ref_atom_uuid, ref_atom_data, target_atoms, core_json_path)
+            elif bs_type in self.target_atoms_scenario_3:
+                target_atom = self.target_atoms_scenario_3[bs_type]
+                self.process_scenario_3(json_file_path, ref_atom_uuid, ref_atom_data, target_atom)
+            else:
+                logging.warning(f"Unsupported bs_type: {bs_type}")
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
 
-        with open(json_file_path, 'r') as file:
-            lfr_atoms = json.load(file)
+    def process_scenario_1(self, json_file_path, ref_atom_uuid, ref_atom_data, target_atom):
+        lfr_atoms = self.read_json_file(json_file_path)
+        x_atom_uuid_to_remove, target_atom_uuid, x_outer_uuid = self.find_target_atom(lfr_atoms, target_atom)
+
+        if x_atom_uuid_to_remove and target_atom_uuid:
+            self.process_atoms(lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove)
+            self.write_json_file(json_file_path, lfr_atoms)
+            logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
+        else:
+            logging.warning("Required atoms not found.")
+
+    def process_scenario_2(self, json_file_path, ref_atom_uuid, ref_atom_data, target_atoms, core_json_path):
+        print(target_atoms)
+        target_atom_1 = target_atoms[0]
+        target_atom_2 = target_atoms[1]
+        print(target_atom_1)
+        neighboor_atoms = self.find_neigboors(core_json_path, ref_atom_uuid)
         
-        target_atom_uuid = None
+        print(neighboor_atoms)
+        lfr_atoms = self.read_json_file(json_file_path)
+        #TO DO: find_target_atoms should be changed considering that the input is a list and that two target atoms should overlap instead of one currently
+        #TO DO: use reference_atom_uuid to find neighbour or neigbours in 
+        #TO DO: in proccess scanarion 1 t was a single target_atom_uuid but now there will be two target atoms uuid as a list, they will need to be passed to another function
+        print('TARGET ATOM UUID')
+        x_atom_uuid_to_remove, target_atom_uuid_1, target_atom_uuid_2, x_outer_uuid = self.find_target_atoms(lfr_atoms, target_atom_1, target_atom_2)
+        print('TARGET ATOM UUID1')
+        print(target_atom_uuid_1)
+        print('TARGET ATOM UUID2')
+        print(target_atom_uuid_2)
+        #x_atom_uuid_to_remove, target_atom_uuid, x_outer_uuid = self.find_target_atoms(lfr_atoms, target_atoms)
+        #TO DO: in in the line below we have target_atom_uuid again,  which should be two atoms, if they exist 
+        if x_atom_uuid_to_remove and target_atom_uuid_1:
+            # To Do: the process function considers two target atoms basically on each site, this requires other functions to change
+            self.process_atoms(lfr_atoms, target_atom_uuid_1, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove)
+            self.write_json_file(json_file_path, lfr_atoms)
+            logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
+        else:
+            logging.warning("Required atoms not found.")
+          
+   
+    def find_neigboors(self, core_json_path, ref_atom_uuid):
+        neigboor_atoms = []
+        core_atoms = self.read_json_file(core_json_path)
+        atom_data = core_atoms.get(ref_atom_uuid)
+
+        if atom_data and "bond" in atom_data:
+            for bond in atom_data["bond"]:
+                neigboor_atoms.append(bond["to_atom"])
+
+        return neigboor_atoms
+
+    def read_json_file(self, filepath):
+        with open(filepath, 'r') as file:
+            return json.load(file)
+
+    def write_json_file(self, filepath, data):
+        with open(filepath, 'w') as file:
+            json.dump(data, file, indent=2)
+
+    def find_target_atom(self, lfr_atoms, target_atom):
         x_atom_uuid_to_remove = None
+        target_atom_uuid = None
         x_outer_uuid = None
         found_target_atom = False
 
@@ -120,49 +178,63 @@ class SubunitBuilder:
             if atom_data['atom'] == 'X':
                 for bond in atom_data.get('bond', []):
                     to_atom_uuid = bond.get('to_atom')
-                    if to_atom_uuid in lfr_atoms:
-                        next_atom_data = lfr_atoms[to_atom_uuid]
-                        # Check for target atom
-                        if next_atom_data['atom'] == target_atom:
-                            if not found_target_atom:
-                                logging.info(f"Found {target_atom} atom at position {to_atom_uuid}")
-                                x_atom_uuid_to_remove = uuid
-                                target_atom_uuid = to_atom_uuid
-                                found_target_atom = True
-                            elif not x_outer_uuid:
-                                x_outer_uuid = uuid
-                        # Check for any atom other than the target atom
+                    if to_atom_uuid in lfr_atoms and lfr_atoms[to_atom_uuid]['atom'] == target_atom:
+                        if not found_target_atom:
+                            logging.info(f"Found {target_atom} atom at position {to_atom_uuid}")
+                            x_atom_uuid_to_remove = uuid
+                            target_atom_uuid = to_atom_uuid
+                            found_target_atom = True
                         elif not x_outer_uuid:
                             x_outer_uuid = uuid
+                    elif not x_outer_uuid:
+                        x_outer_uuid = uuid
 
-        if x_atom_uuid_to_remove and target_atom_uuid:
-            # First, substitute properties without changing UUIDs
-            lfr_atoms = self.substitute_atom_properties(lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid)   
-            # Next, update all bonds referencing the target atom UUID
-            self.update_atom_bonds(lfr_atoms, target_atom_uuid, ref_atom_uuid)        
-            # Now, assign the target atom's data to the reference UUID
-            lfr_atoms[ref_atom_uuid] = lfr_atoms.pop(target_atom_uuid)
-            # Remove 'X' atom
-            del lfr_atoms[x_atom_uuid_to_remove]          
-            # Remove corresponding bond in target atom
-            # Remove corresponding bond in target atom
-            bonds = lfr_atoms[ref_atom_uuid].get('bond', [])
-            lfr_atoms[ref_atom_uuid]['bond'] = [bond for bond in bonds if bond['to_atom'] != x_atom_uuid_to_remove]
-            #bonds = lfr_atoms[target_atom_uuid].get('bond', [])
-            #lfr_atoms[target_atom_uuid]['bond'] = [bond for bond in bonds if bond['to_atom'] != x_atom_uuid_to_remove]
 
- 
-            # [existing code to update lfr_atoms]
+    def find_target_atoms(self, lfr_atoms, target_atom_1, target_atom_2):
+        x_atom_uuid_to_remove = None
+        target_atom_uuid_1 = None
+        target_atom_uuid_2 = None
+        x_outer_uuid = None
 
-            with open(json_file_path, 'w') as file:
-                json.dump(lfr_atoms, file, indent=2)
+        for uuid, atom_data in lfr_atoms.items():
+            if atom_data['atom'] == 'X':
+                for bond in atom_data.get('bond', []):
+                    to_atom_uuid = bond.get('to_atom')
+                    if to_atom_uuid in lfr_atoms:
+                        if lfr_atoms[to_atom_uuid]['atom'] == target_atom_1 and not target_atom_uuid_1:
+                            logging.info(f"Found {target_atom_1} atom at position {to_atom_uuid}")
+                            x_atom_uuid_to_remove = uuid
+                            target_atom_uuid_1 = to_atom_uuid
+                        elif lfr_atoms[to_atom_uuid]['atom'] == target_atom_2 and not target_atom_uuid_2:
+                            logging.info(f"Found {target_atom_2} atom at position {to_atom_uuid}")
+                            x_atom_uuid_to_remove = uuid
+                            target_atom_uuid_2 = to_atom_uuid
 
-            logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
-            logging.info("Removed 'X' atom and updated bonds in target atom.")
-        else:
-            logging.warning("Required atoms not found.")
-            # Handle the case where the necessary atoms are not found
+                if not target_atom_uuid_1 or not target_atom_uuid_2:
+                    x_outer_uuid = uuid
 
+        return x_atom_uuid_to_remove, target_atom_uuid_1, target_atom_uuid_2, x_outer_uuid
+
+
+    def process_atoms(self, lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove):
+        # Substitute properties without changing UUIDs
+        lfr_atoms = self.substitute_atom_properties(lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid)
+        
+        # Update all bonds referencing the target atom UUID
+        self.update_atom_bonds(lfr_atoms, target_atom_uuid, ref_atom_uuid)
+        
+        # Assign the target atom's data to the reference UUID
+        lfr_atoms[ref_atom_uuid] = lfr_atoms.pop(target_atom_uuid)
+        
+        # Remove 'X' atom
+        del lfr_atoms[x_atom_uuid_to_remove]
+        
+        # Remove corresponding bond in target atom
+        bonds = lfr_atoms[ref_atom_uuid].get('bond', [])
+        lfr_atoms[ref_atom_uuid]['bond'] = [bond for bond in bonds if bond['to_atom'] != x_atom_uuid_to_remove]
+
+        # Return the modified atoms data
+        return lfr_atoms
   
     def calculate_midpoint(self, atoms):
         coordinates = np.array([(atom['coordinate_x'], atom['coordinate_y'], atom['coordinate_z']) for atom in atoms.values() if atom['atom'] == 'X'])
@@ -219,7 +291,7 @@ class SubunitBuilder:
         return shifted_atoms, reference_atoms
 
 
-    def update_lfr_files(self, core_atoms, reference_atoms, lfr_folder_path, bs_type):
+    def update_lfr_files(self, core_atoms, reference_atoms, lfr_folder_path, bs_type, core_json_path):
         for i, ref_atom_uuid in enumerate(reference_atoms):
             ref_atom_data = core_atoms[ref_atom_uuid]
             lfr_file_path = os.path.join(lfr_folder_path, f'lfr_copy_{i+1}.json')
@@ -227,7 +299,7 @@ class SubunitBuilder:
                 logging.warning(f"File not found: {lfr_file_path}")
                 #print(f"File not found: {lfr_file_path}")
                 continue
-            self.find_bs_and_update(lfr_file_path, ref_atom_uuid, ref_atom_data, bs_type)
+            self.find_bs_and_update(lfr_file_path, ref_atom_uuid, ref_atom_data, bs_type, core_json_path)
 
     def create_and_update_subcomponent(self, core_json_path, subcomponent_json_path, lfr_folder_path):
         # Start with an empty dictionary
@@ -276,7 +348,7 @@ if __name__ == "__main__":
     core_atoms, reference_atoms = builder.shift_atoms_to_origin(core_json_path)
 
     # Update the lfr files with the atoms from core.json
-    builder.update_lfr_files(core_atoms, reference_atoms, lfr_folder_path, bs_type)
+    builder.update_lfr_files(core_atoms, reference_atoms, lfr_folder_path, bs_type, core_json_path)
     
     subcomponent_json_path = os.path.join(lfr_folder_path, 'subcomponent.json')
     subcomponent_xyz_path = os.path.join(lfr_folder_path, 'subcomponent.xyz')

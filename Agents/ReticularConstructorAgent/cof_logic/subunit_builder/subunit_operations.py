@@ -67,7 +67,7 @@ class SubunitOperations:
         core_json_path = os.path.join(temp_output_directory, 'core.json')
         lfr_folder_path = temp_output_directory
         core_atoms, reference_atoms = builder.shift_atoms_to_origin(core_json_path)
-        builder.update_lfr_files(core_atoms, reference_atoms, lfr_folder_path, self.bs_type)
+        builder.update_lfr_files(core_atoms, reference_atoms, lfr_folder_path, self.bs_type, core_json_path)
         subcomponent_json_path = os.path.join(lfr_folder_path, 'subcomponent.json')
         subcomponent_xyz_path = os.path.join(lfr_folder_path, 'subcomponent.xyz')
         builder.create_and_update_subcomponent(core_json_path, subcomponent_json_path, lfr_folder_path)
