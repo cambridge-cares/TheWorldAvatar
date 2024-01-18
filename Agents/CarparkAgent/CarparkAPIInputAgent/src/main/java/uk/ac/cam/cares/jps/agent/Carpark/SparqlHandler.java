@@ -302,7 +302,9 @@ public class SparqlHandler {
                     insert.prefix(PREFIX_ONTOCARPARK);
                     kbClient.executeUpdate(insert.getQueryString());
 
-                    //Check whether a building concept has been linked to the carpark instance via ontoBuiltEnv:hasPropertyUsage
+                    /**
+                     * Removed temporarily for testing
+                     * //Check whether a building concept has been linked to the carpark instance via ontoBuiltEnv:hasPropertyUsage
                     Variable building = SparqlBuilder.var("building");
                     query = Queries.SELECT();
                     TriplePattern buildingPattern = building.has(hasPropertyUsage, iri(carparkIRI));
@@ -322,6 +324,7 @@ public class SparqlHandler {
                         insert.prefix(PREFIX_BOT, PREFIX_ONTOBUILTENV);
                         kbClient.executeUpdate(insert.getQueryString());
                     }
+                     */
 
                     //TriplePattern for CarparkID
                     pattern = iri(carparkIRI).has(hasID, CarparkID);
@@ -384,7 +387,8 @@ public class SparqlHandler {
                                         throw new JPSRuntimeException("The following word " + Devlabel + " cannot be parsed and capitalised.");
                                     }
 
-                                    //TriplePattern to query for whether buildingIRI hasAddress, if so, skip creating addressIRI and instantiating lat and long
+                                    /**
+                                     * //TriplePattern to query for whether buildingIRI hasAddress, if so, skip creating addressIRI and instantiating lat and long
                                     Variable add = SparqlBuilder.var("address");
                                     query = Queries.SELECT();
                                     pattern = iri(buildingIRI).has(hasAddress, add);
@@ -411,6 +415,7 @@ public class SparqlHandler {
                                     insert = Queries.INSERT_DATA(pattern);
                                     insert.prefix(PREFIX_GEO, PREFIX_ICONTACT);
                                     kbClient.executeUpdate(insert.getQueryString());
+                                     */
 
                                     //Instantiate rdfs:label
                                     pattern = iri(carparkIRI).has(label,Devlabel);
@@ -418,8 +423,15 @@ public class SparqlHandler {
                                     insert = Queries.INSERT_DATA(pattern);
                                     insert.prefix(PREFIX_RDFS);
                                     kbClient.executeUpdate(insert.getQueryString());
+                                }
+                            }
+                    } catch (Exception e) {
+                       throw new JPSRuntimeException("Unable to execute query: " + query.getQueryString(), e);
+                    }   
 
-                                    //parse Development to street, street number, building and unit name
+                                    /**
+                                     * Removed for testing
+                                     * //parse Development to street, street number, building and unit name
                                     if (!Devlabel.contains("Street") & !Devlabel.contains("Avenue") & !Devlabel.contains("Blk") & !Devlabel.contains("St") & !Devlabel.contains("Rd") & !Devlabel.contains("Road")) {
                                         pattern = iri(addressIRI).has(hasBuilding, Devlabel);
                                         insert = new InsertDataQuery();
@@ -736,6 +748,8 @@ public class SparqlHandler {
                            throw new JPSRuntimeException("Unable to execute query: " + query.getQueryString(), e);
                         }   
 
+                                     */
+
 
                         //FuzzyMatching for the carpark Prices
 
@@ -783,8 +797,8 @@ public class SparqlHandler {
                                 }
                             }
                         if(check==1)
-                        i=carparkRates.length();
-                    }
+                            i=carparkRates.length();
+                        }
 
                         TriplePattern pattern9 = iri(carparkIRI).has(hasWeekdayRates,weekday);
                         InsertDataQuery insert11 = Queries.INSERT_DATA(pattern9);
@@ -800,16 +814,9 @@ public class SparqlHandler {
                         InsertDataQuery insert13 = Queries.INSERT_DATA(pattern11);
                         insert13.prefix(PREFIX_ONTOCARPARK);
                         kbClient.executeUpdate(insert13.getQueryString());
-
-
-                        //Looping through for subsequent IRIs
                     }
-    
+                }
             }
-    
-           }
-           
         }
     }
-
 }
