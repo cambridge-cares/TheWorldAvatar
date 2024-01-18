@@ -16,7 +16,6 @@
 					"PARALLELISE_CALCULATIONS=true",
 					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri",
 					"SCOPE_TABLE_NAME=scopes",
-					"SHIPS_LAYER_NAME=ships",
 					"USE_LIVE_DATA=false",
 					"API_KEY=",
 					"BOUNDING_BOXES=[[[1.219097, 103.776165], [1.3096076, 103.9019436]]]"

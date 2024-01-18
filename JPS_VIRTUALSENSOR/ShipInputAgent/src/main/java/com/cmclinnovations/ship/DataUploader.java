@@ -76,9 +76,6 @@ public class DataUploader {
             LOGGER.error(e.getMessage());
             throw new RuntimeException(errmsg, e);
         }
-
-        LOGGER.info("Creating GeoServer layer");
-        createGeoServerLayer();
     }
 
     static List<Ship> uploadDataFromFile(QueryClient queryClient) throws IOException {
@@ -169,40 +166,6 @@ public class DataUploader {
         uploadShips(ships, queryClient);
 
         return ships;
-    }
-
-    static void createGeoServerLayer() {
-        String sqlQuery = """
-                SELECT timeseries.time AS time,
-                    timeseries.value AS geom,
-                    s.ship AS iri,
-                    s.shipname AS name
-                FROM "dbTable",
-                    public.get_geometry_table("tableName", "columnName") AS timeseries,
-                    ship_location_iri AS s,
-                    information_schema.columns c
-                WHERE "dbTable"."dataIRI" = s.location
-                    AND c.table_schema = 'public'
-                    AND c.table_name = "tableName"
-                    AND c.column_name = "columnName"
-                    AND c.udt_name = 'geometry'
-                """;
-
-        GeoServerClient geoserverClient = GeoServerClient.getInstance();
-        geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-
-        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-
-        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-        virtualTable.setSql(sqlQuery);
-        virtualTable.setEscapeSql(true);
-        virtualTable.setName("shipVirtualTable");
-        virtualTable.addVirtualTableGeometry("geom", "Point", "4326"); // geom needs to match the sql query
-        LOGGER.info(virtualTable.getName());
-        geoServerVectorSettings.setVirtualTable(virtualTable);
-
-        geoserverClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                EnvConfig.SHIPS_LAYER_NAME, geoServerVectorSettings);
     }
 
     static void updateFile(File file, String fileContent) {

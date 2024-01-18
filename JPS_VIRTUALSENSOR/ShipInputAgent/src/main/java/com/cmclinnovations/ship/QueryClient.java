@@ -1,5 +1,6 @@
 package com.cmclinnovations.ship;
 
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -165,6 +166,8 @@ public class QueryClient {
                 // mmsi
                 Iri mmsiProperty = P_DISP.iri(shipName + "MMSI");
                 Iri mmsiMeasure = P_DISP.iri(shipName + "MMSIMeasure");
+
+                modify.insert(shipIri.has(iri(RDFS.LABEL), ship.getShipName()));
 
                 modify.insert(shipIri.has(HAS_PROPERTY, mmsiProperty));
                 modify.insert(mmsiProperty.isA(MMSI).andHas(HAS_VALUE, mmsiMeasure));
