@@ -67,14 +67,24 @@ public class AisStreamWebsocketClient extends WebSocketClient {
 
         ship.setTimestamp(timestampInstant);
 
-        Thread newThread = new Thread(() -> {
+        if (queryClient.shipExists()) {
+            Thread newThread = new Thread(() -> {
+                try {
+                    DataUploader.uploadShips(List.of(ship), queryClient);
+                } catch (IOException e) {
+                    LOGGER.warn("Error in uploading ship data");
+                    LOGGER.warn(e.getMessage());
+                }
+            });
+            newThread.start();
+        } else {
             try {
                 DataUploader.uploadShips(List.of(ship), queryClient);
             } catch (IOException e) {
+                LOGGER.warn("Error in uploading ship data");
                 LOGGER.warn(e.getMessage());
             }
-        });
-        newThread.start();
+        }
     }
 
     @Override

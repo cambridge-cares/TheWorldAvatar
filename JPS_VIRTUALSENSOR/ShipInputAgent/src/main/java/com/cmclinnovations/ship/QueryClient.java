@@ -135,6 +135,19 @@ public class QueryClient {
         return newShipsToInitialise;
     }
 
+    boolean shipExists() {
+        SelectQuery query = Queries.SELECT();
+
+        Variable ship = query.var();
+
+        GraphPattern gp = ship.isA(SHIP);
+
+        query.where(gp).prefix(P_DISP).limit(1);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        return queryResult.length() > 0;
+    }
+
     /**
      * called by initialiseShipsIfNotExist, adds triples and initialises the time
      * series tables
