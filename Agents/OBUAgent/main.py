@@ -1,4 +1,4 @@
-from Algorithms import alg1, alg2, enumeration, create_precursors
+from Algorithms import alg1, alg2, enumeration, create_precursors, heatmap
 from rdkit import RDLogger
 RDLogger.DisableLog('rdApp.*')
 
@@ -51,6 +51,7 @@ enumeration.dict_to_csv(union_dict, UNION_ENUM_FILE)
 enumeration.merge_counts(BASE_ENUM_FILE, ALG1_ENUM_FILE, ALG2_ENUM_FILE, UNION_ENUM_FILE, ENUM_OUTPUT_FILE)
 enumeration.merge_csv_files(ALG1_OUTPUT_FILE, ALG2_OUTPUT_FILE, MERGED_ALG1_2_FILE)
 enumeration.remove_duplicates(MERGED_ALG1_2_FILE, ALG1U2_OUTPUT_FILE)
+heatmap.run_heatmap()
 
 # Run precursor creation
 create_precursors.main()

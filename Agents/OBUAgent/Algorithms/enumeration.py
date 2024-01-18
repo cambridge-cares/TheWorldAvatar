@@ -102,9 +102,10 @@ dict_to_csv(union_dict, os.path.join(temp_dir, 'union_enum.csv'))
 
 # Merge the count CSV files into a single enumeration output file
 merge_counts(
-    os.path.join(temp_dir + 'base_enum.csv'),
-    os.path.join(temp_dir + 'alg1_enum.csv'),
-    os.path.join(temp_dir + 'alg2_enum.csv'),
-    os.path.join(temp_dir + 'union_enum.csv'),
+    os.path.join(temp_dir, 'base_enum.csv'),
+    os.path.join(temp_dir, 'alg1_enum.csv'),
+    os.path.join(temp_dir, 'alg2_enum.csv'),
+    os.path.join(temp_dir, 'union_enum.csv'),
     enumeration_output
 )
+

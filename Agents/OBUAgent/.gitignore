@@ -52,3 +52,7 @@ myenv/*
 
 # Ignore CSV files
 *.csv
+
+*_kg.py
+docker-compose.yml
+setup.py
