@@ -39,12 +39,20 @@ public class StartScheduledDispersion extends HttpServlet {
         String[] zArray = req.getParameterValues("z");
         String simulationTimeIri = req.getParameter("simulationTimeIri"); // optional
         String delayMinutes = req.getParameter("delayMinutes"); // optional
+        String intervalMinutes = req.getParameter("intervalMinutes"); // optional
 
         int delay;
         if (delayMinutes != null) {
             delay = Integer.parseInt(delayMinutes);
         } else {
             delay = 30;
+        }
+
+        int interval;
+        if (intervalMinutes != null) {
+            interval = Integer.parseInt(intervalMinutes);
+        } else {
+            interval = 60;
         }
 
         InitialiseSimulation initialiseSimulation = new InitialiseSimulation();
@@ -54,6 +62,10 @@ public class StartScheduledDispersion extends HttpServlet {
                 simulationTimeIri);
 
         LOGGER.info("Starting scheduled dispersion simulations for <{}>", derivation);
+
+        if (delay > 0) {
+            LOGGER.info("Starting first update in {} minutes", delay);
+        }
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
@@ -69,7 +81,7 @@ public class StartScheduledDispersion extends HttpServlet {
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());
             }
-        }, delay, 60, TimeUnit.MINUTES);
+        }, delay, interval, TimeUnit.MINUTES);
     }
 
     @Override
