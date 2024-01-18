@@ -43,6 +43,7 @@ import org.locationtech.jts.geom.Polygon;
 import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Pollutant;
+import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
@@ -240,6 +241,51 @@ public class Aermod {
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.STATIC_SOURCE_TABLE, new GeoServerVectorSettings());
+    }
+
+    void createShipsLayer(List<Ship> pointSources, long simulationTime, String derivationIri) {
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+        JSONArray features = new JSONArray();
+
+        pointSources.forEach(pointSource -> {
+            String originalSrid = "EPSG:" + pointSource.getLocation().getSRID();
+            double[] xyOriginal = { pointSource.getLocation().getX(), pointSource.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:4326", xyOriginal);
+
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Point");
+            geometry.put("coordinates", new JSONArray().put(xyTransformed[0]).put(xyTransformed[1]));
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
+            feature.put("geometry", geometry);
+
+            JSONObject properties = new JSONObject();
+            properties.put("iri", pointSource.getIri());
+            properties.put("time", simulationTime);
+            properties.put("derivation", derivationIri);
+
+            if (pointSource.getLabel() != null) {
+                properties.put("name", "Ship: " + pointSource.getLabel());
+            } else {
+                properties.put("name", "Ship");
+            }
+
+            feature.put("properties", properties);
+
+            features.put(feature);
+        });
+
+        featureCollection.put("features", features);
+
+        GDALClient gdalClient = GDALClient.getInstance();
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SHIPS_LAYER_NAME,
+                featureCollection.toString(), new Ogr2OgrOptions(), true);
+        geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                EnvConfig.SHIPS_LAYER_NAME, new GeoServerVectorSettings());
     }
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {

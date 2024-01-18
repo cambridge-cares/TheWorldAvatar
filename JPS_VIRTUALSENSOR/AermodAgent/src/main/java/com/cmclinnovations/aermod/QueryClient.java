@@ -1542,7 +1542,7 @@ public class QueryClient {
         return false;
     }
 
-    void setStaticPointSourceLabel(List<StaticPointSource> staticPointSources) {
+    void setPointSourceLabel(List<PointSource> staticPointSources) {
         SelectQuery query = Queries.SELECT();
         Variable psVar = query.var();
         Variable labelVar = query.var();
@@ -1554,7 +1554,7 @@ public class QueryClient {
 
         query.where(valuesPattern, queryPattern);
 
-        Map<String, StaticPointSource> iriToSpsMap = new HashMap<>();
+        Map<String, PointSource> iriToSpsMap = new HashMap<>();
         staticPointSources.forEach(sps -> iriToSpsMap.put(sps.getIri(), sps));
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());

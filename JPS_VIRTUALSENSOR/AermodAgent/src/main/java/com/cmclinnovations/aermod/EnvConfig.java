@@ -21,6 +21,7 @@ public class EnvConfig {
     public static final String PARALLELISE_EMISSIONS_UPDATE = System.getenv("PARALLELISE_EMISSIONS_UPDATE");
     public static final double TARGET_EMISSION_VOLUME_FRACTION = Double
             .parseDouble(System.getenv("TARGET_EMISSION_VOLUME_FRACTION"));
+    public static final String SHIPS_LAYER_NAME = System.getenv("SHIPS_LAYER_NAME");
 
     private EnvConfig() {
         throw new IllegalStateException();
