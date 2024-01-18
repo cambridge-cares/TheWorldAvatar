@@ -155,12 +155,11 @@ public class GetDataJson extends HttpServlet {
 
         // optional layers
         if (Boolean.TRUE.equals(hasLayers.get(0))) {
-            long timeBuffer = 1800; // 30 minutes
             String shipWms = Config.STACK_URL + "/geoserver/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     + "&bbox={bbox-epsg-3857}"
                     + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.SHIPS_LAYER_NAME)
-                    + String.format("&CQL_FILTER=time<%d AND time>%d", timestep + timeBuffer, timestep - timeBuffer);
+                    + String.format("&CQL_FILTER=derivation='%s' AND time=%d", derivationIri, timestep);
             JSONObject shipSource = new JSONObject();
             shipSource.put("id", "ship-source");
             shipSource.put("type", "vector");

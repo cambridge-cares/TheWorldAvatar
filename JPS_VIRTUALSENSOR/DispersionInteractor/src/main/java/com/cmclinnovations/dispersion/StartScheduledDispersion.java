@@ -38,6 +38,14 @@ public class StartScheduledDispersion extends HttpServlet {
         String scopeLabel = req.getParameter("label");
         String[] zArray = req.getParameterValues("z");
         String simulationTimeIri = req.getParameter("simulationTimeIri"); // optional
+        String delayMinutes = req.getParameter("delayMinutes"); // optional
+
+        int delay;
+        if (delayMinutes != null) {
+            delay = Integer.parseInt(delayMinutes);
+        } else {
+            delay = 30;
+        }
 
         InitialiseSimulation initialiseSimulation = new InitialiseSimulation();
 
@@ -52,7 +60,7 @@ public class StartScheduledDispersion extends HttpServlet {
                 Instant nextUpdate = Instant.now().plus(1, ChronoUnit.HOURS);
 
                 // timestamp to run dispersion simulations
-                long simTime = Instant.now().minus(30, ChronoUnit.MINUTES).getEpochSecond();
+                long simTime = Instant.now().minus(delay, ChronoUnit.MINUTES).getEpochSecond();
 
                 queryClient.updateSimulationTime(derivation, simTime);
                 devClient.updatePureSyncDerivation(derivation);
@@ -61,7 +69,7 @@ public class StartScheduledDispersion extends HttpServlet {
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());
             }
-        }, 30, 60, TimeUnit.MINUTES);
+        }, delay, 60, TimeUnit.MINUTES);
     }
 
     @Override
