@@ -8,7 +8,7 @@ This script imports data from the BMRS (https://www.bmreports.com/bmrs/?q=eds/ma
 ## Visualisation ##
 Following the successful execution of the tool, you will view a visualisation identical to the one below.
 
-<img align="right" width="700" height="700" src="./img/visualisation.jpg">
+<img align="center" width="700" height="500" src="./img/visualisation.jpg">
 
 ## Tool Execution Details ##
 
