@@ -6,8 +6,8 @@ from pyderivationagent.kg_operations import PySparqlClient
 DELETE_STR = "DELETE WHERE"
 INSERT_STR = "INSERT DATA"
 FORECAST_META_BASE_IRI = "https://www.theworldavatar.com/test/"
-META_UPDATE_QUERY = 'prefix: <'+ FORECAST_META_BASE_IRI+''' >
-prefix owl:    <http://www.w3.org/2002/07/owl#>
+META_UPDATE_QUERY = 'PREFIX : <'+ FORECAST_META_BASE_IRI+'> '+'''
+PREFIX owl:    <http://www.w3.org/2002/07/owl#>
 prefix xsd:    <http://www.w3.org/2001/XMLSchema#>
 prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
@@ -21,14 +21,14 @@ prefix ems:    <https://www.theworldavatar.com/kg/ontoems/>
 {action} {{
 <{ts_iri}> rdf:type owl:Thing.
 :ForecastingModel_{name} rdf:type ts:ForecastingModel.
-  :ForecastingModel_{name}  rdfs:label {model} .
-  :ForecastingModel_{name}  ts:scaleData "false"^^xsd:boolean .
-:OptimisationInterval_{name} rdf:type time:Interval .
+:ForecastingModel_{name}  rdfs:label "{model}".
+:ForecastingModel_{name}  ts:scaleData "false"^^xsd:boolean.
+:OptimisationInterval_{name} rdf:type time:Interval.
  :OptimisationInterval_{name}   time:hasBeginning :OptimisationStartInstant_{name}.
- :OptimisationInterval_{name}   time:hasEnd :OptimisationEndInstant_{name} .
-:OptimisationStartInstant_{name} rdf:type time:Instant .
- :OptimisationStartInstant_{name}   time:inTimePosition :TimePosition_{name}_1 .
-:OptimisationEndInstant_{name} rdf:type time:Instant .
+ :OptimisationInterval_{name}   time:hasEnd :OptimisationEndInstant_{name}.
+:OptimisationStartInstant_{name} rdf:type time:Instant.
+ :OptimisationStartInstant_{name}   time:inTimePosition :TimePosition_{name}_1.
+:OptimisationEndInstant_{name} rdf:type time:Instant.
   :OptimisationEndInstant_{name}  time:inTimePosition :TimePosition_{name}_2 .
 :TimePosition_{name}_1 rdf:type time:TimePosition .
   :TimePosition_{name}_1  time:hasTRS <http://dbpedia.org/resource/Unix_time> .
@@ -59,7 +59,7 @@ class ForcastAgentClient:
 
 
     def call_predict(self, forecast_meta: ForecastMeta):
-        predict_input = self.insert_forcast_meta(forecast_meta)# Meta definition of forecast instance needs to be inserted before run forecast agent
+        predict_input = self.update_forcast_meta(forecast_meta)# Meta definition of forecast instance needs to be inserted before run forecast agent
         self.create_forecast(predict_input)
 
 
@@ -77,17 +77,20 @@ class ForcastAgentClient:
         }}
         '''
         r = self.sparql_client.performQuery(q.format(src_iri))
-        return r[0]['forecast']
+        if len(r) > 0:
+            return r[0]['forecast']
+        else:
+            return False
 
 
-    def insert_forcast_meta(self, fmeta:ForecastMeta) -> list:
+    def update_forcast_meta(self, fmeta:ForecastMeta) -> list:
         self._delete_forecast_meta(fmeta.iri, fmeta.name)
         self._insert_forecast_meta(fmeta)
         input_list = [ fmeta.iri,
                        FORECAST_META_BASE_IRI+"ForecastingModel_{}".format(fmeta.name),
                        FORECAST_META_BASE_IRI+"Frequency_{}".format(fmeta.name),
-                       FORECAST_META_BASE_IRI+"OptimisationInterval{}".format(fmeta.name),
-                       FORECAST_META_BASE_IRI+"Duration{}".format(fmeta.name)
+                       FORECAST_META_BASE_IRI+"OptimisationInterval_{}".format(fmeta.name),
+                       FORECAST_META_BASE_IRI+"Duration_{}".format(fmeta.name)
                        ]
         return input_list
 
@@ -95,10 +98,14 @@ class ForcastAgentClient:
     def _delete_forecast_meta(self, src_iri, name):
         delete_str = META_UPDATE_QUERY.format(action=DELETE_STR, name=name, ts_iri=src_iri, model = '?m', start='?s',end='?e',frequency='?f', unit='?u',duration="?d")
         r = self.sparql_client.performUpdate(delete_str)
+        print(r)
 
 
 
 
     def _insert_forecast_meta(self, fmeta:ForecastMeta):
         update_str = META_UPDATE_QUERY.format(action=INSERT_STR,name=fmeta.name,ts_iri=fmeta.iri,model=fmeta.model,start=fmeta.start,end=fmeta.end,frequency = fmeta.frequency, unit=fmeta.unit_frequency,duration=fmeta.duration)
+        print(update_str)
+        print(fmeta)
         r = self.sparql_client.performUpdate(update_str)
+        print(r)

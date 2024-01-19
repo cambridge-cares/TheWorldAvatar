@@ -5,7 +5,7 @@ from dateutil.parser import parser, parse
 import time
 
 
-DEFAULT_TIME = datetime.datetime.strptime('01/01/01 00:00:00', '%m/%d/%y %H:%M:%S')
+DEFAULT_TIME = datetime.datetime.strptime('01/01/01 00:00:00+0800', '%m/%d/%y %H:%M:%S%z')
 TSTR_FORMATS = {'Instant': '%Y-%m-%dT%H:%M:%SZ', 'LocalDate':'%Y-%m-%d'}
 
 
@@ -52,7 +52,7 @@ class ForecastMeta:
 
     def __post_init__(self):
         if self.unit_frequency == 'year':
-            self.unit_frequency = 'unitDay'
+            self.unit_frequency = 'time:unitDay'
             self.frequency = self.frequency * 365
             self.duration = self.duration * 365
             self.start = parse_time_to_unix(self.start_str)

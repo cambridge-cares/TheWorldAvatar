@@ -5,7 +5,7 @@ import string
 import importlib
 from kg_access import tsclient_wrapper, forecast_client
 from typing import List
-from downloader.downloaders import create_data_downloader
+from downloader.downloaders import Downloader
 from utils.conf_utils import *
 from data_classes.ts_data_classes import PropertiesFileProtytype, ForecastMeta, KgAccessInfo
 
@@ -24,7 +24,7 @@ class MackayDataAgent:
         self.tsclients = {}
         self.forecastclients = {}
         self.name_to_iris = {d["source"]["name"]: d["output"]["srcIri"] for d in data_confs}
-        self.data_downloaders = {d["source"]["name"]: create_data_downloader(d) for d in data_confs}
+        self.data_downloaders = {d["source"]["name"]: Downloader(d) for d in data_confs}
         for cfg in data_confs:
             data_name = cfg["source"]["name"]
             self.tsclients[data_name] = tsclient_wrapper.TSClient(self.property_files_dict[data_name])
@@ -72,12 +72,14 @@ class MackayDataAgent:
             outpaths[dataname] = outpath
         return outpaths
 
+    # Create DB if not exist
     def init_RDB(self):
         sqlcfg = self.base_conf['rdb_access']
         dburls = sqlcfg['url'].split('/')
         db_name = dburls[-1]
         tsclient_wrapper.create_postgres_db_if_not_exists(db_name, sqlcfg['user'], sqlcfg['password'])
 
+    # Register
     def register_all_timeseries_if_not_exist(self):
         for data_name, data_factory in self.data_downloaders.items():
             TSClient = self.tsclients[data_name]
@@ -90,23 +92,27 @@ class MackayDataAgent:
         TSClient = self.tsclients[data_name]
         TSClient.register_timeseries(timeseries_meta)
 
+    # main function : download TS data from API and run forecasting agent to create forecasted timeseries
     def update_from_external_and_predict(self):
         for data_name, data_factory in self.data_downloaders.items():
+            data_iri = self.name_to_iris[data_name]
             timeseries_instance = data_factory.download_tsinstance()
             TSClient = self.tsclients[data_name]
             updated = TSClient.update_timeseries_if_new(timeseries_instance)
-            if updated:  # API have new data, needs to call prediction again
+            hasPredict = self.forecastclients[data_name].get_forecast_iri(data_iri)
+            if updated or not hasPredict:  # API have new data, needs to call prediction again
                 # pad empty TS instance for prediction
-                pad_start = int(timeseries_instance.times[
-                                    -1]) + 1  # custom calculation of predict year start, allow other time type in future
+                forecast_cfg = data_factory.conf['forecast']
+                pad_start = int(timeseries_instance.times[-1]) + 1  # custom calculation of predict year start, allow other time type in future
                 padded_for_forcast = data_factory.get_empty_tsinstance_for_predict(pad_start)
                 TSClient.add_timeseries(padded_for_forcast)
-                start = timeseries_instance.times[0]
-                end = timeseries_instance.times[-1]
+                start = str(int(timeseries_instance.times[-1]) + 1)
+                end = forecast_cfg['predictEnd']
                 history_duration = float(end) - float(start)
-                forecast_cfg = data_factory.conf['forecast']
-                predict_input = ForecastMeta(name=data_factory.dataname, iri=data_factory.src_iri,
+                predict_input = ForecastMeta(name=data_name, iri=data_iri,
                                              duration=history_duration, start_str=start, end_str=end,
                                              frequency=float(forecast_cfg['frequency']),
                                              unit_frequency=forecast_cfg['unitFrequency'])
                 self.forecastclients[data_name].call_predict(predict_input)
+
+

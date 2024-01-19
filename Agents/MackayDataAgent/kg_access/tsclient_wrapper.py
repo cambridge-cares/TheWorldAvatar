@@ -49,18 +49,20 @@ class TSClient():
         # Add data
         self.client.addTimeSeriesData(timeseries)
 
-    def check_timeseries_exist(self, iri):
-        return self.client.checkDataHasTimeSeries(iri)
+    def check_timeseries_exist(self, datairi):
+        tsiri = self.client.getTimeSeriesIRI(datairi)
+        return False if not tsiri else self.client.checkTimeSeriesExists(tsiri)
 
     def update_timeseries_if_new(self,tsinstance: TimeSeriesInstance) -> bool:
         new_times = tsinstance.times
         new_times = [parse_time_to_format(t, self.time_class) for t in new_times]
         old_times,old_values = self.get_timeseries( tsinstance.src_iri)
-        old_times = [t for i,t in enumerate(old_times) if old_values[i]-0.0 > 0] #remove paddings for prediction
-        to_update_idx = [ idx for idx,t in enumerate(new_times) if t not in old_times]
-        if not to_update_idx:
-            logging.info('API for {} has not updated since last time. No update is made to KG.'.format(tsinstance.src_iri))
-            return False
+        if old_times is not None: # Have existing records, check if API values has change compared to record
+            old_times = [t for i,t in enumerate(old_times) if old_values[i]-0.0 > 0] #remove paddings for prediction
+            to_update_idx = [ idx for idx,t in enumerate(new_times) if t not in old_times]
+            if not to_update_idx:
+                logging.info('API for {} has not updated since last time. No update is made to KG.'.format(tsinstance.src_iri))
+                return False
         new_values = [tsinstance.values]
         dataIRIs = [tsinstance.src_iri]
         timeseries = jpsBaseLibView().getView().TimeSeries(new_times, dataIRIs, new_values)

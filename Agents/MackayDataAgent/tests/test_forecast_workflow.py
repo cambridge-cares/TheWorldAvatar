@@ -3,7 +3,7 @@ from pyderivationagent.kg_operations import PyDerivationClient
 deriv_client = PyDerivationClient('http://localhost:5001/ForecastingAgent', 'http://localhost:9999/blazegraph/namespace/country/sparql', 'http://localhost:9999/blazegraph/namespace/country/sparql')
 
 # Create new forecast derivation
-agent_iri = 'https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Test'
+agent_iri = 'https://www.theworldavatar.com/resource/agents/Service_ForecastingAgent/Test'
 derivation_input_set = [
                        'https://www.theworldavatar.com/kg/country/Number_773521f9-528e-40fc-9bcb-4218e49f40e8',
                         'https://www.theworldavatar.com/test/ForecastingModel_1',
