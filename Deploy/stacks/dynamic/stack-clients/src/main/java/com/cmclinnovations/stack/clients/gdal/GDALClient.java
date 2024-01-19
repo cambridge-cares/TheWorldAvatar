@@ -5,13 +5,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
@@ -261,16 +265,29 @@ public class GDALClient extends ContainerClient {
     }
 
     private void multipleRastersFromMultiDim(String timeArrayName, String variableArrayName, String filePath,
-            Path outputDirectory) {
+            Path outputDirectory, String dateTimeFormat, String timeZone, String database, String layername) {
         JSONArray arrayList = getTimeFromGdalmdiminfo(timeArrayName, filePath); // to generate output filenames
         String gdalContainerId = getContainerId("gdal");
+        String postGISContainerId = getContainerId("postgis");
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+        StringJoiner dateTimes = new StringJoiner("),(", "(", ")"); // SQL will want (value1),...,(valueN)
 
         for (int index = 0; index < arrayList.length(); index++) {
             String outputRasterFilePath = outputDirectory
                     .resolve(variableArrayName + "_" + arrayList.getString(index) + ".tif").toString();
+
+            // Convert the time from "dateTimeFormat" format to a format suitable for PostGIS
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormat);
+            ZoneId timeZoneID = ZoneId.of(timeZone);
+
+            LocalDateTime localDateTime =  LocalDateTime.parse(arrayList.getString(index), formatter);
+            ZonedDateTime zonedDateTime = localDateTime.atZone(timeZoneID);
+            dateTimes.add(zonedDateTime.toInstant().toString());
+
+            //
+
             String execId = createComplexCommand(gdalContainerId, "gdalwarp", "-srcband", Integer.toString(index + 1),
                     "-t_srs", "EPSG:4326", "-r", "cubicspline", "-wo", "OPTIMIZE_SIZE=YES", "-multi", "-wo",
                     "NUM_THREADS=ALL_CPUS", "NETCDF:" + filePath + ":" + variableArrayName,
@@ -278,13 +295,17 @@ public class GDALClient extends ContainerClient {
                     .withErrorStream(errorStream)
                     .exec();
             handleErrors(errorStream, execId, logger);
-            errorStream.reset(); // reset
+            errorStream.reset(); 
         }
 
-        // gdalwarp -b 1 -t_srs EPSG:4326 -r cubicspline -wo OPTIMIZE_SIZE=YES -multi
-        // -wo NUM_THREADS=ALL_CPUS
-        // input: NETCDF:tas_rcp85_land-cpm_uk_2.2km_01_1hr_20400101-20400130.nc:tas
-        // tas_rcp85_land-cpm_uk_2.2km_01_1hr_20400101-20400130.tif
+        String execId = createComplexCommand(postGISContainerId,
+                "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
+                .withHereDocument("CREATE TABLE IF NOT EXISTS " + layername + "_times (bands SERIAL, time TIMESTAMPTZ PRIMARY KEY); " +
+                "INSERT INTO " + layername + "_times (time) VALUES (" + dateTimes.toString() + ");")
+                .withErrorStream(errorStream)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+        errorStream.reset();
     }
 
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
@@ -349,7 +370,8 @@ public class GDALClient extends ContainerClient {
                             .exec();
                     handleErrors(errorStream, execId, logger);
                     multipleRastersFromMultiDim(mdimSettings.getTimeOptions().getArrayName(),
-                            mdimSettings.getLayerArrayName(), filePath, geotiffsOutputDirectory);
+                            mdimSettings.getLayerArrayName(), filePath, geotiffsOutputDirectory,
+                            mdimSettings.getTimeOptions().getFormat(), mdimSettings.getTimeOptions().getTimeZone(), databaseName, layerName);
                 } else {
                     execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
                             "-if", inputFormat,
@@ -379,7 +401,7 @@ public class GDALClient extends ContainerClient {
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
                 .withHereDocument("CREATE EXTENSION IF NOT EXISTS postgis_raster;" +
                         "ALTER DATABASE \"" + database + "\" SET postgis.enable_outdb_rasters = True;" +
-                        "ALTER DATABASE \"" + database + "\" SET postgis.gdal_enabled_drivers = 'GTiff';")
+                        "ALTER DATABASE \"" + database + "\" SET postgis.gdal_enabled_drivers = 'GTiff netCDF';")
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
