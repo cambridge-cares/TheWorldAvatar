@@ -1,0 +1,127 @@
+version: "3.8"
+
+services:
+
+  # Agents
+  rng_agent:
+    image: rng_agent:1.0.0
+    container_name: rng_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7000:5000
+    extra_hosts: # added host.gateway so that the rng_agent can access other agents
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./tests/env_files/agent.rng.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_rng_app()"]
+
+  max_agent:
+    image: max_agent:1.0.0
+    container_name: max_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7001:5000
+    extra_hosts: # added host-gateway so that the max_agent can access other agents
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./tests/env_files/agent.max.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_max_app()"]
+
+  min_agent:
+    image: min_agent:1.0.0
+    container_name: min_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7002:5000
+    extra_hosts: # added host-gateway so that the min_agent can access other agents
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./tests/env_files/agent.min.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_min_app()"]
+
+  diff_agent:
+    image: diff_agent:1.0.0
+    container_name: diff_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7003:5000
+    extra_hosts: # added host-gateway so that the diff_agent can access other agents
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./tests/env_files/agent.diff.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_diff_app()"]
+
+  diff_reverse_agent:
+    image: diff_reverse_agent:1.0.0
+    container_name: diff_reverse_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7005:5000
+    extra_hosts: # added host-gateway so that the diff_agent can access other agents
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./tests/env_files/agent.diff.reverse.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_diff_reverse_app()"]
+
+  update_endpoint:
+    image: update_endpoint:1.0.0
+    container_name: update_endpoint
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7004:5000
+    extra_hosts: # added host-gateway so that the update_endpoint can access other agents
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./tests/env_files/endpoint.update.env.test
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_update_endpoint()"]
+
+  exception_throw_agent:
+    image: exception_throw_agent:1.0.0
+    container_name: exception_throw_agent
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    ports:
+     - 7070:5000
+    extra_hosts: # added host.gateway so that the exception_throw_agent can access other agents
+      - "host.docker.internal:host-gateway"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    env_file:
+      - ./tests/env_files/agent.exception.throw.env.test
+    secrets:
+      - email_auth
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "tests.docker_entry_point:create_exception_throw_app()", "--preload"]
+
+  # Blazegraph
+  blazegraph:
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    container_name: "blazegraph_derivation_agent"
+    ports:
+      - 27149:8080
+    environment:
+      BLAZEGRAPH_USER: bg_user
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: ./tests/dummy_services_secrets/blazegraph_passwd.txt
+  email_auth:
+    file: ./tests/dummy_services_secrets/email_auth.json

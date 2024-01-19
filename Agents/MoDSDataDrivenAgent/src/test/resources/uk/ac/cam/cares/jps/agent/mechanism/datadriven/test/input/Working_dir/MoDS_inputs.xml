@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mods xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd">
+    <algorithms>
+        <algorithm name="Initial">
+            <details>
+                <detail name="algorithm_type">Initial</detail>
+                <detail name="optimisable_param_subtypes"></detail>
+                <detail name="response_param_subtypes"></detail>
+                <detail name="global">false</detail>
+            </details>
+        </algorithm>
+        <algorithm name="Data_Algorithm">
+            <details>
+                <detail name="algorithm_type">Read_previous</detail>
+                <detail name="param_subtypes">subtype_c subtype_v subtype_mn subtype_cu subtype_pyro_bp2_temp_max subtype_blooming_duration subtype_flitzer_duration subtype_tandem_duration subtype_blooming_total_passes subtype_furnace_to_blooming_time subtype_blooming_to_flitzer_time subtype_qst_coefficient_set_number subtype_qst_entry_temp_estimate subtype_qst_water_temp_entry subtype_qst_duration subtype_qst_flow_rate_total subtype_elongation_european subtype_toughness_mean</detail>
+                <detail name="objective_function">SumOfSquares</detail>
+                <detail name="output_by_case">false</detail>
+                <detail name="output_values">false</detail>
+                <detail name="global">false</detail>
+                <detail name="previous_algorithm">Data_Algorithm</detail>
+            </details>
+        </algorithm>
+        <algorithm name="GenSurrogateAlg">
+            <details>
+                <detail name="algorithm_type">Surrogate</detail>
+                <detail name="optimisable_param_subtypes">subtype_c subtype_v subtype_mn subtype_cu subtype_pyro_bp2_temp_max subtype_blooming_duration subtype_flitzer_duration subtype_tandem_duration subtype_blooming_total_passes subtype_furnace_to_blooming_time subtype_blooming_to_flitzer_time subtype_qst_coefficient_set_number subtype_qst_entry_temp_estimate subtype_qst_water_temp_entry subtype_qst_duration subtype_qst_flow_rate_total</detail>
+                <detail name="response_param_subtypes">subtype_elongation_european subtype_toughness_mean</detail>
+                <detail name="global">false</detail>
+                <detail name="surrogate_type">HDMR</detail>
+                <detail name="fit_to_coded_responses">false</detail>
+                <detail name="order">6</detail>
+                <detail name="HDMRorder">2</detail>
+                <detail name="r_squared_tol">0.99999</detail>
+                <detail name="previous_algorithm">Data_Algorithm</detail>
+            </details>
+        </algorithm>
+    </algorithms>
+    <models>
+        <model name="Data_model_agent">
+            <details>
+                <detail name="fnames_for_dependent_models"></detail>
+                <detail name="args"></detail>
+                <detail name="executable_name"></detail>
+                <detail name="model_type">Executable</detail>
+                <detail name="working_directory"></detail>
+            </details>
+        </model>
+    </models>
+    <cases>
+        <case name="CaseGroup_Case">
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+        </case>
+    </cases>
+    <files>
+        <file file_name="MODS_SIM_INITFILE__cases.csv">
+            <details>
+                <detail name="file_type">DSV</detail>
+                <detail name="delimiter">,</detail>
+            </details>
+        </file>
+        <file file_name="MODS_SIM_INITFILE__AIVarInitReadFile.csv">
+            <details>
+                <detail name="file_type">DSV</detail>
+                <detail name="delimiter">,</detail>
+            </details>
+        </file>
+    </files>
+    <functions>
+    </functions>
+    <parameters>
+        <parameter type="active_input" subtype="subtype_c" name="c" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">c</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">0.0486</detail>
+                        <detail name="ub_abs">0.1069</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_v" name="v" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">v</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">0.0055</detail>
+                        <detail name="ub_abs">0.0413</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_mn" name="mn" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">mn</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">0.6324</detail>
+                        <detail name="ub_abs">1.1325</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_cu" name="cu" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">cu</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">0.1135</detail>
+                        <detail name="ub_abs">0.5156</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_pyro_bp2_temp_max" name="pyro_bp2_temp_max" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">pyro_bp2_temp_max</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">1070.0</detail>
+                        <detail name="ub_abs">1214.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_blooming_duration" name="blooming_duration" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">blooming_duration</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">70.0</detail>
+                        <detail name="ub_abs">409.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_flitzer_duration" name="flitzer_duration" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">flitzer_duration</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">45.0</detail>
+                        <detail name="ub_abs">232.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_tandem_duration" name="tandem_duration" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">tandem_duration</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">231.0</detail>
+                        <detail name="ub_abs">849.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_blooming_total_passes" name="blooming_total_passes" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">blooming_total_passes</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">6.0</detail>
+                        <detail name="ub_abs">16.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_furnace_to_blooming_time" name="furnace_to_blooming_time" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">furnace_to_blooming_time</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">28.0</detail>
+                        <detail name="ub_abs">127.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_blooming_to_flitzer_time" name="blooming_to_flitzer_time" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">blooming_to_flitzer_time</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">33.0</detail>
+                        <detail name="ub_abs">143.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_qst_coefficient_set_number" name="qst_coefficient_set_number" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">qst_coefficient_set_number</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">9.0</detail>
+                        <detail name="ub_abs">92.1</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_qst_entry_temp_estimate" name="qst_entry_temp_estimate" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">qst_entry_temp_estimate</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">733.0</detail>
+                        <detail name="ub_abs">936.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_qst_water_temp_entry" name="qst_water_temp_entry" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">qst_water_temp_entry</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">15.5</detail>
+                        <detail name="ub_abs">35.8</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_qst_duration" name="qst_duration" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">qst_duration</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">26.0</detail>
+                        <detail name="ub_abs">234.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_qst_flow_rate_total" name="qst_flow_rate_total" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">qst_flow_rate_total</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">502.0</detail>
+                        <detail name="ub_abs">2231.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_output" subtype="subtype_elongation_european" case_detail_sep=";" n_params_per_case="1" name="elongation_european" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">elongation_european</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__cases.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_factor">1.0</detail>
+                        <detail name="ub_factor">1.0</detail>
+                        <detail name="lb_addend">19.95999908</detail>
+                        <detail name="ub_addend">32.02000046</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_output" subtype="subtype_toughness_mean" case_detail_sep=";" n_params_per_case="1" name="toughness_mean" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+                <case>CaseGroup_Case</case>
+            </cases>
+            <models>
+                <model>Data_model_agent</model>
+            </models>
+            <files>
+                <initial_read file_name="MoDS_Data_model_agent_ActiveInit.csv">
+                    <details>
+                        <detail name="column">toughness_mean</detail>
+                        <detail name="row">0</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__cases.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_factor">1.0</detail>
+                        <detail name="ub_factor">1.0</detail>
+                        <detail name="lb_addend">28.0</detail>
+                        <detail name="ub_addend">321.6666667</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+    </parameters>
+</mods>

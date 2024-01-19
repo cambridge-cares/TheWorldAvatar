@@ -1,0 +1,24 @@
+{
+    "DUKESDataVersion": "2019",
+    "startTime_of_EnergyConsumption":"2017",
+    "PopulationVersion": "2019",
+    "limitLines": 3000,
+    "pointDistance":1,
+    "ifUpdateToTripleStore": "True",
+    "topologyConfigList":[{
+        "BusNum": 10,
+        "BranchNum": 14,
+        "slackBusIndex": 1, 
+        "ElectricitySystemName": "Great_Britain",
+        "generatorClusterFunctionName": "sameRegionWithBus",
+        "voltageLevel": ["275", "400"]
+        }, 
+        {
+        "BusNum": 29,
+        "BranchNum": 99,
+        "slackBusIndex": 27, 
+        "ElectricitySystemName": "Great_Britain",
+        "generatorClusterFunctionName": "closestBus",
+        "voltageLevel": []
+        }]  
+}

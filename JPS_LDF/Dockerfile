@@ -26,24 +26,34 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn org.apache.maven.plugins:
 #==================================================================================================
 FROM tomcat:9.0.46-jdk11-openjdk-slim-buster
 
+# Fixes a bug with gcrypt in Debian-based distros that can cause hash mismatches when trying to apt-install certain packages (including npm)
+# See https://bugs.launchpad.net/ubuntu/+source/libgcrypt20/+bug/1890006
+RUN mkdir -p /etc/gcrypt && echo all > /etc/gcrypt/hwf.deny
+
 # Install prequisites: nodeJS, pm2 and redis-server
-RUN apt-get update && apt-get install -y curl npm redis-server
-RUN curl -sL https://deb.nodesource.com/setup_15.x | bash
-RUN apt-get install nodejs -y --fix-missing
-RUN npm install && npm install pm2 -g
+RUN apt-get update && apt-get install -y curl npm redis-server wget
+# RUN curl -sL https://deb.nodesource.com/setup_15.x | bash
+# RUN apt-get install nodejs -y --fix-missing
+# RUN npm install && npm install pm2 -g
+RUN apt-get update && apt-get install -y net-tools
 
 WORKDIR /usr/src/app
 
 # Copy in the entrypoint script
 COPY entrypoint.sh .
 
+RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontokin_clean.hdt -P $CATALINA_HOME/bin/
+RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontocompchem_clean.hdt -P $CATALINA_HOME/bin/
+# COPY /usr/src/app/ontokin_clean.hdt $CATALINA_HOME/bin/
+# COPY /usr/src/app/ontocompchem_clean.hdt $CATALINA_HOME/bin/
+
 # Copy in dependencies from the first stage
 COPY --from=builder /root/build/dependencies ./
 # Copy in .war file from the first stage
-COPY --from=builder /root/build/target/ldfserver.war /usr/local/tomcat/webapps/
+COPY --from=builder /root/build/target/ldfserver.war $CATALINA_HOME/webapps/
 
 # Copy in source files for the Cache server
-COPY components/CACHE_SERVER .
+# COPY components/CACHE_SERVER .
 
-# Entrypoint script starts redis, tomcat, node app
+# Entrypoint script starts redis, tomcat
 ENTRYPOINT ["./entrypoint.sh"]

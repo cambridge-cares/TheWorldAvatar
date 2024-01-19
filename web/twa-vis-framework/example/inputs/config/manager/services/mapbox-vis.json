@@ -1,0 +1,38 @@
+{
+    "type": "visualisation",
+    "ServiceSpec": {
+        "Name": "mapbox-vis",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/twa-vf:TAG",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "mapbox-vis-files",
+                        "Target": "/var/www/html"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "mapbox_username",
+                        "File": {
+                            "Name": "/var/www/html/mapbox_username"
+                        }
+                    },
+                    {
+                        "SecretName": "mapbox_api_key",
+                        "File": {
+                            "Name": "/var/www/html/mapbox_api_key"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost/",
+            "externalPath": "/mapbox-vis/"
+        }
+    }
+}

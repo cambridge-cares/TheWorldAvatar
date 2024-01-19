@@ -21,6 +21,8 @@ public interface Prefixes {
 	String RDF = "rdf";
 	String RDFS = "rdfs";
 	String SKOS = "skos";
+	String WIKIDATA = "wd";
+	String WIKIDATAT = "wdt";
 	String XSD = "xsd";
 	String TIME = "time";
 	
@@ -29,18 +31,46 @@ public interface Prefixes {
 	String OCPGEOM = "OCPGEOM";
 	String OCPMATE = "OCPMATE";
 	String OCPMATH = "OCPMATH";
+	String OCPPERF = "OCPPERF";
 	String OCPPHAS = "OCPPHAS";
 	String OCPSPAC = "OCPSPAC";
 	String OCPSYST = "OCPSYST";
 	String OCPTECH = "OCPTECH";
-	String OCPTOPO = "OCPTOPO";
+	String OCPTOPO = "OCPTOPO";	
+	//****(the following are added by @wx243)****
+	String OCPDSIU = "OCPDSIU";
+	String OCPST = "OCPST";
+	String OCPNTSYS = "OCPNS";
+	String OCPPHYDMS = "OCPPHYDMS";
+	String OCPCOORSYS = "OCPCOORSYS";
+	String OCPSIU = "OCPSIU";
+	String OCPMATHRLT = "OCPMATHRLT";
+	String MATAMDLTOPO = "MATAMDLTOPO";
 	
 	// OntoPowerSys OPS
 	String OPSBEHA = "OPSBEHA";
 	String OPSMODE = "OPSMODE";
 	String OPSREAL = "OPSREAL";
+	//****OntoEIP OEIP (the following are added by @wx243)****
+	String OPSFUNC = "OPSFUNC";
+	String OPSPERFM = "OPSPERFM";
 
 	// other JPS ontologies 
 	String JPSAGEN = "JPSAGEN";
 	String JPSLAND = "JPSLAND";
+	String ONTOCITYGML = "OCGML";
+	String ONTOSPECIES = "OSPECIES";
+	
+	// special prefixes
+	String BLAZEGRAPH_GEO = "BLAZEGEO";
+	
+	//****OntoEIP OEIP (the following are added by @wx243)****
+	String OEIPSYSREAL = "OEIPSYSREAL";
+	String OEIPSYSFUNC = "OEIPSYSFUNC";
+	String OEIPPOWPLANT = "OEIPPOWPLANT";
+	String OEIPUPSV1 = "OEIPUPSV1";
+	String OEISYSPERFM = "OEISYSPERFM";
+	String OEISYSRQRM = "OEISYSRQRM";
+	
+	
 }

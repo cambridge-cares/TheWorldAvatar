@@ -1,0 +1,38 @@
+# these are default settings that will be applied to any file uploads
+# in the upload_to_file_server and upload_to_triple_store sections
+file_server_upload_settings:
+    upload_file_types:
+        - test_stage1
+triple_store_upload_settings:
+    upload_file_types:
+        - test_stage2
+# this section defines what type of files should be uploaded to the file server
+ocompchem:
+    file_server_upload_settings:
+        upload_file_types:
+            - test_stage3
+    qc_log_to_qc_json:
+        file_server_upload_settings:
+            upload_file_types:
+                - test_stage4
+test_results:
+    file_server_upload_settings:
+        upload_file_types:
+            - test_stage1
+    triple_store_upload_settings:
+        upload_file_types:
+            - test_stage2
+    ocompchem:
+        file_server_upload_settings:
+            upload_file_types:
+                - test_stage3
+        triple_store_upload_settings:
+            upload_file_types:
+                - test_stage2
+        qc_log_to_qc_json:
+            file_server_upload_settings:
+                upload_file_types:
+                    - test_stage4
+            triple_store_upload_settings:
+                upload_file_types:
+                    - test_stage2

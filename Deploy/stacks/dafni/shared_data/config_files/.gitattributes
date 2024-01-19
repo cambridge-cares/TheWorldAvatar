@@ -1,0 +1,2 @@
+# These files should be force to have Linux line endings
+*.conf text eol=lf

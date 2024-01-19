@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<!-- Dummy project details, these aren't actually used anywhere -->
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.ac.cam.cares.jps</groupId>
+	<name>KG Website Dependencies</name>
+	<artifactId>kg-website-dependencies</artifactId>
+	<version>1.0.0</version>
+	<packaging>jar</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>uk.ac.cam.cares.jps</groupId>
+									<artifactId>animated-marie</artifactId>
+									<type>zip</type>
+									<version>1.0.0</version>
+									<overWrite>true</overWrite>
+									<outputDirectory>./output</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

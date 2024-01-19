@@ -9,7 +9,8 @@ package uk.ac.cam.cares.jps.base.slurm.job.configuration;
  */
 public class SlurmJobProperty {
 	private String hpcServerLoginUserName;
-	private String hpcServerLoginUserPassword;	
+	private String hpcServerLoginUserPassword;
+        private String hpcServerPrivateKey;
 	private String agentClass;
 	private String agentWorkspacePrefix;
 	private String agentCompletedJobsSpacePrefix;
@@ -42,7 +43,14 @@ public class SlurmJobProperty {
 	public void setHpcServerLoginUserPassword(String hpcServerLoginUserPassword) {
 		this.hpcServerLoginUserPassword = hpcServerLoginUserPassword;
 	}
-
+        
+        public String getHpcServerPrivateKey() {
+            return this.hpcServerPrivateKey;
+        }
+        public void setHpcServerPrivateKey(String hpcServerPrivateKey) {
+            this.hpcServerPrivateKey = hpcServerPrivateKey;
+        }
+        
 	public String getAgentClass() {
 		return agentClass;
 	}

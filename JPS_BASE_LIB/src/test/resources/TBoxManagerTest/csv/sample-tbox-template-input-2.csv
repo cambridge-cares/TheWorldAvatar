@@ -1,0 +1,9 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoKin,TBox,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoKin,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
+specifies,Object Property,,,Journal Specification,http://purl.org/ontology/bibo/Journal,only,"A relation between a journal specification that describes the page number and volume, and the journal that describes its title and ISSN.",
+specifiedBy,Object Property,specifies,INVERSE-OF,,,,,
+has Creator,Object Property,,,Reaction Mechanism,http://xmlns.com/foaf/0.1/Agent,only,A relation between a chemical kinetic reaction mechanism and the agent that created the mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+has Developer,Object Property,has Creator,IS-A,,,,,

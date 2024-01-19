@@ -1,0 +1,21 @@
+{
+    "type": "nginx",
+    "ServiceSpec": {
+        "Name": "nginx",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "nginx:1.19.6"
+            }
+        },
+        "EndpointSpec": {
+            "Ports": [
+                {
+                    "Name": "web",
+                    "Protocol": "tcp",
+                    "TargetPort": "80",
+                    "PublishedPort": "3838"
+                }
+            ]
+        }
+    }
+}

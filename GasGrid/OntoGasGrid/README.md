@@ -22,3 +22,6 @@ This creates OWL files of infrastructure which are stored within the ```abox-tbo
 	- Gas terminal IRIs are hardcoded here
 	- To change this would require a property similar to 'csv_name' to be able to match up the instance of a gas terminal with the name that appears next to its flowrates in the .csv downloaded from the National Grid.
 6. ```use_cases/nearest_local_distribution``` queries for polygons and local distribution offtakes and associates the closest offtake to each area. The assumption here is that the gas for an area comes from the closest local distribution offtake. This code links ONS areas to infrastructure. 
+
+### Update
+**NOTE:** An updated Agent has been produced to handle gathering Gas flow data, submitting it to the KG (using the TimeSeries format), then later querying and exporting it (along with the locations of Terminals, Offtakes, and Pipes). As such, the associated scripts and Docker files have been moved to reside within that agent. The new agent can be found in /Agents/GasGridAgent.

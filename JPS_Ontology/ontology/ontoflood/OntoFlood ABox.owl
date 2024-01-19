@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="https://www.theworldavatar.com/kg/ontoflood/"
+   xmlns:ns2="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <ns1:hasSeverityLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</ns1:hasSeverityLevel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flood Warning</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/FloodWarning"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/MinorImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <ns1:hasImpactLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</ns1:hasImpactLevel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Minor impacts</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/MinorImpact"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/FloodAlert_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/FloodAlert"/>
+    <ns1:hasSeverityLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</ns1:hasSeverityLevel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flood Alert</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/MediumLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medium likelihood</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/MediumLikelihood"/>
+    <ns1:hasLikelihoodScore rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</ns1:hasLikelihoodScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/LowLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <ns1:hasLikelihoodScore rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</ns1:hasLikelihoodScore>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/LowLikelihood"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Low likelihood</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/HighLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">High likelihood</rdfs:label>
+    <ns1:hasLikelihoodScore rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</ns1:hasLikelihoodScore>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/HighLikelihood"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/VeryLowLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Very low likelihood</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/VeryLowLikelihood"/>
+    <ns1:hasLikelihoodScore rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ns1:hasLikelihoodScore>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/SevereFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/SevereFloodWarning"/>
+    <ns1:hasSeverityLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ns1:hasSeverityLevel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Severe Flood Warning</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/MinimalImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Minimal impacts</rdfs:label>
+    <ns1:hasImpactLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ns1:hasImpactLevel>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/MinimalImpact"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/SevereImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/SevereImpact"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Severe impacts</rdfs:label>
+    <ns1:hasImpactLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</ns1:hasImpactLevel>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/SignificantImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Significant impacts</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/SignificantImpact"/>
+    <ns1:hasImpactLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</ns1:hasImpactLevel>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoflood/InactiveFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoflood/InactiveFloodWarning"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inactive Flood Warning</rdfs:label>
+    <ns1:hasSeverityLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</ns1:hasSeverityLevel>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N6e1758513b8e46a78bf5bb571049db66">
+    <ns2:imports rdf:resource="https://www.theworldavatar.com/kg/ontoflood/"/>
+  </rdf:Description>
+</rdf:RDF>

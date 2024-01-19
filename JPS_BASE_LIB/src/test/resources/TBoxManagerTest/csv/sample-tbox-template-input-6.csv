@@ -1,0 +1,14 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+TestTBox,TBox,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+TestTBox,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+TestTBox,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+TestTBox,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+A,Class,,,,,,Comment for A,,A
+B,Class,A,IS-A,,,,Comment for B,,B
+C,Class,B,IS-A,,,,Comment for C,,C
+X,Class,,,,,,Comment for X,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,X
+Y,Class,X,IS-A,,,,Comment for Y,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,Y
+Z,Class,Y,IS-A,,,,Comment for Z,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,Z
+has,Object Property,,,A,X,,Comment for A has X,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,has
+has,Object Property,,,B,Y,some,Comment for B has Y,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,has
+has,Object Property,,,C,Z,only,Comment for C has Z,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,has

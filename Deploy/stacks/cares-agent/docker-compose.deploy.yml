@@ -1,0 +1,32 @@
+# This configuration file should include all docker-compose options required to *deploy containers*
+# for services in the 'agent' stack, with the exception of the 'ports' node which should be set in
+# docker-compose.deploy.live.yml and docker-compose.deploy.test.yml (see those files for details).
+#
+# Options used to generate an image from source, such as the 'build' node and 'labels' node should
+# be set in docker-compose.build.yml.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the 
+# service name, the 'image' tag (retaining 'docker.cmclinnovations.com') and the 'container_name'
+# node (retaining '${CONTAINER_NAME_SUFFIX}').
+# =================================================================================================
+
+version: "3.8"
+
+services:
+
+  # Access Agent
+  access-agent:
+    image: ghcr.io/cambridge-cares/access-agent:1.7.0
+    container_name: "access-agent${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      STOREROUTER_ENDPOINT: "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql"
+      RDB_STOREROUTER_ENDPOINT: "http://www.theworldavatar.com/blazegraph/namespace/ontordbrouter/sparql"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    
+# The default network name is set using a docker-compose environment variable.
+# Please don't modify the contents of the 'networks' node below.
+networks:
+  default:
+    name: ${NETWORK_NAME}

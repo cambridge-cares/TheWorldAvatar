@@ -1,0 +1,6 @@
+configobj
+geojson-rewind~=1.0
+numpy~=1.21
+pandas~=1.3
+pyproj~=3.3
+SPARQLWrapper~=1.8

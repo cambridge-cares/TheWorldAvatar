@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.base.converter;
 
-import java.io.IOException;
-
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
@@ -53,17 +51,19 @@ public interface ITBoxManagement {
 	 * Creates an ontological data property.
 	 * 
 	 * @param propertyName
+	 * @param type
 	 * @param targetName
 	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws JPSRuntimeException;
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException;
 	/**
 	 * Creates an ontological object property.
 	 * 
 	 * @param propertyName
+	 * @param type
 	 * @param targetName
 	 * @param relation
 	 * @param domain
@@ -71,7 +71,17 @@ public interface ITBoxManagement {
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException;
+	public void createOWLObjectProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException;
+	
+	/**
+	 * Adds a label as rdfs:label to the OWL class.
+	 * 
+	 * @param className
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToOWLClass(String className, String label) throws JPSRuntimeException;
+	
 	
 	/**
 	 * Adds the definition as a comment to the OWL class.
@@ -83,6 +93,15 @@ public interface ITBoxManagement {
 	public void addDefinitionToOWLClass(String className, String definition) throws JPSRuntimeException;
 	
 	/**
+	 * Adds a label to the current object property.
+	 * 
+	 * @param property
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToObjectProperty(String property, String label) throws JPSRuntimeException;
+	
+	/**
 	 * Adds the definition of the current object property.
 	 * 
 	 * @param property
@@ -90,6 +109,15 @@ public interface ITBoxManagement {
 	 * @throws JPSRuntimeException
 	 */
 	public void addDefinitionToObjectProperty(String property, String definition) throws JPSRuntimeException;
+	
+	/**
+	 * Adds a label to the current data property.
+	 * 
+	 * @param property
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToDataProperty(String property, String label) throws JPSRuntimeException;
 	
 	/**
 	 * Adds the definition of the current data property.

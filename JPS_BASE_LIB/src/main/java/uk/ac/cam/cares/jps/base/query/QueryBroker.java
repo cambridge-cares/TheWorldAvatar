@@ -26,6 +26,10 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
+@Deprecated
+/**
+ * @deprecated QueryBorker is deprecated. The AccessAgent should be called instead, using query and update methods in JPSAgent or AccessAgentCaller. 
+ */
 public class QueryBroker {
 
     /**
@@ -33,6 +37,8 @@ public class QueryBroker {
      */
     private static final Logger LOGGER = LogManager.getLogger(QueryBroker.class);
 
+    //TODO: remove. AccessAgentCaller.get no longer works 
+    /*
     public String readFile(String url) {
         if (!url.startsWith("http")) {
             throw new JPSRuntimeException("destinationUrl must be a URL");
@@ -40,6 +46,7 @@ public class QueryBroker {
 		String result = AccessAgentCaller.get(null, url, null);
         return result;
     }
+    */
 
     public String readFileLocal(String path) {
         if (path.startsWith("http")) {

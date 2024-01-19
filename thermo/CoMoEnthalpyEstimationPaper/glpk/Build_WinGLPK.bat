@@ -99,3 +99,4 @@ cd release
 %gnuwin32%\zip -r winglpk-%glpkvers%.zip glpk-%glpkvers%
 %gnuwin32%\md5sum winglpk-%glpkvers%.zip > winglpk-%glpkvers%.md5
 cd ..
+

@@ -75,21 +75,16 @@ class SpeciesValidator:
         # else:
         #     return None
 
-        print('=============== line 70 ==============')
-        print('species got in 70', species)
-        print('word map', word_map)
         if species.lower() in word_map:
             species = word_map[species.lower()]
 
         species = self.normalize_formula(species)
-        print('normalized species', species)
         # use regular expression to separate the components
         # rearrange them alphabetically
         # make the comparison
         # replace the species with what is in the dict ...
         if ontology == 'ontocompchem':
             species_dict = self.ontocompchem_species_dict[best_intent]
-            print('line 54')
         elif ontology == 'ontokin':
             species_dict = self.ontokin_species_dict[best_intent]
         else:

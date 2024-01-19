@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#"
+   xmlns:ns3="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
+   xmlns:ns4="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"
+   xmlns:ns5="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+   xmlns:ns6="http://www.w3.org/2002/07/owl#"
+   xmlns:ns7="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#Slough_Heat_Power">
+    <ns2:hasYearOfBuilt rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#YearOfBuilt_Slough_Heat_Power"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
+    <ns4:hasRequirementsAspect rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#DesignCapacity_Slough_Heat_Power"/>
+    <ns4:hasRealizationAspect rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#PowerGenerator_Slough_Heat_Power"/>
+    <ns7:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#CoordinateSystem_Slough_Heat_Power"/>
+    <ns3:isOwnedBy rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#Owner_Slough_Heat_Power"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant"/>
+    <ns4:hasFunctionalAspect rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#BiomassGeneration_Slough_Heat_Power"/>
+    <ns1:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999.owl#operationalPowerPlantBy9999"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BiomassPlant"/>
+    <ns1:hasAddress rdf:resource="http://dbpedia.org/resource/South_East_England"/>
+    <rdfs:label>Slough_Heat_Power</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#CoordinateSystem_Slough_Heat_Power">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
+    <ns7:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#y_coordinate_Slough_Heat_Power"/>
+    <ns7:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#x_coordinate_Slough_Heat_Power"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#value_x_coordinate_Slough_Heat_Power">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.6285419</ns1:numericalValue>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#BiomassGeneration_Slough_Heat_Power">
+    <ns2:usesGenerationTechnology rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#ConventionalSteam"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGenerator"/>
+    <ns2:consumesPrimaryFuel rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Biomass"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#y_coordinate_Slough_Heat_Power">
+    <ns1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <ns5:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#value_y_coordinate_Slough_Heat_Power"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Biomass">
+    <rdfs:label>Biomass (recycled wood)</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PrimaryFuel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#DesignCapacity_Slough_Heat_Power">
+    <ns4:isAchievedThrough rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#BiomassGeneration_Slough_Heat_Power"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#value_DesignCapacity_Slough_Heat_Power"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#DesignCapacity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#value_DesignCapacity_Slough_Heat_Power">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">35.0</ns1:numericalValue>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <ns6:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"/>
+    <ns6:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#x_coordinate_Slough_Heat_Power">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#value_x_coordinate_Slough_Heat_Power"/>
+    <ns5:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <ns1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#Owner_Slough_Heat_Power">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization"/>
+    <ns3:hasName>SSE</ns3:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#value_y_coordinate_Slough_Heat_Power">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">51.5241964</ns1:numericalValue>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#ConventionalSteam">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#YearOfBuilt_Slough_Heat_Power">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#YearOfBuilt"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#value_YearOfBuilt_Slough_Heat_Power"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#value_YearOfBuilt_Slough_Heat_Power">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1918</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#PowerGenerator_Slough_Heat_Power">
+    <ns4:realizes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Slough_Heat_Power.owl#BiomassGeneration_Slough_Heat_Power"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGenerator"/>
+  </rdf:Description>
+</rdf:RDF>

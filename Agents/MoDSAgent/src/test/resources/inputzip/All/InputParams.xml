@@ -1,0 +1,2816 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<srm_inputs xmlns="http://como.cheng.cam.ac.uk/srm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="v11.1.0">
+    <property_group ref="general">
+        <property ref="CaseNumber">
+            <value>1</value>
+        </property>
+        <property ref="ReactorNumber">
+            <value>1</value>
+        </property>
+        <property ref="CycleNumber">
+            <value>1</value>
+        </property>
+        <property ref="NumberOfCycles">
+            <value>1</value>
+        </property>
+        <property ref="EngineML_filename">
+            <value>InputEngineML.xml</value>
+        </property>
+        <property ref="CopyEngineML">
+            <value>1</value>
+        </property>
+        <property ref="EngineML_CaseNumber">
+            <value>1</value>
+        </property>
+        <property ref="Adjustment_filename">
+            <value>..\..\..\InputAdjustments.xml</value>
+        </property>
+        <property ref="ParticleFileOutput">
+            <value>0</value>
+        </property>
+        <property ref="AllowCycleToCycleVariability">
+            <value>0</value>
+        </property>
+        <property ref="CopyInputs">
+            <value>0</value>
+        </property>
+        <property ref="LogFileOutput">
+            <value>1</value>
+        </property>
+        <property ref="DevLogOutput">
+            <value>0</value>
+        </property>
+        <property ref="FinalTimeStepOutputOnly">
+            <value>0</value>
+        </property>
+        <property ref="ParticleFileOutputSpecies">
+            <value>2</value>
+        </property>
+        <property ref="ParticleFileOutputSpeciesList">
+            <value>O2</value>
+            <value>DMM3</value>
+        </property>
+        <property ref="FinalEnsembleFileOutput">
+            <value>0</value>
+        </property>
+        <property ref="EGRFileOutput">
+            <value>0</value>
+        </property>
+        <property ref="MassFractionOutput">
+            <value>1</value>
+        </property>
+        <property ref="MoleFractionOutput">
+            <value>1</value>
+        </property>
+        <property ref="MolarConcentrationOutput">
+            <value>1</value>
+        </property>
+        <property ref="SurfaceConcentrationOutput">
+            <value>1</value>
+        </property>
+        <property ref="SurfaceFractionOutput">
+            <value>1</value>
+        </property>
+        <property ref="SurfacePhaseOutput">
+            <value>1</value>
+        </property>
+        <property ref="MassBalanceOutput">
+            <value>1</value>
+        </property>
+        <property ref="HeatBalanceOutput">
+            <value>1</value>
+        </property>
+        <property ref="EnergyBalanceOutput">
+            <value>1</value>
+        </property>
+        <property ref="MomentsOutput">
+            <value>1</value>
+        </property>
+        <property ref="MechanismOutput">
+            <value>1</value>
+        </property>
+        <property ref="FluxOutput">
+            <value>1</value>
+        </property>
+        <property ref="UserDefinedRealFormat">
+            <value>es14.5e3</value>
+        </property>
+        <property ref="ZoneFileName">
+            <value>..\..\..\InputZones.xml</value>
+        </property>
+        <property ref="TorqueOutput">
+            <value>1</value>
+        </property>
+        <property ref="MassFlowsOutput">
+            <value>0</value>
+        </property>
+        <property ref="MomentsStateOutput">
+            <value>0</value>
+        </property>
+        <property ref="MomentsRateOutput">
+            <value>0</value>
+        </property>
+        <property ref="MomentsPostProcessOutput">
+            <value>0</value>
+        </property>
+        <property ref="HCSpeciesOutput">
+            <value>0</value>
+        </property>
+        <property ref="ADMSOutput">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="Reactor">
+        <property ref="ReactorModel">
+            <value>0</value>
+        </property>
+        <property ref="ConstFlag">
+            <value>0</value>
+        </property>
+        <property dimension="volume" ref="ReactorVolume" unit="m^3">
+            <value>0.01</value>
+        </property>
+        <property allowprofile="never" dimension="area" readfrom="value" ref="CrossSection" unit="m^2">
+            <value>0.01</value>
+            <profile delim="," delimlen="1" dimension_lookup="independent_variable" headers="1" indvarcol="1" mergedelims="0" periodicity="0" trim_leadb="1" trim_trailb="1" unit="ms">
+                <value/>
+            </profile>
+        </property>
+        <property dimension="mass_flow_rate" ref="MassFlowRate" unit="kg/s">
+            <value>0.1</value>
+        </property>
+        <property allowprofile="optional" dimension="temperature" readfrom="value" ref="IniTemp" unit="K">
+            <value>827.7528992</value>
+            <profile delim="," delimlen="1" dimension_lookup="independent_variable" headers="1" indvarcol="1" mergedelims="0" periodicity="0" trim_leadb="1" trim_trailb="1" unit="ms">
+                <value/>
+            </profile>
+        </property>
+        <property dimension="pressure" ref="IniPres" unit="bar">
+            <value>15</value>
+        </property>
+        <property dimension="temperature" ref="WallTemp" unit="K">
+            <value>420.0</value>
+        </property>
+        <property ref="IsothermalFlag">
+            <value>0</value>
+        </property>
+        <property ref="EqConstFlag">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="ReactorIniFuelAirEquivRatio" unit="-">
+            <value>0</value>
+        </property>
+        <property ref="PostProcessorFlag">
+            <value>0</value>
+        </property>
+        <mixtureprofile allowprofile="always" dimension="gas fraction" readfrom="profile" type="composition" unit="mass fraction">
+            <value/>
+            <profile delim="," delimlen="1" dimension_lookup="independent_variable" headers="1" indvarcol="1" mergedelims="0" periodicity="0" trim_leadb="1" trim_trailb="1" unit="ms">
+                <value/>
+            </profile>
+        </mixtureprofile>
+    </property_group>
+    <property_group ref="Solver">
+        <property ref="ODESolver">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="RTol" unit="-">
+            <value>1.0e-3</value>
+        </property>
+        <property dimension="dimensionless" ref="ATol" unit="-">
+            <value>1.0e-11</value>
+        </property>
+        <property ref="IVPFlag">
+            <value>1</value>
+        </property>
+        <property ref="SolverPeriodFlag">
+            <value>0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="SolverPeriodStart" unit="ms">
+            <value>0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="SolverPeriodEnd" unit="ms">
+            <value>20</value>
+        </property>
+        <property ref="SensFlagOnOff">
+            <value>0</value>
+        </property>
+        <property ref="SensFlagStepSizeEst">
+            <value>1</value>
+        </property>
+        <property ref="SensFlagParameters">
+            <value>1</value>
+        </property>
+        <property ref="SensNoofVariables">
+            <value>5</value>
+        </property>
+        <property ref="SensListofVariables">
+            <value>40</value>
+            <value>1</value>
+            <value>2</value>
+            <value>32</value>
+            <value>33</value>
+        </property>
+        <property ref="SkipNonHC">
+            <value>0</value>
+        </property>
+        <property ref="SkipHV">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="Chemistry">
+        <property ref="ChemModel">
+            <value>4</value>
+        </property>
+        <property ref="StrictErrorChecking">
+            <value>0</value>
+        </property>
+        <property ref="MechFile">
+            <value>mechanism.xml</value>
+        </property>
+        <property ref="ThermFile">
+            <value/>
+        </property>
+        <property dimension="dimensionless" ref="ReactionRate_A_Modifiers" unit="-">
+            <value index="1">1.0</value>
+            <value index="2">1.0</value>
+            <value index="3">1.0</value>
+            <value index="4">1.0</value>
+            <value index="5">1.0</value>
+            <value index="6">1.0</value>
+            <value index="7">1.0</value>
+            <value index="8">1.0</value>
+            <value index="9">1.0</value>
+            <value index="10">1.0</value>
+            <value index="11">1.0</value>
+            <value index="12">1.0</value>
+            <value index="13">1.0</value>
+            <value index="14">1.0</value>
+            <value index="15">1.0</value>
+            <value index="16">1.0</value>
+            <value index="17">1.0</value>
+            <value index="18">1.0</value>
+            <value index="19">1.0</value>
+            <value index="20">1.0</value>
+            <value index="21">1.0</value>
+            <value index="22">1.0</value>
+            <value index="23">1.0</value>
+            <value index="24">1.0</value>
+            <value index="25">1.0</value>
+            <value index="26">1.0</value>
+            <value index="27">1.0</value>
+            <value index="28">1.0</value>
+            <value index="29">1.0</value>
+            <value index="30">1.0</value>
+            <value index="31">1.0</value>
+            <value index="32">1.0</value>
+            <value index="33">1.0</value>
+            <value index="34">1.0</value>
+            <value index="35">1.0</value>
+            <value index="36">1.0</value>
+            <value index="37">1.0</value>
+            <value index="38">1.0</value>
+            <value index="39">1.0</value>
+            <value index="40">1.0</value>
+            <value index="41">1.0</value>
+            <value index="42">1.0</value>
+            <value index="43">1.0</value>
+            <value index="44">1.0</value>
+            <value index="45">1.0</value>
+            <value index="46">1.0</value>
+            <value index="47">1.0</value>
+            <value index="48">1.0</value>
+            <value index="49">1.0</value>
+            <value index="50">1.0</value>
+            <value index="51">1.0</value>
+            <value index="52">1.0</value>
+            <value index="53">1.0</value>
+            <value index="54">1.0</value>
+            <value index="55">1.0</value>
+            <value index="56">1.0</value>
+            <value index="57">1.0</value>
+            <value index="58">1.0</value>
+            <value index="59">1.0</value>
+            <value index="60">1.0</value>
+            <value index="61">1.0</value>
+            <value index="62">1.0</value>
+            <value index="63">1.0</value>
+            <value index="64">1.0</value>
+            <value index="65">1.0</value>
+            <value index="66">1.0</value>
+            <value index="67">1.0</value>
+            <value index="68">1.0</value>
+            <value index="69">1.0</value>
+            <value index="70">1.0</value>
+            <value index="71">1.0</value>
+            <value index="72">1.0</value>
+            <value index="73">1.0</value>
+            <value index="74">1.0</value>
+            <value index="75">1.0</value>
+            <value index="76">1.0</value>
+            <value index="77">1.0</value>
+            <value index="78">1.0</value>
+            <value index="79">1.0</value>
+            <value index="80">1.0</value>
+            <value index="81">1.0</value>
+            <value index="82">1.0</value>
+            <value index="83">1.0</value>
+            <value index="84">1.0</value>
+            <value index="85">1.0</value>
+            <value index="86">1.0</value>
+            <value index="87">1.0</value>
+            <value index="88">1.0</value>
+            <value index="89">1.0</value>
+            <value index="90">1.0</value>
+            <value index="91">1.0</value>
+            <value index="92">1.0</value>
+            <value index="93">1.0</value>
+            <value index="94">1.0</value>
+            <value index="95">1.0</value>
+            <value index="96">1.0</value>
+            <value index="97">1.0</value>
+            <value index="98">1.0</value>
+            <value index="99">1.0</value>
+            <value index="100">1.0</value>
+            <value index="101">1.0</value>
+            <value index="102">1.0</value>
+            <value index="103">1.0</value>
+            <value index="104">1.0</value>
+            <value index="105">1.0</value>
+            <value index="106">1.0</value>
+            <value index="107">1.0</value>
+            <value index="108">1.0</value>
+            <value index="109">1.0</value>
+            <value index="110">1.0</value>
+            <value index="111">1.0</value>
+            <value index="112">1.0</value>
+            <value index="113">1.0</value>
+            <value index="114">1.0</value>
+            <value index="115">1.0</value>
+            <value index="116">1.0</value>
+            <value index="117">1.0</value>
+            <value index="118">1.0</value>
+            <value index="119">1.0</value>
+            <value index="120">1.0</value>
+            <value index="121">1.0</value>
+            <value index="122">1.0</value>
+            <value index="123">1.0</value>
+            <value index="124">1.0</value>
+            <value index="125">1.0</value>
+            <value index="126">1.0</value>
+            <value index="127">1.0</value>
+            <value index="128">1.0</value>
+            <value index="129">1.0</value>
+            <value index="130">1.0</value>
+            <value index="131">1.0</value>
+            <value index="132">1.0</value>
+            <value index="133">1.0</value>
+            <value index="134">1.0</value>
+            <value index="135">1.0</value>
+            <value index="136">1.0</value>
+            <value index="137">1.0</value>
+            <value index="138">1.0</value>
+            <value index="139">1.0</value>
+            <value index="140">1.0</value>
+            <value index="141">1.0</value>
+            <value index="142">1.0</value>
+            <value index="143">1.0</value>
+            <value index="144">1.0</value>
+            <value index="145">1.0</value>
+            <value index="146">1.0</value>
+            <value index="147">1.0</value>
+            <value index="148">1.0</value>
+            <value index="149">1.0</value>
+            <value index="150">1.0</value>
+            <value index="151">1.0</value>
+            <value index="152">1.0</value>
+            <value index="153">1.0</value>
+            <value index="154">1.0</value>
+            <value index="155">1.0</value>
+            <value index="156">1.0</value>
+            <value index="157">1.0</value>
+            <value index="158">1.0</value>
+            <value index="159">1.0</value>
+            <value index="160">1.0</value>
+            <value index="161">1.0</value>
+            <value index="162">1.0</value>
+            <value index="163">1.0</value>
+            <value index="164">1.0</value>
+            <value index="165">1.0</value>
+            <value index="166">1.0</value>
+            <value index="167">1.0</value>
+            <value index="168">1.0</value>
+            <value index="169">1.0</value>
+            <value index="170">1.0</value>
+            <value index="171">1.0</value>
+            <value index="172">1.0</value>
+            <value index="173">1.0</value>
+            <value index="174">1.0</value>
+            <value index="175">1.0</value>
+            <value index="176">1.0</value>
+            <value index="177">1.0</value>
+            <value index="178">1.0</value>
+            <value index="179">1.0</value>
+            <value index="180">1.0</value>
+            <value index="181">1.0</value>
+            <value index="182">1.0</value>
+            <value index="183">1.0</value>
+            <value index="184">1.0</value>
+            <value index="185">1.0</value>
+            <value index="186">1.0</value>
+            <value index="187">1.0</value>
+            <value index="188">1.0</value>
+            <value index="189">1.0</value>
+            <value index="190">1.0</value>
+            <value index="191">1.0</value>
+            <value index="192">1.0</value>
+            <value index="193">1.0</value>
+            <value index="194">1.0</value>
+            <value index="195">1.0</value>
+            <value index="196">1.0</value>
+            <value index="197">1.0</value>
+            <value index="198">1.0</value>
+            <value index="199">1.0</value>
+            <value index="200">1.0</value>
+            <value index="201">1.0</value>
+            <value index="202">1.0</value>
+            <value index="203">1.0</value>
+            <value index="204">1.0</value>
+            <value index="205">1.0</value>
+            <value index="206">1.0</value>
+            <value index="207">1.0</value>
+            <value index="208">1.0</value>
+            <value index="209">1.0</value>
+            <value index="210">1.0</value>
+            <value index="211">1.0</value>
+            <value index="212">1.0</value>
+            <value index="213">1.0</value>
+            <value index="214">1.0</value>
+            <value index="215">1.0</value>
+        </property>
+        <property ref="SurfaceFile">
+            <value/>
+        </property>
+        <property ref="TransportFile">
+            <value/>
+        </property>
+    </property_group>
+    <property_group ref="numerical">
+        <property ref="RndSeeds">
+            <value>1</value>
+            <value>2</value>
+        </property>
+        <property ref="UseIVCEVO">
+            <value>0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="SimStart" unit="ms">
+            <value>0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="SimEnd" unit="ms">
+            <value>500</value>
+        </property>
+        <property dimension_lookup="independent_variable_duration" ref="SimStep" unit="us">
+            <value>1</value>
+        </property>
+        <property ref="No_Stochastic_Particles">
+            <value>1</value>
+        </property>
+        <property ref="Initial_Particle_Ensemble">
+            <value>0</value>
+        </property>
+        <property ref="Initial_Particle_Ensemble_filename">
+            <value>..\..\..\Input_Par_Ensemble.csv</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="OutputStep" unit="ms">
+            <value>0.0</value>
+            <value>2.0</value>
+            <value>5.0</value>
+            <value>10.0</value>
+            <value>15.0</value>
+            <value>20.0</value>
+        </property>
+        <property ref="ZoneFlag">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="PressureEquilibration">
+        <property dimension="dimensionless" ref="tauPEq" unit="-">
+            <value>0.00001</value>
+        </property>
+    </property_group>
+    <property_group ref="fuel">
+        <property ref="FuelFlag">
+            <value>0</value>
+        </property>
+        <property dimension="mass" ref="FuelMass" unit="mg">
+            <value>120</value>
+        </property>
+        <mixturename type="composition">
+            <value>Fuel</value>
+        </mixturename>
+        <property ref="IntakeCoolingFlag">
+            <value>0</value>
+        </property>
+        <property dimension="energy_density_by_mass" ref="VapHeatIntake" unit="MJ/kg">
+            <value>0.2</value>
+        </property>
+        <property dimension="temperature" ref="TLiqIntake" unit="K">
+            <value>0.2</value>
+        </property>
+    </property_group>
+    <property_group ref="Oxidiser">
+        <mixturename type="composition">
+            <value>Fuel-Ox-Mix</value>
+        </mixturename>
+    </property_group>
+    <property_group ref="EGR">
+        <property ref="EGRFlag">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="EGR_fraction" unit="-">
+            <value>0.1</value>
+        </property>
+        <property ref="EGRUpdate">
+            <value>0</value>
+        </property>
+        <property ref="NVOFlag">
+            <value>0</value>
+        </property>
+        <property ref="EGRPreProFlag">
+            <value>2</value>
+        </property>
+        <property ref="EGRCompositionSource">
+            <value>1</value>
+        </property>
+        <property ref="RBFFlag">
+            <value>0</value>
+        </property>
+        <property ref="EGRNanoModelFlag">
+            <value>0</value>
+        </property>
+        <property ref="EGRNanoModel_IO_Flag">
+            <value>1</value>
+        </property>
+        <property ref="EGRDirectory">
+            <value>./</value>
+        </property>
+    </property_group>
+    <property_group ref="mixing">
+        <property ref="TurbMixModel">
+            <value>0</value>
+        </property>
+        <property ref="TurbMixMode">
+            <value>0</value>
+        </property>
+        <property ref="TurbProfile">
+            <value>0</value>
+        </property>
+        <property dimension="crank_angle" ref="TurbCADs" unit="CAD aTDC"/>
+        <property dimension="time" ref="TurbtauUs" unit="s"/>
+        <property dimension="time" ref="tauU" unit="s">
+            <value>1.0e-2</value>
+        </property>
+        <property dimension="dimensionless" ref="CphiU" unit="-">
+            <value>2.0</value>
+        </property>
+        <property dimension="Turbulence kinetic energy" ref="TurbQuasi-Ck0" unit="m^2/s^2">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="TurbQuasi-Tumble" unit="-">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="TurbQuasi-Swirl" unit="-">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="TurbQuasi-SquishVolFr" unit="-">
+            <value>0.2</value>
+        </property>
+        <property dimension="dimensionless" ref="TurbQuasi-Csq" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="TurbQuasi-Cden" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="TurbQuasi-Cinj" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="TurbQuasi-Cprod" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="TurbProfileFilename">
+            <value>..\..\..\turb-base.csv</value>
+        </property>
+        <property ref="MixPeriodFlag">
+            <value>0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="MixPeriodStart" unit="ms">
+            <value>0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="MixPeriodEnd" unit="ms">
+            <value>20</value>
+        </property>
+        <property ref="DetailedMixModeCap">
+            <value>0</value>
+        </property>
+        <property dimension="time" ref="TurbQuasi-maxTauU" unit="s">
+            <value>0.006</value>
+        </property>
+        <property dimension="dimensionless" ref="TurbQuasi-Cdiss" unit="-">
+            <value>20</value>
+        </property>
+    </property_group>
+    <property_group ref="heat_transfer">
+        <property ref="Heat_transfer_model">
+            <value>0</value>
+        </property>
+        <property dimension="HeatTransfer" ref="Heat_transfer_Coefficent" unit="W/m^2/K">
+            <value>50.0</value>
+        </property>
+        <property dimension="area" ref="Heat_transfer_Surface_Area" unit="m^2">
+            <value>0.01</value>
+        </property>
+        <property dimension="dimensionless" ref="Heat_transfer_multiplier" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="Piston_surface_area_ratio" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="Head_surface_area_ratio" unit="-">
+            <value>1.2</value>
+        </property>
+        <property dimension="dimensionless" ref="StoHTConst" unit="-">
+            <value>2000.0</value>
+        </property>
+        <property dimension="dimensionless" ref="MassFactorHT" unit="-">
+            <value>0.05</value>
+        </property>
+        <property dimension="temperature" ref="PistonWallTemp" unit="K">
+            <value>420.0</value>
+        </property>
+        <property dimension="temperature" ref="HeadWallTemp" unit="K">
+            <value>450.0</value>
+        </property>
+        <property dimension="temperature" ref="LinerWallTemp" unit="K">
+            <value>420.0</value>
+        </property>
+        <property ref="Heat_transfer_correl">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="WoschniC1" unit="-">
+            <value>2.28</value>
+        </property>
+        <property dimension="dimensionless" ref="WoschniC1_Breath" unit="-">
+            <value>6.18</value>
+        </property>
+        <property dimension="dimensionless" ref="WoschniHRC2" unit="-">
+            <value>0.02</value>
+        </property>
+        <property dimension="dimensionless" ref="HohenbergC1" unit="-">
+            <value>130</value>
+        </property>
+        <property dimension="dimensionless" ref="HohenbergC2" unit="-">
+            <value>1.4</value>
+        </property>
+        <property ref="WallTemperatureModel">
+            <value>0</value>
+        </property>
+        <property dimension="temperature" ref="HeadCoolantTemp" unit="K">
+            <value>365</value>
+        </property>
+        <property dimension="temperature" ref="LinerCoolantTemp" unit="K">
+            <value>365</value>
+        </property>
+        <property dimension="temperature" ref="PistonCoolantTemp" unit="K">
+            <value>365</value>
+        </property>
+        <property dimension="temperature" ref="InjectorCoolantTemp" unit="K">
+            <value>395</value>
+        </property>
+        <property dimension="Thermal insulance" ref="RHeadCoolant" unit="K mm^2/W">
+            <value>0</value>
+        </property>
+        <property dimension="Thermal insulance" ref="RLinerCoolant" unit="K mm^2/W">
+            <value>45</value>
+        </property>
+        <property dimension="Thermal insulance" ref="RPistonCoolant" unit="K mm^2/W">
+            <value>0</value>
+        </property>
+        <property dimension="Thermal insulance" ref="RInjectorCoolant" unit="K mm^2/W">
+            <value>30</value>
+        </property>
+        <property dimension="length" ref="hHeadWall" unit="mm">
+            <value>3</value>
+        </property>
+        <property dimension="length" ref="hLinerWall" unit="mm">
+            <value>5</value>
+        </property>
+        <property dimension="length" ref="hPistonWall" unit="mm">
+            <value>10</value>
+        </property>
+        <property dimension="length" ref="hInjectorWall" unit="mm">
+            <value>12</value>
+        </property>
+        <property dimension="length" ref="hDHead" unit="um">
+            <value>0.0</value>
+        </property>
+        <property dimension="length" ref="hDLiner" unit="um">
+            <value>0.0</value>
+        </property>
+        <property dimension="length" ref="hDPiston" unit="um">
+            <value>0.0</value>
+        </property>
+        <property dimension="length" ref="hDInjector" unit="um">
+            <value>0.0</value>
+        </property>
+        <property dimension="area" ref="AreaInjector" unit="cm^2">
+            <value>2.0</value>
+        </property>
+        <property dimension="Thermal conductivity" ref="kappaHeadWall" unit="W/K/m">
+            <value>54</value>
+        </property>
+        <property dimension="Thermal conductivity" ref="kappaLinerWall" unit="W/K/m">
+            <value>54</value>
+        </property>
+        <property dimension="Thermal conductivity" ref="kappaPistonWall" unit="W/K/m">
+            <value>155</value>
+        </property>
+        <property dimension="Thermal conductivity" ref="kappaInjectorWall" unit="W/K/m">
+            <value>54</value>
+        </property>
+        <property dimension="Thermal conductivity" ref="kappaDeposit" unit="W/K/m">
+            <value>2.5</value>
+        </property>
+        <property dimension="Diffusivity" ref="chiInjectorWall" unit="mm^2/s">
+            <value>15.3</value>
+        </property>
+        <property dimension="Diffusivity" ref="chiDeposit" unit="mm^2/s">
+            <value>11.6</value>
+        </property>
+    </property_group>
+    <property_group ref="crevice_and_blowby">
+        <property dimension="percentage" ref="Crevice_ratio" unit="%">
+            <value>0.0</value>
+        </property>
+        <property dimension="dimensionless" ref="CrTimeFactor" unit="-">
+            <value>0.03</value>
+        </property>
+        <property dimension="dimensionless" ref="CrTimeFactor" unit="-">
+            <value>0.05</value>
+        </property>
+        <property dimension="length" ref="BlowbyGap" unit="m">
+            <value>-1.0e-4</value>
+        </property>
+        <property ref="CreviceModel">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="InflowOutflow">
+        <property ref="InflowOutflowModel">
+            <value>0</value>
+        </property>
+        <property dimension="mass_flow_rate" ref="mdotInlet" unit="kg/s">
+            <value>0.1</value>
+        </property>
+        <property dimension="temperature" ref="TempInlet" unit="K">
+            <value>1100.0</value>
+        </property>
+        <property dimension="dimensionless" ref="epsilon" unit="-">
+            <value>0.001</value>
+        </property>
+        <mixturename type="composition">
+            <value/>
+        </mixturename>
+    </property_group>
+    <property_group ref="direct_injection">
+        <property ref="InjModel">
+            <value>0</value>
+        </property>
+        <property ref="InjProfile">
+            <value>0</value>
+        </property>
+        <property ref="UseSOIAdjforEOI">
+            <value>0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="SOI" unit="ms">
+            <value>5.0d0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="EOI" unit="ms">
+            <value>15e0</value>
+        </property>
+        <property dimension="mass" ref="InjFuelMass" unit="mg">
+            <value>11.6e0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="InjCADs" unit="ms">
+            <value>0.0</value>
+            <value>2.0</value>
+            <value>5.0</value>
+            <value>10.0</value>
+            <value>15.0</value>
+        </property>
+        <property dimension_lookup="mass_flow_rate" ref="InjRateMassCADs" unit="mg/ms">
+            <value>0.5</value>
+            <value>0.1</value>
+            <value>0.5</value>
+            <value>0.5</value>
+            <value>0.8</value>
+        </property>
+        <property dimension="Diffusivity" ref="LambdaEvap" unit="mm^2/s">
+            <value>0.2</value>
+        </property>
+        <property dimension="density" ref="RhoLiq" unit="kg/m^3">
+            <value>690.64</value>
+        </property>
+        <property dimension="temperature" ref="Liq_temp" unit="K">
+            <value>350.0</value>
+        </property>
+        <property dimension="speed" ref="InjVeloc" unit="m/s">
+            <value>30.0</value>
+        </property>
+        <property dimension="plane_angle" ref="Full_Cone_Angle" unit="deg">
+            <value>40.0</value>
+        </property>
+        <property dimension="energy_density_by_mass" ref="VapHeat" unit="MJ/kg">
+            <value>0.2</value>
+        </property>
+        <property ref="InjAlphaProfile">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="InjAlpha" unit="-">
+            <value>5.0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="InjAlphaCADs" unit="ms">
+            <value>0.0</value>
+            <value>2.0</value>
+            <value>5.0</value>
+            <value>10.0</value>
+            <value>15.0</value>
+        </property>
+        <property dimension_lookup="dimensionless" ref="InjAlphas" unit="-">
+            <value>50.0</value>
+            <value>40.0</value>
+            <value>35.0</value>
+            <value>20.0</value>
+            <value>10.0</value>
+        </property>
+        <property dimension="time" ref="tauInj" unit="s">
+            <value>0.001</value>
+        </property>
+        <property dimension="dimensionless" ref="CphiInj" unit="-">
+            <value>2.0</value>
+        </property>
+        <property ref="SMD_model_flag">
+            <value>0</value>
+        </property>
+        <property dimension="length" ref="Nozzle_Diameter" unit="mm">
+            <value>0.16</value>
+        </property>
+        <property dimension="pressure" ref="InjPress" unit="bar">
+            <value>650</value>
+        </property>
+        <property dimension="Surface_Tension" ref="SurfaceTension" unit="mN/m">
+            <value>25.5</value>
+        </property>
+        <property dimension="Kinematic viscosity" ref="FuelViscosity" unit="mm^2/s">
+            <value>3.36</value>
+        </property>
+        <property dimension="length" ref="SMD0" unit="um">
+            <value>50.0</value>
+        </property>
+        <property dimension="dimensionless" ref="SMD_param_A" unit="-">
+            <value>6156</value>
+        </property>
+        <property dimension="dimensionless" ref="SMD_param_nu" unit="-">
+            <value>0.385</value>
+        </property>
+        <property dimension="dimensionless" ref="SMD_param_sigma" unit="-">
+            <value>0.737</value>
+        </property>
+        <property dimension="dimensionless" ref="SMD_param_rhofuel" unit="-">
+            <value>0.737</value>
+        </property>
+        <property dimension="dimensionless" ref="SMD_param_rhoair" unit="-">
+            <value>0.06</value>
+        </property>
+        <property dimension="dimensionless" ref="SMD_param_deltaP" unit="-">
+            <value>-0.54</value>
+        </property>
+        <property ref="InjFuel">
+            <value>1</value>
+        </property>
+        <property ref="InjProfileFilename">
+            <value>..\..\..\InjectionProfile.csv</value>
+        </property>
+        <property ref="InjAlphaProfileFilename">
+            <value>..\..\..\InjectionAlphaProfile.csv</value>
+        </property>
+        <property ref="InjAlphaWallProfileFilename">
+            <value>..\..\..\InjectionAlphaWallProfile.csv</value>
+        </property>
+        <property dimension="dimensionless" ref="InjWallAlpha" unit="-">
+            <value>10000.0</value>
+        </property>
+        <property dimension="dimensionless" ref="InjWallFraction" unit="-">
+            <value>0.05</value>
+        </property>
+        <property dimension="dimensionless" ref="InjWallCentre" unit="-">
+            <value>0.8</value>
+        </property>
+        <property dimension="mass_flow_rate" ref="InjWallEvapRate" unit="g/s">
+            <value>20e-3</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="InjWallAlphaCADs" unit="ms">
+            <value>0.0</value>
+            <value>2.0</value>
+            <value>5.0</value>
+            <value>10.0</value>
+            <value>15.0</value>
+        </property>
+        <property dimension_lookup="dimensionless" ref="InjWallAlphas" unit="-">
+            <value>20.0</value>
+            <value>20.0</value>
+            <value>10.0</value>
+            <value>4.0</value>
+            <value>2.0</value>
+        </property>
+        <property ref="Nozzle_No">
+            <value>6</value>
+        </property>
+        <property ref="nozzle_model_flag">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="grad_CphiInj" unit="-">
+            <value>-0.01</value>
+        </property>
+        <property dimension="dimensionless" ref="grad_InjAlpha" unit="-">
+            <value>-0.1</value>
+        </property>
+        <property dimension="dimensionless" ref="grad_InjVeloc" unit="-">
+            <value>-0.1</value>
+        </property>
+        <property dimension="dimensionless" ref="grad_Full_Cone_Angle" unit="-">
+            <value>0.1</value>
+        </property>
+        <property dimension="dimensionless" ref="Nozzle_No_Base" unit="-">
+            <value>0.5</value>
+        </property>
+        <property ref="InjSysType">
+            <value>0</value>
+        </property>
+        <property dimension="plane_angle" ref="Full_Cone_Angle_Flag" unit="deg">
+            <value>0</value>
+        </property>
+        <property dimension_lookup="independent_variable_duration" ref="InjEOIDelay" unit="ms">
+            <value>3.0</value>
+        </property>
+        <property ref="InjPressProfile">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="InjPressEqnConst" unit="-">
+            <value>0.066</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="InjPressCADs" unit="ms">
+            <value>0.0</value>
+            <value>2.0</value>
+            <value>5.0</value>
+            <value>10.0</value>
+            <value>15.0</value>
+            <value>20.0</value>
+            <value>25.0</value>
+        </property>
+        <property dimension_lookup="pressure" ref="InjPressures" unit="bar">
+            <value>650</value>
+            <value>650</value>
+            <value>650</value>
+            <value>650</value>
+            <value>650</value>
+            <value>650</value>
+            <value>650</value>
+        </property>
+        <property ref="CphiInterpFlag">
+            <value>0</value>
+        </property>
+        <property ref="DepositModel">
+            <value>0</value>
+        </property>
+        <property dimension="density" ref="DepRho" unit="kg/m^3">
+            <value>800</value>
+        </property>
+        <property dimension="dimensionless" ref="KHNOD" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="KHNO2D" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="Pre-exponential factor (2nd order)" ref="ki0D" unit="m^3/mol/s">
+            <value>5.9e6</value>
+        </property>
+        <property dimension="energy_density_by_moles" ref="EiD" unit="kJ/mol">
+            <value>73.6</value>
+        </property>
+        <property dimension="Pre-exponential factor (2nd order)" ref="ki0D2" unit="m^3/mol/s">
+            <value>12.e6</value>
+        </property>
+        <property dimension="dimensionless" ref="EiD2" unit="kJ/mol">
+            <value>86.6</value>
+        </property>
+        <property dimension="Pre-exponential factor (2nd order)" ref="ka0D" unit="m^3/mol/s">
+            <value>1.58e6</value>
+        </property>
+        <property dimension="energy_density_by_moles" ref="EaD" unit="kJ/mol">
+            <value>66.7</value>
+        </property>
+        <property dimension="Pre-exponential factor (2nd order)" ref="ka0D2" unit="m^3/mol/s">
+            <value>1.0e6</value>
+        </property>
+        <property dimension="energy_density_by_moles" ref="EaD2" unit="kJ/mol">
+            <value>71.35</value>
+        </property>
+        <property dimension="Pre-exponential factor (2nd order)" ref="kaOH0D" unit="m^3/mol/s">
+            <value>2.51e6</value>
+        </property>
+        <property dimension="energy_density_by_moles" ref="EaOHD" unit="kJ/mol">
+            <value>22.8</value>
+        </property>
+        <property dimension="Pre-exponential factor (2nd order)" ref="kaOH0D2" unit="m^3/mol/s">
+            <value>1.58e6</value>
+        </property>
+        <property dimension="energy_density_by_moles" ref="EaOHD2" unit="kJ/mol">
+            <value>25.9</value>
+        </property>
+        <property dimension="Pre-exponential factor (2nd order)" ref="kNO0D" unit="m^3/mol/s">
+            <value>4.8e6</value>
+        </property>
+        <property dimension="energy_density_by_moles" ref="ENOD" unit="kJ/mol">
+            <value>0.0</value>
+        </property>
+        <property dimension="number surface density" ref="Depssites" unit="1/m^2">
+            <value>1.176e19</value>
+        </property>
+        <property dimension="frequency" ref="Depkr" unit="1/h">
+            <value>0.5</value>
+        </property>
+        <property dimension="length" ref="hFilm" unit="um">
+            <value>100</value>
+        </property>
+        <property dimension="temperature" ref="Tboiling0" unit="K">
+            <value>373.15</value>
+        </property>
+        <property ref="FixQuenchTemp">
+            <value>1</value>
+        </property>
+        <property ref="NonEquiwgtMethod">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="NonEquiwgtFactor" unit="-">
+            <value>15.0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="MixC1" unit="CAD aTDC">
+            <value>3.0</value>
+        </property>
+        <property dimension="dimensionless" ref="MixC2" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="time" ref="MixC3" unit="s">
+            <value>0.0012</value>
+        </property>
+    </property_group>
+    <property_group ref="soot">
+        <property ref="PopBalModel">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="Sweep_soot_model">
+        <property ref="SweepModel">
+            <value>2</value>
+        </property>
+        <property ref="SweepMechanismFilename">
+            <value>..\..\..\InputSweepMechanism.xml</value>
+        </property>
+        <property dimension="dimensionless" ref="MaxLocalEquivRatio" unit="-">
+            <value>8.0</value>
+        </property>
+        <property ref="SweepTreeLevelCount">
+            <value>9</value>
+        </property>
+        <property dimension="dimensionless" ref="LPDASplitRatio" unit="-">
+            <value>1.0e9</value>
+        </property>
+        <property dimension="dimensionless" ref="MaxNumSootPar" unit="-">
+            <value>1.0e11</value>
+        </property>
+        <property ref="OutputDistrFlag">
+            <value>1</value>
+        </property>
+        <property ref="NumDistrPts">
+            <value>499</value>
+        </property>
+        <property dimension="length" ref="LBSizeDistr" unit="nm">
+            <value>1.0</value>
+        </property>
+        <property dimension="length" ref="UBSizeDistr" unit="nm">
+            <value>300</value>
+        </property>
+        <property dimension="dimensionless" ref="SizeDistrSigma" unit="-">
+            <value>0.07</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="TEMStart" unit="ms">
+            <value>100.0</value>
+        </property>
+        <property dimension_lookup="independent_variable" ref="TEMEnd" unit="ms">
+            <value>-100.0</value>
+        </property>
+        <property ref="SkipPBSforRichParticles">
+            <value>1</value>
+        </property>
+        <property ref="OutputPrimDistrFlag">
+            <value>1</value>
+        </property>
+        <property ref="NumPrimDistrPts">
+            <value>499</value>
+        </property>
+        <property dimension="length" ref="LBPrimSizeDistr" unit="nm">
+            <value>1.0</value>
+        </property>
+        <property dimension="length" ref="UBPrimSizeDistr" unit="nm">
+            <value>300</value>
+        </property>
+        <property dimension="dimensionless" ref="SizePrimDistrSigma" unit="-">
+            <value>0.07</value>
+        </property>
+        <property ref="ParticleModel">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="DoublingThreshold" unit="-">
+            <value>0.75</value>
+        </property>
+        <property dimension="dimensionless" ref="DoublingLimit" unit="-">
+            <value>0.46875</value>
+        </property>
+    </property_group>
+    <property_group ref="Empirical_soot_model">
+        <property ref="EmpSootModel">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="Pre-exponential_Multiplier_SF" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="Exponential_Multiplier_SF" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="Pre-exponential_Multiplier_SO" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="Exponential_Multiplier_SO" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="EmpSootPrecursor">
+            <value>0</value>
+        </property>
+        <property dimension="density" ref="EmpSootDensity" unit="g/cm^3">
+            <value>2.0</value>
+        </property>
+        <property dimension="length" ref="EmpSootMeanDiameter" unit="cm">
+            <value>4.5E-7</value>
+        </property>
+    </property_group>
+    <property_group ref="Emissions">
+        <property dimension="dimensionless" ref="NOx_Multiplier" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="CO_Multiplier" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="uHCs_Multiplier" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="Soot_Multiplier" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="Fuel_Multiplier" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="mass_flow_rate" ref="uHCs_Shift" unit="g/h">
+            <value>0.0</value>
+        </property>
+        <property dimension="mass_flow_rate" ref="NOx_Shift" unit="g/h">
+            <value>0</value>
+        </property>
+        <property dimension="mass_flow_rate" ref="CO_Shift" unit="g/h">
+            <value>0</value>
+        </property>
+        <property dimension="mass_flow_rate" ref="Soot_Shift" unit="g/h">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="IgnDelay_PostProcessor">
+        <property ref="IgnDelay_Model">
+            <value>1</value>
+        </property>
+        <property dimension="temperature" ref="IgnDelay_DeltaT" unit="K">
+            <value>400</value>
+        </property>
+        <property ref="IgnDelay_SpeciesIndex">
+            <value>AR</value>
+        </property>
+        <property ref="IgnDelay_ShowAll">
+            <value>1</value>
+        </property>
+    </property_group>
+    <property_group ref="spark_ignition">
+        <property ref="SIMode">
+            <value>0</value>
+        </property>
+        <property ref="KnockMisfFlag">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="Entr_Rate_Const" unit="-">
+            <value>18.0</value>
+        </property>
+        <property dimension="dimensionless" ref="PeakPresSigma" unit="-">
+            <value>-3.0</value>
+        </property>
+        <property dimension="energy" ref="Spark_energy" unit="J">
+            <value>0.2</value>
+        </property>
+        <property dimension="length" ref="IniFlameRad" unit="m">
+            <value>0.0005</value>
+        </property>
+        <property dimension="temperature" ref="SparkTemp" unit="K">
+            <value>2000.0</value>
+        </property>
+        <property dimension="dimensionless" ref="HRRDrop" unit="-">
+            <value>0.02</value>
+        </property>
+        <property dimension="temperature" ref="EUtoEBTemp" unit="K">
+            <value>1500.0</value>
+        </property>
+        <property dimension="dimensionless" ref="MinEBFrac" unit="-">
+            <value>0.01</value>
+        </property>
+        <property dimension="crank_angle" ref="AnchorAngleWiebe" unit="CAD aTDC">
+            <value>5.0</value>
+        </property>
+        <property dimension="dimensionless" ref="AnchorMFBWiebe" unit="-">
+            <value>0.5</value>
+        </property>
+        <property dimension="dimensionless" ref="StartCombMFBWiebe" unit="-">
+            <value>0.1</value>
+        </property>
+        <property dimension="dimensionless" ref="EndCombMFBWiebe" unit="-">
+            <value>0.9</value>
+        </property>
+        <property dimension="time" ref="MaxEntTime" unit="s">
+            <value>0.0025</value>
+        </property>
+        <property dimension="speed" ref="Bm" unit="m/s">
+            <value>0.305</value>
+        </property>
+        <property dimension="speed" ref="Bphi" unit="m/s">
+            <value>-0.549</value>
+        </property>
+        <property dimension="dimensionless" ref="phim" unit="-">
+            <value>1.21</value>
+        </property>
+        <property ref="LamFlaSpeCor">
+            <value>2</value>
+        </property>
+        <property dimension="dimensionless" ref="Alpha1" unit="-">
+            <value>2.4</value>
+        </property>
+        <property dimension="dimensionless" ref="Alpha2" unit="-">
+            <value>-0.271</value>
+        </property>
+        <property dimension="dimensionless" ref="Alpha3" unit="-">
+            <value>3.51</value>
+        </property>
+        <property dimension="dimensionless" ref="Beta1" unit="-">
+            <value>-0.357</value>
+        </property>
+        <property dimension="dimensionless" ref="Beta2" unit="-">
+            <value>0.14</value>
+        </property>
+        <property dimension="dimensionless" ref="Beta3" unit="-">
+            <value>2.77</value>
+        </property>
+        <property dimension="dimensionless" ref="Param_SL1" unit="-">
+            <value>-0.357</value>
+        </property>
+        <property dimension="dimensionless" ref="Param_SL2" unit="-">
+            <value>0.14</value>
+        </property>
+        <property dimension="dimensionless" ref="Param_SL3" unit="-">
+            <value>2.77</value>
+        </property>
+        <property dimension="dimensionless" ref="Param_SL4" unit="-">
+            <value>2.77</value>
+        </property>
+        <property dimension="dimensionless" ref="EGR_Param_A" unit="-">
+            <value>2.06</value>
+        </property>
+        <property dimension="dimensionless" ref="EGR_Param_B" unit="-">
+            <value>0.77</value>
+        </property>
+        <property dimension="length" ref="SparkToRoofDis" unit="m">
+            <value>0.01</value>
+        </property>
+        <property dimension="area" ref="InletValveArea" unit="m^2">
+            <value>1.4e-3</value>
+        </property>
+        <property dimension="length" ref="BowlRadius" unit="m">
+            <value>2.55e-2</value>
+        </property>
+        <property dimension="length" ref="BowlDepth" unit="m">
+            <value>2.5e-3</value>
+        </property>
+        <property dimension="plane_angle" ref="RoofAngle" unit="deg">
+            <value>155.0</value>
+        </property>
+        <property dimension="length" ref="InletValveLift" unit="m">
+            <value>7.5e-3</value>
+        </property>
+        <property dimension="time" ref="tauB" unit="s">
+            <value>0</value>
+        </property>
+        <property dimension="time" ref="tauE" unit="s">
+            <value>0.00075</value>
+        </property>
+        <property ref="EntrMixingModel">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="EntMixConst" unit="-">
+            <value>1.0d0</value>
+        </property>
+        <property dimension="dimensionless" ref="MixFact" unit="-">
+            <value>0.1</value>
+        </property>
+        <property ref="InputMFBFileName">
+            <value>..\..\..\InputMFB.csv</value>
+        </property>
+        <property ref="SILookUpFlag">
+            <value>0</value>
+        </property>
+        <property ref="BurnOrderFlag">
+            <value>0</value>
+        </property>
+        <property ref="BurnOrderFileName">
+            <value>..\..\..\InputBurnOrder.csv</value>
+        </property>
+        <property dimension="crank_angle" ref="CADSpark" unit="CAD aTDC">
+            <value>-40.0</value>
+        </property>
+        <property dimension="crank_angle" ref="StdWiebe_SoC" unit="CAD aTDC">
+            <value>-40.0</value>
+        </property>
+        <property dimension="crank_angle" ref="DoubleWiebe_SoC" unit="CAD aTDC">
+            <value>-40.0</value>
+            <value>-40.0</value>
+        </property>
+        <property dimension="dimensionless" ref="DoubleWiebeWeightFraction" unit="-">
+            <value>0.5</value>
+        </property>
+        <property dimension="crank_angle_duration" ref="StdWiebe_CombDur" unit="CAD">
+            <value>50.0</value>
+        </property>
+        <property dimension="crank_angle_duration" ref="ModWiebe_CombDur" unit="CAD">
+            <value>50.0</value>
+        </property>
+        <property dimension="crank_angle_duration" ref="DoubleWiebe_CombDur" unit="CAD">
+            <value>50.0</value>
+            <value>50.0</value>
+        </property>
+        <property dimension="dimensionless" ref="StdWiebe_m" unit="-">
+            <value>2.0</value>
+        </property>
+        <property dimension="dimensionless" ref="ModWiebe_m" unit="-">
+            <value>2.0</value>
+        </property>
+        <property dimension="dimensionless" ref="DoubleWiebe_m" unit="-">
+            <value>2.0</value>
+            <value>2.0</value>
+        </property>
+        <property dimension="dimensionless" ref="StdWiebe_a" unit="-">
+            <value>5.0</value>
+        </property>
+        <property dimension="dimensionless" ref="DoubleWiebe_a" unit="-">
+            <value>5.0</value>
+            <value>5.0</value>
+        </property>
+        <property ref="LamFlamePhiGlobalFlag">
+            <value>0</value>
+        </property>
+        <property dimension="crank_angle_duration" ref="IncreaseDuration" unit="CAD">
+            <value>10</value>
+        </property>
+        <property dimension="crank_angle_duration" ref="DecreaseDuration" unit="CAD">
+            <value>20</value>
+        </property>
+        <property dimension="dimensionless" ref="Mu1" unit="-">
+            <value>1.438</value>
+        </property>
+        <property dimension="dimensionless" ref="Mu2" unit="-">
+            <value>1.4111</value>
+        </property>
+        <property dimension="dimensionless" ref="Mu3" unit="-">
+            <value>0.2006</value>
+        </property>
+        <property dimension="dimensionless" ref="Param_SL0" unit="-">
+            <value>35.615</value>
+        </property>
+        <property ref="FlamePropfFlag">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="SI_Char_Time" unit="-">
+            <value>0.06</value>
+        </property>
+        <property dimension="dimensionless" ref="Ini_Flame_Scale" unit="-">
+            <value>0.0001</value>
+        </property>
+        <property dimension="dimensionless" ref="Flame_Scale_Const" unit="-">
+            <value>550.0</value>
+        </property>
+        <property dimension="dimensionless" ref="SI_Wall_Extinct2_Const" unit="-">
+            <value>4.0</value>
+        </property>
+        <property dimension="dimensionless" ref="SI_Wall_Extinct_Const" unit="-">
+            <value>5.0</value>
+        </property>
+        <property ref="KnockSpecies">
+            <value>OH</value>
+        </property>
+        <property dimension="dimensionless" ref="KnockSpeciesMassFrac" unit="-">
+            <value>1E-4</value>
+        </property>
+    </property_group>
+    <property_group ref="Breathing">
+        <property ref="BreathingModel">
+            <value>0</value>
+        </property>
+        <property ref="NumIntValves">
+            <value>2</value>
+        </property>
+        <property dimension="length" ref="IntValveRefDiam" unit="mm">
+            <value>30.0</value>
+        </property>
+        <property dimension="crank_angle" ref="IntCADs" unit="CAD aTDC">
+            <value>-355.0</value>
+            <value>-318.0</value>
+            <value>-261.0</value>
+            <value>-204.0</value>
+            <value>-167.0</value>
+        </property>
+        <property dimension="length" ref="IntValveLiftsCAD" unit="mm">
+            <value>0.0</value>
+            <value>10.0</value>
+            <value>12.0</value>
+            <value>10.0</value>
+            <value>0.0</value>
+        </property>
+        <property dimension="length" ref="IntValveLiftsCD" unit="mm">
+            <value>0.0</value>
+            <value>5.0</value>
+            <value>10.0</value>
+        </property>
+        <property dimension="dimensionless" ref="IntValveCDs" unit="-">
+            <value>0.0</value>
+            <value>0.8</value>
+            <value>1.0</value>
+        </property>
+        <property ref="NumExhValves">
+            <value>2</value>
+        </property>
+        <property dimension="length" ref="ExhValveRefDiam" unit="mm">
+            <value>27.0</value>
+        </property>
+        <property dimension="crank_angle" ref="ExhCADs" unit="CAD aTDC">
+            <value>141.0</value>
+            <value>197.0</value>
+            <value>253.0</value>
+            <value>309.0</value>
+            <value>365.0</value>
+        </property>
+        <property dimension="length" ref="ExhValveLiftsCAD" unit="mm">
+            <value>0.0</value>
+            <value>10.0</value>
+            <value>12.0</value>
+            <value>10.0</value>
+            <value>0.0</value>
+        </property>
+        <property dimension="length" ref="ExhValveLiftsCD" unit="mm">
+            <value>0.0</value>
+            <value>5.0</value>
+            <value>10.0</value>
+        </property>
+        <property dimension="dimensionless" ref="ExhValveCDs" unit="-">
+            <value>0.0</value>
+            <value>0.8</value>
+            <value>1.0</value>
+        </property>
+        <property ref="IntValveProfile">
+            <value>0</value>
+        </property>
+        <property ref="IntValveProfileFilename">
+            <value>..\..\..\IntakeValveProfile.csv</value>
+        </property>
+        <property ref="ExhValveProfile">
+            <value>0</value>
+        </property>
+        <property ref="ExhValveProfileFilename">
+            <value>..\..\..\ExhaustValveProfile.csv</value>
+        </property>
+        <property ref="MultiCylTorqueFlag">
+            <value>0</value>
+        </property>
+        <property dimension="crank_angle" ref="CylinderCADOffsets" unit="CAD aTDC">
+            <value>0</value>
+        </property>
+        <property dimension="crank_angle_duration" ref="TorqueTimestep" unit="CAD">
+            <value>0.2</value>
+        </property>
+        <property ref="ExtrapMethod">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="IntMultiplier" unit="-">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="ExhMultiplier" unit="-">
+            <value>1</value>
+        </property>
+    </property_group>
+    <property_group ref="InjectionFuel">
+        <mixturename type="composition">
+            <value>Injection Fuel</value>
+        </mixturename>
+    </property_group>
+    <property_group ref="Friction">
+        <property dimension="pressure" ref="Acf" unit="bar">
+            <value>0.5</value>
+        </property>
+        <property dimension="dimensionless" ref="Bcf" unit="-">
+            <value>0.006</value>
+        </property>
+        <property dimension="friction Ccf" ref="Ccf" unit="Pa min/m">
+            <value>600</value>
+        </property>
+        <property dimension="friction Qcf" ref="Qcf" unit="Pa min^2/m^2">
+            <value>0.2</value>
+        </property>
+    </property_group>
+    <property_group ref="GUI_Properties">
+        <property ref="Case_Alias">
+            <value>PODE3_Figure-5_Ignition_Criterion</value>
+        </property>
+        <property ref="Case_Description">
+            <value>Set IVPFLAG (line 180) to 1 in InputParams file.</value>
+        </property>
+        <property ref="Mechanism_Name">
+            <value>Wenming_PODE</value>
+        </property>
+        <property ref="Piston_Bowl_Name">
+            <value>Unknown</value>
+        </property>
+        <property ref="UserImportedSootMechanism">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="engine_conventions">
+        <property ref="TDC_convention_flag" unit="integer">
+            <value>0</value>
+        </property>
+        <property ref="Stroke_convention_flag" unit="integer">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="ApparentHRR">
+        <property ref="AppHRR_gammaFlag">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="AppHRR_gammaConst" unit="-">
+            <value>1.37</value>
+        </property>
+        <property ref="AppHRR_smoothFlag">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="AppHRR_dampFac" unit="-">
+            <value>0.765928338</value>
+        </property>
+    </property_group>
+    <property_group ref="Empirical_PM_PN_models">
+        <property dimension="dimensionless" ref="PM_grad" unit="-">
+            <value>0.4</value>
+        </property>
+        <property dimension="dimensionless" ref="EmpPM_SOF_SOx" unit="-">
+            <value>0</value>
+        </property>
+        <property ref="EmpPNModel">
+            <value>0</value>
+        </property>
+        <property ref="soot_PN_correl">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="ArndtsootA" unit="-">
+            <value>0.965</value>
+        </property>
+        <property dimension="dimensionless" ref="ArndtsootB" unit="-">
+            <value>12.232</value>
+        </property>
+        <property dimension="dimensionless" ref="Arndt_PM_A" unit="-">
+            <value>0.985</value>
+        </property>
+        <property dimension="dimensionless" ref="Arndt_PM_B" unit="-">
+            <value>12.572</value>
+        </property>
+        <property dimension="dimensionless" ref="Gallus_grad" unit="-">
+            <value>1.1E12</value>
+        </property>
+        <property dimension="dimensionless" ref="Gallus_const" unit="-">
+            <value>4.06E11</value>
+        </property>
+    </property_group>
+    <property_group ref="Sectional_P4N_model">
+        <property ref="Num_sections">
+            <value>35</value>
+        </property>
+        <property dimension="dimensionless" ref="Spacing_Factor" unit="-">
+            <value>2.0</value>
+        </property>
+        <property dimension="length" ref="Max_Size" unit="nm">
+            <value>2500</value>
+        </property>
+        <property ref="Use_Max_Size">
+            <value>1</value>
+        </property>
+        <property ref="Scaling_Method">
+            <value>1</value>
+        </property>
+        <property ref="Include_Heat_Release">
+            <value>0</value>
+        </property>
+        <property ref="Use_2D_Model">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Fractal_Dimension" unit="-">
+            <value>1.8</value>
+        </property>
+        <property dimension="dimensionless" ref="Volume_Filling_Factor" unit="-">
+            <value>1.43</value>
+        </property>
+        <property dimension="dimensionless" ref="Fractal_Prefactor" unit="-">
+            <value>1.37</value>
+        </property>
+        <property dimension="dimensionless" ref="Coagulation_Efficiency" unit="-">
+            <value>0.2</value>
+        </property>
+        <property dimension="dimensionless" ref="Surface_Growth_Factor" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="OH_Efficiency" unit="-">
+            <value>0.13</value>
+        </property>
+        <property dimension="dimensionless" ref="Inception_Efficiency" unit="-">
+            <value>0.0001</value>
+        </property>
+        <property dimension="dimensionless" ref="Fragmentation_Constant" unit="-">
+            <value>1.0d5</value>
+        </property>
+        <property dimension="dimensionless" ref="Condensation_Efficiency" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="PAH_species_sect">
+            <value>PYRENE</value>
+        </property>
+        <property dimension="length" ref="PAH_diameter" unit="cm">
+            <value>0.787e-7</value>
+        </property>
+        <property ref="Allow_IN">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CO">
+            <value>1</value>
+        </property>
+        <property ref="Allow_OX">
+            <value>1</value>
+        </property>
+        <property ref="Allow_SG">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FR">
+            <value>1</value>
+        </property>
+        <property ref="Cosolve_Method">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_ATOL" unit="-">
+            <value>1.0d-5</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_RTOL" unit="-">
+            <value>1.0d-3</value>
+        </property>
+        <property ref="Realise_Method">
+            <value>0</value>
+        </property>
+        <property dimension="number_concentration" ref="M0_cutoff" unit="#/m^3">
+            <value>0.0</value>
+        </property>
+        <property dimension="dimensionless" ref="epsilon_ij" unit="-">
+            <value>2.2</value>
+        </property>
+        <property dimension="dimensionless" ref="alpha_T" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="Allow_FM">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CR">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_IN" unit="-">
+            <value index="1">1</value>
+            <value index="2">1</value>
+            <value index="3">1</value>
+            <value index="4">1</value>
+            <value index="5">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_SG" unit="-">
+            <value index="1">1</value>
+            <value index="2">1</value>
+            <value index="3">1</value>
+            <value index="4">1</value>
+            <value index="5">1</value>
+            <value index="6">1</value>
+            <value index="7">1</value>
+            <value index="8">1</value>
+            <value index="9">1</value>
+            <value index="10">1</value>
+            <value index="11">1</value>
+            <value index="12">1</value>
+            <value index="13">1</value>
+            <value index="14">1</value>
+            <value index="15">1</value>
+            <value index="16">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FM" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FR" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property ref="Cosolve_Opsplit">
+            <value>1</value>
+        </property>
+        <property ref="Use_Ash_Model">
+            <value>0</value>
+        </property>
+        <property ref="Use_SO4_Model">
+            <value>0</value>
+        </property>
+        <property ref="Use_SOF_Model">
+            <value>0</value>
+        </property>
+        <property ref="Use_xSOF_Model">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="O2_Regen_K_Factor" unit="-">
+            <value>1d+20</value>
+        </property>
+        <property dimension="dimensionless" ref="O2_Regen_Ea" unit="-">
+            <value>125000.0</value>
+        </property>
+        <property dimension="dimensionless" ref="O2_Regen_B" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="O2_Regen_Alpha" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="NO2_Regen_K_Factor" unit="-">
+            <value>1d+20</value>
+        </property>
+        <property dimension="dimensionless" ref="NO2_Regen_Ea" unit="-">
+            <value>95000.0</value>
+        </property>
+        <property dimension="dimensionless" ref="NO2_Regen_B" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="NO2_Regen_Alpha" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="H2SO4_Accomodation_Factor" unit="-">
+            <value>0.05</value>
+        </property>
+        <property dimension="dimensionless" ref="Ash_Nucleation_Rate" unit="-">
+            <value>0.0001</value>
+        </property>
+        <property dimension="dimensionless" ref="Ash_Condensation_Rate" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="SOF_species">
+            <value>C8H18</value>
+        </property>
+        <property dimension="temperature" ref="SOF_Boil_T" unit="K">
+            <value>400</value>
+        </property>
+        <property dimension="length" ref="SOF_diameter" unit="cm">
+            <value>0.787e-7</value>
+        </property>
+        <property dimension="dimensionless" ref="SOF_Inception_Eff" unit="-">
+            <value>0.0001</value>
+        </property>
+        <property dimension="dimensionless" ref="SOF_Condensation_Eff" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="Allow_CD">
+            <value>1</value>
+        </property>
+        <property dimension="number_concentration" ref="Initial_State" unit="#/m^3">
+            <value index="1">0.0</value>
+            <value index="2">0.0</value>
+            <value index="3">0.0</value>
+            <value index="4">0.0</value>
+            <value index="5">0.0</value>
+            <value index="6">0.0</value>
+            <value index="7">0.0</value>
+            <value index="8">0.0</value>
+            <value index="9">0.0</value>
+            <value index="10">0.0</value>
+            <value index="11">0.0</value>
+            <value index="12">0.0</value>
+            <value index="13">0.0</value>
+            <value index="14">0.0</value>
+            <value index="15">0.0</value>
+            <value index="16">0.0</value>
+            <value index="17">0.0</value>
+            <value index="18">0.0</value>
+            <value index="19">0.0</value>
+            <value index="20">0.0</value>
+            <value index="21">0.0</value>
+            <value index="22">0.0</value>
+            <value index="23">0.0</value>
+            <value index="24">0.0</value>
+            <value index="25">0.0</value>
+            <value index="26">0.0</value>
+            <value index="27">0.0</value>
+            <value index="28">0.0</value>
+            <value index="29">0.0</value>
+            <value index="30">0.0</value>
+            <value index="31">0.0</value>
+            <value index="32">0.0</value>
+            <value index="33">0.0</value>
+            <value index="34">0.0</value>
+            <value index="35">0.0</value>
+        </property>
+        <property ref="Allow_O2_Regen">
+            <value>0</value>
+        </property>
+        <property ref="Allow_NO2_Regen">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="NanoModel">
+        <property ref="NanoModelFlag">
+            <value>0</value>
+        </property>
+        <property ref="NanoModelFlag_Engines">
+            <value>0</value>
+        </property>
+        <property ref="NanoModelFlag_Aftertreatment">
+            <value>0</value>
+        </property>
+    </property_group>
+    <property_group ref="DimensionMaps">
+        <map ReactorModel="default">
+            <value lookup="independent_variable">time</value>
+            <value lookup="independent_variable_duration">time</value>
+            <value lookup="mass_flow_rate">mass_flow_rate</value>
+        </map>
+        <map ReactorModel="1">
+            <value lookup="independent_variable">length</value>
+            <value lookup="independent_variable_duration">length</value>
+            <value lookup="mass_flow_rate">mass_flow_rate</value>
+        </map>
+        <map ReactorModel="2">
+            <value lookup="independent_variable">crank_angle</value>
+            <value lookup="independent_variable_duration">crank_angle_duration</value>
+            <value lookup="mass_flow_rate">mass_per_plane_angle</value>
+        </map>
+        <map ReactorModel="4">
+            <value lookup="independent_variable">length</value>
+            <value lookup="independent_variable_duration">length</value>
+            <value lookup="mass_flow_rate">mass_flow_rate</value>
+        </map>
+    </property_group>
+    <property_group ref="MoMIC_soot_model">
+        <property ref="Num_moments">
+            <value>5</value>
+        </property>
+        <property ref="PAH_species">
+            <value>PYRENE</value>
+        </property>
+        <property dimension="length" ref="PAH_diameter" unit="cm">
+            <value>0.97e-7</value>
+        </property>
+        <property dimension="number_concentration" ref="M0_cutoff" unit="#/m^3">
+            <value>1e-15</value>
+        </property>
+        <property ref="Allow_IN">
+            <value>1</value>
+        </property>
+        <property ref="Allow_SG">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CD">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FM">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CR">
+            <value>1</value>
+        </property>
+        <property ref="Scaling_Method">
+            <value>2</value>
+        </property>
+        <property ref="Closure_Method">
+            <value>1</value>
+        </property>
+        <property dimension="number_concentration" ref="Initial_State" unit="#/m^3">
+            <value index="1">0</value>
+            <value index="2">0</value>
+            <value index="3">0</value>
+            <value index="4">0</value>
+            <value index="5">0</value>
+            <value index="6">0</value>
+        </property>
+        <property ref="Cosolve_Method">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_ATOL" unit="-">
+            <value>1.0d-5</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_RTOL" unit="-">
+            <value>1.0d-3</value>
+        </property>
+        <property ref="Realise_Method">
+            <value>1</value>
+        </property>
+        <property ref="Include_Heat_Release">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="epsilon_ij" unit="-">
+            <value>2.2</value>
+        </property>
+        <property dimension="dimensionless" ref="alpha_T" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="Allow_OX">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FR">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_IN" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_SG" unit="-">
+            <value index="1">1</value>
+            <value index="2">1</value>
+            <value index="3">1</value>
+            <value index="4">1</value>
+            <value index="5">1</value>
+            <value index="6">1</value>
+            <value index="7">1</value>
+            <value index="8">1</value>
+            <value index="9">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FM" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_CR" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FR" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property ref="Cosolve_Opsplit">
+            <value>1</value>
+        </property>
+        <property ref="Type_FR">
+            <value index="1">0</value>
+        </property>
+    </property_group>
+    <property_group ref="MoMIC_ZnO_model">
+        <property ref="Num_moments">
+            <value>5</value>
+        </property>
+        <property dimension="number_concentration" ref="M0_cutoff" unit="#/m^3">
+            <value>1e-15</value>
+        </property>
+        <property ref="Allow_IN">
+            <value>1</value>
+        </property>
+        <property ref="Allow_SG">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FM">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CR">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="epsilon_ij" unit="-">
+            <value>2.64</value>
+        </property>
+        <property dimension="dimensionless" ref="alpha_T" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="Scaling_Method">
+            <value>1</value>
+        </property>
+        <property dimension="number_concentration" ref="Initial_State" unit="#/m^3">
+            <value index="1">0</value>
+            <value index="2">0</value>
+            <value index="3">0</value>
+            <value index="4">0</value>
+            <value index="5">0</value>
+            <value index="6">0</value>
+        </property>
+        <property ref="Cosolve_Method">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_ATOL" unit="-">
+            <value>1.0d-5</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_RTOL" unit="-">
+            <value>1.0d-3</value>
+        </property>
+        <property ref="Realise_Method">
+            <value>0</value>
+        </property>
+        <property ref="Include_Heat_Release">
+            <value>1</value>
+        </property>
+        <property ref="Allow_OX">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FR">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_IN" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_SG" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FM" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_CR" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property ref="Cosolve_Opsplit">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CD">
+            <value>1</value>
+        </property>
+    </property_group>
+    <property_group ref="products_flame">
+        <mixturename type="composition">
+            <value/>
+        </mixturename>
+    </property_group>
+    <property_group ref="MoMIC_Si_model_1">
+        <property ref="Num_moments">
+            <value>5</value>
+        </property>
+        <property dimension="number_concentration" ref="M0_cutoff" unit="#/m^3">
+            <value>1e-15</value>
+        </property>
+        <property ref="Allow_IN">
+            <value>1</value>
+        </property>
+        <property ref="Allow_SG">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FM">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CR">
+            <value>1</value>
+        </property>
+        <property ref="Include_Heat_Release">
+            <value>1</value>
+        </property>
+        <property ref="Use_dCutoff">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="erf_dx" unit="-">
+            <value>0.01</value>
+        </property>
+        <property dimension="dimensionless" ref="epsilon_ij" unit="-">
+            <value>2.2</value>
+        </property>
+        <property dimension="dimensionless" ref="alpha_T" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="Scaling_Method">
+            <value>1</value>
+        </property>
+        <property dimension="number_concentration" ref="Initial_State" unit="#/m^3">
+            <value index="1">0</value>
+            <value index="2">0</value>
+            <value index="3">0</value>
+            <value index="4">0</value>
+            <value index="5">0</value>
+            <value index="6">0</value>
+        </property>
+        <property ref="Cosolve_Method">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_ATOL" unit="-">
+            <value>1.0d-5</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_RTOL" unit="-">
+            <value>1.0d-3</value>
+        </property>
+        <property ref="Realise_Method">
+            <value>0</value>
+        </property>
+        <property ref="Allow_OX">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FR">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_IN" unit="-">
+            <value index="1">1</value>
+            <value index="2">1</value>
+            <value index="3">1</value>
+            <value index="4">1</value>
+            <value index="5">1</value>
+            <value index="6">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_SG" unit="-">
+            <value index="1">1</value>
+            <value index="2">1</value>
+            <value index="3">1</value>
+            <value index="4">1</value>
+            <value index="5">1</value>
+            <value index="6">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FM" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_CR" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property ref="Cosolve_Opsplit">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CD">
+            <value>1</value>
+        </property>
+    </property_group>
+    <property_group ref="MoMIC_Si_model_2">
+        <property ref="Num_moments">
+            <value>5</value>
+        </property>
+        <property dimension="number_concentration" ref="M0_cutoff" unit="#/m^3">
+            <value>1e-15</value>
+        </property>
+        <property ref="Allow_IN">
+            <value>1</value>
+        </property>
+        <property ref="Allow_SG">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FM">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CR">
+            <value>1</value>
+        </property>
+        <property ref="Include_Heat_Release">
+            <value>1</value>
+        </property>
+        <property ref="Use_dCutoff">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="erf_dx" unit="-">
+            <value>0.01</value>
+        </property>
+        <property dimension="dimensionless" ref="epsilon_ij" unit="-">
+            <value>2.2</value>
+        </property>
+        <property dimension="dimensionless" ref="alpha_T" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="Scaling_Method">
+            <value>1</value>
+        </property>
+        <property dimension="number_concentration" ref="Initial_State" unit="#/m^3">
+            <value index="1">0</value>
+            <value index="2">0</value>
+            <value index="3">0</value>
+            <value index="4">0</value>
+            <value index="5">0</value>
+            <value index="6">0</value>
+        </property>
+        <property ref="Cosolve_Method">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_ATOL" unit="-">
+            <value>1.0d-5</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_RTOL" unit="-">
+            <value>1.0d-3</value>
+        </property>
+        <property ref="Realise_Method">
+            <value>0</value>
+        </property>
+        <property ref="Allow_OX">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FR">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_IN" unit="-">
+            <value index="1">1</value>
+            <value index="2">1</value>
+            <value index="3">1</value>
+            <value index="4">1</value>
+            <value index="5">1</value>
+            <value index="6">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_SG" unit="-">
+            <value index="1">1</value>
+            <value index="2">1</value>
+            <value index="3">1</value>
+            <value index="4">1</value>
+            <value index="5">1</value>
+            <value index="6">1</value>
+            <value index="7">1</value>
+            <value index="8">1</value>
+            <value index="9">1</value>
+            <value index="10">1</value>
+            <value index="11">1</value>
+            <value index="12">1</value>
+            <value index="13">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FM" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_CR" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property ref="Cosolve_Opsplit">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CD">
+            <value>1</value>
+        </property>
+    </property_group>
+    <property_group ref="MoMIC_Si_model_3">
+        <property ref="Num_moments">
+            <value>5</value>
+        </property>
+        <property dimension="number_concentration" ref="M0_cutoff" unit="#/m^3">
+            <value>1e-15</value>
+        </property>
+        <property ref="Allow_IN">
+            <value>1</value>
+        </property>
+        <property ref="Allow_SG">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FM">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CR">
+            <value>1</value>
+        </property>
+        <property ref="Include_Heat_Release">
+            <value>1</value>
+        </property>
+        <property ref="Use_dCutoff">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="erf_dx" unit="-">
+            <value>0.01</value>
+        </property>
+        <property dimension="dimensionless" ref="epsilon_ij" unit="-">
+            <value>2.2</value>
+        </property>
+        <property dimension="dimensionless" ref="alpha_T" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="Scaling_Method">
+            <value>1</value>
+        </property>
+        <property dimension="number_concentration" ref="Initial_State" unit="#/m^3">
+            <value index="1">0</value>
+            <value index="2">0</value>
+            <value index="3">0</value>
+            <value index="4">0</value>
+            <value index="5">0</value>
+            <value index="6">0</value>
+        </property>
+        <property ref="Cosolve_Method">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_ATOL" unit="-">
+            <value>1.0d-5</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_RTOL" unit="-">
+            <value>1.0d-3</value>
+        </property>
+        <property ref="Realise_Method">
+            <value>0</value>
+        </property>
+        <property ref="Allow_OX">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FR">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_IN" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_SG" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FM" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_CR" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property ref="Cosolve_Opsplit">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CD">
+            <value>1</value>
+        </property>
+    </property_group>
+    <property_group ref="MoMIC_TTIP_model_1">
+        <property ref="Num_moments">
+            <value>5</value>
+        </property>
+        <property dimension="number_concentration" ref="M0_cutoff" unit="#/m^3">
+            <value>1e-15</value>
+        </property>
+        <property ref="Allow_IN">
+            <value>1</value>
+        </property>
+        <property ref="Allow_SG">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FM">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CR">
+            <value>1</value>
+        </property>
+        <property ref="Include_Heat_Release">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="epsilon_ij" unit="-">
+            <value>2.64</value>
+        </property>
+        <property dimension="dimensionless" ref="alpha_T" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="Scaling_Method">
+            <value>1</value>
+        </property>
+        <property dimension="number_concentration" ref="Initial_State" unit="#/m^3">
+            <value index="1">0</value>
+            <value index="2">0</value>
+            <value index="3">0</value>
+            <value index="4">0</value>
+            <value index="5">0</value>
+            <value index="6">0</value>
+        </property>
+        <property ref="Cosolve_Method">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_ATOL" unit="-">
+            <value>1.0d-5</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_RTOL" unit="-">
+            <value>1.0d-3</value>
+        </property>
+        <property ref="Realise_Method">
+            <value>0</value>
+        </property>
+        <property ref="Allow_OX">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FR">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_IN" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_SG" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FM" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_CR" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property ref="Cosolve_Opsplit">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CD">
+            <value>1</value>
+        </property>
+        <property default="true" desc="Inception rate multiplier" dimension="dimensionless" hidden="true" ref="gamma_in" unit="-">
+            <value>1.0</value>
+        </property>
+        <property default="true" desc="Surface reaction rate multiplier" dimension="dimensionless" hidden="true" ref="gamma_sg" unit="-">
+            <value>1.0</value>
+        </property>
+    </property_group>
+    <property_group ref="MoMIC_TTIP_model_2">
+        <property ref="Num_moments">
+            <value>5</value>
+        </property>
+        <property dimension="number_concentration" ref="M0_cutoff" unit="#/m^3">
+            <value>1e-15</value>
+        </property>
+        <property ref="Allow_IN">
+            <value>1</value>
+        </property>
+        <property ref="Allow_SG">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FM">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CR">
+            <value>1</value>
+        </property>
+        <property ref="Include_Heat_Release">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="epsilon_ij" unit="-">
+            <value>2.64</value>
+        </property>
+        <property dimension="dimensionless" ref="alpha_T" unit="-">
+            <value>1.0</value>
+        </property>
+        <property ref="Scaling_Method">
+            <value>1</value>
+        </property>
+        <property dimension="number_concentration" ref="Initial_State" unit="#/m^3">
+            <value index="1">0</value>
+            <value index="2">0</value>
+            <value index="3">0</value>
+            <value index="4">0</value>
+            <value index="5">0</value>
+            <value index="6">0</value>
+        </property>
+        <property ref="Cosolve_Method">
+            <value>0</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_ATOL" unit="-">
+            <value>1.0d-5</value>
+        </property>
+        <property dimension="dimensionless" ref="Cosolve_RTOL" unit="-">
+            <value>1.0d-3</value>
+        </property>
+        <property ref="Realise_Method">
+            <value>0</value>
+        </property>
+        <property ref="Allow_OX">
+            <value>1</value>
+        </property>
+        <property ref="Allow_FR">
+            <value>1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_IN" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_SG" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_FM" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property dimension="dimensionless" ref="Multiplier_CR" unit="-">
+            <value index="1">1</value>
+        </property>
+        <property ref="Cosolve_Opsplit">
+            <value>1</value>
+        </property>
+        <property ref="Allow_CD">
+            <value>1</value>
+        </property>
+        <property default="true" desc="solid phase density" dimension="density" hidden="true" ref="rho" unit="kg/m3">
+            <value>4.25</value>
+        </property>
+    </property_group>
+    <property_group ref="NanoModelPostProcess">
+        <property ref="Number_KDE_point">
+            <value>200</value>
+        </property>
+        <property dimension="length" ref="LB_KDE_Diameter" unit="m">
+            <value>1.0e-10</value>
+        </property>
+        <property dimension="length" ref="UB_KDE_Diameter" unit="m">
+            <value>1.0e-6</value>
+        </property>
+        <property dimension="dimensionless" ref="KDE_Sigma" unit="-">
+            <value>0.15</value>
+        </property>
+        <property ref="Number_ME_point">
+            <value>1000</value>
+        </property>
+        <property ref="max_loop">
+            <value>5000</value>
+        </property>
+        <property dimension="dimensionless" ref="min_c_max" unit="-">
+            <value>1.5</value>
+        </property>
+        <property dimension="dimensionless" ref="max_c_max" unit="-">
+            <value>3.0</value>
+        </property>
+        <property ref="N_c_max">
+            <value>5</value>
+        </property>
+        <property dimension="dimensionless" ref="ATol_ME" unit="-">
+            <value>1e-8</value>
+        </property>
+        <property dimension="dimensionless" ref="RTol_ME" unit="-">
+            <value>1e-4</value>
+        </property>
+        <property dimension="dimensionless" ref="min_lambda" unit="-">
+            <value>-3000.0</value>
+        </property>
+        <property dimension="dimensionless" ref="Const_step" unit="-">
+            <value>1.0</value>
+        </property>
+        <property dimension="dimensionless" ref="r_frac" unit="-">
+            <value>3.0</value>
+        </property>
+        <property ref="GaussianFlag">
+            <value>1</value>
+        </property>
+    </property_group>
+    <property_group ref="MoMIC_model">
+        <property default="true" desc="Number for Moments" ref="Num_moments" uitype="int">
+            <value>4</value>
+        </property>
+        <property default="true" desc="Number Density Cutoff" dimension="number_concentration" ref="M0_cutoff" unit="#/m^3">
+            <value>1e-15</value>
+        </property>
+        <property default="true" desc="Discrete phase material" ref="Material">
+            <value>MATERIAL1</value>
+        </property>
+    </property_group>
+    <flame>
+        <property_group index="1" ref="Simulation">
+            <prob>
+                <value>LA</value>
+            </prob>
+            <use_NANOMODEL>
+                <value>0</value>
+            </use_NANOMODEL>
+            <ignoreFluxInBC>
+                <value>0</value>
+            </ignoreFluxInBC>
+            <FOAMfriendly>
+                <value>0</value>
+            </FOAMfriendly>
+            <burn>
+                <value>1</value>
+            </burn>
+            <pres dimension="pressure" unit="atm">
+                <value>1.0e0</value>
+            </pres>
+            <flrt dimension="mass flux" unit="g/cm^2/s">
+                <value>6.843e-3</value>
+            </flrt>
+            <xfixt dimension="length" unit="cm">
+                <value>1.0e0</value>
+            </xfixt>
+            <tfixt dimension="temperature" unit="K">
+                <value>2000.0</value>
+            </tfixt>
+            <vfue dimension="speed" unit="cm/s">
+                <value>5.0</value>
+            </vfue>
+            <voxi dimension="speed" unit="cm/s">
+                <value>0.0</value>
+            </voxi>
+            <afue dimension="velocity gradient" unit="1/s">
+                <value>0.0</value>
+            </afue>
+            <aoxi dimension="velocity gradient" unit="1/s">
+                <value>0.0</value>
+            </aoxi>
+            <tfue dimension="temperature" unit="K">
+                <value>298.0</value>
+            </tfue>
+            <toxi dimension="temperature" unit="K">
+                <value>1233.0</value>
+            </toxi>
+            <tfix>
+                <value>0</value>
+            </tfix>
+            <enrg>
+                <value>1</value>
+            </enrg>
+            <noft>
+                <value>0</value>
+            </noft>
+            <iniprof>
+                <value>3</value>
+            </iniprof>
+            <xend dimension="length" unit="cm">
+                <value>2.15</value>
+            </xend>
+            <xcen dimension="length" unit="cm">
+                <value>1.0</value>
+            </xcen>
+            <wmix dimension="length" unit="cm">
+                <value>1.5</value>
+            </wmix>
+            <max_temp dimension="temperature" unit="K">
+                <value>2200.0</value>
+            </max_temp>
+            <ustg>
+                <value>0</value>
+            </ustg>
+            <mult>
+                <value>0</value>
+            </mult>
+            <tdif>
+                <value>0</value>
+            </tdif>
+            <rad1>
+                <value>0</value>
+            </rad1>
+            <rad2>
+                <value>0</value>
+            </rad2>
+            <equl>
+                <value>0</value>
+            </equl>
+            <fxeq>
+                <value>0</value>
+            </fxeq>
+            <gfac dimension="dimensionless" unit="-">
+                <value>1.0</value>
+            </gfac>
+            <asen>
+                <value>0</value>
+            </asen>
+            <adapt>
+                <value>1</value>
+            </adapt>
+            <nmax>
+                <value>500</value>
+            </nmax>
+            <padd>
+                <value>100</value>
+            </padd>
+            <npts>
+                <value>6</value>
+            </npts>
+            <usegrid>
+                <value>0</value>
+            </usegrid>
+            <grid dimension="dimensionless" unit="-">
+                <value>0.0</value>
+            </grid>
+            <steady>
+                <value>1</value>
+            </steady>
+            <JacREL dimension="dimensionless" unit="-">
+                <value>0.0e0</value>
+            </JacREL>
+            <JacABS dimension="dimensionless" unit="-">
+                <value>0.0e0</value>
+            </JacABS>
+            <ssage dimension="dimensionless" unit="-">
+                <value>5</value>
+            </ssage>
+            <ssrel dimension="dimensionless" unit="-">
+                <value>1.0e-4</value>
+            </ssrel>
+            <ssabs dimension="dimensionless" unit="-">
+                <value>1.0e-11</value>
+            </ssabs>
+            <tdage>
+                <value>5</value>
+            </tdage>
+            <tdrel dimension="dimensionless" unit="-">
+                <value>1.0e-4</value>
+            </tdrel>
+            <tdabs dimension="dimensionless" unit="-">
+                <value>1.0e-8</value>
+            </tdabs>
+            <steps0>
+                <value>200</value>
+            </steps0>
+            <steps1>
+                <value>200</value>
+            </steps1>
+            <steps2>
+                <value>10</value>
+            </steps2>
+            <strid0 dimension="dimensionless" unit="-">
+                <value>1.0e-7</value>
+            </strid0>
+            <tdec dimension="dimensionless" unit="-">
+                <value>2.0</value>
+            </tdec>
+            <tinc dimension="dimensionless" unit="-">
+                <value>3.1623</value>
+            </tinc>
+            <stride_max dimension="dimensionless" unit="-">
+                <value>1.0e0</value>
+            </stride_max>
+            <stride_min dimension="dimensionless" unit="-">
+                <value>1.0e-20</value>
+            </stride_min>
+            <stride_min_fix>
+                <value>0</value>
+            </stride_min_fix>
+            <toler0 dimension="dimensionless" unit="-">
+                <value>1.0e-7</value>
+            </toler0>
+            <toler1 dimension="dimensionless" unit="-">
+                <value>1.0</value>
+            </toler1>
+            <toler2 dimension="dimensionless" unit="-">
+                <value>1.0</value>
+            </toler2>
+            <max_SEARCH>
+                <value>0</value>
+            </max_SEARCH>
+            <deltaDexp>
+                <value>10</value>
+            </deltaDexp>
+            <wdif>
+                <value>1</value>
+            </wdif>
+            <sflr dimension="dimensionless" unit="-">
+                <value>-1.0e-4</value>
+            </sflr>
+            <rstr>
+                <value>0</value>
+            </rstr>
+            <RestartFileName>
+                <value/>
+            </RestartFileName>
+            <regrid>
+                <value>0</value>
+            </regrid>
+            <jjrg>
+                <value>40</value>
+            </jjrg>
+            <pcad dimension="dimensionless" unit="-">
+                <value>0.7</value>
+            </pcad>
+            <rgtc dimension="dimensionless" unit="-">
+                <value>1.0</value>
+            </rgtc>
+            <skip>
+                <value>1</value>
+            </skip>
+            <ImpTemp allowprofile="always" dimension="temperature" readfrom="profile" unit="K">
+                <value>0.0</value>
+                <profile delim="," delimlen="1" dimension_lookup="independent_variable" headers="1" indvarcol="1" mergedelims="0" periodicity="0" trim_leadb="1" trim_trailb="1" unit="cm">
+                    <value>ImposedFlameTempProfile.csv</value>
+                </profile>
+            </ImpTemp>
+        </property_group>
+    </flame>
+    <mixtures type="composition">
+        <composition dimension="gas fraction" name="Fuel" unit="mole fraction">
+            <value species="DMM3">1.0</value>
+        </composition>
+        <composition dimension="gas fraction" name="Oxidiser_Phi=0.5" unit="mole fraction">
+            <value species="N2">0.8888888888888888</value>
+            <value species="O2">0.1111111111111111</value>
+        </composition>
+        <composition dimension="gas fraction" name="Oxidiser_Phi=1" unit="mole fraction">
+            <value species="O2">0.0625</value>
+            <value species="N2">0.9375</value>
+        </composition>
+        <composition dimension="gas fraction" name="Oxidiser_Phi=1.5" unit="mole fraction">
+            <value species="O2">0.047619047619047616</value>
+            <value species="N2">0.9523809523809523</value>
+        </composition>
+        <composition dimension="gas fraction" name="Fuel-Ox-Mix" unit="mole fraction">
+            <value species="DMM3">0.009174312</value>
+            <value species="O2">0.110091743</value>
+            <value species="N2">0.880733945</value>
+        </composition>
+    </mixtures>
+    <mixtures type="composition_site"/>
+    <mixtures type="composition_bulk"/>
+</srm_inputs>

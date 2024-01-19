@@ -63,7 +63,14 @@ public class ScenarioHelper {
 	   } catch (URISyntaxException e) {
 		   throw new JPSRuntimeException(e.getMessage(), e);
 	   }
-	   int hashedHost = uri.getHost().hashCode();
+
+	   int hashedHost;
+	   try {
+		   hashedHost = uri.getHost().hashCode();
+	   } catch (NullPointerException e) {
+		   throw new JPSRuntimeException("Not able to get host from the URI: " + uri.toString(), e);
+	   }
+
 	   return "" + hashedHost + uri.getPath();
 	}
 	

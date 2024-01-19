@@ -1,0 +1,140 @@
+# ------------------------------------------------------------------------------
+# This is the aboxwriters config file used to specify all the writers settings.
+# The settings can be specified at three different levels of granularity:
+#
+# - global settings   - any settings defined here would apply to all
+#                       pipelines handlers, unless overwritten
+# - pipeline settings - any settings defined here would apply to all
+#                       handlers for the selected pipeline and would
+#                       overwrite any global settings
+# - handler settings  - any settings defined here would apply only
+#                       to the selected pipeline handler and would
+#                       overwrite any global and pipeline level settings
+# ------------------------------------------------------------------------------
+# GLOBAL
+# ------------------------------------------------------------------------------
+file_server_upload_settings:
+    # file server upload url
+    url: http://localhost:48086/FileServer/
+    # file server secrets file
+    auth_file: dummy_fileserver_secrets_file
+    # if True, auth_file input is not needed
+    no_auth: True
+    # directory on the file server where all files should go
+    subdirs: dummy_subdir1/subdir2
+triple_store_upload_settings:
+    # triple store sparql upload endpoint
+    url: http://localhost:48083/blazegraph/namespace/kb/sparql/
+    auth_file: dummy_blazegraph-geo_secrets_file
+    no_auth: True
+kg_query_endpoints:
+    # define any sparql query endpoints for the given prefixes
+    # these are used in some handlers to query KG for extra information
+    # e.g. when creating the ontocompchem abox, a query is made based on
+    # the species inchi string to try to find the corresponding ontospecies
+    # entry
+    ospecies: http://localhost:48083/blazegraph/namespace/ospecies/sparql/
+    omops: http://localhost:48083/blazegraph/namespace/omops/sparql/
+    ocompchem: http://localhost:48083/blazegraph/namespace/ocompchem/sparql/
+    opsscan: http://localhost:48083/blazegraph/namespace/opsscan/sparql/
+# ------------------------------------------------------------------------------
+# PIPELINES
+# ------------------------------------------------------------------------------
+#
+# OCOMPCHEM
+#-----------------------------------------
+ocompchem:
+    # these options would overwrite any global settings above
+    file_server_upload_settings:
+        # this will overwrite the global "dummy_subdir1/subdir2" subdirs
+        # all other properties will be inherited
+        subdirs: ocompchem
+    triple_store_upload_settings:
+        # this will overwrite the global triple store upload url
+        # all other properties will be inherited
+        url: http://localhost:48083/blazegraph/namespace/ocompchem/sparql/
+    #-----------------------------------------
+    # SELECTED OCOMPCHEM HANDLERS
+    #-----------------------------------------
+    # these options define any handler specific settings and would overwrite
+    # any pipeline and global settings
+    #
+    # handler 1
+    qc_log_to_qc_json: # handler name, non-case specific
+        file_server_upload_settings:
+            # this defines which types of files should be uploaded to the file server
+            upload_file_types:
+                - qc_log
+    # handler 2
+    qc_json_to_oc_json:
+        file_server_upload_settings:
+            # this enables molecules png files upload (if files are present)
+            upload_file_types:
+                - oc_png
+        handler_kwargs:
+            # this enables molecules png files generation
+            generate_png: true
+
+    # handler 3
+    oc_csv_to_oc_owl:
+        triple_store_upload_settings:
+            # this defines which types of files should be uploaded to the file server
+            upload_file_types:
+                - oc_owl
+# OSPECIES
+#-----------------------------------------
+ospecies:
+    file_server_upload_settings:
+        subdirs: ospecies
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/ospecies/sparql/
+    #-----------------------------------------
+    # SELECTED OSPECIES HANDLERS
+    #-----------------------------------------
+    # If one wishes to fully merge all the pipeline or global settings into
+    # the lower setting, e.g. qc_json_to_os_json, then this is the correct way
+    # to do it. If the {} brackets were omitted the qc_json_to_os_json field
+    # would be set to None, preventing any merging
+    qc_json_to_os_json: {}
+    os_csv_to_os_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - os_owl
+# OMOPS
+omops:
+    file_server_upload_settings:
+        subdirs: omops
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/omops/sparql/
+    #-----------------------------------------
+    # SELECTED OMOPS HANDLERS
+    #-----------------------------------------
+    ominp_json_to_om_json:
+        file_server_upload_settings:
+            upload_file_types:
+                - ominp_xyz
+    om_csv_to_om_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - om_owl
+# OPSSCAN
+#-----------------------------------------
+opsscan:
+    file_server_upload_settings:
+        subdirs: opsscan
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/opsscan/sparql/
+    #-----------------------------------------
+    # SELECTED OPSSCAN HANDLERS
+    #-----------------------------------------
+    oc_json_to_ops_json:
+      # example handler parameters for a bond scan
+      handler_kwargs:
+          os_iris: Species_11-111-111
+          os_atoms_iris: Atom_11-11-111_C1,Atom_11-11-111_C2
+          oc_atoms_pos: 1,2
+          random_id: OPStestID-111-111-11
+    ops_csv_to_ops_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - ops_owl

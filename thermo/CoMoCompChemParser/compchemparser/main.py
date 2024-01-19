@@ -1,5 +1,7 @@
 from compchemparser.app import runParser
+import compchemparser.helpers.utils as utils
 from docopt import docopt, DocoptExit
+
 
 __doc__ = """ccparse
 
@@ -17,7 +19,11 @@ def main():
     except DocoptExit:
         raise DocoptExit('Error: parser called with wrong arguments.')
 
+    utils.config_logging()
+
+
     runParser(args['<logFileOrDir>'],args["--logExt"], args['-n'])
+
 
 if __name__ == '__main__':
     main()

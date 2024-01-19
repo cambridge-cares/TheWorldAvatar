@@ -10,7 +10,6 @@
 
 version: "3.8"
 
-
 services:
 
   # Blazegraph
@@ -22,6 +21,11 @@ services:
   blazegraph-geo:
     ports:
       - 48083:8080
+
+  # File server
+  fileserver:
+    ports:
+      - 48086:8080
 
   # Postgres
   postgres:

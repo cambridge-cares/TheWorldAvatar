@@ -1,0 +1,551 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontohplc/"
+     xml:base="https://www.theworldavatar.com/kg/ontohplc/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:ontohplc="https://www.theworldavatar.com/kg/ontohplc/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontohplc/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 April 2023</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoHPLC is an ontology developed for expressing a high performance liquid chromatography.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.8</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/atRetentionTime -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/atRetentionTime">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/ChromatogramPoint"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/RetentionTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between chromatogram point and the retention time at which the point was referring to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/characterises -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/characterises">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCJob"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC job and the reaction experiment it characterises.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/generatedFor -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/generatedFor">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCReport"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC report and the chemical amount it is generated for.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/hasJob -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/hasJob">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HighPerformanceLiquidChromatography"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCJob"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC and the HPLC job it conducts.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/hasPastReport -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/hasPastReport">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HighPerformanceLiquidChromatography"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCReport"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC and the HPLC reports it generated in the past.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/hasPeakArea -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/hasPeakArea">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/ChromatogramPoint"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/PeakArea"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the chromatogram point and the peak area it calculated.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/hasReport -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/hasReport">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCJob"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCReport"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC job and the report it generates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/hasResponseFactor -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/hasResponseFactor">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCMethod"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/ResponseFactor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC method and the response factor of each species under this method.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/hasRetentionTime -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/hasRetentionTime">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCMethod"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/RetentionTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC method and the ideal retention time of each species under this method.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/indicatesComponent -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/indicatesComponent">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/ChromatogramPoint"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the chromatogram point and the phase component it refers to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/records -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/records">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCReport"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/ChromatogramPoint"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC report and the chromatogram data it records.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/refersToSpecies -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/refersToSpecies">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontohplc/ResponseFactor"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontohplc/RetentionTime"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relationship between the response factor/retention time and the species which the previous quantity is referring to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/reportExtension -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/reportExtension">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HighPerformanceLiquidChromatography"/>
+        <rdfs:range rdf:resource="http://dbpedia.org/class/yago/WikicatFilenameExtensions"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC and the filename extension of the HPLC report it generates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/usesInternalStandard -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/usesInternalStandard">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCMethod"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/InternalStandard"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC report and the internal standard that was used during generating the report.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/usesMethod -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/usesMethod">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCJob"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCMethod"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between a HPLC job and the method it uses.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/lastLocalModifiedAt -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/lastLocalModifiedAt">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCReport"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/lastUploadedAt -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/lastUploadedAt">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCReport"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/localFilePath -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/localFilePath">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCMethod"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCReport"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/localReportDirectory -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/localReportDirectory">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HighPerformanceLiquidChromatography"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/remoteFilePath -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/remoteFilePath">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCMethod"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCReport"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/retentionTimeMatchThreshold -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/retentionTimeMatchThreshold">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/HPLCMethod"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/unidentified -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontohplc/unidentified">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontohplc/ChromatogramPoint"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://dbpedia.org/class/yago/WikicatFilenameExtensions -->
+
+
+    <owl:Class rdf:about="http://dbpedia.org/class/yago/WikicatFilenameExtensions"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Duration -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Duration"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/QuantityOfDimensionOne -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/QuantityOfDimensionOne"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+    
+
+
+    <!-- https://saref.etsi.org/core/Command -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Command"/>
+    
+
+
+    <!-- https://saref.etsi.org/core/Function -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Function"/>
+    
+
+
+    <!-- https://saref.etsi.org/core/Task -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Task"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/ChromatogramMeasurement -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/ChromatogramMeasurement">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Function"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The function to measure the chromatogram of a given chemical amount.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/ChromatogramMeasurementCommand -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/ChromatogramMeasurementCommand">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The command to realise &quot;ChromatogramMeasurement&quot; function.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/ChromatogramPoint -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/ChromatogramPoint">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontohplc/atRetentionTime"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontohplc/RetentionTime"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontohplc/hasPeakArea"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontohplc/PeakArea"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One data point that indicates a peak appears in the chromatogram, normally it refers to a phase component.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/HPLCJob -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/HPLCJob">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An appearance of one HPLC job.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/HPLCMethod -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/HPLCMethod">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The method used by HPLC during HPLC job.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/HPLCReport -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/HPLCReport">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The report generated during one HPLC job.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/HighPerformanceLiquidChromatography -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/HighPerformanceLiquidChromatography">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A separation technique in which the mobile phase is a liquid. Liquid chromatography can be carried out either in a column or on a plane. Present-day liquid chromatography generally utilizing very small particles and a relatively high inlet pressure is often characterized by the term high-performance (or high-pressure) liquid chromatography, and the acronym HPLC. [https://doi.org/10.1351/goldbook.L03578]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/InternalStandard -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/InternalStandard">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A compound added to a sample in known concentration to facilitate the qualitative indentification and/or quantitative determination of the sample components. [https://doi.org/10.1351/goldbook.I03108]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/LiquidChromatography -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/LiquidChromatography">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Task"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A separation technique in which the mobile phase is a liquid. Here the liquid chromatography is modelled as a saref:Task that can be accomplished by HPLC.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/PeakArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/PeakArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area enclosed between the peak and the baseline. [https://doi.org/10.1351/goldbook.P04453]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/ResponseFactor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/ResponseFactor">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/QuantityOfDimensionOne"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The response factor is defined as the ratio between a signal produced by a solute of the sample and the signal produced by the internal standard of the sample. This ratio is concentration-based in this specific application.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontohplc/RetentionTime -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontohplc/RetentionTime">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Duration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The time between injection of sample into HPLC column and emergence of a solute of the sample.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontohplc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ChemicalAmount -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/LabEquipment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+

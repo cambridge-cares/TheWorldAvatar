@@ -1,0 +1,262 @@
+# these are default settings that will be applied to any file uploads
+# in the upload_file_types and upload_file_types sections
+file_server_upload_settings:
+    url: fs_endpoint
+    subdirs: fs_subdir/subdir
+    auth_file: fs_dummy_secrets
+    no_auth: True
+triple_store_upload_settings:
+    url: ts_endpoint
+    auth_file: ts_dummy_secrets
+    no_auth: True
+kg_query_endpoints:
+    ospecies_query_endpoint: ospecies
+    omops_query_endpoint: omops
+    ocompchem_query_endpoint: ocompchem
+    opsscan_query_endpoint: opsscan
+# this section defines what type of files should be uploaded to the file server
+ocompchem:
+    file_server_upload_settings:
+        url: ocompchem
+        subdirs: ocompchem
+        no_auth: True
+    triple_store_upload_settings:
+        no_auth: True
+
+    qc_log_to_qc_json:
+        file_server_upload_settings:
+            upload_file_types:
+                - qc_log
+    oc_json_to_oc_csv:
+        handler_kwargs:
+            kwarg1: kwarg1_value
+            kwarg2: kwarg2_value
+    oc_csv_to_oc_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - oc_owl
+ospecies:
+    file_server_upload_settings:
+        url: ospecies
+        subdirs: ospecies
+    os_csv_to_os_owl:
+        triple_store_upload_settings:
+            no_auth: True
+            upload_file_types:
+                - os_owl
+omops:
+    file_server_upload_settings:
+        url: omops
+        subdirs: omops
+    ominp_json_to_om_json:
+        file_server_upload_settings:
+            no_auth: True
+            upload_file_types:
+                - ominp_xyz
+    om_csv_to_om_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - om_owl
+opsscan:
+    file_server_upload_settings:
+        url: opsscan
+        subdirs: opsscan
+    ops_csv_to_ops_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - ops_owl
+test_results:
+    file_server_upload_settings:
+        url: fs_endpoint
+        auth_file: fs_dummy_secrets
+        subdirs: fs_subdir/subdir
+        no_auth: True
+    triple_store_upload_settings:
+        url: ts_endpoint
+        auth_file: ts_dummy_secrets
+        no_auth: True
+    kg_query_endpoints:
+        ospecies_query_endpoint: ospecies
+        omops_query_endpoint: omops
+        ocompchem_query_endpoint: ocompchem
+        opsscan_query_endpoint: opsscan
+    ocompchem:
+        file_server_upload_settings:
+            url: ocompchem
+            subdirs: ocompchem
+            auth_file: fs_dummy_secrets
+            no_auth: True
+        triple_store_upload_settings:
+            url: ts_endpoint
+            auth_file: ts_dummy_secrets
+            no_auth: True
+        kg_query_endpoints:
+            ospecies_query_endpoint: ospecies
+            omops_query_endpoint: omops
+            ocompchem_query_endpoint: ocompchem
+            opsscan_query_endpoint: opsscan
+        qc_log_to_qc_json:
+            file_server_upload_settings:
+                url: ocompchem
+                subdirs: ocompchem
+                auth_file: fs_dummy_secrets
+                no_auth: True
+                upload_file_types:
+                    - qc_log
+            triple_store_upload_settings:
+                url: ts_endpoint
+                auth_file: ts_dummy_secrets
+                no_auth: True
+            kg_query_endpoints:
+                ospecies_query_endpoint: ospecies
+                omops_query_endpoint: omops
+                ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
+        oc_json_to_oc_csv:
+            file_server_upload_settings:
+                url: ocompchem
+                subdirs: ocompchem
+                auth_file: fs_dummy_secrets
+                no_auth: True
+            triple_store_upload_settings:
+                url: ts_endpoint
+                auth_file: ts_dummy_secrets
+                no_auth: True
+            kg_query_endpoints:
+                ospecies_query_endpoint: ospecies
+                omops_query_endpoint: omops
+                ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
+            handler_kwargs:
+                kwarg1: kwarg1_value
+                kwarg2: kwarg2_value
+        oc_csv_to_oc_owl:
+            file_server_upload_settings:
+                url: ocompchem
+                subdirs: ocompchem
+                auth_file: fs_dummy_secrets
+                no_auth: True
+            triple_store_upload_settings:
+                url: ts_endpoint
+                auth_file: ts_dummy_secrets
+                no_auth: True
+                upload_file_types:
+                    - oc_owl
+            kg_query_endpoints:
+                ospecies_query_endpoint: ospecies
+                omops_query_endpoint: omops
+                ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
+    ospecies:
+        file_server_upload_settings:
+            url: ospecies
+            subdirs: ospecies
+            auth_file: fs_dummy_secrets
+            no_auth: True
+        triple_store_upload_settings:
+            url: ts_endpoint
+            auth_file: ts_dummy_secrets
+            no_auth: True
+        kg_query_endpoints:
+            ospecies_query_endpoint: ospecies
+            omops_query_endpoint: omops
+            ocompchem_query_endpoint: ocompchem
+            opsscan_query_endpoint: opsscan
+        os_csv_to_os_owl:
+            file_server_upload_settings:
+                url: ospecies
+                subdirs: ospecies
+                auth_file: fs_dummy_secrets
+                no_auth: True
+            triple_store_upload_settings:
+                url: ts_endpoint
+                auth_file: ts_dummy_secrets
+                no_auth: True
+                upload_file_types:
+                    - os_owl
+            kg_query_endpoints:
+                ospecies_query_endpoint: ospecies
+                omops_query_endpoint: omops
+                ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
+    omops:
+        file_server_upload_settings:
+            url: omops
+            subdirs: omops
+            auth_file: fs_dummy_secrets
+            no_auth: True
+        triple_store_upload_settings:
+            url: ts_endpoint
+            auth_file: ts_dummy_secrets
+            no_auth: True
+        kg_query_endpoints:
+            ospecies_query_endpoint: ospecies
+            omops_query_endpoint: omops
+            ocompchem_query_endpoint: ocompchem
+            opsscan_query_endpoint: opsscan
+        ominp_json_to_om_json:
+            file_server_upload_settings:
+                url: omops
+                subdirs: omops
+                auth_file: fs_dummy_secrets
+                no_auth: True
+                upload_file_types:
+                    - ominp_xyz
+            triple_store_upload_settings:
+                url: ts_endpoint
+                auth_file: ts_dummy_secrets
+                no_auth: True
+            kg_query_endpoints:
+                ospecies_query_endpoint: ospecies
+                omops_query_endpoint: omops
+                ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
+        om_csv_to_om_owl:
+            file_server_upload_settings:
+                url: omops
+                subdirs: omops
+                auth_file: fs_dummy_secrets
+                no_auth: True
+            triple_store_upload_settings:
+                url: ts_endpoint
+                auth_file: ts_dummy_secrets
+                no_auth: True
+                upload_file_types:
+                    - om_owl
+            kg_query_endpoints:
+                ospecies_query_endpoint: ospecies
+                omops_query_endpoint: omops
+                ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan
+    opsscan:
+        file_server_upload_settings:
+            url: opsscan
+            subdirs: opsscan
+            auth_file: fs_dummy_secrets
+            no_auth: True
+        triple_store_upload_settings:
+            url: ts_endpoint
+            auth_file: ts_dummy_secrets
+            no_auth: True
+        kg_query_endpoints:
+            ospecies_query_endpoint: ospecies
+            omops_query_endpoint: omops
+            ocompchem_query_endpoint: ocompchem
+            opsscan_query_endpoint: opsscan
+        ops_csv_to_ops_owl:
+            file_server_upload_settings:
+                url: opsscan
+                subdirs: opsscan
+                auth_file: fs_dummy_secrets
+                no_auth: True
+            triple_store_upload_settings:
+                url: ts_endpoint
+                auth_file: ts_dummy_secrets
+                no_auth: True
+                upload_file_types:
+                    - ops_owl
+            kg_query_endpoints:
+                ospecies_query_endpoint: ospecies
+                omops_query_endpoint: omops
+                ocompchem_query_endpoint: ocompchem
+                opsscan_query_endpoint: opsscan

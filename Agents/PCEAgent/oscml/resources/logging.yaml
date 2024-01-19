@@ -1,0 +1,25 @@
+version: 1
+formatters:
+  simple:
+    #format: '%(levelname)-8s %(filename)-25s line %(lineno)-4d %(message)s'
+    format: '%(asctime)s %(levelname)-8s %(message)s'
+  extended:
+    #format: '%(asctime)s %(name)-10s %(levelname)-8s %(filename)-25s %(lineno)-4d %(message)s - %(funcName)-10s'
+    format: '%(asctime)s %(levelname)-8s %(message)s - %(filename)s %(lineno)-4d %(funcName)s %(name)s [[%(threadName)s]]'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: simple
+  file_handler:
+    class: logging.FileHandler
+    filename: ./logs/oscml.log
+    level: INFO
+    formatter: extended
+loggers:
+  lightning:
+    level: INFO
+    handlers: [console]
+root:
+  level: INFO
+  handlers: [console, file_handler]

@@ -9,3 +9,4 @@ copy config_VC config.h
 %HOME%\bin\nmake.exe /f Makefile_VC check
 
 pause
+

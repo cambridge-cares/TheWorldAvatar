@@ -1,0 +1,4 @@
+pandas
+SPARQLWrapper
+fuzzywuzzy~=0.18
+python-Levenshtein~=0.20

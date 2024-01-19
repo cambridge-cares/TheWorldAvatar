@@ -1,10 +1,5 @@
 #!/bin/bash
 # D. Nurkowski (danieln@cmclinnovations.com)
-echo "-----------------------------------------------"
-echo "--   python entrdfizer installation script  --"
-echo "-----------------------------------------------"
-echo ""
-#
 
 AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -75,7 +70,7 @@ function create_env {
 			echo "    ERROR: Failed to create virtual environment."
 			echo "-----------------------------------------"
             read -n 1 -s -r -p "Press any key to continue"
-			exit -1
+			exit 1
 		fi
 		echo ""
 }
@@ -83,7 +78,7 @@ function create_env {
 function get_pip_path {
     if [[ $CREATE_VENV == 'y' ]]
 	then
-	    if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
+	    if [ -d "$VENV_DIR/$VENV_NAME/bin" ]; then
             PIPPATH=$VENV_DIR"/"$VENV_NAME/bin/pip3
 		else
 		    PIPPATH=$VENV_DIR"/"$VENV_NAME/Scripts/pip3
@@ -113,7 +108,7 @@ function install_project {
     	echo "    ERROR: installation failed."
     	echo "-----------------------------------------"
         read -n 1 -s -r -p "Press any key to continue"
-        exit -1
+        exit 2
     fi
 
 }
@@ -123,7 +118,7 @@ if [[ $# = 0 ]]
 then
    usage
 fi
-while [[ $# > 0 ]]
+while [[ $# -gt 0 ]]
 do
 key="$1"
 case $key in
@@ -153,3 +148,4 @@ fi
 
 echo
 read -n 1 -s -r -p "Press any key to continue"
+

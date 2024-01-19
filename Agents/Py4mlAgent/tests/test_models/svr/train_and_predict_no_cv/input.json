@@ -1,0 +1,112 @@
+{
+    "goals": {
+        "hpo": true,
+        "contour_plot": false,
+        "best_trial_retraining": true,
+        "transfer_learning": false,
+        "predict": true
+    },
+    "numerical_settings": {
+        "seed": 1,
+        "cudnn_deterministic": true,
+        "cudnn_benchmark": false
+    },
+    "dataset": {
+        "src": "./tests/fake_data.csv",
+        "transform_type": "z-transform",
+        "x_column": [
+            "feature 1",
+            "feature 2",
+            "feature 3"
+        ],
+        "y_column": [
+            "y(x)"
+        ],
+        "split": [
+            0.7,
+            0.15,
+            0.15
+        ]
+    },
+    "logging_settings": {
+        "log_main_dir": "./tests/test_models/svr/train_and_predict_no_cv",
+        "log_sub_dir_prefix": "test_data",
+        "log_config_file": "./tests/conf/logging.yaml",
+        "log_file_name": "test.log",
+        "use_date_time": false
+    },
+    "model": {
+        "name": "SVR",
+        "model_specific": {
+            "kernel": "rbf",
+            "C": {
+                "type": "loguniform",
+                "low": 800.0,
+                "high": 1000.0
+            },
+            "epsilon": {
+                "type": "loguniform",
+                "low": 1e-10,
+                "high": 1e-8
+            }
+        }
+    },
+    "training": {
+        "metric": "mse",
+        "cross_validation": 0,
+        "direction": "minimize",
+        "trials": 10,
+        "study_name": "svr_train_and_predict_no_cv",
+        "storage": "sqlite:///tests/test_models/svr/train_and_predict_no_cv/test_data/test_data.db",
+        "storage_timeout": 1000,
+        "load_if_exists": true,
+        "jobs": 1
+    },
+    "post_processing": {
+        "contour_plot_alt_dir": null,
+        "regression_plot": false
+    },
+    "predict_settings": {
+        "ckpt_path": "./tests/test_models/svr/train_and_predict_no_cv/test_data/best_trial_retrain/trial_*/best_trial_retrain_model.ckpt",
+        "predict_input": [
+            [
+                1.05,
+                1.1025,
+                1.157625
+            ],
+            [
+                -1.05,
+                1.1025,
+                -1.157625
+            ],
+            [
+                5.02,
+                25.2004,
+                126.506008
+            ],
+            [
+                -5.02,
+                25.2004,
+                -126.506008
+            ],
+            [
+                10.15,
+                103.0225,
+                1045.678375
+            ],
+            [
+                -10.15,
+                103.0225,
+                -1045.678375
+            ]
+        ],
+        "actual_output": [
+            14.077875,
+            -9.667875,
+            470.078824,
+            -369.277224,
+            3424.280125,
+            -3012.190125
+        ]
+    }
+}

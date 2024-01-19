@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  data-bridge-agent:
+    container_name: data-bridge-agent
+    image: data-bridge-agent:1.0.0
+    build:
+      context: ..
+      target: agent
+    environment:
+      - "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+    volumes:
+      - ../config:/usr/local/tomcat/config
+    ports:
+      - "5005:5005"
+      - "3055:8080"

@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  # Blazegraph
+  blazegraph_agent_test:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: blazegraph_agent_test
+    ports:
+      - 27149:8080

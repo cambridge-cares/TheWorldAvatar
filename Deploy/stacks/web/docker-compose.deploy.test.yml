@@ -38,3 +38,8 @@ services:
   uk-power-system:
     ports:
       - 41083:80
+      
+  # CReDo visualisation
+  credo-vis:
+    ports:
+      - 41086:80

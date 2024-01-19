@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
 public class ResourcePathConverter {
@@ -60,7 +60,7 @@ public class ResourcePathConverter {
 
     public static String convertToLocalPath(String path) {
 
-        URI uri = AgentCaller.createURI(path);
+        URI uri = Http.createURI(path);
         String root = KeyValueManager.get("absdir.root");
 //		if ((path.startsWith("C:")) || (!AgentLocator.isJPSRunningForTest())) {
 //			LOGGER.info(path);

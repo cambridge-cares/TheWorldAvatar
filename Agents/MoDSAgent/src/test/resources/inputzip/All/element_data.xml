@@ -1,0 +1,10 @@
+<ctml>
+    <elementData id="element_data" caseSensitive="yes">
+        <element name="AR" atomicWt="39.948"/>
+        <element name="C" atomicWt="12.011"/>
+        <element name="H" atomicWt="1.0079"/>
+        <element name="HE" atomicWt="4.0026"/>
+        <element name="N" atomicWt="14.0067"/>
+        <element name="O" atomicWt="15.9994"/>
+    </elementData>
+</ctml>

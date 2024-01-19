@@ -1,4 +1,4 @@
-"Site location","Reactor type","Number of units","Capacity of 1 unit(MW)","Y coordinate","X coordinate"
+"Site location","Reactor type","Number of units","Capacity of 1 unit(MW)","X coordinate","Y coordinate"
 "s12","t2","2",200.000000,103.719167,1.270333
 "s21","t2","2",200.000000,103.698217,1.263367
 "s15","t2","5",200.000000,103.698900,1.253383

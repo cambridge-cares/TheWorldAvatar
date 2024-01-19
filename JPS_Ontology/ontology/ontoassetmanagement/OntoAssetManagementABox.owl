@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.w3.org/2004/02/skos/core#"
+   xmlns:ns2="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/Laptop">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Laptop</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/DHL">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DHL</rdfs:label>
+    <rdf:type rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/FormalOrganization"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/DeliveryModeMail">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/DeliveryMethod"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DeliveryModeMail</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/LabEquipment">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LabEquipment</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/Workstation">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Workstation</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/Printer">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Printer</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/UnitedParcelService">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnitedParcelService</rdfs:label>
+    <rdf:type rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/FormalOrganization"/>
+    <ns1:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UPS</ns1:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/OtherIT">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OtherIT</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/DeliveryModeFreight">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/DeliveryMethod"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DeliveryModeFreight</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/DeliveryModePickUp">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DeliveryModePickUp</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/DeliveryMethod"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/FederalExpress">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FederalExpress</rdfs:label>
+    <rdf:type rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/FormalOrganization"/>
+    <ns1:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FedEx</ns1:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/DeliveryModeOwnFleet">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DeliveryModeOwnFleet</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/DeliveryMethod"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/Monitor">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/UserDefinedCategory"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monitor</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nfa4cf562b5bc41b3ad641de3e9e1539c">
+    <ns2:imports rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement"/>
+  </rdf:Description>
+</rdf:RDF>

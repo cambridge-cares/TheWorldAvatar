@@ -1,0 +1,20 @@
+{
+    "100": 
+        {
+            "eionet": "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/8",
+            "pollutant": "nitrogen dioxide in air",
+            "unit": "ug.m-3"
+        },
+    "101": 
+        {
+            "eionet": "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/9",
+            "pollutant": "nitrogen oxides in air",
+            "unit": "ug.m-3"
+        },
+    "102": 
+        {
+            "eionet": "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/5",
+            "pollutant": "pm10 in aerosol",
+            "unit": "ug.m-3"
+        }
+}

@@ -63,7 +63,7 @@ import com.cmclinnovations.ontology.model.exception.ABoxManagementException;
 import com.cmclinnovations.ontology.model.utils.ABoxManagementUtils;
 
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
-import uk.ac.cam.cares.jps.blazegraph.KnowledgeRepository;
+import uk.ac.cam.cares.jps.base.upload.KnowledgeRepository;
 
 import org.apache.commons.lang3.text.WordUtils;
 

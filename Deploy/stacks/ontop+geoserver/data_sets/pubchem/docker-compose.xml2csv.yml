@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+
+  xml2csv:
+    image: docker.cmclinnovations.com/xml2csv:0.1.0-SNAPSHOT
+    build:
+      args:
+        PYTHON_VERSION: 3.7.12
+      context: xml2csv
+      labels:
+        authors: "oparry@cmclinnovations, gbrownbridge@cmclinnovations, support@cmclinnovations"
+        description: "Container with the tools required to upload csv, shp, asc and tif files to postgresql databases."
+    container_name: "xml2csv"
+    env_file:
+      - .env
+    security_opt:
+      - label=disable
+    volumes:
+      - ./shared_data:/data/inputs
+

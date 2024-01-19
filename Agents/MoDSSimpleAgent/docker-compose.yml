@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  modssimpleagent:
+    image: ghcr.io/cambridge-cares/modssimpleagent:0.4.0
+    build: .
+    container_name: modssimpleagent
+    environment:
+      DATA_DIR: /app/files
+      CMCL_LICENSE_PATH: "/run/secrets/mods_agent_licence"
+      MODS_SAVE_DIR: "/usr/local/mods-simple-agent/savedsurrogates"
+    ports:
+      - "58085:58085"
+      - "8000:8000"
+    secrets:
+      - mods_agent_licence
+    volumes:
+      - "./savedsurrogates:/usr/local/mods-simple-agent/savedsurrogates/"
+
+# Secrets
+secrets:
+  mods_agent_licence:
+    file: ./secrets/docker-agent-licence.lic

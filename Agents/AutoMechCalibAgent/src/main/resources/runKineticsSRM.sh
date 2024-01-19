@@ -13,3 +13,4 @@ CURRENT_DIR=$PWD
 pushd /home/jb2197/Codes_kinetics/mods-backend/Applications/MoDS/bin/
 ./srm_driver64_20200819build -w $CURRENT_DIR/
 popd
+

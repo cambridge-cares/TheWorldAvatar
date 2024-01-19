@@ -1,17 +1,23 @@
 import logging
 import os
+from typing import Optional
 
-logging.getLogger('py4j').propagate = False
 
-def config_logging(log_file_dir, log_file_name, no_file_logging):
-    if log_file_dir is None: log_file_dir = os.getcwd()
+def config_logging(
+    log_file_dir: Optional[str], log_file_name: str, no_file_logging: bool
+) -> None:
+
+    if log_file_dir is None:
+        log_file_dir = os.getcwd()
     log_file = os.path.join(log_file_dir, log_file_name)
 
-    logHandlers= []
+    logHandlers = []
     logHandlers.append(logging.StreamHandler())
     if not no_file_logging:
-        logHandlers.append(logging.FileHandler(filename=log_file, mode='w'))
+        logHandlers.append(logging.FileHandler(filename=log_file, mode="w"))
 
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s [%(threadName)s] [%(levelname)s] %(message)s',
-                        handlers=logHandlers)
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s [%(threadName)s] [%(levelname)s] %(message)s",
+        handlers=logHandlers,
+    )

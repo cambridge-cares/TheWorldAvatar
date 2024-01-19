@@ -1,0 +1,39 @@
+Source,Type,Target,Relation,Value,Data Type
+ABoxOntoFlood,Ontology,https://www.theworldavatar.com/kg/ontoflood/,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoFlood,Ontology,https://www.theworldavatar.com/kg/ontoflood,base,,
+VeryLowLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/VeryLowLikelihood,,,
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,VeryLowLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Very low likelihood,string
+https://www.theworldavatar.com/kg/ontoflood/hasLikelihoodScore,Data Property,VeryLowLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,1,integer
+LowLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/LowLikelihood,,,
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,LowLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Low likelihood,string
+https://www.theworldavatar.com/kg/ontoflood/hasLikelihoodScore,Data Property,LowLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,2,integer
+MediumLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/MediumLikelihood,,,
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,MediumLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Medium likelihood,string
+https://www.theworldavatar.com/kg/ontoflood/hasLikelihoodScore,Data Property,MediumLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,3,integer
+HighLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/HighLikelihood,,,
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,HighLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,High likelihood,string
+https://www.theworldavatar.com/kg/ontoflood/hasLikelihoodScore,Data Property,HighLikelihood_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,4,integer
+MinimalImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/MinimalImpact,,,
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,MinimalImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Minimal impacts,string
+https://www.theworldavatar.com/kg/ontoflood/hasImpactLevel,Data Property,MinimalImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,1,integer
+MinorImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/MinorImpact,,,
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,MinorImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Minor impacts,string
+https://www.theworldavatar.com/kg/ontoflood/hasImpactLevel,Data Property,MinorImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,2,integer
+SignificantImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/SignificantImpact,,,
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,SignificantImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Significant impacts,string
+https://www.theworldavatar.com/kg/ontoflood/hasImpactLevel,Data Property,SignificantImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,3,integer
+SevereImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/SevereImpact,,,
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,SevereImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Severe impacts,string
+https://www.theworldavatar.com/kg/ontoflood/hasImpactLevel,Data Property,SevereImpact_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,4,integer
+FloodAlert_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/FloodAlert,,,
+https://www.theworldavatar.com/kg/ontoflood/hasSeverityLevel,Data Property,FloodAlert_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,3,integer
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,FloodAlert_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Flood Alert,string
+FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/FloodWarning,,,
+https://www.theworldavatar.com/kg/ontoflood/hasSeverityLevel,Data Property,FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,2,integer
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Flood Warning,string
+SevereFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/SevereFloodWarning,,,
+https://www.theworldavatar.com/kg/ontoflood/hasSeverityLevel,Data Property,SevereFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,1,integer
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,SevereFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Severe Flood Warning,string
+InactiveFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,Instance,https://www.theworldavatar.com/kg/ontoflood/InactiveFloodWarning,,,
+https://www.theworldavatar.com/kg/ontoflood/hasSeverityLevel,Data Property,InactiveFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,4,integer
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,InactiveFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b,,Inactive Flood Warning,string

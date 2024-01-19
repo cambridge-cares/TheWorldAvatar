@@ -4,14 +4,16 @@
 
 	<groupId>com.cmclinnovations</groupId>
 	<artifactId>CMCLOntoChemExp</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>jar</packaging>
 	<name>CMCLOntoChemExp</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 		<rdf4j.version>2.0</rdf4j.version>
+		<!-- Version of the JPS Base Library to use -->
+        <jps.base.version>1.6.0</jps.base.version>
 	</properties>
 
 	<distributionManagement>
@@ -97,11 +99,12 @@
 			<artifactId>CMCLConversionCheck</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>uk.ac.cam.cares.jps</groupId>
-			<artifactId>JPS_BLAZEGRAPH</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
+		<!-- JPS Base Library -->
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps</groupId>
+            <artifactId>jps-base-lib</artifactId>
+            <version>${jps.base.version}</version>
+        </dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
@@ -132,12 +135,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.7.0</version>
 				<configuration>
 					<arg>-verbose</arg>
 					<arg>-Xlint:all,-options,-path, unchecked</arg>
 					<source>1.8</source>
 					<target>1.8</target>
+					<release>8</release>
 					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>

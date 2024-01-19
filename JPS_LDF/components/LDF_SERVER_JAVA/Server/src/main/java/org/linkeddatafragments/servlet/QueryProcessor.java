@@ -13,25 +13,6 @@ public class QueryProcessor {
  
 	// check whether the request is a equation query 
 	public static boolean isOntokinEquationQuery(HttpServletRequest request) {
-		
-		String queryString = request.getQueryString();
-	    String all_names = "";
-		Iterator<String> paraNames = request.getParameterNames().asIterator();
-	    while (paraNames.hasNext()) {
-			String name = paraNames.next();
-			// the condition is: it comes with a predicate: hasEquation, it comes with either the reactants or the products 
-			all_names = all_names + name;
-		}
-	    
-	    if(!(queryString.contains("hasEquation") && all_names.contains("predicate"))) {
-	    	return false;
-	    }
-	    
-	    if(!(all_names.contains("reactants") || all_names.contains("products"))) {
-	    	return false;
-	    }
-
-		
 		return true; 
 	}
 	
@@ -64,13 +45,15 @@ public class QueryProcessor {
         JSONObject result = new JSONObject();
         String ontology = request.getPathInfo().replace("/","");
         result.put("ontology", ontology);
-		String hasEquationQuery = "predicate=" + request.getParameter("predicate");
+		// String hasEquationQuery = "predicate=" + request.getParameter("predicate");
+		String hasEquationQuery = "predicate=http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasEquation";
+
 		if(request.getParameterMap().containsKey("page")) {
 			hasEquationQuery = hasEquationQuery + "&page=" + request.getParameter("page");
 			result.put("page",  request.getParameter("page"));
 		}
 		
-        
+
         result.put("hasEquationQuery", hasEquationQuery);
         if (request.getParameter("products") != null) {
             String[] products = request.getParameterValues("products");

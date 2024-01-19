@@ -1,0 +1,89 @@
+{
+    "Empirical_Formula": "C2H6",
+    "Atom_Total_Counts": [
+        2,
+        6
+    ],
+    "Atom_List": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atom_Masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Elements": [
+        "C",
+        "H"
+    ],
+    "Level_of_Theory": "RB3LYP",
+    "Basis_Set": "6-31G(d)",
+    "Spin_Multiplicity": 1,
+    "Total_Charge": 0,
+    "Geometry_Type": "nonlinear",
+    "X_Atoms_Coordinates": [
+        0.81537,
+        -0.81537,
+        -1.193012,
+        -1.193018,
+        -1.193057,
+        1.193057,
+        1.193018,
+        1.193012
+    ],
+    "Y_Atoms_Coordinates": [
+        1.5e-05,
+        -1.5e-05,
+        0.195452,
+        0.775303,
+        -0.970777,
+        0.970777,
+        -0.775303,
+        -0.195452
+    ],
+    "Z_Atoms_Coordinates": [
+        -1.4e-05,
+        1.4e-05,
+        -1.008079,
+        0.673321,
+        0.334764,
+        -0.334764,
+        -0.673321,
+        1.008079
+    ],
+    "Rotational_Constants_String": "79.2600076 18.2114267 18.211344",
+    "Rotational_Constants_Number": 3,
+    "Rotational_Symmetry_Number": null,
+    "Frequencies_String": null,
+    "Frequencies_Number": null,
+    "Electronic_Energy": -79.8263566552,
+    "Electronic_And_ZPE_Energy": null,
+    "ZPE_Energy": null,
+    "Homo_Energy": -0.34257,
+    "Homo-1_Energy": -0.3491,
+    "Homo-2_Energy": -0.3491,
+    "Lumo_Energy": 0.1048,
+    "Lumo+1_Energy": 0.14823,
+    "Lumo+2_Energy": 0.17039,
+    "Program_Name": "Gaussian",
+    "Program_Version": "2009+D.01",
+    "Run_Date": "Wed May 26 17:24:33 2021",
+    "Log_File_Name": "ethane_mod.log",
+    "Species_IRI": "test_species_iri",
+    "Entry_IRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_test_id",
+    "PNG_Source_Location": null,
+    "CCLOG_Source_Location": null,
+    "Entry_ID": "test_id"
+}

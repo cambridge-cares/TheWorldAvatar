@@ -1,13 +1,17 @@
-from stdc.kgoperations.javagateway import jpsBaseLibGW
-import json
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 
-jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+def querykg(sparqlEndPoint=None, queryStr=None):   
+    sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/" + sparqlEndPoint + "/sparql")
+    sparql.setQuery(queryStr)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    results = results['results']['bindings']
 
-def querykg(sparqlEndPoint=None, queryStr=None):
-    # perform an example sparqle query, see the jps-base-lib docs for further details
-    StoreRouter = jpsBaseLib_view.StoreRouter
-    StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
-    response = json.loads(str(StoreClient.executeQuery(queryStr)))
-    return response
+    for res in results:
+        for key in res:
+            if(isinstance(res[key], dict)):
+                res[key] = res[key]['value']
+
+    return results
+        

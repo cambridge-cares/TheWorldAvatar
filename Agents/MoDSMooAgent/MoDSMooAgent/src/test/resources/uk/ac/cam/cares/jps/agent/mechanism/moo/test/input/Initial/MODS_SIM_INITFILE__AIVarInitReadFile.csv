@@ -1,0 +1,2 @@
+Case names,c,v,mn,cu,pyro_bp2_temp_max,blooming_duration,flitzer_duration,tandem_duration,blooming_total_passes,furnace_to_blooming_time,blooming_to_flitzer_time,qst_coefficient_set_number,qst_entry_temp_estimate,qst_water_temp_entry,qst_duration,qst_flow_rate_total
+CaseGroup_Case,0.07775,0.0234,0.88245,0.31455,1142.0,239.5,138.5,540.0,11.0,77.5,88.0,50.55,834.5,25.65,130.0,1366.5

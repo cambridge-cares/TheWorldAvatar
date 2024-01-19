@@ -1,1 +1,3 @@
 pytest
+pytest-docker-compose
+pytest-html

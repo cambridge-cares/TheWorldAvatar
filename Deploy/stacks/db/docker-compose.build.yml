@@ -8,12 +8,11 @@
 
 version: "3.8"
 
-
 services:
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/blazegraph:1.1.0
     build:
       context: blazegraph
       labels:
@@ -31,6 +30,19 @@ services:
         authors: "msff2@cam.ac.uk, support@cmclinnovations"
         builder: "${BUILDER}"
         description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
+        hash: "${HASH}"
+
+  # File server
+  fileserver:
+    image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
+    build:
+      args:
+        mvn_profile: ${MODE}-profile
+      context: fileserver
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Tomcat servlet designed to simplify the storage and retrieval of files referenced in the knowledge graph."
         hash: "${HASH}"
 
   # RDF4J

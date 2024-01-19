@@ -1,0 +1,11 @@
+Source,Type,Target,Relation,Value,Data Type
+ABoxOntoEMS,Ontology,https://www.theworldavatar.com/kg/ontoems,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoEMS,Ontology,https://www.theworldavatar.com/kg/ontoems,base,,
+NormalRange_4f10fa30-bfde-4453-9749-8f681be7ecf9,Instance,https://www.theworldavatar.com/kg/ontoems/NormalRange,,,
+LowRange_bf14516e-a4b3-45de-ab39-39a21b90487a,Instance,https://www.theworldavatar.com/kg/ontoems/LowRange,,,
+HighRange_34ee3729-c78e-46c1-8a55-49e3c764a8f3,Instance,https://www.theworldavatar.com/kg/ontoems/HighRange,,,
+UnavailableRange_941b7f1a-4c44-4ae8-bc9d-22108cd74a8d,Instance,https://www.theworldavatar.com/kg/ontoems/UnavailableRange,,,
+Steady_de13a159-f00f-47a6-970c-233afed8775f,Instance,https://www.theworldavatar.com/kg/ontoems/Steady,,,
+Rising_4e48e74d-ec54-4a35-844e-900f146ecf60,Instance,https://www.theworldavatar.com/kg/ontoems/Rising,,,
+Falling_4484ba6b-d47b-4e76-9ede-35023b1c0f33,Instance,https://www.theworldavatar.com/kg/ontoems/Falling,,,
+UnavailableRange_bb272fe4-d841-40b8-98d9-d3df78870e99,Instance,https://www.theworldavatar.com/kg/ontoems/UnavailableRange,,,

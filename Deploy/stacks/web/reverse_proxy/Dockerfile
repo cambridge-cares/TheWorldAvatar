@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y cron procps
 # Install python3
 RUN apt-get update && apt-get install -y python3
 
+# Install password creation utility
+RUN apt-get update && apt-get install -y apache2-utils
+
 # Add the contents of conf.d
 ADD conf.d /etc/nginx/conf.d/
 
@@ -25,6 +28,14 @@ RUN chmod 755 /etc/cron.daily/parse-logs
 # Add python script
 COPY log-parser.py /usr/local/log-parser.py
 RUN chmod 777 /usr/local/log-parser.py
+
+# Create 'credo-user' account (currently disabled)
+#COPY credentials/* /usr/local/
+#COPY setup-credo.sh /usr/local/setup-credo.sh
+#RUN chmod 755 /usr/local/setup-credo.sh
+#RUN /usr/local/setup-credo.sh
+
+RUN mkdir -p /var/www/certbot/.well-known
 
 # Run both nginx and cron together on boot
 CMD [ "sh", "-c", "cron && nginx -g 'daemon off;'" ]

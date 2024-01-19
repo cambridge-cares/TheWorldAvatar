@@ -1,37 +1,77 @@
---INSTALLATION--
-1) Create a virtual environment in python for use with the parser. This can be done easily using conda/Anaconda.
-2) Open a command prompt with python. 
-3) Activate the virtual environment that you want to store the parser code in. 
-4) Change directory to thermochemistry/CoMoCompChemParser   
-5) Run "pip install -e ." (This installs the code in develop version so your changes will be linked) 
-6) Hope that all the necessary packages install successfully. 
+# Description
 
---RUNNING THE TESTS-- 
-1) Change director into the 'tests' folder (or point the path to the test_gaussian.py script, either will work).
-2) Run "python -m unittest test_gaussian.py" 
-3) Let the tests run. If the tests run sucessfully you will see "Ran 1 test in 5.899 s" and "OK" - the actual time may be different.
-4) The test should check the parsing of a variety of Gaussian log files - 16 in total consisting of different job types, 
-   print directives, and log file structures, generate JSON files for each of these logs and compare them to the reference JSON files. 
-5) If the tests passed - all good. 
-6) If you delete the reference JSON files, you will need to re-generate them to run the comparison test. 
-   Uncomment lines 45 and 46 in test_gaussian.py to generate the files, but remember to comment them back out when checking new changes.
+The `compchemparser` package provides parsers to convert quantum chemistry log files into a more condensed JSON format. At the moment, only one parser for Gaussian log files is implemented.
 
---PARSING A LOG FILE-- 
-1) Simply run "ccparse -f PATH/LOGFILENAME.log" to parse the log file. If successful, you will see "finished!" message. 
-   Note that you should be able to run this command from anywhere and it should work as long as the virtual environment
-   with the parser is active.  
-2) You can also generate a JSON file for the log, although this has been left as optional 
-   (as we want to upload the info to the knowledge graph directly after parsing). To do this, 
-   use the -j option: "ccparse -f PATH/LOGFILENAME.log -j True". This will generate JSON file(s) with LOGFILENAME.json 
-   or in the case of a log file containing multiple jobs LOGFILENAME#1.json,LOGFILENAME#2.json ... LOGFILENAME#N.json
-   with #N being the number of linked jobs in the log file. 
+# Installation
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
---EDITING--
-1) With the -e option specified in installation, the code should be linked in develop, and so changes you make should be 
-   active without the need to re-install. 
-2) The exception is if you change the main.py file. In this case, you will most likely have to run "pip uninstall" to remove the parser 
-   and then re-run "pip install -e ." to update the changes.   
-   
- 
+## Virtual environment setup
 
- 
+It is highly recommended to use a [virtual environment](https://docs.python.org/3/tutorial/venv.html) for the `compchemparser` installation. The virtual environment can be created as follows:
+
+`(Windows)`
+
+```cmd
+$ python -m venv <your_venv>
+$ your_venv\Scripts\activate.bat
+(your_venv) $
+```
+
+`(Linux)`
+```sh
+$ python3 -m venv <your_venv>
+$ source your_venv/bin/activate
+(your_venv) $
+```
+
+The above commands will create and activate the virtual environment `your_venv` in the current directory.
+
+## Installation via pip
+
+To install the `compchemparser` simply run the following command:
+
+```sh
+(your_venv) $ python -m pip install compchemparser
+```
+
+## Installation from the version-controlled source (for developers)
+
+This type of installation is only for the developers. To install `compchemparser` directly from its repository you need to first clone the `TheWorldAvatar` project. Then simply navigate to the *TheWorldAvatar\thermo\CoMoCompChemParser* directory and execute the following commands:
+
+```bash
+# build and install
+(your_venv) $ python -m pip install .
+
+# or build for in-place development
+(your_venv) $ python -m pip install -e .
+```
+
+Alternatively, use the provided `install_script_pip.sh` or `install_script_conda.sh` convenience scripts, that can create virtual environment and install the `compchemparser` in one go:
+
+```bash
+# create the environment and install the project
+$ install_script_pip.sh -v -i
+# create the environment and install the project for in-place development
+$ install_script_pip.sh -v -i -e
+```
+
+Note that installing the project for in-place development (setting the `-e` flag) also installs the required python packages for development and testing. To test the code, simply run the following commands:
+
+```bash
+(your_venv) $ pytest tests
+```
+
+# How to use
+
+```bash
+Usage:
+    ccparse <logFileOrDir> [-n --logExt=<LOG_EXT>]
+
+Options:
+    -n                    Suppress parser command output files (json and csv)
+    --logExt=<LOG_EXT>    Log files file extension for log file directory input [default: .log]
+```
+
+# Authors
+Daniel Nurkowski (danieln@cmclinnovations.com)
+Angiras Menon

@@ -1,0 +1,65 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoUBEMMP,TBox,https://www.theworldavatar.com/kg/ontoubemmp/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoUBEMMP,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoUBEMMP,TBox,Ontology for urban building energy modelling (UBEM) and master planning (MP) data,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoUBEMMP,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+PVPanel,Class,SolarDevice,IS-A,,,,Photovoltaic panel: converts solar radiation into usable electrical energy,https://www.theworldavatar.com/kg/ontoubemmp/,PV panel
+PVPanelArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,The area of a photovoltaic panel,https://www.theworldavatar.com/kg/ontoubemmp/,PV panel area
+EnergySupply,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Energy,IS-A,,,,The amount of energy produced by an energy generating facility or device,https://www.theworldavatar.com/kg/ontoubemmp/,Energy supply
+EnergyConsumption,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Energy,IS-A,,,,The amount of energy consumed by an energy consuming facility,https://www.theworldavatar.com/kg/ontoubemmp/,Energy consumption
+EnergyConsumption,Class,UtilitiesConsumption,IS-A,,,,The amount of energy consumed by an energy consuming facility,https://www.theworldavatar.com/kg/ontoubemmp/,Energy consumption
+ElectricitySupply,Class,EnergySupply,IS-A,,,,The amount of electricity energy produced,https://www.theworldavatar.com/kg/ontoubemmp/,Electricity supply
+AnnualElectricitySupply,Class,ElectricitySupply,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual electricity supply
+ElectricityConsumption,Class,EnergyConsumption,IS-A,,,,The amount of electricity consumed by appliances and lighting,https://www.theworldavatar.com/kg/ontoubemmp/,Electricity consumption
+AnnualElectricityConsumption,Class,ElectricityConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual electricity consumption
+ThermalConsumption,Class,EnergyConsumption,IS-A,,,,The amount of thermal energy consumed by a heating/cooling system,https://www.theworldavatar.com/kg/ontoubemmp/,Thermal consumption
+AnnualThermalConsumption,Class,ThermalConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual thermal consumption
+CoolingConsumption,Class,ThermalConsumption,IS-A,,,,The amount of thermal energy consumed by a cooling system,https://www.theworldavatar.com/kg/ontoubemmp/,Cooling consumption
+AnnualCoolingConsumption,Class,CoolingConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual cooling consumption
+AnnualCoolingConsumption,Class,AnnualThermalConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual cooling consumption
+HeatingConsumption,Class,ThermalConsumption,IS-A,,,,The amount of thermal energy consumed by a heating system,https://www.theworldavatar.com/kg/ontoubemmp/,Heating consumption
+AnnualHeatingConsumption,Class,HeatingConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual heating consumption
+AnnualHeatingConsumption,Class,AnnualThermalConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual heating consumption
+GridConsumption,Class,EnergyConsumption,IS-A,,,,The total grid electricity energy consumption,https://www.theworldavatar.com/kg/ontoubemmp/,Grid consumption
+AnnualGridConsumption,Class,GridConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual grid consumption
+consumesEnergy,Object Property,,,https://www.theworldavatar.com/kg/ontodevice/Device UNION https://w3id.org/bot#Zone UNION http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,EnergyConsumption,,"A relationship between a device, zone or technical system and its consumed energy",https://www.theworldavatar.com/kg/ontoubemmp/,consumes energy
+producesEnergy,Object Property,,,SolarDevice,EnergySupply,,A relationship that links the solar device to the energy it produces,https://www.theworldavatar.com/kg/ontoubemmp/,produces energy
+hasArea,Object Property,,,https://www.theworldavatar.com/kg/ontodevice/Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,,https://www.theworldavatar.com/kg/ontoubemmp/,has area
+SolarCollector,Class,SolarDevice,IS-A,,,,Solar collector: converts solar radiation into usable thermal energy,https://www.theworldavatar.com/kg/ontoubemmp/,Solar collector
+SolarCollectorArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,The area of a solar collector,https://www.theworldavatar.com/kg/ontoubemmp/,Solar collector area
+PVTCollector,Class,SolarDevice,IS-A,,,,Photovoltaic thermal hybrid solar collector: converts solar radiation into usable thermal and electrical energy,https://www.theworldavatar.com/kg/ontoubemmp/,PVT collector
+PVTCollectorArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,The area of a photovoltaic thermal collector,https://www.theworldavatar.com/kg/ontoubemmp/,PVT collector area
+UtilitiesConsumption,Class,,,,,,The amount of utilities consumed by a facility,https://www.theworldavatar.com/kg/ontoubemmp/,Utilities consumption
+OilConsumption,Class,UtilitiesConsumption,IS-A,,,,The amount of oil consumed by a facility,https://www.theworldavatar.com/kg/ontoubemmp/,Oil consumption
+OilConsumption,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Volume,IS-A,,,,The amount of oil consumed by a facility,https://www.theworldavatar.com/kg/ontoubemmp/,Oil consumption
+AnnualOilConsumption,Class,OilConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual oil consumption
+GasConsumption,Class,UtilitiesConsumption,IS-A,,,,The amount of gas consumed by a facility,https://www.theworldavatar.com/kg/ontoubemmp/,Gas consumption
+GasConsumption,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Volume,IS-A,,,,The amount of gas consumed by a facility,https://www.theworldavatar.com/kg/ontoubemmp/,Gas consumption
+AnnualGasConsumption,Class,GasConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual gas consumption
+WaterConsumption,Class,UtilitiesConsumption,IS-A,,,,The amount of water consumed by an water consuming facility,https://www.theworldavatar.com/kg/ontoubemmp/,Water consumption
+WaterConsumption,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Volume,IS-A,,,,The amount of water consumed by an water consuming facility,https://www.theworldavatar.com/kg/ontoubemmp/,Water consumption
+AnnualWaterConsumption,Class,WaterConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual water consumption
+HeatSupply,Class,EnergySupply,IS-A,,,,The amount of heat energy produced,https://www.theworldavatar.com/kg/ontoubemmp/,Heat supply
+AnnualHeatSupply,Class,HeatSupply,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual heat supply
+consumesUtilities,Object Property,,,https://w3id.org/bot#Zone,UtilitiesConsumption,,A relationship between a facility and its consumed utilities,https://www.theworldavatar.com/kg/ontoubemmp/,consumes utilities
+Radabshz,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Average solar radiation energy on a suitable roof area during a year. Minor shading on the surface is taken into account.,https://www.theworldavatar.com/kg/ontoubemmp/,Radabshz
+SolarIrradiation,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,"Energy received from solar radation incident on an area, over a time period",https://www.theworldavatar.com/kg/ontoubemmp/,Solar irradiation
+AnnualSolarIrradiation,Class,SolarIrradiation,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual solar irradiation
+CO2Savings,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Volume,IS-A,,,,The amount of carbon dioxide savings a device could produce,https://www.theworldavatar.com/kg/ontoubemmp/,CO2 savings
+AnnualCO2Savings,Class,CO2Savings,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,Annual CO2 savings
+ThermalPlateCollector,Class,SolarCollector,IS-A,,,,Plate solar collector,https://www.theworldavatar.com/kg/ontoubemmp/,Thermal plate collector
+ThermalPlateCollectorArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,The area of a thermal plate collector,https://www.theworldavatar.com/kg/ontoubemmp/,Thermal plate collector area
+ThermalTubeCollector,Class,SolarCollector,IS-A,,,,Tube solar collector,https://www.theworldavatar.com/kg/ontoubemmp/,Thermal tube collector
+ThermalTubeCollectorArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,The area of a thermal tube collector,https://www.theworldavatar.com/kg/ontoubemmp/,Thermal tube collector area
+SolarDevice,Class,https://www.theworldavatar.com/kg/ontodevice/Device,IS-A,,,,An energy generator that converts solar radiation into usable energy.,https://www.theworldavatar.com/kg/ontoubemmp/,Solar device
+hasPeakPower,Object Property,,,PVPanel UNION PVTCollector,http://www.ontology-of-units-of-measure.org/resource/om-2/Power,,A relationship between an electricity generating device and the peak power it can generate,https://www.theworldavatar.com/kg/ontoubemmp/,has peak power
+hasSpecificYield,Object Property,,,PVPanel UNION PVTCollector,http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificYield,,"A relationship between a solar device capable of generating electricity and its specific yield, which is given by dividing the amount of energy generated by the device's peak power over the course of a year",https://www.theworldavatar.com/kg/ontoubemmp/,has specific yield
+producesCO2Savings,Object Property,,,SolarDevice,CO2Savings,,A relationship between an energy generating device and the amount of carbond dioxide that it could save,https://www.theworldavatar.com/kg/ontoubemmp/,produces CO2 savings
+receivesRadiation,Object Property,,,https://w3id.org/bot#Building UNION SolarDevice UNION https://www.theworldavatar.com/kg/ontobuildingstructure/Roof UNION https://www.theworldavatar.com/kg/ontobuildingstructure/Wall,SolarIrradiation UNION Radabshz,,A relationship between a device or a building and the radiation that it receives,https://www.theworldavatar.com/kg/ontoubemmp/,receives radiation
+hasCalculationBasis,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,string,,A relationship between a measure and a string containing information on how the measure was calculated,https://www.theworldavatar.com/kg/ontoubemmp/,has calculation basis
+PVTPlateCollector,Class,PVTCollector,IS-A,,,,Photovoltaic thermal hybrid solar collector with thermal plate collector,https://www.theworldavatar.com/kg/ontoubemmp/,PVT plate collector
+PVTPlateCollectorArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,The total area of photovoltaic thermal collectors with thermal plate collectors,https://www.theworldavatar.com/kg/ontoubemmp/,PVT plate collector area
+PVTTubeCollector,Class,PVTCollector,IS-A,,,,Photovoltaic thermal hybrid solar collector with thermal tube collector,https://www.theworldavatar.com/kg/ontoubemmp/,PVT tube collector
+PVTTubeCollectorArea,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,IS-A,,,,The total area of photovoltaic thermal collectors with thermal tube collectors,https://www.theworldavatar.com/kg/ontoubemmp/,PVT tube collector area
+hasSolarSuitableArea,Object Property,,,https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade UNION https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,A relationship linking the building's roof or wall facade with their area that is suitable for receiving solar energy.,https://www.theworldavatar.com/kg/ontoubemmp/,has solar suitable area
+hasTheoreticalEnergyProduction,Object Property,,,https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade UNION https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade,SolarDevice,,A relationship linking the building's roof or wall facade to their theoretical energy produced from a specified solar device. Energy production is dependent on  both the solar device type and solar suitable area available.,https://www.theworldavatar.com/kg/ontoubemmp/,has theoretical energy production

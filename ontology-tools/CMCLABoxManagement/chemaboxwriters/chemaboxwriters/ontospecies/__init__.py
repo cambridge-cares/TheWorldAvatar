@@ -1,2 +1,3 @@
-from chemaboxwriters.ontospecies.pipeline import assemble_os_pipeline
-from chemaboxwriters.ontospecies.writeabox import write_abox
+import pkg_resources
+
+OS_SCHEMA = pkg_resources.resource_filename(__name__, "os_schema.yml")

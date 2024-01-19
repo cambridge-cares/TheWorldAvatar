@@ -1,0 +1,22 @@
+__pycache__/
+.mypy_cache/
+.pytest_cache
+*.egg-info
+build/
+dist/
+*~*
+.idea/
+*venv/
+coverage.xml
+.coverage
+*.gv
+*.png
+assets
+
+## Directories
+data/*
+!.gitkeep
+
+## Celery beat schedule
+**/dump.rdb
+**/celerybeat-schedule
