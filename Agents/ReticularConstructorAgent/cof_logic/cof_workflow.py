@@ -177,7 +177,9 @@ class COFProcessor:
 
         if assembly_model in list_3_assembly_models:
             if linkage in lfr_set_2:    
-                sbu_names = [linkage]               
+                sbu_names = [linkage]  
+            elif linkage in lfr_set_4:
+                pass         
             elif linkage in lfr_set_3: 
                 supplementary_sbu = 'dum_dum'
                 sbu_names.append(supplementary_sbu)
@@ -210,6 +212,18 @@ class COFProcessor:
                 #supplementary_sbu = 'dum_dum'
                 #sbu_names.append(supplementary_sbu)
                 # Create an instance of SubunitOperations and get the result
+
+        if assembly_model in list_3_assembly_models:
+            if linkage in lfr_set_4:
+                print(sbu_names)
+                subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
+                subunit_result = subunit_operations.process()  # Assuming process() returns a string
+                # Replace the first element in sbu_names with the result
+                sbu_names[0] = subunit_result
+                supplementary_sbu = 'dum_dum'
+                sbu_names.append(supplementary_sbu)
+            else:
+                pass
 
         print('---------LOOK HERE----------')
         print(sbu_names)
