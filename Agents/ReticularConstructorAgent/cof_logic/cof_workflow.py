@@ -160,12 +160,13 @@ class COFProcessor:
                                   'hcb-[(3-planar)x2(2-linear)x3(L:2-linear)x6]n',
                                   'hcb-[(3-pyramidal)x2(2-linear)x3(L:2-linear)x6]n',
                                   'kgm-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n',
-                                  'sql-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n'] 
+                                  'sql-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n',
+                                  'bor-[(4-tetrahedral)x3(3-planar)x4(L:2-linear)x12]n'] 
         list_3_assembly_models = ['hcb-[(3-planar)x1(3-planar)x1(L:2-linear)x3]n']                   
         lfr_set_1 = ['LFR-20','LFR-21'] #symmetrical building unit
         lfr_set_2 = ['LFR-10'] #symmetrical building unit, carbon carbon
         lfr_set_3 = ['LFR-6','LFR-12','LFR-13'] #single bond
-        lfr_set_4 = ['LFR-3']
+        lfr_set_4 = ['LFR-3', 'LFR-8', 'LFR-1', 'LFR-7']
         
         if assembly_model in list_1_assembly_models:
             sbu_names = [linkage]
@@ -203,16 +204,19 @@ class COFProcessor:
 
         if assembly_model in list_2_assembly_models:
             if linkage in lfr_set_3:
-                pass
-            else:
+                pass             
+            elif linkage in lfr_set_4:
+            #    print(sbu_names)
                 subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
                 subunit_result = subunit_operations.process()  # Assuming process() returns a string
                 # Replace the first element in sbu_names with the result
                 sbu_names[0] = subunit_result
-                #supplementary_sbu = 'dum_dum'
-                #sbu_names.append(supplementary_sbu)
-                # Create an instance of SubunitOperations and get the result
-
+                supplementary_sbu = 'dum_dum'
+                sbu_names.append(supplementary_sbu)
+            #    sbu_names[1], sbu_names[2] = sbu_names[2], sbu_names[1]
+            else:
+                pass    
+            
         if assembly_model in list_3_assembly_models:
             if linkage in lfr_set_4:
                 print(sbu_names)
@@ -222,6 +226,7 @@ class COFProcessor:
                 sbu_names[0] = subunit_result
                 supplementary_sbu = 'dum_dum'
                 sbu_names.append(supplementary_sbu)
+                
             else:
                 pass
 

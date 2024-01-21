@@ -82,7 +82,73 @@ class SubunitBuilder:
 
         return lfr_atoms
 
+    def find_bs_and_update(self, json_file_path, ref_atom_uuid, ref_atom_data, bs_type, core_json_path):
+        target_atoms_scenario_1 = {
+            "MDNH2": "N", "MDCO": "C", "NHOH": "N", "C3X3CH3": "C",
+            "CCN": "C", "ter-C": "C", "CO2R": "C", "MDOH": "O",
+            "MDCOCl": "C", "CNRC": "N", "BDBOH": "B", 
+        }
+        target_atoms_scenario_2 = {
+            "BDNH2": [["N","N"]],"BDO": [["N","N"],["O","O"]],"BDOH": [["N","N"],["O","O"]] 
+            }
 
+        try:
+            if bs_type in target_atoms_scenario_1:
+                target_atom = self.target_atoms_scenario_1[bs_type]
+                self.process_scenario_1(json_file_path, ref_atom_uuid, ref_atom_data, target_atom)
+            elif bs_type in target_atoms_scenario_2:
+                target_atoms = target_atoms_scenario_2[bs_type]
+                self.process_scenario_2(json_file_path, ref_atom_uuid, ref_atom_data, target_atoms, core_json_path)
+            
+            else:
+                logging.warning(f"Unsupported bs_type: {bs_type}")
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+
+    def process_scenario_1(self, json_file_path, ref_atom_uuid, ref_atom_data, target_atom):
+        lfr_atoms = self.read_json_file(json_file_path)
+        x_atom_uuid_to_remove, target_atom_uuid, x_outer_uuid = self.find_target_atom(lfr_atoms, target_atom)
+
+        if x_atom_uuid_to_remove and target_atom_uuid:
+            self.process_atoms(lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove)
+            self.write_json_file(json_file_path, lfr_atoms)
+            logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
+        else:
+            logging.wa#rning("Required atoms not found.")
+
+    def process_scenario_2(self, json_file_path, ref_atom_uuid, ref_atom_data, target_atoms, core_json_path):
+        for target_atom_pair in target_atoms:
+            try:
+                target_atom_1, target_atom_2 = target_atom_pair
+                print("Processing with target atoms:", target_atom_1, target_atom_2)
+
+                neighboor_atoms = self.find_neigboors(core_json_path, ref_atom_uuid)
+                lfr_atoms = self.read_json_file(json_file_path)
+
+                # Find target atoms
+                x_atom_uuid_to_remove, target_atom_uuid_1, target_atom_uuid_2, x_outer_uuid = self.find_target_atoms(lfr_atoms, target_atom_1, target_atom_2)
+                print('TARGET ATOM UUID1:', target_atom_uuid_1)
+                print('TARGET ATOM UUID2:', target_atom_uuid_2)
+
+                # Process if all required atoms are found
+                if x_atom_uuid_to_remove is not None and target_atom_uuid_1 is not None and target_atom_uuid_2 is not None:
+                    self.process_atoms_2(lfr_atoms, target_atom_uuid_1, target_atom_uuid_2, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove, neighboor_atoms, core_json_path)
+                    self.write_json_file(json_file_path, lfr_atoms)
+                    logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
+                    break  # Exit loop if processing is successful
+                else:
+                    logging.warning("Required atoms not found for current pair, trying next pair if available.")
+
+            except Exception as e:
+                logging.error(f"An error occurred with pair {target_atom_1}, {target_atom_2}: {e}")
+                # Continue to the next pair
+          
+    def process_atoms_2(self, lfr_atoms, target_atom_uuid_1, target_atom_uuid_2, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove, neighboor_atoms, core_json_path):
+
+        lfr_atoms = self.substitute_atom_properties_2(lfr_atoms, x_atom_uuid_to_remove, ref_atom_data, x_outer_uuid, target_atom_uuid_1, target_atom_uuid_2, neighboor_atoms, core_json_path, ref_atom_uuid)
+        
+        return lfr_atoms  
+    
     def substitute_atom_properties_2(self, lfr_atoms, x_atom_uuid_to_remove, reference_atom_data, x_outer_uuid, target_atom_uuid_1, target_atom_uuid_2, neighboor_atoms, core_json_path, ref_atom_uuid):
         # 1. Shift all atoms to maintain relative positions
 
@@ -118,7 +184,6 @@ class SubunitBuilder:
         target_vector = new_coordinates - np.array([0, 0, 0])
         rotation_matrix = self.rotation_matrix_from_vectors(original_vector, target_vector)
 
-        
         # 3. Rotate all atoms except the target_atom
         for uuid, atom_data in lfr_atoms.items():
             if uuid != x_atom_uuid_to_remove:  # Exclude only the x_atom_uuid_to_remove
@@ -140,7 +205,6 @@ class SubunitBuilder:
                 new_bond['to_atom'] = x_atom_uuid_to_remove
                 lfr_atoms[x_atom_uuid_to_remove]['bond'].append(new_bond)
 
-
         # Remove ref_atom_uuid from core_atoms
         if ref_atom_uuid in core_atoms:
             del core_atoms[ref_atom_uuid]
@@ -149,7 +213,6 @@ class SubunitBuilder:
         for atom_data in core_atoms.values():
             if 'bond' in atom_data:
                 atom_data['bond'] = [bond for bond in atom_data['bond'] if bond['to_atom'] != ref_atom_uuid]
-
 
         def euclidean_distance(coord1, coord2):
             return np.sqrt(np.sum((np.array(coord1) - np.array(coord2))**2))
@@ -191,6 +254,129 @@ class SubunitBuilder:
             if 'bond' in atom_data:
                 atom_data['bond'] = [bond for bond in atom_data['bond'] if bond['to_atom'] != ref_atom_uuid]
 
+        # Remove x_atom_uuid_to_remove from core_atoms
+        if x_atom_uuid_to_remove in lfr_atoms:
+            del lfr_atoms[x_atom_uuid_to_remove]
+
+        # Update bonding information in other atoms
+        for atom_data in lfr_atoms.values():
+            if 'bond' in atom_data:
+                atom_data['bond'] = [bond for bond in atom_data['bond'] if bond['to_atom'] != x_atom_uuid_to_remove]
+  
+        self.write_json_file(core_json_path, core_atoms)
+        
+        return lfr_atoms
+    
+
+
+    def process_scenario_3(self, json_file_path, ref_atom_uuid, ref_atom_data, target_atom, core_json_path):
+
+       #print(target_atom_1)
+        neighboor_atoms = self.find_neigboors(core_json_path, ref_atom_uuid)
+        
+        #print(neighboor_atoms)
+        lfr_atoms = self.read_json_file(json_file_path)
+
+        x_atom_uuid_to_remove, target_atom_uuid, target_atom_uuid_2, x_outer_uuid = self.find_target_atom(lfr_atoms, target_atom)
+
+        #TO DO: in in the line below we have target_atom_uuid again,  which should be two atoms, if they exist 
+        if x_atom_uuid_to_remove is not None and target_atom_uuid is not None:
+            # To Do: the process function considers two target atoms basically on each site, this requires other functions to change
+            self.process_atoms_3(lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove, neighboor_atoms, core_json_path)
+            self.write_json_file(json_file_path, lfr_atoms)
+            
+            core_json_path
+            logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
+        else:
+            logging.warning("Required atoms not found.")
+          
+    def process_atoms_3(self, lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove, neighboor_atoms, core_json_path):
+
+        lfr_atoms = self.substitute_atom_properties_3(lfr_atoms, x_atom_uuid_to_remove, ref_atom_data, x_outer_uuid, target_atom_uuid, neighboor_atoms, core_json_path, ref_atom_uuid)
+        
+        return lfr_atoms  
+    
+    def substitute_atom_properties_3(self, lfr_atoms, x_atom_uuid_to_remove, reference_atom_data, x_outer_uuid, target_atom_uuid, neighboor_atoms, core_json_path, ref_atom_uuid):
+        # 1. Shift all atoms to maintain relative positions
+
+        neighboor__atom_uuid_1 = neighboor_atoms[0]
+        neighboor__atom_uuid_2 = neighboor_atoms[1]
+        core_atoms = self.read_json_file(core_json_path)
+
+        old_coordinates = np.array([
+            lfr_atoms[x_atom_uuid_to_remove]['coordinate_x'],
+            lfr_atoms[x_atom_uuid_to_remove]['coordinate_y'],
+            lfr_atoms[x_atom_uuid_to_remove]['coordinate_z']
+        ])
+        new_coordinates = np.array([
+            reference_atom_data['coordinate_x'],
+            reference_atom_data['coordinate_y'],
+            reference_atom_data['coordinate_z']
+        ])
+        shift = new_coordinates - old_coordinates
+        
+        for uuid, atom_data in lfr_atoms.items():
+            atom_data['coordinate_x'] += shift[0]
+            atom_data['coordinate_y'] += shift[1]
+            atom_data['coordinate_z'] += shift[2]
+
+        # 2. Compute the rotation to align x_outer_uuid with the center 000 and target_atom
+
+        original_vector = np.array([
+            lfr_atoms[x_outer_uuid]['coordinate_x'] - reference_atom_data['coordinate_x'],
+            lfr_atoms[x_outer_uuid]['coordinate_y'] - reference_atom_data['coordinate_y'],
+            lfr_atoms[x_outer_uuid]['coordinate_z'] - reference_atom_data['coordinate_z']
+        ])
+        
+        target_vector = new_coordinates - np.array([0, 0, 0])
+        rotation_matrix = self.rotation_matrix_from_vectors(original_vector, target_vector)
+
+        # 3. Rotate all atoms except the target_atom
+        for uuid, atom_data in lfr_atoms.items():
+            if uuid != x_atom_uuid_to_remove:  # Exclude only the x_atom_uuid_to_remove
+                atom_coords = np.array([atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']])
+                rotated_coords = rotation_matrix.dot(atom_coords - new_coordinates) + new_coordinates
+                atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z'] = rotated_coords
+        
+        # 4. Substitute the properties of the target atom with those of the reference atom
+        for key, value in reference_atom_data.items():
+            if key not in ['atom', 'uuid', 'bond']:
+                lfr_atoms[x_atom_uuid_to_remove][key] = value
+        
+        # 5. Save/update the bonds
+        if 'bond' in reference_atom_data:
+            if 'bond' not in lfr_atoms[x_atom_uuid_to_remove]:
+                lfr_atoms[x_atom_uuid_to_remove]['bond'] = []
+            for bond in reference_atom_data['bond']:
+                new_bond = bond.copy()
+                new_bond['to_atom'] = x_atom_uuid_to_remove
+                lfr_atoms[x_atom_uuid_to_remove]['bond'].append(new_bond)
+
+        # Remove ref_atom_uuid from core_atoms
+        if ref_atom_uuid in core_atoms:
+            del core_atoms[ref_atom_uuid]
+
+        # Update bonding information in other atoms
+        for atom_data in core_atoms.values():
+            if 'bond' in atom_data:
+                atom_data['bond'] = [bond for bond in atom_data['bond'] if bond['to_atom'] != ref_atom_uuid]
+
+             # Conditional update of bonding information
+            # Update bonds for lfr_atoms[target_atom_uuid_1] and core_atoms[neighboor__atom_uuid_1]
+        lfr_atoms[target_atom_uuid]['bond'] = [{'to_atom': neighboor__atom_uuid_1, 'bond_order': 1.5}]
+        core_atoms[neighboor__atom_uuid_1]['bond'] = [{'to_atom': target_atom_uuid, 'bond_order': 1.5}]
+
+            # Update bonds for lfr_atoms[target_atom_uuid_1] and core_atoms[neighboor__atom_uuid_2]
+        lfr_atoms[target_atom_uuid]['bond'] = [{'to_atom': neighboor__atom_uuid_2, 'bond_order': 1.5}]
+        core_atoms[neighboor__atom_uuid_2]['bond'] = [{'to_atom': target_atom_uuid, 'bond_order': 1.5}]
+
+        if ref_atom_uuid in core_atoms:
+            del core_atoms[ref_atom_uuid]
+
+        # Update bonding information in other atoms
+        for atom_data in core_atoms.values():
+            if 'bond' in atom_data:
+                atom_data['bond'] = [bond for bond in atom_data['bond'] if bond['to_atom'] != ref_atom_uuid]
 
         # Remove x_atom_uuid_to_remove from core_atoms
         if x_atom_uuid_to_remove in lfr_atoms:
@@ -200,89 +386,12 @@ class SubunitBuilder:
         for atom_data in lfr_atoms.values():
             if 'bond' in atom_data:
                 atom_data['bond'] = [bond for bond in atom_data['bond'] if bond['to_atom'] != x_atom_uuid_to_remove]
-
-
-        print('==================POINTS===========================')
-        #print(core_atoms[ref_atom_uuid])
-        #print(lfr_atoms[x_atom_uuid_to_remove])
-        print(lfr_atoms[target_atom_uuid_1])
-        print(lfr_atoms[target_atom_uuid_2])
-        print(core_atoms[neighboor__atom_uuid_1])
-        print(core_atoms[neighboor__atom_uuid_2])
-        #print('==================POINTS===========================')
-   
+  
         self.write_json_file(core_json_path, core_atoms)
         
         return lfr_atoms
+    
 
-    def find_bs_and_update(self, json_file_path, ref_atom_uuid, ref_atom_data, bs_type, core_json_path):
-        target_atoms_scenario_1 = {
-            "MDNH2": "N", "MDCO": "C", "NHOH": "N", "C3X3CH3": "C",
-            "CCN": "C", "ter-C": "C", "CO2R": "C", "MDOH": "O",
-            "MDCOCl": "C", "CNRC": "N"
-        }
-        target_atoms_scenario_2 = {
-            "BDNH2": ["N","N"],"BDO": ["O","O"]
-            }
-        try:
-            if bs_type in target_atoms_scenario_1:
-                target_atom = self.target_atoms_scenario_1[bs_type]
-                self.process_scenario_1(json_file_path, ref_atom_uuid, ref_atom_data, target_atom)
-            elif bs_type in target_atoms_scenario_2:
-                #print("NEEE")
-                #print(bs_type)
-                target_atoms = target_atoms_scenario_2[bs_type]
-                #print(target_atoms)
-                self.process_scenario_2(json_file_path, ref_atom_uuid, ref_atom_data, target_atoms, core_json_path)
-            elif bs_type in self.target_atoms_scenario_3:
-                target_atom = self.target_atoms_scenario_3[bs_type]
-                self.process_scenario_3(json_file_path, ref_atom_uuid, ref_atom_data, target_atom)
-            else:
-                logging.warning(f"Unsupported bs_type: {bs_type}")
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
-
-    def process_scenario_1(self, json_file_path, ref_atom_uuid, ref_atom_data, target_atom):
-        lfr_atoms = self.read_json_file(json_file_path)
-        x_atom_uuid_to_remove, target_atom_uuid, x_outer_uuid = self.find_target_atom(lfr_atoms, target_atom)
-
-        if x_atom_uuid_to_remove and target_atom_uuid:
-            self.process_atoms(lfr_atoms, target_atom_uuid, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove)
-            self.write_json_file(json_file_path, lfr_atoms)
-            logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
-        else:
-            logging.wa#rning("Required atoms not found.")
-
-    def process_scenario_2(self, json_file_path, ref_atom_uuid, ref_atom_data, target_atoms, core_json_path):
-        #print(target_atoms)
-        target_atom_1 = target_atoms[0]
-        target_atom_2 = target_atoms[1]
-        #print(target_atom_1)
-        neighboor_atoms = self.find_neigboors(core_json_path, ref_atom_uuid)
-        
-        #print(neighboor_atoms)
-        lfr_atoms = self.read_json_file(json_file_path)
-        #TO DO: find_target_atoms should be changed considering that the input is a list and that two target atoms should overlap instead of one currently
-        #TO DO: use reference_atom_uuid to find neighbour or neigbours in 
-        #TO DO: in proccess scanarion 1 t was a single target_atom_uuid but now there will be two target atoms uuid as a list, they will need to be passed to another function
-        #print('TARGET ATOM UUID')
-        x_atom_uuid_to_remove, target_atom_uuid_1, target_atom_uuid_2, x_outer_uuid = self.find_target_atoms(lfr_atoms, target_atom_1, target_atom_2)
-        print('TARGET ATOM UUID1')
-        print(target_atom_uuid_1)
-        print('TARGET ATOM UUID2')
-        print(target_atom_uuid_2)
-        #TO DO: in in the line below we have target_atom_uuid again,  which should be two atoms, if they exist 
-        if x_atom_uuid_to_remove is not None and target_atom_uuid_1 is not None and target_atom_uuid_2 is not None:
-            # To Do: the process function considers two target atoms basically on each site, this requires other functions to change
-            self.process_atoms_2(lfr_atoms, target_atom_uuid_1, target_atom_uuid_2, ref_atom_data, x_outer_uuid, ref_atom_uuid, x_atom_uuid_to_remove, neighboor_atoms, core_json_path)
-            self.write_json_file(json_file_path, lfr_atoms)
-            
-            core_json_path
-            logging.info(f"Updated {json_file_path} with reference atom {ref_atom_uuid}")
-        else:
-            logging.warning("Required atoms not found.")
-          
-   
     def find_neigboors(self, core_json_path, ref_atom_uuid):
         neigboor_atoms = []
         core_atoms = self.read_json_file(core_json_path)
