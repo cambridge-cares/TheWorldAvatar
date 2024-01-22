@@ -3,10 +3,9 @@
 		"Name": "aermod-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.2.3",
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.4",
 				"Env": [
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
-					"PYTHON_SERVICE_ELEVATION_URL=http://ship-stack-python-service:5000/getElevationGeoJSON",
 					"AERMAP_EXE=/root/aermod/aermap",
 					"BPIPPRM_EXE=/root/aermod/bpipprm",
 					"AERMET_EXE=/root/aermod/aermet",
@@ -17,13 +16,15 @@
 					"DISPERSION_LAYER=dispersion_layer",
 					"SIMULATION_DIR=/root/aermod/simulations",
 					"FILE_SERVER_URL=http://ship-stack-file-server:8080/FileServer/",
-					"DISPERSION_STYLE_NAME=dispersion_style",
-					"SOURCE_LAYER=source_layer",
-					"VIS_FOLDER=/vis_data",
-					"GEOSERVER_URL=http://localhost:3838/geoserver",
 					"ELEVATION_TABLE=elevation",
 					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
-					"DISPERSION_RASTER_TABLE=dispersion_raster"
+					"DISPERSION_RASTER_TABLE=dispersion_raster",
+					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri",
+					"BUILDINGS_TABLE=buildings",
+					"STATIC_SOURCE_TABLE=static",
+					"ELEVATION_CONTOURS_TABLE=elevation_contours",
+					"PARALLELISE_EMISSIONS_UPDATE=true",
+					"TARGET_EMISSION_VOLUME_FRACTION=0.001"
 				],
 				"Configs": [
 					{

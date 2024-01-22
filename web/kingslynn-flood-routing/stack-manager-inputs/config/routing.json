@@ -1,0 +1,15 @@
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "isochroneagent",
+            "travellingsalesmanagent",
+            "networkanalysisagent"
+        ],
+        "excludes": [
+            ]
+    },
+    "volumes": {
+        "vis-files": "webspace"
+    }
+}

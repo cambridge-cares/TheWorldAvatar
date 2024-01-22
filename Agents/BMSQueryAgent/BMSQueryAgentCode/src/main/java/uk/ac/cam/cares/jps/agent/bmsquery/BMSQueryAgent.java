@@ -20,7 +20,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.HashMap;
-import java.util.List;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
@@ -32,7 +31,8 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 public class BMSQueryAgent {
 
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgent.class);
-    RemoteStoreClient rsClient;
+    RemoteStoreClient labRsClient;
+    RemoteStoreClient officeRsClient;
 
     private final String BOT_STR = "https://w3id.org/bot#";
     private final Prefix P_BOT = SparqlBuilder.prefix("bot", iri(BOT_STR));
@@ -42,17 +42,66 @@ public class BMSQueryAgent {
 
     /**
      * Setter for RemoteStoreClient and Knowledge graph namespace urls
-     * @param rsClient RemoteStoreClient instance
+     * @param labRsClient RemoteStoreClient instance for lab namespace
+     * @param officeRsClient RemoteStoreClient instance for office namespace
      */
-    public void setRSClient(RemoteStoreClient rsClient) {
-        this.rsClient = rsClient;
+    public void setRSClient(RemoteStoreClient labRsClient, RemoteStoreClient officeRsClient) {
+        this.labRsClient = labRsClient;
+        this.officeRsClient = officeRsClient;
     }
 
     /**
-     * Query buildings, facilities, rooms from blazegraph and keep the hierarchy of zones.
+     * Query buildings, facilities, rooms from lab namespace and keep the hierarchy of zones.
      * @return JSONObject with zone hierarchy
      */
+    public JSONObject queryLabZones() {
+        String queryString  = getZoneQueryString();
+
+        LOGGER.info(queryString);
+        JSONArray jsonResult;
+        try {
+            LOGGER.info("Sending request...");
+            jsonResult = labRsClient.executeQuery(queryString);
+        } catch (Exception e) {
+            LOGGER.error("Fail to run query to get everything in buildings");
+            throw new JPSRuntimeException("Unable to get everything in buildings");
+        }
+
+        return parseTableToJSONObj(jsonResult);
+    }
+
+    /**
+     * Query buildings, facilities, rooms from office namespace and keep the hierarchy of zones.
+     * @return JSONObject with zone hierarchy
+     */
+    public JSONObject queryOfficeZones() {
+        String queryString  = getZoneQueryString();
+
+        LOGGER.info(queryString);
+        JSONArray jsonResult;
+        try {
+            LOGGER.info("Sending request...");
+            jsonResult = officeRsClient.executeQuery(queryString);
+        } catch (Exception e) {
+            LOGGER.error("Fail to run query to get everything in buildings");
+            throw new JPSRuntimeException("Unable to get everything in buildings");
+        }
+
+        return parseTableToJSONObj(jsonResult);
+    }
+
     public JSONObject queryAllZones() {
+        JSONObject officeZones = queryOfficeZones();
+        JSONObject labZones = queryLabZones();
+
+        JSONObject buildingJo = officeZones.getJSONObject("buildings");
+        for (String key : labZones.getJSONObject("buildings").keySet()) {
+            buildingJo.put(key, labZones.getJSONObject("buildings").getJSONObject(key));
+        }
+        return officeZones;
+    }
+
+    private String getZoneQueryString() {
         Variable building = SparqlBuilder.var("building");
         Variable facility = SparqlBuilder.var("facility");
         Variable buildingLabel = SparqlBuilder.var("buildingLabel");
@@ -87,17 +136,7 @@ public class BMSQueryAgent {
                         GraphPatterns.optional(getAllFacilitiesInBuildings, getFacilitiesTypes, getFacilitiesNames,
                                 GraphPatterns.optional(getAllRoomsInFacilities, getRoomsNames))
                 );
-
-        JSONArray jsonResult;
-        try {
-            LOGGER.info("Sending request...");
-            jsonResult = rsClient.executeQuery(query.getQueryString());
-        } catch (Exception e) {
-            LOGGER.error("Fail to run query to get everything in buildings");
-            throw new JPSRuntimeException("Unable to get everything in buildings");
-        }
-
-        return parseTableToJSONObj(jsonResult);
+        return query.getQueryString();
     }
 
     /**
@@ -164,7 +203,7 @@ public class BMSQueryAgent {
         try {
             LOGGER.info("Sending request with query: ");
             LOGGER.info(query.getQueryString());
-            jsonResult = rsClient.executeQuery(query.getQueryString());
+            jsonResult = labRsClient.executeQuery(query.getQueryString());
         } catch (Exception e) {
             LOGGER.error("Fail to run query to get equipment in the room: " + roomStr);
             throw new JPSRuntimeException("Unable to get equipment in the room: " + roomStr);

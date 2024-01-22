@@ -1,0 +1,52 @@
+{
+    "ServiceSpec": {
+        "Name": "cea-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/cea-agent:3.3.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/CEAAgent/cea-agent/src/main/resources/CEAAgentConfig.properties",
+                        "Target": "/resources/CEAAgentConfig.properties"
+                    }
+                ],
+                "Env": [
+                    "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                      "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        },
+		"EndpointSpec": {
+			"Ports": [
+				{
+                    "Name": "web",
+                    "Protocol": "tcp",
+					"TargetPort": "5005",
+					"PublishedPort": "5005"
+				}
+			]
+		}
+    },
+    "endpoints": {
+        "cea-agent": {
+          "url": "http://localhost:8084/cea-agent/",
+          "externalPath": "/cea-agent/"
+        }
+    }
+}

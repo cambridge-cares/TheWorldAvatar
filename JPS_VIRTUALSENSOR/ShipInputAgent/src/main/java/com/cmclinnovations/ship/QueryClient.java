@@ -12,7 +12,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -64,7 +63,7 @@ public class QueryClient {
     private static final String LOCATION_STRING = PREFIX + "Location";
     private static final Iri LOCATION = iri(LOCATION_STRING);
     private static final Iri SHIP_TYPE = P_DISP.iri("ShipType");
-    private static final Iri MEASURE = P_DISP.iri("Measure");
+    private static final Iri MEASURE = P_OM.iri("Measure");
 
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
@@ -363,25 +362,9 @@ public class QueryClient {
      */
     void createNewDerivations(List<Ship> ships) {
         if (Boolean.parseBoolean(EnvConfig.PARALLELISE_CALCULATIONS)) {
-            CompletableFuture<Derivation> getAsync = null;
-
-            for (Ship ship : ships) {
-                getAsync = CompletableFuture.supplyAsync(() -> {
-                    Derivation derivation = null;
-                    try {
-                        derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI,
-                                Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
-                    } catch (Exception e) {
-                        LOGGER.error(e.getMessage());
-                        LOGGER.error("Failed to create new derivation for {}", ship.getIri());
-                    }
-                    return derivation;
-                });
-            }
-
-            if (getAsync != null) {
-                getAsync.join();
-            }
+            ships.parallelStream()
+                    .forEach(ship -> derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI,
+                            Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION));
         } else {
             for (Ship ship : ships) {
                 try {
@@ -393,5 +376,9 @@ public class QueryClient {
                 }
             }
         }
+    }
+
+    void updateLatestValues(List<Ship> ships) {
+
     }
 }

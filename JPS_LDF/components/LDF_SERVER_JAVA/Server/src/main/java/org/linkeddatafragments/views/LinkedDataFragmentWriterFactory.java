@@ -12,7 +12,7 @@ import org.linkeddatafragments.datasource.IDataSource;
  */
 public class LinkedDataFragmentWriterFactory {
     
-    private final static String HTML = "text/html";
+    private final static String HTML = "text";
     
     /**
      * Creates {@link ILinkedDataFragmentWriter} for a given mimeType
