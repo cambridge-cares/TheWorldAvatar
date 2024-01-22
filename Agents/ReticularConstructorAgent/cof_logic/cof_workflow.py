@@ -129,7 +129,30 @@ class COFProcessor:
         cof_nr = row['COF_Nr']
         
         return precursor_1, precursor_2, linkage, topology_name, cof_nr, assembly_model
-    
+
+    def check_and_swap_precursors(self, precursor_1, precursor_2):
+        bindingSite_1 = None
+        bindingSite_2 = None
+        swap_needed = False
+
+        if precursor_1 is not None:
+            matched_row = self.precursors_inp[self.precursors_inp['Precursor'] == precursor_1]
+            if not matched_row.empty:
+                bindingSite_1 = matched_row.iloc[0]['bindingSite']
+
+        if precursor_2 is not None:
+            matched_row = self.precursors_inp[self.precursors_inp['Precursor'] == precursor_2]
+            if not matched_row.empty:
+                bindingSite_2 = matched_row.iloc[0]['bindingSite']
+
+        # Check if swap is needed
+        swap_conditions = ["BDOH", "BDNH2", "BDO", 'BDOHNH2', 'OCOCO']
+        if bindingSite_2 in swap_conditions and bindingSite_1 not in swap_conditions:
+            swap_needed = True
+
+        return swap_needed
+
+   
     def get_sbu_names(self, precursor_1, precursor_2, linkage, assembly_model):
         """
         Get the names of the SBUs and additional information based on the precursors and linkage.
@@ -149,6 +172,12 @@ class COFProcessor:
         supplementary_sbu = None
         precursor_values = {}
         
+        swap_needed = self.check_and_swap_precursors(precursor_1, precursor_2)
+        
+        if swap_needed:
+        # Swap precursor_1 and precursor_2
+            precursor_1, precursor_2 = precursor_2, precursor_1
+        
         list_1_assembly_models = ['ctn-[(4-tetrahedral)x3(L:3-planar)x4]n',
                                 'hcb-[(3-planar)x1(L:3-planar)x1]n',
                                 'dia-[(4-tetrahedral)x1(L:2-linear)x2]n',
@@ -160,13 +189,13 @@ class COFProcessor:
                                   'hcb-[(3-planar)x2(2-linear)x3(L:2-linear)x6]n',
                                   'hcb-[(3-pyramidal)x2(2-linear)x3(L:2-linear)x6]n',
                                   'kgm-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n',
-                                  'sql-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n',
-                                  'bor-[(4-tetrahedral)x3(3-planar)x4(L:2-linear)x12]n'] 
+                                  'sql-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n'] 
+        list_2a_assembly_models = ['bor-[(4-tetrahedral)x3(3-planar)x4(L:2-linear)x12]n']
         list_3_assembly_models = ['hcb-[(3-planar)x1(3-planar)x1(L:2-linear)x3]n']                   
         lfr_set_1 = ['LFR-20','LFR-21'] #symmetrical building unit
         lfr_set_2 = ['LFR-10'] #symmetrical building unit, carbon carbon
         lfr_set_3 = ['LFR-6','LFR-12','LFR-13'] #single bond
-        lfr_set_4 = ['LFR-3', 'LFR-8', 'LFR-1', 'LFR-7']
+        lfr_set_4 = ['LFR-3', 'LFR-8', 'LFR-1', 'LFR-7', 'LFR-4', 'LFR-5']
         
         if assembly_model in list_1_assembly_models:
             sbu_names = [linkage]
@@ -211,11 +240,26 @@ class COFProcessor:
                 subunit_result = subunit_operations.process()  # Assuming process() returns a string
                 # Replace the first element in sbu_names with the result
                 sbu_names[0] = subunit_result
+                #supplementary_sbu = 'dum_dum'
+               # sbu_names.append(supplementary_sbu)
+            #    sbu_names[1], sbu_names[2] = sbu_names[2], sbu_names[1]
+            else:
+                pass    
+        
+        if assembly_model in list_2a_assembly_models:
+            if linkage in lfr_set_3:
+                pass             
+            elif linkage in lfr_set_4:
+            #    print(sbu_names)
+                subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
+                subunit_result = subunit_operations.process()  # Assuming process() returns a string
+                # Replace the first element in sbu_names with the result
+                sbu_names[0] = subunit_result
                 supplementary_sbu = 'dum_dum'
                 sbu_names.append(supplementary_sbu)
             #    sbu_names[1], sbu_names[2] = sbu_names[2], sbu_names[1]
             else:
-                pass    
+                pass 
             
         if assembly_model in list_3_assembly_models:
             if linkage in lfr_set_4:

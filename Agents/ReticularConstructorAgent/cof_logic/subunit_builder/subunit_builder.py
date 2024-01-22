@@ -90,7 +90,7 @@ class SubunitBuilder:
         }
         target_atoms_scenario_2 = {
             "BDNH2": [["N","N"]],"BDO": [["N","N"],["O","O"]],"BDOH": [["N","N"],["O","O"]] 
-            }
+            , "BDOHNH2": [["O","N"]],"OCOCO": [["C","C"]]}
 
         try:
             if bs_type in target_atoms_scenario_1:
