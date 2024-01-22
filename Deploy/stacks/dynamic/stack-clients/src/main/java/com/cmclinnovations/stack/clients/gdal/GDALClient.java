@@ -264,7 +264,7 @@ public class GDALClient extends ContainerClient {
         JSONArray arrayList = getTimeFromGdalmdiminfo(timeArrayName, filePath); // to generate output filenames
         String gdalContainerId = getContainerId(GDAL);
         String postGISContainerId = getContainerId(POSTGIS);
-        StringJoiner dateTimes = new StringJoiner("),(", "(", ")"); // SQL will want (value1),...,(valueN)
+        StringJoiner dateTimes = new StringJoiner("'),('", "('", "')"); // SQL will want ('value1'),...,('valueN')
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
         for (int index = 0; index < arrayList.length(); index++) {
@@ -291,11 +291,12 @@ public class GDALClient extends ContainerClient {
             errorStream.reset();
         }
 
+        String hereDocument = "CREATE TABLE IF NOT EXISTS " + layername
+                + "_times (bands SERIAL, time TIMESTAMPTZ PRIMARY KEY); " +
+                "INSERT INTO " + layername + "_times (time) VALUES "+ dateTimes.toString() + ";";
         String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
-                .withHereDocument("CREATE TABLE IF NOT EXISTS " + layername
-                        + "_times (bands SERIAL, time TIMESTAMPTZ PRIMARY KEY); " +
-                        "INSERT INTO " + layername + "_times (time) VALUES (" + dateTimes.toString() + ");")
+                .withHereDocument(hereDocument)
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
