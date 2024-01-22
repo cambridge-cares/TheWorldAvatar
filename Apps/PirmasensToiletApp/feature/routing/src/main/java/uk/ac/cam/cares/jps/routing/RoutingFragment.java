@@ -21,7 +21,7 @@ import uk.ac.cam.cares.jps.routing.databinding.FragmentMapBinding;
 
 @AndroidEntryPoint
 public class RoutingFragment extends Fragment {
-    private Logger LOGGER = Logger.getLogger(RoutingFragment.class);
+    private Logger LOGGER = Logger.getLogger( RoutingFragment.class);
 
     private FragmentMapBinding binding;
     private MapView mapView;

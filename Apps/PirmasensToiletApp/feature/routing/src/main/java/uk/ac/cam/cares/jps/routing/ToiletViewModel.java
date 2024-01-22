@@ -5,11 +5,14 @@ import androidx.lifecycle.ViewModel;
 
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.ToiletRepository;
+import uk.ac.cam.cares.jps.model.Toilet;
 
 
 @HiltViewModel
@@ -17,18 +20,18 @@ public class ToiletViewModel extends ViewModel {
     private Logger LOGGER = Logger.getLogger(ToiletViewModel.class);
 
     // Holds all toilets GeoJSON data
-    private MutableLiveData<String> toiletsGeoJsonData = new MutableLiveData<>();
+    private MutableLiveData<List<Toilet>> toiletsGeoJsonData = new MutableLiveData<>();
     private ToiletRepository toiletRepository;
-    private RepositoryCallback<String> routeGeoJsonUrlCallback = new RepositoryCallback<String>() {
+    private RepositoryCallback<List<Toilet>> routeGeoJsonUrlCallback = new RepositoryCallback<List<Toilet>>() {
         @Override
-        public void onSuccess(String result) {
+        public void onSuccess(List<Toilet> result) {
             toiletsGeoJsonData.postValue(result);
         }
 
         @Override
         public void onFailure(Throwable error) {
             error.printStackTrace();
-            LOGGER.debug("c to update toilet view model data "+toiletRepository.getRouteGeoJsonUrl());
+            LOGGER.debug("fail to update toilet view model data " + toiletRepository.getRouteGeoJsonUrl());
         }
     };
 
@@ -41,7 +44,7 @@ public class ToiletViewModel extends ViewModel {
         toiletRepository.getRouteGeoJsonUrl(routeGeoJsonUrlCallback);
     }
 
-    public MutableLiveData<String> getToiletsGeoJsonData() {
+    public MutableLiveData<List<Toilet>> getToiletsGeoJsonData() {
         return toiletsGeoJsonData;
     }
 }

@@ -26,8 +26,8 @@ public class RouteManager {
 
         routingViewModel = new ViewModelProvider(fragment).get(RoutingViewModel.class);
         routingViewModel.getRouteGeoJsonData().observe(fragment, data -> mapView.getMapboxMap().getStyle(style -> {
-            Expected<String, None> removeLayerSuccess =  style.removeStyleLayer("route_layer");
-            Expected<String, None> removeSourceSuccess =  style.removeStyleSource("route");
+            Expected<String, None> removeLayerSuccess = style.removeStyleLayer("route_layer");
+            Expected<String, None> removeSourceSuccess = style.removeStyleSource("route");
             LOGGER.debug("Route: layer and source removed result " + (removeSourceSuccess.isError() && removeLayerSuccess.isError() ? removeSourceSuccess.getError() + "\n" + removeLayerSuccess.getError() : "success"));
 
             JSONObject sourceJson = new JSONObject();
@@ -56,7 +56,7 @@ public class RouteManager {
     public void requestForRouting(Point endPoint) {
         Point currentLocation = locationManager.getCurrentLocation();
 
-        LOGGER.debug("FROM("+ currentLocation +") TO ("+endPoint+")");
+        LOGGER.debug("FROM(" + currentLocation + ") TO (" + endPoint + ")");
         routingViewModel.getRouteData(currentLocation.longitude(), currentLocation.latitude(),
                 endPoint.longitude(), endPoint.latitude());
     }

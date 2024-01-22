@@ -52,6 +52,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.1'
 
     implementation project(path: ':core:network')
+    implementation project(path: ':core:model')
 }
 
 kapt {

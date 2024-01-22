@@ -4,15 +4,21 @@ import androidx.annotation.NonNull;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
+import uk.ac.cam.cares.jps.model.Toilet;
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.NetworkConfiguration;
 import uk.ac.cam.cares.jps.network.route.VertexNetworkSource;
@@ -40,15 +46,41 @@ public class ToiletNetworkSource {
         this.connection = connection;
     }
 
-    public void getToiletsData(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+    public void getToiletsData(Response.Listener<List<Toilet>> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         //https://github.com/cambridge-cares/TheWorldAvatar/blob/fd29120e46068686d4671e6e319fbdfe2666562e/JPS_VIRTUALSENSOR/DispersionInteractor/src/main/resources/pirmasensData.json
 
         String requestUri = getRequestUri();
 
         Response.Listener<String> onSuccess = response -> {
             try {
-                JSONObject rawResponse = new JSONObject(response);
-                onSuccessUpper.onResponse(rawResponse.toString());
+                List<Toilet> toilets = new ArrayList<>();
+
+                JSONObject featureCollection = new JSONObject(response);
+                if ("FeatureCollection".equals(featureCollection.optString("type"))) {
+                    JSONArray features = featureCollection.getJSONArray("features");
+
+                    for (int i = 0; i < features.length(); i++) {
+                        JSONObject feature = features.getJSONObject(i);
+                        JSONObject geometry = feature.getJSONObject("geometry");
+                        JSONObject properties = feature.getJSONObject("properties");
+
+                        if ("Point".equals(geometry.optString("type"))) {
+                            JSONArray coordinates = geometry.getJSONArray("coordinates");
+
+                            // Extract longitude and latitude
+                            double longitude = coordinates.getDouble(0);
+                            double latitude = coordinates.getDouble(1);
+
+                            toilets.add(new Toilet(longitude, latitude));
+                        }
+                    }
+
+                    onSuccessUpper.onResponse(toilets);
+                } else {
+                    LOGGER.error("Invalid GeoJSON: Not a FeatureCollection");
+                    onFailureUpper.onErrorResponse(new VolleyError("Invalid GeoJSON: Not a FeatureCollection"));
+                }
+
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }

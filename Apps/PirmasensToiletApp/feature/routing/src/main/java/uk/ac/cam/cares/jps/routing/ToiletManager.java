@@ -8,9 +8,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.MapView;
@@ -24,6 +22,8 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.model.Toilet;
 
 public class ToiletManager {
     private Logger LOGGER = Logger.getLogger(ToiletManager.class);
@@ -40,43 +40,12 @@ public class ToiletManager {
 
         toiletViewModel = new ViewModelProvider(fragment).get(ToiletViewModel.class);
         // set observer on the model, when data ready, display points
-        toiletViewModel.getToiletsGeoJsonData().observe(fragment, data -> {
-            LOGGER.debug("route: source created " + data);
-            // Add toilets locations
-            try {
-                JSONObject featureCollection = new JSONObject(data);
-                if ("FeatureCollection".equals(featureCollection.optString("type"))) {
-                    // todo: process the raw data in network layer
-                    JSONArray features = featureCollection.getJSONArray("features");
+        toiletViewModel.getToiletsGeoJsonData().observe(fragment, toilets -> {
+            LOGGER.debug("Received toilets number: " + toilets.size());
 
-                    for (int i = 0; i < features.length(); i++) {
-                        JSONObject feature = features.getJSONObject(i);
-                        JSONObject geometry = feature.getJSONObject("geometry");
-                        JSONObject properties = feature.getJSONObject("properties");
-
-                        if ("Point".equals(geometry.optString("type"))) {
-                            JSONArray coordinates = geometry.getJSONArray("coordinates");
-
-                            // Extract longitude and latitude
-                            double longitude = coordinates.getDouble(0);
-                            double latitude = coordinates.getDouble(1);
-
-                            Point toiletPoint = Point.fromLngLat(longitude, latitude);
-
-                            // event listener on markers
-                            // when user clicks on toilet marks
-                            // then he/she should be able to see the details of it
-                            addMarker(toiletPoint, context.getResources().getColor(R.color.end_marker_color));
-
-                            System.out.println("Feature " + i + ": Latitude=" + latitude + ", Longitude=" + longitude);
-                            // You can store these values in a data structure or perform any other operations needed
-                        }
-                    }
-                } else {
-                    System.out.println("Invalid GeoJSON: Not a FeatureCollection");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            for (Toilet toilet : toilets) {
+                addMarker(toilet.getLocation(), context.getResources().getColor(R.color.end_marker_color));
+                LOGGER.debug("Longitude=" + toilet.getLocation().longitude() + ", Latitude=" + toilet.getLocation().latitude());
             }
         });
 

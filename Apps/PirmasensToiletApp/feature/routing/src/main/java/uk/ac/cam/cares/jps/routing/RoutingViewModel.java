@@ -10,7 +10,7 @@ import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.RouteRepository;
 
 @HiltViewModel
-public class RoutingViewModel extends ViewModel{
+public class RoutingViewModel extends ViewModel {
     public MutableLiveData<String> routeGeoJsonData = new MutableLiveData<>();
     RepositoryCallback<String> routeGeoJsonUrlCallback = new RepositoryCallback<String>() {
         @Override
