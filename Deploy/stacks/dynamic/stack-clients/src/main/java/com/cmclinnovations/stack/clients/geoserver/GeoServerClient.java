@@ -291,6 +291,11 @@ public class GeoServerClient extends ContainerClient {
                     // TODO Work out how to set the layer title/display name
                 }
 
+                Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions = geoServerSettings.getDimensions();
+            if (null != dimensions) {
+                dimensions.entrySet().forEach(entry -> storeEncoder.setMetadataDimension(entry.getKey(), entry.getValue()));
+            }
+
                 if (manager.getPublisher().publishExternalMosaic(
                         workspaceName, name,
                         geotiffDir.toFile(),

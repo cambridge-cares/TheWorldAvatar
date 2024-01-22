@@ -1,5 +1,7 @@
 package com.cmclinnovations.stack.clients.geoserver;
 
+import java.util.Map;
+
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
 
@@ -14,6 +16,16 @@ public class GeoServerRasterSettings {
 
     public GSLayerEncoder getLayerSettings() {
         return layerSettings;
+    }
+
+    private Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions;
+
+    public Map<String, UpdatedGSFeatureDimensionInfoEncoder> getDimensions() {
+        return dimensions;
+    }
+
+    public void setDimensions(Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions) {
+        this.dimensions = dimensions;
     }
 
 }
