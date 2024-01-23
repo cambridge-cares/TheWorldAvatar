@@ -1,6 +1,6 @@
-# TWA Visualisation Platform
+# TWA Visualisation Platform (TWA-ViP)
 
-This directory contains the source code, configuration files, and build-time resources required to compile and package the TWA Visualisation Platform (TWA-ViP). The TWA Visualisation Platform represents the evolution of The World Avatar project's visualisation toolkit, improving the legacy TWA Visualisation Framework (TWA-VF). It aims to offer a quick & easy way to set up geospatial visualisations, analytical tools, and static online content.
+This directory contains the source code, configuration files, and build-time resources required to compile and package the TWA Visualisation Platform (TWA-ViP). The Platform represents the evolution of The World Avatar project's visualisation toolkit, improving the legacy TWA Visualisation Framework (TWA-VF). It aims to offer a quick & easy way to set up geospatial visualisations, analytical tools, and static online content.
 
 The TWA Visualisation Platform takes the form of a [Next.js](https://nextjs.org/) project written using [TypeScript](https://www.typescriptlang.org/), utilising both client and server-side codes. Next.js is a framework that sits atop the [React.js library](https://react.dev/); on top of the component-based UI offering from React, Next.js adds support for server-side code, custom routing, and update data fetching routines.
 
