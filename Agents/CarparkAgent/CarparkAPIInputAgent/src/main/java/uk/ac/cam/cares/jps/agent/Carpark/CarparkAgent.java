@@ -1,9 +1,11 @@
 package uk.ac.cam.cares.jps.agent.Carpark;
+
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+
 import java.util.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -11,8 +13,10 @@ import java.time.OffsetDateTime;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,22 +24,14 @@ import java.io.InputStream;
 
 @WebServlet(urlPatterns = {"/retrieve", "/status"})
 
-public class CarparkAgent extends JPSAgent
-{
-    public static final String Key_AgentProp = "agentProperties";
-    public static final String Key_APIProp = "apiProperties";
-    public static final String Key_ClientProp = "clientProperties";
-    
+public class CarparkAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(CarparkAgent.class);
-
-
     private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.";
     private static final String AGENT_ERROR_MSG = "The timeseries handler could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the timeseries handler!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the carpark API connector needed to interact with the API!";
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
-
     String dbUrl;
     String dbUsername;
     String dbPassword;
@@ -61,8 +57,9 @@ public class CarparkAgent extends JPSAgent
 
     /**
      * Handle request and route to different functions based on the path.
+     *
      * @param requestParams Parameters sent with HTTP request
-     * @param request HTTPServletRequest instance
+     * @param request       HTTPServletRequest instance
      * @return result of the request
      */
     @Override
@@ -70,9 +67,7 @@ public class CarparkAgent extends JPSAgent
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
         LOGGER.info("Request received at: {" + datetime + "}");
-
         JSONObject msg = new JSONObject();
-
         String url = request.getRequestURI();
 
         if (url.contains("status")) {
@@ -83,17 +78,17 @@ public class CarparkAgent extends JPSAgent
             String agentProperties = System.getenv("Carpark_AGENTPROPERTIES");
             String clientProperties = System.getenv("Carpark_CLIENTPROPERTIES");
             String apiProperties = System.getenv("Carpark_APIPROPERTIES");
-            
-            String[] args = new String []{agentProperties,clientProperties,apiProperties};
+
+            String[] args = new String[]{agentProperties, clientProperties, apiProperties};
             msg = initializeAgent(args);
         }
 
         return msg;
-        
     }
 
     /**
      * Handle GET /status route and return the status of the agent.
+     *
      * @return Status of the agent
      */
     private JSONObject getStatus() {
@@ -103,35 +98,28 @@ public class CarparkAgent extends JPSAgent
         return result;
     }
 
-    public JSONObject initializeAgent(String []args)
-    {
-        if(args.length!=3)
-        {
+    public JSONObject initializeAgent(String[] args) {
+        if (args.length != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
 
-        LOGGER.debug("Launcher called with the following files: " + String.join(" ",args));
+        LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
 
         TimeSeriesHandler tsHandler;
-        try
-        {
+        try {
             tsHandler = new TimeSeriesHandler(args[0]);
-
-        }
-        catch(IOException e)
-        {
-            LOGGER.error(AGENT_ERROR_MSG,e);
-            throw new JPSRuntimeException(AGENT_ERROR_MSG,e);
+        } catch (IOException e) {
+            LOGGER.error(AGENT_ERROR_MSG, e);
+            throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
         }
 
         LOGGER.info("Input Agent object initialized");
         JSONObject jsonMessage = new JSONObject();
-        jsonMessage.accumulate("Result","Input Agent Object Initialized");
+        jsonMessage.accumulate("Result", "Input Agent Object Initialized");
 
         TimeSeriesClient<OffsetDateTime> tsclient;
-        try
-        {
+        try {
             loadTSClientConfigs(args[1]);
             RemoteStoreClient kbClient = new RemoteStoreClient();
             kbClient.setQueryEndpoint(sparqlQueryEndpoint);
@@ -140,116 +128,86 @@ public class CarparkAgent extends JPSAgent
             LOGGER.info("The password is " + sparqlPassword);
             kbClient.setUser(sparqlUsername);
             kbClient.setPassword(sparqlPassword);
-            //tsclient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
             tsclient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, dbUrl, dbUsername, dbPassword);
             tsHandler.setTsClient(tsclient);
+        } catch (Exception e) {
+            LOGGER.error(TSCLIENT_ERROR_MSG, e);
+            throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
         }
-        catch(Exception e)
-        {
-            LOGGER.error(TSCLIENT_ERROR_MSG,e);
-            throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e); 
-        }
-
         LOGGER.info("Time Series object initialized");
-        jsonMessage.accumulate("Result","Time Series Client Object Initialized");
+        jsonMessage.accumulate("Result", "Time Series Client Object Initialized");
 
-        try
-        {
+        try {
             tsHandler.initializeTimeSeriesIfNotExist();
-        }
-        catch(JPSRuntimeException e)
-        {
+        } catch (JPSRuntimeException e) {
             LOGGER.error(INITIALIZE_ERROR_MSG);
-            throw new JPSRuntimeException(INITIALIZE_ERROR_MSG,e);
+            throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
         }
 
         APIConnector connector;
-        try
-        {
+        try {
             connector = new APIConnector(args[2]);
-        }
-        catch(IOException e)
-        {
-            LOGGER.error(CONNECTOR_ERROR_MSG,e);
-            throw new JPSRuntimeException(CONNECTOR_ERROR_MSG,e);
+        } catch (IOException e) {
+            LOGGER.error(CONNECTOR_ERROR_MSG, e);
+            throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
         }
 
         LOGGER.info("API Connector Object Initialized");
-        jsonMessage.accumulate("Result","API Connector object Initialized");
+        jsonMessage.accumulate("Result", "API Connector object Initialized");
 
         JSONObject carparkReadings;
 
-        try
-        {
+        try {
             carparkReadings = connector.getReadings();
-        }
-        catch(Exception e)
-        {
-            LOGGER.error(GET_READINGS_ERROR_MSG,e);
-            throw new JPSRuntimeException(GET_READINGS_ERROR_MSG,e);
+        } catch (Exception e) {
+            LOGGER.error(GET_READINGS_ERROR_MSG, e);
+            throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
 
         LOGGER.info(String.format("Retrieved %d carpark readings", carparkReadings.length()));
-        jsonMessage.accumulate("Result","Retrieved"+carparkReadings.getJSONArray("value").length()+" carpark readings");
+        jsonMessage.accumulate("Result", "Retrieved" + carparkReadings.getJSONArray("value").length() + " carpark readings");
 
-        if(!carparkReadings.isEmpty())
-        {
+        if (!carparkReadings.isEmpty()) {
             tsHandler.updateData(carparkReadings);
             LOGGER.info("Data updated with new API Readings");
-            jsonMessage.accumulate("Result","Data updated with new API Readings");
-
-        }
-        else if(carparkReadings.isEmpty())
-        {
+            jsonMessage.accumulate("Result", "Data updated with new API Readings");
+        } else if (carparkReadings.isEmpty()) {
             LOGGER.info("No new carpark data recorded");
-            jsonMessage.accumulate("Result","No new carpark data recorded");
+            jsonMessage.accumulate("Result", "No new carpark data recorded");
         }
 
         JSONObject pricingReadings;
 
-        try
-        {
+        try {
             pricingReadings = connector.getPrices();
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG);
         }
-        
+
         LOGGER.info(String.format("Retrieved pricing readings for %d carparks", pricingReadings.length()));
-        jsonMessage.accumulate("Result","Retrieved"+pricingReadings.getJSONObject("result").getJSONArray("records").length()+"carpark price readings");
-
-
+        jsonMessage.accumulate("Result", "Retrieved" + pricingReadings.getJSONObject("result").getJSONArray("records").length() + "carpark price readings");
         //To call APIQueryBuilder
-       
+
         SparqlHandler sparqlHandler;
 
-        try
-        {
-            sparqlHandler = new SparqlHandler(args[0],args[1]);
+        try {
+            sparqlHandler = new SparqlHandler(args[0], args[1]);
             LOGGER.info("QueryBuilder constructed");
-          
-        }
-        catch(Exception e)
-        {
+
+        } catch (Exception e) {
             LOGGER.error("Could not build the QueryBuilder");
             throw new JPSRuntimeException("Could not successfully initialise the QueryBuilder Object");
         }
-
-        {
-            sparqlHandler.instantiateIfNotInstantiated(carparkReadings,pricingReadings);
-            LOGGER.info("All Data IRIs within Carpark Readings successfully instantiated");
-            jsonMessage.accumulate("Result","All Data IRIs successfully instantiated");
-
-        }
-
-        
-       return jsonMessage;
+        sparqlHandler.instantiateIfNotInstantiated(carparkReadings, pricingReadings);
+        LOGGER.info("All Data IRIs within Carpark Readings successfully instantiated");
+        jsonMessage.accumulate("Result", "All Data IRIs successfully instantiated");
+        return jsonMessage;
     }
 
-      /**
+    /**
      * Reads the parameters needed for the timeseries client
+     *
      * @param filepath Path to the properties file from which to read the parameters
      */
     private void loadTSClientConfigs(String filepath) throws IOException {
@@ -261,14 +219,12 @@ public class CarparkAgent extends JPSAgent
 
         // Try-with-resource to ensure closure of input stream
         try (InputStream input = new FileInputStream(file)) {
-
             // Load properties file from specified path
             Properties prop = new Properties();
             prop.load(input);
-
             // Get timeseries client parameters from properties file
             if (prop.containsKey("db.url")) {
-                this.dbUrl= prop.getProperty("db.url");
+                this.dbUrl = prop.getProperty("db.url");
             } else {
                 throw new IOException("Properties file is missing \"db.url=<db_url>\"");
             }
@@ -292,13 +248,8 @@ public class CarparkAgent extends JPSAgent
             } else {
                 throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
             }
-            if (prop.containsKey("sparql.username")) {
-                this.sparqlUsername = prop.getProperty("sparql.username");
-            }
-            if (prop.containsKey("sparql.password")) {
-                this.sparqlPassword = prop.getProperty("sparql.password");
-            }
+            this.sparqlUsername = prop.getProperty("sparql.username");
+            this.sparqlPassword = prop.getProperty("sparql.password");
         }
     }
-
 }
