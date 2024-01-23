@@ -17,10 +17,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +31,6 @@ public class TimeSeriesHandler {
     public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Carpark";
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();
     public static final String timestampKey = "time";
-    //public static final String status = "qcstatus";
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
     public TimeSeriesHandler(String propertiesFile) throws IOException {
@@ -243,7 +240,7 @@ public class TimeSeriesHandler {
         // Convert first to a local time
         LocalDateTime localTime = LocalDateTime.parse(timestamp);
         // Then add the zone id
-        return OffsetDateTime.of(localTime, ZoneOffset.UTC);
+        return OffsetDateTime.of(localTime, ZONE_OFFSET);
     }
 
     private TimeSeries<OffsetDateTime> pruneTimeSeries(TimeSeries<OffsetDateTime> timeSeries, OffsetDateTime timeThreshold) {

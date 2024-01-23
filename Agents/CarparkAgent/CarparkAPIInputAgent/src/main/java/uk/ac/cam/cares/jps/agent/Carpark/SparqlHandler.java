@@ -26,7 +26,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
