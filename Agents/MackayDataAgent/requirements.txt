@@ -1,2 +1,4 @@
 git+https://github.com/anuzzolese/pyrml
 pyderivationagent
+pandas
+openpyxl

@@ -23,8 +23,9 @@ class MackayDataAgent:
         self.property_files_dict = self._create_property_files(data_confs)
         self.tsclients = {}
         self.forecastclients = {}
-        self.name_to_iris = {d["source"]["name"]: d["output"]["srcIri"] for d in data_confs}
+        self.name_to_iris = {d["source"]["name"]: d["output"]["src_iri"] for d in data_confs}
         self.data_downloaders = {d["source"]["name"]: Downloader(d) for d in data_confs}
+        self.requires_predict = {d["source"]["name"]: True if 'forecast' in d else False for d in data_confs}
         for cfg in data_confs:
             data_name = cfg["source"]["name"]
             self.tsclients[data_name] = tsclient_wrapper.TSClient(self.property_files_dict[data_name])
@@ -43,11 +44,11 @@ class MackayDataAgent:
             TSClient = self.tsclients[data_name]
             data_iri = self.name_to_iris[data_name]
             times, values = TSClient.get_timeseries(data_iri)
-            if forecast:# concat original series with forecasted one
-                forecast_client = self.forecastclients[data_name]
+            if forecast and self.requires_predict[data_name]:#If both global flag to return forecast and local flag of has forecast are true
+                forecast_client = self.forecastclients[data_name]# concat orignal timeseries with forecasted ones
                 forecast_iri = forecast_client.get_forecast_iri(data_iri)
                 ftimes, fvalues = TSClient.get_timeseries(forecast_iri)
-                truncate_holder = [(t,v) for t,v in zip(times,values) if v!=0]
+                truncate_holder = [(t,v) for t,v in zip(times,values) if v!=0]# TODO:A adhoc implementation, will not work if ts contains 0 value
                 times = [d[0] for d in truncate_holder]
                 values =  [d[1] for d in truncate_holder]
                 times.extend(ftimes)
@@ -100,7 +101,8 @@ class MackayDataAgent:
             TSClient = self.tsclients[data_name]
             updated = TSClient.update_timeseries_if_new(timeseries_instance)
             hasPredict = self.forecastclients[data_name].get_forecast_iri(data_iri)
-            if updated or not hasPredict:  # API have new data, needs to call prediction again
+            # Call predication agent if: requires to predict and either A. an update in timeseries record B. no predication has ever been made
+            if self.requires_predict[data_name] and (updated or not hasPredict):  # API have new data, needs to call prediction again
                 # pad empty TS instance for prediction
                 forecast_cfg = data_factory.conf['forecast']
                 pad_start = int(timeseries_instance.times[-1]) + 1  # custom calculation of predict year start, allow other time type in future
@@ -114,5 +116,3 @@ class MackayDataAgent:
                                              frequency=float(forecast_cfg['frequency']),
                                              unit_frequency=forecast_cfg['unitFrequency'])
                 self.forecastclients[data_name].call_predict(predict_input)
-
-
