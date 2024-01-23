@@ -41,7 +41,7 @@ class CompactQueryParser:
                 ptr = advance_ptr_thru_space(query, ptr)
                 if query[ptr] != "(":
                     raise ValueError(
-                        "Open bracket is missing from FITLER clause: "
+                        "Open bracket is missing from FILTER clause: "
                         + query[start_idx:]
                     )
 
