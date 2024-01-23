@@ -48,6 +48,21 @@ class Manager {
     private searchHandler: SearchHandler;
 
     /**
+     * Handles scenario selection.
+     */
+    private scenarioHandler: ScenarioHandler;
+
+    /**
+     * Optional callbacks to trigger once a singluar feature has been selected.
+     */
+    public selectionCallbacks = [];
+
+    /**
+     * Optional callbacks to trigger once a feature selection is cleared.
+     */
+    public unselectionCallbacks = [];
+
+    /**
      * Optional callback to trigger once data definitions have been loaded.
      */
     public dataLoadCallback;
@@ -82,13 +97,11 @@ class Manager {
         // Enter Mapbox account name and API key here!
         await $.get("mapbox_username", {}, function (result) {
             MapHandler.MAP_USER = result;
-            console.log("USERNAME = " + MapHandler.MAP_USER);
         }).fail(function () {
             console.error("Could not read Mapbox username from 'mapbox_username' secret file.");
         });
         await $.get("mapbox_api_key", {}, function (result) {
             MapHandler.MAP_API = result;
-            console.log("KEY = " + MapHandler.MAP_API);
         }).fail(function () {
             console.error("Could not read Mapbox API key from 'mapbox_api_key' secret file.");
         });
@@ -151,6 +164,37 @@ class Manager {
     }
 
     /**
+     * Adds a callback that will fire with the selected feature once a 
+     * singular feature has been selected.
+     * 
+     * @param selectionCallback callback function.
+     */
+    public addSelectionCallback(selectionCallback) {
+        this.selectionCallbacks.push(selectionCallback);
+    }
+
+    /**
+     * Adds a callback that will fire with no parameters once the
+     * current feature selection is cleared.
+     * 
+     * @param unselectionCallback callback function.
+     */
+    public addUnselectionCallback(unselectionCallback) {
+        this.unselectionCallbacks.push(unselectionCallback);
+        this.panelHandler.addUnselectionCallback(unselectionCallback);
+    }
+
+    /**
+     * Adds a callback that will fire with two arrays of layerIDs (visible, hidden)
+     * when any selection state in the layer tree changes.
+     * 
+     * @param treeSelectionCallback callback function.
+     */
+    public addTreeSelectionCallback(treeSelectionCallback) {
+        this.controlHandler.addTreeSelectionCallback(treeSelectionCallback);
+    }
+
+    /**
      * Loads the global (i.e. non-data specific) visualisation settings.
      * 
      * @returns promise object
@@ -163,6 +207,7 @@ class Manager {
             let enabled = (Manager.SETTINGS.getSetting("search") != null);
             let searchIcon = document.getElementById("searchIconContainer");
             if(searchIcon != null) searchIcon.style.display = (enabled) ? "block" : "none";
+            console.log("Map configuration settings have been loaded.");
         });
     }
 
@@ -176,9 +221,12 @@ class Manager {
      */
     public loadDefinitions() {
         let settingPromise = this.loadSettings();
-        let dataPromise = this.loadDefinitionsFromURL("./data.json");
-
-        return Promise.all([settingPromise, dataPromise]);
+    
+        return settingPromise.then(() => {
+            if(!this.checkForScenarios()) {
+                return this.loadDefinitionsFromURL("./data.json");
+            }
+        });
     }
 
     /**
@@ -189,6 +237,10 @@ class Manager {
      * @returns promise object
      */
     public loadDefinitionsFromObject(dataJSON) {
+        if(dataJSON == null) {
+            return Promise.resolve();
+        }
+
         // Initialise global settings
         Manager.DATA_STORE.reset();
 
@@ -212,7 +264,8 @@ class Manager {
         let promise = $.getJSON(dataURL, function(json) {
             return json;
         }).fail((error) => {
-            throw error;
+            console.log("Error reading data specification file from URL.");
+            console.log(error);
         });    
 
         return promise.then((response) => self.loadDefinitionsFromObject(response));
@@ -322,8 +375,9 @@ class Manager {
             this.panelHandler.setContent("");
         }
 
-        // Retrieve and display meta and timeseries data
-        this.panelHandler.addSupportingData(feature, properties);
+        // Retrieve and display meta and time series data
+        let scenarioID = (this.scenarioHandler == null) ? null : this.scenarioHandler.selectedScenario;
+        this.panelHandler.addSupportingData(feature, properties, scenarioID);
 
         // Update buttons accordingly
         let metaTreeButton = document.getElementById("treeButton");
@@ -345,6 +399,11 @@ class Manager {
         
         // Store selected feature
         window.currentFeature = feature;
+
+        // Fire selection callbacks
+        this.selectionCallbacks.forEach(callback => {
+            callback(feature);
+        });
     }
 
     /**
@@ -655,5 +714,60 @@ class Manager {
         }
 
         return null;
+    }
+
+    /**
+     * Checks if scenarios have been enabled for this visualisation.
+     * 
+     * @returns true if scenarios enabled, false if not 
+     */
+    public checkForScenarios() {
+        let scenarioButton = document.getElementById("scenarioChangeContainer");
+
+        // If a scenario endpoint is specified, load the handler
+        let scenarioURL = Manager.SETTINGS.getSetting("scenarioAgent");
+        let scenarioDataset = Manager.SETTINGS.getSetting("scenarioDataset");
+
+        if(this.scenarioHandler == null && scenarioURL != null) {
+            this.scenarioHandler = new ScenarioHandler(scenarioURL, scenarioDataset);
+            scenarioButton.style.display = "block";
+            return true;
+        } 
+        return scenarioURL != null;
+    }
+
+    /**
+     * Displays the scenario selector component.
+     */
+    public showScenarioSelector() {
+        if(this.scenarioHandler != null) {
+            this.scenarioHandler.showSelector();
+        }
+    }
+
+    /**
+     * Selects and loads data from the input scenario.
+     * 
+     * @param scenarioID scenario id 
+     * @param scenarioName user facing name of the scenario
+     */
+    public selectScenario(scenarioID, scenarioName) {
+        if(this.scenarioHandler != null) {
+            if(scenarioID === this.scenarioHandler.selectedScenario) return;
+
+            // Set the selected scenario
+            this.scenarioHandler.selectScenario(scenarioID, scenarioName);
+
+            // Show the current name
+            let container = document.getElementById("currentScenarioName");
+            container.innerHTML = "Current: " + scenarioName;
+
+            // Load its data configuration file
+            let self = this;
+            this.scenarioHandler.getConfiguration(function(dataJSON) {
+                let promise = self.loadDefinitionsFromObject(dataJSON) as Promise<any>;
+                promise.then(() => self.plotData());
+            });
+        }
     }
 }

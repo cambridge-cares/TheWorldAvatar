@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.cea;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
 import org.junit.jupiter.api.Test;
@@ -147,19 +148,17 @@ public class CEAAgentTest {
                             doReturn("").when(mock).getDbPassword();
                             doReturn("").when(mock).getOntopUrl();
                         })) {
-                    try (MockedConstruction<DataManager> dataManagerMock = mockConstruction(DataManager.class,
-                            (mock, context) -> {
-                                doReturn(true).when(mock).checkBuildingInitialised(anyString(), anyString());
-                                doReturn(true).when(mock).checkDataInitialised(anyString(), any(), any(), anyString());
-                            })) {
+                    try (MockedStatic<DataManager> dataManagerMock = mockStatic(DataManager.class)) {
+                        dataManagerMock.when(() -> DataManager.checkBuildingInitialised(anyString(), anyString())).thenReturn(true);
+                        dataManagerMock.when(() -> DataManager.checkDataInitialised(anyString(), any(), any(), anyString())).thenReturn(true);
                         try (MockedConstruction<TimeSeriesHelper> mockTs = mockConstruction(TimeSeriesHelper.class)) {
-                            try (MockedConstruction<AnnualValueHelper> mockAnnualHelper = mockConstruction(AnnualValueHelper.class)) {
+                            try (MockedStatic<AnnualValueHelper> annualValueHelperMock = mockStatic(AnnualValueHelper.class)) {
                                 // test update endpoint
                                 CEAAgent agent = new CEAAgent();
                                 returnParams = agent.processRequestParameters(requestParams);
 
                                 verify(mockTs.constructed().get(0), times(1)).addDataToTimeSeries(anyList(), anyList(), any());
-                                verify(mockAnnualHelper.constructed().get(0), times(1)).instantiateAnnual(anyList(), any(), any());
+                                annualValueHelperMock.verify(() -> AnnualValueHelper.instantiateAnnual(anyList(), any(), any()), times(1));
                                 assertEquals(requestParams, returnParams);
                             }
                         }
@@ -171,19 +170,13 @@ public class CEAAgentTest {
                         routeHelperMock.when(() -> RouteHelper.checkEndpoint(anyString())).thenReturn(true);
                         routeHelperMock.when(() -> RouteHelper.getRouteEndpoints(anyString())).thenReturn(endpoints);
                         CEAGeometryData testGeometry = new CEAGeometryData(new ArrayList<>(), "", "");
-                        try (MockedConstruction<GeometryQueryHelper> geometryQueryHelperMock = mockConstruction(GeometryQueryHelper.class,
-                                (mock, context) -> {
-                                    doReturn(testGeometry).when(mock).getBuildingGeometry(anyString(), anyString(), anyBoolean());
-                                })) {
+                        try (MockedStatic<GeometryQueryHelper> geometryQueryHelperMock = mockStatic(GeometryQueryHelper.class)) {
+                            geometryQueryHelperMock.when(() -> GeometryQueryHelper.getBuildingGeometry(anyString(), anyString(), anyBoolean())).thenReturn(testGeometry);
                             Map<String, Double> usages = new HashMap<>();
-                            try (MockedConstruction<BuildingUsageHelper> usageHelpermock = mockConstruction(BuildingUsageHelper.class,
-                                    (mock, context) -> {
-                                        doReturn(usages).when(mock).getBuildingUsages(anyString(), anyString());
-                                    })) {
-                                try (MockedConstruction<SurroundingsHelper> surroundingsHelper = mockConstruction(SurroundingsHelper.class,
-                                        (mock, context) -> {
-                                            doReturn(new ArrayList<CEAGeometryData>()).when(mock).getSurroundings(any(), any(), anyString());
-                                        })) {
+                            try (MockedStatic<BuildingUsageHelper> usageHelpermock = mockStatic(BuildingUsageHelper.class)) {
+                                usageHelpermock.when(() -> BuildingUsageHelper.getBuildingUsages(anyString(), anyString())).thenReturn(usages);
+                                try (MockedStatic<SurroundingsHelper> surroundingsHelperMock = mockStatic(SurroundingsHelper.class)) {
+                                    surroundingsHelperMock.when(() -> SurroundingsHelper.getSurroundings(any(), any(), anyString())).thenReturn(new ArrayList<CEAGeometryData>());
                                     try (MockedConstruction<WeatherHelper> weatherHelperMock = mockConstruction(WeatherHelper.class,
                                             (mock, context) -> {
                                                 doReturn(false).when(mock).getWeather(any(), anyList(), anyString(), anyString(), anyList());
@@ -191,7 +184,7 @@ public class CEAAgentTest {
                                         byte[] terrain = new byte[1];
                                         try (MockedConstruction<TerrainHelper> terrainHelperMock = mockConstruction(TerrainHelper.class,
                                                 (mock, context) -> {
-                                                    doReturn(terrain).when(mock).getTerrain(anyString(), anyString(), anyList(), anyString(), any());
+                                                    doReturn(terrain).when(mock).getTerrain(any(), anyList(), anyString());
                                                 })) {
                                             try (MockedConstruction<RunCEATask> mockTask = mockConstruction(RunCEATask.class)) {
                                                 // test run endpoint
@@ -207,11 +200,11 @@ public class CEAAgentTest {
 
                                                 returnParams = agent.processRequestParameters(requestParams);
 
-                                                verify(geometryQueryHelperMock.constructed().get(0), times(1)).getBuildingGeometry(anyString(), anyString(), anyBoolean());
-                                                verify(usageHelpermock.constructed().get(0), times(1)).getBuildingUsages(anyString(), anyString());
-                                                verify(surroundingsHelper.constructed().get(0), times(1)).getSurroundings(any(), any(), anyString());
+                                                geometryQueryHelperMock.verify(() -> GeometryQueryHelper.getBuildingGeometry(anyString(), anyString(), anyBoolean()), times(1));
+                                                usageHelpermock.verify(() -> BuildingUsageHelper.getBuildingUsages(anyString(), anyString()), times(1));
+                                                surroundingsHelperMock.verify(() -> SurroundingsHelper.getSurroundings(any(), any(), anyString()), times(1));
                                                 verify(weatherHelperMock.constructed().get(0), times(1)).getWeather(any(), anyList(), anyString(), anyString(), anyList());
-                                                verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(anyString(), anyString(), anyList(), anyString(), any());
+                                                verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(any(), anyList(), anyString());
                                                 verify(executor, times(1)).execute(mockTask.constructed().get(0));
                                                 assertEquals(requestParams, returnParams);
                                             }
@@ -234,21 +227,18 @@ public class CEAAgentTest {
                         String testReturnValue = "testAnnual";
                         TimeSeries<OffsetDateTime> timeSeries = mock(TimeSeries.class);
 
-                        try (MockedConstruction<DataManager> dataManagerMock = mockConstruction(DataManager.class,
-                                (mock, context) -> {
-                                    doReturn(true).when(mock).checkBuildingInitialised(anyString(), anyString());
-                                })) {
-                            try (MockedConstruction<DataRetriever> dataRetrieverMock = mockConstruction(DataRetriever.class,
-                                    (mock, context) -> {
-                                        doReturn(testList).when(mock).getDataIRI(anyString(), anyString(), anyString());
-                                        doReturn(testUnit).when(mock).getUnit(anyString());
-                                        doReturn(testScalar).when(mock).getNumericalValue(anyString(), anyString());
-                                    })) {
-                                try (MockedStatic<DataParser> dataParserMock = mockStatic(DataParser.class)) {
-                                    dataParserMock.when(() -> DataParser.calculateAnnual(any(), anyString())).thenReturn(testReturnValue);
-                                    try (MockedStatic<TimeSeriesHelper> timeSeriesHelperMock = mockStatic(TimeSeriesHelper.class)) {
-                                        timeSeriesHelperMock.when(() -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any())).thenReturn(timeSeries);
-
+                        try (MockedStatic<DataManager> dataManagerMock = mockStatic(DataManager.class)) {
+                            dataManagerMock.when(() -> DataManager.checkBuildingInitialised(anyString(), anyString())).thenReturn(true);
+                            try (MockedStatic<DataRetriever> dataRetrieverMock = mockStatic(DataRetriever.class)) {
+                                dataRetrieverMock.when(() -> DataRetriever.getDataIRI(anyString(), anyString(), anyString())).thenReturn(testList);
+                                dataRetrieverMock.when(() -> DataRetriever.getUnit(anyString())).thenReturn(testUnit);
+                                dataRetrieverMock.when(() -> DataRetriever.getNumericalValue(anyString(), anyString())).thenReturn(testScalar);
+                                try (MockedStatic<TimeSeriesHelper> timeSeriesHelperMock = mockStatic(TimeSeriesHelper.class)) {
+                                    timeSeriesHelperMock.when(() -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any())).thenReturn(timeSeries);
+                                    try (MockedStatic<AnnualValueHelper> annualValueHelperMock = mockStatic(AnnualValueHelper.class)) {
+                                        annualValueHelperMock.when(() -> AnnualValueHelper.getInfo(anyString(), anyString(), anyString())).thenReturn("");
+                                        annualValueHelperMock.when (() -> AnnualValueHelper.getType(anyString(), anyString())).thenReturn("");
+                                        annualValueHelperMock.when(() -> AnnualValueHelper.retrieveAnnualValue(anyString(), anyString(), anyString())).thenReturn(testReturnValue);
                                         CEAAgent agent = new CEAAgent();
 
                                         returnParams = agent.processRequestParameters(requestParams);
