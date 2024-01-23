@@ -1,6 +1,7 @@
 {
     "services": {
         "includes": [
+            "visualisation",
             "feature_info_agent"
         ],
         "excludes": [

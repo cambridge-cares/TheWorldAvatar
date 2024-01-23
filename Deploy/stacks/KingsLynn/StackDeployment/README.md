@@ -1,6 +1,6 @@
-# Kings Lynn Stack
+# King's Lynn Stack
 
-This project contains a step-by-step guide on how to spin up the Docker Stack (developed by CMCL) for the King's Lynn use case and instantiate all relevant data. It links to other projects and helper scripts where appropriate.
+This project contains a step-by-step guide on how to spin up the Docker stack (developed by CMCL) for the King's Lynn use case and instantiate all relevant data. It links to other projects and helper scripts where appropriate.
 
 Key sections:
 - [1. Prerequisites](#1-prerequisites): Preparations required before spinning up the use case stack
@@ -16,14 +16,10 @@ Key sections:
 
 ## Access to Docker registries
 
-Spinning up the (core) Docker Stack requires access to the [CMCL Docker Registry] to pull required images. Deploying (pre-built) agents to the spun up Stack requires access to CARES' [Container registry on Github] to pull agent images. Access needs to be ensured beforehand via your Github [personal access token], which must have a `scope` that [allows you to publish and install packages].
+Spinning up the Docker stack requires access to the [Container registry on Github] to pull (agent) images. Access needs to be ensured beforehand via your Github [personal access token], which must have a `scope` that [allows you to publish and install packages].
 
-To log in to the Container registries, please run the following commands to establish the connections and provide your password/access token when prompted. For more details please refer to the linked resources.
+To log in to the container registry, please run the following command to establish the connections and provide your access token when prompted. For more details please refer to the linked resources.
 ```bash
-# CMCL Container registry
-$ docker login docker.cmclinnovations.com -u <username>
-$ <password>
-
 # Github Container registry
 $ docker login ghcr.io -u <github_username>
 $ <github_personal_access_token>
@@ -35,29 +31,28 @@ $ <github_personal_access_token>
 This section explains how to spin up the core stack and upload initial data sets, i.e. high-resolution population raster data and pre-instantiated OntoCityGml building triples.
 If using VSCode, all required VSCode extensions shall be installed (on the remote machine if applicable) for all convenience scripts to work properly, i.e. *augustocdias.tasks-shell-input*.
 
-> The functionality has been tested using the Stack Manager `docker.cmclinnovations.com/stack-manager:1.10.2` based on commit `0c05f624bde1ee57cf353244e637f2f83740c758` on branch `main` of the World Avatar repository.
 
-&nbsp;
 ## Spinning up the core Stack
 
-Navigate to `Deploy/stacks/dynamic/stack-manager` on the `main` branch of the World Avatar repository and run the following command there from a *bash* terminal. To spin up the stack using the [Stack manager], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
+To spin up the stack using the [Stack manager], both a `postgis_password` and `geoserver_password` file need to be provided. Please create them in the `./inputs/stack-manager/inputs/secrets` directory. Subsequently, copy all files in `./inputs/stack-manager/` into their corresponding repositories of the stack-manager, i.e., under `Deploy/stacks/dynamic/stack-manager/`.
+
+Then navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. There are several [common stack scripts] provided to manage the stack:
 
 ```bash
 # Start the stack (please note that this might take some time)
 bash ./stack.sh start KINGS-LYNN
-
 # Stop the stack
 bash ./stack.sh stop KINGS-LYNN
-
-# Remove stack services (incl. volumes)
+# Remove the stack (incl. volumes)
 bash ./stack.sh remove KINGS-LYNN -v
+# Remove individual service
+bash ./stack.sh remove KINGS-LYNN <service name>
 ```
 
-After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [Stack manager] readme.
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [Stack manager] README.
 
-After stack startup, please ensure that Geoserver supports serving `MapBox Vector Tiles` (as required by the Digital Twin Visualisation Framework). In case this option does not yet appear in the Geoserver GUI, please restart the Geoserver service (i.e. right click on container in VSCode Docker extension and stop container followed by another `bash ./stack.sh start KINGS-LYNN` from within the `stack-manager` repository). (It seems that the plug-in download URL required to enable `MapBox Vector Tiles` works but might have intermittent issues.)
+After stack startup, please ensure that Geoserver supports serving `MapBox Vector Tiles` (as required by the TWF Visualisation Framework). In case this option does not yet appear in the Geoserver GUI, please restart the Geoserver service (It seems that the plug-in download URL required to enable `MapBox Vector Tiles` works but might have intermittent issues.)
 
-&nbsp;
 ## Spinning up the core Stack remotely via SSH
 
 To spin up the stack remotely via SSH, VSCode's in-built SSH support can be used. Simply follow the steps provided here to use [VSCode via SSH] to log in to a remote machine (e.g. Virtual machine running on Digital Ocean) an start deployment. Regular log in relies on username and password. To avoid recurring prompts to provide credentials, one can [Create SSH key] and [Upload SSH key] to the remote machine to allow for automatic authentification.
@@ -70,7 +65,7 @@ $ cd <REPO NAME>
 $ git checkout <BRANCH NAME>
 $ git pull
 ```
-Once the repository clone is obtained, please follow the instructions above to spin up the stack on the remote machine. In order to access the exposed endpoints, e.g. `http://<host IP>:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
+Once the repository clone is obtained, please follow the instructions above to spin up the stack on the remote machine. In order to access the exposed endpoints, e.g. `http://<host IP>:3838/blazegraph/ui`, please make sure that the respective ports are open on the remove machine. 
 
 Some issues have been encountered in interacting with the GeoServer GUI when running remotely (e.g. inability to remove layers, edit CRS information, etc.). In such cases, please try [forwarding the port] used by the stack to your local machine after having established the SSH tunnel (e.g. via VSCode for remote development). This ensures that Geoserver becomes available at `http://localhost:3838/geoserver/` as compared to e.g. `http://165.232.172.16:3838/geoserver/`, which seems to solve most of the issues encountered.
 
