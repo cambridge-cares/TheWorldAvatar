@@ -1,0 +1,21 @@
+SELECT DISTINCT ?label ?PropertyLabel ?PropertyNameValue ?PropertyNameUnitValue ?PropertyNameReferenceStateValue ?PropertyNameReferenceStateUnitValue
+WHERE {{
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
+
+    ?SpeciesIRI ?hasIdentifier ?IdentifierIRI .
+    ?IdentifierIRI  rdf:type ?Identifier ; os:value ?species .
+    ?Identifier rdfs:subClassOf os:Identifier .
+
+    FILTER( ?species = "{species}")
+
+    ?SpeciesIRI ?hasPropertyName ?PropertyNameIRI .
+    ?PropertyNameIRI  rdf:type ?PropertyName .
+    ?PropertyName rdfs:subClassOf os:Property .
+    ?PropertyNameIRI os:value ?PropertyNameValue ; os:unit ?PropertyNameUnitIRI ; os:hasProvenance ?PropertyNameProvenanceIRI . 
+    ?PropertyNameUnitIRI rdfs:label ?PropertyNameUnitValue .
+    OPTIONAL{{?PropertyNameIRI os:hasReferenceState ?PropertyNameReferenceStateIRI . 
+    ?PropertyNameReferenceStateIRI os:value ?PropertyNameReferenceStateValue ; os:unit ?PropertyNameReferenceStateUnitIRI .
+    ?PropertyNameReferenceStateUnitIRI rdfs:label ?PropertyNameReferenceStateUnitValue .}}
+    
+  	BIND(strafter(str(?PropertyName),'#') AS ?PropertyLabel)   
+}}
