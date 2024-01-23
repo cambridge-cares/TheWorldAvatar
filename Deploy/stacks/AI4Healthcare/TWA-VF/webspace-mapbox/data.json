@@ -48,6 +48,38 @@
                 }
             ]
         },
+        {   "name": "Food Hygiene Rating",
+            "stack": "http://174.138.27.240:5007",
+            "sources": [
+                {
+                    "id": "fhr-cambridge-source",
+                    "type": "vector",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                        "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:fhr_cambridge&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "fhr-cambridge_layer",
+                    "name": "FHR Cambridge",
+                    "source": "fhr-cambridge-source",
+                    "source-layer": "fhr_cambridge",
+                    "type": "symbol",
+                    "minzoom": 4,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "FoodHygieneRating",
+                        "icon-size": 0.45,
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                }
+            ]
+        },
         {
             "name": "Reporting Stations",
             "stack": "http://165.232.172.16:3838",
