@@ -97,7 +97,7 @@ The natural language questions in the generated dataset can be paraphrased using
 
 ### Data augmentation
 
-Data augmentation methods are adapted from https://arxiv.org/pdf/1901.11196.pdf. 
+Word-level data augmentation methods&mdash;synonym substitution, random insertion, random swap, random delete&mdash;are implemented with adaptations based on https://arxiv.org/pdf/1901.11196.pdf. 
 
 1. Download relevant `nltk` resources in a Python shell. 
 
