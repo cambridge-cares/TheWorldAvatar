@@ -1,5 +1,7 @@
 # Marie4
 
+Marie is a question-answering system that exposes chemical data from the World Avatar Knowledge Graph via a natural language interface. In this iteration of Marie, a text-to-text transformer model is employed to translate natural language questions to SPARQL queries, which are then executed against the underlying knowledge graph to yield the desired answers.
+
 ## Contents
 
 - [data_generation](./data_generation/): to generate training data

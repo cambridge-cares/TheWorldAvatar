@@ -1,6 +1,17 @@
 # Deployment for Marie
 
+## Architecture
+
+Based on the principle of separation of concerns, the application architecture comprises two main components:
+
+- Flask app: serves as the point of entry to Marie via a browser-based UI
+- Triton server: exposes the translation model
+
+Additionally, the Flask app has a dependency on the knowledge graph server that hosts the OntoSpecies triples.
+
 ## Local deployment (Docker)
+
+1. Update the environment variables in `triton-variables.env`.
 
 1. Spin up the services ` docker compose -f "docker-compose.local.yaml" up -d --build`.
 

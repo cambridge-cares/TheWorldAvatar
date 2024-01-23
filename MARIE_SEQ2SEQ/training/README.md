@@ -73,14 +73,16 @@ Additional dependencies:
     - [TensorRT](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html) (installation from tar ball recommended)
 - To enable memory profiling with the command line argument `--do_profile`, run `pip install memory-profiler==0.61.0`.
 
-See [`inference.sh`](./scripts/inference.sh) for example usage. The script will generate a json file containing  
+See [`inference.sh`](./scripts/inference.sh) for example usage. The script will generate a json file containing the predicted SPARQL queries and inference latency.
 
 For a list of all arguments that can be passed to the inference script, see classes `arguments_schema.ModelArguments`, `arguments_schema.DatasetArguments`, and `arguments_schema.InferenceArguments`.
 
 ## Evaluation
 
+To obtain evaluation metrics for translation, including sacreBLEU and exact match scores, execute the following. The optional flags `--do_correct_spans` and `--do_correct_relations` can be set for differential post-processing.
+
 ```
-python evaluate.py predictions.json evaluation_results.json --do_correct_spans --do_correct_relations
+python evaluate.py <inference_filepath> <evaluation_result_filepath> [--do_correct_spans] [--do_correct_relations]
 ```
 
 ## Running jobs on CSD3 and similar SLURM environments

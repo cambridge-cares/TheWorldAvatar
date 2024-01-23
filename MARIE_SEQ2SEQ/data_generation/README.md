@@ -27,9 +27,9 @@
 
 ## Usage
 
-### Dataset creation
+### Dataset creation from ABox
 
-Example usage
+Training data can be created from the ABox of the OntoSpecies knowledge graph, provided that there are a sufficiently large number of species (>100) whose data properties provide a good spread over the ontology's schema. Example usage:
 
 ```python
 import json
