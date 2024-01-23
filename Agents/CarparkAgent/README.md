@@ -48,6 +48,17 @@ as well as, the url of the API and the identifier of the weather station. More s
 More information can be found in the example property file `api.properties` in the `config` folder.
 
 ### Deployment
+
+**1) TEST ENVIRONMENT**
+
+Deploy the agent to execute the unit tests by running the following code in the CLI at the <root> directory.
+The success of all tests must be verified through the Docker logs.
+```
+docker compose -f "./docker/docker-compose.test.yml" up -d --build
+```
+
+**2) PRODUCTION ENVIRONMENT**
+
 Modify `api.properties` and `client.properties` in the config folder accordingly. Open up the command prompt in the same directory as this README, run the command below to build the docker image:
 ```
 docker compose build
