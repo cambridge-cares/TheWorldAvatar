@@ -23,10 +23,7 @@ class ExampleMakerByQueryPath:
         x for x in PROPERTY_NAMES if x != "SubStructureKeysFingerprint"
     ]
 
-    def __init__(
-        self,
-        kg_endpoint: str = "http://theworldavatar.com/blazegraph/namespace/copy_ontospecies_pubchem/sparql",
-    ):
+    def __init__(self, kg_endpoint: str):
         self.subgraph_retriever = SubgraphRetriever(kg_endpoint)
         self.example_maker_head2tail = ExampleMakerHead2Tail()
         self.example_maker_tail2head = ExampleMakerTail2Head()

@@ -13,9 +13,6 @@ from tqdm import tqdm
 from core.kg_client import KgClient
 
 
-SPARQL_ENDPOINT = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql"
-
-
 class TimeoutError(Exception):
     pass
 
@@ -40,8 +37,8 @@ def timeout(seconds: int, error_message=os.strerror(errno.ETIME)):
     return decorator
 
 
-def get_answer_data(data: List[dict]):
-    kg_client = KgClient(SPARQL_ENDPOINT)
+def get_answer_data(sparql_endpoint: str, data: List[dict]):
+    kg_client = KgClient(sparql_endpoint)
 
     @timeout(20)
     def _query(query: str):
@@ -81,12 +78,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("input_path", type=str)
     parser.add_argument("output_path", type=str)
+    parser.add_argument("--sparql_endpoint", type=str, required=True)
     args = parser.parse_args()
 
     with open(args.input_path, "r") as f:
         data = json.load(f)
 
-    answer_data = get_answer_data(data)
+    answer_data = get_answer_data(args.sparql_endpoint, data)
 
     with open(args.output_path, "w") as f:
         json.dump(answer_data, f, indent=4)

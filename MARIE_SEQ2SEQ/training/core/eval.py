@@ -2,12 +2,6 @@ from typing import Dict, List, Optional
 from sacrebleu.metrics import BLEU
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 from sklearn.preprocessing import MultiLabelBinarizer
-from core.data_processing.compact_query.compact_query_rep import CompactQueryRep
-from core.data_processing.compact_query.correct_relations import RelationCorrector
-from core.data_processing.compact_query.correct_spans import SpanCorrector
-from core.data_processing.exceptions import InvalidCompactQueryError
-
-from core.data_processing.output_processing import normalize_query, remove_prefixes
 
 
 def get_bleu_metrics(refs: List[List[str]], sys: List[str]):

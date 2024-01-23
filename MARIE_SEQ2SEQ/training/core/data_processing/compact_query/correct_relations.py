@@ -56,11 +56,7 @@ class RelationCorrector:
         + ["?hasIdentifier"]
     )
 
-    def __init__(
-        self,
-        model: str = "sentence-transformers/all-MiniLM-L12-v2",
-        threshold: float = 0,
-    ):
+    def __init__(self, model: str, threshold: float = 0):
         self.model = SentenceTransformer(model)
         self.embed_matrix = self.model.encode(
             [" ".join(tokenize(x)) for x in self.RELATION_NAMES], convert_to_tensor=True

@@ -16,7 +16,7 @@ app = Flask(__name__)
 translation_client = TranslationClient(
     triton_endpoint=os.environ.get("TRITON_ENDPOINT", "localhost:8000")
 )
-kg_client = KgClient()
+kg_client = KgClient(os.environ.get("KG_ENDPOINT"))
 
 
 if __name__ != '__main__':

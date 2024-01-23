@@ -7,11 +7,9 @@ from .construct_query import RetrieveQueryConstructor
 from .parse_kg_response import KgResponseParser
 from .timeout import timeout
 
+
 class SubgraphRetriever:
-    def __init__(
-        self,
-        kg_endpoint: str = "http://theworldavatar.com/blazegraph/namespace/copy_ontospecies_pubchem/sparql",
-    ):
+    def __init__(self, kg_endpoint: str):
         sparql_client = SPARQLWrapper(kg_endpoint)
         sparql_client.setReturnFormat(JSON)
         sparql_client.setMethod(POST)

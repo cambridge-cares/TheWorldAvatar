@@ -8,10 +8,7 @@ from .make_examples_by_query_path import ExampleMakerByQueryPath
 
 
 class DatasetFromKgMaker:
-    def __init__(
-        self,
-        kg_endpoint: str = "http://theworldavatar.com/blazegraph/namespace/copy_ontospecies_pubchem/sparql",
-    ):
+    def __init__(self, kg_endpoint: str):
         self.example_maker_by_query_path = ExampleMakerByQueryPath(kg_endpoint)
         self.example_maker_from_template = ExampleMakerFromTemplate()
 

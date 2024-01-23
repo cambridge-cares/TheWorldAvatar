@@ -20,11 +20,11 @@ from core.model_utils.ov import get_ov_model_and_tokenizer
 
 
 class TranslationModel(ABC):
-    def __init__(self, model_family: str, do_correct: bool):
+    def __init__(self, model_family: str, do_correct: bool, embedding_model_path: str):
         self.model_family = model_family
         self.do_correct = do_correct
         self.span_corrector = SpanCorrector()
-        self.relation_corrector = RelationCorrector()
+        self.relation_corrector = RelationCorrector(embedding_model_path)
 
     @abstractmethod
     def _translate(self, question: str):
@@ -70,11 +70,16 @@ class _HfTranslationModelBase(TranslationModel):
         self,
         model_family: str,
         do_correct: str,
+        embedding_model_path: str,
         model,
         tokenizer: PreTrainedTokenizer,
         max_new_tokens: int = 256,
     ):
-        super().__init__(model_family=model_family, do_correct=do_correct)
+        super().__init__(
+            model_family=model_family,
+            do_correct=do_correct,
+            embedding_model_path=embedding_model_path,
+        )
         self.model = model
         self.tokenizer = tokenizer
         self.max_new_tokens = max_new_tokens
@@ -94,6 +99,7 @@ class HfTranslationModel(_HfTranslationModelBase):
         self,
         model_args: ModelArguments,
         do_correct: bool,
+        embedding_model_path: str,
         max_new_tokens: int = 256,
         do_torch_compile: bool = False,
     ):
@@ -104,6 +110,7 @@ class HfTranslationModel(_HfTranslationModelBase):
         super().__init__(
             model_family=model_args.model_family,
             do_correct=do_correct,
+            embedding_model_path=embedding_model_path,
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=max_new_tokens,
@@ -115,6 +122,7 @@ class OVHfTranslationModel(_HfTranslationModelBase):
         self,
         model_args: ModelArguments,
         do_correct: bool,
+        embedding_model_path: str,
         max_input_tokens: int = 256,
         max_new_tokens: int = 256,
     ):
@@ -125,6 +133,7 @@ class OVHfTranslationModel(_HfTranslationModelBase):
         super().__init__(
             model_family=model_args.model_family,
             do_correct=do_correct,
+            embedding_model_path=embedding_model_path,
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=max_new_tokens,
@@ -145,12 +154,17 @@ class OVHfTranslationModel(_HfTranslationModelBase):
 
 class OrtHfTranslationModel(_HfTranslationModelBase):
     def __init__(
-        self, model_args: ModelArguments, do_correct: bool, max_new_tokens: int = 256
+        self,
+        model_args: ModelArguments,
+        do_correct: bool,
+        embedding_model_path: str,
+        max_new_tokens: int = 256,
     ):
         model, tokenizer = get_ort_model_and_tokenizer(model_args)
         super().__init__(
             model_family=model_args.model_family,
             do_correct=do_correct,
+            embedding_model_path=embedding_model_path,
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=max_new_tokens,
@@ -162,11 +176,16 @@ class ONmtTranslationModel(TranslationModel):
         self,
         model_args: ModelArguments,
         do_correct: bool,
+        embedding_model_path: str,
         max_new_tokens: int = 256,
     ):
         self.model, self.tokenizer = get_onmt_model_and_tokenizer(model_args)
         self.max_new_tokens = max_new_tokens
-        super().__init__(model_family=model_args.model_family, do_correct=do_correct)
+        super().__init__(
+            model_family=model_args.model_family,
+            do_correct=do_correct,
+            embedding_model_path=embedding_model_path,
+        )
 
     def _translate(self, question: str):
         input_tokens = self.tokenizer(question)

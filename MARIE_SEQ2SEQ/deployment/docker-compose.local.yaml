@@ -5,6 +5,8 @@ services:
     shm_size: 256m
     ports:
       - 8000:8000
+    env_file:
+      - triton-variables.env
   flask:
     build:
       context: flask

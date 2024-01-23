@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, Union
+from typing import Optional
 
 
 @dataclass
@@ -54,6 +54,7 @@ class InferenceArguments:
     max_new_tokens: int = field(
         default=512, metadata={"help": "Maximum number of tokens to be generated."}
     )
+    embedding_model_path: str = field(metadata={"help": "Path to embedding model for relation correction."})
     do_torch_compile: bool = field(
         default=False,
         metadata={

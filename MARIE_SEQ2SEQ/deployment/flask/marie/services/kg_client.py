@@ -8,10 +8,7 @@ class KgClient:
         "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
     )
 
-    def __init__(
-        self,
-        kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
-    ):
+    def __init__(self, kg_endpoint: str):
         sparql = SPARQLWrapper(kg_endpoint)
         sparql.setReturnFormat(JSON)
         sparql.setMethod(POST)

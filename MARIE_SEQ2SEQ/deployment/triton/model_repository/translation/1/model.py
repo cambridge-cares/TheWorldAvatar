@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import triton_python_backend_utils as pb_utils
 from transformers import AutoTokenizer
@@ -18,7 +20,7 @@ def replace_multi(text: str, mapper: dict):
 
 
 class TritonPythonModel:
-    MODEL_PATH = "picas9dan/20230924_1_8bit"
+    MODEL_PATH = os.getenv("TRANSLATION_MODELPATH")
     T5_INPUT_PREFIX = "translate to SPARQL: "
     T5_INPUT_ENCODINGS = {
         "<": "&lt;",
@@ -29,13 +31,15 @@ class TritonPythonModel:
         "&lcub;": "{",
         "&rcub;": "}",
         "&lt;": "<",
-        "&gt;": ">"
+        "&gt;": ">",
     }
 
     def _load_model(self):
         encoder_path = cached_file(self.MODEL_PATH, "encoder_model_quantized.onnx")
         decoder_path = cached_file(self.MODEL_PATH, "decoder_model_quantized.onnx")
-        decoder_wp_path = cached_file(self.MODEL_PATH, "decoder_with_past_model_quantized.onnx")
+        decoder_wp_path = cached_file(
+            self.MODEL_PATH, "decoder_with_past_model_quantized.onnx"
+        )
 
         (
             encoder_session,
@@ -71,13 +75,13 @@ class TritonPythonModel:
         self.max_new_tokens = 256
 
         self.span_corrector = SpanCorrector()
-        self.relation_corrector = RelationCorrector()
+        self.relation_corrector = RelationCorrector(os.getenv("EMBEDDING_MODELPATH"))
 
     def preprocess(self, text):
         text = replace_multi(text, self.T5_INPUT_ENCODINGS)
         text = self.T5_INPUT_PREFIX + text
         return text
-    
+
     def postprocess(self, text):
         text = replace_multi(text, self.T5_OUTPUT_DECODINGS)
         return text
@@ -94,14 +98,16 @@ class TritonPythonModel:
         output_text = self.postprocess(output_text)
         return output_text
 
-        
     def execute(self, requests):
         responses = []
 
         for request in requests:
-            input_text = pb_utils.get_input_tensor_by_name(
-                request, "text"
-            ).as_numpy().tolist()[0].decode("UTF-8")
+            input_text = (
+                pb_utils.get_input_tensor_by_name(request, "text")
+                .as_numpy()
+                .tolist()[0]
+                .decode("UTF-8")
+            )
             output_text = self.translate(input_text)
 
             try:
@@ -111,11 +117,15 @@ class TritonPythonModel:
                 verbose_output = query.to_verbose()
             except:
                 verbose_output = ""
-            
+
             inference_response = pb_utils.InferenceResponse(
                 output_tensors=[
-                    pb_utils.Tensor("output_compact", np.array([output_text], dtype=object)),
-                    pb_utils.Tensor("output_verbose", np.array([verbose_output], dtype=object))
+                    pb_utils.Tensor(
+                        "output_compact", np.array([output_text], dtype=object)
+                    ),
+                    pb_utils.Tensor(
+                        "output_verbose", np.array([verbose_output], dtype=object)
+                    ),
                 ]
             )
             responses.append(inference_response)
