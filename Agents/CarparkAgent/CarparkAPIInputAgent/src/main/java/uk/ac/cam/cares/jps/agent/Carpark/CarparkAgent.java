@@ -82,7 +82,7 @@ public class CarparkAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
-        LOGGER.info("Request received at: {" + datetime + "}");
+        LOGGER.info("Request received at: {}", datetime);
         JSONObject msg = new JSONObject();
         String route = requestParams.get("requestUrl").toString();
         route = route.substring(route.lastIndexOf("/") + 1);
@@ -126,8 +126,7 @@ public class CarparkAgent extends JPSAgent {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
-
-        LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
+        LOGGER.debug(() -> "Launcher called with the following files: " + String.join(" ", args));
 
         TimeSeriesHandler tsHandler;
         try {
@@ -147,8 +146,6 @@ public class CarparkAgent extends JPSAgent {
             RemoteStoreClient kbClient = new RemoteStoreClient();
             kbClient.setQueryEndpoint(sparqlQueryEndpoint);
             kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
-            LOGGER.info("The username is " + sparqlUsername);
-            LOGGER.info("The password is " + sparqlPassword);
             kbClient.setUser(sparqlUsername);
             kbClient.setPassword(sparqlPassword);
             tsclient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, dbUrl, dbUsername, dbPassword);
@@ -163,7 +160,7 @@ public class CarparkAgent extends JPSAgent {
         try {
             tsHandler.initializeTimeSeriesIfNotExist();
         } catch (JPSRuntimeException e) {
-            LOGGER.error(INITIALIZE_ERROR_MSG);
+            LOGGER.error(INITIALIZE_ERROR_MSG, e);
             throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
         }
 
@@ -187,7 +184,7 @@ public class CarparkAgent extends JPSAgent {
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
 
-        LOGGER.info(String.format("Retrieved %d carpark readings", carparkReadings.length()));
+        LOGGER.info("Retrieved {} carpark readings", carparkReadings.length());
         jsonMessage.accumulate(JSON_RESULT_KEY, "Retrieved" + carparkReadings.getJSONArray("value").length() + " carpark readings");
 
         if (!carparkReadings.isEmpty()) {
@@ -204,11 +201,11 @@ public class CarparkAgent extends JPSAgent {
         try {
             pricingReadings = connector.getPrices();
         } catch (Exception e) {
-            LOGGER.error(GET_READINGS_ERROR_MSG);
-            throw new JPSRuntimeException(GET_READINGS_ERROR_MSG);
+            LOGGER.error(GET_READINGS_ERROR_MSG, e);
+            throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
 
-        LOGGER.info(String.format("Retrieved pricing readings for %d carparks", pricingReadings.length()));
+        LOGGER.info("Retrieved pricing readings for {} carparks", pricingReadings.length());
         jsonMessage.accumulate(JSON_RESULT_KEY, "Retrieved" + pricingReadings.getJSONObject("result").getJSONArray("records").length() + "carpark price readings");
         //To call APIQueryBuilder
 
@@ -219,8 +216,8 @@ public class CarparkAgent extends JPSAgent {
             LOGGER.info("QueryBuilder constructed");
 
         } catch (Exception e) {
-            LOGGER.error("Could not build the QueryBuilder");
-            throw new JPSRuntimeException("Could not successfully initialise the QueryBuilder Object");
+            LOGGER.error("Could not build the QueryBuilder ", e);
+            throw new JPSRuntimeException("Could not successfully initialise the QueryBuilder Object", e);
         }
         sparqlHandler.instantiateIfNotInstantiated(carparkReadings, pricingReadings);
         LOGGER.info("All Data IRIs within Carpark Readings successfully instantiated");

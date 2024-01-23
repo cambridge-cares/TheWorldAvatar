@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 
 
 public class TimeSeriesHandler {
-    public static final Logger Log = LogManager.getLogger(CarparkAgent.class);
+    public static final Logger LOGGER = LogManager.getLogger(TimeSeriesHandler.class);
     private TimeSeriesClient<OffsetDateTime> tsclient;
     private List<JSONKeyToIRIMapper> mappings;
     public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Carpark";
@@ -42,10 +42,12 @@ public class TimeSeriesHandler {
             try {
                 mappingFolder = System.getenv(prop.getProperty("Carpark.mappingfolder"));
             } catch (NullPointerException e) {
+                LOGGER.fatal("The key Carpark.mappingfolder cannot be found in the file");
                 throw new IOException("The key Carpark.mappingfolder cannot be found in the file");
             }
 
             if (mappingFolder == null) {
+                LOGGER.fatal("The properties file does not contain the key Carpark.mappingfolder with a path to the folder containing the required JSON key to IRI Mappings");
                 throw new InvalidPropertiesFormatException("The properties file does not contain the key Carpark.mappingfolder with a path to the folder containing the required JSON key to IRI Mappings");
             }
             readmappings(mappingFolder);
@@ -66,10 +68,11 @@ public class TimeSeriesHandler {
         File[] mappingFiles = folder.listFiles();
 
         if (mappingFiles == null) {
+            LOGGER.fatal("Folder does not exist: {}", mappingfolder);
             throw new IOException("Folder does not exist: " + mappingfolder);
-        }
-        if (mappingFiles.length == 0) {
-            throw new IOException("No files in folder");
+        } else if (mappingFiles.length == 0) {
+            LOGGER.fatal("No files in folder {}", mappingfolder);
+            throw new IOException("No files in folder: " + mappingfolder);
         } else {
             for (File mappingFile : mappingFiles) {
                 JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(TimeSeriesHandler.generatedIRIPrefix, mappingFile.getAbsolutePath());
@@ -86,9 +89,10 @@ public class TimeSeriesHandler {
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 try {
                     tsclient.initTimeSeries(iris, classes, timeUnit);
-                    Log.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+                    LOGGER.info(() -> "Initialized time series with the following IRIs: " + String.join(", ", iris));
                 } catch (Exception e) {
-                    throw new JPSRuntimeException("Could not instantiate TimeSeries");
+                    LOGGER.fatal("Could not instantiate TimeSeries ", e);
+                    throw new JPSRuntimeException("Could not instantiate TimeSeries" + e);
                 }
             }
         }
@@ -112,27 +116,20 @@ public class TimeSeriesHandler {
     }
 
     public void updateData(JSONObject carparkReadings) throws IllegalArgumentException {
-        Map<String, List<?>> carparkReadingsMap = new HashMap<>();
-        try {
-            carparkReadingsMap = jsonObjectToMap(carparkReadings);
-        } catch (Exception e) {
-            throw new JPSRuntimeException(e.toString());
-        }
+        Map<String, List<?>> carparkReadingsMap = jsonObjectToMap(carparkReadings);
 
         if (!carparkReadings.isEmpty()) {
             List<TimeSeries<OffsetDateTime>> timeSeries;
-            try {
-                timeSeries = convertReadingsToTimeSeries(carparkReadingsMap);
-            } catch (NoSuchElementException e) {
-                throw new IllegalArgumentException("Readings cannot be converted to ProperTimeSeries", e);
-            }
+            timeSeries = convertReadingsToTimeSeries(carparkReadingsMap);
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
                 // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
                 OffsetDateTime endDataTime;
+                List<String> dataIRIs = ts.getDataIRIs();
                 try {
-                    endDataTime = tsclient.getMaxTime(ts.getDataIRIs().get(0));
+                    endDataTime = tsclient.getMaxTime(dataIRIs.get(0));
                 } catch (Exception e) {
-                    throw new JPSRuntimeException("Could not get max time!");
+                    LOGGER.error("Could not get max time for {}. The current time series readings will be ignored. Proceeding to next set...", dataIRIs.get(0));
+                    break;
                 }
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If there is already a maximum time
@@ -145,14 +142,12 @@ public class TimeSeriesHandler {
                 if (!ts.getTimes().isEmpty()) {
                     try {
                         tsclient.addTimeSeriesData(ts);
-                        Log.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                        LOGGER.debug(() -> "Time series updated for following IRIs: " + String.join(", ", dataIRIs));
                     } catch (Exception e) {
                         throw new JPSRuntimeException("Could not add timeseries!");
                     }
                 }
             }
-        } else {
-            throw new IllegalArgumentException("Readings can not be empty!");
         }
     }
 
@@ -194,13 +189,13 @@ public class TimeSeriesHandler {
 
             readingsMap.put(k, valueTyped);
         } catch (Exception e) {
+            LOGGER.fatal("Readings can not be empty!", e);
             throw new JPSRuntimeException("Readings can not be empty!", e);
         }
         return readingsMap;
     }
 
-    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> carparkReadings)
-            throws NoSuchElementException {
+    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> carparkReadings) {
         // Extract the timestamps by mapping the private conversion method on the list items
         // that are supposed to be string (toString() is necessary as the map contains lists of different types)
         List<OffsetDateTime> carparkTimestamps = carparkReadings.get(TimeSeriesHandler.timestampKey).stream().map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
@@ -232,7 +227,8 @@ public class TimeSeriesHandler {
             }
             return timeSeries;
         } catch (Exception e) {
-            throw new JPSRuntimeException("Readings cannot be converted to Proper TimeSeries.");
+            LOGGER.fatal("Readings cannot be converted to Proper TimeSeries.", e);
+            throw new JPSRuntimeException("Readings cannot be converted to Proper TimeSeries.", e);
         }
     }
 

@@ -22,7 +22,7 @@ public class APIConnector {
     private String accountKey;
 
     private static final String ERRORMSG = "Carpark data could not be retrieved";
-    private static final Logger LOG = LogManager.getLogger(CarparkAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(APIConnector.class);
 
     //Standard Constructor to initialise the instance variables
     public APIConnector(String URL, String d, String k, String Pricing_URL) {
@@ -42,7 +42,7 @@ public class APIConnector {
         try {
             return retrieveData();
         } catch (IOException e) {
-            LOG.error(ERRORMSG);
+            LOGGER.error(ERRORMSG, e);
             throw new JPSRuntimeException(ERRORMSG, e);
         }
     }
@@ -51,7 +51,7 @@ public class APIConnector {
         try {
             return retreivePricingData();
         } catch (Exception e) {
-            LOG.error(ERRORMSG);
+            LOGGER.error(ERRORMSG, e);
             throw new JPSRuntimeException(ERRORMSG, e);
         }
     }
@@ -66,6 +66,7 @@ public class APIConnector {
                 if (status == 200) {
                     return new JSONObject(EntityUtils.toString(response.getEntity()));
                 } else {
+                    LOGGER.fatal("Data could not be retrieved due to a server error");
                     throw new HttpResponseException(status, "Data could not be retrieved due to a server error");
                 }
             }
@@ -82,7 +83,8 @@ public class APIConnector {
                 if (status == 200) {
                     return new JSONObject(EntityUtils.toString(response.getEntity()));
                 } else {
-                    throw new HttpResponseException(status, "Pricing Data could not be retrieved due to a server");
+                    LOGGER.fatal("Pricing Data could not be retrieved due to a server error");
+                    throw new HttpResponseException(status, "Pricing Data could not be retrieved due to a server error");
                 }
             }
         }
@@ -91,6 +93,7 @@ public class APIConnector {
     private void loadAPIConfigs(String filepath) throws IOException {
         File file = new File(filepath);
         if (!file.exists()) {
+            LOGGER.fatal("There was no file found in the path");
             throw new FileNotFoundException("There was no file found in the path");
         }
 

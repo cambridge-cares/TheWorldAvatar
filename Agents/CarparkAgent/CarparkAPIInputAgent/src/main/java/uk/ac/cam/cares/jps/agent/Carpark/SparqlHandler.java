@@ -35,7 +35,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 public class SparqlHandler {
-    public static final Logger Log = LogManager.getLogger(CarparkAgent.class);
+    public static final Logger LOGGER = LogManager.getLogger(SparqlHandler.class);
     public String queryEndpoint;
     public String updateEndpoint;
     public String sparqlUsername;
@@ -122,10 +122,13 @@ public class SparqlHandler {
             try {
                 mappingfolder = System.getenv(prop.getProperty("Carpark.mappingfolder"));
             } catch (NullPointerException e) {
+                LOGGER.fatal("The key Carpark.mappingfolder cannot be found");
                 throw new IOException("The key Carpark.mappingfolder cannot be found");
             }
 
             if (mappingfolder == null) {
+                LOGGER.fatal("The properties file does not contain the key Carpark.mappingfolder with a path to the folder containing the required JSON key to IRI Mappings");
+
                 throw new InvalidPropertiesFormatException("The properties file does not contain the key Carpark.mappingfolder with a path to the folder containing the required JSON key to IRI Mappings");
             }
             mappings = new ArrayList<>();
@@ -133,6 +136,7 @@ public class SparqlHandler {
             File[] mappingFiles = folder.listFiles();
 
             if (mappingFiles.length == 0) {
+                LOGGER.fatal("No files in folder");
                 throw new IOException("No files in folder");
             } else {
                 for (File mappingFile : mappingFiles) {
@@ -147,6 +151,7 @@ public class SparqlHandler {
     public void loadconfigs(String filepath) throws IOException {
         File file = new File(filepath);
         if (!file.exists()) {
+            LOGGER.fatal("There was no file found in the path");
             throw new FileNotFoundException("There was no file found in the path");
         }
         try (InputStream input = new FileInputStream(file)) {
@@ -175,7 +180,6 @@ public class SparqlHandler {
         word = word.toLowerCase();
         String[] listOfLabel = word.split(" ");
         String output = "";
-        Log.info("The word to capitalise is " + word);
         for (int j = 0; j < listOfLabel.length; j++) {
             if (listOfLabel[j].length() < 1) {
                 output = output + listOfLabel[j];
@@ -216,6 +220,7 @@ public class SparqlHandler {
                             continue;
                         }
                     } catch (Exception e) {
+                        LOGGER.fatal("Could not check for an rdf:type for the Data IRI");
                         throw new JPSRuntimeException("Could not check for an rdf:type for the Data IRI");
                     }
 
@@ -322,6 +327,7 @@ public class SparqlHandler {
                         insert.prefix(PREFIX_ONTOCARPARK);
                         kbClient.executeUpdate(insert.getQueryString());
                     } catch (Exception e) {
+                        LOGGER.fatal("Unable to execute query: {} {}", query.getQueryString(), e);
                         throw new JPSRuntimeException("Unable to execute query: " + query.getQueryString(), e);
                     }
 
@@ -361,12 +367,7 @@ public class SparqlHandler {
                                     insert = Queries.INSERT_DATA(pattern);
                                     insert.prefix(PREFIX_ONTOCARPARK);
                                     kbClient.executeUpdate(insert.getQueryString());
-
-                                    try {
-                                        Devlabel = capitaliseFirstLetterOfEachWord(Devlabel);
-                                    } catch (Exception e) {
-                                        throw new JPSRuntimeException("The following word " + Devlabel + " cannot be parsed and capitalised.");
-                                    }
+                                    Devlabel = capitaliseFirstLetterOfEachWord(Devlabel);
 
                                     /**
                                      * //TriplePattern to query for whether buildingIRI hasAddress, if so, skip creating addressIRI and instantiating lat and long
@@ -407,6 +408,7 @@ public class SparqlHandler {
                                 }
                             }
                         } catch (Exception e) {
+                            LOGGER.fatal("Unable to execute query: {} {}", query.getQueryString(), e);
                             throw new JPSRuntimeException("Unable to execute query: " + query.getQueryString(), e);
                         }
 
