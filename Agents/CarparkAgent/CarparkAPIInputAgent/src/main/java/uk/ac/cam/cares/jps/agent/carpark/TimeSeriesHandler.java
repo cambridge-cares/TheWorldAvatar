@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.Carpark;
+package uk.ac.cam.cares.jps.agent.carpark;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
