@@ -25,7 +25,12 @@ import java.io.InputStream;
 @WebServlet(urlPatterns = {"/retrieve", "/status"})
 
 public class CarparkAgent extends JPSAgent {
+    // Agent starts off in invalid state, and will become valid when initialised without exceptions
+    private static boolean valid = false;
     private static final Logger LOGGER = LogManager.getLogger(CarparkAgent.class);
+    private static final String JSON_ERROR_KEY = "Error";
+    private static final String JSON_RESULT_KEY = "Result";
+    private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
     private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.";
     private static final String AGENT_ERROR_MSG = "The timeseries handler could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the timeseries handler!";
@@ -53,36 +58,50 @@ public class CarparkAgent extends JPSAgent {
         LOGGER.warn("This is a warn message.");
         LOGGER.error("This is an error message.");
         LOGGER.fatal("This is a fatal message.");
+        valid = true;
     }
 
     /**
-     * Handle request and route to different functions based on the path.
+     * An overloaded method to process all the different HTTP (GET/POST/PULL..) requests.
+     * Do note all requests to JPS agents are processed similarly and will only return response objects.
      *
-     * @param requestParams Parameters sent with HTTP request
-     * @param request       HTTPServletRequest instance
-     * @return result of the request
+     * @return A response to the request called as a JSON Object.
      */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+        return processRequestParameters(requestParams);
+    }
+
+    /**
+     * A method that process all the different HTTP (GET/POST/PULL..) requests.
+     * This will validate the incoming request type and parameters against their route options.
+     *
+     * @return A response to the request called as a JSON Object.
+     */
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
         LOGGER.info("Request received at: {" + datetime + "}");
         JSONObject msg = new JSONObject();
-        String url = request.getRequestURI();
+        String route = requestParams.get("requestUrl").toString();
+        route = route.substring(route.lastIndexOf("/") + 1);
+        switch (route) {
+            case "status":
+                msg = statusRoute();
+                break;
+            case "retrieve":
+                String agentProperties = System.getenv("Carpark_AGENTPROPERTIES");
+                String clientProperties = System.getenv("Carpark_CLIENTPROPERTIES");
+                String apiProperties = System.getenv("Carpark_APIPROPERTIES");
 
-        if (url.contains("status")) {
-            msg = getStatus();
+                String[] args = new String[]{agentProperties, clientProperties, apiProperties};
+                msg = initializeAgent(args);
+                break;
+            default:
+                LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
+                msg.put(JSON_ERROR_KEY, UNDEFINED_ROUTE_ERROR_MSG + route);
         }
-
-        if (url.contains("retrieve")) {
-            String agentProperties = System.getenv("Carpark_AGENTPROPERTIES");
-            String clientProperties = System.getenv("Carpark_CLIENTPROPERTIES");
-            String apiProperties = System.getenv("Carpark_APIPROPERTIES");
-
-            String[] args = new String[]{agentProperties, clientProperties, apiProperties};
-            msg = initializeAgent(args);
-        }
-
         return msg;
     }
 
@@ -91,11 +110,15 @@ public class CarparkAgent extends JPSAgent {
      *
      * @return Status of the agent
      */
-    private JSONObject getStatus() {
+    private JSONObject statusRoute() {
+        JSONObject response = new JSONObject();
         LOGGER.info("Detected request to get agent status...");
-        JSONObject result = new JSONObject();
-        result.put("description", "CarparkAgent is ready.");
-        return result;
+        if (valid) {
+            response.put(JSON_RESULT_KEY, "Agent is ready to receive requests.");
+        } else {
+            response.put(JSON_ERROR_KEY, "Agent could not be initialised! Please check logs for more information.");
+        }
+        return response;
     }
 
     public JSONObject initializeAgent(String[] args) {
