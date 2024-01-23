@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  carpark-agent:
+    image: carpark-agent:test
+    container_name: carpark-agent
+    build:
+      context: ..
+      target: test
+    volumes:
+      - ./config:/usr/local/tomcat/config
+    ports:
+      - "1080:8080"

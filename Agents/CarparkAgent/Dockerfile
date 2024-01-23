@@ -13,11 +13,25 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/CarparkAPIInputAgent
-RUN --mount=type=cache,target=/root/.m2/repository mvn package
+RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package -DskipTests --update-snapshots
 
 #==================================================================================================
 
-# Second stage: copy the downloaded dependency into a new image and build into an app
+# Test build stage: create an image for unit testing based on common build stage
+#==================================================================================================
+
+FROM builder as test
+
+RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
+
+COPY /CarparkAPIInputAgent/src/test ./src/test
+
+# Execute test
+CMD mvn test
+
+#==================================================================================================
+
+# Second build stage for production: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
 FROM tomcat:9.0 as agent
 WORKDIR /app
