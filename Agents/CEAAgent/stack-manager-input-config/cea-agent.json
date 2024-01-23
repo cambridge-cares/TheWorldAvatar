@@ -3,11 +3,11 @@
         "Name": "cea-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/cea-agent:3.3.0",
+                "Image": "ghcr.io/cambridge-cares/cea-agent:3.4.1",
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/CEAAgent/cea-agent/src/main/resources/CEAAgentConfig.properties",
+                        "Source": "../../../../../../Agents/CEAAgent/cea-agent/src/main/resources/CEAAgentConfig.properties",
                         "Target": "/resources/CEAAgentConfig.properties"
                     }
                 ],

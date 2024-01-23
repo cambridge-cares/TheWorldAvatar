@@ -1,0 +1,35 @@
+PREFIX powsys: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+    {
+        BIND ("Venue Name" AS ?Property)
+        [IRI] powsys:hasVenueName ?Value.
+    } UNION {
+        BIND ("Class Name" AS ?Property)
+        [IRI] powsys:hasVenueName ?venuename.
+        ?classSchedule a powsys:ClassSchedule.
+        ?classSchedule powsys:hasVenue ?venuename.
+        ?classSchedule <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasName> ?Value.
+    } UNION{
+        BIND ("Day" AS ?Property)
+        [IRI] powsys:hasVenueName ?venuename.
+        ?classSchedule a powsys:ClassSchedule.
+        ?classSchedule powsys:hasVenue ?venuename.
+        ?classSchedule <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasDay> ?Value.
+    } UNION{
+        BIND ("Class Time" AS ?Property)
+        [IRI] powsys:hasVenueName ?venuename.
+        ?classSchedule a powsys:ClassSchedule.
+        ?classSchedule powsys:hasVenue ?venuename.
+        ?classSchedule <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasTime> ?Value.
+    } UNION{
+         BIND ("Student Profile" AS ?Property)
+         [IRI] powsys:hasVenueName ?venuename.
+         ?classSchedule a powsys:ClassSchedule.
+         ?classSchedule powsys:hasVenue ?venuename.
+         ?classSchedule <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasStudentProfiles> ?Value.
+    }
+
+}
