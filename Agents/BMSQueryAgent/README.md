@@ -1,9 +1,11 @@
 # BMSQueryAgent
 BMSQueryAgent is an agent designed to query for equipment instances and the related zones from the knowledge graph.
-With this agent, a user can get all the equipment following the link building - facility - room - equipment. The agent is usually used in the BMS Query App for visualisation.
+With this agent, a user can get all the equipment following the link building - facility - room - equipment. 
 
 To achieve a balance between response speed and body size, the agent breaks the above link to two Http requests. 
 - Request sent to `retrieve/zones` will return all the available buildings, the associated facilities and all the rooms in each facility in JSON format. 
+- Request sent to `retrieve/lab` is similar to `retrieve/zones` but only the zones in lab namespace
+- Request sent to `retrieve/office` is similar to `retrieve/zones` but only the zones in office namespace
 - Once the room is determined, users can send `retrieve/equipment?RoomIRI=<selected room iri>` to get all the equipment in the selected room.
 
 # 1. Setup
@@ -26,22 +28,7 @@ For the BMSQueryAgent to return results, it is assumed that there is already kno
 BMSQueryAgent does not depend on [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent), but they are used together to create time series visualisation in the [BMS Query App](https://github.com/cambridge-cares/TheWorldAvatar/tree/1502-android-app-for-data-visualisation/Apps/BMSQueryApp).
 
 ## 1.1 Config BMSQueryAgent in Stack
-### 1) Build Docker Image
-The BMSQueryAgent is set up to use the Maven repository. You'll need to provide your credentials in single-word text files located like this:
-```
-./credentials/
-    repo_username.txt
-    repo_password.txt
-```
-repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
-which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-Then build image with:
-```
-docker build . -t bms-query-agent:1.0.0
-```
-
-### 2) Add Config to Stack Manager
 Copy `stack-manager-input-config-service/bms-query-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
 
 Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it doesn't exist. If it exists already, append the agent to the file as follows:
@@ -76,6 +63,8 @@ Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/D
 The agent accepts three paths:
 - /status
 - /retrieve/zones
+- /retrieve/lab
+- /retrieve/office
 - /retrieve/equipment?roomIRI="room iri"
 
 ## Status
@@ -90,7 +79,7 @@ Result in:
 ```
 
 ## Retrieve Zones
-This request gets all the available buildings, the associated facilities and all the rooms in each facility in JSON format. The request has the following format:
+This request gets all the available buildings from lab and office namespace, the associated facilities and all the rooms in each facility in JSON format. The request has the following format:
 ```
 curl -X GET http://localhost:3838/bms-query-agent/retrieve/zones
 ```
@@ -125,6 +114,20 @@ Result in:
     }
 }
 ```
+
+## Retrieve Lab Zones
+This request gets all the available buildings from lab namespace, the associated facilities and all the rooms in each facility in JSON format. The request has the following format:
+```
+curl -X GET http://localhost:3838/bms-query-agent/retrieve/lab
+```
+The response will have similar structure as in `/retrieve/zones`
+
+## Retrieve Office Zones
+This request gets all the available buildings from office namespace, the associated facilities and all the rooms in each facility in JSON format. The request has the following format:
+```
+curl -X GET http://localhost:3838/bms-query-agent/retrieve/office
+```
+The response will have similar structure as in `/retrieve/zones`
 
 ## Retrieve Equipment
 This request gets all the equipment in a given room. The request has the following format:

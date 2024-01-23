@@ -22,42 +22,50 @@ class SpatialZoneFacadeTest {
     private static final String BIM_REP_CONTEXT_INST = TEST_BASE_URI + "GeometricRepresentationContext_352";
     private static final String WCS_INST = TEST_BASE_URI + "LocalPlacement_2531";
     private static final String TRUE_NORTH_INST = TEST_BASE_URI + "DirectionVector_5513";
+    // Address
+    private static final String STREET = "Road Street";
+    private static final String STREET_NUMBER = "52";
+    private static final String ADDRESS_LINE = STREET + " " + STREET_NUMBER;
+    private static final String CITY = "Cambridge";
+    private static final String STATE = "Cambridgeshire";
+    private static final String COUNTRY = "England";
+    private static final String POSTAL_CODE = "51284";
     // Spatial zones
     private static final String SITE_INST = TEST_BASE_URI + "IfcSite_16";
     private static final String SITE_ID = "1204avak981";
     private static final String SITE_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_1041";
-    private static final String SITE_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_1041";
+    private static final String SITE_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_1041";
     private static final String SITE_NAME = "Land boundary";
     private static final String BUILDING_INST = TEST_BASE_URI + "IfcBuilding_32";
     private static final String BUILDING_ID = "maso9127";
     private static final String BUILDING_NAME = "Host building";
     private static final String BUILDING_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_1052";
-    private static final String BUILDING_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_1052";
+    private static final String BUILDING_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_1052";
     private static final String STOREY_INST = TEST_BASE_URI + "IfcBuildingStorey_48";
     private static final String STOREY_ID = "kja184he";
     private static final String STOREY_NAME = "First storey";
     private static final String STOREY_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_343";
-    private static final String STOREY_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_343";
+    private static final String STOREY_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_343";
     private static final String STOREY_INST2 = TEST_BASE_URI + "IfcBuildingStorey_52";
     private static final String STOREY_2_ID = "mh1br";
     private static final String STOREY_2_NAME = "Second storey";
     private static final String STOREY_2_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_3453";
-    private static final String STOREY_2_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_3453";
+    private static final String STOREY_2_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_3453";
     private static final String LIVING_ROOM_INST = TEST_BASE_URI + "IfcSpace_215";
     private static final String LIVING_ROOM_ID = "la17246";
     private static final String LIVING_ROOM_NAME = "Living room";
     private static final String LIVING_ROOM_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_5525";
-    private static final String LIVING_ROOM_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_5525";
+    private static final String LIVING_ROOM_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_5525";
     private static final String BEDROOM_INST = TEST_BASE_URI + "IfcSpace_321";
     private static final String BEDROOM_ID = "eq9e71";
     private static final String BEDROOM_NAME = "Bedroom";
     private static final String BEDROOM_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_6521";
-    private static final String BEDROOM_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_6521";
+    private static final String BEDROOM_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_6521";
     private static final String KITCHEN_INST = TEST_BASE_URI + "IfcSpace_615";
     private static final String KITCHEN_ID = "0a126gr";
     private static final String KITCHEN_NAME = "Kitchen";
     private static final String KITCHEN_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_7373";
-    private static final String KITCHEN_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_7373";
+    private static final String KITCHEN_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_7373";
     private static final String PROJECT_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_5";
     private static final String BUILDING_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_106";
     private static final String STOREY_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_126";
@@ -99,7 +107,7 @@ class SpatialZoneFacadeTest {
         // For IfcProject context properties
         Resource projectContextDimBlankNode = sampleModel.createResource();
         Resource projectContextPrecisionBlankNode = sampleModel.createResource();
-        Resource projectContext= sampleModel.createResource(REP_CONTEXT_INST)
+        Resource projectContext = sampleModel.createResource(REP_CONTEXT_INST)
                 .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcGeometricRepresentationContext"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "coordinateSpaceDimension_IfcGeometricRepresentationContext"), projectContextDimBlankNode)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "precision_IfcGeometricRepresentationContext"), projectContextPrecisionBlankNode)
@@ -126,7 +134,7 @@ class SpatialZoneFacadeTest {
                 .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcSite"))
                 .addProperty(hasName, siteNameBlankNode)
-                .addProperty(hasId,siteIDBlankNode)
+                .addProperty(hasId, siteIDBlankNode)
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refElevation_IfcSite"),
                         siteBlankNode)
                 .addProperty(objectPlacement, sitePositionNode);
@@ -136,7 +144,7 @@ class SpatialZoneFacadeTest {
         // For IfcBuilding
         Resource buildingBlankNode = sampleModel.createResource();
         Resource buildingNameBlankNode = sampleModel.createResource();
-        Resource buildingIDBlankNode = sampleModel.createResource();;
+        Resource buildingIDBlankNode = sampleModel.createResource();
         Resource buildingPositionNode = sampleModel.createResource(BUILDING_POSITION_INST).addProperty(JunitTestUtils.RDF_TYPE, localPlacement);
         sampleModel.createResource(BUILDING_INST)
                 .addProperty(JunitTestUtils.RDF_TYPE,
@@ -145,7 +153,21 @@ class SpatialZoneFacadeTest {
                 .addProperty(hasId, buildingIDBlankNode)
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "elevationOfRefHeight_IfcBuilding"),
                         buildingBlankNode)
-                .addProperty(objectPlacement, buildingPositionNode);
+                .addProperty(objectPlacement, buildingPositionNode)
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "buildingAddress_IfcBuilding"), sampleModel.createResource()
+                        .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPostalAddress"))
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "addressLines_IfcPostalAddress"),
+                                sampleModel.createResource().addProperty(hasContents, sampleModel.createResource()
+                                                .addProperty(hasString, ResourceFactory.createPlainLiteral(ADDRESS_LINE))))
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "town_IfcPostalAddress"),
+                                sampleModel.createResource().addProperty(hasString, ResourceFactory.createPlainLiteral(CITY)))
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "region_IfcPostalAddress"),
+                                sampleModel.createResource().addProperty(hasString, ResourceFactory.createPlainLiteral(STATE)))
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "country_IfcPostalAddress"),
+                                sampleModel.createResource().addProperty(hasString, ResourceFactory.createPlainLiteral(COUNTRY)))
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "postalCode_IfcPostalAddress"),
+                                sampleModel.createResource().addProperty(hasString, ResourceFactory.createPlainLiteral(POSTAL_CODE)))
+                );
         sampleModel.add(buildingNameBlankNode, hasString, ResourceFactory.createPlainLiteral(BUILDING_NAME));
         sampleModel.add(buildingIDBlankNode, hasString, ResourceFactory.createPlainLiteral(BUILDING_ID));
         sampleModel.add(buildingBlankNode, hasDouble, ResourceFactory.createTypedLiteral(String.valueOf(TEST_BUILDING_REF_ELEV_DOUBLE)));
@@ -159,7 +181,9 @@ class SpatialZoneFacadeTest {
     }
 
     @AfterAll
-    static void resetNamespace(){ NamespaceMapper.setBaseNameSpace("");}
+    static void resetNamespace() {
+        NamespaceMapper.setBaseNameSpace("");
+    }
 
     @Test
     void testGenZoneTriplesSimpleModel() {
@@ -423,7 +447,8 @@ class SpatialZoneFacadeTest {
         sampleModel.add(longSecValBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LONG_SEC)));
         sampleModel.add(longSecBlankNode, hasNext, longMilSecBlankNode);
         sampleModel.add(longMilSecBlankNode, hasContents, longMilSecValBlankNode);
-        sampleModel.add(longMilSecValBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LONG_MIL_SEC)));    }
+        sampleModel.add(longMilSecValBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LONG_MIL_SEC)));
+    }
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
@@ -450,6 +475,14 @@ class SpatialZoneFacadeTest {
         expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, " + JunitTestUtils.RDFS_LABEL + ", \"" + BUILDING_NAME);
         expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + BUILDING_ID);
         expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + BUILDING_POSITION_BIM_INST);
+        expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuiltenv/hasAddress, " + TEST_BASE_URI + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, " + JunitTestUtils.RDF_TYPE + ", http://ontology.eil.utoronto.ca/icontact.owl#Address");
+        expected.add(TEST_BASE_URI + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasStreet, \"" + STREET);
+        expected.add(TEST_BASE_URI + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasStreetNumber, \"" + STREET_NUMBER);
+        expected.add(TEST_BASE_URI + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasCity, \"" + CITY);
+        expected.add(TEST_BASE_URI + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasState, \"" + STATE);
+        expected.add(TEST_BASE_URI + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasCountry, \"" + COUNTRY);
+        expected.add(TEST_BASE_URI + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasPostalCode, \"" + POSTAL_CODE);
         expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_BUILDING_REF_ELEV_DOUBLE);
         expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, " + JunitTestUtils.RDF_TYPE + ", https://w3id.org/bot#Building");
         expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");

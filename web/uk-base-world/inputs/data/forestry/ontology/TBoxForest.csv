@@ -1,0 +1,34 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoForest,Tbox,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoForest,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoForest,TBox,OntoForest is an ontology developed for creating a digital twin for the forest.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoForest,TBox,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
+Woodland,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,Land covered with trees and shrubs,,Woodland
+NonWoodland,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,Land not covered with trees.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Non Woodland
+AssumedWoodland,Class,Woodland,IS-A,,,,Areas have not been checked against the latest images and will be monitored in future updates and either updated to reflect forest type or removed from the dataset. (The Supplied grant scheme polygons and supplied FC new planting polygons).,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Assumed Woodland
+Broadleaved,Class,Woodland,IS-A,,,,Woodland dominated (more than 80% of the area) by trees which do not have needles. ,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Broadleaved
+Conifer,Class,Woodland,IS-A,,,,Woodland dominated (more than 80% of the area) by trees which have needle-like leaves.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Conifer
+Coppice,Class,Woodland,IS-A,,,,Woodland where young tree stems are repeatedly cut down to near ground level to put out new shoots from their stump or roots.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Coppice
+CoppiceWithStandards,Class,Woodland,IS-A,,,,"Woodland where young tree stems, mainly large broadleaved trees, are repeatedly cut down to near ground level to put out new shoots from their stump or roots.",http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Coppice with Standards
+Failed,Class,Woodland,IS-A,,,,"Established woodland, but which may have failed to achieve woodland cover.",http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Failed
+Felled,Class,Woodland,IS-A,,,,Areas of woodland where the trees have been harvested or felled.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Felled
+GroundPrep,Class,Woodland,IS-A,,,,Land recently converted from some other land use to woodland.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Ground Prep
+LowDensity,Class,Woodland,IS-A,,,,Polygonal areas mapped by NIWT but not mapped by NFI but investigation of the archive images shows a higher density than at present. These have been included for future monitoring.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Low Density
+MixedMainlyBroadleaved,Class,Woodland,IS-A,,,,Woodland predominantly covered (more than 50% of the area and less than 80%) by broadleaved trees and exhibits intermediate characteristics between Conifer and Broadleaved woodland.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Mixed Mainly Broadleaved
+MixedMainlyConifer,Class,Woodland,IS-A,,,,Woodland predominantly covered (more than 50% of the area and less than 80%) by coniferous trees and exhibits intermediate characteristics between Conifer and Broadleaved woodland.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Mixed Mainly Conifer
+Shrub,Class,Woodland,IS-A,,,,"A plant community characterised by vegetation dominated by shrubs, often also including grasses, herbs, and geophytes. ",http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Shrub
+Uncertain,Class,Woodland,IS-A,,,,Area where the interpreter is uncertain of the IFT/IOA to be used.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Uncertain
+Windblow,Class,Woodland,IS-A,,,,Woodland where trees that have been windblown.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Windblow
+YoungTrees,Class,Woodland,IS-A,,,,Areas where planting is clearly visible but the trees cannot yet be allocated between Conifer and Broadleaved due to their immaturity. These areas can be on either land new to woodland or where a felled crop has been replaced.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Young Trees
+AgricultureLand,Class,NonWoodland,IS-A,,,,Land that may contain a cereal crop or pasture.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Agriculture Land
+BareArea,Class,NonWoodland,IS-A,,,,Bare ground or rock.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Bare Area
+CloudOrShadow,Class,NonWoodland,IS-A,,,,"If cloud or shadow areas obscure woodland detail and it is difficult to allocate one of the above IFTs, then digitise a new boundary line feature around the area of uncertain forest type.",http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Cloud or Shadow
+Grassland,Class,NonWoodland,IS-A,,,,A predominantly grassy area - may or may not be agricultural.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Grassland
+OpenWater,Class,NonWoodland,IS-A,,,,"Normally labelled within OS MasterMap, areas of even colour.",http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Open Water
+OtherVegetation,Class,NonWoodland,IS-A,,,,"Not covered by the above (e.g. gorse, rhododendron, bracken, heather etc)",http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Other Vegetation
+Powerline,Class,NonWoodland,IS-A,,,,"Linear feature, possibly shadow evidence of poles, pylons or even the cables/lines.",http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Powerline
+Quarry,Class,NonWoodland,IS-A,,,,"A place with evidence of change from vegetation to geology; sand, slate, rock etc. Active quarries could have buildings, and heavy plant tracks leading into the quarry.",http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Quarry
+River,Class,NonWoodland,IS-A,,,,Linear feature; depending on location can be fairly straight or meander through woodland,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,River
+Road,Class,NonWoodland,IS-A,,,,Linear feature; often fairly straight with gentle bends or turning circles,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Road
+Urban,Class,NonWoodland,IS-A,,,,Buildings within woodland areas; may include gardens surrounding the buildings.,http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Urban
+Windfarm,Class,NonWoodland,IS-A,,,,"Possible shadow evidence of turbines, normally in groups.",http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl,Windfarm

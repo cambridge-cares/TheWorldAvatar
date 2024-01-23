@@ -65,13 +65,26 @@ class IfcAbstractRepresentationTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(true ), result);
     }
 
-    private List<String> genExpectedCommonStatements() {
+    @Test
+    void testAddIfcAbstractRepresentationStatementsMissingName() {
+        // Set up
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        IfcAbstractRepresentation sample = new IfcAbstractRepresentation(testClassName1, "", testUID1, testPlacementIri1);
+        // Execute method
+        sample.addIfcAbstractRepresentationStatements(sampleSet, testClass);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(false), result);
+    }
+
+    private List<String> genExpectedCommonStatements(boolean reqName) {
         List<String> expected = new ArrayList<>();
         expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, " + JunitTestUtils.RDF_TYPE + ", " + testClass);
-        expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, " + JunitTestUtils.RDFS_LABEL + ", \"" + testName1);
+        if(reqName) expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, " + JunitTestUtils.RDFS_LABEL + ", \"" + testName1);
         expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + testUID1);
         expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testBimPlacementIri);
         return expected;

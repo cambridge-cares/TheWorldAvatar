@@ -1,0 +1,21 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+prefix bot: <https://w3id.org/bot#>
+SELECT ?Property ?Value ?Unit
+WHERE {
+  { BIND ("Name" AS ?Property )
+    [IRI] rdfs:label ?Value .
+  } UNION {
+    BIND ("IRI" AS ?Property )
+    [IRI] rdfs:label/^rdfs:label ?Value .
+  } UNION {
+    BIND ("Located in" AS ?Property )
+    ?building bot:hasStorey ?storey;
+    	ontobim:hasIfcRepresentation/rdfs:label ?buildingname.
+    ?storey ontobim:hasRoom ?room;
+    	ontobim:hasIfcRepresentation/rdfs:label ?storeyname.
+    ?room bot:containsElement [IRI];
+    	ontobim:hasIfcRepresentation/rdfs:label ?roomname.
+    BIND(CONCAT(STR(?roomname), " at ", STR(?storeyname), " of the ", STR(?buildingname)) AS ?Value)
+  }
+}

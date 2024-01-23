@@ -7,11 +7,15 @@ import java.util.Properties;
 
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
+import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Dataset {
+
+    static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/";
 
     public static final String NAME_KEY = "name";
 
@@ -27,8 +31,11 @@ public class Dataset {
     private final List<DataSubset> dataSubsets;
     private final List<GeoServerStyle> geoserverStyles;
     private final List<String> ontopMappings;
+    private final StaticGeoServerData staticGeoServerData;
 
     private final boolean skip;
+
+    private final String baseIRI;
 
     @JsonCreator
     public Dataset(@JsonProperty(value = NAME_KEY) @JacksonInject(NAME_KEY) String name,
@@ -40,7 +47,9 @@ public class Dataset {
             @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
             @JsonProperty(value = "mappings") List<String> ontopMappings,
-            @JsonProperty(value = "skip") boolean skip) {
+            @JsonProperty(value = "staticGeoServerData") StaticGeoServerData staticGeoServerData,
+            @JsonProperty(value = "skip") boolean skip,
+            @JsonProperty(value = "baseIRI") String baseIRI) {
         this.name = name;
         this.datasetDirectory = datasetDirectory;
         this.database = database;
@@ -50,7 +59,9 @@ public class Dataset {
         this.dataSubsets = dataSubsets;
         this.geoserverStyles = geoserverStyles;
         this.ontopMappings = ontopMappings;
+        this.staticGeoServerData = staticGeoServerData;
         this.skip = skip;
+        this.baseIRI = (null == baseIRI) ? DEFAULT_BASE_IRI : baseIRI;
     }
 
     public String getName() {
@@ -66,7 +77,7 @@ public class Dataset {
     }
 
     public String getDatabase() {
-        return (null != database) ? database : "postgres";
+        return (null != database) ? database : PostGISClient.DEFAULT_DATABASE_NAME;
     }
 
     public String getNamespace() {
@@ -105,8 +116,16 @@ public class Dataset {
         return (null != ontopMappings) ? ontopMappings : Collections.emptyList();
     }
 
+    public StaticGeoServerData getStaticGeoServerData() {
+        return staticGeoServerData;
+    }
+
     public boolean isSkip() {
         return skip;
+    }
+
+    public String baseIRI() {
+        return baseIRI;
     }
 
 }

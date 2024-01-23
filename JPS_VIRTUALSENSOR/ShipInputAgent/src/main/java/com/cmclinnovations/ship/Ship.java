@@ -20,8 +20,10 @@ public class Ship {
     private double lat;
     private double lon;
     private Instant timestamp; // timestamp when data was obtained
+    private String shipName;
 
-    public Ship() {}
+    public Ship() {
+    }
 
     // raw data
     public Ship(JSONObject json, int timeOffset) {
@@ -32,7 +34,15 @@ public class Ship {
         this.lat = json.getDouble("LAT");
         this.lon = json.getDouble("LON");
         this.shipType = json.getInt("SHIPTYPE");
-        this.timestamp = LocalDateTime.parse(json.getString("TIMESTAMP")).toInstant(ZoneOffset.UTC).plus(Duration.ofHours(timeOffset));
+        this.timestamp = LocalDateTime.parse(json.getString("TIMESTAMP")).toInstant(ZoneOffset.UTC)
+                .plus(Duration.ofHours(timeOffset));
+
+        shipName = "Ship: ";
+        if (json.has("SHIPNAME")) {
+            shipName += json.getString("SHIPNAME");
+        } else {
+            shipName += "Ship - " + mmsi;
+        }
     }
 
     public Instant getTimestamp() {
@@ -42,6 +52,7 @@ public class Ship {
     public void setIri(String iri) {
         this.iri = iri;
     }
+
     public String getIri() {
         return this.iri;
     }
@@ -49,6 +60,7 @@ public class Ship {
     public void setMmsi(int mmsi) {
         this.mmsi = mmsi;
     }
+
     public int getMmsi() {
         return this.mmsi;
     }
@@ -56,6 +68,7 @@ public class Ship {
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+
     public double getSpeed() {
         return this.speed;
     }
@@ -63,6 +76,7 @@ public class Ship {
     public void setCourse(int course) {
         this.course = course;
     }
+
     public double getCourse() {
         return this.course;
     }
@@ -70,6 +84,7 @@ public class Ship {
     public void setLat(double lat) {
         this.lat = lat;
     }
+
     public double getLat() {
         return this.lat;
     }
@@ -77,6 +92,7 @@ public class Ship {
     public void setLon(double lon) {
         this.lon = lon;
     }
+
     public double getLon() {
         return this.lon;
     }
@@ -93,6 +109,7 @@ public class Ship {
     public void setShipType(int shipType) {
         this.shipType = shipType;
     }
+
     public int getShipType() {
         return this.shipType;
     }
@@ -100,6 +117,7 @@ public class Ship {
     public void setLocationMeasureIri(String locationMeasureIri) {
         this.locationMeasureIri = locationMeasureIri;
     }
+
     public String getLocationMeasureIri() {
         return this.locationMeasureIri;
     }
@@ -107,6 +125,7 @@ public class Ship {
     public void setCourseMeasureIri(String courseMeasureIri) {
         this.courseMeasureIri = courseMeasureIri;
     }
+
     public String getCourseMeasureIri() {
         return this.courseMeasureIri;
     }
@@ -114,7 +133,12 @@ public class Ship {
     public void setSpeedMeasureIri(String speedMeasureIri) {
         this.speedMeasureIri = speedMeasureIri;
     }
+
     public String getSpeedMeasureIri() {
         return this.speedMeasureIri;
+    }
+
+    public String getShipName() {
+        return shipName;
     }
 }

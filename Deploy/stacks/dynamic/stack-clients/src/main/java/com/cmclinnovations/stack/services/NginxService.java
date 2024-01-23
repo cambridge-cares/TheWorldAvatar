@@ -41,8 +41,8 @@ public final class NginxService extends ContainerService implements ReverseProxy
 
     private ConfigSender sender = new ConfigSender();
 
-    public NginxService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public NginxService(String stackName, ServiceConfig config) {
+        super(stackName, config);
 
         updateExternalPort(config);
 

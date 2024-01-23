@@ -1,0 +1,6 @@
+# This file shows a sample http request to assess the total cost savings
+# between historical generation and optimised/forecast generation
+# NOTE: the corresponding method expects an empty GET request
+
+#GET http://localhost:5000/compare_cost
+GET http://<host>:3838/dh-optimisation-agent/compare_cost

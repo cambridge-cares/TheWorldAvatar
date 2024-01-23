@@ -120,20 +120,10 @@ public class GDALClient extends ContainerClient {
                 .withEvaluationTimeout(300)
                 .exec();
 
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
     }
 
-    private void handleErrors(ByteArrayOutputStream errorStream, String execId) {
-        long commandErrorCode = getCommandErrorCode(execId);
-        if (0 != commandErrorCode) {
-            throw new RuntimeException("Docker exec command returned '" + commandErrorCode
-                    + "' and wrote the following to stderr:\n" + errorStream.toString());
-        } else {
-            logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
-        }
-    }
-
-    public void uploadRasterFilesToPostGIS(String database, String layerName,
+    public void uploadRasterFilesToPostGIS(String database, String schema, String layerName,
             String dirPath, GDALTranslateOptions options, boolean append) {
 
         String gdalContainerId = getContainerId("gdal");
@@ -143,7 +133,8 @@ public class GDALClient extends ContainerClient {
 
             tempDir.copyFrom(Path.of(dirPath));
 
-            List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, layerName, tempDir, options);
+            List<String> geotiffFiles = convertRastersToGeoTiffs(gdalContainerId, database, schema, layerName, tempDir,
+                    options);
 
             ensurePostGISRasterSupportEnabled(postGISContainerId, database);
 
@@ -159,7 +150,7 @@ public class GDALClient extends ContainerClient {
                 .withErrorStream(errorStream)
                 .exec();
 
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
 
         return outputStream.toString().lines()
                 .map(entry -> entry.split(": "))
@@ -168,8 +159,8 @@ public class GDALClient extends ContainerClient {
                         Multimap::putAll);
     }
 
-    private List<String> convertRastersToGeoTiffs(String gdalContainerId, String layerName, TempDir tempDir,
-            GDALTranslateOptions options) {
+    private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
+            String layerName, TempDir tempDir, GDALTranslateOptions options) {
 
         Multimap<String, String> foundRasterFiles = findGeoFiles(gdalContainerId, tempDir.toString());
 
@@ -184,7 +175,8 @@ public class GDALClient extends ContainerClient {
             String inputFormat = fileTypeEntry.getKey();
             for (String filePath : fileTypeEntry.getValue()) {
 
-                String outputPath = generateRasterOutPath(tempDir.toString(), filePath, layerName);
+                String outputPath = generateRasterOutFilePath(tempDir.toString(), databaseName, schemaName, layerName,
+                        filePath);
                 geotiffFiles.add(outputPath);
 
                 Path directoryPath = Paths.get(outputPath).getParent();
@@ -206,7 +198,7 @@ public class GDALClient extends ContainerClient {
                         .withEvaluationTimeout(300)
                         .exec();
 
-                handleErrors(errorStream, execId);
+                handleErrors(errorStream, execId, logger);
             }
         }
 
@@ -221,11 +213,11 @@ public class GDALClient extends ContainerClient {
         String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
                 .withHereDocument("CREATE EXTENSION IF NOT EXISTS postgis_raster;" +
-                        "ALTER DATABASE " + database + " SET postgis.enable_outdb_rasters = True;" +
-                        "ALTER DATABASE " + database + " SET postgis.gdal_enabled_drivers = 'GTiff';")
+                        "ALTER DATABASE \"" + database + "\" SET postgis.enable_outdb_rasters = True;" +
+                        "ALTER DATABASE \"" + database + "\" SET postgis.gdal_enabled_drivers = 'GTiff';")
                 .withErrorStream(errorStream)
                 .exec();
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
     }
 
     private void uploadRasters(String postGISContainerId, String database, String layerName,
@@ -235,9 +227,10 @@ public class GDALClient extends ContainerClient {
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         String mode = append ? "-a" : "-d";
         String execId = createComplexCommand(postGISContainerId, "bash", "-c",
+                "(which raster2pgsql || (apt update && apt install -y postgis && rm -rf /var/lib/apt/lists/*)) && " +
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
                 "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
-                        + geotiffFiles.stream().collect(Collectors.joining(" ", " ", " "))
+                        + geotiffFiles.stream().collect(Collectors.joining("' '", " '", "' "))
                         + layerName
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")
                 .withOutputStream(outputStream)
@@ -245,15 +238,21 @@ public class GDALClient extends ContainerClient {
                 .withEvaluationTimeout(300)
                 .exec();
 
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
     }
 
-    private String generateRasterOutPath(String basePathIn, String filePath, String layerName) {
+    public static String generateRasterOutFilePath(String basePathIn, String databaseName, String schemaName,
+            String layerName,
+            String filePath) {
         return FileUtils.replaceExtension(
-                Path.of(StackClient.GEOTIFFS_DIR, layerName)
+                generateRasterOutDirPath(databaseName, schemaName, layerName)
                         .resolve(Path.of(basePathIn).relativize(Path.of(filePath)))
                         .toString(),
                 ".tif");
+    }
+
+    public static Path generateRasterOutDirPath(String databaseName, String schemaName, String layerName) {
+        return Path.of(StackClient.GEOTIFFS_DIR, databaseName, schemaName, layerName);
     }
 
 }

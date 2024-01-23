@@ -3,7 +3,22 @@
         "Name": "python-service",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/python-service:1.0.1"
+                "Image": "ghcr.io/cambridge-cares/python-service:1.3",
+                "Env": [
+                    "FILE_SERVER=http://ship-stack-file-server:8080/FileServer/"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "logs",
+                        "Target": "/root/.jps"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "vis_data",
+                        "Target": "/vis_data"
+                    }
+                ]
             }
         }
     },
