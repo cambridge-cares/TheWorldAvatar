@@ -10,6 +10,8 @@
     "dataSubsets": [
         {
             "type": "rdf",
+            "name": "kingslynn",
+            "subdirectory": "triples",
             "skip": false
         }
     ]

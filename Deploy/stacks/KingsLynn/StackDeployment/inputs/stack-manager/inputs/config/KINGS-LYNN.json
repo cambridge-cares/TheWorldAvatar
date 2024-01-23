@@ -2,7 +2,7 @@
     "services": {
         "includes": [
             "visualisation",
-            "feature_info_agent"
+            "feature-info-agent"
         ],
         "excludes": [
             "citydbimpexp",

@@ -11,6 +11,8 @@
     "dataSubsets": [
         {
             "type": "rdf",
+            "name": "ocgml",
+            "subdirectory": "quads",
             "skip": false
         }
     ]

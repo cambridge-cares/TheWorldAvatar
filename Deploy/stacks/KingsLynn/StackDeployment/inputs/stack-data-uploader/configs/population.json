@@ -4,9 +4,9 @@
     "datasetDirectory": "population",
     "dataSubsets": [
         {
-            "type": "Raster",
-            "schema": "public",
-            "table": "population",
+            "type": "raster",
+            "name": "population",
+            "subdirectory": "population",
             "gdalTranslateOptions": {
                 "sridIn": "EPSG:27700"
             },
