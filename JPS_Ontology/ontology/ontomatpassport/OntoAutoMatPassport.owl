@@ -5,7 +5,10 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:om-2="http://www.ontology-of-units-of-measure.org/resource/om-2/"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:ontomatpassport="http://www.theworldavatar.com/kg/ontomatpassport#"
      xmlns:OntoAutoMatPassport="http://www.theworldavatar.com/kg/OntoAutoMatPassport#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/OntoAutoMatPassport">
         <owl:imports rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/dev-composite-materials-ontology/JPS_Ontology/ontology/ontomatpassport/OntoMatPassport.owl"/>
@@ -13,6 +16,148 @@
         <rdfs:label xml:lang="en">OntoAutoMatPassport</rdfs:label>
         <owl:versionInfo>1</owl:versionInfo>
     </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/HeatCapacity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatCapacity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/OntoAutoMatPassport#GlassTransitionTemperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/OntoAutoMatPassport#GlassTransitionTemperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/OntoAutoMatPassport#GlassTransitionTemperatureMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/OntoAutoMatPassport#GlassTransitionTemperatureMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">A thermal property referring to a range of temperatures over which a polymer converts from a rigid state to a soft state.</rdfs:comment>
+        <rdfs:label xml:lang="en">Glass transition temperature</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/OntoAutoMatPassport#GlassTransitionTemperatureMeasure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/OntoAutoMatPassport#GlassTransitionTemperatureMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:label xml:lang="en">Glass transition temperature measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/OntoAutoMatPassport#MeltingPoint -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/OntoAutoMatPassport#MeltingPoint">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/OntoAutoMatPassport#MeltingTemperatureMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/OntoAutoMatPassport#MeltingTemperatureMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">A thermal property indicating the temperature that causes a solid substance to convert into liquid form.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Melting temperature</rdfs:comment>
+        <rdfs:label xml:lang="en">Melting point</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/OntoAutoMatPassport#MeltingTemperatureMeasure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/OntoAutoMatPassport#MeltingTemperatureMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Melting temperature measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius -->
+
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin -->
+
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin"/>
 </rdf:RDF>
 
 
