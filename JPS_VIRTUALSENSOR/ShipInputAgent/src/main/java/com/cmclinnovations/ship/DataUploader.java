@@ -23,9 +23,6 @@ import org.json.JSONException;
 import org.json.JSONTokener;
 import org.springframework.core.io.ClassPathResource;
 
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 public class DataUploader {

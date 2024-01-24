@@ -28,6 +28,7 @@ public class ShipInputAgent extends HttpServlet {
     private AisStreamWebsocketClient client;
     public static final String UPDATE_PATH = "/update";
     public static final String RESTART_PATH = "/restart_live_server";
+    private static final String URI_STRING = "wss://stream.aisstream.io/v0/stream";
 
     @Override
     public void init() throws ServletException {
@@ -42,7 +43,7 @@ public class ShipInputAgent extends HttpServlet {
         if (EnvConfig.USE_LIVE_DATA) {
             URI uri;
             try {
-                uri = new URI("wss://stream.aisstream.io/v0/stream");
+                uri = new URI(URI_STRING);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
@@ -54,6 +55,13 @@ public class ShipInputAgent extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (req.getServletPath().contentEquals(RESTART_PATH)) {
+            URI uri;
+            try {
+                uri = new URI(URI_STRING);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+            client = new AisStreamWebsocketClient(uri, queryClient);
             client.connect();
         } else if (req.getServletPath().contentEquals(UPDATE_PATH)) {
             // read ship data from data folder

@@ -4,12 +4,20 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -18,10 +26,15 @@ import org.json.JSONObject;
 public class AisStreamWebsocketClient extends WebSocketClient {
     private static final Logger LOGGER = LogManager.getLogger(AisStreamWebsocketClient.class);
     private QueryClient queryClient;
+    private Map<Integer, Ship> mmsiToShipMap;
+    private Instant start;
+    private int numMessages;
+    private Thread thread;
 
     public AisStreamWebsocketClient(URI uri, QueryClient queryClient) {
         super(uri);
         this.queryClient = queryClient;
+        mmsiToShipMap = new HashMap<>();
     }
 
     @Override
@@ -29,15 +42,21 @@ public class AisStreamWebsocketClient extends WebSocketClient {
         // The close codes are documented in class org.java_websocket.framing.CloseFrame
         LOGGER.error("Connection closed error code: {}", code);
         LOGGER.error("Connection closed reason: {}", reason);
+        HttpPost post = new HttpPost("http://localhost:8080/ShipInputAgent" + ShipInputAgent.RESTART_PATH);
 
-        LOGGER.info("Reconnecting");
-        close();
-        connect();
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                CloseableHttpResponse response = httpClient.execute(post);) {
+            LOGGER.info("Restarting live updates");
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Error during restart");
+        }
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         // send subscription message upon connection
+        start = Instant.now();
         send(String.format(
                 "{\"APIKey\":\"%s\",\"BoundingBoxes\":%s, \"FilterMessageTypes\": [\"PositionReport\"]}",
                 EnvConfig.API_KEY, EnvConfig.BOUNDING_BOXES));
@@ -45,45 +64,68 @@ public class AisStreamWebsocketClient extends WebSocketClient {
 
     @Override
     public void onMessage(ByteBuffer message) {
+        numMessages += 1;
+        LOGGER.info("Number of collated messages: {}", numMessages);
         String messageString = StandardCharsets.UTF_8.decode(message).toString();
 
         JSONObject messageJson = new JSONObject(messageString);
         JSONObject metaData = messageJson.getJSONObject("MetaData");
         JSONObject positionReport = messageJson.getJSONObject("Message").getJSONObject("PositionReport");
 
-        Ship ship = new Ship();
-        ship.setMmsi(messageJson.getJSONObject("MetaData").getInt("MMSI"));
-        ship.setLat(positionReport.getDouble("Latitude"));
-        ship.setLon(positionReport.getDouble("Longitude"));
-        ship.setSpeed(positionReport.getDouble("Sog"));
-        if (!metaData.getString("ShipName").trim().isBlank()) {
-            ship.setShipName(metaData.getString("ShipName").trim());
-        }
+        int mmsi = messageJson.getJSONObject("MetaData").getInt("MMSI");
 
-        // Parse the timestamp string, remove nanoseconds and convert string to ISO
-        // standard
+        // remove nanoseconds and convert string to ISO standard
         Instant timestampInstant = LocalDateTime.parse(metaData.getString("time_utc").split("\\.")[0].replace(" ", "T"))
                 .toInstant(ZoneOffset.UTC);
+        double lat = positionReport.getDouble("Latitude");
+        double lon = positionReport.getDouble("Longitude");
+        double speed = positionReport.getDouble("Sog");
+        double cog = positionReport.getDouble("Cog");
 
-        ship.setTimestamp(timestampInstant);
+        if (mmsiToShipMap.containsKey(mmsi)) {
+            mmsiToShipMap.get(mmsi).addTimeSeriesData(timestampInstant, speed, lat, lon, cog);
+        } else {
+            Ship ship = new Ship();
+            ship.setMmsi(mmsi);
+            if (!metaData.getString("ShipName").trim().isBlank()) {
+                ship.setShipName(metaData.getString("ShipName").trim());
+            } else {
+                ship.setShipName("Ship" + mmsi);
+            }
+            ship.addTimeSeriesData(timestampInstant, speed, lat, lon, cog);
+            mmsiToShipMap.put(mmsi, ship);
+        }
 
-        if (queryClient.shipExists()) {
-            Thread newThread = new Thread(() -> {
+        Duration elapsedTime = Duration.between(start, Instant.now());
+
+        if (elapsedTime.toMinutes() > 10) {
+            LOGGER.info("Accumulated 10 minutes' worth of data, uploading consolidated ship data");
+            List<Ship> ships = new ArrayList<>(mmsiToShipMap.values());
+            try {
+                if (thread != null && thread.isAlive()) {
+                    LOGGER.info("Previous thread is still alive, waiting for it to finish");
+                    thread.join();
+                }
+            } catch (InterruptedException e) {
+                LOGGER.error("Error from previous uploading data thread");
+                LOGGER.error(e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+
+            thread = new Thread(() -> {
                 try {
-                    DataUploader.uploadShips(List.of(ship), queryClient);
+                    DataUploader.uploadShips(ships, queryClient);
                 } catch (IOException e) {
                     LOGGER.warn("Error in uploading ship data");
                     LOGGER.warn(e.getMessage());
                 }
             });
-            newThread.start();
-        } else {
-            try {
-                DataUploader.uploadShips(List.of(ship), queryClient);
-            } catch (IOException e) {
-                LOGGER.warn("Error in uploading ship data");
-                LOGGER.warn(e.getMessage());
-            }
+            thread.start();
+            mmsiToShipMap = new HashMap<>();
+            numMessages = 0;
+            start = Instant.now();
+            LOGGER.info("Resetting");
+            LOGGER.info("numMessages = {}", numMessages);
         }
     }
 

@@ -24,7 +24,6 @@ import org.apache.logging.log4j.Logger;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
-import java.rmi.Remote;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.postgis.Point;
@@ -222,7 +220,7 @@ public class QueryClient {
                 modify.insert(iri(courseMeasure).isA(MEASURE));
 
                 dataWithTimeSeries.add(courseMeasure);
-                classes.add(Integer.class);
+                classes.add(Double.class);
 
                 dataIRIs.add(dataWithTimeSeries);
                 dataClasses.add(classes);
@@ -334,16 +332,24 @@ public class QueryClient {
 
                 // order of dataIRIs is course, speed, location, as defined in the previous loop
                 List<List<?>> values = new ArrayList<>();
-                values.add(Arrays.asList(ship.getCourse()));
-                values.add(Arrays.asList(ship.getSpeed()));
-                values.add(Arrays.asList(ship.getLocation()));
-
-                List<Long> time = Arrays.asList(ship.getTimestamp().getEpochSecond());
+                List<Long> time;
+                if (ship.hasTimeSeries()) {
+                    time = ship.getTimestampList();
+                    values.add(ship.getCogList());
+                    values.add(ship.getSpeedList());
+                    values.add(ship.getLocationList());
+                } else {
+                    time = Arrays.asList(ship.getTimestamp().getEpochSecond());
+                    values.add(Arrays.asList(ship.getCourse()));
+                    values.add(Arrays.asList(ship.getSpeed()));
+                    values.add(Arrays.asList(ship.getLocation()));
+                }
 
                 TimeSeries<Long> ts = new TimeSeries<>(time, dataIRIs, values);
                 tsClient.addTimeSeriesData(ts, conn);
             });
         } catch (SQLException e) {
+            LOGGER.error("Error adding time series for ship");
             LOGGER.error(e.getMessage());
         }
 
