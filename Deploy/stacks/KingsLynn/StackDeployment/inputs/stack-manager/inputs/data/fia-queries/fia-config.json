@@ -23,10 +23,6 @@
             "metaFile": "OntoBuiltEnvProperties.sparql"
         },
         {
-            "class": "https://www.theworldavatar.com/kg/ontobuiltenv/Property",
-            "metaFile": "OntoBuiltEnvProperties.sparql"
-        },
-        {
             "class": "https://www.theworldavatar.com/kg/ontoflood/ArealExtentPolygon",
             "metaFile": "FloodWarnings.sparql"
         }
