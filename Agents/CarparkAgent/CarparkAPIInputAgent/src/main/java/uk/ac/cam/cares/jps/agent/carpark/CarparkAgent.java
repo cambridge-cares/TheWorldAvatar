@@ -87,7 +87,7 @@ public class CarparkAgent extends JPSAgent {
                 break;
             case "retrieve":
                 String[] args = new String[]{CARPARK_AGENT_PROPERTIES_KEY, CARPARK_CLIENT_PROPERTIES_KEY, CARPARK_API_PROPERTIES_KEY};
-                msg = initializeAgent(args);
+                msg = retrieveRoute(args);
                 break;
             default:
                 LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
@@ -112,7 +112,7 @@ public class CarparkAgent extends JPSAgent {
         return response;
     }
 
-    public JSONObject initializeAgent(String[] args) {
+    public JSONObject retrieveRoute(String[] args) {
         if (args.length != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
@@ -126,18 +126,7 @@ public class CarparkAgent extends JPSAgent {
             throw new JPSRuntimeException("Failed to retrieve mappings: ", e);
         }
 
-        TimeSeriesHandler tsHandler;
-        try {
-            tsHandler = new TimeSeriesHandler(mappings);
-        } catch (IOException e) {
-            LOGGER.error(AGENT_ERROR_MSG, e);
-            throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
-        }
-
-        LOGGER.info("Input Agent object initialized");
-        JSONObject jsonMessage = new JSONObject();
-        jsonMessage.accumulate(JSON_RESULT_KEY, "Input Agent Object Initialized");
-
+        LOGGER.info("Setting up the time series and remote store clients...");
         TimeSeriesClient<OffsetDateTime> tsclient;
         RemoteStoreClient kbClient;
         try {
@@ -155,13 +144,20 @@ public class CarparkAgent extends JPSAgent {
             // Retrieve RDB configs and populate it accordingly in sequence of url, user, password
             Queue<String> rdbConfigs = ConfigReader.retrieveRDBConfig(args[1]);
             tsclient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, rdbConfigs.poll(), rdbConfigs.poll(), rdbConfigs.poll());
-            tsHandler.setTsClient(tsclient);
         } catch (Exception e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
             throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
         }
-        LOGGER.info("Time Series object initialized");
-        jsonMessage.accumulate(JSON_RESULT_KEY, "Time Series Client Object Initialized");
+
+        LOGGER.info("Setting up the time series for the instantiation process...");
+        TimeSeriesHandler tsHandler;
+        try {
+            tsHandler = new TimeSeriesHandler(mappings);
+            tsHandler.setTsClient(tsclient);
+        } catch (IOException e) {
+            LOGGER.error(AGENT_ERROR_MSG, e);
+            throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
+        }
 
         try {
             tsHandler.initializeTimeSeriesIfNotExist();
@@ -170,6 +166,7 @@ public class CarparkAgent extends JPSAgent {
             throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
         }
 
+        LOGGER.info("Setting up the API connector...");
         APIConnector connector;
         try {
             connector = new APIConnector(args[2]);
@@ -178,56 +175,45 @@ public class CarparkAgent extends JPSAgent {
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
         }
 
-        LOGGER.info("API Connector Object Initialized");
-        jsonMessage.accumulate(JSON_RESULT_KEY, "API Connector object Initialized");
-
+        LOGGER.info("Retrieving available carpark lot data from the API...");
         JSONObject carparkReadings;
-
         try {
             carparkReadings = connector.getReadings();
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
+        JSONObject jsonMessage = new JSONObject();
+        LOGGER.info("Retrieved available lot readings for {} carparks", carparkReadings.length());
+        jsonMessage.put(JSON_RESULT_KEY, "Retrieved available lot readings for " + carparkReadings.getJSONArray("value").length() + " carparks.");
 
-        LOGGER.info("Retrieved {} carpark readings", carparkReadings.length());
-        jsonMessage.accumulate(JSON_RESULT_KEY, "Retrieved" + carparkReadings.getJSONArray("value").length() + " carpark readings");
-
+        LOGGER.info("Instantiating available carpark lot data...");
         if (!carparkReadings.isEmpty()) {
+            LOGGER.info("Updating data with new API Readings");
             tsHandler.updateData(carparkReadings);
-            LOGGER.info("Data updated with new API Readings");
-            jsonMessage.accumulate(JSON_RESULT_KEY, "Data updated with new API Readings");
-        } else if (carparkReadings.isEmpty()) {
-            LOGGER.info("No new carpark data recorded");
-            jsonMessage.accumulate(JSON_RESULT_KEY, "No new carpark data recorded");
         }
 
+        LOGGER.info("Retrieving carpark rates from the API...");
         JSONObject pricingReadings;
-
         try {
             pricingReadings = connector.getPrices();
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
+        LOGGER.info("Retrieved carpark rates for {} carparks", pricingReadings.length());
+        jsonMessage.accumulate(JSON_RESULT_KEY, " Retrieved carpark rates for" + pricingReadings.getJSONObject("result").getJSONArray("records").length() + "carparks.");
 
-        LOGGER.info("Retrieved pricing readings for {} carparks", pricingReadings.length());
-        jsonMessage.accumulate(JSON_RESULT_KEY, "Retrieved" + pricingReadings.getJSONObject("result").getJSONArray("records").length() + "carpark price readings");
-        //To call APIQueryBuilder
-
+        LOGGER.info("Setting up the sparql handler...");
         SparqlHandler sparqlHandler;
-
         try {
             sparqlHandler = new SparqlHandler(mappings, kbClient);
-            LOGGER.info("QueryBuilder constructed");
-
         } catch (Exception e) {
             LOGGER.error("Could not build the QueryBuilder ", e);
             throw new JPSRuntimeException("Could not successfully initialise the QueryBuilder Object", e);
         }
         sparqlHandler.instantiateIfNotInstantiated(carparkReadings, pricingReadings);
-        LOGGER.info("All Data IRIs within Carpark Readings successfully instantiated");
-        jsonMessage.accumulate(JSON_RESULT_KEY, "All Data IRIs successfully instantiated");
+        jsonMessage.accumulate(JSON_RESULT_KEY, " Data has been successfully instantiated!");
         return jsonMessage;
     }
 }
