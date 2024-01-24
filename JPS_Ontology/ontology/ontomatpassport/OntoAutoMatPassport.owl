@@ -51,6 +51,7 @@
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatCapacity">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
+        <rdfs:label xml:lang="en">Heat capacity</rdfs:label>
     </owl:Class>
     
 
@@ -59,6 +60,7 @@
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
+        <rdfs:label xml:lang="en">Specific heat capacity</rdfs:label>
     </owl:Class>
     
 
@@ -89,6 +91,24 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/OntoAutoMatPassport#GlassTransitionTemperatureMeasure">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeFahrenheit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:label xml:lang="en">Glass transition temperature measure</rdfs:label>
     </owl:Class>
     
@@ -152,6 +172,12 @@
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius -->
 
     <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/degreeFahrenheit -->
+
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeFahrenheit"/>
     
 
 
