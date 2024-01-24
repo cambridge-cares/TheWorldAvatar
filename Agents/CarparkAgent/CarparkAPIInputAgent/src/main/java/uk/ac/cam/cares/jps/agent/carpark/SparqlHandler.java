@@ -3,13 +3,8 @@ package uk.ac.cam.cares.jps.agent.carpark;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -51,7 +46,6 @@ public class SparqlHandler {
      * Prefixes
      */
     private static final Prefix PREFIX_ONTOCARPARK = SparqlBuilder.prefix("ontocarpark", iri(OntoCarpark_NS));
-    private static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Carpark";
     private static final Prefix PREFIX_RDFS = SparqlBuilder.prefix("rdfs", iri(RDFS_NS));
     private static final Prefix PREFIX_BOT = SparqlBuilder.prefix("bot", iri(BOT_NS));
     private static final Prefix PREFIX_ONTOBUILTENV = SparqlBuilder.prefix("ontobuiltenv", iri(OntoBuiltEnv_NS));
@@ -92,46 +86,11 @@ public class SparqlHandler {
     public JSONObject readings;
     public JSONObject priceReadings;
 
-    private List<JSONKeyToIRIMapper> mappings;
+    private final List<JSONKeyToIRIMapper> mappings;
 
-    public SparqlHandler(String agentProp, RemoteStoreClient kbClient) throws IOException {
+    public SparqlHandler(List<JSONKeyToIRIMapper> mappings, RemoteStoreClient kbClient) {
         this.kbClient = kbClient;
-        // Retrieve agent properties
-        loadproperties(agentProp);
-    }
-
-    public void loadproperties(String propfile) throws IOException {
-        try (InputStream input = new FileInputStream(propfile)) {
-            Properties prop = new Properties();
-            prop.load(input);
-            String mappingfolder;
-            try {
-                mappingfolder = System.getenv(prop.getProperty("carpark.mapping.folder"));
-            } catch (NullPointerException e) {
-                LOGGER.fatal("The key carpark.mapping.folder cannot be found");
-                throw new IOException("The key carpark.mapping.folder cannot be found");
-            }
-
-            if (mappingfolder == null) {
-                LOGGER.fatal("The properties file does not contain the key carpark.mapping.folder with a path to the folder containing the required JSON key to IRI Mappings");
-
-                throw new InvalidPropertiesFormatException("The properties file does not contain the key carpark.mapping.folder with a path to the folder containing the required JSON key to IRI Mappings");
-            }
-            mappings = new ArrayList<>();
-            File folder = new File(mappingfolder);
-            File[] mappingFiles = folder.listFiles();
-
-            if (mappingFiles.length == 0) {
-                LOGGER.fatal("No files in folder");
-                throw new IOException("No files in folder");
-            } else {
-                for (File mappingFile : mappingFiles) {
-                    JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(generatedIRIPrefix, mappingFile.getAbsolutePath());
-                    mappings.add(mapper);
-                    mapper.saveToFile(mappingFile.getAbsolutePath());
-                }
-            }
-        }
+        this.mappings = mappings;
     }
 
     public String capitaliseFirstLetterOfEachWord(String word) {

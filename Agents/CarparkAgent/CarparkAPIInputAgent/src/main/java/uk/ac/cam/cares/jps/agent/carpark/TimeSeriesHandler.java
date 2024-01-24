@@ -6,16 +6,12 @@ import org.jooq.exception.DataAccessException;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 import java.text.SimpleDateFormat;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,31 +23,13 @@ import org.apache.logging.log4j.Logger;
 public class TimeSeriesHandler {
     public static final Logger LOGGER = LogManager.getLogger(TimeSeriesHandler.class);
     private TimeSeriesClient<OffsetDateTime> tsclient;
-    private List<JSONKeyToIRIMapper> mappings;
-    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Carpark";
+    private final List<JSONKeyToIRIMapper> mappings;
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();
     public static final String timestampKey = "time";
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
-    public TimeSeriesHandler(String propertiesFile) throws IOException {
-        try (InputStream input = new FileInputStream(propertiesFile)) {
-            Properties prop = new Properties();
-            prop.load(input);
-            String mappingFolder;
-
-            try {
-                mappingFolder = System.getenv(prop.getProperty("carpark.mapping.folder"));
-            } catch (NullPointerException e) {
-                LOGGER.fatal("The key carpark.mapping.folder cannot be found in the file");
-                throw new IOException("The key carpark.mapping.folder cannot be found in the file");
-            }
-
-            if (mappingFolder == null) {
-                LOGGER.fatal("The properties file does not contain the key carpark.mapping.folder with a path to the folder containing the required JSON key to IRI Mappings");
-                throw new InvalidPropertiesFormatException("The properties file does not contain the key carpark.mapping.folder with a path to the folder containing the required JSON key to IRI Mappings");
-            }
-            readmappings(mappingFolder);
-        }
+    public TimeSeriesHandler(List<JSONKeyToIRIMapper> mappings) throws IOException {
+        this.mappings = mappings;
     }
 
     public int getNumberofTimeSeries() {
@@ -60,26 +38,6 @@ public class TimeSeriesHandler {
 
     public void setTsClient(TimeSeriesClient<OffsetDateTime> tsclient) {
         this.tsclient = tsclient;
-    }
-
-    private void readmappings(String mappingfolder) throws IOException {
-        mappings = new ArrayList<>();
-        File folder = new File(mappingfolder);
-        File[] mappingFiles = folder.listFiles();
-
-        if (mappingFiles == null) {
-            LOGGER.fatal("Folder does not exist: {}", mappingfolder);
-            throw new IOException("Folder does not exist: " + mappingfolder);
-        } else if (mappingFiles.length == 0) {
-            LOGGER.fatal("No files in folder {}", mappingfolder);
-            throw new IOException("No files in folder: " + mappingfolder);
-        } else {
-            for (File mappingFile : mappingFiles) {
-                JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(TimeSeriesHandler.generatedIRIPrefix, mappingFile.getAbsolutePath());
-                mappings.add(mapper);
-                mapper.saveToFile(mappingFile.getAbsolutePath());
-            }
-        }
     }
 
     public void initializeTimeSeriesIfNotExist() {

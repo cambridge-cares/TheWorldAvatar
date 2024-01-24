@@ -22,6 +22,15 @@ RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked m
 
 FROM builder as test
 
+# Set the required environment variables for testing
+ENV CARPARK_AGENTPROPERTIES="/usr/local/tomcat/config/agent.properties"
+ENV CARPARK_APIPROPERTIES="/usr/local/tomcat/config/api.properties"
+ENV CARPARK_CLIENTPROPERTIES="/usr/local/tomcat/config/client.properties"
+ENV CARPARK_AGENT_MAPPINGS="/usr/local/tomcat/config/mappings"
+
+# Create the required mapping folder for ease of testing
+RUN mkdir -p /usr/local/tomcat/config/mappings
+
 RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
 
 COPY /CarparkAPIInputAgent/src/test ./src/test

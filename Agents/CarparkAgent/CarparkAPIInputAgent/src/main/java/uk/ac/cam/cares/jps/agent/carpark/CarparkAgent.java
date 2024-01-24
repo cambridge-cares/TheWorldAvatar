@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
+import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 @WebServlet(urlPatterns = {"/retrieve", "/status"})
 
@@ -36,6 +38,7 @@ public class CarparkAgent extends JPSAgent {
     private static final String CARPARK_AGENT_PROPERTIES_KEY = "CARPARK_AGENTPROPERTIES";
     private static final String CARPARK_CLIENT_PROPERTIES_KEY = "CARPARK_CLIENTPROPERTIES";
     private static final String CARPARK_API_PROPERTIES_KEY = "CARPARK_APIPROPERTIES";
+    private static final String TIMESERIES_IRI_PREFIX = TimeSeriesSparql.TIMESERIES_NAMESPACE + "carpark";
 
     /**
      * Servlet init.
@@ -114,11 +117,18 @@ public class CarparkAgent extends JPSAgent {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
-        LOGGER.debug(() -> "Launcher called with the following files: " + String.join(" ", args));
+        LOGGER.info("Attempting to retrieve mappings...");
+        List<JSONKeyToIRIMapper> mappings;
+        try {
+            mappings = ConfigReader.retrieveKeyToIriMappings(args[0], TIMESERIES_IRI_PREFIX);
+        } catch (IOException e) {
+            LOGGER.fatal("Failed to retrieve mappings: ", e);
+            throw new JPSRuntimeException("Failed to retrieve mappings: ", e);
+        }
 
         TimeSeriesHandler tsHandler;
         try {
-            tsHandler = new TimeSeriesHandler(args[0]);
+            tsHandler = new TimeSeriesHandler(mappings);
         } catch (IOException e) {
             LOGGER.error(AGENT_ERROR_MSG, e);
             throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
@@ -208,7 +218,7 @@ public class CarparkAgent extends JPSAgent {
         SparqlHandler sparqlHandler;
 
         try {
-            sparqlHandler = new SparqlHandler(args[0], kbClient);
+            sparqlHandler = new SparqlHandler(mappings, kbClient);
             LOGGER.info("QueryBuilder constructed");
 
         } catch (Exception e) {

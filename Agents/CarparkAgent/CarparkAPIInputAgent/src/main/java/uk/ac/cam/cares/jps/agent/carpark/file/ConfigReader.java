@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.carpark.file;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +23,7 @@ public class ConfigReader {
     private static final String API_AVAILABLE_LOT_ENDPOINT_KEY = "carpark.api.lot.endpoint";
     private static final String API_LOT_TOKEN_KEY = "carpark.api.lot.token";
     private static final String API_PRICING_ENDPOINT_KEY = "carpark.api.pricing.endpoint";
+    private static final String CARPARK_MAPPING_FOLDER_KEY = "carpark.mapping.folder";
 
     // Private constructor that should not be instantiated
     private ConfigReader() {}
@@ -63,6 +65,33 @@ public class ConfigReader {
     public static Queue<String> retrieveAPIConfig(String filepath) throws IOException {
         String[] requiredProperties = new String[]{API_AVAILABLE_LOT_ENDPOINT_KEY, API_LOT_TOKEN_KEY, API_PRICING_ENDPOINT_KEY};
         return retrieveFileContents(filepath, requiredProperties, true);
+    }
+
+    /**
+     * Retrieves the key to IRI mappings from the specified mapping folder.
+     *
+     * @param filepath  Path to the agent.properties containing the `carpark.mapping.folder` key.
+     * @param iriPrefix The required IRI prefix to append to the IRIs in the mappings.
+     * @return All key to IRI mappings.
+     */
+    public static List<JSONKeyToIRIMapper> retrieveKeyToIriMappings(String filepath, String iriPrefix) throws IOException {
+        Queue<String> fileContent = retrieveFileContents(filepath, new String[]{CARPARK_MAPPING_FOLDER_KEY}, true);
+        String mappingFolderEnvironmentVar = fileContent.poll();
+        String mappingFolder = System.getenv(mappingFolderEnvironmentVar);
+        File folder = new File(mappingFolder);
+        File[] mappingFiles = folder.listFiles();
+        if (mappingFiles == null || mappingFiles.length == 0) {
+            String emptyDirectoryMessage = String.format("Directory is empty. Please ensure there is at least one mapping in the %s directory.", folder.getAbsolutePath());
+            LOGGER.fatal(emptyDirectoryMessage);
+            throw new IOException(emptyDirectoryMessage);
+        }
+        List<JSONKeyToIRIMapper> mappings = new ArrayList<>();
+        for (File mappingFile : mappingFiles) {
+            JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(iriPrefix, mappingFile.getAbsolutePath());
+            mappings.add(mapper);
+            mapper.saveToFile(mappingFile.getAbsolutePath());
+        }
+        return mappings;
     }
 
     /**

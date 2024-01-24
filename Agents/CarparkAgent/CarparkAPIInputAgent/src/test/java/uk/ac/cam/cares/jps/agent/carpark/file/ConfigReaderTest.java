@@ -1,11 +1,14 @@
 package uk.ac.cam.cares.jps.agent.carpark.file;
 
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
+import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Queue;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +24,8 @@ class ConfigReaderTest {
     private static final String API_AVAILABLE_LOT_ENDPOINT_KEY = "carpark.api.lot.endpoint";
     private static final String API_LOT_TOKEN_KEY = "carpark.api.lot.token";
     private static final String API_PRICING_ENDPOINT_KEY = "carpark.api.pricing.endpoint";
+    private static final String MAPPING_FOLDER_KEY = "carpark.mapping.folder";
+    private static final String MAPPING_FOLDER_ENVIRONMENT_VAR = "CARPARK_AGENT_MAPPINGS";
     private static final String SAMPLE_RDB_DB = "jdbc:postgresql://host.docker.internal:5432/carpark";
     private static final String SAMPLE_RDB_USER = "postgres";
     private static final String SAMPLE_RDB_PASS = "postgis";
@@ -31,6 +36,8 @@ class ConfigReaderTest {
     private static final String SAMPLE_API_LOT_ENDPOINT = "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2";
     private static final String SAMPLE_API_LOT_TOKEN = "bjaga8f";
     private static final String SAMPLE_API_PRICING_ENDPOINT = "https://data.gov.sg/api/action/datastore_search";
+    private static final String SAMPLE_JSON_KEY = "TEST_JSON";
+    private static final String TIMESERIES_IRI_PREFIX = TimeSeriesSparql.TIMESERIES_NAMESPACE + "carpark";
 
     @Test
     void testRetrieveRDBConfig_NoConfigFile() {
@@ -200,6 +207,95 @@ class ConfigReaderTest {
         }
     }
 
+    @Test
+    void testRetrieveKeyToIriMappings_NoConfigFile() {
+        String invalidFilePath = "invalid";
+        // Verify right exception is thrown
+        IOException thrownError = assertThrows(IOException.class, () -> ConfigReader.retrieveKeyToIriMappings(invalidFilePath, TIMESERIES_IRI_PREFIX));
+        assertEquals("No file was found from the path " + invalidFilePath, thrownError.getMessage());
+    }
+
+    @Test
+    void testRetrieveKeyToIriMappings_MissingKeys() throws IOException {
+        File config = genSampleAPIConfigFile("", "", "");
+        try {
+            // Execute method and ensure right error is thrown
+            IOException thrownError = assertThrows(IOException.class, () -> ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX));
+            assertEquals(String.format("Missing property: %s in the file %s", MAPPING_FOLDER_KEY, config.getAbsolutePath()), thrownError.getMessage());
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testRetrieveKeyToIriMappings_MissingInputs() throws IOException {
+        File config = genSampleAgentProperties(true);
+        try {
+            // Execute method and ensure right error is thrown
+            IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class, () -> ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX));
+            assertEquals(String.format("Property %s cannot be empty in the file %s", MAPPING_FOLDER_KEY, config.getAbsolutePath()), thrownError.getMessage());
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testRetrieveKeyToIriMappings_EmptyMappingFolder() throws IOException {
+        File config = genSampleAgentProperties(false);
+        try {
+            // Execute method and ensure right error is thrown
+            IOException thrownError = assertThrows(IOException.class, () -> ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX));
+            assertEquals(String.format("Directory is empty. Please ensure there is at least one mapping in the %s directory.", System.getenv(MAPPING_FOLDER_ENVIRONMENT_VAR)),
+                    thrownError.getMessage());
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testRetrieveKeyToIriMappings_SuccessfulWithEmptyMappings() throws IOException {
+        File config = genSampleAgentProperties(false);
+        File sampleMappings = genSampleMappings("", "");
+        try {
+            // Execute method
+            List<JSONKeyToIRIMapper> result = ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX);
+            // Verify results are expected
+            assertEquals(1, result.size());
+            JSONKeyToIRIMapper mapper = result.get(0);
+            assertEquals(0, mapper.getAllJSONKeys().size());
+            assertEquals(0, mapper.getAllIRIs().size());
+        } finally {
+            // Always delete generated config file
+            config.delete();
+            sampleMappings.delete();
+        }
+    }
+
+    @Test
+    void testRetrieveKeyToIriMappings_SuccessWithMappingValue() throws IOException {
+        File config = genSampleAgentProperties(false);
+        String sampleIRI = TIMESERIES_IRI_PREFIX + "/test_2318125";
+        File sampleMappings = genSampleMappings(SAMPLE_JSON_KEY, sampleIRI);
+        try {
+            // Execute method
+            List<JSONKeyToIRIMapper> result = ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX);
+            // Verify results are expected
+            assertEquals(1, result.size());
+            JSONKeyToIRIMapper mapper = result.get(0);
+            assertEquals(1, mapper.getAllJSONKeys().size());
+            assertEquals(SAMPLE_JSON_KEY, mapper.getAllJSONKeys().get(0));
+            assertEquals(1, mapper.getAllIRIs().size());
+            assertEquals(sampleIRI, mapper.getAllIRIs().get(0));
+        } finally {
+            // Always delete generated config file
+            config.delete();
+            sampleMappings.delete();
+        }
+    }
+
     public static File genSampleRDBConfigFile(String db, String user, String pass) throws IOException {
         File file = new File(System.getProperty("user.dir") + "/config/client.properties");
         createFileAndDirectoryIfUnavailable(file);
@@ -236,6 +332,30 @@ class ConfigReaderTest {
         writer.println(API_PRICING_ENDPOINT_KEY + "=" + apiPricingEndpoint);
         writer.close();
         return file;
+    }
+
+    public static File genSampleAgentProperties(boolean isEmpty) throws IOException {
+        File agentPropertiesFile = new File(System.getProperty("user.dir") + "/config/agent.properties");
+        createFileAndDirectoryIfUnavailable(agentPropertiesFile);
+        PrintWriter writer = new PrintWriter(new FileWriter(agentPropertiesFile, true));
+        String mappingFolderVal = "";
+        if (!isEmpty) {
+            mappingFolderVal = MAPPING_FOLDER_ENVIRONMENT_VAR;
+        }
+        writer.println(MAPPING_FOLDER_KEY + "=" + mappingFolderVal);
+        writer.close();
+        return agentPropertiesFile;
+    }
+
+    public static File genSampleMappings(String jsonKey, String iriValue) throws IOException {
+        File sampleMappingFile = new File("/usr/local/tomcat/config/mappings/sample.properties");
+        createFileAndDirectoryIfUnavailable(sampleMappingFile);
+        PrintWriter writer = new PrintWriter(new FileWriter(sampleMappingFile, true));
+        if (!jsonKey.isEmpty() || !iriValue.isEmpty()) {
+            writer.println(jsonKey + "=" + iriValue);
+        }
+        writer.close();
+        return sampleMappingFile;
     }
 
     private static void createFileAndDirectoryIfUnavailable(File file) {
