@@ -24,7 +24,7 @@ import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 public class CarparkAgent extends JPSAgent {
     // Agent starts off in invalid state, and will become valid when initialised without exceptions
-    private static boolean valid = false;
+    private boolean valid = false;
     private static final Logger LOGGER = LogManager.getLogger(CarparkAgent.class);
     private static final String JSON_ERROR_KEY = "Error";
     private static final String JSON_RESULT_KEY = "Result";
