@@ -1,21 +1,7 @@
 # BuildingIdentification agent
 
 
-The BuildingIdentificationAgent queries factories' coordinates and heat emissions from a blazegraph namespace. It then queries buildings data from a user-specified 
-POSTGRES database and assigns a building to each factory whose footprint polygon is closest to its coordinates.  
-
-The agent will create a POSTGRES table called 'factories' with the following columns in the user-specified database and the 'citydb' schema : iri, height, heat, factory_type, name, building_id. The meanings of these names are as follows:
-
-
-
-| Column name                      |            Meaning                                                  | 
-|:--------------------------------:|:-------------------------------------------------------------------:|
-|    ```iri```                     |       Factory IRI in blazegraph namespace                           |
-|    ```height```                  |       Height of building assigned to this factory in meters.        |
-|    ```heat```                    |       Heat emissions of this building in megawatts.                 |
-|    ```factory_type```            |       Type of factory                                               |
-|    ```name```                    |       Name of company operating this factory                        |
-|    ```building_id```             |       ID of building as given in building and cityobject tables.    |
+The BuildingIdentificationAgent takes a set of geospatial coordinates as input in the form of a 2D JSON array. It identifies the building nearest to each point by querying buildings footprint data from the "citydb" schema of the "postgres" database in the stack. The identification numbers of the matched buildings are returned within a JSONObject.
 
 
 ## 1. Agent Deployment
@@ -39,13 +25,9 @@ which must have a 'scope' that [allows you to publish and install packages](http
 This agent requires the following tools, which **MUST** run on the same stack. The details for setting them up are explained at [stack manager page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
 
-(1) SPARQL endpoint
+(1) PostgreSQL database
 
-There must be an existing namespace in the stack blazegraph which contains the heat emissions and coordinates data of various companies. The coordinates must be in the EPSG:4326 CRS. These are converted internally to the CRS used in the PostgreSQL database. These triples must be instantiated according to the [OntoCompany](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocompany) ontology. This can be done by running the [heat instantiation agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1690-add-heat-instantiation-agent/Agents/HeatInstantiationAgent) followed by the [heat emission agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1683-update-heat-agent-queries/Agents/HeatEmissionAgent).
-
-(2) PostgreSQL database
-
-The agent is designed to use the stack PostgreSQL. It requires the buildings data to be stored in a schema called 'citydb' in the user-specified database. This schema must have three tables called 'database_srs', 'building' and 'cityobject'. The building height is retrieved from the 'measured_height' column of the 'building' table. The building footprint is obtained from the 'wkb' column of the 'cityobject' table. The EPSG coordinate reference system used in the database is retrieved from the 'database_srs' table. The record for a single building must have identical values for the 'id' column in the 'building' and 'cityobject' tables. This id will appear in the 'building_id' column of the 'factories' table created by this agent.
+The agent is designed to use the stack PostgreSQL. It requires the buildings data to be stored in a schema called 'citydb' in the "postgres" database. This schema must have three tables called 'database_srs', 'building' and 'cityobject'. The building height is retrieved from the 'measured_height' column of the 'building' table. The building footprint is obtained from the 'wkb' column of the 'cityobject' table. The EPSG coordinate reference system used in the database is retrieved from the 'database_srs' table. The record for a single building must have identical values for the 'id' column in the 'building' and 'cityobject' tables. This id will appear in the JSONObject returned by this agent.
 
 ### 1.2 Docker deployment
 
@@ -55,20 +37,19 @@ The agent is designed to use the stack PostgreSQL. It requires the buildings dat
 
 ## 2. Agent Routes
 
-The agent supports POST requests and is reachable at http://localhost:3838/buildingidentificationagent, where 3838 is the default port number used by stack manager. If another port number was specified when spinning up the stack, please replace 3838 with the specified port number. The agent provides a single endpoint at http://localhost:3838/buildingidentificationagent/run, which accepts the following POST request parameters :
+The agent supports POST requests and is reachable at http://localhost:3838/buildingidentificationagent, where 3838 is the default port number used by stack manager. If another port number was specified when spinning up the stack, please replace 3838 with the specified port number. The agent provides a single endpoint at http://localhost:3838/buildingidentificationagent/run, which accepts the following POST request parameters. All the parameters except the first are optional :
 
-- ```maxDistance```: The maximum allowable distance between the centre of the matched building footprint and the factories' coordinates in meters. If the nearest building is further than ```maxDistance```, the matching still takes place but a warning is printed in the Docker logs.
-- ```dbName```: Name of the database in the stack from which to query the buildings data. This database must contain the buildings data in the 'citydb' schema.
-- ```namespace```: A namespace in the stack blazegraph containing the factories' coordinates, heat emissions and other data.
+- ```coordinates```: The value of this parameter should be a 2D JSONArray containing the coordinates of the points to be matched. 
+- ```maxDistance``` [Optional]: The maximum allowable distance between the centre of the matched building footprint and the specified coordinates in meters. If the nearest building is further than ```maxDistance```, the matching still takes place but a warning is printed in the Docker logs. The default value of this parameter is 100 meters.
+- ```srid``` [Optional]: An integer specifying the coordinate reference system of the input coordinates. The input coordinates will be converted to the SRID corresponding to the buildings data in the citydb schema as required.
 
 The following is an example POST request :
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","dbName":"test","namespace":"sgbusinessunits"}'  "localhost:3838/buildingidentificationagent/run"
+curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","srid":"4326","coordinates":[[103.67455581177452, 1.2711156279472327], [103.68455581177452, 1.2611156279472327]]}'  "localhost:3838/buildingidentificationagent/run"
 ```
 
-Upon successful completion, the agent returns a JSON object indicating the number of factories queries from the Blazegraph namespace and the number of buildings matched. Both numbers should be equal. A table called 'factories' will be created in the 'citydb' schema of the user-specified database with the columns mentioned above. This table will create one record for each factory queried from the blazegraph namespace. 
-
+Upon successful completion, the agent returns a JSONObject indicating the number of buildings matched and their corresponding ids.  
 
 
 
