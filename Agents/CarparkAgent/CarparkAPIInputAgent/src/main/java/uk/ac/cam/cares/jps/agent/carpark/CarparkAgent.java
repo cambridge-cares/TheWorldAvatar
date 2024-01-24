@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.carpark;
 
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.agent.carpark.file.ConfigReader;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -37,13 +38,6 @@ public class CarparkAgent extends JPSAgent {
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the carpark API connector needed to interact with the API!";
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
-    String dbUrl;
-    String dbUsername;
-    String dbPassword;
-    String sparqlQueryEndpoint;
-    String sparqlUpdateEndpoint;
-    String sparqlUsername;
-    String sparqlPassword;
 
     /**
      * Servlet init.
@@ -141,14 +135,22 @@ public class CarparkAgent extends JPSAgent {
         jsonMessage.accumulate(JSON_RESULT_KEY, "Input Agent Object Initialized");
 
         TimeSeriesClient<OffsetDateTime> tsclient;
+        RemoteStoreClient kbClient;
         try {
-            loadTSClientConfigs(args[1]);
-            RemoteStoreClient kbClient = new RemoteStoreClient();
-            kbClient.setQueryEndpoint(sparqlQueryEndpoint);
-            kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
-            kbClient.setUser(sparqlUsername);
-            kbClient.setPassword(sparqlPassword);
-            tsclient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, dbUrl, dbUsername, dbPassword);
+            // Retrieve sparql configurations
+            Queue<String> sparqlConfigs = ConfigReader.retrieveSparqlConfig(args[1]);
+            kbClient = new RemoteStoreClient();
+            // First two configuration should be query and update endpoint
+            kbClient.setQueryEndpoint(sparqlConfigs.poll());
+            kbClient.setUpdateEndpoint(sparqlConfigs.poll());
+            // If there are more configuration, then it should be user and password
+            if (!sparqlConfigs.isEmpty()) {
+                kbClient.setUser(sparqlConfigs.poll());
+                kbClient.setPassword(sparqlConfigs.poll());
+            }
+            // Retrieve RDB configs and populate it accordingly in sequence of url, user, password
+            Queue<String> rdbConfigs = ConfigReader.retrieveRDBConfig(args[1]);
+            tsclient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, rdbConfigs.poll(), rdbConfigs.poll(), rdbConfigs.poll());
             tsHandler.setTsClient(tsclient);
         } catch (Exception e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
@@ -212,7 +214,7 @@ public class CarparkAgent extends JPSAgent {
         SparqlHandler sparqlHandler;
 
         try {
-            sparqlHandler = new SparqlHandler(args[0], args[1]);
+            sparqlHandler = new SparqlHandler(args[0], kbClient);
             LOGGER.info("QueryBuilder constructed");
 
         } catch (Exception e) {
@@ -223,53 +225,5 @@ public class CarparkAgent extends JPSAgent {
         LOGGER.info("All Data IRIs within Carpark Readings successfully instantiated");
         jsonMessage.accumulate(JSON_RESULT_KEY, "All Data IRIs successfully instantiated");
         return jsonMessage;
-    }
-
-    /**
-     * Reads the parameters needed for the timeseries client
-     *
-     * @param filepath Path to the properties file from which to read the parameters
-     */
-    private void loadTSClientConfigs(String filepath) throws IOException {
-        // Check whether properties file exists at specified location
-        File file = new File(filepath);
-        if (!file.exists()) {
-            throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
-        }
-
-        // Try-with-resource to ensure closure of input stream
-        try (InputStream input = new FileInputStream(file)) {
-            // Load properties file from specified path
-            Properties prop = new Properties();
-            prop.load(input);
-            // Get timeseries client parameters from properties file
-            if (prop.containsKey("db.url")) {
-                this.dbUrl = prop.getProperty("db.url");
-            } else {
-                throw new IOException("Properties file is missing \"db.url=<db_url>\"");
-            }
-            if (prop.containsKey("db.user")) {
-                this.dbUsername = prop.getProperty("db.user");
-            } else {
-                throw new IOException("Properties file is missing \"db.user=<db_user>\"");
-            }
-            if (prop.containsKey("db.password")) {
-                this.dbPassword = prop.getProperty("db.password");
-            } else {
-                throw new IOException("Properties file is missing \"db.password=<db_password>\"");
-            }
-            if (prop.containsKey("sparql.query.endpoint")) {
-                this.sparqlQueryEndpoint = prop.getProperty("sparql.query.endpoint");
-            } else {
-                throw new IOException("Properties file is missing \"sparql.query.endpoint=<sparql_query_endpoint>\"");
-            }
-            if (prop.containsKey("sparql.update.endpoint")) {
-                this.sparqlUpdateEndpoint = prop.getProperty("sparql.update.endpoint");
-            } else {
-                throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
-            }
-            this.sparqlUsername = prop.getProperty("sparql.username");
-            this.sparqlPassword = prop.getProperty("sparql.password");
-        }
     }
 }

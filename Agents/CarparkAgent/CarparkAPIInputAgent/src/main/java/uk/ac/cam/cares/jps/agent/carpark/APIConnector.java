@@ -10,10 +10,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.agent.carpark.file.ConfigReader;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.Queue;
 
 public class APIConnector {
     private String API_URL = "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2";
@@ -34,7 +36,10 @@ public class APIConnector {
 
     //Constructor to initialise the variables according to the Properties file
     public APIConnector(String filepath) throws IOException {
-        loadAPIConfigs(filepath);
+        Queue<String> apiConfigs = ConfigReader.retrieveAPIConfig(filepath);
+        this.API_URL = apiConfigs.poll();
+        this.PRICING_API_URL = apiConfigs.poll();
+        this.accountKey = apiConfigs.poll();
     }
 
     // Obtains Weather data in JSON format containing key:value pairs
@@ -86,36 +91,6 @@ public class APIConnector {
                     LOGGER.fatal("Pricing Data could not be retrieved due to a server error");
                     throw new HttpResponseException(status, "Pricing Data could not be retrieved due to a server error");
                 }
-            }
-        }
-    }
-
-    private void loadAPIConfigs(String filepath) throws IOException {
-        File file = new File(filepath);
-        if (!file.exists()) {
-            LOGGER.fatal("There was no file found in the path");
-            throw new FileNotFoundException("There was no file found in the path");
-        }
-
-        try (InputStream input = new FileInputStream(file)) {
-            Properties prop = new Properties();
-            prop.load(input);
-            if (prop.containsKey("carpark.api_url")) {
-                this.API_URL = prop.getProperty("carpark.api_url");
-            } else {
-                throw new IOException("The file is missing: \"carpark.api_url=<api_url>\"");
-            }
-
-            if (prop.containsKey("carpark.accountKey")) {
-                this.accountKey = prop.getProperty("carpark.accountKey");
-            } else {
-                throw new IOException("The file is missing: \"carpark.accountKey=<accountKey>\"");
-            }
-
-            if (prop.containsKey("carpark.pricing_url")) {
-                this.PRICING_API_URL = prop.getProperty("carpark.pricing_url");
-            } else {
-                throw new IOException("The file is missing: \"carpark.pricing_url=<pricing_url>\"");
             }
         }
     }

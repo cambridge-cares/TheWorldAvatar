@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.carpark;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.agent.carpark.file.ConfigReader;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -35,11 +36,11 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 public class SparqlHandler {
-    public static final Logger LOGGER = LogManager.getLogger(SparqlHandler.class);
-    public String queryEndpoint;
-    public String updateEndpoint;
-    public String sparqlUsername;
-    public String sparqlPassword;
+    private static final Logger LOGGER = LogManager.getLogger(SparqlHandler.class);
+    private String queryEndpoint;
+    private String updateEndpoint;
+    private String sparqlUsername;
+    private String sparqlPassword;
     RemoteStoreClient kbClient;
 
     /**
@@ -94,24 +95,15 @@ public class SparqlHandler {
     private static final Iri Building = PREFIX_BOT.iri("Building");
     private static final Iri Address = PREFIX_ICONTACT.iri("Address");
 
-    public String agentProperties;
-    public String clientProperties;
     public JSONObject readings;
     public JSONObject priceReadings;
 
     private List<JSONKeyToIRIMapper> mappings;
 
-    public SparqlHandler(String agentProp, String clientProp) throws IOException {
-        agentProperties = agentProp;
-        clientProperties = clientProp;
-        loadconfigs(clientProperties);
-        //readings endpoints from client.properties
-        loadproperties(agentProperties);
-        kbClient = new RemoteStoreClient();
-        kbClient.setUpdateEndpoint(updateEndpoint);
-        kbClient.setQueryEndpoint(queryEndpoint);
-        kbClient.setUser(sparqlUsername);
-        kbClient.setPassword(sparqlPassword);
+    public SparqlHandler(String agentProp, RemoteStoreClient kbClient) throws IOException {
+        this.kbClient = kbClient;
+        // Retrieve agent properties
+        loadproperties(agentProp);
     }
 
     public void loadproperties(String propfile) throws IOException {
@@ -144,34 +136,6 @@ public class SparqlHandler {
                     mappings.add(mapper);
                     mapper.saveToFile(mappingFile.getAbsolutePath());
                 }
-            }
-        }
-    }
-
-    public void loadconfigs(String filepath) throws IOException {
-        File file = new File(filepath);
-        if (!file.exists()) {
-            LOGGER.fatal("There was no file found in the path");
-            throw new FileNotFoundException("There was no file found in the path");
-        }
-        try (InputStream input = new FileInputStream(file)) {
-            Properties prop = new Properties();
-            prop.load(input);
-            if (prop.containsKey("sparql.query.endpoint")) {
-                queryEndpoint = prop.getProperty("sparql.query.endpoint");
-            } else {
-                throw new IOException("The file is missing: \"sparql.query.endpoint=<queryEndpoint>\"");
-            }
-            if (prop.containsKey("sparql.update.endpoint")) {
-                updateEndpoint = prop.getProperty("sparql.update.endpoint");
-            } else {
-                throw new IOException("The file is missing: \"sparql.update.endpoint=<updateEndpoint>\"");
-            }
-            if (prop.containsKey("sparql.username")) {
-                this.sparqlUsername = prop.getProperty("sparql.username");
-            }
-            if (prop.containsKey("sparql.password")) {
-                this.sparqlPassword = prop.getProperty("sparql.password");
             }
         }
     }
