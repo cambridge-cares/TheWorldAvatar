@@ -485,6 +485,30 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/ThermalConductivity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/ThermalConductivity">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalConductivityMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalConductivityMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A thermal property that describes the capacity of an object to conduct heat.</rdfs:comment>
+        <rdfs:label xml:lang="en">Thermal conductivity</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
@@ -1144,21 +1168,7 @@
 
     <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
-                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalConductivityMeasure"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalConductivityMeasure"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity"/>
     
 
 
@@ -1681,6 +1691,14 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#heatTransferCoefficient-Dimension -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#heatTransferCoefficient-Dimension">
+        <rdfs:label xml:lang="en">Heat transfer coefficient dimension</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#isBiodegradable -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#isBiodegradable"/>
@@ -1979,9 +1997,7 @@
         <rdfs:label xml:lang="en">Young&apos;s modulus</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity">
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
-        <rdfs:comment xml:lang="en">A thermal property that describes the capacity of an object to conduct heat.</rdfs:comment>
-        <rdfs:label xml:lang="en">Thermal conductivity</rdfs:label>
+        <rdfs:isDefinedBy>http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl</rdfs:isDefinedBy>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property">
         <rdfs:comment xml:lang="en">A characteristic of an object that can be applied in determining its use in applications.</rdfs:comment>
