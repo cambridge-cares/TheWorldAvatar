@@ -34,7 +34,17 @@ If using VSCode, all required VSCode extensions shall be installed (on the remot
 
 ## Spinning up the core Stack
 
-To spin up the stack using the [Stack manager], both a `postgis_password` and `geoserver_password` file need to be provided. Please create them in the `./inputs/stack-manager/inputs/secrets` directory. Subsequently, copy all files in `./inputs/stack-manager/` into their corresponding repositories of the stack-manager, i.e., under `Deploy/stacks/dynamic/stack-manager/`.
+Before spinning up the stack using the [Stack manager], please provide the following files to the specified repositories:
+
+-  4 secret files in `./inputs/stack-manager/inputs/secrets`:
+    - `postgis_password`
+    - `geoserver_password`
+    - `mapbox_username`
+    - `mapbox_api_key`
+-  Download the geojson as specified in `./inputs/stack-manager/inputs/data/visualisation/data/buildings/readme.txt`
+- Create missing colourbars using the provided utility scripts in `Utilities/dtvf_legends` (this will create 3 additional legend figures in `./inputs/stack-manager/inputs/data/visualisation/data/icons`)
+
+Subsequently, copy all files in `./inputs/stack-manager/` into their corresponding repositories of the stack-manager, i.e., under `Deploy/stacks/dynamic/stack-manager/`.
 
 Then navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. There are several [common stack scripts] provided to manage the stack:
 
@@ -78,22 +88,19 @@ ls -l <REPO NAME>
 chmod -R +rwx <REPO NAME>
 ```
 
-&nbsp;
 ## Uploading initial data
 
-> The functionality has been tested using the Stack Data Uploader `docker.cmclinnovations.com/stack-data-uploader:1.10.2`
-
-A few datasets and files which shall initially be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1.0 - 1.6 (depending on the exact quads file provided) of the building instantiation workflow below.
+A few datasets and files which shall initially be uploaded to the stack are provided in the `./inputs/stack-data-uploader` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1.0 - 1.6 (depending on the exact quads file provided) of the building instantiation workflow below.
 
 The following steps explain how to upload the data to the stack using the [Stack data uploader] (please see the referenced README for more details):
 
-1) Copy all relevant files from the `inputs/datauploader` folder of this repository into the `inputs` folder of  the stack data uploader repository:
+1) Copy all relevant files from the `./inputs/stack-data-uploader` folder of this repository into the `inputs` folder of  the stack data uploader repository:
 
-    a) Copy the configuration files from the `inputs/datauploader/configs/` directory to the matching directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/configs/`
+    a) Copy the configuration files from the `./inputs/stack-data-uploader/config/` directory to the matching directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/config/`
 
-    b) Replace the `readme.txt` files in the `inputs/datauploader/data/*` sub-folders with the referenced data files from `../../Data/...`
+    b) Replace the `readme.txt` files in the `./inputs/stack-data-uploader/data/*` sub-folders with the referenced data files
 
-    c) Copy all data sub-directories from the `inputs/datauploader/data` directory into the matching parent directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/data/`
+    c) Copy all data sub-directories from the `./inputs/stack-data-uploader/data` directory into the matching parent directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/data/`
 
 2) Navigate to `Deploy/stacks/dynamic/stack-data-uploader` and run the following command there from a *bash* terminal and wait until container has stopped again (i.e. the upload has finished). Specified Blazegraph/Geoserver/... namespaces will be created automatically by the uploader if not already exist.
     ```bash
