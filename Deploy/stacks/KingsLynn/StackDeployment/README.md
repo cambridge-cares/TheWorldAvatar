@@ -8,6 +8,7 @@ Key sections:
 - [3. Data instantiation workflow](#3-data-instantiation-workflow): How to deploy all required agents (sequence, interdependencies, etc.)
 - [5. Triggering new derivation cascades](#5-triggering-new-derivation-cascades): How to manually trigger new derivation cascades (mainly for showcase purposes)
 - [6. Redeployment](#6-redeployment): How to restart stack and agents (after initial data instantiation workflow)
+- [7. Incorporate CReDo network visualisation](#7-connecting-with-credo-visualisation): How to incorporate synthetic network data from CReDo into the visualisation
 - [Potential refinements/next steps](#potential-refinementsnext-steps): Potential refinements for future work
 
 
@@ -278,8 +279,6 @@ After the Building instances are matched, step 3.4) from the EPC Agent can be pe
 
 ## 2.3) Property Sales Instantiation Agent
 
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/landregistry_agent:1.1.0` as of commit `1a856a052a7f4cd6bd3edd22352b78e35d9d34d1`
-
 To avoid potential issues with unregistered and unavailable derivation agents, both the `Average Square Metre Price Agent` and the `Property Value Estimation Agent` should be deployed (and hence registered in the KG) **before** instantiating property transaction data. Otherwise, the `createSyncDerivationForNewInfo` method will cause an exception, as it cannot instantiate the requested derivation outputs.
 
 Deploy the agent as described in the [Property Sales Instantiation Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_landregistry.yml` in the [Agent docker-compose file folder] for the actually used compose file.
@@ -301,15 +300,11 @@ Content-Type: application/json
 
 ## 3.1) Average Square Metre Price Agent
 
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/avgsqmprice_agent:1.1.0` as of commit `d55b63ffa93bd388fb6c0957db150c0d2f1adb71`
-
 Deploy the agent as described in the [Average Square Metre Price Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_avg_sqm_price.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
 After agent startup, the agent starts monitoring the specified namespace for outdated information in the specified frequency (i.e. asynchronous mode) or triggers a re-assessment upon request (i.e. synchronous mode).
 
 ## 3.2) Property Value Estimation Agent
-
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/propertyvalue_agent:1.2.0` as of commit `d55b63ffa93bd388fb6c0957db150c0d2f1adb71`
 
 Deploy the agent as described in the [Property Sales Instantiation Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_value_estimation.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
@@ -317,15 +312,11 @@ After agent startup, the agent starts monitoring the specified namespace for out
 
 ## 3.3) Flood Assessment Agent
 
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/floodassessment_agent:1.1.0` as of commit `fb70ef49e18374adc5b7acd2e3499b74bbb42302`
-
 Deploy the agent as described in the [Flood Assessment Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_flood_assessment.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
 After agent startup, the agent starts monitoring the specified namespace for changes in instantiated OntoFlood and OntoBuiltEnv properties and automatically updates the associated potential Impacts of a flood (i.e. using the asychronous mode of the Derivation Framework).
 
 ## 3.4) Flood Warning Instantiation Agent
-
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/floodwarnings_agent:1.1.0` as of commit `fd51f7bd8b8ea1dda20d556c6b6ab2453a5a220a`
 
 Deploy the agent as described in the [Flood Warning Instantiation Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_flood_warnings.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
@@ -335,8 +326,6 @@ Agent start-up will automatically register a recurring task to assimilate latest
 ## 4) Additional data incorporation
 
 ## 4.1) MetOffice Agent
-
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/metoffice_agent:1.0.0` as of commit `6b3ff32af6df2c356e1a49f0c727ebf6db53a15a`
 
 The [MetOffice Agent] continuously (i.e. once per day) queries data from the MetOffice API and instantiates it according to the OntoEMS ontology. Deploy the agent as described in the [MetOffice Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_metoffice.yml` in the [Agent docker-compose file folder] for the actually used compose file. The required API key can be obtained from the [MetOffice My Account] page after successful registration.
 
@@ -348,31 +337,26 @@ Content-Type: application/json
 
 ## 4.2) River Levels Agent
 
-> The following description refers to commit `d877c31d7a6a2cc642e861e041a3df170def24d4` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
-
 The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river level data from the [Environment Agency] into the KG. Details on building and deploying the agent are provided in its README and only summarised here: 
 
-* Building the agent requires two single-word text files `repo_username.txt` and `repo_password.txt` to be provided in the `docker/credentials` sub-repository of the agent (in order to be able to download TWA packages from Github)
-* Both the `datum.json` and `river_stations.csv` files provided in the [river_level_agent input folder] here shall be copied over to the root directory of the agent (i.e. the location where the agent's `docker-compose.yml` file is located)
+* Create Blazegraph namespace specified in the docker-compose file (i.e. `riverstations`) before spinning up the agent
+* Both the `datum.json` and `river_stations.csv` files provided in the [river_level_agent input folder] shall be copied over to the root directory of the agent (i.e. the location where the agent's `docker-compose.yml` file is located)
 * To deploy the agent (using the pulled image) to the spun up stack, simply run the following command to initialise the stations and start a scheduled update that downloads data from the API daily. See the `docker-compose_riverstations.yml` in the [Agent docker-compose file folder] for the actually used compose file:
     ```bash
     bash ./stack.sh start KINGS-LYNN
     ```
-* **Please note**: The Blazegraph namespace specified in the docker-compose file (i.e. `riverstations`) needs to be created beforehand in order for the agent to start up successfully.
 
 ## 4.3) AirQuality Agent
 
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/airquality_agent:1.0.0` as of commit `8b4d4882da8a45f8e344d8cb26243ea235a46230`
-
 The [AirQuality Agent] continuously (i.e. once per day) queries data from the UK-AIR Sensor Observation Service API and instantiates it according to the OntoEMS ontology. Deploy the agent as described in the [AirQuality Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_airquality.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
-After agent startup, latest airquality observations will be instantiated/updated once the cronjob is triggered (i.e. currently at 53:00am UTC). An initial data instantiation can be invoked by sending the following HTTP request to the agent:
+After agent startup, latest airquality observations will be instantiated/updated once the cronjob is triggered (i.e. currently at 3:00am UTC). An initial data instantiation can be invoked by sending the following HTTP request to the agent:
 ```
 GET http://165.232.172.16:5002/airqualityagent/update/all
 Content-Type: application/json
 ```
 
-As the UK-AIR Sensor Observation Service API (currently) does not cover King's Lynn, virtual (mocked) station(s) can be instantiated by sending the following request. Currently, this instantiates one mocked station which shows readings from the actual station in Aberdeen Erroll Park. This is an arbitrary choice and can be changed [here](https://github.com/cambridge-cares/TheWorldAvatar/blob/1468-dev-stackerise-air-quality-agent/Agents/AirQualityAgent/agent/datainstantiation/stations.py#L197)
+As the UK-AIR Sensor Observation Service API (currently) does not cover King's Lynn, virtual (mocked) station(s) can be instantiated by sending the following request. Currently, this instantiates one mocked station which shows readings from the actual station in Aberdeen Erroll Park. This is an arbitrary choice and can be changed [here](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/AirQualityAgent/agent/datainstantiation/stations.py#L197)
 ```
 GET http://165.232.172.16:5002/airqualityagent/instantiate/mocked
 Content-Type: application/json
@@ -428,10 +412,25 @@ It has been observed that the stack tends to crash when RAM usage approaches 100
 Please note that this 1) only works after the initial data instantiation workflow has been executed (due to initial agent dependencies as explained above) and 2) requires all corresponding `docker-compose` files populated with all required parameters (i.e., aligned namespaces and API keys) in the corresponding agent repositories.
 
 &nbsp;
-# Potential refinements/next steps
+# 7. Connecting with CreDo visualisation
 
-**General Watch Outs**
-- The current versions of the ontologies as well as agents refer to several custom units using the `ontouom` ontology. Those are likely to be incorporated into (our fork of) the ontology of units of measure, see [issue #576](https://github.com/cambridge-cares/TheWorldAvatar/issues/576). Any respective changes would need to be reflected in both the ontologies (i.e. OntoEMS, OntoBuiltEnv, OntoFlood) and agents!
+The visualisation includes synthetic network data created during CReDo and hosted by CMCL. In case this data does not show up in the visualisation, this is likely because new scenarios have been created and the visualisation needs to be updated accordingly. The list of latest scenarios can be inspected [here](https://kg.cmclinnovations.com/credo/phase2/central/CentralStackAgent/getScenarios?type=list).
+
+To update the visualisation, the scenario id part of the `data` endpoints (i.e. `gxibUm4A` in the example below) in the [data.json] need to be updated with the corresponding id from the above link.
+
+```
+"name": "Water Network (Synthetic)",
+"stack": "https://kg.cmclinnovations.com/credo/phase2/water",
+"sources": [
+    {
+        "id": "water-source",
+        "type": "geojson",
+        "data": "https://kg.cmclinnovations.com/credo/phase2/water/geoserver/gxibUm4A/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gxibUm4A%3AWater&outputFormat=application%2Fjson",
+        "cluster": true,
+```
+
+&nbsp;
+# Potential refinements/next steps
 
 **EPC Agent**
 - HTTP response to `/epcagent/instantiate/certificates/all` does not seem to provide the correct number of instantiated and updated properties. Instead of providing the sum of all instantiated/updated properties from all API endpoints, it only seems to provide the number from the last endpoint and shall be revisited
@@ -470,7 +469,6 @@ HAVING(?streets > 1)
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
-[CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [Container registry on Github]: https://github.com/orgs/cambridge-cares/packages
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Environment Agency]: https://environment.data.gov.uk/flood-monitoring/doc/reference
@@ -505,6 +503,7 @@ HAVING(?streets > 1)
 [AirQuality Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AirQualityAgent
 
 <!-- Repositories -->
+[data.json]: /StackDeployment/inputs/stack-manager/inputs/data/visualisation/data.json
 [Agent docker-compose file folder]: /StackDeployment/inputs/docker_compose_files
 [resources]: /StackDeployment/resources
 [river_level_agent input folder]: /StackDeployment/inputs/river_level_agent
