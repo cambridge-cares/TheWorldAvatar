@@ -1,0 +1,51 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "GPSData",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "GPSData",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "geom",
+                    "SEPARATOR": "COMMA"
+                },
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "LONGITUDE",
+                    "Y_POSSIBLE_NAMES": "LATITUDE"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": [
+                    {
+                        "name": "gps_points_extended",
+                        "sql": "SELECT ST_SetSRID(ST_MakePoint(LONGITUDE, LATITUDE), 4326) AS geom, \"UTC DATE\", \"UTC TIME\", \"LATITUDE\", \"LONGITUDE\" FROM GPSData",
+                        "escapeSql": false,
+                        "geometry": {
+                            "name": "geom",
+                            "type": "Point",
+                            "srid": 4326
+                        }
+                    },
+                    {
+                        "name": "gps_lines",
+                        "sql": "WITH OrderedPoints AS (SELECT *, ROW_NUMBER() OVER (ORDER BY \"UTC DATE\", \"UTC TIME\") as seq FROM GPSData) SELECT ST_MakeLine(ST_SetSRID(ST_MakePoint(LONGITUDE, LATITUDE), 4326)) OVER (ORDER BY seq) AS geom, AVG(\"SPEED\") OVER (ORDER BY seq) AS avg_speed, SUM(\"DISTANCE\") OVER (ORDER BY seq) AS total_distance FROM OrderedPoints WHERE seq > 1",
+                        "escapeSql": false,
+                        "geometry": {
+                            "name": "geom",
+                            "type": "LineString",
+                            "srid": 4326
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
