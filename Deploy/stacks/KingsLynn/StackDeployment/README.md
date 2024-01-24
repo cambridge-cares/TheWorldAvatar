@@ -112,25 +112,27 @@ The following steps explain how to upload the data to the stack using the [Stack
 
 The following provides an overview of all steps and agents required to instantiate the data into the KG. Copies of the (potentially) required `docker-compose.yml` files are provided in the [Agent docker-compose file folder] for convenience and reproducibility.
 
-&nbsp;
+
 ## 1) Building instantiation (OntoCityGml)
+
+Some of the following steps refer to an associated `DATA` repository. In case access is needed, please get in touch with mh807@cam.ac.uk.
 
 ## 1.1) Geospatial data consolidation (QGIS, *manual*)
 
-QGIS is used to consolidate various geospatial data sets from Digimap (both Ordnance Survey (OS) Open data as well as Premium OS data are used, i.e. Building Height Attribute and Digital Terrain Model 5m ) into a single shapefile containing all relevant building information. The exact workflow is described in the `QGIS workflow.pptx` in the `../../Data/01 QGIS` repository, which also contains the QGIS project file. The output shapefile forms the input for the FME workflow below and can be found under `../../Data/02 FME/KingsLynn_cleaned ALL buildings_adjusted building heights_incl UPRNs_final.shp`.
+QGIS is used to consolidate various geospatial data sets from Digimap (both Ordnance Survey (OS) Open data as well as Premium OS data are used, i.e. Building Height Attribute and Digital Terrain Model 5m ) into a single shapefile containing all relevant building information. The exact workflow is described in the `QGIS workflow.pptx` in the `DATA/01 QGIS` repository, which also contains the QGIS project file. The output shapefile forms the input for the FME workflow below and can be found under `DATA/02 FME/KingsLynn_cleaned ALL buildings_adjusted building heights_incl UPRNs_final.shp`.
 
 ## 1.2) Creation of .gml input file for KG import (FME, *manual*)
 
-FME is used to convert the shapefile from the previous step into a `.gml` file that can be instantiated into the KG using the Import Agent/Importer Tool. The exact FME workflow is provided by `shapefile2citygml Kings Lynn BHA data_final.fmw` in the `../../Data/02 FME` repository, which also contains both its input and output file. The output `.gml` file contains (all) buildings in King's Lynn in LOD1 including their height (i.e. both building ground elevation as well as actual building height (is both premium data)) and UPRN information.
+FME is used to convert the shapefile from the previous step into a `.gml` file that can be instantiated into the KG using the Import Agent/Importer Tool. The exact FME workflow is provided by `shapefile2citygml Kings Lynn BHA data_final.fmw` in the `DATA/02 FME` repository, which also contains both its input and output file. The output `.gml` file contains (all) buildings in King's Lynn in LOD1 including their height (i.e. both building ground elevation as well as actual building height (is both premium data)) and UPRN information.
 
 ## 1.3) Access Agent
 
 All CitiesKG Agents require the [AccessAgent] to be running (locally) as Docker container in order to access the target KG namespaces. Details on how to deploy the AccessAgent and upload required routing information are detailed in the [AccessAgent] README and summarised below:
 
-1) Navigate to `JPS_ACCESS_AGENT/access-agent-dev-stack` on TWAs `main` branch
+1) Navigate to `Agents/AccessAgent/access-agent-dev-stack` on TWAs `main` branch
 2) Pull Docker image and start container by running `docker-compose up -d --no-build`. The agent shall start at port `48888`
 3) Replace initial `routing.json` within AccessAgent repository with provided [routing.json] file
-4) Upload routing information by running `bash ./uploadRouting.sh` (again within `JPS_ACCESS_AGENT/access-agent-dev-stack` repo)
+4) Upload routing information by running `bash ./uploadRouting.sh`
 
 **Please note** that the `uri.route` within the [CKG config.properties] file needs to match the label used in the [routing.json] file, i.e. `uri.route=http://localhost:48888/ocgml_buildings`. After providing the correct `uri.route`, the City Agents `.war` file can be built and deployed as described in the [CityImportAgent] README.
 
@@ -138,19 +140,19 @@ All CitiesKG Agents require the [AccessAgent] to be running (locally) as Docker 
 
 > The following steps refer to commit `7c378e97d268b02e0d70661257894d5bff8e3655` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
 
-The [CityImportAgent] can be used to import the `.gml` file from the previous step into the KG. However, the version at time of writing faces issues with larger `.gml` files and a manual workaround is required as detailed below. Please note that Java 8 and IntelliJ are required to build and run the CityImportAgent. Furthermore, the [AccessAgent] needs to be running locally (as Docker container) in order to access the target KG namespace. The folder `../../Data/03 OntoCityGml Instantiation/Standalone_CitiesKG_Blazegraph/` contains a `Start_Blazegraph_with_default_settings.bat` file to bring up a Blazegraph instance with required settings for importing OntoCityGml buildings, which will start at `http://127.0.0.1:9999/blazegraph/`.
+The [CityImportAgent] can be used to import the `.gml` file from the previous step into the KG. However, the version at time of writing faces issues with larger `.gml` files and a manual workaround is required as detailed below. Please note that Java 8 and IntelliJ are required to build and run the CityImportAgent. Furthermore, the [AccessAgent] needs to be running locally (as Docker container) in order to access the target KG namespace. The folder `DATA/03 OntoCityGml Instantiation/Standalone_CitiesKG_Blazegraph/` contains a `Start_Blazegraph_with_default_settings.bat` file to bring up a Blazegraph instance with required settings for importing OntoCityGml buildings, which will start at `http://127.0.0.1:9999/blazegraph/`.
 
-It is **not** recommended to re-do step 1.4) and instead use the pre-instantiated OntoCityGml quads provided in the `../../Data/99 KG snapshots/1_instantiated_ontocitygml/` repository.
+It is **not** recommended to re-do step 1.4) and instead use the pre-instantiated OntoCityGml quads provided in the `DATA/99 KG snapshots/1_instantiated_ontocitygml/` repository.
 
 ## 1.4.1) City Import Agent
 
-Build and deploy the City Import Agent as described in the [CityImportAgent] README. Required IntelliJ run configurations are provided in the `../../Data/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository, which also provides a short step-by-step guide `Building Instantiation_short.pptx`.
+Build and deploy the City Import Agent as described in the [CityImportAgent] README. Required IntelliJ run configurations are provided in the `DATA/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository, which also provides a short step-by-step guide `Building Instantiation_short.pptx`.
 
 The used version at commit `7c378e97d268b02e0d70661257894d5bff8e3655` seems unable to handle large `.gml` files. Hence, the CityImportAgent is primarily used to split the large `.gml` file into multiple smaller `.gml` files to be manually uploaded by the Import GUI as described in the next step.
 
 ## 1.4.2) Import GUI
 
-After the `.gml` file is split into smaller files, they can be manually uploaded in chunks of 100-200 files via the Importer GUI. The `Building Instantiation_short.pptx` guide contains a step-by-step description on how to achieve this with required IntelliJ run configurations also provided in the `../../Data/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository.
+After the `.gml` file is split into smaller files, they can be manually uploaded in chunks of 100-200 files via the Importer GUI. The `Building Instantiation_short.pptx` guide contains a step-by-step description on how to achieve this with required IntelliJ run configurations also provided in the `DATA/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository.
 
 ## 1.5) Thematic Surface Discovery Agent (CitiesKG)
 
@@ -167,11 +169,11 @@ Content-Type: application/json
   "mode": "footprint" }
 ```
 
-- A KG export after successfully amended by the TSD Agent is provided in `../../Data/99 KG snapshots/2_ontocitygml_tsd`
+- A KG export after successfully amended by the TSD Agent is provided in `DATA/99 KG snapshots/2_ontocitygml_tsd`
 
 ## 1.6) UPRN Agent (potentially in chunks)
 
-> The following steps refer to commit `609022747856c619984fa972e6a773259625a9ec` on `https://github.com/cambridge-cares/CitiesKG/tree/develop` (the `.war` file built of this commit is provided in the `../../Data/03 OntoCityGml Instantiation/City agents war file/` repository (for reference); however, deploying via IntelliJ is recommended).
+> The following steps refer to commit `609022747856c619984fa972e6a773259625a9ec` on `https://github.com/cambridge-cares/CitiesKG/tree/develop` (the `.war` file built of this commit is provided in the `DATA/03 OntoCityGml Instantiation/City agents war file/` repository (for reference); however, deploying via IntelliJ is recommended).
 
 The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml building from the Ordnance Survey [OS Features API] and instantiates them into the KG. The agent is designed to either process all buildings within a namespace (and push changes to KG every 2k buildings) or a single building provided as `cityObjectIRI`:
 
@@ -185,7 +187,7 @@ Content-Type: application/json
 ```
 As the agent tends to fail when processing an entire namespace on particular machines (heap space issues or "arbitrary "JSON exceptions have been observed), a workaround might be necessary. The Kings Lynn [Utilities] repository contains a script to run the [UPRN Agent in batches] of single buildings with a to be specified waiting time between individual requests (to allow for uninterrupted SPARQL updates). More details can be found in the README there.
 
-- A KG export after successfully amended by the UPRN Agent is provided in `../../Data/99 KG snapshots/3_ontocitygml_tsd_uprn`
+- A KG export after successfully amended by the UPRN Agent is provided in `DATA/99 KG snapshots/3_ontocitygml_tsd_uprn`
 
 &nbsp;
 ## 2) Building data enrichment (OntoBuiltEnv)
@@ -213,13 +215,11 @@ Some of the agents have (data) interdependencies and, hence, require matching na
 &nbsp;
 ## 2.1) Energy Performance Certificate (EPC) Agent
 
-> The following steps refer to the published Docker image `ghcr.io/cambridge-cares/epc_agent:1.2.0` as of commit `93c2844a1d4074ca38e86074d7003332fed0673d` 
-
 Deploy the agent as described in the [EPC Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_epcs.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
 The required Base64-encoded authentication token can be created using `echo -n '<email address>:<provided API key>' | base64` on the command line (Windows) with `<email address>` being the email address used to register for the API and `<provided API key>` being the API key sent to you via email after registration. In case `bash ./stack.sh start KINGS-LYNN` does not successfully start the agent, simply re-run the command (this is a known issue and mentioned in the [EPC Agent] README). 
 
-After agent startup, follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updated of instantiated data occurs automatically. The EPC Agent represents the first step/agent to instantiate non-OntoCityGml buildings data in the overall workflow.
+After agent startup, follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring update of instantiated data occurs automatically. The EPC Agent represents the first step/agent to instantiate non-OntoCityGml buildings data in the overall workflow.
 
 0) New namespace (i.e. `kingslynn`) to host all building related data will be created automatically upon agent startup (incl. upload of ontology and all required unit symbols)
 1) Instantiate all postcodes in King's Lynn local authority:
@@ -250,8 +250,8 @@ After agent startup, follow the described instantiation workflow by sending the 
     ```
 
 - There are KG exports of successfully instantiated EPC data provided in 
-    - steps 1 & 2: `../../Data/99 KG snapshots/4_epc_data_before_matching`
-    - steps 1, 2 & 3: `../../Data/99 KG snapshots/5_epc_data_after_matching`
+    - steps 1 & 2: `DATA/99 KG snapshots/4_epc_data_before_matching`
+    - steps 1, 2 & 3: `DATA/99 KG snapshots/5_epc_data_after_matching`
 - There is no KG export after step 4, as this also requires the footprints to be uploaded to PostGIS (for visualisation); hence, step 4 shall be run as part of the instantiation workflow
 
 
@@ -274,7 +274,7 @@ Content-Type: application/json
 
 After the Building instances are matched, step 3.4) from the EPC Agent can be performed.
 
-- A KG export of successfully instantiated and linked EPC data is provided in `../../Data/99 KG snapshots/5_epc_data_after_matching` (i.e. this does NOT include step 3.5 from the EPC agent README, but only the matching of buildings)
+- A KG export of successfully instantiated and linked EPC data is provided in `DATA/99 KG snapshots/5_epc_data_after_matching` (i.e. this does NOT include step 3.5 from the EPC agent README, but only the matching of buildings)
 
 ## 2.3) Property Sales Instantiation Agent
 
@@ -487,7 +487,7 @@ HAVING(?streets > 1)
 [Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
 
 <!-- Agents -->
-[AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
+[AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent
 [CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
