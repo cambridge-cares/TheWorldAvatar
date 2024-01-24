@@ -3,7 +3,7 @@
 		"Name": "virtual-sensor-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/virtual-sensor-agent:1.4",
+				"Image": "ghcr.io/cambridge-cares/virtual-sensor-agent:1.5-dev-live-ship-data-SNAPSHOT",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"DATABASE=postgres"
