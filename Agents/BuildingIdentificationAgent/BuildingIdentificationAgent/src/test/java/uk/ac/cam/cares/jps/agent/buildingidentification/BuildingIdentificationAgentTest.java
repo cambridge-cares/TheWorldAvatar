@@ -6,20 +6,31 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class BuildingIdentificationAgentTest {
 
     @Test
     public void testAgent() {
         JSONObject request = new JSONObject();
         request.put("maxDistance", "100.0");
-        request.put("endpoint", System.getenv("endpoint"));
+        // request.put("endpoint", System.getenv("endpoint"));
         request.put("dbUrl", System.getenv("dbUrl"));
         request.put("dbUser", System.getenv("dbUser"));
         request.put("dbPassword", System.getenv("dbPassword"));
+        JSONArray coordinates = new JSONArray();
+
+        JSONArray coord1 = new JSONArray(new double[] { 103.67455581177452, 1.2711156279472327 });
+        JSONArray coord2 = new JSONArray(new double[] { 103.68455581177452, 1.2611156279472327 });
+        coordinates.put(coord1);
+        coordinates.put(coord2);
+
+        request.put("coordinates", coordinates);
 
         JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
-        assertTrue(result.getInt("number_factories") > 0);
-        assertTrue(result.getInt("number_buildings") > 0);
+
+        assertTrue(result.getInt("number_matched") > 0);
 
     }
 
