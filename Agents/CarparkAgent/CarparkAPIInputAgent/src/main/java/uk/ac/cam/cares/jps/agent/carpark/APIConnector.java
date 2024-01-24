@@ -17,28 +17,28 @@ import java.io.*;
 import java.util.Queue;
 
 public class APIConnector {
-    private String API_URL = "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2";
-    private String PRICING_API_URL = "https://data.gov.sg/api/action/datastore_search?resource_id=85207289-6ae7-4a56-9066-e6090a3684a5&limit=357";
+    private String lotApiEndpoint = "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2";
+    private String lotApiToken;
+    private String pricingApiEndpoint = "https://data.gov.sg/api/action/datastore_search?resource_id=85207289-6ae7-4a56-9066-e6090a3684a5&limit=357";
     private String date;
-    private String accountKey;
 
     private static final String ERRORMSG = "Carpark data could not be retrieved";
     private static final Logger LOGGER = LogManager.getLogger(APIConnector.class);
 
     //Standard Constructor to initialise the instance variables
     public APIConnector(String URL, String d, String k, String Pricing_URL) {
-        API_URL = URL;
-        PRICING_API_URL = Pricing_URL;
+        lotApiEndpoint = URL;
+        lotApiToken = k;
+        pricingApiEndpoint = Pricing_URL;
         date = d;
-        accountKey = k;
     }
 
     //Constructor to initialise the variables according to the Properties file
     public APIConnector(String filepath) throws IOException {
         Queue<String> apiConfigs = ConfigReader.retrieveAPIConfig(filepath);
-        this.API_URL = apiConfigs.poll();
-        this.PRICING_API_URL = apiConfigs.poll();
-        this.accountKey = apiConfigs.poll();
+        this.lotApiEndpoint = apiConfigs.poll();
+        this.lotApiToken = apiConfigs.poll();
+        this.pricingApiEndpoint = apiConfigs.poll();
     }
 
     // Obtains Weather data in JSON format containing key:value pairs
@@ -61,10 +61,10 @@ public class APIConnector {
     }
 
     private JSONObject retrieveData() throws IOException, JSONException {
-        String path = API_URL;
+        String path = lotApiEndpoint;
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpGet readrequest = new HttpGet(path);
-            readrequest.setHeader("AccountKey", accountKey);
+            readrequest.setHeader("AccountKey", lotApiToken);
             try (CloseableHttpResponse response = httpclient.execute(readrequest)) {
                 int status = response.getStatusLine().getStatusCode();
                 if (status == 200) {
@@ -78,7 +78,7 @@ public class APIConnector {
     }
 
     private JSONObject retreivePricingData() throws IOException, JSONException {
-        String path = PRICING_API_URL;
+        String path = pricingApiEndpoint;
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet readrequest = new HttpGet(path);

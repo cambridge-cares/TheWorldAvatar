@@ -41,9 +41,9 @@ More information can be found in the example property file `client.properties` i
 #### API properties
 The API properties contain the credentials to authorize access to the weather Station API (see the [API description](#Weather-Station-API)),
 as well as, the url of the API and the identifier of the weather station. More specifically, the API properties file should contain the following keys:
-- `carpark.api_url` the API URL to retrieve the carpark available lots data
-- `carpark.accountKey` the key necessary to access the carpark avaliable lots API
-- `carpark.pricing_url` the API URL to retrieve the carpark's rates.
+- `carpark.api.lot.endpoint` the API endpoint to retrieve the available lots for all car parks
+- `carpark.api.lot.token` API token to access the API for car park lots
+- `carpark.api.pricing.endpoint` the API endpoint to retrieve the parking rates for all car parks.
 
 More information can be found in the example property file `api.properties` in the `config` folder.
 

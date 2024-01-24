@@ -18,9 +18,9 @@ class ConfigReaderTest {
     private static final String SPARQL_UPDATE_ENDPOINT_KEY = "sparql.update.endpoint";
     private static final String SPARQL_USERNAME_KEY = "sparql.username";
     private static final String SPARQL_PASSWORD_KEY = "sparql.password";
-    private static final String API_AVAILABLE_LOT_ENDPOINT_KEY = "carpark.api_url";
-    private static final String API_PRICING_ENDPOINT_KEY = "carpark.pricing_url";
-    private static final String API_TOKEN_KEY = "carpark.accountKey";
+    private static final String API_AVAILABLE_LOT_ENDPOINT_KEY = "carpark.api.lot.endpoint";
+    private static final String API_LOT_TOKEN_KEY = "carpark.api.lot.token";
+    private static final String API_PRICING_ENDPOINT_KEY = "carpark.api.pricing.endpoint";
     private static final String SAMPLE_RDB_DB = "jdbc:postgresql://host.docker.internal:5432/carpark";
     private static final String SAMPLE_RDB_USER = "postgres";
     private static final String SAMPLE_RDB_PASS = "postgis";
@@ -29,8 +29,8 @@ class ConfigReaderTest {
     private static final String SAMPLE_SPARQL_USER = "admin";
     private static final String SAMPLE_SPARQL_PASS = "carparks";
     private static final String SAMPLE_API_LOT_ENDPOINT = "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2";
+    private static final String SAMPLE_API_LOT_TOKEN = "bjaga8f";
     private static final String SAMPLE_API_PRICING_ENDPOINT = "https://data.gov.sg/api/action/datastore_search";
-    private static final String SAMPLE_API_TOKEN = "bjaga8f";
 
     @Test
     void testRetrieveRDBConfig_NoConfigFile() {
@@ -173,11 +173,11 @@ class ConfigReaderTest {
 
     @Test
     void testRetrieveAPIConfig_MissingInputs() throws IOException {
-        File config = genSampleAPIConfigFile(SAMPLE_API_LOT_ENDPOINT, SAMPLE_API_PRICING_ENDPOINT, "");
+        File config = genSampleAPIConfigFile(SAMPLE_API_LOT_ENDPOINT, "", SAMPLE_API_PRICING_ENDPOINT);
         try {
             // Execute method and ensure right error is thrown
             IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class, () -> ConfigReader.retrieveAPIConfig(config.getAbsolutePath()));
-            assertEquals(String.format("Property %s cannot be empty in the file %s", API_TOKEN_KEY, config.getAbsolutePath()), thrownError.getMessage());
+            assertEquals(String.format("Property %s cannot be empty in the file %s", API_LOT_TOKEN_KEY, config.getAbsolutePath()), thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -186,14 +186,14 @@ class ConfigReaderTest {
 
     @Test
     void testRetrieveAPIConfig_Success() throws IOException {
-        File config = genSampleAPIConfigFile(SAMPLE_API_LOT_ENDPOINT, SAMPLE_API_PRICING_ENDPOINT, SAMPLE_API_TOKEN);
+        File config = genSampleAPIConfigFile(SAMPLE_API_LOT_ENDPOINT, SAMPLE_API_LOT_TOKEN, SAMPLE_API_PRICING_ENDPOINT);
         try {
             // Execute method
             Queue<String> result = ConfigReader.retrieveAPIConfig(config.getAbsolutePath());
             // Verify results are expected
             assertEquals(SAMPLE_API_LOT_ENDPOINT, result.poll());
+            assertEquals(SAMPLE_API_LOT_TOKEN, result.poll());
             assertEquals(SAMPLE_API_PRICING_ENDPOINT, result.poll());
-            assertEquals(SAMPLE_API_TOKEN, result.poll());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -227,13 +227,13 @@ class ConfigReaderTest {
         return file;
     }
 
-    public static File genSampleAPIConfigFile(String apiLotEndpoint, String apiPricingEndpoint, String apiToken) throws IOException {
+    public static File genSampleAPIConfigFile(String apiLotEndpoint, String apiLotToken, String apiPricingEndpoint) throws IOException {
         File file = new File(System.getProperty("user.dir") + "/config/api.properties");
         createFileAndDirectoryIfUnavailable(file);
         PrintWriter writer = new PrintWriter(new FileWriter(file, true));
         writer.println(API_AVAILABLE_LOT_ENDPOINT_KEY + "=" + apiLotEndpoint);
+        writer.println(API_LOT_TOKEN_KEY + "=" + apiLotToken);
         writer.println(API_PRICING_ENDPOINT_KEY + "=" + apiPricingEndpoint);
-        writer.println(API_TOKEN_KEY + "=" + apiToken);
         writer.close();
         return file;
     }

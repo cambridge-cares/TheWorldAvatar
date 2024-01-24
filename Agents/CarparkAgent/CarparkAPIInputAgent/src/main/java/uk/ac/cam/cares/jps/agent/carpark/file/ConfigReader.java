@@ -19,9 +19,9 @@ public class ConfigReader {
     private static final String SPARQL_UPDATE_ENDPOINT_KEY = "sparql.update.endpoint";
     private static final String SPARQL_USERNAME_KEY = "sparql.username";
     private static final String SPARQL_PASSWORD_KEY = "sparql.password";
-    private static final String API_AVAILABLE_LOT_ENDPOINT_KEY = "carpark.api_url";
-    private static final String API_PRICING_ENDPOINT_KEY = "carpark.pricing_url";
-    private static final String API_TOKEN_KEY = "carpark.accountKey";
+    private static final String API_AVAILABLE_LOT_ENDPOINT_KEY = "carpark.api.lot.endpoint";
+    private static final String API_LOT_TOKEN_KEY = "carpark.api.lot.token";
+    private static final String API_PRICING_ENDPOINT_KEY = "carpark.api.pricing.endpoint";
 
     // Private constructor that should not be instantiated
     private ConfigReader() {}
@@ -61,7 +61,7 @@ public class ConfigReader {
      * @return The available lot endpoint, pricing endpoint, and api token as a queue in this sequence.
      */
     public static Queue<String> retrieveAPIConfig(String filepath) throws IOException {
-        String[] requiredProperties = new String[]{API_AVAILABLE_LOT_ENDPOINT_KEY, API_PRICING_ENDPOINT_KEY, API_TOKEN_KEY};
+        String[] requiredProperties = new String[]{API_AVAILABLE_LOT_ENDPOINT_KEY, API_LOT_TOKEN_KEY, API_PRICING_ENDPOINT_KEY};
         return retrieveFileContents(filepath, requiredProperties, true);
     }
 
