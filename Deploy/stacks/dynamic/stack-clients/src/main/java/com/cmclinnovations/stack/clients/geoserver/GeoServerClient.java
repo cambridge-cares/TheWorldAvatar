@@ -26,6 +26,7 @@ import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
@@ -206,6 +207,8 @@ public class GeoServerClient extends ContainerClient {
                 fte.setMetadataVirtualTable(virtualTable);
             }
 
+            processDimensions(geoServerSettings, fte);
+
             if (manager.getPublisher().publishDBLayer(workspaceName,
                     storeName,
                     fte, geoServerSettings)) {
@@ -262,10 +265,6 @@ public class GeoServerClient extends ContainerClient {
                         files.put("timeregex.properties", ("regex=" + regex + ",format=" + format).getBytes());
 
                     }
-
-                    //TODO coverageconfig.json may need timeoptions.getarrayname()
-
-
                 }
 
                 files.put("indexer.properties",
@@ -291,10 +290,7 @@ public class GeoServerClient extends ContainerClient {
                     // TODO Work out how to set the layer title/display name
                 }
 
-                Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions = geoServerSettings.getDimensions();
-            if (null != dimensions) {
-                dimensions.entrySet().forEach(entry -> storeEncoder.setMetadataDimension(entry.getKey(), entry.getValue()));
-            }
+                processDimensions(geoServerSettings, storeEncoder);
 
                 if (manager.getPublisher().publishExternalMosaic(
                         workspaceName, name,
@@ -311,6 +307,13 @@ public class GeoServerClient extends ContainerClient {
                         "GeoServer coverage datastore '" + name + "' does not exist and could not be created.", ex);
             }
         }
+    }
+
+    private void processDimensions(GeoServerDimensionSettings dimensionSettings, GSResourceEncoder resourceEncoder) {
+        Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions = dimensionSettings.getDimensions();
+         if (null != dimensions) {
+        dimensions.entrySet().forEach(entry -> resourceEncoder.setMetadataDimension(entry.getKey(), entry.getValue()));
+         }
     }
 
     public void addProjectionsToGeoserver(String geoserverContainerID, String wktString, String srid) {
