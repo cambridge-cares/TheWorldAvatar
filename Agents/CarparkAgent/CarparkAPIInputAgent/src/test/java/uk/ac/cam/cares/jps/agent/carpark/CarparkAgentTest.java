@@ -25,11 +25,10 @@ class CarparkAgentTest {
     }
 
     @Test
-    void testProcessRequestParameters_UndefinedRoute() throws ServletException {
+    void testProcessRequestParameters_UndefinedRoute() {
         JsonObject requestParams = new JsonObject();
         requestParams.add(KEY_METHOD, GET_METHOD);
         requestParams.add(KEY_ROUTE, JSON_BASE_ROUTE);
-        agent.init();
         JSONObject response = agent.processRequestParameters(new JSONObject(requestParams.toString()));
         assertEquals("Invalid route! Requested route does not exist for : ", response.getString("Error"));
     }
