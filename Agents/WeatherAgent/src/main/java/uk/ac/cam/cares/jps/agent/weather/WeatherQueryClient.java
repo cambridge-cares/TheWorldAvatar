@@ -138,14 +138,14 @@ class WeatherQueryClient {
         geojson.put("type", "Feature").put("properties", properties).put("geometry", geometry);
 
         LOGGER.info("Uploading GeoJSON to PostGIS");
-        GDALClient gdalclient = new GDALClient();
+        GDALClient gdalclient = GDALClient.getInstance();
         gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, Config.LAYERNAME, geojson.toString(),
                 new Ogr2OgrOptions(), true);
 
         LOGGER.info("Creating layer in Geoserver");
-        GeoServerClient geoserverclient = new GeoServerClient();
+        GeoServerClient geoserverclient = GeoServerClient.getInstance();
         geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
-        geoserverclient.createPostGISLayer(null, Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.LAYERNAME,
+        geoserverclient.createPostGISLayer(Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.LAYERNAME,
                 new GeoServerVectorSettings());
 
         LOGGER.info("Instantiating weather station in triple-store");
