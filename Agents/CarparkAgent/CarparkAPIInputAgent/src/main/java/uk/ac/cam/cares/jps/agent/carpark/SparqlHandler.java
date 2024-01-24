@@ -2,13 +2,11 @@ package uk.ac.cam.cares.jps.agent.carpark;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import uk.ac.cam.cares.jps.agent.carpark.file.ConfigReader;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,10 +35,6 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 public class SparqlHandler {
     private static final Logger LOGGER = LogManager.getLogger(SparqlHandler.class);
-    private String queryEndpoint;
-    private String updateEndpoint;
-    private String sparqlUsername;
-    private String sparqlPassword;
     RemoteStoreClient kbClient;
 
     /**

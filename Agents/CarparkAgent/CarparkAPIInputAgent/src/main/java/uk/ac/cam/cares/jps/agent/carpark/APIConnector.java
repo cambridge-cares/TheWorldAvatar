@@ -14,7 +14,6 @@ import uk.ac.cam.cares.jps.agent.carpark.file.ConfigReader;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.*;
-import java.util.Properties;
 import java.util.Queue;
 
 public class APIConnector {
