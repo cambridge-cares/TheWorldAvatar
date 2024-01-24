@@ -19,12 +19,12 @@ For running the agent, three property files are required:
 - One [property file for the carpark APIs](#api-properties) defining the api_key, stationId and the api_url.
 
 #### Agent properties
-The agent property file only needs to contain a single line:
+The `agent.properties` file only needs to contain a single line:
 ```
-Carpark.mappingfolder=Carpark_AGENT_MAPPINGS
+carpark.mapping.folder=CARPARK_AGENT_MAPPINGS
 ```
-where `Carpark_AGENT_MAPPINGS` is the environment variable pointing to the location of a folder containing JSON key to IRI mappings. An example property file can be found in the `config` folder under 
-`agent.properties`. 
+where `CARPARK_AGENT_MAPPINGS` is the environment variable pointing to the location of a folder containing JSON key to IRI mappings. 
+A sample file is found at `config/agent.properties`. 
 
 #### Time-series client properties
 The time-series client property file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
