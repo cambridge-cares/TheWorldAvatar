@@ -106,16 +106,16 @@ public class SparqlHandler {
             prop.load(input);
             String mappingfolder;
             try {
-                mappingfolder = System.getenv(prop.getProperty("Carpark.mappingfolder"));
+                mappingfolder = System.getenv(prop.getProperty("carpark.mapping.folder"));
             } catch (NullPointerException e) {
-                LOGGER.fatal("The key Carpark.mappingfolder cannot be found");
-                throw new IOException("The key Carpark.mappingfolder cannot be found");
+                LOGGER.fatal("The key carpark.mapping.folder cannot be found");
+                throw new IOException("The key carpark.mapping.folder cannot be found");
             }
 
             if (mappingfolder == null) {
-                LOGGER.fatal("The properties file does not contain the key Carpark.mappingfolder with a path to the folder containing the required JSON key to IRI Mappings");
+                LOGGER.fatal("The properties file does not contain the key carpark.mapping.folder with a path to the folder containing the required JSON key to IRI Mappings");
 
-                throw new InvalidPropertiesFormatException("The properties file does not contain the key Carpark.mappingfolder with a path to the folder containing the required JSON key to IRI Mappings");
+                throw new InvalidPropertiesFormatException("The properties file does not contain the key carpark.mapping.folder with a path to the folder containing the required JSON key to IRI Mappings");
             }
             mappings = new ArrayList<>();
             File folder = new File(mappingfolder);

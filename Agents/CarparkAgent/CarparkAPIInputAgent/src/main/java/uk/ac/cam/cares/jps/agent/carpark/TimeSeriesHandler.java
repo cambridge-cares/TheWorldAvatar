@@ -40,15 +40,15 @@ public class TimeSeriesHandler {
             String mappingFolder;
 
             try {
-                mappingFolder = System.getenv(prop.getProperty("Carpark.mappingfolder"));
+                mappingFolder = System.getenv(prop.getProperty("carpark.mapping.folder"));
             } catch (NullPointerException e) {
-                LOGGER.fatal("The key Carpark.mappingfolder cannot be found in the file");
-                throw new IOException("The key Carpark.mappingfolder cannot be found in the file");
+                LOGGER.fatal("The key carpark.mapping.folder cannot be found in the file");
+                throw new IOException("The key carpark.mapping.folder cannot be found in the file");
             }
 
             if (mappingFolder == null) {
-                LOGGER.fatal("The properties file does not contain the key Carpark.mappingfolder with a path to the folder containing the required JSON key to IRI Mappings");
-                throw new InvalidPropertiesFormatException("The properties file does not contain the key Carpark.mappingfolder with a path to the folder containing the required JSON key to IRI Mappings");
+                LOGGER.fatal("The properties file does not contain the key carpark.mapping.folder with a path to the folder containing the required JSON key to IRI Mappings");
+                throw new InvalidPropertiesFormatException("The properties file does not contain the key carpark.mapping.folder with a path to the folder containing the required JSON key to IRI Mappings");
             }
             readmappings(mappingFolder);
         }

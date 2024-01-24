@@ -36,17 +36,11 @@ CMD mvn test
 FROM tomcat:9.0 as agent
 WORKDIR /app
 
-# Set the required environment variable
-ENV Carpark_AGENTPROPERTIES="/usr/local/tomcat/config/agent.properties"
-
-# Set the required environment variable
-ENV Carpark_APIPROPERTIES="/usr/local/tomcat/config/api.properties"
-
-# Set the required environment variable
-ENV Carpark_CLIENTPROPERTIES="/usr/local/tomcat/config/client.properties"
-
-# Set the required environment variable
-ENV Carpark_AGENT_MAPPINGS="/usr/local/tomcat/config/mappings"
+# Set the required environment variables
+ENV CARPARK_AGENTPROPERTIES="/usr/local/tomcat/config/agent.properties"
+ENV CARPARK_APIPROPERTIES="/usr/local/tomcat/config/api.properties"
+ENV CARPARK_CLIENTPROPERTIES="/usr/local/tomcat/config/client.properties"
+ENV CARPARK_AGENT_MAPPINGS="/usr/local/tomcat/config/mappings"
 
 COPY --from=builder /root/CarparkAPIInputAgent/output/carpark-agent##1.0.0.war $CATALINA_HOME/webapps/
 

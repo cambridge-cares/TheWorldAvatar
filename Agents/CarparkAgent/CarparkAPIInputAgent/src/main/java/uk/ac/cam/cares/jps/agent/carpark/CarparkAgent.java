@@ -33,6 +33,9 @@ public class CarparkAgent extends JPSAgent {
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the carpark API connector needed to interact with the API!";
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
+    private static final String CARPARK_AGENT_PROPERTIES_KEY = "CARPARK_AGENTPROPERTIES";
+    private static final String CARPARK_CLIENT_PROPERTIES_KEY = "CARPARK_CLIENTPROPERTIES";
+    private static final String CARPARK_API_PROPERTIES_KEY = "CARPARK_APIPROPERTIES";
 
     /**
      * Servlet init.
@@ -80,11 +83,7 @@ public class CarparkAgent extends JPSAgent {
                 msg = statusRoute();
                 break;
             case "retrieve":
-                String agentProperties = System.getenv("Carpark_AGENTPROPERTIES");
-                String clientProperties = System.getenv("Carpark_CLIENTPROPERTIES");
-                String apiProperties = System.getenv("Carpark_APIPROPERTIES");
-
-                String[] args = new String[]{agentProperties, clientProperties, apiProperties};
+                String[] args = new String[]{CARPARK_AGENT_PROPERTIES_KEY, CARPARK_CLIENT_PROPERTIES_KEY, CARPARK_API_PROPERTIES_KEY};
                 msg = initializeAgent(args);
                 break;
             default:
