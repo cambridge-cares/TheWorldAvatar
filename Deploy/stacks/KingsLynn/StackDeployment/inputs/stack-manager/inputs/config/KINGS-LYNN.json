@@ -8,5 +8,9 @@
             "citydbimpexp",
             "citytiler"
         ]
+    },
+    "volumes": {
+        "vis-files": "visualisation",
+        "fia-queries": "fia-queries"
     }
 }
