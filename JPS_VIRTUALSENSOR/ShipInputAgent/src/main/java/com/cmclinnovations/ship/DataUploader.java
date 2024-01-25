@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,19 +58,6 @@ public class DataUploader {
 
         // new derivations are created on the spot (request sent to agent immediately)
         queryClient.createNewDerivations(newlyCreatedShips);
-
-        // populate ship iri lookup table, for creation of geoserver layer in aermod
-        // agent
-        try (Connection conn = queryClient.getRemoteRDBStoreClient().getConnection()) {
-            ShipRDBClient rdbClient = new ShipRDBClient();
-            rdbClient.createIriLookUpTable(conn);
-            rdbClient.populateTable(newlyCreatedShips, conn);
-        } catch (SQLException e) {
-            String errmsg = "Probably failed to close connection while dealing with ship look up table";
-            LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
-            throw new RuntimeException(errmsg, e);
-        }
     }
 
     static List<Ship> uploadDataFromFile(QueryClient queryClient) throws IOException {
