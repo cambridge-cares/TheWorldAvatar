@@ -210,7 +210,7 @@ Some of the agents have (data) interdependencies and, hence, require matching na
 | Property Value Estimation Agent | kingslynn | marketvalues<br>(buildings) | marketvalues | kingslynn |
 | Flood Assessment Agent | kingslynn | floodwarnings<br>population |  |  |
 | MetOffice Agent | metoffice | metoffice | metoffice | stations |
-| Riverlevel Agent | riverstations | riverstations | riverstations | stations |
+| Riverlevel Agent | river_stations | river_stations | river_stations | stations |
 | Airquality Agent | airquality | airquality | airquality | stations |
 
 &nbsp;
@@ -339,7 +339,7 @@ Content-Type: application/json
 
 The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river level data from the [Environment Agency] into the KG. Details on building and deploying the agent are provided in its README and only summarised here: 
 
-* Create Blazegraph namespace specified in the docker-compose file (i.e. `riverstations`) before spinning up the agent
+* Create Blazegraph namespace specified in the docker-compose file (i.e. `river_stations`) before spinning up the agent
 * Both the `datum.json` and `river_stations.csv` files provided in the [river_level_agent input folder] shall be copied over to the root directory of the agent (i.e. the location where the agent's `docker-compose.yml` file is located)
 * To deploy the agent (using the pulled image) to the spun up stack, simply run the following command to initialise the stations and start a scheduled update that downloads data from the API daily. See the `docker-compose_riverstations.yml` in the [Agent docker-compose file folder] for the actually used compose file:
     ```bash
