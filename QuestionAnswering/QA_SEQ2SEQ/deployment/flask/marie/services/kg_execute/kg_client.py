@@ -18,13 +18,13 @@ PREFIX occ: <http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.ow
 
     def __init__(
         self,
-        kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
+        kg_endpoint: str,
         user: Optional[str] = None,
         pw: Optional[str] = None,
     ):
         if not isinstance(kg_endpoint, str):
             raise InvalidUrlError(kg_endpoint)
-        
+
         sparql = SPARQLWrapper(kg_endpoint)
         sparql.setReturnFormat(JSON)
         if user is not None and pw is not None:

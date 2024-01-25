@@ -55,8 +55,8 @@ def query_doi_for_regrounding():
     return [x for x in data if x]
 
 
-def query_entities_for_regrounding():
-    client = KgClient("http://theworldavatar.com/blazegraph/namespace/ontokin/sparql")
+def query_entities_for_regrounding(kg_endpoint: str):
+    client = KgClient(kg_endpoint)
     data = dict(
         Species=query_species_for_regrounding(client),
         Equations=query_eqn_for_regrounding(client),
@@ -121,13 +121,14 @@ def reground(entities_for_regrounding: Dict[str, List[str]], datum: dict):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("input_file", type=str)
+    parser.add_argument("--kg_endpoint", type=str, required=True)
     args = parser.parse_args()
 
     with open(args.input_file, "r") as f:
         data = json.load(f, object_hook=as_enum)
 
     if not os.path.exists(PATH_TO_ENTITIES_FOR_REGROUNDING):
-        query_entities_for_regrounding()
+        query_entities_for_regrounding(args.kg_endpoint)
     with open(PATH_TO_ENTITIES_FOR_REGROUNDING, "r") as f:
         entities_for_regrounding = json.load(f)
 

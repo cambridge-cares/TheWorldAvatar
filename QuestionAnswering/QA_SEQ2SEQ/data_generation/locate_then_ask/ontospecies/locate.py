@@ -20,8 +20,8 @@ class OSSpeciesLocator:
         "SMILES",
     ]
 
-    def __init__(self):
-        self.store = OSEntityStore()
+    def __init__(self, kg_endpoint: str):
+        self.store = OSEntityStore(kg_endpoint)
 
     def locate_entity_name(self, entity_iris: Iterable[str]):
         entity_names = []

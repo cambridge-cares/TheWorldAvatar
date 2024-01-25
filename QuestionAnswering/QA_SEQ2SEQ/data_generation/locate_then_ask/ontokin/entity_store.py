@@ -9,11 +9,7 @@ from locate_then_ask.ontokin.model import (
 
 
 class OKEntityStore:
-    def __init__(
-        self,
-        kg_endpoint: str = "http://theworldavatar.com/blazegraph/namespace/ontokin/sparql",
-        **kwargs
-    ):
+    def __init__(self, kg_endpoint: str, **kwargs):
         self.kg_client = KgClient(kg_endpoint, **kwargs)
         self.iri2cls: Dict[
             str, Union[Type[OKSpecies], Type[OKGasPhaseReaction], Type[OKMechanism]]

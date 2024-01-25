@@ -1,3 +1,4 @@
+import os
 import traceback
 from core.args_schema import ModelArguments
 
@@ -20,7 +21,7 @@ class SingleDomainTranslator:
     ):
         self.model = ModelWrapper(model_args, max_new_tokens=max_new_tokens)
         if domain == "ontospecies":
-            postprocessor = OSPostProcessor()
+            postprocessor = OSPostProcessor(embedding_model_path=os.getenv("FEATURE_EXTRACTION_MODEL_PATH"))
         elif domain == "ontokin":
             postprocessor = OKPostProcessor()
         else:

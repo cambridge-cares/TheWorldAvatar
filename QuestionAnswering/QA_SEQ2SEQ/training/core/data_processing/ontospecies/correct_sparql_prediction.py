@@ -5,8 +5,8 @@ from core.sparql.graph_pattern import TriplePattern, ValuesClause
 
 
 class OSSparqlPredictionCorrector:
-    def __init__(self):
-        self.predicate_corrector = OSPredicateCorrector()
+    def __init__(self, embedding_model_path: str):
+        self.predicate_corrector = OSPredicateCorrector(embedding_model_path)
         self.span_corrector = OSSpanCorrector()
 
     def correct_values_clause(self, values_clause: ValuesClause, nlq: str):

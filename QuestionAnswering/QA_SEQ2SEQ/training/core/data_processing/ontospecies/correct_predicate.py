@@ -52,7 +52,7 @@ class OSPredicateCorrector:
         + ["os:has{key}/rdfs:label".format(key=x) for x in USE_CHEMCLASS_KEYS]
     )
 
-    def __init__(self, model: str = "sentence-transformers/all-MiniLM-L12-v2"):
+    def __init__(self, model: str):
         self.model = SentenceTransformer(model)
         self.embed_matrix = self.model.encode(
             [" ".join(tokenize(x)) for x in self.KEYS], convert_to_tensor=True

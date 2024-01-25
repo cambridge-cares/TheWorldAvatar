@@ -16,10 +16,10 @@ class QueryGraphGenerator:
     def __init__(
         self,
         ontology: nx.DiGraph,
+        kg_endpoint: str,
         numcls2prop: Dict[str, str] = dict(),
         prop_blacklist: List[str] = [],
         questionnode_blacklist: List[str] = [],
-        kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
     ):
         G = UtilsOntology.flatten_subclassof(ontology)
         G = UtilsOntology.remove_egdes_by_label(G, labels=prop_blacklist)
@@ -75,7 +75,14 @@ class QueryGraphGenerator:
 
                     G.add_nodes_from(
                         [
-                            (val_node, dict(template_node=True, literal=True, label="rdfs:Literal")),  # value node
+                            (
+                                val_node,
+                                dict(
+                                    template_node=True,
+                                    literal=True,
+                                    label="rdfs:Literal",
+                                ),
+                            ),  # value node
                             (
                                 func_node,
                                 dict(func=comparative, label=comparative.value),

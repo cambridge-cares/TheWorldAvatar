@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 import json
 import os
 import random
@@ -24,12 +25,10 @@ class DatasetGenerator:
     }
 
     @classmethod
-    def query_seed_species(self):
+    def query_seed_species(self, kg_endpoint: str):
         from locate_then_ask.kg_client import KgClient
 
-        kg_client = KgClient(
-            "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql"
-        )
+        kg_client = KgClient(kg_endpoint)
 
         species_attr_values = "\n        " + "\n        ".join(
             ["(os:has{p})".format(p=p) for p in SPECIES_ATTRIBUTE_KEYS]
@@ -52,12 +51,12 @@ LIMIT {num}"""
         return [x["x"]["value"] for x in bindings]
 
     @classmethod
-    def retrieve_seed_species(self):
+    def retrieve_seed_species(self, kg_endpoint: str):
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_FILEPATH)
 
         if not os.path.isfile(filepath):
             print("No seed species found. Retrieving seed species...")
-            species = self.query_seed_species()
+            species = self.query_seed_species(kg_endpoint)
             with open(filepath, "w") as f:
                 f.write("\n".join(species))
             print("Retrieval of seed species done.")
@@ -67,11 +66,11 @@ LIMIT {num}"""
 
         return [x for x in seed_entities if x]
 
-    def __init__(self):
-        self.locator = OSSpeciesLocator()
+    def __init__(self, kg_endpoint: str):
+        self.locator = OSSpeciesLocator(kg_endpoint)
         self.asker = OSAsker()
 
-        self.seed_species = self.retrieve_seed_species()
+        self.seed_species = self.retrieve_seed_species(kg_endpoint)
         random.shuffle(self.seed_species)
 
     def locate(self, locate_strategy: str, species_id: int):
@@ -160,7 +159,11 @@ LIMIT {num}"""
 
 
 if __name__ == "__main__":
-    ds_gen = DatasetGenerator()
+    parser = ArgumentParser()
+    parser.add_argument("--kg_endpoint", type=str, required=True)
+    args = parser.parse_args()
+
+    ds_gen = DatasetGenerator(args.kg_endpoint)
     examples = ds_gen.generate()
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")

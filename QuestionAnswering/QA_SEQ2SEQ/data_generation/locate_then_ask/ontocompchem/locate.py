@@ -8,8 +8,8 @@ from locate_then_ask.query_graph import QueryGraph
 
 
 class OCCLocator:
-    def __init__(self):
-        self.store = OCCEntityStore()
+    def __init__(self, kg_endpoint: str):
+        self.store = OCCEntityStore(kg_endpoint)
 
     def locate(self, entity_iri: str):
         species = self.store.get(entity_iri)

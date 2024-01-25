@@ -18,12 +18,10 @@ SEED_SPECIES_PATH = "data/seed_entities/ontocompchem.txt"
 
 class DatasetGenerator:
     @classmethod
-    def query_seed_entities(cls):
+    def query_seed_entities(cls, kg_endpoint: str):
         from locate_then_ask.kg_client import KgClient
 
-        kg_client = KgClient(
-            "http://178.128.105.213:3838/blazegraph/namespace/ontocompchem/sparql"
-        )
+        kg_client = KgClient(kg_endpoint)
         query = """SELECT DISTINCT ?Species WHERE {
     ?MolecularComputation occ:hasSpeciesModel/occ:hasSpecies ?Species
 }"""
@@ -31,11 +29,11 @@ class DatasetGenerator:
         return [x["Species"]["value"] for x in response_bindings]
 
     @classmethod
-    def retrieve_seed_entities(cls):
+    def retrieve_seed_entities(cls, kg_endpoint: str):
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_PATH)
 
         if not os.path.isfile(filepath):
-            entities = cls.query_seed_entities()
+            entities = cls.query_seed_entities(kg_endpoint)
             with open(filepath, "w") as f:
                 f.write("\n".join(entities))
 
@@ -44,10 +42,10 @@ class DatasetGenerator:
 
         return [x for x in seed_entities if x]
 
-    def __init__(self):
-        self.locator = OCCLocator()
+    def __init__(self, kg_endpoint: str):
+        self.locator = OCCLocator(kg_endpoint)
         self.asker = OCCAsker()
-        self.seed_entities = self.retrieve_seed_entities()
+        self.seed_entities = self.retrieve_seed_entities(kg_endpoint)
         random.shuffle(self.seed_entities)
 
     def generate(self, repeats: int = 1):
@@ -79,9 +77,10 @@ class DatasetGenerator:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--repeats", type=int, default=1)
+    parser.add_argument("--kg_endpoint", type=str, required=True)
     args = parser.parse_args()
 
-    ds_gen = DatasetGenerator()
+    ds_gen = DatasetGenerator(args.kg_endpoint)
     examples = ds_gen.generate(repeats=args.repeats)
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")

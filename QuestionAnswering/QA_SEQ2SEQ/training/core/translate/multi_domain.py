@@ -1,3 +1,4 @@
+import os
 from typing import Dict
 
 from core.args_schema import ModelArguments
@@ -20,7 +21,7 @@ class MultiDomainTranslator:
     ):
         self.model = ModelWrapper(model_args, max_new_tokens=max_new_tokens)
         self.domain2postprocessor: Dict[str, PostProcessor] = dict(
-            ontospecies=OSPostProcessor(),
+            ontospecies=OSPostProcessor(embedding_model_path=os.getenv("FEATURE_EXTRACTION_MODEL_PATH")),
             ontokin=OKPostProcessor(),
             ontocompchem=OCCPostProcessor(),
         )

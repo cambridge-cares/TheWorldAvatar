@@ -6,10 +6,7 @@ from locate_then_ask.ontospecies.model import OSProperty, OSSpecies
 
 
 class OSEntityStore:
-    def __init__(
-        self,
-        kg_endpoint: str = "http://178.128.105.213:3838/blazegraph/namespace/ontospecies/sparql",
-    ):
+    def __init__(self, kg_endpoint: str):
         self.kg_client = KgClient(kg_endpoint)
         self.iri2entity: Dict[str, OSSpecies] = dict()
 
@@ -104,7 +101,11 @@ SELECT DISTINCT ?ChemicalClassLabel WHERE {{
         return [x["ChemicalClassLabel"]["value"] for x in response_bindings]
 
     def retrieve_uses(self, entity_iri: str):
-        use_blacklist = ["Other", "Other (specify)", "Not Known or Reasonably Ascertainable"]
+        use_blacklist = [
+            "Other",
+            "Other (specify)",
+            "Not Known or Reasonably Ascertainable",
+        ]
 
         query_template = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
