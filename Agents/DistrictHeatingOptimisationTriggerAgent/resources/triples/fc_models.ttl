@@ -1,0 +1,30 @@
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ts:     <https://www.theworldavatar.com/kg/ontotimeseries/> .
+@prefix :       <[prefix]> .
+
+# This file contains triples to instantiate forecasting model instances
+# which can be used/are required by the forecasting agent
+# ([prefix] will be replace with actual KB prefix within agent logic)
+#
+# Currently included models:
+#       1) Default Prophet (without covariates)
+#       2) Prophet with covariate support
+#       3) Pre-trained TFT model for heat demand
+#
+# NOTE: covariate relationships for 2) and 3) are added in code
+
+:ForecastingModel_Prophet rdf:type ts:ForecastingModel ;
+        rdfs:label "prophet" ;
+        ts:scaleData "False"^^xsd:boolean .
+
+:ForecastingModel_Prophet_covariates rdf:type ts:ForecastingModel ;
+        rdfs:label "prophet" ;
+        ts:scaleData "False"^^xsd:boolean .
+
+:ForecastingModel_TFT_heat_demand rdf:type ts:ForecastingModel ;
+        rdfs:label "tft_pirmasens_heat_demand" ;
+        ts:scaleData "True"^^xsd:boolean ;
+        ts:hasModelURL "https://www.dropbox.com/s/8pnne7gv34btr9x/_model.pth.tar?dl=1"^^xsd:string ;
+        ts:hasCheckpointURL "https://www.dropbox.com/s/ia1nwqbepu8lbeh/best.ckpt?dl=1"^^xsd:string .

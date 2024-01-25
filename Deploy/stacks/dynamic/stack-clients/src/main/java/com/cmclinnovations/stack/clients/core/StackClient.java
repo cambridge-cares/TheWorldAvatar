@@ -14,6 +14,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 public final class StackClient {
 
+    public static final String EXECUTABLE_KEY = "EXECUTABLE";
     public static final String STACK_NAME_KEY = "STACK_NAME";
     private static final String STACK_BASE_DIR_KEY = "STACK_BASE_DIR";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
@@ -67,7 +68,7 @@ public final class StackClient {
     }
 
     public static String getContainerEngineName() {
-        return System.getenv().getOrDefault("EXECUTABLE", "docker");
+        return System.getenv().getOrDefault(EXECUTABLE_KEY, "docker");
     }
 
     private static Path getStackBaseDir() {

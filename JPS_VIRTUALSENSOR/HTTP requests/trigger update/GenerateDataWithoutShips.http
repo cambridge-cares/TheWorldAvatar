@@ -1,0 +1,5 @@
+# parameters
+# derivation - derivation IRI without curly brackets
+# timestep (optional) - unix timestamp, multiple values allowed, e.g. &timestep=1&timestep=2, if not provided, runs a single timestep at current time
+POST http://localhost:3838/dispersion-interactor/GenerateDataWithoutShips
+?derivation=REPLACE_WITH_DERIVATION_IRI
