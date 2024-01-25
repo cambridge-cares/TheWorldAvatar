@@ -20,13 +20,6 @@
                     {
                         "SecretName": "postgis_password"
                     }
-                ],
-                "Mounts": [
-                    {
-                        "Type": "volume",
-                        "Source": "logs",
-                        "Target": "/root/.jps"
-                    }
                 ]
             }
         }

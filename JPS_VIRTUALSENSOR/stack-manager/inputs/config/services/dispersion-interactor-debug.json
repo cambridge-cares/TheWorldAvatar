@@ -46,13 +46,6 @@
                     {
                         "SecretName": "geoserver_password"
                     }
-                ],
-                "Mounts": [
-                    {
-                        "Type": "volume",
-                        "Source": "logs",
-                        "Target": "/root/.jps"
-                    }
                 ]
             }
         },
