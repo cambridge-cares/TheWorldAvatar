@@ -85,6 +85,12 @@
         <rdfs:comment xml:lang="en">The diameter of the wind turbine blade&apos;s root or base inserted into the turbine hub.</rdfs:comment>
         <rdfs:label xml:lang="en">Root diametre</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Dimension -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
 </rdf:RDF>
 
 

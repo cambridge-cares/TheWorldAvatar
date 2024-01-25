@@ -39,6 +39,29 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Classes
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -53,6 +76,12 @@
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
         <rdfs:label xml:lang="en">Heat capacity</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
     
 
 
@@ -155,6 +184,12 @@
         </rdfs:subClassOf>
         <rdfs:label xml:lang="en">Melting temperature measure</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
     
 
 
