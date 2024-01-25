@@ -138,7 +138,7 @@ LIMIT 100"""
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--endpoint")
+    parser.add_argument("--kg_endpoint", type=str, required=True)
     parser.add_argument("--user", default=None)
     parser.add_argument("--pw", default=None)
     parser.add_argument("--repeats", type=int, default=1)
