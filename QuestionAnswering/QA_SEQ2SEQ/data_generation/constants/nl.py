@@ -1,0 +1,1 @@
+PLURAL_ADJS = ["many", "different", "various"]
