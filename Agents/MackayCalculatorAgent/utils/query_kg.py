@@ -4,7 +4,7 @@
 
 import requests
 from requests.auth import HTTPBasicAuth
-from utils.kg_access.KGClient import KGClient
+#from utils.kg_access.KGClient import KGClient
 
 
 
@@ -16,10 +16,13 @@ def unit_convert_hv(hv):
 def unit_convert_ppl(ppl):
     return ppl/1000
 
+#TODO: check unit for this
 def query_data_agent(agent_url):
     return requests.get(agent_url).json()
 
 
+
+'''
 #Read in a query object, returns the result of query if success
 def query_single_ep(queryobj):
     kg_client = KGClient(queryobj['url'], queryobj['url'], kg_user=None if 'user' not in queryobj else queryobj['user'], kg_password=None if 'pwd' not in queryobj else queryobj['pwd'])
@@ -32,7 +35,8 @@ def query_single_ep(queryobj):
         for out in queryobj['outputs']:
             results[out] = response[0][out]
     return results
-
+'''
+'''
 def query_all(querylist):
     querylist = querylist['queries']
     results = {}
@@ -49,3 +53,4 @@ def query_all(querylist):
         except Exception as e:
             raise e
     return results
+'''

@@ -1,20 +1,19 @@
 from agents.mackay_data_agent import MackayDataAgent
-from flask import Flask,Response
+from flask import Flask, Response
 import json
 
 app = Flask(__name__)
 
-#agent init
-#agent serve on flask an update function
 agent = MackayDataAgent()
 agent.initiate()
+
 
 @app.route('/update', methods=['GET'])
 def run_update():
     try:
         agent.update_from_external_and_predict()
         final_ret = {"status": "Success"}
-        return  final_ret
+        return final_ret
     except Exception as e:
         app.logger.debug('update error: %s', e)
         return Response(

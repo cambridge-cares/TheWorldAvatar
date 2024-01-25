@@ -1,5 +1,5 @@
 '''
-This module wraps all function regarding timeseries Client of JPS_BASE_LIB
+This module wraps JAVA functions of TimeseriesClient in JPS_BASE_LIB
 '''
 import psycopg2
 from .java_gateway import jpsBaseLibView
@@ -9,39 +9,33 @@ import datetime
 from typing import List
 
 
-
-
-
-
-
-
-def get_ts_client(property_file_path:str, data_class_name:str = 'Instant'):
+def get_ts_client(property_file_path: str, data_class_name: str = 'Instant'):
     TSClient = jpsBaseLibView().getView().TimeSeriesClient(get_java_time_object(data_class_name), property_file_path)
     return TSClient
 
 
-def get_java_time_object(data_class_name:str='Instant'):
+def get_java_time_object(data_class_name: str = 'Instant'):
     JavaTimeClass = getattr(jpsBaseLibView().getView().java.time, data_class_name)
     data_class = JavaTimeClass.now().getClass()
     return data_class
 
 
 class TSClient():
-    def __init__(self, property_file_path:str, time_class:str='Instant'):
-        self.client = get_ts_client(property_file_path,time_class)
-        self.time_class =  time_class
+    def __init__(self, property_file_path: str, time_class: str = 'Instant'):
+        self.client = get_ts_client(property_file_path, time_class)
+        self.time_class = time_class
 
     def register_timeseries(self, ts_meta: TimeSeriesMeta):
         # Retrieve Java classes for time entries (Instant) and data (ALL Double)
         # (required for time series client instantiation)
         double_class = jpsBaseLibView().getView().java.lang.Double.TYPE
         time_units = ts_meta.time_unit
-        src_iris = [ ts_meta.src_iri ]
+        src_iris = [ts_meta.src_iri]
         self.client.initTimeSeries(src_iris, [double_class], time_units)
 
     # Note that different property files might be requested as target endpoints might be different for each TS instance
     def add_timeseries(self, tsinstance: TimeSeriesInstance):
-        times = tsinstance.times
+        times = tsinstance.times  # times should either be time str of datetime
         times = [parse_time_to_format(t, self.time_class) for t in times]
         values = [tsinstance.values]
         dataIRIs = [tsinstance.src_iri]
@@ -53,35 +47,33 @@ class TSClient():
         tsiri = self.client.getTimeSeriesIRI(datairi)
         return False if not tsiri else self.client.checkTimeSeriesExists(tsiri)
 
-    def update_timeseries_if_new(self,tsinstance: TimeSeriesInstance) -> bool:
-        new_times = tsinstance.times
-        new_times = [parse_time_to_format(t, self.time_class) for t in new_times]
-        old_times,old_values = self.get_timeseries( tsinstance.src_iri)
-        if old_times is not None: # Have existing records, check if API values has change compared to record
-            old_times = [t for i,t in enumerate(old_times) if old_values[i]-0.0 > 0] #remove paddings for prediction
-            to_update_idx = [ idx for idx,t in enumerate(new_times) if t not in old_times]
-            if not to_update_idx:
-                logging.info('API for {} has not updated since last time. No update is made to KG.'.format(tsinstance.src_iri))
-                return False
+    def update_timeseries_if_new(self, tsinstance: TimeSeriesInstance, force=False) -> bool:
+        times_new = [parse_time_to_format(t, self.time_class) for t in tsinstance.times]
+        if not force:
+            exist_times, exist_values = self.get_timeseries(tsinstance.src_iri)
+            if exist_times is not None:  # Have existing records, check if API values has change compared to record
+                to_update_idx = [idx for idx, t in enumerate(times_new) if t not in exist_times]
+                if not to_update_idx:
+                    logging.info('API for {} has not updated since last time. No change is made into KG'.format(
+                        tsinstance.src_iri))
+                    return False
         new_values = [tsinstance.values]
         dataIRIs = [tsinstance.src_iri]
-        timeseries = jpsBaseLibView().getView().TimeSeries(new_times, dataIRIs, new_values)
-        lowb = jpsBaseLibView().getView().java.time.Instant.parse(new_times[0])
-        upb = jpsBaseLibView().getView().java.time.Instant.parse(new_times[-1])
-        self.client.deleteTimeSeriesHistory(tsinstance.src_iri,lowb,upb)
+        timeseries = jpsBaseLibView().getView().TimeSeries(times_new, dataIRIs, new_values)
+        lowb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("2000")))
+        hb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("3000")))
+        a = self.client.deleteTimeSeriesHistory(tsinstance.src_iri, lowb, hb)  # Delete everything in last TS record
         self.client.addTimeSeriesData(timeseries)
+        logging.info('Timeseries for {} updated from API'.format(tsinstance.src_iri))
         return True
 
-
-
-    def get_timeseries(self, ts_iri:str):
+    def get_timeseries(self, ts_iri: str):
         ts = self.client.getTimeSeriesWithinBounds([ts_iri], None, None)
         times = ts.getTimes()
         values = ts.getValues(ts_iri)
         # Unwrap Java time objects
         times = [t.toString() for t in times]
         return times, list(values)
-
 
 
 def create_postgres_db_if_not_exists(db_name, db_usr, db_pw):

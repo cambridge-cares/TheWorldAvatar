@@ -103,3 +103,5 @@ Agents/MackayCalculatorAgent/frontend/package-lock.json
 Agents/MackayDataAgent/playground.py
 *.ttl
 *.owl
+*.xlsx
+*.properties

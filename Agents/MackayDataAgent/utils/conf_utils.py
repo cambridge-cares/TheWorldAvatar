@@ -1,14 +1,16 @@
+'''
+This module contains utility function of config parser
+'''
+
 import configparser
 import os
 
-def load_conf(fullfilepath:str) -> configparser.ConfigParser:
+
+def load_conf(fullfilepath: str) -> configparser.ConfigParser:
     config = configparser.ConfigParser()
     config.read(fullfilepath)
     print(config)
     return config
-
-
-
 
 
 def load_confs_from_dir(fulldirpath) -> list:
@@ -30,7 +32,8 @@ def match_properties(props_java: dict, props_ini: dict) -> dict:
             updated[k] = props_ini[short_k]
     return updated
 
-def write_java_properties_conf(props:dict, outpath:str):
+
+def write_java_properties_conf(props: dict, outpath: str):
     parser = configparser.ConfigParser()
     parser['top'] = props
     text = '\n'.join(['='.join(item) for item in parser.items('top')])

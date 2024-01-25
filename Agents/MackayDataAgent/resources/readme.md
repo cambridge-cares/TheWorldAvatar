@@ -1,1 +1,0 @@
-Put the created property files for TSClient here
