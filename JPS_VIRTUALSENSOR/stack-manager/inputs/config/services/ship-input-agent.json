@@ -16,7 +16,8 @@
 					"PARALLELISE_CALCULATIONS=true",
 					"USE_LIVE_DATA=false",
 					"API_KEY=",
-					"BOUNDING_BOXES=[[[1.219097, 103.776165], [1.3096076, 103.9019436]]]"
+					"BOUNDING_BOXES=[[[1.219097, 103.776165], [1.3096076, 103.9019436]], [[1.2162967, 103.6518113], [1.3067911, 103.741632]]]",
+					"UPLOAD_INTERVAL_MINUTES=10"
 				],
 				"Configs": [
 					{
@@ -41,11 +42,6 @@
 					}
 				],
                 "Mounts": [
-                    {
-                        "Type": "volume",
-                        "Source": "logs",
-                        "Target": "/root/.jps"
-                    },
 					{
                         "Type": "volume",
                         "Source": "misc",

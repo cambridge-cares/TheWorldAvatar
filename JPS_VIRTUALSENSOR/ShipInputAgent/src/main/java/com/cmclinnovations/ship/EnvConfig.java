@@ -16,6 +16,7 @@ public class EnvConfig {
     public static final boolean USE_LIVE_DATA = Boolean.parseBoolean(System.getenv("USE_LIVE_DATA"));
     public static final String API_KEY = System.getenv("API_KEY");
     public static final JSONArray BOUNDING_BOXES = new JSONArray(System.getenv("BOUNDING_BOXES"));
+    public static final String UPLOAD_INTERVAL_MINUTES = System.getenv("UPLOAD_INTERVAL_MINUTES");
 
     private EnvConfig() {
         throw new IllegalStateException();

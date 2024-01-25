@@ -98,8 +98,13 @@ public class AisStreamWebsocketClient extends WebSocketClient {
 
         Duration elapsedTime = Duration.between(start, Instant.now());
 
-        if (elapsedTime.toMinutes() > 10) {
-            LOGGER.info("Accumulated 10 minutes' worth of data, uploading consolidated ship data");
+        int uploadInterval = 10;
+        if (EnvConfig.UPLOAD_INTERVAL_MINUTES != null) {
+            uploadInterval = Integer.parseInt(EnvConfig.UPLOAD_INTERVAL_MINUTES);
+        }
+
+        if (elapsedTime.toMinutes() > uploadInterval) {
+            LOGGER.info("Accumulated {} minutes' worth of data, uploading consolidated ship data", uploadInterval);
             List<Ship> ships = new ArrayList<>(mmsiToShipMap.values());
             try {
                 if (thread != null && thread.isAlive()) {
