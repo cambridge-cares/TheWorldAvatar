@@ -535,8 +535,10 @@ This is for specific info about multidimensional geospatial files. Consider runn
 
 - `"layerArrayName"` is the array of the multidimensional file with the required data to iterate over and generate rasters
 - `"timeOptions"` contains information for geoserver to parse the time dimension. `"arrayName"` should have the name of the array with times.
-  - The `"format"` needs to be set to the [standard format][geoserver-time] understood by geoserver e.g. `"yyyyMMddHH`".
+  - The `"format"` needs to be set to the [standard format][time-formatting] understood by java and geoserver e.g. `"yyyyMMddHH`".
   Be careful that `m` is minute and `M` is month etc.
+  See above link to correctly format your datetime string.
+  This can include a timezone offset but will be overridden by `timeZone` parameter.
   - The regex should be used in conjuction with the format to parse the filename. e.g. `"regex": ".*([0-9]{10}).*" will parse 10 digits beside each other anywhere in the filename.`
   - The `timeZone` is passed as a `ZoneId` in java and can be something like `"GMT"` or `"Europe/Paris"`, see more [here][zone-id].
 
@@ -812,7 +814,7 @@ This way you can look at look at the user interfaces of the various services (se
 [geoserver-sql-params]:  https://docs.geoserver.org/latest/en/user/data/database/sqlview.html#defining-parameters
 [geoserver-rest]:        https://docs.geoserver.org/stable/en/user/rest/
 [geoserver-rest-layers]: https://docs.geoserver.org/latest/en/api/#1.0.0/layers.yaml#/definitions/Layer
-[geoserver-time]:        https://docs.geoserver.org/stable/en/user/services/wms/time.html
+[time-formatting]:       https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#:~:text=All%20letters%20%27A%27%20to%20%27Z,use%0A%20%20%20%7D%20%20%20%20%20%20%20reserved%20for%20future%20use
 [sld-cookbook]:          https://docs.geoserver.org/stable/en/user/styling/sld/cookbook/index.html
 
 [gdal-translate]:       https://gdal.org/programs/gdal_translate.html#gdal-translate
