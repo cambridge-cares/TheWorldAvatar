@@ -1,18 +1,16 @@
 package uk.ac.cam.cares.jps.agent.buildingidentification;
 
 import org.json.JSONObject;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
-public class BuildingIdentificationAgentTest {
+class BuildingIdentificationAgentTest {
 
     @Test
-    public void testAgent() {
+    void testAgentArray() {
         JSONObject request = new JSONObject();
         request.put("maxDistance", "100.0");
         // request.put("endpoint", System.getenv("endpoint"));
@@ -27,6 +25,25 @@ public class BuildingIdentificationAgentTest {
         coordinates.put(coord2);
 
         request.put("coordinates", coordinates);
+        request.put("requestUrl", "array");
+
+        JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
+
+        assertTrue(result.getInt("number_matched") > 0);
+
+    }
+
+    @Test
+    void testAgentTable() {
+        JSONObject request = new JSONObject();
+        request.put("maxDistance", "100.0");
+        // request.put("endpoint", System.getenv("endpoint"));
+        request.put("dbUrl", System.getenv("dbUrl"));
+        request.put("dbUser", System.getenv("dbUser"));
+        request.put("dbPassword", System.getenv("dbPassword"));
+
+        request.put("requestUrl", "table");
+        request.put("table", "industry.test");
 
         JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
 
