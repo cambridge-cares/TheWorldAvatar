@@ -1,18 +1,30 @@
-import csv
-import json
-import os
-from typing import List, Optional
+from typing import List, Optional, Tuple
+import Levenshtein
+import numpy as np
 
-import openai
-from tqdm import tqdm
-import pandas as pd
-
-PARAPHRASE_NUM = 3
-HEADER = ["id", "verbalization", "paraphrases"]
+from openai import OpenAI
 
 
 class OpenAiClientForBulletPointResponse:
-    def __init__(self, **kwargs: dict):
+    PARAPHRASE_NUM = 3
+    SYSTEM_PROMPT_TEMPLATE = '''You will be provided with a machine-generated query. Rephrase it in {num} different ways. Additionally, keep the square brackets, tags, and their enclosing text unchanged.
+    
+Text: """
+{text}
+"""
+
+Paraphrases: 
+'''
+
+    def __init__(
+        self,
+        endpoint: None,
+        api_key: Optional[str] = None,
+        model: str = "gpt-4-0613",
+        **kwargs: dict
+    ):
+        self.openai_client = OpenAI(base_url=endpoint, api_key=api_key)
+        self.model = model
         self.kwargs = kwargs
 
     def _sanitize_bulletpoint(self, text: str):
@@ -79,58 +91,147 @@ class OpenAiClientForBulletPointResponse:
         return lines
 
     def call(self, input_text: str):
-        response = openai.ChatCompletion.create(
-            model="gpt-4-0613",
+        response = self.openai_client.chat.completions.create(
+            model=self.model,
             messages=[
                 {
-                    "role": "system",
-                    "content": "You will be provided with a machine-generated statement. Rephrase it in {num} different ways as if it were human input to a search engine. Make sure that the paraphrases vary in their query structures, terminological expressions, and sentence lengths. Additionally, keep the square brackets and their enclosing text unchanged.".format(
-                        num=PARAPHRASE_NUM
-                    ),
-                },
-                {
                     "role": "user",
-                    "content": input_text,
+                    "content": self.SYSTEM_PROMPT_TEMPLATE.format(
+                        num=self.PARAPHRASE_NUM,
+                        text=input_text
+                    )
                 },
             ],
             **self.kwargs
         )
 
-        response_content = response["choices"][0]["message"]["content"]
+        response_content = response.choices[0].message.content
         return self._parse_openai_response_content(response_content)
 
 
 class Paraphraser:
-    def __init__(self, openai_kwargs: Optional[dict] = None):
+    TRY_LIMIT = 5
+    FUZZY_TOLERANCE = 5
+
+    def __init__(
+        self,
+        endpoint: Optional[str] = None,
+        api_key: Optional[str] = None,
+        model: str = "gpt-4-0613",
+        openai_kwargs: Optional[dict] = None,
+    ):
         if openai_kwargs is None:
-            self.openai_client = OpenAiClientForBulletPointResponse()
+            self.openai_client = OpenAiClientForBulletPointResponse(
+                endpoint, api_key, model
+            )
         else:
-            self.openai_client = OpenAiClientForBulletPointResponse(**openai_kwargs)
+            self.openai_client = OpenAiClientForBulletPointResponse(
+                endpoint, api_key, model, **openai_kwargs
+            )
 
-    def paraphrase_from_file(self, filepath: str):
-        with open(filepath, "r") as f:
-            data = json.load(f)
+    def _extract_literals(self, text: str):
+        """Extracts literals enclosed by square brackets."""
+        literals: List[str] = []
+        ptr = 0
+        while ptr < len(text):
+            start = text.find("[", ptr)
+            if start < 0:
+                break
 
-        filepath_out = filepath.rsplit(".", maxsplit=1)[0] + "_paraphrases.csv"
-        print("Writing to file: ", filepath_out)
-        if not os.path.exists(filepath_out):
-            f = open(filepath_out, "w")
-            writer = csv.writer(f)
-            writer.writerow(HEADER)
+            if start > 0 and not text[start - 1].isspace():
+                ptr = start + 1
+                continue
+
+            end = start + 1
+            while end < len(text):
+                end = text.find("]", end)
+                if end < 0:
+                    break
+                if (
+                    end + 1 == len(text)
+                    or text[end + 1].isspace()
+                    or text[end + 1] in ".,!?;"
+                ):
+                    break
+                else:
+                    end += 1
+
+            if end < 0:
+                break
+
+            literals.append(text[start : end + 1])
+            ptr = end + 1
+        return tuple(literals)
+
+    def _correct_paraphrase(self, paraphrase: str, literals: Tuple[str, ...]):
+        corrected = True
+
+        for l in literals:
+            if l in paraphrase:
+                continue
+
+            _l = l
+            if _l.startswith("["):
+                _l = _l[1:]
+            if _l.endswith("]"):
+                _l = _l[:-1]
+            _l = _l.strip()
+            _l = _l.lower()
+            w_num = len(_l.split())
+
+            words = paraphrase.split()
+            candidates = [words[i : i + w_num] for i in range(len(words) - w_num)]
+            if not candidates:
+                corrected = False
+                break
+            
+            dists = np.array(
+                [
+                    Levenshtein.distance(" ".join(c).lower(), _l)
+                    for c in candidates
+                ]
+            )
+            idx = np.argmin(dists)
+            if dists[idx] > self.FUZZY_TOLERANCE:
+                corrected = False
+                break
+            paraphrase = "{pre} {mid} {post}".format(
+                pre=" ".join(words[:idx]), mid=l, post=" ".join(words[idx + w_num :])
+            )
+
+        if corrected:
+            return paraphrase
         else:
-            df = pd.read_csv(filepath_out)
-            data = [datum for datum in data if datum["id"] not in df["id"]]
-
-            f = open(filepath_out, "a")
-            writer = csv.writer(f)
-
-        try:
-            for datum in tqdm(data):
-                paraphrases = self.paraphrase(datum["verbalization"])
-                writer.writerow([datum["id"], datum["verbalization"], paraphrases])
-        except Exception as e:
-            f.close()
-            raise e
+            return None
 
     def paraphrase(self, text: str):
-        return self.openai_client.call(text)
+        literals = self._extract_literals(text)
+
+        try_num = 0
+        paraphrases: List[str] = []
+        rejected: List[str] = []
+        while len(paraphrases) < 3 and try_num < self.TRY_LIMIT:
+            for p in self.openai_client.call(text):
+                if all(l in p for l in literals):
+                    paraphrases.append(p)
+                else:
+                    corrected = self._correct_paraphrase(p, literals)
+                    if corrected:
+                        print(
+                            "Successful correction.\nFrom: {i}\nTo:{o}\n".format(
+                                i=p, o=corrected
+                            )
+                        )
+                        paraphrases.append(corrected)
+                    else:
+                        rejected.append(p)
+            try_num += 1
+
+        if len(paraphrases) < 3:
+            print(
+                "Unable to generate 3 faithful paraphrases.\nOriginal text: {og}\nParaphrases: {p}\nRejected: {rej}\n".format(
+                    og=text, p=paraphrases, rej=rejected
+                )
+            )
+
+        return paraphrases

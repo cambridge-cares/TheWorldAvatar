@@ -1,27 +1,33 @@
-import copy
 import random
-from typing import Iterable
+from typing import Iterable, Optional
 
-from constants.functions import (
-    COMPARATIVE_COND_MAKER,
-    NumOp
+from constants.functions import NumOp, StrOp
+from constants.ontospecies import (
+    CHEMCLASS_LABELS,
+    OS_PROPERTY_LABELS,
+    USE_LABELS,
+    OSIdentifierKey,
+    OSPropertyKey,
+    OSSpeciesAttrKey,
 )
-from constants.ontospecies import CHEMCLASS_KEY, KEY2LABELS, USE_KEY
 from locate_then_ask.ontospecies.entity_store import OSEntityStore
-from locate_then_ask.query_graph import QueryGraph, get_objs, get_preds
-from locate_then_ask.utils import get_gt, get_lt
+from locate_then_ask.query_graph import QueryGraph
+from utils.numerical import make_operand_and_verbn
 
 
 class OSSpeciesLocator:
     IDENTIFIER_WHITELIST = [
-        "InChI",
-        "IUPACName",
-        "MolecularFormula",
-        "SMILES",
+        OSIdentifierKey.INCHI,
+        OSIdentifierKey.IUPAC_NAME,
+        OSIdentifierKey.MOLECULAR_FORMULA,
+        OSIdentifierKey.SMILES,
     ]
 
-    def __init__(self, kg_endpoint: str):
-        self.store = OSEntityStore(kg_endpoint)
+    def __init__(self, store: Optional[OSEntityStore] = None):
+        if store is None:
+            self.store = OSEntityStore()
+        else:
+            self.store = store
 
     def locate_entity_name(self, entity_iris: Iterable[str]):
         entity_names = []
@@ -35,13 +41,8 @@ class OSSpeciesLocator:
             entity_names.append(entity_name)
 
         query_graph = QueryGraph()
-        query_graph.add_node(
-            "Species",
-            iri=entity_iris,
-            label=entity_names,
-            template_node=True,
-            topic_entity=True,
-        )
+        query_graph.add_topic_node("Species", iri=entity_iris)
+        query_graph.add_func("Species", operator=StrOp.VALUES, operand=entity_names)
 
         verbalization = " and ".join(
             ["<entity>{entity}</entity>".format(entity=name) for name in entity_names]
@@ -50,159 +51,93 @@ class OSSpeciesLocator:
 
     def locate_concept_name(self, entity_iri: str):
         query_graph = QueryGraph()
-        query_graph.add_node(
-            "Species",
-            iri=entity_iri,
-            rdf_type="os:Species",
-            label="os:Species",
-            topic_entity=True,
-        )
+        query_graph.add_topic_node("Species", iri=entity_iri)
         return query_graph, "chemical species"
 
-    def _locate_concept_and_literal(self, query_graph: QueryGraph):
-        query_graph = copy.deepcopy(query_graph)
-        topic_node = next(
-            n
-            for n, topic_entity in query_graph.nodes(data="topic_entity")
-            if topic_entity
-        )
-        entity_iri = query_graph.nodes[topic_node]["iri"]
+    def locate_concept_and_literal_multi(self, entity_iri: str, cond_num: int = 2):
+        query_graph, concept = self.locate_concept_name(entity_iri)
         entity = self.store.get(entity_iri)
 
-        sampled_keys = [
-            x[len("os:has") :]
-            for x in get_preds(query_graph, subj="Species")
-            if x.startswith("os:has")
-        ]
-        unsampled_property_keys = [
-            x for x in entity.key2property.keys() if x not in sampled_keys
+        keys = [
+            OSSpeciesAttrKey.PROPERTY,
+            OSSpeciesAttrKey.CHEMCLASS,
+            OSSpeciesAttrKey.USE,
         ]
 
-        sampled_uses = get_objs(
-            query_graph, subj="Species", predicate="os:hasUse/rdfs:label"
-        )
-        unsampled_uses = [x for x in entity.uses if x not in sampled_uses]
-
-        sampled_chemclasses = get_objs(
-            query_graph, subj="Species", predicate="os:hasChemicalClass/rdfs:label"
-        )
-        unsampled_chemclasses = [
-            x for x in entity.chemclasses if x not in sampled_chemclasses
+        counts_ontology = [x * 3 for x in [len(OSPropertyKey), 1, 1]]
+        counts_entity = [
+            len(entity.key2property),
+            len(entity.chemclasses),
+            len(entity.uses),
         ]
+        counts = [min(x, y) for x, y in zip(counts_ontology, counts_entity)]
 
-        sampling_frame = (
-            unsampled_property_keys + unsampled_uses + unsampled_chemclasses
-        )
-        if len(sampling_frame) == 0:
-            return query_graph, None
-
-        new_sample = random.choice(sampling_frame)
-        if new_sample in unsampled_property_keys:
-            key = new_sample
-            predicate = "os:has{PropertyName}/os:value".format(PropertyName=key)
-
-            species_property = random.choice(entity.key2property[key])
-            property_value = species_property.value
-            operator = random.choice([x.value for x in NumOp])
-
-            if operator in [NumOp.LESS_THAN, NumOp.LESS_THAN_EQUAL]:
-                num_value = get_gt(property_value)
-            elif operator in [NumOp.GREATER_THAN, NumOp.GREATER_THAN_EQUAL]:
-                num_value = get_lt(property_value)
-            elif operator in [NumOp.EQUAL, NumOp.AROUND]:
-                num_value = property_value
-            elif operator in [NumOp.INSIDE_RANGE, NumOp.OUTSIDE_RANGE]:
-                num_value = (get_lt(property_value), get_gt(property_value))
+        key2freq = dict()
+        for k in random.sample(keys, counts=counts, k=cond_num):
+            if k not in key2freq:
+                key2freq[k] = 1
             else:
-                raise ValueError("Unrecognised comparative: " + operator)
+                key2freq[k] += 1
 
-            node = key + "Value"
-            node_label = node
-            template_node = False
+        verbns = []
+        random.shuffle(keys)
+        for key in keys:
+            freq = key2freq.get(key, 0)
+            if freq == 0:
+                continue
 
-            # qualifier_key = "reference state"
-            # qualifier_value = species_property.reference_state_value
-        elif new_sample in unsampled_chemclasses:
-            key = CHEMCLASS_KEY
-            predicate = "os:hasChemicalClass/rdfs:label"
-            node_label = new_sample
-            node = None
-            operator = None
-            template_node = True
-            # qualifier_key = None
-            # qualifier_value = None
-        elif new_sample in unsampled_uses:
-            key = USE_KEY
-            predicate = "os:hasUse/rdfs:label"
-            node_label = new_sample
-            node = None
-            operator = None
-            template_node = True
-            # qualifier_key = None
-            # qualifier_value = None
-        else:
-            raise Exception("Unexpected sample: " + new_sample)
+            if key is OSSpeciesAttrKey.PROPERTY:
+                property_keys = random.sample(tuple(entity.key2property.keys()), k=freq)
+                for k in property_keys:
+                    val_node = k.value + "Value"
+                    query_graph.add_literal_node(val_node)
+                    query_graph.add_triple("Species", "os:has{key}/os:value".format(key=k.value), val_node)
 
-        key_label = random.choice(KEY2LABELS[key])
+                    prop = random.choice(entity.key2property[k])
+                    operator = random.choice(tuple(NumOp))
+                    operand, op_verbn = make_operand_and_verbn(
+                        operator, value=prop.value, to_int=random.getrandbits(1)
+                    )
 
-        if node is None:
-            literal_num = len(
-                [n for n in query_graph.nodes() if n.startswith("literal")]
-            )
-            node = "literal_" + str(literal_num)
+                    query_graph.add_func(target_node=val_node, operator=operator, operand=operand)
 
-        query_graph.add_node(
-            node, label=node_label, literal=True, template_node=template_node
-        )
-        query_graph.add_edge("Species", node, label=predicate)
+                    verbn = "{key} is {op}".format(
+                        key=random.choice(OS_PROPERTY_LABELS[k]), op=op_verbn
+                    )
+                    verbns.append(verbn)
+            elif key is OSSpeciesAttrKey.CHEMCLASS:
+                chemclasses = random.sample(entity.chemclasses, k=freq)
+                for cc in chemclasses:
+                    literal_node = query_graph.make_literal_node(value=cc, key=key)
+                    query_graph.add_triple(
+                        "Species", "os:hasChemicalClass/rdfs:label", literal_node
+                    )
 
-        if operator is None:
-            verbalization = "{K} is {V}".format(
-                K=key_label, V="[{x}]".format(x=node_label)
-            )
-        else:
-            cond = COMPARATIVE_COND_MAKER[operator](num_value)
+                template = "{attr} is [{value}]"
+                verbn = template.format(
+                    attr=random.choice(CHEMCLASS_LABELS),
+                    value=" and ".join(chemclasses),
+                )
+                verbns.append(verbn)
+            elif key is OSSpeciesAttrKey.USE:
+                uses = random.sample(entity.uses, k=freq)
+                for use in uses:
+                    literal_node = query_graph.make_literal_node(value=use, key=key)
+                    query_graph.add_triple(
+                        "Species", "os:hasUse/rdfs:label", literal_node
+                    )
 
-            func_node = node + "_func"
-            func_label = "{op}\n{val}".format(op=operator, val=num_value)
-            query_graph.add_node(
-                func_node,
-                operator=operator,
-                operand=num_value,
-                label=func_label,
-                func=True,
-                template_node=True,
-            )
-            query_graph.add_edge(node, func_node, label="func")
-
-            verbalization = "{K} is {COND}".format(K=key_label, COND=cond)
-
-        # if (
-        #     qualifier_key is not None
-        #     and qualifier_value is not None
-        #     and random.getrandbits(1)
-        # ):
-        #     query_graph.nodes[literal_node]["qualifier_key"] = qualifier_key
-        #     query_graph.nodes[literal_node]["qualifier_value"] = qualifier_value
-
-        #     qualifier_template = " ({QK} is {QV})"
-        #     verbalization += qualifier_template.format(
-        #         QK=qualifier_key, QV=qualifier_value
-        #     )
-
-        return query_graph, verbalization
-
-    def locate_concept_and_literal_multi(self, entity_iri: str, cond_num: int = 2):
-        verbalized_conds = []
-        query_graph, concept = self.locate_concept_name(entity_iri)
-
-        for _ in range(cond_num):
-            query_graph, verbalized_cond = self._locate_concept_and_literal(query_graph)
-            if verbalized_cond is not None:
-                verbalized_conds.append(verbalized_cond)
+                template = "{attr} is [{value}]"
+                verbn = template.format(
+                    attr=random.choice(USE_LABELS),
+                    value=" and ".join(uses),
+                )
+                verbns.append(verbn)
+            else:
+                raise Exception("Unexpected key: " + key)
 
         verbalization = "the {concept} whose {conds}".format(
-            concept=concept, conds=" and ".join(verbalized_conds)
+            concept=concept, conds=" and ".join(verbns)
         )
 
         return query_graph, verbalization

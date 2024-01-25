@@ -18,10 +18,12 @@ SEED_SPECIES_PATH = "data/seed_entities/ontocompchem.txt"
 
 class DatasetGenerator:
     @classmethod
-    def query_seed_entities(cls, kg_endpoint: str):
+    def query_seed_entities(cls):
         from locate_then_ask.kg_client import KgClient
 
-        kg_client = KgClient(kg_endpoint)
+        kg_client = KgClient(
+            "http://178.128.105.213:3838/blazegraph/namespace/ontocompchem/sparql"
+        )
         query = """SELECT DISTINCT ?Species WHERE {
     ?MolecularComputation occ:hasSpeciesModel/occ:hasSpecies ?Species
 }"""
@@ -29,11 +31,11 @@ class DatasetGenerator:
         return [x["Species"]["value"] for x in response_bindings]
 
     @classmethod
-    def retrieve_seed_entities(cls, kg_endpoint: str):
+    def retrieve_seed_entities(cls):
         filepath = os.path.join(ROOTDIR, SEED_SPECIES_PATH)
 
         if not os.path.isfile(filepath):
-            entities = cls.query_seed_entities(kg_endpoint)
+            entities = cls.query_seed_entities()
             with open(filepath, "w") as f:
                 f.write("\n".join(entities))
 
@@ -42,10 +44,10 @@ class DatasetGenerator:
 
         return [x for x in seed_entities if x]
 
-    def __init__(self, kg_endpoint: str):
-        self.locator = OCCLocator(kg_endpoint)
+    def __init__(self):
+        self.locator = OCCLocator()
         self.asker = OCCAsker()
-        self.seed_entities = self.retrieve_seed_entities(kg_endpoint)
+        self.seed_entities = self.retrieve_seed_entities()
         random.shuffle(self.seed_entities)
 
     def generate(self, repeats: int = 1):
@@ -55,17 +57,17 @@ class DatasetGenerator:
             entity_iri = self.seed_entities[i % len(self.seed_entities)]
             query_graph, verbalization = self.locator.locate(entity_iri)
 
-            attr_num = random.sample(population=[1, 2, 3], counts=[9, 3, 1], k=1)[0]
-            ask_datum = self.asker.ask(
+            attr_num = random.sample(population=[1, 2, 3], counts=[16, 4, 1], k=1)[0]
+            query_sparql, verbalization = self.asker.ask(
                 query_graph=query_graph, verbalization=verbalization, attr_num=attr_num
             )
 
             example = dict(
                 id=i,
-                verbalization=ask_datum.verbalization,
+                verbalization=verbalization,
                 query=dict(
-                    sparql=ask_datum.query_sparql,
-                    graph=nx.node_link_data(ask_datum.query_graph),
+                    sparql=query_sparql,
+                    graph=nx.node_link_data(query_graph),
                 ),
             )
 
@@ -77,10 +79,9 @@ class DatasetGenerator:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--repeats", type=int, default=1)
-    parser.add_argument("--kg_endpoint", type=str, required=True)
     args = parser.parse_args()
 
-    ds_gen = DatasetGenerator(args.kg_endpoint)
+    ds_gen = DatasetGenerator()
     examples = ds_gen.generate(repeats=args.repeats)
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")
