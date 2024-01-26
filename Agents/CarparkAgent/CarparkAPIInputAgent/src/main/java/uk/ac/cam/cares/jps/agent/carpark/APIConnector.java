@@ -17,23 +17,31 @@ import java.io.*;
 import java.util.Queue;
 
 public class APIConnector {
-    private String lotApiEndpoint = "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2";
+    private String lotApiEndpoint;
     private String lotApiToken;
-    private String pricingApiEndpoint = "https://data.gov.sg/api/action/datastore_search?resource_id=85207289-6ae7-4a56-9066-e6090a3684a5&limit=357";
-    private String date;
+    private String pricingApiEndpoint;
 
-    private static final String ERRORMSG = "Carpark data could not be retrieved";
+    private static final String RATES_DATA_RETRIEVAL_ERROR = "Carpark rates data could not be retrieved";
+    private static final String AVAILABLE_LOTS_DATA_RETRIEVAL_ERROR = "Carpark available lots data could not be retrieved";
     private static final Logger LOGGER = LogManager.getLogger(APIConnector.class);
 
-    //Standard Constructor to initialise the instance variables
-    public APIConnector(String URL, String d, String k, String Pricing_URL) {
-        lotApiEndpoint = URL;
-        lotApiToken = k;
-        pricingApiEndpoint = Pricing_URL;
-        date = d;
+    /**
+     * Standard Constructor for APIConnector
+     * @param availableLotsUrl endpoint URL to retrieve the available lots data
+     * @param availableLotsAPIToken API token for accessing the endpoint
+     * @param ratesUrl endpoint URL to retrieve the carpark rates data
+     */
+    public APIConnector(String availableLotsUrl, String availableLotsAPIToken, String ratesUrl) {
+        lotApiEndpoint = availableLotsUrl ;
+        lotApiToken = availableLotsAPIToken;
+        pricingApiEndpoint = ratesUrl;
     }
 
-    //Constructor to initialise the variables according to the Properties file
+    /**
+     * Standard Constructor for APIConnector
+     * @param filepath filepath to file that contains properties for connecting to the APIs
+     * @throws IOException
+     */
     public APIConnector(String filepath) throws IOException {
         Queue<String> apiConfigs = ConfigReader.retrieveAPIConfig(filepath);
         this.lotApiEndpoint = apiConfigs.poll();
@@ -41,29 +49,33 @@ public class APIConnector {
         this.pricingApiEndpoint = apiConfigs.poll();
     }
 
-    // Obtains Weather data in JSON format containing key:value pairs
-    public JSONObject getReadings() {
-        try {
-            return retrieveData();
-        } catch (IOException e) {
-            LOGGER.error(ERRORMSG, e);
-            throw new JPSRuntimeException(ERRORMSG, e);
-        }
+    /**
+     * Get available carpark lots data
+     * @return Current available carpark lots data as a JSONObject
+     * @throws JSONException
+     * @throws IOException
+     */
+    public JSONObject getAvailableLots() throws JSONException, IOException {
+        return retrieveAvailableLotsData();
     }
 
-    public JSONObject getPrices() {
-        try {
-            return retreivePricingData();
-        } catch (Exception e) {
-            LOGGER.error(ERRORMSG, e);
-            throw new JPSRuntimeException(ERRORMSG, e);
-        }
+    /**
+     * Get carpark rates data
+     * @return Current carpark rates data as a JSONObject
+     * @throws JSONException
+     * @throws IOException
+     */
+    public JSONObject getCarparkRates() throws JSONException, IOException {
+        return retreiveRatesData();
     }
 
-    private JSONObject retrieveData() throws IOException, JSONException {
-        String path = lotApiEndpoint;
+    /**
+     * Retrieve carparks available lots data
+     * @return carpark availabe lots data as a JSONObject
+     */
+    private JSONObject retrieveAvailableLotsData() {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            HttpGet readrequest = new HttpGet(path);
+            HttpGet readrequest = new HttpGet(lotApiEndpoint);
             readrequest.setHeader("AccountKey", lotApiToken);
             try (CloseableHttpResponse response = httpclient.execute(readrequest)) {
                 int status = response.getStatusLine().getStatusCode();
@@ -74,10 +86,16 @@ public class APIConnector {
                     throw new HttpResponseException(status, "Data could not be retrieved due to a server error");
                 }
             }
+        } catch (Exception e) {
+            throw new JPSRuntimeException(AVAILABLE_LOTS_DATA_RETRIEVAL_ERROR, e);
         }
     }
 
-    private JSONObject retreivePricingData() throws IOException, JSONException {
+    /**
+     * Retrieve carpark rates data
+     * @return carpark rates data as a JSONObject
+     */
+    private JSONObject retreiveRatesData() {
         String path = pricingApiEndpoint;
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
@@ -91,6 +109,8 @@ public class APIConnector {
                     throw new HttpResponseException(status, "Pricing Data could not be retrieved due to a server error");
                 }
             }
+        } catch (Exception e) {
+            throw new JPSRuntimeException(RATES_DATA_RETRIEVAL_ERROR, e);
         }
     }
 }
