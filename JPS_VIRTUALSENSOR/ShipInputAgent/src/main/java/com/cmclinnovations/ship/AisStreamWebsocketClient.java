@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -58,7 +59,7 @@ public class AisStreamWebsocketClient extends WebSocketClient {
         // send subscription message upon connection
         start = Instant.now();
         send(String.format(
-                "{\"APIKey\":\"%s\",\"BoundingBoxes\":%s, \"FilterMessageTypes\": [\"PositionReport\"]}",
+                "{\"APIKey\":\"%s\",\"BoundingBoxes\":%s, \"FilterMessageTypes\": [\"PositionReport\", \"ShipStaticData\"]}",
                 EnvConfig.API_KEY, EnvConfig.BOUNDING_BOXES));
     }
 
@@ -70,30 +71,27 @@ public class AisStreamWebsocketClient extends WebSocketClient {
 
         JSONObject messageJson = new JSONObject(messageString);
         JSONObject metaData = messageJson.getJSONObject("MetaData");
-        JSONObject positionReport = messageJson.getJSONObject("Message").getJSONObject("PositionReport");
 
         int mmsi = messageJson.getJSONObject("MetaData").getInt("MMSI");
 
         // remove nanoseconds and convert string to ISO standard
         Instant timestampInstant = LocalDateTime.parse(metaData.getString("time_utc").split("\\.")[0].replace(" ", "T"))
                 .toInstant(ZoneOffset.UTC);
-        double lat = positionReport.getDouble("Latitude");
-        double lon = positionReport.getDouble("Longitude");
-        double speed = positionReport.getDouble("Sog");
-        double cog = positionReport.getDouble("Cog");
 
-        if (mmsiToShipMap.containsKey(mmsi)) {
+        mmsiToShipMap.computeIfAbsent(mmsi, Ship::new);
+
+        if (messageJson.getString("MessageType").contentEquals("PositionReport")) {
+            JSONObject positionReport = messageJson.getJSONObject("Message").getJSONObject("PositionReport");
+            double lat = positionReport.getDouble("Latitude");
+            double lon = positionReport.getDouble("Longitude");
+            double speed = positionReport.getDouble("Sog");
+            double cog = positionReport.getDouble("Cog");
             mmsiToShipMap.get(mmsi).addTimeSeriesData(timestampInstant, speed, lat, lon, cog);
-        } else {
-            Ship ship = new Ship();
-            ship.setMmsi(mmsi);
-            if (!metaData.getString("ShipName").trim().isBlank()) {
-                ship.setShipName(metaData.getString("ShipName").trim());
-            } else {
-                ship.setShipName("Ship" + mmsi);
-            }
-            ship.addTimeSeriesData(timestampInstant, speed, lat, lon, cog);
-            mmsiToShipMap.put(mmsi, ship);
+
+        } else if (messageJson.getString("MessageType").contentEquals("ShipStaticData")) {
+            JSONObject staticData = messageJson.getJSONObject("Message").getJSONObject("ShipStaticData");
+            int shipType = staticData.getInt("Type");
+            mmsiToShipMap.get(mmsi).setShipType(shipType);
         }
 
         Duration elapsedTime = Duration.between(start, Instant.now());

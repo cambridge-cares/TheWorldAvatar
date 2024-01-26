@@ -33,7 +33,8 @@ public class Ship {
     private boolean hasTimeSeries;
 
     // this constructor is used for live data, ais stream
-    public Ship() {
+    public Ship(int mmsi) {
+        this.mmsi = mmsi;
         hasTimeSeries = true;
         timestampList = new ArrayList<>();
         speedList = new ArrayList<>();
