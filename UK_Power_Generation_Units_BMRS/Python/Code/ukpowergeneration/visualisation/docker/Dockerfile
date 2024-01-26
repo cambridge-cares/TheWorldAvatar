@@ -17,18 +17,18 @@
 
 ##### DEVELOPMENT STAGE #####
 # Using Alpine as the base image
-FROM  alpine:3.14.0 as dev
+FROM  alpine:3.14.0 AS dev
 
 # Meta data
-LABEL authors = "support@cmclinnovations.com"
-LABEL version = "1.0.0-SNAPSHOT"
-LABEL description = "Example Digital Twin"
+LABEL authors="support@cmclinnovations.com"
+LABEL version="1.0.0-SNAPSHOT"
+LABEL description="Example Digital Twin"
 
 # Install utilities
-RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix
+RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix && apk cache clean
 
 # Install Apache and PHP
-RUn apk update && apk add apache2 php7-apache2
+RUN apk update && apk add apache2 php7-apache2 && apk cache clean
 
 # Copy in the start-up script
 COPY ./docker/start-up.sh /usr/local/start-up.sh
@@ -59,7 +59,7 @@ CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh" ]
 
 ##### PRODUCTION STAGE #####
 # Using development image as the base 
-FROM dev as prod
+FROM dev AS prod
 
 # Copy in the HTML file that designates the PRODUCTION imports
 #COPY head-prod.html head.html
