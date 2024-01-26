@@ -27,6 +27,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.jena.sparql.pfunction.library.listLength;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
@@ -184,7 +185,13 @@ public class AssetManagerAgent extends JPSAgent{
                         throw new JPSRuntimeException("Failed to read properties file: ", e);
                     }
                 }
-                jsonMessage = instantiateAsset(args, assetData);
+                if (assetData.has("setData")){
+                    jsonMessage = instantiateSet(args, assetData);
+                }
+                else{
+                    jsonMessage = instantiateAsset(args, assetData);
+                }
+                
             }
             else if (urlPath.contains("addmanual")){
                 jsonMessage = addManual(args, 
@@ -328,6 +335,37 @@ public class AssetManagerAgent extends JPSAgent{
                 "Asset data is invalid. "+
                 "Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and ontology prefix and class."
             );
+        }
+        return message;
+    }
+
+    public JSONObject instantiateSet (String[] arg, JSONObject setData) {
+        JSONObject message = new JSONObject();
+        // handle input
+        JSONArray assetDataAll = setData.getJSONArray("setData");
+        Boolean stillValid = true;
+        for(int i=0; i< assetDataAll.length();i++){
+            JSONObject assetData = assetDataAll.getJSONObject(i);
+            if (!validateAssetData(assetData)){
+                message.accumulate("Result", "Instantiation cancelled: " + 
+                    "One of the asset data is invalid: "+
+                    assetData +
+                    "Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and ontology prefix and class."
+                );
+                stillValid = false;
+            }
+        }
+        if (stillValid){
+            if (!(setData.has("deliveryDate"))){
+                setData.put("deliveryDate", "");
+            }
+
+            try {
+                JSONObject iriResult = instanceHandler.setInstantiate(setData);
+                message.accumulate("Result", iriResult);
+            } catch (Exception e) {
+                message.accumulate("Result", "Instantiation failed: " + e);
+            }
         }
         return message;
     }

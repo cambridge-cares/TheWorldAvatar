@@ -110,6 +110,42 @@ public class AssetKGInterface {
      * =============================================================================================================================================================
      * Instantiate asset based on data from given request
      */
+
+    public JSONObject setInstantiate(JSONObject setDataRaw) throws Exception{
+        JSONArray resArr = new JSONArray();
+        String desiredID = setDataRaw.getString("desiredID");
+        String deliveryDate = setDataRaw.getString("deliveryDate");
+        if (desiredID.isBlank() || desiredID == null){
+            
+            String date;
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            if (deliveryDate.isBlank() || deliveryDate == null){
+                LocalDateTime now = LocalDateTime.now();
+                date = dtf.format(now);
+            }
+            else{
+                try {
+                    deliveryDate = dtf.format(LocalDate.parse(deliveryDate, dtf));
+                } catch (Exception e) {
+                    // TODO: handle exception
+                    throw new JPSRuntimeException("Failed to parse deliveryDate", e);
+                }
+                date = deliveryDate;
+            }
+            String idNum = String.valueOf(getLatestIDNum() +  1);
+            desiredID = date +"/"+ idNum;
+        }
+        JSONArray assetSet = setDataRaw.getJSONArray("setData");
+        for (int i=0;i<assetSet.length();i++){
+            JSONObject assetData = assetSet.getJSONObject(i);
+            assetData.put("ID", desiredID + "." + String.valueOf(i+1));
+            resArr.put(instantiate(assetData));
+        }
+
+        return new JSONObject().put("InstanceResults", resArr);
+    }
+
+
     public JSONObject instantiate (JSONObject AssetDataRaw) throws Exception{
         //Get IRI from ID
         String deviceIRIString = existenceChecker.getIRIStringbyID(AssetDataRaw.getString("ID"));
