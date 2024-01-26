@@ -1,28 +1,12 @@
-footer p, span {
-    color: #50596c;
-}
-
-#all-rights-reserved {
-    background-color: black;
-    width: 100vw !important;
-    position: relative !important;
-    margin-left: -50vw !important;
-    left: 50% !important;
-    color: white;
-    font-size: 75%;
-    margin-top: 2rem;
-    padding: 1rem;
-}
-
 .mybutton {
-    background-image: url(../img/search.svg);
+    background-image: url(/static/img/search.svg);
     background-position: center;
     background-size: cover;
     cursor: pointer;
 }
 
 .spinner {
-    background-image: url(../img/spinner.gif);
+    background-image: url(/static/img/spinner.gif);
     cursor: not-allowed
 }
 

@@ -1,5 +1,6 @@
 from services.translate.sparql import SparqlQuery
 from services.translate.sparql.graph_pattern import TriplePattern, ValuesClause
+from services.translate.sparql.where_clause import WhereClause
 from .correct_predicate import OSPredicateCorrector
 from .correct_span import OSSpanCorrector
 
@@ -15,7 +16,7 @@ class OSSparqlPredictionCorrector:
             value = self.span_corrector.correct(nlq, value)
             values.append(value)
         return ValuesClause(values_clause.var, values)
-    
+
     def correct_triple_pattern(self, triple_pattern: TriplePattern):
         tails = []
         for predicate, obj in triple_pattern.tails:
@@ -25,11 +26,15 @@ class OSSparqlPredictionCorrector:
 
     def correct(self, sparql: SparqlQuery, nlq: str):
         graph_patterns = []
-        for pattern in sparql.graph_patterns:
+        for pattern in sparql.where_clause.graph_patterns:
             if isinstance(pattern, ValuesClause):
                 pattern = self.correct_values_clause(pattern, nlq)
             elif isinstance(pattern, TriplePattern):
                 pattern = self.correct_triple_pattern(pattern)
             graph_patterns.append(pattern)
 
-        return SparqlQuery(sparql.select_clause, graph_patterns)
+        return SparqlQuery(
+            select_clause=sparql.select_clause,
+            where_clause=WhereClause(graph_patterns),
+            solultion_modifier=sparql.solultion_modifier,
+        )

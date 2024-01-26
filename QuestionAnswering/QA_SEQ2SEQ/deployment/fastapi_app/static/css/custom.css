@@ -256,7 +256,7 @@ body.header-fixed.header-animated #header.scrolled .logo img, body.header-fixed.
 	margin-top: 50px;
 	margin-bottom: 50px;
 	height: 240px;
-	background-image: url('/user/images/chemical-background-green.png');
+	background-image:  url(/static/img/chemical-background-green.png);
 	background-size: cover;
 	background-repeat: no-repeat;
 }
