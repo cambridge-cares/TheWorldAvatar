@@ -120,7 +120,7 @@ public class CarparkAgent extends JPSAgent {
         LOGGER.info("Attempting to retrieve mappings...");
         List<JSONKeyToIRIMapper> mappings;
         try {
-            mappings = ConfigReader.retrieveKeyToIriMappings(args[0], TIMESERIES_IRI_PREFIX);
+            mappings = ConfigReader.retrieveKeyToIriMappings(System.getenv(args[0]), TIMESERIES_IRI_PREFIX);
         } catch (IOException e) {
             LOGGER.fatal("Failed to retrieve mappings: ", e);
             throw new JPSRuntimeException("Failed to retrieve mappings: ", e);
@@ -131,7 +131,7 @@ public class CarparkAgent extends JPSAgent {
         RemoteStoreClient kbClient;
         try {
             // Retrieve sparql configurations
-            Queue<String> sparqlConfigs = ConfigReader.retrieveSparqlConfig(args[1]);
+            Queue<String> sparqlConfigs = ConfigReader.retrieveSparqlConfig(System.getenv(args[1]));
             kbClient = new RemoteStoreClient();
             // First two configuration should be query and update endpoint
             kbClient.setQueryEndpoint(sparqlConfigs.poll());
@@ -142,7 +142,7 @@ public class CarparkAgent extends JPSAgent {
                 kbClient.setPassword(sparqlConfigs.poll());
             }
             // Retrieve RDB configs and populate it accordingly in sequence of url, user, password
-            Queue<String> rdbConfigs = ConfigReader.retrieveRDBConfig(args[1]);
+            Queue<String> rdbConfigs = ConfigReader.retrieveRDBConfig(System.getenv(args[1]));
             tsclient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, rdbConfigs.poll(), rdbConfigs.poll(), rdbConfigs.poll());
         } catch (Exception e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
@@ -169,7 +169,7 @@ public class CarparkAgent extends JPSAgent {
         LOGGER.info("Setting up the API connector...");
         APIConnector connector;
         try {
-            connector = new APIConnector(args[2]);
+            connector = new APIConnector(System.getenv(args[2]));
         } catch (IOException e) {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
@@ -178,9 +178,8 @@ public class CarparkAgent extends JPSAgent {
         LOGGER.info("Retrieving available carpark lot data from the API...");
         JSONObject carparkReadings;
         try {
-            carparkReadings = connector.getReadings();
+            carparkReadings = connector.getAvailableLots();
         } catch (Exception e) {
-            LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
         JSONObject jsonMessage = new JSONObject();
@@ -196,7 +195,7 @@ public class CarparkAgent extends JPSAgent {
         LOGGER.info("Retrieving carpark rates from the API...");
         JSONObject pricingReadings;
         try {
-            pricingReadings = connector.getPrices();
+            pricingReadings = connector.getCarparkRates();
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
