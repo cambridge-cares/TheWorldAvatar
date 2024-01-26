@@ -1,0 +1,74 @@
+from dataclasses import dataclass
+import logging
+import os
+from typing import Dict, Optional
+
+from .data_processing.constants import T5_PREFIX_DOMAINCLS, T5_PREFIX_NL2SPARQL
+from .data_processing.nl import preprocess_nl
+from .data_processing.ontokin.postprocess import OKPostProcessor
+from .data_processing.ontospecies.postprocess import OSPostProcessor
+from .data_processing.ontocompchem.postprocess import OCCPostProcessor
+from .data_processing.ontobuiltenv.postprocess import OBEPostProcessor
+from .data_processing.postprocess import PostProcessor
+from .data_processing.sparql import postprocess_sparql
+from .sparql import SparqlQuery
+from .triton_client.seq2seq_client import Seq2SeqClient
+
+
+@dataclass
+class TranslateResultSparql:
+    raw: str
+    decoded: str
+    verbose: Optional[str]
+
+
+@dataclass
+class TranslateResult:
+    domain: str
+    sparql: TranslateResultSparql
+
+
+logger = logging.getLogger(__name__)
+
+
+class Translator:
+    def __init__(self):
+        self.domain = os.getenv("QA_DOMAIN")
+        self.model = Seq2SeqClient()
+        self.domain2postprocessor: Dict[str, PostProcessor] = dict(
+            ontospecies=OSPostProcessor(),
+            ontokin=OKPostProcessor(),
+            ontocompchem=OCCPostProcessor(),
+            kingslynn=OBEPostProcessor()
+        )
+
+    def get_domain(self, question: str):
+        if self.domain:
+            return self.domain
+        return self.model.forward(T5_PREFIX_DOMAINCLS + question)
+
+    def nl2sparql(self, question: str):
+        question_encoded = preprocess_nl(question)
+
+        domain = self.get_domain(question_encoded)
+        pred_raw = self.model.forward(T5_PREFIX_NL2SPARQL + question_encoded)
+        pred_decoded = postprocess_sparql(pred_raw)
+
+        try:
+            pred_decoded_parsed = SparqlQuery.fromstring(pred_decoded)
+            pred_verbose = self.domain2postprocessor[domain].postprocess(
+                query=pred_decoded_parsed, nlq=question
+            )
+            pred_verbose_str = str(pred_verbose)
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            pred_verbose_str = None
+
+        return TranslateResult(
+            domain=domain,
+            sparql=TranslateResultSparql(
+                raw=pred_raw,
+                decoded=pred_decoded,
+                verbose=pred_verbose_str,
+            ),
+        )

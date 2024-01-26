@@ -1,0 +1,19 @@
+[
+    {
+        "title": "King's Lynn",
+        "description": "Queries related to properties of chemical species",
+        "questions": [
+            "How many buildings are there?",
+            "How many properties with previous sales transaction records and energy performance certificate (EPC) data are there?",
+            "How many schools are there?",
+            "How many buildings have an energy rating of B?",
+            "How many buildings have a floor area between 80 and 120 m2?",
+            "What's the average property value for buildings with a floor area between 80 and 120 m2?",
+            "What's the average property value for a 6 bedroom building?",
+            "Which buildings are located in postcode PE30 2DH?",
+
+            "Find me all hospitals",
+            "Please give me buildings with mixed residential and office use, where residential accounts for at least 65% of the building usage"
+        ]
+    }
+]

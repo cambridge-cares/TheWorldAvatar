@@ -1,0 +1,57 @@
+footer p, span {
+    color: #50596c;
+}
+
+#all-rights-reserved {
+    background-color: black;
+    width: 100vw !important;
+    position: relative !important;
+    margin-left: -50vw !important;
+    left: 50% !important;
+    color: white;
+    font-size: 75%;
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+.mybutton {
+    background-image: url(../img/search.svg);
+    background-position: center;
+    background-size: cover;
+    cursor: pointer;
+}
+
+.spinner {
+    background-image: url(../img/spinner.gif);
+    cursor: not-allowed
+}
+
+.sample-question:hover {
+    border-color: #FFA500;
+    cursor: pointer;
+}
+
+#input-field {
+    width: calc(100% - 50px);
+}
+
+#special-chars-container {
+    position: absolute;
+    top: calc(50% - 60px);
+    left: calc(50% - min(450px, 37.5%));
+    padding: 5px 10px;
+    background: white;
+    color: #338cea;
+}
+
+.special-char {
+    cursor: pointer;
+}
+
+#sparql-query-predicted, #sparql-query-postprocessed, #chatbot-response {
+    white-space: pre-wrap;
+}
+
+.list-group {
+    margin: 0
+}
