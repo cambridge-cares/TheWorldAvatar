@@ -5,7 +5,7 @@ services:
 
   # UK Power Grid Agent Visualisation
   power-grid-visualisation:
-    image: docker.cmclinnovations.com/power-grid-visualisation:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/power-grid-visualisation:1.0.0
     container_name: power-grid-visualisation
     build:
       context: "../"
@@ -19,3 +19,12 @@ services:
     - ../:/var/www/html
     ports:
       - "65082:80"
+
+
+      version: "3.8"
+
+
+  # FeatureInfoAgent
+  feature-info-agent:
+    image: ghcr.io/cambridge-cares/feature-info-agent:latest
+    build: .

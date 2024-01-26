@@ -1,6 +1,6 @@
 #!/bin/bash
 
-startDate=`date`
+startDate=$(date)
 echo "Running output scripts, time is: $startDate" 
 
 # Activate new virtual environment
@@ -24,5 +24,5 @@ echo "Offtake locations have been output."
 python3 /root/code/gasgridagent/output_pipe_locations.py > /var/log/gas-grid/output_pipe_locations.log 2>&1
 echo "Pipe locations have been output."
 
-endDate=`date`
+endDate=$(date)
 echo "Output scripts finised at: $endDate"
