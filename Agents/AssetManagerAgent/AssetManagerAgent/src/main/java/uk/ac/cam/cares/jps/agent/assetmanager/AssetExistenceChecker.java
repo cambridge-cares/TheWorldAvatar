@@ -101,6 +101,33 @@ public class AssetExistenceChecker {
                 throw new JPSRuntimeException("An organization has more than 1 instance: " + orgName + ". Check the knowledge graph for duplicates.", null);
         }
     }
+    public JSONObject getIndependentPartyTriples (String orgName) {
+        return getOrganizationTriples (orgName, false);
+    }
+    public JSONObject getIndependentPartyTriples (String orgName, Boolean generate) {
+        JSONObject result = new JSONObject();
+        JSONArray reqResult = getIRIbyLiteral(orgName, iri(RDFS.LABEL), storeClientAsset);
+        String serviceProviderIRI;
+        LOGGER.info("IndependentParty check query for name::" + orgName + ": " + reqResult);
+        switch (reqResult.length()) {
+            case 0:
+                if (generate){
+                    //Create IRI and add to result
+                    serviceProviderIRI = genIRIString("ServiceProvider", P_ASSET);
+                    result.put("ServiceProviderIRI", serviceProviderIRI);
+                    return result;
+                }
+                return null;
+                
+            case 1:
+                //Add the existing IRI to result
+                serviceProviderIRI = reqResult.getJSONObject(0).getString("Subject");
+                result.put("ServiceProviderIRI", serviceProviderIRI);
+                return result;
+            default:
+                throw new JPSRuntimeException("An independent party has more than 1 instance: " + orgName + ". Check the knowledge graph for duplicates.", null);
+        }
+    }
 
     public String getIRIStringbyID (String ID){
         JSONArray reqResult = getIRIbyLiteral (ID, hasItemInventoryIdentifier, storeClientAsset);
@@ -529,6 +556,10 @@ public class AssetExistenceChecker {
         Variable intervalIRI = SparqlBuilder.var("intervalIRI");
         Variable durationIRI = SparqlBuilder.var("durationIRI");
         Variable performerIRI = SparqlBuilder.var("performerIRI");
+        Variable performerName = SparqlBuilder.var("performerName");
+
+        Variable orgNameIRI = SparqlBuilder.var("orgNameIRI"); 
+        Variable personNameIRI = SparqlBuilder.var("personNameIRI");
 
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
@@ -538,6 +569,17 @@ public class AssetExistenceChecker {
         query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
         query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
         query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
+        query.where(GraphPatterns.optional(
+            performerIRI.has(hasName, orgNameIRI),
+            orgNameIRI.has(hasLegalName, performerName)
+            ));
+        query.where(GraphPatterns.optional(
+            performerIRI.has(hasName, personNameIRI),
+            personNameIRI.has(hasPersonName, performerName)
+            ));
+        query.where(GraphPatterns.optional(
+            performerIRI.has(RDFS.LABEL, performerName)
+            ));
         query.where(GraphPatterns.optional(maintenanceTaskIRI.has(performedAt, lastServiceIRI)));
         query.where(GraphPatterns.optional(maintenanceTaskIRI.has(scheduledFor, nextServiceIRI)));
         query.where(GraphPatterns.optional(
@@ -563,6 +605,8 @@ public class AssetExistenceChecker {
                     result.put("durationIRI", genIRIString("DurationDescription", P_TIME));
                     //Performer IRI is not generated as it is supposed to be updated as requested
                     //Hence it does not matter if its retrieved or not
+                    result.put("performerIRI", "");
+                    result.put("performerName", "");
                     return result;
                 }
                 return null;
@@ -570,6 +614,8 @@ public class AssetExistenceChecker {
             case 1:
                 result.put("maintenanceScheduleIRI", reqResult.getJSONObject(0).getString("maintenanceScheduleIRI"));
                 result.put("maintenanceTaskIRI", reqResult.getJSONObject(0).getString("maintenanceTaskIRI"));
+                result.put("performerIRI", reqResult.getJSONObject(0).getString("performerIRI"));
+                result.put("performerName", reqResult.getJSONObject(0).getString("performerName"));
                 
                 //In case some of the maintenance component does not exist before, create new IRI here:
                 if (reqResult.getJSONObject(0).has("lastServiceIRI")){

@@ -73,6 +73,10 @@ public class AssetRetriever {
         retrieveDeviceNamespace(deviceIRI);
         retrievePurchaseDocNamespace(itemIRI);
 
+        //the above methods throw an error when multiple rows are retrieved.
+        //So for data where multiple instances are allowed are retrieved below (maintenance etc.)
+        retrieveMaintenance(deviceIRI);
+
         return result;
     }
 
@@ -82,7 +86,9 @@ public class AssetRetriever {
         //Asset namespace query
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
-            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
+            Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE,
+            Pref_TIME
         );
         Variable deviceIRIVar = SparqlBuilder.var("deviceIRI");
         Variable deviceTypeIRI = SparqlBuilder.var("deviceTypeIRI");
@@ -392,7 +398,6 @@ public class AssetRetriever {
 
     }
 
-
     void inputDataToResult (String[] keyArray, JSONArray requestResult){
         /*
          * Format to follow
@@ -452,6 +457,78 @@ public class AssetRetriever {
                 throw new JPSRuntimeException("Duplicate data on retrieve. Check the knowledge graph for duplicates.");
         }
     }
+
+    
+    void retrieveMaintenance(Iri deviceIRI){
+        SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
+            Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE,
+            Pref_TIME
+        );
+        //Maintenance
+        Variable maintenanceScheduleIRI = SparqlBuilder.var("maintenanceScheduleIRI");
+        Variable maintenanceTaskIRI = SparqlBuilder.var("maintenanceTaskIRI");
+        Variable lastServiceIRI = SparqlBuilder.var("lastServiceIRI");
+        Variable lastServiceTime = SparqlBuilder.var("lastServiceTime");
+        Variable nextServiceIRI = SparqlBuilder.var("nextServiceIRI");
+        Variable nextServiceTime = SparqlBuilder.var("nextServiceTime");
+        Variable intervalIRI = SparqlBuilder.var("intervalIRI");
+        Variable durationIRI = SparqlBuilder.var("durationIRI");
+        Variable performerIRI = SparqlBuilder.var("performerIRI");
+        Variable durationMonth = SparqlBuilder.var("durationMonth");
+        Variable durationYear = SparqlBuilder.var("durationYear");
+
+        //Maintenance
+        query.where(GraphPatterns.optional(
+            deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI),
+            maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI),
+            maintenanceTaskIRI.has(isPerformedBy, performerIRI),
+            GraphPatterns.optional(
+                maintenanceTaskIRI.has(performedAt, lastServiceIRI),
+                lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime)),
+            GraphPatterns.optional(
+                maintenanceTaskIRI.has(scheduledFor, nextServiceIRI),
+                nextServiceIRI.has(inXSDDateTimeStamp, nextServiceTime)),
+            GraphPatterns.optional(
+                maintenanceTaskIRI.has(hasInterval, intervalIRI),
+                intervalIRI.has(hasDurationDescription, durationIRI),
+                durationIRI.has(months, durationMonth).andHas(years, durationYear))
+        ));
+
+        handleMaintenanceRetrieveData(storeClientAsset.executeQuery(query.getQueryString()));
+    }
+
+    private void handleMaintenanceRetrieveData (JSONArray requestResult){
+        String[] keyArray = {
+            "maintenanceScheduleIRI",
+            "maintenanceTaskIRI",
+            "lastServiceTime",
+            "nextServiceTime",
+            "durationMonth",
+            "durationYear"
+        };
+
+        inputMultipleDataToResult("maintenanceSchedule", keyArray, requestResult);
+    }
+
+    private void inputMultipleDataToResult (String resultKey, String[] keyArray, JSONArray requestResult){
+        JSONArray res= new JSONArray();
+        for (int i=0; i < requestResult.length();i++){
+            JSONObject row = requestResult.getJSONObject(i);
+            JSONObject newEntry = new JSONObject();
+            for(String key : keyArray){
+                try {
+                    newEntry.put(key, row.getString(key));
+                } catch (JSONException e) {
+                    newEntry.put(key, "");
+                }
+            }
+            res.put(newEntry);
+        }
+        result.put(resultKey, res);
+    } 
+
 
     public JSONObject getRequiredIriUI (String assetNamespace, String deviceNamepsace) {
         JSONObject result = new JSONObject();
@@ -713,6 +790,10 @@ public class AssetRetriever {
         Variable durationMonth = SparqlBuilder.var("durationMonth");
         Variable durationYear = SparqlBuilder.var("durationYear");
         Variable performerIRI = SparqlBuilder.var("performerIRI");
+        Variable performerName = SparqlBuilder.var("performerName");
+
+        Variable orgNameIRI = SparqlBuilder.var("orgNameIRI"); 
+        Variable personNameIRI = SparqlBuilder.var("personNameIRI");
 
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, 
@@ -722,6 +803,17 @@ public class AssetRetriever {
         query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
         query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
         query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
+        query.where(GraphPatterns.optional(
+            performerIRI.has(hasName, orgNameIRI),
+            orgNameIRI.has(hasLegalName, performerName)
+            ));
+        query.where(GraphPatterns.optional(
+            performerIRI.has(hasName, personNameIRI),
+            personNameIRI.has(hasPersonName, performerName)
+            ));
+        query.where(GraphPatterns.optional(
+            performerIRI.has(RDFS.LABEL, performerName)
+            ));
         query.where(GraphPatterns.optional(
             maintenanceTaskIRI.has(performedAt, lastServiceIRI),
             lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime)
@@ -762,6 +854,7 @@ public class AssetRetriever {
         Variable intervalIRI = SparqlBuilder.var("intervalIRI");
         Variable durationIRI = SparqlBuilder.var("durationIRI");
         Variable performerIRI = SparqlBuilder.var("performerIRI");
+        Variable performerName = SparqlBuilder.var("performerName");
         Variable durationMonth = SparqlBuilder.var("durationMonth");
         Variable durationYear = SparqlBuilder.var("durationYear");
 
@@ -773,6 +866,7 @@ public class AssetRetriever {
         query.where(deviceIRI.has(hasMaintenanceSchedule, maintenanceScheduleIRI));
         query.where(maintenanceScheduleIRI.has(hasTask, maintenanceTaskIRI));
         query.where(maintenanceTaskIRI.has(isPerformedBy, performerIRI));
+        query.where(performerIRI.has(RDFS.LABEL, performerName));
         query.where(GraphPatterns.optional(
             maintenanceTaskIRI.has(performedAt, lastServiceIRI),
             lastServiceIRI.has(inXSDDateTimeStamp, lastServiceTime)

@@ -774,6 +774,21 @@ public class AssetKGInterface {
      */
     public void addMaintenanceData(JSONObject maintenanceData){
         String ID = maintenanceData.getString("ID");
+
+        //Validation
+        String deviceIRI = existenceChecker.getIRIStringbyID(ID);
+        if (deviceIRI == null || deviceIRI.isBlank()){
+            throw new JPSRuntimeException(String.format("Device is unregistered for ID:%s", ID));
+        }
+        JSONObject maintenanceIRI = existenceChecker.getMaintenanceIRI(deviceIRI, true);
+
+        addMaintenanceData(maintenanceIRI, maintenanceData);
+
+    }
+
+    //TODO Fix this mesy method. This one exist so the update can be done more smoothly when the IRI exist, but it still is a mess
+    public void addMaintenanceData(JSONObject maintenanceIRI, JSONObject maintenanceData){
+        String ID = maintenanceData.getString("ID");
         String lastService = maintenanceData.getString("LastService");
         String nextService = maintenanceData.getString("NextService");
         String interval = maintenanceData.getString("Interval");
@@ -796,7 +811,7 @@ public class AssetKGInterface {
         if (deviceIRI == null || deviceIRI.isBlank()){
             throw new JPSRuntimeException(String.format("Device is unregistered for ID:%s", ID));
         }
-        JSONObject maintenanceIRI = existenceChecker.getMaintenanceIRI(deviceIRI, true);
+        //JSONObject maintenanceIRI = existenceChecker.getMaintenanceIRI(deviceIRI, true);
 
         String maintenanceScheduleIRI = maintenanceIRI.getString("maintenanceScheduleIRI");
         String maintenanceTaskIRI = maintenanceIRI.getString("maintenanceTaskIRI");
@@ -811,13 +826,20 @@ public class AssetKGInterface {
             } catch (DateTimeParseException e) {
                 throw new JPSRuntimeException("Failed to parse service times, ensure the format is correct: yyyy-mm-dd", e);
             }
+            
+            if (lastServiceDate.isAfter(LocalDate.now())){
+                throw new JPSRuntimeException("Last service date cannot be in the future. Please use next service date instead");
+            }
+
         }
 
         JSONObject existingServiceIRIs = existenceChecker.getPersonTriples(serviceProvider, false);
         if (existingServiceIRIs == null) {
             existingServiceIRIs = existenceChecker.getOrganizationTriples(serviceProvider);
             if (existingServiceIRIs == null){
-                serviceProviderIRI = genIRIString("ServiceProvider", P_ASSET);
+                existingServiceIRIs = existenceChecker.getIndependentPartyTriples(serviceProvider, true);
+                //serviceProviderIRI = genIRIString("ServiceProvider", P_ASSET);
+                serviceProviderIRI = existingServiceIRIs.getString("ServiceProviderIRI");
                 serviceProviderTypeIRI = IndependentParty;
             }
             else{
@@ -879,8 +901,27 @@ public class AssetKGInterface {
         }
 
         query.insert(iri(maintenanceTaskIRI).has(isPerformedBy, iri(serviceProviderIRI)));
-        query.insert(iri(serviceProviderIRI).isA(serviceProviderTypeIRI));
-        query.insert(iri(serviceProviderIRI).has(RDFS.LABEL, Rdf.literalOf(serviceProvider)));
+        
+        if (serviceProviderTypeIRI == FormalOrganization){
+            Iri serviceProviderNameIRI = iri(existingServiceIRIs.getString("OrgNameIRI"));
+            query.insert(iri(serviceProviderIRI).isA(FormalOrganization));
+            query.insert(serviceProviderNameIRI.isA(OrganizationName));
+            query.insert(iri(serviceProviderIRI).has(hasName, serviceProviderNameIRI));
+            query.insert(serviceProviderNameIRI.has(hasLegalName, serviceProvider));
+            query.insert(serviceProviderNameIRI.has(RDFS.LABEL, Rdf.literalOf(serviceProvider)));
+        }
+        else if (serviceProviderTypeIRI == Person){
+            Iri serviceProviderNameIRI = iri(existingServiceIRIs.getString("PersonNameIRI"));
+            query.insert(iri(serviceProviderIRI).isA(Person));
+            query.insert(serviceProviderNameIRI.isA(PersonName));
+            query.insert(iri(serviceProviderIRI).has(hasName, serviceProviderNameIRI));
+            query.insert(serviceProviderNameIRI.has(hasPersonName, Rdf.literalOf(serviceProvider)));
+        }
+        else{
+            query.insert(iri(serviceProviderIRI).isA(serviceProviderTypeIRI));
+            query.insert(iri(serviceProviderIRI).has(RDFS.LABEL, Rdf.literalOf(serviceProvider)));
+        }
+        
 
         if(!(interval.isBlank() || interval==null)){
             year = Integer.valueOf(interval)/12;
@@ -903,6 +944,7 @@ public class AssetKGInterface {
         JSONArray result = new JSONArray();
         for (int i = 0; i < maintenanceList.length(); i ++){
             JSONObject maintenanceData = maintenanceList.getJSONObject(i);
+            assetDeleter.deleteMaintenanceData(maintenanceList.getJSONObject(i));
             if (maintenanceData.has("nextServiceIRI")){
                 LocalDate nextService = LocalDate.parse(maintenanceData.getString("nextServiceTime"));
                 if (callTime.isAfter(nextService)){
@@ -923,16 +965,33 @@ public class AssetKGInterface {
             LOGGER.info("New maintenance time for maintenance schedule::" + maintenanceData);
             result.put(maintenanceData);
             //updateGeneralMaintenanceData(maintenanceData, maintenanceList.getJSONObject(i));
-            assetDeleter.deleteMaintenanceData(maintenanceList.getJSONObject(i));
-            addMaintenanceData(maintenanceData);
+            addMaintenanceData(maintenanceData, fitMaintenanceIRItoMaintenanceData(maintenanceData));
         }
         return result;
     }
+
+    //TODO sort this method out as it seems unnneccesarry
+    //This method is the result of *trying* to write competent code after 2 weeks break and it produces a messy mess
+    //This method is the ice pack you use the morning after banging your head on a drunken night's hangover
+    //Need to fix addMaintenance before anything really...
+    private JSONObject fitMaintenanceIRItoMaintenanceData (JSONObject maintenanceIRI) {
+        JSONObject maintenanceData = new JSONObject();
+        Long totalIntervalMonth = Long.valueOf(maintenanceIRI.getString("durationYear")) * 12 + 
+                                                    Long.valueOf(maintenanceIRI.getString("durationMonth"));
+        maintenanceData.put("ID", existenceChecker.getIDbyIRIString(maintenanceIRI.getString("deviceIRI")));
+        maintenanceData.put("LastService", maintenanceIRI.getString("lastServiceTime"));
+        maintenanceData.put("NextService", maintenanceIRI.getString("nextServiceTime"));
+        maintenanceData.put("Interval", Long.toString(totalIntervalMonth));
+        maintenanceData.put("ServiceProvider", maintenanceIRI.getString("performerName"));
+        return maintenanceData;
+    }
+
     public void deleteMaintenance(String maintenanceScheduleIRI){
         JSONObject maintenanceData = assetRetriever.getAssetMaintenanceIRI(maintenanceScheduleIRI);
         if (maintenanceData == null){
             throw new JPSRuntimeException("Maintenance schedule data does not exist for IRI" + maintenanceScheduleIRI);
         }
+        maintenanceData.put("ID", existenceChecker.getIDbyIRIString(maintenanceData.getString("deviceIRI")));
         assetDeleter.deleteMaintenanceData(maintenanceData);
     }
 
