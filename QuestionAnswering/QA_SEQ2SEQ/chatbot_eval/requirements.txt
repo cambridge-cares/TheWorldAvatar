@@ -1,5 +1,6 @@
 openai
 pandas
 tqdm
-vllm
 huggingface_hub[cli]
+vllm
+llama_cpp[server]
