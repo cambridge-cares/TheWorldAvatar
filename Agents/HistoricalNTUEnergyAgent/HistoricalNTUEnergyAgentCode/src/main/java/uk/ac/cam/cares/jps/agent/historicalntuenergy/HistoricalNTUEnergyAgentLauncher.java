@@ -176,8 +176,9 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
         }
         LOGGER.info("xlsx connector object initialized.");
-
-        // Retrieve readings
+        /*
+            Retrieve energy readings from the XLSX file
+         */
         JSONArray energyReadings;
         try {
             energyReadings = connector.getEnergyReadings();
@@ -185,6 +186,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
+
         LOGGER.info(String.format("Retrieved %d energy readings.",
                 energyReadings.length()));
 
@@ -198,11 +200,36 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         // If the file readings are empty, then no new readings are available
         else if (energyReadings.isEmpty()) {
             LOGGER.info("No new readings are available.");
+            jsonMessage.put("Result", "No new readings  are available.");
+        } else {
+            LOGGER.error(ONE_READING_EMPTY_ERROR_MSG);
+            throw new JPSRuntimeException(ONE_READING_EMPTY_ERROR_MSG);
+        }
+
+        /*
+            Retrieve energy readings from the CSV file
+         */
+        JSONArray waterReadings;
+        try {
+            waterReadings = connector.getWaterReadings();
+        } catch (Exception e) {
+            LOGGER.error(GET_READINGS_ERROR_MSG, e);
+            throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
+        }
+        if (!waterReadings.isEmpty()) {
+            // Update the data
+            agent.updateData(waterReadings);
+            LOGGER.info("Data updated with new readings from API.");
+            jsonMessage.put("Result", "Data updated with new readings from API.");
+        }
+        else if(waterReadings.isEmpty()) {
+            LOGGER.info("No new readings are available.");
             jsonMessage.put("Result", "No new readings are available.");
         } else {
             LOGGER.error(ONE_READING_EMPTY_ERROR_MSG);
             throw new JPSRuntimeException(ONE_READING_EMPTY_ERROR_MSG);
         }
+
 
         //Retrieve specs
         JSONArray busNodeSpecs;
@@ -226,12 +253,15 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
 
         HistoricalQueryBuilder queryBuilder;
         try {
-            queryBuilder = new HistoricalQueryBuilder(properties[0], kbClient, busNodeSpecs, branchSpecs, generatorSpecs, pvSpecs, venueInfo, classSchedule);
+            queryBuilder = new HistoricalQueryBuilder(properties[0], kbClient, busNodeSpecs, branchSpecs, generatorSpecs, pvSpecs, venueInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         queryBuilder.instantiateTriples();
+
+        CourseInstantiator courseInstantiator;
+        courseInstantiator = new CourseInstantiator(kbClient, classSchedule);
+        courseInstantiator.instantiateTriples();
 
         return jsonMessage;
     }

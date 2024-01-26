@@ -24,7 +24,11 @@ volumes:
   scratch:
     name: ${STACK_NAME}_scratch
     labels:
-      - com.docker.stack.namespace:${STACK_NAME}
+      - com.docker.stack.namespace=${STACK_NAME}
+  jdbc_drivers:
+    name: ${STACK_NAME}_jdbc_drivers
+    labels:
+      - com.docker.stack.namespace=${STACK_NAME}
 
 configs:
   postgis:

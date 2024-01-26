@@ -30,5 +30,7 @@ WORKDIR /root/isochroneagent
 COPY --from=builder /root/isochroneagent/output/isochroneagent##1.0.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
+EXPOSE 5005
+
 
 ENTRYPOINT ["./entrypoint.sh"]
