@@ -10,7 +10,8 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.network.Connection;
-import uk.ac.cam.cares.jps.network.poi.ToiletNetworkSource;
+import uk.ac.cam.cares.jps.network.toilet.ToiletInfoNetworkSource;
+import uk.ac.cam.cares.jps.network.toilet.ToiletNetworkSource;
 import uk.ac.cam.cares.jps.network.route.RouteNetworkSource;
 import uk.ac.cam.cares.jps.network.route.VertexNetworkSource;
 
@@ -38,5 +39,11 @@ public class NetworkModule {
     @Singleton
     public ToiletNetworkSource provideToiletNetworkSource(Connection connection) {
         return new ToiletNetworkSource(connection);
+    }
+
+    @Provides
+    @Singleton
+    public ToiletInfoNetworkSource provideToiletInfoNetworkSource(Connection connection) {
+        return new ToiletInfoNetworkSource(connection);
     }
 }

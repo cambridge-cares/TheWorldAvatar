@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.network.poi;
+package uk.ac.cam.cares.jps.network.toilet;
 
 import androidx.annotation.NonNull;
 
@@ -38,7 +38,6 @@ public class ToiletNetworkSource {
 
     // TODO: Generalize amenity filter to work with Building, School, ...
     String amenityFilter = "amenity='toilets'";
-
 
     @Inject
     public ToiletNetworkSource(Connection connection) {

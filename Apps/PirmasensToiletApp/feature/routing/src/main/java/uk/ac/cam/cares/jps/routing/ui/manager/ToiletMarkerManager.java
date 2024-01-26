@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.routing;
+package uk.ac.cam.cares.jps.routing.ui.manager;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -19,28 +19,30 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.model.Toilet;
+import uk.ac.cam.cares.jps.routing.R;
+import uk.ac.cam.cares.jps.routing.viewmodel.ToiletViewModel;
+import uk.ac.cam.cares.jps.routing.bottomsheet.ToiletBottomSheet;
 
-public class ToiletManager {
-    private Logger LOGGER = Logger.getLogger(ToiletManager.class);
+public class ToiletMarkerManager {
+    private Logger LOGGER = Logger.getLogger(ToiletMarkerManager.class);
     private PointAnnotationManager pointAnnotationManager;
     private ToiletViewModel toiletViewModel;
     private Context context;
-    private RouteManager routeManager;
 
-    public ToiletManager(MapView mapView, Fragment fragment, RouteManager routeManager) {
+    private ToiletBottomSheet toiletBottomSheet;
+
+    public ToiletMarkerManager(MapView mapView, Fragment fragment, ToiletBottomSheet toiletBottomSheet) {
+        this.toiletBottomSheet = toiletBottomSheet;
+
         AnnotationPlugin annotationPlugin = mapView.getPlugin(Plugin.MAPBOX_ANNOTATION_PLUGIN_ID);
         pointAnnotationManager = (PointAnnotationManager) annotationPlugin.createAnnotationManager(AnnotationType.PointAnnotation, null);
         this.context = fragment.requireContext();
-        this.routeManager = routeManager;
 
         toiletViewModel = new ViewModelProvider(fragment).get(ToiletViewModel.class);
         // set observer on the model, when data ready, display points
-        toiletViewModel.getToiletsGeoJsonData().observe(fragment, toilets -> {
+        toiletViewModel.getToiletsLiveData().observe(fragment, toilets -> {
             LOGGER.debug("Received toilets number: " + toilets.size());
 
             for (Toilet toilet : toilets) {
@@ -50,7 +52,8 @@ public class ToiletManager {
         });
 
         pointAnnotationManager.addClickListener(pointAnnotation -> {
-            routeManager.requestForRouting(pointAnnotation.getPoint());
+            toiletViewModel.getToilet(pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
+            toiletBottomSheet.show(fragment.getParentFragmentManager(), "toilet_bottom_sheet");
             return true;
         });
     }

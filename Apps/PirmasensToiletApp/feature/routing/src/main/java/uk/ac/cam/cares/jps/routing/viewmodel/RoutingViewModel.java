@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.routing;
+package uk.ac.cam.cares.jps.routing.viewmodel;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;

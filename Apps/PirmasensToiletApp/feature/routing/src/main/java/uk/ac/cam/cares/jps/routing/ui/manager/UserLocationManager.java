@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.routing;
+package uk.ac.cam.cares.jps.routing.ui.manager;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -7,6 +7,7 @@ import android.os.Looper;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -22,15 +23,17 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 
 import org.apache.log4j.Logger;
 
-public class LocationManager {
+import uk.ac.cam.cares.jps.routing.viewmodel.LocationViewModel;
+
+public class UserLocationManager {
     private Context context;
     private LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
-    private Point currentLocation;
+    private LocationViewModel locationViewModel;
 
-    private Logger LOGGER = Logger.getLogger(LocationManager.class);
+    private Logger LOGGER = Logger.getLogger(UserLocationManager.class);
 
-    public LocationManager(MapView mapView, Fragment fragment) {
+    public UserLocationManager(MapView mapView, Fragment fragment) {
         this.context = fragment.requireContext();
 
         requestLocationPermission();
@@ -38,11 +41,13 @@ public class LocationManager {
         LocationComponentPlugin locationComponent = mapView.getPlugin(Plugin.MAPBOX_LOCATION_COMPONENT_PLUGIN_ID);
         locationComponent.addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener);
         locationComponent.setEnabled(true);
+
+        locationViewModel = new ViewModelProvider(fragment).get(LocationViewModel.class);
     }
 
     private OnIndicatorPositionChangedListener onIndicatorPositionChangedListener = positionPoint -> {
 //        mapView.getMapboxMap().setCamera(new CameraOptions.Builder().center(positionPoint).build());
-        currentLocation = Point.fromLngLat(positionPoint.longitude(), positionPoint.latitude());
+        locationViewModel.setCurrentLocation(Point.fromLngLat(positionPoint.longitude(), positionPoint.latitude()));
     };
 
     private void requestLocationPermission() {
@@ -60,9 +65,8 @@ public class LocationManager {
             if (location != null) {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
-                // Add user location marker
 
-                currentLocation = Point.fromLngLat(longitude, latitude);
+                locationViewModel.setCurrentLocation(Point.fromLngLat(longitude, latitude));
             }
         });
 
@@ -86,7 +90,7 @@ public class LocationManager {
             for (Location location : locationResult.getLocations()) {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
-                currentLocation = Point.fromLngLat(longitude, latitude);
+                locationViewModel.setCurrentLocation(Point.fromLngLat(longitude, latitude));
                 LOGGER.debug("Update Location ");
             }
         }
@@ -99,9 +103,5 @@ public class LocationManager {
                 android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermission();
         }
-    }
-
-    public Point getCurrentLocation() {
-        return currentLocation;
     }
 }

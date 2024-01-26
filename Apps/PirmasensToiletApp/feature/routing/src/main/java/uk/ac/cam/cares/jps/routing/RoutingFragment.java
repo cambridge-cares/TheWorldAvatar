@@ -16,7 +16,11 @@ import com.mapbox.maps.Style;
 import org.apache.log4j.Logger;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.routing.bottomsheet.ToiletBottomSheet;
 import uk.ac.cam.cares.jps.routing.databinding.FragmentMapBinding;
+import uk.ac.cam.cares.jps.routing.ui.manager.UserLocationManager;
+import uk.ac.cam.cares.jps.routing.ui.manager.RouteManager;
+import uk.ac.cam.cares.jps.routing.ui.manager.ToiletMarkerManager;
 
 
 @AndroidEntryPoint
@@ -27,10 +31,10 @@ public class RoutingFragment extends Fragment {
     private MapView mapView;
     private ImageView imageView;
 
-
-    private ToiletManager toiletManager;
+    // UI manager
+    private ToiletMarkerManager toiletMarkerManager;
     private RouteManager routeManager;
-    private LocationManager locationManager;
+    private UserLocationManager userLocationManager;
 
 
     @Nullable
@@ -43,10 +47,14 @@ public class RoutingFragment extends Fragment {
         mapView = binding.getRoot().findViewById(R.id.mapView);
         mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS);
 
-        // todo: check whether can init with dependency injection
-        locationManager = new LocationManager(mapView, this);
-        routeManager = new RouteManager(mapView, this, locationManager);
-        toiletManager = new ToiletManager(mapView, this, routeManager);
+        ToiletBottomSheet toiletBottomSheet = new ToiletBottomSheet(this);
+
+        // init UI manager
+        userLocationManager = new UserLocationManager(mapView, this);
+        routeManager = new RouteManager(mapView, this);
+        toiletMarkerManager = new ToiletMarkerManager(mapView, this, toiletBottomSheet);
+
+
 
         return binding.getRoot();
     }
@@ -56,10 +64,10 @@ public class RoutingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        locationManager.requestLastLocation();
-        locationManager.startLocationUpdates();
+        userLocationManager.requestLastLocation();
+        userLocationManager.startLocationUpdates();
 
-        toiletManager.getToiletsData();
+        toiletMarkerManager.getToiletsData();
     }
 
     @Override

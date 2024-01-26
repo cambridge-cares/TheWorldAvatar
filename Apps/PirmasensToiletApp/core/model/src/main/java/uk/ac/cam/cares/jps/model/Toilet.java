@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.model;
 
 import com.mapbox.geojson.Point;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Toilet {
@@ -12,8 +13,10 @@ public class Toilet {
     String access;
     String fee;
     String wheelchair;
+    String name;
+    Price price;
 
-    Map<String, String> otherInfo;
+    Map<String, String> otherInfo = new HashMap<>();
 
     public Toilet(double lng, double lat) {
         location = Point.fromLngLat(lng, lat);
@@ -79,7 +82,23 @@ public class Toilet {
         return otherInfo;
     }
 
-    public void setOtherInfo(Map<String, String> otherInfo) {
-        this.otherInfo = otherInfo;
+    public void addOtherInfo(String infoName, String infoValue) {
+        this.otherInfo.put(infoName, infoValue);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Price getPrice() {
+        return price;
+    }
+
+    public void setPrice(Price price) {
+        this.price = price;
     }
 }

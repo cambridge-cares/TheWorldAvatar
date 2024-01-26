@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.routing;
+package uk.ac.cam.cares.jps.routing.ui.manager;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -16,13 +16,14 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
+import uk.ac.cam.cares.jps.routing.viewmodel.LocationViewModel;
+import uk.ac.cam.cares.jps.routing.viewmodel.RoutingViewModel;
+
 public class RouteManager {
     private Logger LOGGER = Logger.getLogger(RouteManager.class);
     private RoutingViewModel routingViewModel;
-    private LocationManager locationManager;
 
-    public RouteManager(MapView mapView, Fragment fragment, LocationManager locationManager) {
-        this.locationManager = locationManager;
+    public RouteManager(MapView mapView, Fragment fragment) {
 
         routingViewModel = new ViewModelProvider(fragment).get(RoutingViewModel.class);
         routingViewModel.getRouteGeoJsonData().observe(fragment, data -> mapView.getMapboxMap().getStyle(style -> {
@@ -51,13 +52,5 @@ public class RouteManager {
             Expected<String, None> layerSuccess = style.addStyleLayer(Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()), new LayerPosition(null, null, null));
             LOGGER.debug("route: layer created " + (layerSuccess.isError() ? layerSuccess.getError() : "success"));
         }));
-    }
-
-    public void requestForRouting(Point endPoint) {
-        Point currentLocation = locationManager.getCurrentLocation();
-
-        LOGGER.debug("FROM(" + currentLocation + ") TO (" + endPoint + ")");
-        routingViewModel.getRouteData(currentLocation.longitude(), currentLocation.latitude(),
-                endPoint.longitude(), endPoint.latitude());
     }
 }
