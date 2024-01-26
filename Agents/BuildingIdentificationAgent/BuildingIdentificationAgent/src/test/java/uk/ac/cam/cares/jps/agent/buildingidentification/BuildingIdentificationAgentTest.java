@@ -25,7 +25,7 @@ class BuildingIdentificationAgentTest {
         coordinates.put(coord2);
 
         request.put("coordinates", coordinates);
-        request.put("requestUrl", "array");
+        request.put("requestUrl", "/location");
 
         JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
 
@@ -42,7 +42,7 @@ class BuildingIdentificationAgentTest {
         request.put("dbUser", System.getenv("dbUser"));
         request.put("dbPassword", System.getenv("dbPassword"));
 
-        request.put("requestUrl", "table");
+        request.put("requestUrl", "/postgis");
         request.put("table", "industry.test");
 
         JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
