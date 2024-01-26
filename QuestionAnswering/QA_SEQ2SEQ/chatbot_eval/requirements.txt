@@ -1,0 +1,5 @@
+openai
+pandas
+tqdm
+vllm
+huggingface_hub[cli]
