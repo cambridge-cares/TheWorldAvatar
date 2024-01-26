@@ -7,21 +7,12 @@ import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 public class EndpointConfig {
     private PostGISEndpointConfig postGISEndpointConfig;
     private BlazegraphEndpointConfig blazegraphEndpointConfig;
-    private String dbUser;
-    private String dbPassword;
-
-    private String kguser;
-    private String kgpassword;
 
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
-        blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph",
+        this.blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph",
                 BlazegraphEndpointConfig.class);
-        this.kguser = blazegraphEndpointConfig.getUsername();
-        this.kgpassword = blazegraphEndpointConfig.getPassword();
-        postGISEndpointConfig = containerClient.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-        this.dbUser = postGISEndpointConfig.getUsername();
-        this.dbPassword = postGISEndpointConfig.getPassword();
+        this.postGISEndpointConfig = containerClient.readEndpointConfig("postgis", PostGISEndpointConfig.class);
     }
 
     public String getKgurl(String namespace) {
@@ -29,11 +20,11 @@ public class EndpointConfig {
     }
 
     public String getKguser() {
-        return this.kguser;
+        return blazegraphEndpointConfig.getUsername();
     }
 
     public String getKgpassword() {
-        return this.kgpassword;
+        return blazegraphEndpointConfig.getPassword();
     }
 
     public String getDbUrl(String dbName) {
@@ -41,10 +32,10 @@ public class EndpointConfig {
     }
 
     public String getDbUser() {
-        return this.dbUser;
+        return this.postGISEndpointConfig.getUsername();
     }
 
     public String getDbPassword() {
-        return this.dbPassword;
+        return this.postGISEndpointConfig.getPassword();
     }
 }

@@ -10,22 +10,18 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
-import org.jooq.SQLDialect;
-
 import java.sql.*;
 import java.util.*;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
-@WebServlet(urlPatterns = { BuildingIdentificationAgent.URI_LOCATION,
-        BuildingIdentificationAgent.URI_POSTGIS
+@WebServlet(urlPatterns = { BuildingIdentificationAgent.ROUTE_LOCATION,
+        BuildingIdentificationAgent.ROUTE_POSTGIS
 })
 public class BuildingIdentificationAgent extends JPSAgent {
 
     public static final String KEY_REQ_URL = "requestUrl";
-    public static final String URI_LOCATION = "/location";
-    public static final String URI_POSTGIS = "/postgis";
+    public static final String ROUTE_LOCATION = "/location";
+    public static final String ROUTE_POSTGIS = "/postgis";
     public static final String KEY_DISTANCE = "maxDistance";
     public static final String KEY_COORD = "coordinates";
     public static final String KEY_SRID = "srid";
@@ -51,17 +47,10 @@ public class BuildingIdentificationAgent extends JPSAgent {
             String dbPassword = null;
             String dbName = "postgres";
 
-            if (requestParams.has("dbUrl")) {
-                // for local testing outside stack
-                dbUrl = requestParams.getString("dbUrl");
-                dbUser = requestParams.getString("dbUser");
-                dbPassword = requestParams.getString("dbPassword");
-            } else {
-                EndpointConfig endpointConfig = new EndpointConfig();
-                dbUrl = endpointConfig.getDbUrl(dbName);
-                dbUser = endpointConfig.getDbUser();
-                dbPassword = endpointConfig.getDbPassword();
-            }
+            EndpointConfig endpointConfig = new EndpointConfig();
+            dbUrl = endpointConfig.getDbUrl(dbName);
+            dbUser = endpointConfig.getDbUser();
+            dbPassword = endpointConfig.getDbPassword();
 
             rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
             int dbSrid = getDbSrid();
@@ -94,7 +83,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
             JSONObject responseObject = new JSONObject();
 
-            if (requestParams.getString(KEY_REQ_URL).contains(URI_LOCATION)) {
+            if (requestParams.getString(KEY_REQ_URL).contains(ROUTE_LOCATION)) {
 
                 JSONArray coords = requestParams.getJSONArray(KEY_COORD);
 
@@ -108,12 +97,15 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 List<String> buildings = linkBuildingsArray(dbSrid, maxDistance, locations, iriPrefix);
                 responseObject.put(COLUMN_NAME, new JSONArray(buildings));
                 numberBuildingsIdentified = buildings.size();
-            } else if (requestParams.getString(KEY_REQ_URL).contains(URI_POSTGIS)) {
+            } else if (requestParams.getString(KEY_REQ_URL).contains(ROUTE_POSTGIS)) {
                 String tableName = requestParams.getString(KEY_TABLE);
                 Map<Integer, String> buildings = linkBuildingsTable(maxDistance, tableName);
                 numberBuildingsIdentified = buildings.size();
                 updateBuildings(buildings, tableName);
                 responseObject.put(COLUMN_NAME, new JSONArray(buildings.values()));
+            } else {
+                String route = requestParams.getString(KEY_REQ_URL);
+                LOGGER.fatal("{}{}", "The Building Identification Agent does not support the route ", route);
             }
 
             responseObject.put("number_matched", numberBuildingsIdentified);
@@ -192,18 +184,18 @@ public class BuildingIdentificationAgent extends JPSAgent {
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
 
+            String sqlTemplate = "select cityobject_genericattrib.strval as iri, "
+                    +
+                    "public.ST_DISTANCE(public.ST_Point(%f, %f, %d), envelope) AS dist from citydb.cityobject, citydb.cityobject_genericattrib "
+                    +
+                    "WHERE \"citydb\".\"cityobject_genericattrib\".\"strval\" IS NOT NULL AND cityobject.objectclass_id = 26 AND cityobject.id = cityobject_genericattrib.cityobject_id "
+                    +
+                    " order by dist " +
+                    " limit 1;";
+
             for (int i = 0; i < locations.size(); i++) {
                 List<Double> loc = locations.get(i);
-                String sqlString = String.format("select iri, wkt, dist from ( " +
-                        "select cityobject_genericattrib.strval as iri, public.ST_AsText(envelope) as wkt, "
-                        +
-                        "public.ST_DISTANCE(public.ST_Point(%f,%f, %d), envelope) AS dist from citydb.cityobject, citydb.cityobject_genericattrib "
-                        +
-                        "WHERE \"citydb\".\"cityobject_genericattrib\".\"strval\" IS NOT NULL AND cityobject.objectclass_id = 26 AND cityobject.id = cityobject_genericattrib.cityobject_id"
-                        +
-                        ") AS sub " +
-                        "order by dist " +
-                        "limit 1",
+                String sqlString = String.format(sqlTemplate,
                         loc.get(0), loc.get(1), dbSrid);
 
                 ResultSet result = stmt.executeQuery(sqlString);
@@ -239,7 +231,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
             String sqlString = String.format("SELECT ogc_fid, iri, dist FROM " +
                     "(SELECT ogc_fid, geometry FROM %s) r1 " +
                     "LEFT JOIN LATERAL ( " +
-                    " SELECT envelope, cityobject_genericattrib.strval AS iri, " +
+                    " SELECT cityobject_genericattrib.strval AS iri, " +
                     " public.ST_DISTANCE(public.ST_TRANSFORM(r1.geometry, public.ST_SRID(citydb.cityobject.envelope)), citydb.cityobject.envelope) AS dist "
                     +
                     " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
@@ -319,22 +311,6 @@ public class BuildingIdentificationAgent extends JPSAgent {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    DSLContext getContext(Connection conn) {
-        return DSL.using(conn, SQLDialect.POSTGRES);
-    }
-
-    boolean tableExists(String tableName, Connection conn) {
-        String condition = String.format("table_name = '%s'", tableName);
-        return getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0,
-                int.class) == 1;
-    }
-
-    boolean columnExists(String tableName, String columnName, Connection conn) {
-        String condition = String.format("table_name = '%s' AND column_name = '%s'", tableName, columnName);
-        return getContext(conn).select(DSL.count()).from("information_schema.columns").where(condition).fetchOne(0,
-                int.class) == 1;
     }
 
 }
