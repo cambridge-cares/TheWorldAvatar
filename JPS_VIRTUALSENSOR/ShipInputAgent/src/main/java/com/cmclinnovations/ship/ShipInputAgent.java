@@ -27,7 +27,7 @@ public class ShipInputAgent extends HttpServlet {
     private QueryClient queryClient;
     private AisStreamWebsocketClient client;
     public static final String UPDATE_PATH = "/update";
-    public static final String RESTART_PATH = "/restart_live_server";
+    public static final String RESTART_PATH = "/start-live-server";
     private static final String URI_STRING = "wss://stream.aisstream.io/v0/stream";
 
     @Override
