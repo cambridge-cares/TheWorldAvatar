@@ -51,6 +51,7 @@ module load rhel8/default-amp              # REQUIRED - loads the basic environm
 source /home/nmdt2/.bashrc
 conda activate llm-eval
 
+export HF_ACCESS_TOKEN=
 export HF_HOME=/rds/user/nmdt2/hpc-work/.cache/huggingface
 
 #! Full path to application executable: 
@@ -60,7 +61,7 @@ application="sh with_local_llm.sh"
 options=""
 
 #! Work directory (i.e. where the job will run):
-workdir="/home/nmdt2/repos/llm-eval"
+workdir="/home/nmdt2/repos/TheWorldAvatar/QuestionAnswering/QA_SEQ2SEQ/chatbot_eval"
 
 #! Are you using OpenMP (NB this is unrelated to OpenMPI)? If so increase this
 #! safe value to no more than 128:
