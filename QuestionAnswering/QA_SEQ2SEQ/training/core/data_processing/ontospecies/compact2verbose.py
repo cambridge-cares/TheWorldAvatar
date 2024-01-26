@@ -13,6 +13,7 @@ from core.sparql.graph_pattern import (
     TriplePattern,
     ValuesClause,
 )
+from core.sparql.where_clause import WhereClause
 
 
 class OSSparqlCompact2VerboseConverter:
@@ -91,7 +92,7 @@ class OSSparqlCompact2VerboseConverter:
             var_PropertyNameReferenceStateUnitLabel,
         ]
         return patterns, select_vars
-    
+
     def _try_convert_species_haspropertyvalue_triple(self, pattern: GraphPattern):
         try:
             """?Species os:has{PropertyName}/os:value ?{PropertyName}Value ."""
@@ -110,7 +111,7 @@ class OSSparqlCompact2VerboseConverter:
             return self._make_species_hasproperty_patterns(key)
         except AssertionError:
             return None
-        
+
     def _try_convert_species_hasproperty_triple(self, pattern: GraphPattern):
         try:
             """?Species os:has{PropertyName} ?{PropertyName} ."""
@@ -136,7 +137,7 @@ class OSSparqlCompact2VerboseConverter:
             assert isinstance(pattern, TriplePattern)
             assert pattern.subj == "?Species"
             assert len(pattern.tails) == 1
-            
+
             predicate, obj = pattern.tails[0]
             assert predicate == "?hasPropertyName"
             assert obj == "?PropertyName"
@@ -150,7 +151,7 @@ class OSSparqlCompact2VerboseConverter:
             BIND(STRAFTER(STR(?hasPropertyName),'#has') AS ?PropertyLabel)
             """
             patterns: List[GraphPattern] = [
-                pattern, 
+                pattern,
                 TriplePattern(
                     "?PropertyName",
                     tails=[
@@ -199,27 +200,29 @@ class OSSparqlCompact2VerboseConverter:
             ?Species os:has{IdentifierName} ?{IdentifierName} .
             ?{IdentifierName} os:value ?{IdentifierName}Value .
             """
-            var_IdentifierNameValue = "?{IdentifierName}Value".format(IdentifierName=key)
+            var_IdentifierNameValue = "?{IdentifierName}Value".format(
+                IdentifierName=key
+            )
             patterns = [
-                pattern, 
+                pattern,
                 TriplePattern.from_triple(
                     "?" + key,
                     "os:value",
                     var_IdentifierNameValue,
-                )
+                ),
             ]
             select_vars = [var_IdentifierNameValue]
             return patterns, select_vars
         except AssertionError:
             return None
 
-    def _try_convert_species_hasidentifierabstract_triple(self, pattern:GraphPattern):
+    def _try_convert_species_hasidentifierabstract_triple(self, pattern: GraphPattern):
         try:
             """?Species ?hasIdentifierName ?IdentifierName ."""
             assert isinstance(pattern, TriplePattern)
             assert pattern.subj == "?Species"
             assert len(pattern.tails) == 1
-            
+
             predicate, obj = pattern.tails[0]
             assert predicate == "?hasIdentifierName"
             assert obj == "?IdentifierName"
@@ -231,7 +234,7 @@ class OSSparqlCompact2VerboseConverter:
             """
             var_IdentifierNameValue = "?IdentifierNameValue"
             patterns = [
-                pattern, 
+                pattern,
                 TriplePattern.from_triple(
                     "?IdentifierName",
                     "os:value",
@@ -240,7 +243,7 @@ class OSSparqlCompact2VerboseConverter:
                 BindClause(
                     exprn="STRAFTER(STR(?hasIdentifierName),'#has')",
                     var="?IdentifierLabel",
-                )
+                ),
             ]
             select_vars = [var_IdentifierNameValue]
             return patterns, select_vars
@@ -256,23 +259,23 @@ class OSSparqlCompact2VerboseConverter:
 
             predicate, obj = pattern.tails[0]
             assert predicate == "os:hasChemicalClass/rdfs:label"
-            assert (obj.startswith('"') and obj.endswith('"')) or obj == "?ChemicalClassLabel"
-            
+            assert (
+                obj.startswith('"') and obj.endswith('"')
+            ) or obj == "?ChemicalClassLabel"
+
             """
             ?Species (a|!a)+ [ rdf:type os:ChemicalClass ; rdfs:label {label} ] .
             """
             return TriplePattern.from_triple(
                 "?Species",
                 "(a|!a)+",
-                "[ rdf:type os:ChemicalClass ; rdfs:label {label} ]".format(
-                    label=obj
-                ),
+                "[ rdf:type os:ChemicalClass ; rdfs:label {label} ]".format(label=obj),
             )
         except AssertionError:
             return None
 
     def convert(self, sparql_compact: SparqlQuery):
-        graph_patterns = list(sparql_compact.graph_patterns)
+        graph_patterns = list(sparql_compact.where_clause.graph_patterns)
         graph_patterns.reverse()
 
         select_vars_verbose = list(sparql_compact.select_clause.vars)
@@ -293,7 +296,7 @@ class OSSparqlCompact2VerboseConverter:
                 select_vars_verbose.extend(select_vars)
                 graph_patterns_verbose.extend(patterns)
                 continue
-            
+
             optional = self._try_convert_species_haspropertyvalue_triple(pattern)
             if optional is not None:
                 patterns, select_vars = optional
@@ -328,7 +331,7 @@ class OSSparqlCompact2VerboseConverter:
                 select_vars_verbose.extend(select_vars)
                 graph_patterns_verbose.extend(patterns)
                 continue
-            
+
             optional = self._try_convert_species_haschemclasslabel_triple(pattern)
             if optional is not None:
                 graph_patterns_verbose.append(optional)
@@ -340,5 +343,6 @@ class OSSparqlCompact2VerboseConverter:
             select_clause=SelectClause(
                 solution_modifier="DISTINCT", vars=select_vars_verbose
             ),
-            graph_patterns=graph_patterns_verbose,
+            where_clause=WhereClause(graph_patterns_verbose),
+            solultion_modifier=sparql_compact.solultion_modifier,
         )

@@ -4,6 +4,7 @@ from core.sparql.graph_pattern import (
     GraphPattern,
     TriplePattern,
 )
+from core.sparql.where_clause import WhereClause
 
 
 class OCCSparqlCompact2VerboseConverter:
@@ -106,24 +107,28 @@ class OCCSparqlCompact2VerboseConverter:
                     ),
                 ]
                 select_vars = [result_value_var, result_unit_var]
+            else:
+                raise AssertionError()
             return patterns, select_vars
 
         except AssertionError:
             return None
 
     def convert(self, sparql_compact: SparqlQuery):
-        graph_patterns = list(sparql_compact.graph_patterns)
-        graph_patterns.reverse()
+        select_vars_verbose = []
+        if "?BasisSetLabel" not in sparql_compact.select_clause.vars:
+            select_vars_verbose.append("?BasisSetLabel")
+        if "?LevelOfTheoryLabel" not in sparql_compact.select_clause.vars:
+            select_vars_verbose.append("?LevelOfTheoryLabel")
+        select_vars_verbose += list(sparql_compact.select_clause.vars)
 
-        select_vars_verbose = ["?BasisSetLabel", "?LevelOfTheoryLabel"] + list(sparql_compact.select_clause.vars)
         graph_patterns_verbose = []
-
         basisset_pattern = TriplePattern.from_triple(
             "?MolecularComputation",
             "occ:hasMethodology/occ:hasBasisSet/rdfs:label",
             "?BasisSetLabel"
         )
-        if basisset_pattern not in graph_patterns:
+        if basisset_pattern not in sparql_compact.graph_patterns:
             graph_patterns_verbose.append(basisset_pattern)
         
         leveloftheory_pattern = TriplePattern.from_triple(
@@ -131,12 +136,10 @@ class OCCSparqlCompact2VerboseConverter:
             "occ:hasMethodology/occ:hasLevelOfTheory/rdfs:label",
             "?LevelOfTheoryLabel"
         )
-        if leveloftheory_pattern not in graph_patterns:
+        if leveloftheory_pattern not in sparql_compact.where_clause.graph_patterns:
             graph_patterns_verbose.append(leveloftheory_pattern)
 
-        while len(graph_patterns) > 0:
-            pattern = graph_patterns.pop()
-
+        for pattern in reversed(sparql_compact.where_clause.graph_patterns):
             optional = self._try_convert_molcomp_hasresult_triple(pattern)
             if optional is not None:
                 patterns, select_vars = optional
@@ -150,5 +153,6 @@ class OCCSparqlCompact2VerboseConverter:
             select_clause=SelectClause(
                 solution_modifier="DISTINCT", vars=select_vars_verbose
             ),
-            graph_patterns=graph_patterns_verbose,
+            where_clause=WhereClause(graph_patterns_verbose),
+            solultion_modifier=sparql_compact.solultion_modifier
         )

@@ -3,8 +3,11 @@ torchrun \
     --model_path google/flan-t5-small \
     --train_data_path train.json \
     --eval_data_path dev.json \
+    --target_max_len 1024 \
     --domain ontospecies \
     --output_dir outputs \
+    --predict_with_generate \
+    --generation_max_length 1024 \
     --do_train \
     --do_eval \
     --per_device_train_batch_size 8 \

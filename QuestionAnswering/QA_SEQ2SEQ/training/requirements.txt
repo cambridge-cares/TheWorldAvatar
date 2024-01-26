@@ -1,5 +1,7 @@
 torch
 transformers[torch]
+evaluate
+sacrebleu
 optimum[onnxruntime]
 datasets
 wandb

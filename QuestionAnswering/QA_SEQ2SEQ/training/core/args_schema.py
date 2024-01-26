@@ -10,7 +10,7 @@ class ModelArguments:
     )
     model_format: str = field(
         default="hf",
-        metadata={"help": "`hf` (Hugging Face), `ort` (ONNX Runtime)."},
+        metadata={"help": "`hf` (Hugging Face), `onnx`."},
     )
 
 @dataclass

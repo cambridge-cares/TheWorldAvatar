@@ -8,6 +8,8 @@ from core.sparql.graph_pattern import (
     TriplePattern,
     ValuesClause,
 )
+from core.sparql.solution_modifier import GroupClause, SolutionModifier
+from core.sparql.where_clause import WhereClause
 
 
 class OKSparqlCompact2VerboseConverter:
@@ -50,7 +52,9 @@ class OKSparqlCompact2VerboseConverter:
             return (
                 isinstance(pattern, TriplePattern)
                 and pattern.subj == "?Mechanism"
-                and any(pred == "okin:hasProvenance/op:hasDOI" for pred, _ in pattern.tails)
+                and any(
+                    pred == "okin:hasProvenance/op:hasDOI" for pred, _ in pattern.tails
+                )
             )
 
         if topic_entity_type == "Species":
@@ -70,9 +74,7 @@ class OKSparqlCompact2VerboseConverter:
 
         entity_types = self._get_types_topicentities_selectvars(query)
         for entity_type in entity_types:
-            is_entity_grounded = self._is_entity_grounded(
-                query, entity_types
-            )
+            is_entity_grounded = self._is_entity_grounded(query, entity_types)
             if entity_type == "Species":
                 if is_entity_grounded:
                     patterns.append(
@@ -94,7 +96,9 @@ class OKSparqlCompact2VerboseConverter:
             elif entity_type == "Reaction":
                 if is_entity_grounded:
                     patterns.append(
-                        TriplePattern.from_triple("?Reaction", "a", "okin:GasPhaseReaction")
+                        TriplePattern.from_triple(
+                            "?Reaction", "a", "okin:GasPhaseReaction"
+                        )
                     )
                 else:
                     patterns.append(
@@ -337,13 +341,21 @@ class OKSparqlCompact2VerboseConverter:
                     ],
                 ),
             ]
-            arrheniusmodel_vars = ["?ActivationEnergyValue", "?ActivationEnergyUnit", "?ArrheniusFactorValue", "?ArrheniusFactorUnit", "?TemperatureExponentialValue"]
-            
+            arrheniusmodel_vars = [
+                "?ActivationEnergyValue",
+                "?ActivationEnergyUnit",
+                "?ArrheniusFactorValue",
+                "?ArrheniusFactorUnit",
+                "?TemperatureExponentValue",
+            ]
+
             multiarrheniusmodel_patterns = [
                 ValuesClause(
                     var="?KineticModelType", values=["okin:MultiArrheniusModel"]
                 ),
-                TriplePattern.from_triple("?KineticModel","okin:hasArrheniusModel", "?ArrheniusModel"),
+                TriplePattern.from_triple(
+                    "?KineticModel", "okin:hasArrheniusModel", "?ArrheniusModel"
+                ),
                 TriplePattern(
                     subj="?ArrheniusModel",
                     tails=[
@@ -362,7 +374,14 @@ class OKSparqlCompact2VerboseConverter:
                     ],
                 ),
             ]
-            multiarrheniusmodel_vars = ["?ArrheniusModel", "?ActivationEnergyValue", "?ActivationEnergyUnit", "?ArrheniusFactorValue", "?ArrheniusFactorUnit", "?TemperatureExponentialValue"]
+            multiarrheniusmodel_vars = [
+                "?ArrheniusModel",
+                "?ActivationEnergyValue",
+                "?ActivationEnergyUnit",
+                "?ArrheniusFactorValue",
+                "?ArrheniusFactorUnit",
+                "?TemperatureExponentValue",
+            ]
 
             falloffmodel_patterns = [
                 ValuesClause(
@@ -373,10 +392,18 @@ class OKSparqlCompact2VerboseConverter:
                         "okin:TroeModel",
                     ],
                 ),
-                OptionalClause([
-                    TriplePattern.from_triple("?KineticMode", "okin:hasCollider", "[ rdfs:label ?ColliderLabel ; okin:hasEfficiency ?ColliderEfficiency ]")
-                ]),
-                TriplePattern.from_triple("?KineticModel", "okin:hasArrheniusLowModel", "?ArrheniusLowModel"),
+                OptionalClause(
+                    [
+                        TriplePattern.from_triple(
+                            "?KineticMode",
+                            "okin:hasCollider",
+                            "[ rdfs:label ?ColliderLabel ; okin:hasEfficiency ?ColliderEfficiency ]",
+                        )
+                    ]
+                ),
+                TriplePattern.from_triple(
+                    "?KineticModel", "okin:hasArrheniusLowModel", "?ArrheniusLowModel"
+                ),
                 TriplePattern(
                     subj="?ArrheniusLowModel",
                     tails=[
@@ -394,67 +421,120 @@ class OKSparqlCompact2VerboseConverter:
                         ),
                     ],
                 ),
-                OptionalClause([
-                    TriplePattern.from_triple("?KineticModel", "okin:hasArrheniusLowModel", "?ArrheniusHighModel"),
-                    TriplePattern(
-                        subj="?ArrheniusHighModel",
-                        tails=[
-                            (
-                                "okin:hasActivationEnergy",
-                                "[ okin:value ?ActivationEnergyHighValue ; okin:unit ?ActivationEnergyHighUnit ]",
-                            ),
-                            (
-                                "okin:hasArrheniusFactor",
-                                "[ okin:value ?ArrheniusFactorHighValue ; okin:unit ?ArrheniusFactorHighUnit ]",
-                            ),
-                            (
-                                "okin:hasTemperatureExponent/okin:value",
-                                "?TemperatureExponentHighValue",
-                            ),
-                        ],
-                    ),
-                    OptionalClause([
+                OptionalClause(
+                    [
+                        TriplePattern.from_triple(
+                            "?KineticModel",
+                            "okin:hasArrheniusLowModel",
+                            "?ArrheniusHighModel",
+                        ),
                         TriplePattern(
-                        subj="?KineticModel",
-                        tails=[
-                            ("okin:hasAlpha/okin:value", "?AlphaValue"),
-                            ("okin:hasT1/okin:value", "?T1Value"),
-                            ("okin:hasT2/okin:value", "?T2Value"),
-                            ("okin:hasT3/okin:value", "?T3Value"),
-                        ],
-                    ),
-                    ])
-                ]),
+                            subj="?ArrheniusHighModel",
+                            tails=[
+                                (
+                                    "okin:hasActivationEnergy",
+                                    "[ okin:value ?ActivationEnergyHighValue ; okin:unit ?ActivationEnergyHighUnit ]",
+                                ),
+                                (
+                                    "okin:hasArrheniusFactor",
+                                    "[ okin:value ?ArrheniusFactorHighValue ; okin:unit ?ArrheniusFactorHighUnit ]",
+                                ),
+                                (
+                                    "okin:hasTemperatureExponent/okin:value",
+                                    "?TemperatureExponentHighValue",
+                                ),
+                            ],
+                        ),
+                        OptionalClause(
+                            [
+                                TriplePattern(
+                                    subj="?KineticModel",
+                                    tails=[
+                                        ("okin:hasAlpha/okin:value", "?AlphaValue"),
+                                        ("okin:hasT1/okin:value", "?T1Value"),
+                                        ("okin:hasT2/okin:value", "?T2Value"),
+                                        ("okin:hasT3/okin:value", "?T3Value"),
+                                    ],
+                                ),
+                            ]
+                        ),
+                    ]
+                ),
             ]
             falloffmodel_vars = [
-                "?ColliderLabel", "?ColliderEfficiency", 
-                "?ActivationEnergyLowValue", "?ActivationEnergyLowUnit", "?ArrheniusFactorLowValue", "?ArrheniusFactorLowUnit", "?TemperatureExponentLowValue",
-                "?ActivationEnergyHighValue", "?ActivationEnergyHighUnit", "?ArrheniusFactorHighValue", "?ArrheniusFactorHighUnit", "?TemperatureExponentHighValue",
-                "?AlphaValue", "?T1Value", "?T2Value", "?T3Value"
+                "?ColliderLabel",
+                "?ColliderEfficiency",
+                "?ActivationEnergyLowValue",
+                "?ActivationEnergyLowUnit",
+                "?ArrheniusFactorLowValue",
+                "?ArrheniusFactorLowUnit",
+                "?TemperatureExponentLowValue",
+                "?ActivationEnergyHighValue",
+                "?ActivationEnergyHighUnit",
+                "?ArrheniusFactorHighValue",
+                "?ArrheniusFactorHighUnit",
+                "?TemperatureExponentHighValue",
+                "?AlphaValue",
+                "?T1Value",
+                "?T2Value",
+                "?T3Value",
             ]
 
             patterns: List[GraphPattern] = [
                 pattern,
                 TriplePattern.from_triple("?KineticModel", "a", "?KineticModelType"),
-                BindClause(exprn='STRAFTER(STR(?KineticModelType), "#")', var="?ModelType"),
+                BindClause(
+                    exprn='STRAFTER(STR(?KineticModelType), "#")', var="?ModelType"
+                ),
                 OptionalClause(arrheniusmodel_patterns),
                 OptionalClause(multiarrheniusmodel_patterns),
                 OptionalClause(falloffmodel_patterns),
             ]
-            select_vars = ["?ModelType"] + list(set(arrheniusmodel_vars).union(set(multiarrheniusmodel_vars)).union(set(falloffmodel_vars)))
+            select_vars = ["?ModelType"] + list(
+                set(arrheniusmodel_vars)
+                .union(set(multiarrheniusmodel_vars))
+                .union(set(falloffmodel_vars))
+            )
 
             return patterns, select_vars
         except AssertionError:
             return None
 
+    def _sample_rxn_eqn(self, query: SparqlQuery):
+        if "?ReactionEquation" not in query.select_clause.vars:
+            return query
+
+        vars = [
+            x
+            if x != "?ReactionEquation"
+            else "(SAMPLE(?ReactionEquation) AS ?SampledReactionEquation)"
+            for x in query.select_clause.vars
+        ]
+        return SparqlQuery(
+            select_clause=SelectClause(
+                vars=vars, solution_modifier=query.select_clause.solution_modifier
+            ),
+            where_clause=query.where_clause,
+            solultion_modifier=SolutionModifier(
+                group_clause=GroupClause(
+                    query.solultion_modifier.group_clause.vars
+                    + [x for x in query.select_clause.vars if x != "?ReactionEquation"]
+                ),
+                order_clause=query.solultion_modifier.order_clause,
+                limit_clause=query.solultion_modifier.limit_clause,
+            ),
+        )
+
     def convert(self, sparql_compact: SparqlQuery):
-        graph_patterns = list(sparql_compact.graph_patterns)
+        graph_patterns = list(sparql_compact.where_clause.graph_patterns)
         graph_patterns.reverse()
 
         select_vars_verbose = list(sparql_compact.select_clause.vars)
         graph_patterns_verbose = []
 
-        patterns, select_vars = self.add_type_and_label_for_select_entities(sparql_compact)
+        patterns, select_vars = self.add_type_and_label_for_select_entities(
+            sparql_compact
+        )
         graph_patterns_verbose.extend(patterns)
         select_vars_verbose.extend(select_vars)
 
@@ -484,9 +564,11 @@ class OKSparqlCompact2VerboseConverter:
 
             graph_patterns_verbose.append(pattern)
 
-        return SparqlQuery(
+        sparql_verbose = SparqlQuery(
             select_clause=SelectClause(
                 solution_modifier="DISTINCT", vars=select_vars_verbose
             ),
-            graph_patterns=graph_patterns_verbose,
+            where_clause=WhereClause(graph_patterns_verbose),
+            solultion_modifier=sparql_compact.solultion_modifier,
         )
+        return self._sample_rxn_eqn(sparql_verbose)
