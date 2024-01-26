@@ -1,0 +1,8 @@
+torch
+transformers[torch]
+optimum[onnxruntime]
+datasets
+wandb
+tqdm
+sentence-transformers
+levenshtein

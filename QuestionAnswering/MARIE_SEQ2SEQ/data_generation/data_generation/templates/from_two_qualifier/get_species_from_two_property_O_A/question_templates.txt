@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} lower than {minvalue1} and higher than {maxvalue1} and {PropertyName2} around {value2}
+Provide a roster of chemical species having {PropertyName1} below {minvalue1} and above {maxvalue1}, with {PropertyName2} approximately at {value2}.
+Enumerate molecules exhibiting {PropertyName1} lesser than {minvalue1} and greater than {maxvalue1}, alongside {PropertyName2} roughly at {value2}.
+List compounds where {PropertyName1} falls below {minvalue1} and above {maxvalue1}, and {PropertyName2} is approximately {value2}.
+Offer a compilation of species featuring {PropertyName1} lower than {minvalue1} and higher than {maxvalue1}, while maintaining {PropertyName2} at approximately {value2}.
+Present a catalog of chemical entities with {PropertyName1} beneath {minvalue1} and above {maxvalue1}, and {PropertyName2} centered around {value2}.
+Enlist molecules demonstrating {PropertyName1} below {minvalue1} and above {maxvalue1}, with {PropertyName2} roughly at {value2}.
+Detail compounds exhibiting {PropertyName1} lesser than {minvalue1} and greater than {maxvalue1}, while maintaining {PropertyName2} around {value2}.
+Provide a list of species showing {PropertyName1} lower than {minvalue1} and higher than {maxvalue1}, with {PropertyName2} situated near {value2}.
+Offer a roster of chemical species with {PropertyName1} below {minvalue1} and above {maxvalue1}, and {PropertyName2} approximately at {value2}.
+Enumerate molecules having {PropertyName1} beneath {minvalue1} and above {maxvalue1}, alongside {PropertyName2} approximately at {value2}.
+List compounds exhibiting {PropertyName1} lower than {minvalue1} and higher than {maxvalue1}, while {PropertyName2} revolves around {value2}.
+Provide a compilation of species demonstrating {PropertyName1} below {minvalue1} and above {maxvalue1}, with {PropertyName2} roughly at {value2}.
+Present a catalog of chemical entities featuring {PropertyName1} lesser than {minvalue1} and greater than {maxvalue1}, and {PropertyName2} centered around {value2}.
+Enlist molecules showing {PropertyName1} below {minvalue1} and above {maxvalue1}, alongside {PropertyName2} approximately at {value2}.
+Detail compounds with {PropertyName1} beneath {minvalue1} and greater than {maxvalue1}, while {PropertyName2} stays close to {value2}.
+Provide a list of species indicating {PropertyName1} lower than {minvalue1} and higher than {maxvalue1}, with {PropertyName2} roughly at {value2}.
+Offer a roster of chemical species displaying {PropertyName1} below {minvalue1} and above {maxvalue1}, with {PropertyName2} approximately at {value2}.
+Enumerate molecules having {PropertyName1} lesser than {minvalue1} and greater than {maxvalue1}, while {PropertyName2} is around {value2}.
+List compounds demonstrating {PropertyName1} below {minvalue1} and above {maxvalue1}, and {PropertyName2} approximately {value2}.
+Present a compilation of species with {PropertyName1} lower than {minvalue1} and higher than {maxvalue1}, and {PropertyName2} centered around {value2}.
