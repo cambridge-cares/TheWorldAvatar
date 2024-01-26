@@ -24,8 +24,8 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 public class BuildingIdentificationAgent extends JPSAgent {
 
     public static final String KEY_REQ_URL = "requestUrl";
-    public static final String URI_ARRAY = "array";
-    public static final String URI_TABLE = "table";
+    public static final String URI_ARRAY = "/array";
+    public static final String URI_TABLE = "/table";
     public static final String KEY_DISTANCE = "maxDistance";
     public static final String KEY_COORD = "coordinates";
     public static final String KEY_SRID = "srid";
