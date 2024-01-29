@@ -23,29 +23,17 @@ router = APIRouter()
 
 CHATBOT_ENDPOINT = os.getenv("CHATBOT_ENDPOINT", "http://localhost:8001/v1")
 logger.info("Connecting to chatbot at endpoint: " + CHATBOT_ENDPOINT)
-chatbot_client = OpenAI(base_url=CHATBOT_ENDPOINT, api_key="placeholder")
+chatbot_client = OpenAI(base_url=CHATBOT_ENDPOINT, api_key=os.getenv("OPENAI_API_KEY"))
 
 with resources.as_file(
     resources.files("resources.common").joinpath("tokenizer.model")
 ) as path:
     sp = spm.SentencePieceProcessor(model_file=str(path))
 
-PROMPT_TEMPLATE_FULL_DATA = '''
-Query: """
-{query}
-"""
+prompt_template = json.loads(
+    resources.files("resources.common").joinpath("prompt_template.json").read_text()
+)
 
-Data: """
-{data}
-""""'''
-PROMPT_TEMPLATE_TRUNCATED_DATA = '''
-Query: """
-{query}
-"""
-
-Truncated data: """
-{data}
-""""'''
 CHARS_PER_TOKEN = 4
 TOKENS_LIMIT = int(os.getenv("CHAT_TOKENS_LIMIT", 500))
 
@@ -79,7 +67,7 @@ def binary_search(low: int, high: int, fn: Callable[[int], int], target: int):
 
 
 def make_chatbot_response_stream(question: str, data: str):
-    content = PROMPT_TEMPLATE_FULL_DATA.format(query=question, data=data)
+    content = prompt_template["user"].format(question=question, data=data)
 
     if get_tokens_num(content) > TOKENS_LIMIT:
         logger.info(
@@ -87,7 +75,7 @@ def make_chatbot_response_stream(question: str, data: str):
                 num=TOKENS_LIMIT
             )
         )
-        content = PROMPT_TEMPLATE_TRUNCATED_DATA.format(query=question, data=data)
+        content = prompt_template["user"].format(question=question, data=data)
         truncate_idx = binary_search(
             low=0,
             high=len(content),
@@ -97,11 +85,11 @@ def make_chatbot_response_stream(question: str, data: str):
         content = content[:truncate_idx]
 
     return chatbot_client.chat.completions.create(
-        model="placeholder",
+        model=os.getenv("CHATBOT_MODEL"),
         messages=[
             {
                 "role": "system",
-                "content": "You are a chatbot that succinctly responds to user queries based on the provided data.",
+                "content": prompt_template["system"],
             },
             {
                 "role": "user",
