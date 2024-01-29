@@ -13,7 +13,8 @@
             "Which buildings are located in postcode PE30 2DH?",
 
             "Find me all hospitals",
-            "Please give me buildings with mixed residential and office use, where residential accounts for at least 65% of the building usage"
+            "Please give me buildings with mixed residential and office use, where at least 65% of the building is for residence",
+            "What are the 3 post codes with the lowest average building price?"
         ]
     }
 ]
