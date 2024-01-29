@@ -47,32 +47,45 @@ class Translator:
         self,
         model_args: ModelArguments,
         max_new_tokens: int = 256,
-        domain: Optional[str] = None
+        domain: Optional[str] = None,
+        embedding_model_path: Optional[str] = None
     ):
         self.model = ModelWrapper(model_args, max_new_tokens=max_new_tokens)
         self.domain = domain
-        self.domain2postprocessor: Dict[str, PostProcessor] = dict(
-            ontospecies=OSPostProcessor(),
-            ontokin=OKPostProcessor(),
-            ontocompchem=OCCPostProcessor(),
-            ontobuiltenv=OBEPostProcessor()
-        )
+        self.domain2postprocessor: Dict[str, PostProcessor] = dict()
 
     def get_domain(self, question: str):
         if self.domain is not None:
             return self.domain
         return self.model.forward(T5_PREFIX_DOMAINCLS + question)
+    
+    def get_postprocessor(self, domain: str):
+        if domain not in self.domain2postprocessor:
+            if domain == "ontospecies":
+                pp = OSPostProcessor(embedding_model_path=self.embedding_model_path)
+            elif domain == "ontokin":
+                pp = OKPostProcessor()
+            elif domain == "ontocompchem":
+                pp = OCCPostProcessor()
+            elif domain == "ontobuiltenv":
+                pp = OBEPostProcessor()
+            else:
+                raise ValueError("Unrecognised domain: " + domain)
+            self.domain2postprocessor[domain] = pp
+        return self.domain2postprocessor[domain]
 
     def nl2sparql(self, question: str):
         question_encoded = preprocess_nl(question)
 
         domain = self.get_domain(question_encoded)
+        postprocessor = self.get_postprocessor(domain)
+
         pred_raw = self.model.forward(T5_PREFIX_NL2SPARQL + question_encoded)
         pred_decoded = postprocess_sparql(pred_raw)
 
         try:
             pred_decoded_parsed = SparqlQuery.fromstring(pred_decoded)
-            pred_verbose = self.domain2postprocessor[domain].postprocess(
+            pred_verbose = postprocessor.postprocess(
                 query=pred_decoded_parsed, nlq=question
             )
             pred_verbose_str = str(pred_verbose)
