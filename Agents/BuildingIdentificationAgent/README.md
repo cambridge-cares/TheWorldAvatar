@@ -1,7 +1,7 @@
 # Building Identification Agent
 
 
-The Building Identification Agent takes a list of geospatial coordinates as input. These coordinates can specified as part of the JSONObject sent in the POST request to this agent. Alternatively, the user can store these coordinates as Point geometries in a PostgreSQL table and specify the name of this table. The agent retrieves the Universally Unique Identifier (UUID) of the building nearest to each point by querying buildings footprint data from the 'citydb' schema of the 'postgres' database in the stack. If the input is a list of coordinates, the full IRIs of the matched buildings are returned within a JSONObject. If the point geometries were queried from a user-specified PostgreSQL table, only the UUIDs are retuned without any prefix. In this case, these UUIDs will also be appended as a column with the name 'building_id' to the same table. This 'building_id' column will have the character varying PostgreSQL data type.
+The Building Identification Agent takes a list of geospatial coordinates as input. These coordinates can specified as part of the JSONObject sent in the POST request to this agent. Alternatively, the user can store these coordinates as Point geometries in a PostgreSQL table and specify the name of this table. The agent retrieves the Universally Unique Identifier (UUID) of the building nearest to each point by querying buildings footprint data from the 'citydb' schema of the 'postgres' database in the stack. These UUIDs are returned within a JSONObject. If the point geometries were queried from a user-specified PostgreSQL table, these UUIDs will also be appended as a column with the name 'building_id' to the same table. This 'building_id' column will have the character varying PostgreSQL data type.
 
 
 ## 1. Agent Deployment
@@ -50,18 +50,17 @@ This endpoint should be used if the user wishes to specify a list of coordinates
 - ```coordinates```: The value of this parameter should be a 2D JSONArray containing the coordinates of the points to be matched. 
 - ```maxDistance``` (Optional): The maximum allowable distance between the centre of the matched building footprint and the specified coordinates in meters. If the nearest building is further than ```maxDistance```, the matching still takes place but a warning is printed in the Docker logs. The default value of this parameter is 100 meters.
 - ```srid``` (Optional): An integer specifying the coordinate reference system of the input coordinates. The input coordinates will be converted to the SRID corresponding to the buildings data in the citydb schema as required. If the value of this parameter is not specified, a default value of 4326 is assumed.
-- ```iriPrefix``` (Optional): A string specifying the prefix for the building IRIs. The default value is "http://www.theworldavatar.com/kg/singapore/buildings/Buildings_".
 
 The following is an example POST request for the location route :
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","srid":"4326","iriPrefix":"http://www.theworldavatar.com/kg/sg/buildings/Buildings_","coordinates":[[103.67455581177452, 1.2711156279472327], [103.68455581177452, 1.2611156279472327]]}'  "localhost:3838/buildingidentificationagent/location"
+curl -X POST -H "Content-Type: application/json" -d '{"maxDistance":"100.0","srid":"4326","coordinates":[[103.67455581177452, 1.2711156279472327], [103.68455581177452, 1.2611156279472327]]}'  "localhost:3838/buildingidentificationagent/location"
 ```
 
-Upon successful completion, the agent returns a JSONObject indicating the number of buildings matched and their corresponding IRIs. The following is a representative example: 
+Upon successful completion, the agent returns a JSONObject indicating the number of buildings matched and their corresponding UUIDs. The following is a representative example: 
 
 ```
-{"number_matched":2,"building_iri":["http://www.theworldavatar.com/kg/sg/buildings/Buildings_UUID_fe4d706f-eb92-4382-ba38-9b953af41301","http://www.theworldavatar.com/kg/sg/buildings/Buildings_UUID_b86a1c8a-84b8-4ce9-8df6-72016de1fb54]}
+{"number_matched":2,"building_iri":["UUID_fe4d706f-eb92-4382-ba38-9b953af41301","UUID_b86a1c8a-84b8-4ce9-8df6-72016de1fb54"]}
 ```
 
 ### 2.2 Postgis route (http://localhost:3838/buildingidentificationagent/postgis)
