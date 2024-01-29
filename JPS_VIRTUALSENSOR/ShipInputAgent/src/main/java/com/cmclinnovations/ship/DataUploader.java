@@ -50,6 +50,10 @@ public class DataUploader {
         // object
         queryClient.setShipIRIs(ships);
 
+        // update value of ship type if they were initialised without a ship type in
+        // previous updates
+        queryClient.updateShipType(ships.stream().filter(s -> s.getShipType() != 0).collect(Collectors.toList()));
+
         // sets course, speed, location measure IRI in ship objects to be used later
         queryClient.setMeasureIri(ships);
 

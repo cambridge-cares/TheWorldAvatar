@@ -405,7 +405,48 @@ public class QueryClient {
         }
     }
 
-    void updateLatestValues(List<Ship> ships) {
+    /**
+     * update value of ship type if previous value is 0
+     * 
+     * @param ships
+     */
+    void updateShipType(List<Ship> shipsWithShipType) {
+        Map<String, Ship> iriToShipMap = new HashMap<>();
+        shipsWithShipType.forEach(s -> iriToShipMap.put(s.getIri(), s));
 
+        SelectQuery query = Queries.SELECT();
+
+        Variable shipVar = query.var();
+        Variable shipPropertyVar = query.var();
+        Variable shipPropertyValueVar = query.var();
+
+        ValuesPattern<Iri> valuesPattern = new ValuesPattern<>(shipVar,
+                shipsWithShipType.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
+
+        GraphPattern queryPattern = GraphPatterns.and(shipVar.has(HAS_PROPERTY, shipPropertyVar),
+                shipPropertyVar.isA(SHIP_TYPE).andHas(HAS_VALUE, shipPropertyValueVar),
+                shipPropertyValueVar.has(HAS_NUMERICALVALUE, 0));
+
+        query.where(queryPattern, valuesPattern).prefix(P_DISP, P_OM);
+
+        // only ships with previous value of shiptype = 0 will appear here
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        Map<String, Integer> valueIriToValueMap = new HashMap<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            String shipIri = queryResult.getJSONObject(i).getString(shipVar.getQueryString().substring(1));
+            String valueIri = queryResult.getJSONObject(i)
+                    .getString(shipPropertyValueVar.getQueryString().substring(1));
+
+            valueIriToValueMap.put(valueIri, iriToShipMap.get(shipIri).getShipType());
+        }
+
+        if (!valueIriToValueMap.isEmpty()) {
+            ModifyQuery modify = Queries.MODIFY();
+            valueIriToValueMap.entrySet().forEach(entry -> modify.delete(iri(entry.getKey()).has(HAS_NUMERICALVALUE, 0))
+                    .insert(iri(entry.getKey()).has(HAS_NUMERICALVALUE, entry.getValue())));
+            modify.prefix(P_OM);
+            storeClient.executeUpdate(modify.getQueryString());
+        }
     }
 }
