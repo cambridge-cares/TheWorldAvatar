@@ -185,7 +185,7 @@ public class AssetDelete {
             "itemName",
             "itemType",
             "itemComment",
-            "ServiceCategoryIRI",
+            "BudgetCategoryIRI",
             "InvoiceIRI",
             "DeliveryOrderIRI",
             "PurchaseOrderIRI",
@@ -270,7 +270,7 @@ public class AssetDelete {
         LOGGER.info("DELETE query :: " + queryString);
         //ACTIVATE ONLY WHEN READY FOR PROD
         //AS WE ALL KNOW WHAT WILL HAPPEN WHEN THIS THING FAILS
-        storeClient.executeUpdate(queryString);
+        //storeClient.executeUpdate(queryString);
 
         //For when the target is the object
         if (isIRI(target)){
@@ -293,7 +293,7 @@ public class AssetDelete {
             LOGGER.info("DELETE query :: " + queryString);
             //ACTIVATE ONLY WHEN READY FOR PROD
             //AS WE ALL KNOW WHAT WILL HAPPEN WHEN THIS THING FAILS
-            storeClient.executeUpdate(queryString);
+            //storeClient.executeUpdate(queryString);
         }
 
     }
