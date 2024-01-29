@@ -26,6 +26,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
     public static final String KEY_COORD = "coordinates";
     public static final String KEY_SRID = "srid";
     public static final String KEY_TABLE = "table";
+    public static final String KEY_COLUMN = "column";
     public static final String KEY_SCHEMA = "schema";
     public static final String KEY_IRI_PREFIX = "iriPrefix";
     private static final String EPSG = "EPSG:";
@@ -71,6 +72,12 @@ public class BuildingIdentificationAgent extends JPSAgent {
             if (requestParams.has(KEY_SRID))
                 inputSrid = Integer.parseInt(requestParams.getString(KEY_SRID));
 
+            // Name of column containing user-specified geometries. Only applicable for
+            // postgis route.
+            String columnName = "geometry";
+            if (requestParams.has(KEY_COLUMN))
+                columnName = requestParams.getString(KEY_COLUMN);
+
             // Reset all variables
             // List of coordinates for which the nearest building needs to be identified
             List<List<Double>> locations = new ArrayList<>();
@@ -95,7 +102,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 numberBuildingsIdentified = buildings.size();
             } else if (requestParams.getString(KEY_REQ_URL).contains(ROUTE_POSTGIS)) {
                 String tableName = requestParams.getString(KEY_TABLE);
-                Map<Integer, String> buildings = linkBuildingsTable(maxDistance, tableName);
+                Map<Integer, String> buildings = linkBuildingsTable(maxDistance, tableName, columnName);
                 numberBuildingsIdentified = buildings.size();
                 updateBuildings(buildings, tableName);
                 responseObject.put(COLUMN_NAME, new JSONArray(buildings.values()));
@@ -218,7 +225,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
     }
 
-    private Map<Integer, String> linkBuildingsTable(double maxDistance, String tableName) {
+    private Map<Integer, String> linkBuildingsTable(double maxDistance, String tableName, String columnName) {
 
         Map<Integer, String> buildings = new HashMap<>();
 
@@ -226,7 +233,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 Statement stmt = conn.createStatement();) {
 
             String sqlString = String.format("SELECT ogc_fid, iri, dist FROM " +
-                    "(SELECT ogc_fid, geometry FROM %s) r1 " +
+                    "(SELECT ogc_fid, %s FROM %s) r1 " +
                     "LEFT JOIN LATERAL ( " +
                     " SELECT cityobject_genericattrib.strval AS iri, " +
                     " public.ST_DISTANCE(public.ST_TRANSFORM(r1.geometry, public.ST_SRID(citydb.cityobject.envelope)), citydb.cityobject.envelope) AS dist "
@@ -236,7 +243,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     +
                     " ORDER BY dist " +
                     " LIMIT 1 " +
-                    " ) r2 ON true;", tableName);
+                    " ) r2 ON true;", columnName, tableName);
             ResultSet result = stmt.executeQuery(sqlString);
 
             while (result.next()) {
