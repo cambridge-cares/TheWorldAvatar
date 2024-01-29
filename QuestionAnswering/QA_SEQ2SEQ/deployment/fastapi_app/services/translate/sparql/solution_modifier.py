@@ -35,11 +35,9 @@ class SolutionModifier(SparqlBase):
     limit_clause: Optional[LimitClause] = None
 
     def __str__(self):
-        return "{group_clause}\n{order_clause}\n{limit_clause}".format(
-            group_clause=self.group_clause,
-            order_clause=self.order_clause,
-            limit_clause=self.limit_clause,
-        )
+        clauses = [self.group_clause, self.order_clause, self.limit_clause]
+        clauses = [str(x) for x in clauses if x]
+        return "\n".join(clauses)
 
     @classmethod
     def extract(cls, sparql_fragment: str):

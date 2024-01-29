@@ -67,7 +67,7 @@ class OKSparqlCompact2VerboseConverter:
         else:
             checker = lambda _: False
 
-        return any(checker(pattern) for pattern in query.graph_patterns)
+        return any(checker(pattern) for pattern in query.where_clause.graph_patterns)
 
     def add_type_and_label_for_select_entities(self, query: SparqlQuery):
         patterns = []
@@ -518,11 +518,16 @@ class OKSparqlCompact2VerboseConverter:
             where_clause=query.where_clause,
             solultion_modifier=SolutionModifier(
                 group_clause=GroupClause(
-                    query.solultion_modifier.group_clause.vars
+                    (
+                        query.solultion_modifier.group_clause.vars
+                        if query.solultion_modifier
+                        and query.solultion_modifier.group_clause
+                        else []
+                    )
                     + [x for x in query.select_clause.vars if x != "?ReactionEquation"]
                 ),
-                order_clause=query.solultion_modifier.order_clause,
-                limit_clause=query.solultion_modifier.limit_clause,
+                order_clause=query.solultion_modifier.order_clause if query.solultion_modifier and query.solultion_modifier.order_clause else None,
+                limit_clause=query.solultion_modifier.limit_clause if query.solultion_modifier and query.solultion_modifier.limit_clause else None,
             ),
         )
 

@@ -127,7 +127,7 @@ class OCCSparqlCompact2VerboseConverter:
             "occ:hasMethodology/occ:hasBasisSet/rdfs:label",
             "?BasisSetLabel"
         )
-        if basisset_pattern not in sparql_compact.graph_patterns:
+        if basisset_pattern not in sparql_compact.where_clause.graph_patterns:
             graph_patterns_verbose.append(basisset_pattern)
         
         leveloftheory_pattern = TriplePattern.from_triple(
