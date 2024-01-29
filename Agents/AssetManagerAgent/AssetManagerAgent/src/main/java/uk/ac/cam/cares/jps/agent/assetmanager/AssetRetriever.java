@@ -304,9 +304,6 @@ public class AssetRetriever {
         );
         Variable itemNameLiteral = SparqlBuilder.var("itemName");
         Variable itemCommentLiteral = SparqlBuilder.var("itemComment");
-        Variable ServiceCategoryIRI = SparqlBuilder.var("ServiceCategoryIRI");
-        Variable ServiceCategoryNameLiteral = SparqlBuilder.var("ServiceCategoryName");
-        Variable ServiceCategoryTypeLiteral = SparqlBuilder.var("ServiceCategoryType");
         //invoice instances
         Variable InvoiceIRI = SparqlBuilder.var("InvoiceIRI");
         Variable InvoiceNumLiteral = SparqlBuilder.var("InvoiceNum");
@@ -324,13 +321,21 @@ public class AssetRetriever {
         Variable priceMeasureIRI = SparqlBuilder.var("priceMeasureIRI");
         Variable priceLiteral = SparqlBuilder.var("price");
         Variable priceCurrencyIRI = SparqlBuilder.var("currencyIRI");
+        //Budgets
+        Variable budgetCategoryIRI = SparqlBuilder.var("BudgetCategoryIRI");
+        Variable serviceCategoryIRI = SparqlBuilder.var("ServiceCategoryIRI");
+        Variable serviceCodeIRI = SparqlBuilder.var("ServiceCodeIRI");
+        Variable serviceCateogryLiteral = SparqlBuilder.var("ServiceCategory");
+        Variable serviceCodeLiteral = SparqlBuilder.var("ServiceCode");
         //QUERY
         //item data
         query.where(itemIRI.has(itemName, itemNameLiteral));
         query.where(itemIRI.has(RDFS.COMMENT, itemCommentLiteral));
-        query.where(itemIRI.has(hasAttribute, ServiceCategoryIRI));
-        query.where(ServiceCategoryIRI.has(attributeName, ServiceCategoryTypeLiteral));
-        query.where(ServiceCategoryIRI.has(attributeValue, ServiceCategoryNameLiteral));
+        query.where(itemIRI.has(purchasedUnder, budgetCategoryIRI));
+        query.where(budgetCategoryIRI.has(hasServiceCategory, serviceCategoryIRI));
+        query.where(serviceCategoryIRI.has(hasServiceCategoryIdentifier, serviceCateogryLiteral));
+        query.where(budgetCategoryIRI.has(hasServiceCode, serviceCodeIRI));
+        query.where(serviceCodeIRI.has(hasServiceCodeIdentifier, serviceCodeLiteral));
         //OPTIONAL QUERIES
 
         //Invoice, DO and PO
@@ -375,9 +380,11 @@ public class AssetRetriever {
         String[] keyArray = {
             "itemName",
             "itemComment",
+            "BudgetCategoryIRI",
             "ServiceCategoryIRI",
-            "ServiceCategoryName",
-            "ServiceCategoryType",
+            "ServiceCodeIRI",
+            "ServiceCategory",
+            "ServiceCode",
             "InvoiceIRI",
             "InvoiceNum",
             "InvoiceLineIRI",
