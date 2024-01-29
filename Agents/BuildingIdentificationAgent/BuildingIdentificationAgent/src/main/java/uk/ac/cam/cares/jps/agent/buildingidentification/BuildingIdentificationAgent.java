@@ -71,10 +71,6 @@ public class BuildingIdentificationAgent extends JPSAgent {
             if (requestParams.has(KEY_SRID))
                 inputSrid = Integer.parseInt(requestParams.getString(KEY_SRID));
 
-            String iriPrefix = "http://www.theworldavatar.com/kg/singapore/buildings/Buildings_";
-            if (requestParams.has(KEY_IRI_PREFIX))
-                iriPrefix = requestParams.getString(KEY_IRI_PREFIX);
-
             // Reset all variables
             // List of coordinates for which the nearest building needs to be identified
             List<List<Double>> locations = new ArrayList<>();
@@ -94,7 +90,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     List<Double> pointLocation = Arrays.asList(xyTransformed[0], xyTransformed[1]);
                     locations.add(pointLocation);
                 }
-                List<String> buildings = linkBuildingsArray(dbSrid, maxDistance, locations, iriPrefix);
+                List<String> buildings = linkBuildingsArray(dbSrid, maxDistance, locations);
                 responseObject.put(COLUMN_NAME, new JSONArray(buildings));
                 numberBuildingsIdentified = buildings.size();
             } else if (requestParams.getString(KEY_REQ_URL).contains(ROUTE_POSTGIS)) {
@@ -176,8 +172,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
      * @return None
      */
 
-    private List<String> linkBuildingsArray(int dbSrid, double maxDistance, List<List<Double>> locations,
-            String iriPrefix) {
+    private List<String> linkBuildingsArray(int dbSrid, double maxDistance, List<List<Double>> locations) {
 
         List<String> buildings = new ArrayList<>();
 
@@ -201,8 +196,10 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 ResultSet result = stmt.executeQuery(sqlString);
 
                 while (result.next()) {
+                    // The variable buildingIri actually contains just a UUID instead of the full
+                    // IRI.
                     String buildingIri = result.getString("iri");
-                    buildings.add(iriPrefix + buildingIri);
+                    buildings.add(buildingIri);
 
                     Double dist = result.getDouble("dist");
 
