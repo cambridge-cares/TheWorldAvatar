@@ -65,12 +65,13 @@ Upon successful completion, the agent returns a JSONObject indicating the number
 
 ### 2.2 Postgis route (http://localhost:3838/buildingidentificationagent/postgis)
 
-This endpoint should be used when the user has stored the coordinates that need to be matched as Point geometries in a PostgreSQL table. The column containing these geometries must have the name "geometry" and an associated SRID. The agent automatically converts the coordinates from the SRID in the user-specified table to the SRID used to store the building footprints in the "citydb" schema. The user-specified table must also have a column called 'ogc_fid' containing integers which are unique and non-null.
+This endpoint should be used when the user has stored the coordinates that need to be matched as Point geometries in a PostgreSQL table. If the name of the column containing these geometries is not specified, a default value of "geometry" is assumed. The geometries need to have an associated SRID. The agent automatically converts the coordinates from the SRID in the user-specified table to the SRID used to store the building footprints in the "citydb" schema. The user-specified table must also have a column called 'ogc_fid' containing integers which are unique and non-null.
 
 This endpoint accepts the following POST request parameters.  :
 
 - ```table```: The name of the PostgreSQL table containing the coordinates to be matched as POSTGIS Point geometries. If the table is not located within the "public" schema, the schema name should also be included. For example, if the table is called "test" and it is located in the "industry" schema, the value of this parameter should be specified as the string "industry.test". This table must be stored in a schema within the "postgres" database.
 - ```maxDistance``` (Optional): The maximum allowable distance between the centre of the matched building footprint and the specified coordinates in meters. If the nearest building is further than ```maxDistance```, the matching still takes place but a warning is printed in the Docker logs. The default value of this parameter is 100 meters.
+- ```column```: The column in the PostgreSQL table containing the geometries to be matched.
 
 The following is an example POST request for the postgis route, assuming that the user has created a table called "test" in a schema called "industry" with the required format :
 
