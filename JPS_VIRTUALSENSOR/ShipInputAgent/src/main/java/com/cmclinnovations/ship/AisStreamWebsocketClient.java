@@ -94,6 +94,12 @@ public class AisStreamWebsocketClient extends WebSocketClient {
             mmsiToShipMap.get(mmsi).setShipType(shipType);
         }
 
+        if (!metaData.getString("ShipName").trim().isBlank()) {
+            mmsiToShipMap.get(mmsi).setShipName(metaData.getString("ShipName").trim());
+        } else {
+            mmsiToShipMap.get(mmsi).setShipName("Ship" + mmsi);
+        }
+
         Duration elapsedTime = Duration.between(start, Instant.now());
 
         int uploadInterval = 10;
