@@ -25,10 +25,10 @@ LABEL version="1.0.0-SNAPSHOT"
 LABEL description="Example Digital Twin"
 
 # Install utilities
-RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix && apk cache clean
+RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix 
 
 # Install Apache and PHP
-RUN apk update && apk add apache2 php7-apache2 && apk cache clean
+RUN apk update && apk add apache2 php7-apache2 
 
 # Copy in the start-up script
 COPY ./docker/start-up.sh /usr/local/start-up.sh
