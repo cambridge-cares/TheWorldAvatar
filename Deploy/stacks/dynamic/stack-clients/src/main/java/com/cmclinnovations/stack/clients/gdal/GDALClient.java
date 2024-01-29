@@ -196,8 +196,7 @@ public class GDALClient extends ContainerClient {
                         authName, srid);
                 GeoServerClient.getInstance().addProjectionsToGeoserver(geoserverContainerID, wktString, srid);
             } catch (NullPointerException e) {
-                logger.error("Custom CRS not specified, add \"sridOut\": \"<AUTH>:<123456>\" to gdalTranslateOptions");
-                e.printStackTrace();
+                throw new RuntimeException("Custom CRS not specified, add \"sridOut\": \"<AUTH>:<123456>\" to gdalTranslateOptions", ex);
             }
         }
     }
