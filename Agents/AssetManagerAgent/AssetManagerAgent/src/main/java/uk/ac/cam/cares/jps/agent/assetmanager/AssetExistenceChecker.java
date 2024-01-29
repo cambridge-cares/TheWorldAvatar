@@ -436,7 +436,43 @@ public class AssetExistenceChecker {
 
     }
 
-    public JSONObject getBudgetTriples(String projectName, String serviceCategory, String serviceCode){
+    public JSONObject getBudgetTriples(String serviceCategory, String serviceCode){
+        JSONObject result = new JSONObject();
+        SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG_FORMAL, Pref_FIBO_ORG_ORGS, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        Variable budgetCategoryIRI = SparqlBuilder.var("budgetCategoryIRI");
+        Variable serviceCategoryIRI = SparqlBuilder.var("serviceCategoryIRI");
+        Variable serviceCodeIRI = SparqlBuilder.var("serviceCodeIRI");
+        query.where(budgetCategoryIRI.has(hasServiceCategory, serviceCategoryIRI));
+        query.where(serviceCategoryIRI.has(hasServiceCategoryIdentifier, serviceCategory));
+        query.where(budgetCategoryIRI.has(hasServiceCode, serviceCodeIRI));
+        query.where(serviceCodeIRI.has(hasServiceCodeIdentifier, serviceCode));
+
+        JSONArray reqResult = storeClientPurchDoc.executeQuery(query.getQueryString());
+        LOGGER.info("Query service category info check result for project::"+serviceCategory+" : "+reqResult);
+        switch (reqResult.length()) {
+            case 0:
+                //Project doesn't exist. Make new IRIs
+                result.put("budgetCategoryIRI", genIRIString("BudgetCategory", P_ASSET));
+                result.put("serviceCategoryIRI", genIRIString("ServiceCategory", P_ASSET));
+                result.put("serviceCodeIRI", genIRIString("ServiceCode", P_ASSET));
+                return result;
+                
+            case 1:
+                result.put("budgetCategoryIRI", reqResult.getJSONObject(0).getString("budgetCategoryIRI"));
+                result.put("serviceCategoryIRI", reqResult.getJSONObject(0).getString("serviceCategoryIRI"));
+                result.put("serviceCodeIRI", reqResult.getJSONObject(0).getString("serviceCodeIRI"));
+                return result;
+            default:
+                throw new JPSRuntimeException("Budget has more than 1 IRIs: " + serviceCategory + ". Check the knowledge graph for duplicates.", null);
+        }
+    }
+
+    //TBox were updated. Kept just in case
+    @Deprecated
+    public JSONObject getBudgetTriplesDeprecated(String projectName, String serviceCategory, String serviceCode){
          JSONObject result = new JSONObject();
         //Retrieve Budget Category IRI and service category first. 
         //Create service category if doesn't exist

@@ -94,6 +94,7 @@ public class ClassAndProperties {
     public static final Iri isPerformedBy = Pref_ASSET.iri("isPerformedBy");
     public static final Iri hasInverval = Pref_ASSET.iri("hasInverval");
     public static final Iri hasImageURI = Pref_ASSET.iri("hasImageURI");
+    public static final Iri purchasedUnder = Pref_ASSET.iri("purchasedUnder");
 
     public static final Iri hasDataSheet = Pref_DEV.iri("hasDataSheet");
     public static final Iri hasPrice = Pref_DEV.iri("hasPrice");

@@ -194,7 +194,11 @@ public class AssetKGInterface {
         AssetData.put("label", AssetDataRaw.getString("Name").replaceAll("(\\r|\\n)", " ").replace("\\", "\\\\"));
         AssetData.put("itemIRI", itemIRI);
         AssetData.put("itemComment", AssetDataRaw.getString("ItemComment"));
-        AssetData.put("ServiceCategoryIRI", genIRIString("ServiceCategory", P_ASSET));
+        //AssetData.put("ServiceCategoryIRI", genIRIString("ServiceCategory", P_ASSET));
+        JSONObject budgetTriples = existenceChecker.getBudgetTriples(AssetDataRaw.getString("BudgetCat"), AssetDataRaw.getString("ServiceCode"));
+        AssetData.put("ServiceCategoryIRI", budgetTriples.getString("serviceCategoryIRI"));
+        AssetData.put("budgetCategoryIRI", budgetTriples.getString("budgetCategoryIRI"));
+        AssetData.put("ServiceCodeIRI", budgetTriples.getString("serviceCodeIRI"));
         AssetData.put("ServiceCategoryName", AssetDataRaw.getString("BudgetCat"));
         AssetData.put("ServiceCategoryType", AssetDataRaw.getString("ServiceCode"));
 
@@ -696,6 +700,8 @@ public class AssetKGInterface {
         Iri ServiceCategoryIRI = iri(data.getString("ServiceCategoryIRI"));
         String ServiceCategoryNameLiteral = data.getString("ServiceCategoryName");
         String ServiceCategoryTypeLiteral = data.getString("ServiceCategoryType");
+        Iri BudgetCategoryIRI = iri(data.getString("budgetCategoryIRI"));
+        Iri ServiceCodeIRI = iri(data.getString("ServiceCodeIRI"));
 
         //invoice instances
         Iri InvoiceIRI = iri(data.getString("InvoiceIRI"));
@@ -728,7 +734,11 @@ public class AssetKGInterface {
         query.insert(ServiceCategoryIRI.isA(ServiceCategory));
         query.insert(itemIRI.has(itemName, Rdf.literalOf(itemNameLiteral)));
         query.insert(itemIRI.has(RDFS.COMMENT, Rdf.literalOf(itemCommentLiteral)));
-        query.insert(itemIRI.has(hasAttribute, ServiceCategoryIRI));
+        query.insert(itemIRI.has(purchasedUnder, BudgetCategoryIRI));
+        query.insert(BudgetCategoryIRI.has(hasServiceCategory, ServiceCategoryIRI));
+        query.insert(BudgetCategoryIRI.has(hasServiceCode, ServiceCodeIRI));
+        query.insert(ServiceCategoryIRI.has(hasServiceCategoryIdentifier, ServiceCategoryNameLiteral));
+        query.insert(ServiceCodeIRI.has(hasServiceCodeIdentifier, ServiceCategoryTypeLiteral));
 
         //OPTIONAL QUERIES
 
@@ -799,8 +809,8 @@ public class AssetKGInterface {
 
         //Projects and service codes
 
-        query.insert(ServiceCategoryIRI.has(attributeName, ServiceCategoryTypeLiteral));
-        query.insert(ServiceCategoryIRI.has(attributeValue, ServiceCategoryNameLiteral));
+        //query.insert(ServiceCategoryIRI.has(attributeName, ServiceCategoryTypeLiteral));
+        //query.insert(ServiceCategoryIRI.has(attributeValue, ServiceCategoryNameLiteral));
 
         storeClientPurchDoc.executeUpdate(query.getQueryString());
     }
