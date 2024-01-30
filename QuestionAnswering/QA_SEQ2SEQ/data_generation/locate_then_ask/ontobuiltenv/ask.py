@@ -57,8 +57,8 @@ class OBEAsker:
 
     def _ask_attr(self, query_graph: QueryGraph, key: OBEAttrKey):
         if key is OBEAttrKey.ADDRESS and random.random() < 1 / 3:
-            q = random.choice(["postalcode", "street"])
-            if q == "postalcode":
+            q = random.choice(["postal_code", "street"])
+            if q == "postal_code":
                 query_graph.add_question_node("PostalCodeLabel")
                 query_graph.add_triple(
                     "Property",
@@ -66,14 +66,14 @@ class OBEAsker:
                     "PostalCodeLabel",
                 )
 
-                return "postal code"
+                return "PostalCodeLabel", "postal code"
             elif q == "street":
                 query_graph.add_question_node("Street")
                 query_graph.add_triple(
                     "Property", "obe:hasAddress/ict:hasStreet", "Street"
                 )
 
-                return "street"
+                return "Street", "street"
             else:
                 raise Exception("Unexpected value: " + q)
         elif key in [
@@ -87,12 +87,12 @@ class OBEAsker:
                 "Property", "obe:has{key}/a".format(key=key.value), qnode
             )
 
-            return random.choice(OBE_ATTR_LABELS[key])
+            return qnode, random.choice(OBE_ATTR_LABELS[key])
         else:
             query_graph.add_question_node(key.value)
             query_graph.add_triple("Property", "obe:has" + key.value, key.value)
 
-            return random.choice(OBE_ATTR_LABELS[key])
+            return key.value, random.choice(OBE_ATTR_LABELS[key])
 
     def ask_name(self, query_graph: QueryGraph, verbalization: str):
         query_graph.add_question_node("Property")
@@ -123,7 +123,7 @@ class OBEAsker:
         for key in random.sample(
             unsampled_attr_keys, k=min(attr_num, len(unsampled_attr_keys))
         ):
-            verbn = self._ask_attr(query_graph, key)
+            _, verbn = self._ask_attr(query_graph, key)
             verbns.append(verbn)
 
         query_sparql = self.graph2sparql.convert(query_graph)
@@ -232,7 +232,8 @@ class OBEAsker:
         key = random.choice(sampling_frame)
         modifier = random.choice(EXTREMUM_OPS)
 
-        attr_verbn = self._ask_attr(query_graph, key)
+        attr_qn_node, attr_verbn = self._ask_attr(query_graph, key)
+        query_graph.add_groupby(attr_qn_node)
         query_graph.add_question_node("Property", agg=AggOp.COUNT)
         query_graph.add_orderby("PropertyCount", desc=modifier is AggOp.MAX)
         query_graph.set_limit(limit)
@@ -277,14 +278,8 @@ class OBEAsker:
                 if x is not extr_attr_key
             ]
         )
-        qn_attr_verbn = self._ask_attr(query_graph, qn_key)
-        query_graph.add_groupby(
-            next(
-                n
-                for n, question_node in query_graph.nodes(data="question_node")
-                if question_node
-            )
-        )
+        attr_qn_node, qn_attr_verbn = self._ask_attr(query_graph, qn_key)
+        query_graph.add_groupby(attr_qn_node)
         query_graph.add_orderby(value_node, desc=modifier is AggOp.MAX)
         query_graph.set_limit(limit)
 
@@ -332,14 +327,8 @@ class OBEAsker:
                 and x is not extr_attr_key
             ]
         )
-        qn_attr_verbn = self._ask_attr(query_graph, qn_key)
-        query_graph.add_groupby(
-            next(
-                n
-                for n, question_node in query_graph.nodes(data="question_node")
-                if question_node
-            )
-        )
+        attr_qn_node, qn_attr_verbn = self._ask_attr(query_graph, qn_key)
+        query_graph.add_groupby(attr_qn_node)
         query_graph.add_question_node(value_node, agg=AggOp.AVG)
         query_graph.add_orderby(value_node + "Avg", desc=modifier is AggOp.MAX)
         query_graph.set_limit(limit)
