@@ -43,13 +43,21 @@ class TSClient():
         # Add data
         self.client.addTimeSeriesData(timeseries)
 
+    def delete_timeseries(self, datairi):
+       tsiri = self.client.getTimeSeriesIRI(datairi)
+       self.client.deleteTimeSeries(tsiri)
+
     def check_timeseries_exist(self, datairi):
         tsiri = self.client.getTimeSeriesIRI(datairi)
         return False if not tsiri else self.client.checkTimeSeriesExists(tsiri)
 
     def update_timeseries_if_new(self, tsinstance: TimeSeriesInstance, force=False) -> bool:
         times_new = [parse_time_to_format(t, self.time_class) for t in tsinstance.times]
-        if not force:
+        ts_exist = self.check_timeseries_exist(tsinstance.src_iri)
+        if not ts_exist:
+            logging.error('TSClient_Wrapper: try to update a timeseries that has not been registered')
+            raise Exception('TSClient_Wrapper: try to update a timeseries that has not been registered')
+        if not force:#If Force-update Flag not set, and timeseries does exist
             exist_times, exist_values = self.get_timeseries(tsinstance.src_iri)
             if exist_times is not None:  # Have existing records, check if API values has change compared to record
                 to_update_idx = [idx for idx, t in enumerate(times_new) if t not in exist_times]
@@ -60,14 +68,14 @@ class TSClient():
         new_values = [tsinstance.values]
         dataIRIs = [tsinstance.src_iri]
         timeseries = jpsBaseLibView().getView().TimeSeries(times_new, dataIRIs, new_values)
-        lowb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("2000")))
+        lowb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("1000")))
         hb = jpsBaseLibView().getView().java.time.Instant.parse(parse_time_to_format(parse_incomplete_time("3000")))
         a = self.client.deleteTimeSeriesHistory(tsinstance.src_iri, lowb, hb)  # Delete everything in last TS record
         self.client.addTimeSeriesData(timeseries)
         logging.info('Timeseries for {} updated from API'.format(tsinstance.src_iri))
         return True
 
-    def get_timeseries(self, ts_iri: str):
+    def get_timeseries(self, ts_iri: str) -> (list,list):
         ts = self.client.getTimeSeriesWithinBounds([ts_iri], None, None)
         times = ts.getTimes()
         values = ts.getValues(ts_iri)

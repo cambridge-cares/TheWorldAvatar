@@ -4,6 +4,10 @@ This module contains utility function of config parser
 
 import configparser
 import os
+from pathlib import Path
+from typing import List
+
+from data_classes.ts_data_classes import PropertiesFileProtytype
 
 
 def load_conf(fullfilepath: str) -> configparser.ConfigParser:
@@ -39,3 +43,21 @@ def write_java_properties_conf(props: dict, outpath: str):
     text = '\n'.join(['='.join(item) for item in parser.items('top')])
     with open(outpath, 'w') as config_file:
         config_file.write(text)
+
+# Generate Java property files to call TSClient for each TS instance (each needs one as sparql eps are different)
+def create_property_files(base_conf, data_confs) -> dict:
+    outdir_name = base_conf['paths']['resourcesDir']
+    sqlcfg = base_conf['rdb_access']
+    outpaths = {}
+    outdir = (os.path.join(Path(__file__).parent.parent, outdir_name))
+    Path(outdir).mkdir(parents=True, exist_ok=True)
+    for datacfg in data_confs:
+        dataname = datacfg['source']['name']
+        props = PropertiesFileProtytype.copy()
+        allcfg = dict(datacfg['kg_access']).copy()
+        allcfg.update(dict(sqlcfg))
+        updated_props = match_properties(props, allcfg)
+        outpath = os.path.abspath(os.path.join(outdir, "{}.properties".format(dataname)))
+        write_java_properties_conf(updated_props, outpath)
+        outpaths[dataname] = outpath
+    return outpaths

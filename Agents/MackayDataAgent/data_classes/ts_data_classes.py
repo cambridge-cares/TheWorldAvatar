@@ -18,16 +18,19 @@ TSTR_FORMATS = {'Instant': '%Y-%m-%dT%H:%M:%SZ', 'LocalDate': '%Y-%m-%d'}
 @dataclass(frozen=True)
 class TimeSeriesMeta:
     time_unit: str
-    src_iri: str = None
+    src_iri: str
 
 
 @dataclass
 class TimeSeriesInstance:
     times: list
     values: list
-    src_iri: str = None
+    src_iri: str
 
-    def __post_init__(self):  # Convert times to datetime objects
+    def __post_init__(self):
+        if len(self.times) != len(self.values):
+            raise Exception('TimesSeriesInstance length of time list and value list need to be equal')
+        #Check format of times [int/float/str] and convert to datetime objects
         if type(self.times[0]) == str:
             self.times = [parse_incomplete_time(t) for t in self.times]
         elif type(self.times[0]) == float or type(self.times[0]) == int:
@@ -41,9 +44,9 @@ class TimeSeriesInstance:
 class ForecastMeta:
     name: str
     iri: str
-    duration: float
-    start_dt: datetime.datetime
-    end_dt: datetime.datetime
+    duration: float # historical data length in days
+    start_dt: datetime.datetime # predict start
+    end_dt: datetime.datetime  # predict end
     start: float = field(init=False)
     end: float = field(init=False)
     frequency: float
@@ -58,11 +61,15 @@ class ForecastMeta:
         elif self.unit_frequency == 'month':
             self.unit_frequency_kg = 'time:unitDay'
             self.frequency = self.frequency * 30
+        elif self.unit_frequency == 'day':
+            self.unit_frequency_kg = 'time:unitDay'
+        else:
+            raise ValueError('timeUnit {} is currently not supported in defining ForecastMeta'.format(self.unit_frequency))
         self.start = parse_time_to_unix(self.start_dt)
         self.end = parse_time_to_unix(self.end_dt)
 
 
-@dataclass
+@dataclass(frozen=True)
 class KgAccessInfo:
     endpoint: str
     password: str = None
@@ -122,4 +129,4 @@ def get_padded_TSInstance(src_iri: str, unit: str, last_time: datetime.datetime,
 
 def get_duration_in_days(start_dt: datetime.datetime, end_dt: datetime.datetime) -> float:
     diff = end_dt - start_dt
-    return float(diff.days) + 365
+    return float(diff.days)+1

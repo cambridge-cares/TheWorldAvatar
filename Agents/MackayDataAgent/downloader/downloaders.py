@@ -2,7 +2,7 @@
 This module contains functions to download from external data source in json/csv/xlsx and parse them to timeseries
 '''
 import json
-
+import logging
 import requests
 from data_classes import ts_data_classes
 import jsonpath_ng.ext
@@ -51,9 +51,10 @@ class Downloader:
         raw_response = requests.request(conf['method'], url, headers=magic_header,
                                         params=dict(self.conf['sourceparams']) if 'sourceparams' in self.conf else None)
         # Add switch of parser types later
-        print(dict(self.conf['output']))
         parsed = self.format_parser(raw_response.content if self.format == 'xlsx' else raw_response.text,
                                     **dict(self.conf['output']))
+        logging.debug(raw_response)
+        logging.info('Successfully download data for {}'.format(self.conf['source']['name']))
         if self.post_calculation:
             parsed = self.post_calculation(parsed)
         return parsed

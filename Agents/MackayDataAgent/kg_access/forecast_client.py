@@ -1,12 +1,15 @@
 '''
 This module contains functions to call forecast agent client and insert/delete meta data into KG as required by forecast agent
 '''
+import logging
+
 from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATIONWITHTIMESERIES
 from pyderivationagent.kg_operations import PyDerivationClient
 from data_classes.ts_data_classes import *
 from pyderivationagent.kg_operations import PySparqlClient
 
 DELETE_STR = "DELETE WHERE"
+SELECT_STR=  "SELECT * WHERE"
 INSERT_STR = "INSERT DATA"
 FORECAST_META_BASE_IRI = "https://www.theworldavatar.com/test/"
 META_PREFIX = 'PREFIX : <' + FORECAST_META_BASE_IRI + '> ' + '''
@@ -69,7 +72,9 @@ class ForcastAgentClient:
     def call_predict(self, forecast_meta: ForecastMeta):
         predict_input = self.update_forcast_meta(
             forecast_meta)  # Meta definition of forecast instance needs to be inserted before run forecast agent
+        logging.info('Forecast meta successfully inserted to KG')
         self.create_forecast(predict_input)
+        logging.info('Forecast successfully created for: {}'.format(forecast_meta.name))
 
     def create_forecast(self, input_iri_list) -> str:
         derivation = self.deriv_client.createSyncDerivationForNewInfo(self.forcastagent_iri, input_iri_list,
@@ -94,6 +99,7 @@ class ForcastAgentClient:
     def update_forcast_meta(self, fmeta: ForecastMeta) -> list:
         self._delete_forecast_meta(fmeta.iri, fmeta.name)
         self._insert_forecast_meta(fmeta)
+        logging.info('Forecast meta successfully inserted')
         input_list = [fmeta.iri,
                       FORECAST_META_BASE_IRI + "ForecastingModel_{}".format(fmeta.name),
                       FORECAST_META_BASE_IRI + "Frequency_{}".format(fmeta.name),
@@ -106,16 +112,26 @@ class ForcastAgentClient:
         delete_str = META_PREFIX + META_UPDATE_QUERY.format(action=DELETE_STR, name=name, ts_iri=src_iri, model='?m',
                                                             start='?s', end='?e', frequency='?f', unit='?u',
                                                             duration="?d")
-        print(delete_str)
-        r = self.sparql_client.performUpdate(delete_str)
-        print(r)
+        if self.get_forecast_meta(src_iri,name):
+            r = self.sparql_client.performUpdate(delete_str)
+            logging.info('Old Forecast meta successfully deleted')
+
 
     def _insert_forecast_meta(self, fmeta: ForecastMeta):
         update_str = META_PREFIX + META_UPDATE_QUERY.format(action=INSERT_STR, name=fmeta.name, ts_iri=fmeta.iri,
                                                             model="\"" + fmeta.model + "\"", start=fmeta.start,
                                                             end=fmeta.end, frequency=fmeta.frequency,
                                                             unit=fmeta.unit_frequency_kg, duration=fmeta.duration)
-        print(update_str)
-        print(fmeta)
         r = self.sparql_client.performUpdate(update_str)
-        print(r)
+
+    def get_forecast_meta(self,src_iri,name):
+        search_str = META_PREFIX + META_UPDATE_QUERY.format(action=SELECT_STR, name=name, ts_iri=src_iri, model='?model',
+                                                            start='?start', end='?end', frequency='?frequency', unit='?unit_frequency',
+                                                            duration="?duration")
+        r = self.sparql_client.performQuery(search_str)
+        if len(r) == 1:
+            return r[0]
+        elif len(r)>1:
+            raise Exception('Duplicate forecast meta info records in KG of same iri {}'.format(src_iri))
+        else:
+            return None
