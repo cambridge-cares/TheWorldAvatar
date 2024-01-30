@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.plugin.Plugin;
@@ -53,7 +54,7 @@ public class ToiletMarkerManager {
 
         pointAnnotationManager.addClickListener(pointAnnotation -> {
             toiletViewModel.getToilet(pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
-            toiletBottomSheet.show(fragment.getParentFragmentManager(), "toilet_bottom_sheet");
+            toiletBottomSheet.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             return true;
         });
     }

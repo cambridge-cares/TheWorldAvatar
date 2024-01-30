@@ -1,216 +1,221 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-<androidx.appcompat.widget.LinearLayoutCompat android:orientation="vertical"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/component_margin"
-    android:paddingTop="@dimen/component_margin_xs"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    style="@style/BottomSheet"
-    app:behavior_hideable="false"
-    android:id="@+id/bottom_sheet"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content">
 
-            <com.google.android.material.bottomsheet.BottomSheetDragHandleView
-                android:id="@+id/drag_handle"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginTop="@dimen/component_margin_small"
-                />
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/bottom_sheet_linear_layout"
+        style="@style/BottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/component_margin"
+        android:paddingTop="@dimen/component_margin_xs"
+        app:behavior_hideable="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+            android:id="@+id/drag_handle"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="@dimen/component_margin_small" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/component_margin_xs"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/address_name_tv"
+                style="@style/TextAppearance.Material3.TitleLarge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/component_margin_xs"
+                android:text="Test"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/icon_container"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
+                android:id="@+id/icon_container"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginVertical="@dimen/component_margin_xs">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Test"
-                    android:layout_marginStart="@dimen/component_margin_xs"
-                    android:id="@+id/address_name_tv"
-                    style="@style/TextAppearance.Material3.TitleLarge"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/icon_container"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:id="@+id/icon_container">
-
-                    <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:src="@drawable/baseline_accessible_24"
-                        android:id="@+id/wheelchair_icon"
-                        app:tint="@color/grey"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/dot_divider"/>
-
-
-                    <ImageView
-                        android:layout_width="5dp"
-                        android:layout_height="5dp"
-                        android:src="@drawable/baseline_circle_24"
-                        app:tint="@color/grey"
-                        android:id="@+id/dot_divider"
-                        app:layout_constraintTop_toTopOf="@id/has_males_icon"
-                        app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
-                        app:layout_constraintEnd_toStartOf="@id/has_males_icon"
-                        />
-
-                    <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/baseline_boy_24"
-                        android:id="@+id/has_males_icon"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/has_female_icon"
-                        app:tint="@color/grey"
-                        />
-
-                    <View
-                        android:layout_width="2dp"
-                        android:layout_height="0dp"
-                        android:background="@color/grey"
-                        android:layout_marginVertical="2dp"
-                        app:layout_constraintStart_toStartOf="@id/has_males_icon"
-                        app:layout_constraintEnd_toEndOf="@id/has_female_icon"
-                        app:layout_constraintTop_toTopOf="@id/has_males_icon"
-                        app:layout_constraintBottom_toBottomOf="@id/has_males_icon"/>
-
-
-                    <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/baseline_girl_24"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:id="@+id/has_female_icon"
-                        app:tint="@color/grey" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginVertical="@dimen/component_margin_xs">
                 <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/baseline_directions_walk_24"
-                    android:foregroundTint="@color/white"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/component_margin"
-                    android:id="@+id/distance_tv"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginVertical="@dimen/component_margin_xs"
-                android:id="@+id/open_hour_container">
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/baseline_access_time_24" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/open_hours"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/component_margin"
-                    android:id="@+id/open_hour_tv"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginVertical="@dimen/component_margin_xs"
-                android:id="@+id/price_container">
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/baseline_attach_money_24" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/price"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/component_margin"
-                    android:id="@+id/price"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/other_info_container"
-                android:orientation="vertical">
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="@string/price"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    style="@style/TextAppearance.Material3.TitleMedium" />-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="@string/price"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    style="@style/TextAppearance.Material3.BodyMedium"-->
-<!--                    android:layout_marginStart="@dimen/component_margin"/>-->
-            </LinearLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginVertical="@dimen/component_margin_xs">
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/report"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:id="@+id/wheelchair_icon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/baseline_accessible_24"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/direction_bt"
-                    android:id="@+id/report_bt"
-                    style="?attr/materialButtonOutlinedStyle"/>
+                    app:layout_constraintEnd_toStartOf="@id/dot_divider"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/grey" />
 
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/direction"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/component_margin"
-                    android:id="@+id/direction_bt"
-                    app:layout_constraintStart_toEndOf="@id/report_bt"
+
+                <ImageView
+                    android:id="@+id/dot_divider"
+                    android:layout_width="5dp"
+                    android:layout_height="5dp"
+                    android:src="@drawable/baseline_circle_24"
+                    app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
+                    app:layout_constraintEnd_toStartOf="@id/has_males_icon"
+                    app:layout_constraintTop_toTopOf="@id/has_males_icon"
+                    app:tint="@color/grey" />
+
+                <ImageView
+                    android:id="@+id/has_males_icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/baseline_boy_24"
+                    app:layout_constraintEnd_toStartOf="@id/has_female_icon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/grey" />
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="0dp"
+                    android:layout_marginVertical="2dp"
+                    android:background="@color/grey"
+                    app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
+                    app:layout_constraintEnd_toEndOf="@id/has_female_icon"
+                    app:layout_constraintStart_toStartOf="@id/has_males_icon"
+                    app:layout_constraintTop_toTopOf="@id/has_males_icon" />
+
+
+                <ImageView
+                    android:id="@+id/has_female_icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/baseline_girl_24"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    app:tint="@color/grey" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/component_margin_xs"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:foregroundTint="@color/white"
+                android:src="@drawable/baseline_directions_walk_24" />
+
+            <TextView
+                android:id="@+id/distance_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/component_margin"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/open_hour_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/component_margin_xs"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/baseline_access_time_24" />
+
+            <TextView
+                android:id="@+id/open_hour_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/component_margin"
+                android:text="@string/open_hours" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/price_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/component_margin_xs"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/baseline_attach_money_24" />
+
+            <TextView
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/component_margin"
+                android:text="@string/price" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/other_info_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <!--                <TextView-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:text="@string/price"-->
+            <!--                    android:layout_gravity="center"-->
+            <!--                    style="@style/TextAppearance.Material3.TitleMedium" />-->
+
+            <!--                <TextView-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:text="@string/price"-->
+            <!--                    android:layout_gravity="center"-->
+            <!--                    style="@style/TextAppearance.Material3.BodyMedium"-->
+            <!--                    android:layout_marginStart="@dimen/component_margin"/>-->
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/component_margin_xs"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/report_bt"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/report"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/direction_bt"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/direction_bt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/component_margin"
+                android:text="@string/direction"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/report_bt"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

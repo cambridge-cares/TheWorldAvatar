@@ -47,7 +47,7 @@ public class RoutingFragment extends Fragment {
         mapView = binding.getRoot().findViewById(R.id.mapView);
         mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS);
 
-        ToiletBottomSheet toiletBottomSheet = new ToiletBottomSheet(this);
+        ToiletBottomSheet toiletBottomSheet = new ToiletBottomSheet(this, binding.bottomSheet.getRoot().findViewById(R.id.bottom_sheet_linear_layout));
 
         // init UI manager
         userLocationManager = new UserLocationManager(mapView, this);
