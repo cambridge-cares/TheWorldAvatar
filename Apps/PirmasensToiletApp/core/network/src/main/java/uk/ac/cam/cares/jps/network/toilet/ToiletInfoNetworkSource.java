@@ -54,6 +54,7 @@ public class ToiletInfoNetworkSource {
                 Response.Listener<String> onGetToiletInfo = toiletInfo -> {
                     try {
                         JSONObject toiletInfoJson = new JSONObject(toiletInfo).getJSONObject("meta");
+                        LOGGER.info(toiletInfoJson);
 
                         // todo: the mapping need to be updated if ontology is refined
                         Toilet toilet = new Toilet(lng, lat);

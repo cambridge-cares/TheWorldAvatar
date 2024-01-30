@@ -1,9 +1,5 @@
 package uk.ac.cam.cares.jps.routing.bottomsheet;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -11,15 +7,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.Map;
 
@@ -27,7 +20,6 @@ import uk.ac.cam.cares.jps.routing.R;
 import uk.ac.cam.cares.jps.routing.viewmodel.LocationViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.RoutingViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.ToiletViewModel;
-import uk.ac.cam.cares.jps.routing.databinding.ToiletBottomSheetBinding;
 
 public class ToiletBottomSheet {
 
@@ -56,15 +48,12 @@ public class ToiletBottomSheet {
         toiletViewModel.getSelectedToilet().observe(hostFragment.getViewLifecycleOwner(), toilet -> {
             ((TextView) bottomSheetView.findViewById(R.id.address_name_tv)).setText(!toilet.getName().isEmpty() ? toilet.getName() : String.format("(%f, %f)", toilet.getLocation().longitude(), toilet.getLocation().latitude()));
 
-            if (toilet.getHasFemale()) {
-                ((ImageView) bottomSheetView.findViewById(R.id.has_female_icon)).setColorFilter(uk.ac.cam.cares.jps.ui.R.color.black);
-            }
-            if (toilet.getHasMale()) {
-                ((ImageView) bottomSheetView.findViewById(R.id.has_males_icon)).setColorFilter(uk.ac.cam.cares.jps.ui.R.color.black);
-            }
-            if (!toilet.getWheelchair().isEmpty()) {
-                ((ImageView) bottomSheetView.findViewById(R.id.wheelchair_icon)).setColorFilter(uk.ac.cam.cares.jps.ui.R.color.black);
-            }
+            ((ImageView) bottomSheetView.findViewById(R.id.has_female_icon))
+                    .setColorFilter(toilet.getHasFemale() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.female_toilet) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
+            ((ImageView) bottomSheetView.findViewById(R.id.has_males_icon))
+                    .setColorFilter(toilet.getHasMale() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.male_toilet) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
+            ((ImageView) bottomSheetView.findViewById(R.id.wheelchair_icon))
+                    .setColorFilter(!toilet.getWheelchair().isEmpty() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.black) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
 
             if (!toilet.getOpenTime().isEmpty() || !toilet.getEndTime().isEmpty()) {
                 ((TextView) bottomSheetView.findViewById(R.id.open_hour_tv)).setText(String.format("%s - %s", toilet.getOpenTime(), toilet.getEndTime()));

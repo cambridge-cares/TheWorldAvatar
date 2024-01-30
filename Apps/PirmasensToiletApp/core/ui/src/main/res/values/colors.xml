@@ -13,4 +13,6 @@
     <color name="background_grey">#EDEDED</color>
     <color name="red">#9F0B01</color>
     <color name="transparent">#00000000</color>
+    <color name="female_toilet">#bb0819</color>
+    <color name="male_toilet">#0d498f</color>
 </resources>
