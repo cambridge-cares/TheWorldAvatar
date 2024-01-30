@@ -3,7 +3,10 @@ package com.cmclinnovations.stack.services;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -27,6 +30,8 @@ public class ContainerService extends AbstractService {
     private String containerId;
 
     private DockerClient dockerClient;
+
+    List<EndpointConfig> endpointConfigs = new ArrayList<>();
 
     public ContainerService(String stackName, ServiceConfig config) {
         super(config);
@@ -73,18 +78,16 @@ public class ContainerService extends AbstractService {
         this.dockerClient = dockerClient;
     }
 
-    public final void doPreStartUpConfiguration() {
-        doPreStartUpConfigurationImpl();
-        createEndpoints();
-    }
-    
-
-    protected void doPreStartUpConfigurationImpl() {
+    protected void doPreStartUpConfiguration() {
         // Do nothing by default, override if container needs pre-startup configuration
     }
 
-    protected void createEndpoints() {
-        // Do nothing by default, override if container produces one or more endpoints
+    protected final void addEndpointConfig(EndpointConfig endpointConfig) {
+        endpointConfigs.add(endpointConfig);
+    }
+
+    public final void writeEndpointConfigs() {
+        endpointConfigs.forEach(this::writeEndpointConfig);
     }
 
     public void doPostStartUpConfiguration() {
@@ -144,7 +147,11 @@ public class ContainerService extends AbstractService {
         }
     }
 
-    public <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public boolean endpointConfigExists(String configName) {
+        return dockerClient.configExists(configName);
+    }
+
+    private <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         dockerClient.writeEndpointConfig(endpointConfig);
     }
 
@@ -159,8 +166,13 @@ public class ContainerService extends AbstractService {
      * @param secretName
      */
     protected boolean ensureOptionalSecret(String secretName) {
+        // Check whether the secret exists in Docker/Podman
         boolean secretExists = dockerClient.secretExists(secretName);
-        if (!secretExists) {
+        if (secretExists) {
+            // Check to see if the secret also exists in this container
+            secretExists = Files.exists(Path.of("/run/secrets", secretName));
+        } else {
+            // Add a dummy secret to Docker/Podman
             dockerClient.addSecret(secretName, "UNUSED");
         }
         return secretExists;

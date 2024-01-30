@@ -1,0 +1,7 @@
+SELECT DISTINCT ?UseValue ?ChemicalClassValue
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasUse ?UseValue .
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
+}}

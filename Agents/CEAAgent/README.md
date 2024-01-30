@@ -61,7 +61,7 @@ where X.Y.Z is the new version number.
 
 ### 2.11. Run
 Copy [cea-agent.json] from ```./stack-manager-input/``` and place it in [stack-manager config services] directory. 
-Please ensure that `Source` in `Mounts` of [cea-agent.json] points correctly to the local `CEAAgentConfig.properties`. Then, in the [stack-manager] directory, run 
+Then, in the [stack-manager] directory, run 
 ```
 ./stack.sh start <STACK NAME>
 ```

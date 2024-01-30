@@ -126,11 +126,17 @@ public class WeatherHelper extends JPSAgent {
             // coordinate in (longitude, latitude) format
             Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
 
+            Double latitude;
+            Double longitude;
+
+            latitude = coordinate.getY();
+            longitude = coordinate.getX();
+
             String stationIRI = getWeatherStation(coordinate, 2.0, weatherRoute);
 
             // if no nearby weather station, send request to OpenMeteoAgent to instantiate weather data
             if (stationIRI.isEmpty()) {
-                stationIRI = runOpenMeteoAgent(String.valueOf(coordinate.getX()), String.valueOf(coordinate.getY()), weatherRoute);
+                stationIRI = runOpenMeteoAgent(String.valueOf(latitude), String.valueOf(longitude), weatherRoute);
 
                 // if request fails
                 if (stationIRI.isEmpty()) {return false;}
@@ -139,16 +145,10 @@ public class WeatherHelper extends JPSAgent {
             Map<String, List<String>> weatherMap = getWeatherIRI(stationIRI, weatherRoute);
 
             List<Double> lat_lon = getStationCoordinate(stationIRI, weatherRoute);
-            Double latitude;
-            Double longitude;
 
             if (!lat_lon.isEmpty()) {
                 latitude = lat_lon.get(0);
                 longitude = lat_lon.get(1);
-            }
-            else {
-                latitude = coordinate.getX();
-                longitude = coordinate.getY();
             }
 
             // if the timestamps of the instantiated weather data does not meet CEA requirements,

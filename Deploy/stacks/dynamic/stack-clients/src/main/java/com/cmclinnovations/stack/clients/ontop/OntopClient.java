@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
@@ -15,30 +16,34 @@ public class OntopClient extends ContainerClient implements ClientWithEndpoint {
 
     public static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
 
-    private static OntopClient instance = null;
+    private static Map<String, OntopClient> instances = new HashMap<>();
 
     private OntopEndpointConfig ontopEndpoint;
 
+    private final String containerName;
+
     public static OntopClient getInstance() {
-        if (null == instance) {
-            instance = new OntopClient();
-        }
-        return instance;
+        return getInstance(EndpointNames.ONTOP);
     }
 
-    private OntopClient() {
+    public static OntopClient getInstance(String containerName) {
+        return instances.computeIfAbsent(containerName, OntopClient::new);
+    }
+
+    private OntopClient(String containerName) {
+        this.containerName = containerName;
     }
 
     @Override
     public OntopEndpointConfig getEndpoint() {
         if (null == ontopEndpoint) {
-            ontopEndpoint = readEndpointConfig(EndpointNames.ONTOP, OntopEndpointConfig.class);
+            ontopEndpoint = readEndpointConfig(containerName, OntopEndpointConfig.class);
         }
         return ontopEndpoint;
     }
 
     public void updateOBDA(Path newMappingFilePath) {
-        String containerId = getContainerId("ontop");
+        String containerId = getContainerId(containerName);
         Path ontopMappingFilePath = getEnvironmentVariable(containerId, ONTOP_MAPPING_FILE)
                 .map(Path::of)
                 .orElseThrow(() -> new RuntimeException("Environment variable '" + ONTOP_MAPPING_FILE

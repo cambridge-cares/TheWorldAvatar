@@ -1,5 +1,33 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+#4.5.0
+### Features
+Three control buttons are now included by default. These are:
+
+* Scale Control (bottom right indicator of current map scale in metres and kilometres)
+* Geolocator (a button in the bottom right to display current location of the user)
+* Zoom, pitch and compass controls in the top right
+  
+  Ability to turn off with flags in `settings.json`. see [advanced mapbox documentation](../docs/advanced-mapbox.md)
+
+# 4.4.0
+### Features
+* New colours in side panel including CMCL blue and more modern grey on off-white text
+* Add animated wave above footer in sidebar
+* Rich link hover effects in side panel
+
+### Bug Fixes
+* fixed scroll bars appearing automatically in layer tree
+
+
+# 4.3.0
+### Features
+* Initial support for "parallel-world" scenarios (not yet supported by TWA backend).
+* Added optional "credo" flag to use different format URLs for FeatureInfoAgent calls.
+### Bug Fixes:
+* Fixed checks for object properties before passing layers/sources to Mapbox API.
+* Click events now correctly filter out non-interactable layers.
+
 # 4.2.0
 ### Features
 * Added an "interactions" layer parameter to set level of allowed mouse interaction ("all"|"click-only"|"hover-only"|"none", defaults to "all").

@@ -20,7 +20,8 @@ cb_max = 1200000
 # 
 # Specify filepath to store colorbar legend
 f = 'value_colorbar.png'
-fp = os.path.join(Path(__file__).parent.parent.parent, 'DTVF', 'data', 'icons', f)
+fp = os.path.join(Path(__file__).parent.parent.parent, 'StackDeployment', 'inputs', 
+                  'stack-manager', 'inputs', 'data', 'visualisation', 'data', 'icons', f)
 
 # Specify colors for colorbar (must match settings in data.json)
 colors = ["#0769AD", "#AD0202"]

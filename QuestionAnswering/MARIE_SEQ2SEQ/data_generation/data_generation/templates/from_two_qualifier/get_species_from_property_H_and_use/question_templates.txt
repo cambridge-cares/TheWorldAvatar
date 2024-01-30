@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} higher than {value} and used as {Use}
+Provide a roster of chemical species with {PropertyName} greater than {value} that find application as {Use}.
+List molecules having a {PropertyName} exceeding {value} and utilized for {Use}.
+Enumerate compounds with {PropertyName} surpassing {value} and employed in the capacity of {Use}.
+Furnish a catalog of species where {PropertyName} is above {value} and known for their {Use}.
+Present a compilation of chemical entities exhibiting {PropertyName} higher than {value} and put to use as {Use}.
+Detail a record of molecules demonstrating {PropertyName} beyond {value} and having purposes in {Use}.
+Jot down a register of compounds displaying {PropertyName} surpassing {value} and found valuable for {Use}.
+Offer an inventory of species with {PropertyName} that's elevated compared to {value}, recognized for their {Use}.
+Display a list of chemical species manifesting {PropertyName} above {value} and employed for {Use}.
+Outline molecules exhibiting {PropertyName} greater than {value} and serving as {Use}.
+Compile a list of compounds with {PropertyName} exceeding {value} and applicable in {Use}.
+Provide a rundown of species where {PropertyName} is higher than {value} and utilized for {Use}.
+Offer a catalog of chemical entities showcasing {PropertyName} surpassing {value} and put to practical {Use}.
+Enumerate molecules with {PropertyName} surpassing {value} and known for their {Use}.
+Present a comprehensive list of compounds displaying {PropertyName} above {value} and finding utility in {Use}.
+Give a breakdown of species possessing {PropertyName} greater than {value} and utilized as {Use}.
+Share a collection of chemical species exemplifying {PropertyName} higher than {value} and adopted for {Use}.
+Provide an organized list of molecules with {PropertyName} exceeding {value} and utilized in {Use}.
+Present an itemized list of compounds showcasing {PropertyName} surpassing {value} and employed for {Use}.
+Share a compilation of species having {PropertyName} higher than {value} and recognized for their {Use}.
