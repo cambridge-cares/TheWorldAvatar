@@ -1,29 +1,36 @@
 import random
 from typing import List
+
+from git import Optional
 from constants.functions import StrOp
 
 from locate_then_ask.ontocompchem.entity_store import OCCEntityStore
-from locate_then_ask.ontocompchem.model import OCCMolecularComputation, OCCSpecies
 from locate_then_ask.query_graph import QueryGraph
 
 
 class OCCLocator:
-    def __init__(self):
-        self.store = OCCEntityStore()
+    def __init__(self, store: Optional[OCCEntityStore] = None):
+        if store:
+            self.store = store
+        else:
+            self.store = OCCEntityStore()
 
     def locate(self, entity_iri: str):
-        species = self.store.get(entity_iri)
-        assert isinstance(species, OCCSpecies)
+        species = self.store.get_species(entity_iri)
 
         query_graph = QueryGraph()
         query_graph.add_topic_node("MolecularComputation")
         species_label_node = query_graph.make_literal_node(value=species.label)
-        query_graph.add_triple("MolecularComputation", "occ:hasSpeciesModel/occ:hasSpecies/rdfs:label", species_label_node)
+        query_graph.add_triple(
+            "MolecularComputation",
+            "occ:hasSpeciesModel/occ:hasSpecies/rdfs:label",
+            species_label_node,
+        )
 
         verbalization = "[{label}]".format(label=species.label)
 
-        molcomps: List[OCCMolecularComputation] = [
-            self.store.get(iri) for iri in species.molecular_computation_iris
+        molcomps = [
+            self.store.get_molcomp(iri) for iri in species.molecular_computation_iris
         ]
 
         # locate level of theory
@@ -33,8 +40,14 @@ class OCCLocator:
             lots_sampled = random.sample(lots, k=min(num, len(lots)))
 
             query_graph.add_literal_node("LevelOfTheoryLabel")
-            query_graph.add_func("LevelOfTheoryLabel", operator=StrOp.VALUES, operand=lots_sampled)
-            query_graph.add_triple("MolecularComputation", "occ:hasMethodology/occ:hasLevelOfTheory/rdfs:label", "LevelOfTheoryLabel")
+            query_graph.add_func(
+                "LevelOfTheoryLabel", operator=StrOp.VALUES, operand=lots_sampled
+            )
+            query_graph.add_triple(
+                "MolecularComputation",
+                "occ:hasMethodology/occ:hasLevelOfTheory/rdfs:label",
+                "LevelOfTheoryLabel",
+            )
 
             verbn_template = random.choice(
                 ["at the {LOT} level", "at the {LOT} level of theory"]
@@ -52,8 +65,14 @@ class OCCLocator:
             bss_sampled = random.sample(bss, k=min(num, len(bss)))
 
             query_graph.add_literal_node("BasisSetLabel")
-            query_graph.add_func("BasisSetLabel", operator=StrOp.VALUES, operand=bss_sampled)
-            query_graph.add_triple("MolecularComputation", "occ:hasMethodology/occ:hasBasisSet/rdfs:label", "BasisSetLabel")
+            query_graph.add_func(
+                "BasisSetLabel", operator=StrOp.VALUES, operand=bss_sampled
+            )
+            query_graph.add_triple(
+                "MolecularComputation",
+                "occ:hasMethodology/occ:hasBasisSet/rdfs:label",
+                "BasisSetLabel",
+            )
 
             verbn_template = "using the {BS} basis set"
             verbn_bs = verbn_template.format(
