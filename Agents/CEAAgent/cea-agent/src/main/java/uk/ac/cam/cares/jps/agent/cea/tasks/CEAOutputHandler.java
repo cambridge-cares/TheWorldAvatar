@@ -331,7 +331,11 @@ public class CEAOutputHandler {
             ceaOutputData.EastWallSolarSuitableArea = eastResult;
         }
     }
-    
+
+    /**
+     * Initialise CEAOutputData as list of list of zeros
+     * @param ceaOutputData CEAOutputData for initialisation
+     */
     private static void initialiseCEAOutputTS(CEAOutputData ceaOutputData) {
         int iriSize = ceaOutputData.iris.size();
         int timeSize = ceaOutputData.times.size();
@@ -380,6 +384,12 @@ public class CEAOutputHandler {
         ceaOutputData.ThermalTubeWallWestSupply = initialiseZeroList(iriSize, timeSize);
     }
 
+    /**
+     * Creates and returns a list of list of zeros
+     * @param outerSize size of outer list
+     * @param innerSize size of inner list
+     * @return a list of list of zeros
+     */
     private static List<List<Double>> initialiseZeroList(Integer outerSize, Integer innerSize) {
         return IntStream.range(0, outerSize)
                 .mapToObj(i -> new ArrayList<>(Collections.nCopies(innerSize, 0.0)))

@@ -49,7 +49,6 @@ async function loadHTML(htmlFile: string) {
  * @returns 
  */
 function getDefaultImagery() {
-    console.log("GENERATING DEFAULT IMAGERY");
     let imagerySettings = Manager.SETTINGS.getSetting("imagery");
     if(imagerySettings == null) {
 
@@ -63,7 +62,6 @@ function getDefaultImagery() {
     }
 
     let defaultSetting = imagerySettings["default"];
-    console.log("DEFAULT " + defaultSetting);
 
     let url = imagerySettings[defaultSetting];
     if(url.endsWith("_token=")) url += MapHandler.MAP_API;

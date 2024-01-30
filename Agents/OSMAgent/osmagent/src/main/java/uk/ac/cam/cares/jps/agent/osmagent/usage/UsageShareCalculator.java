@@ -24,7 +24,7 @@ import java.io.*;
  */
 
 public class UsageShareCalculator {
-        private static final String LANDUSE_PATH = "/resources/dlm_landuse.csv";
+        private static final String RESOURCES_PATH = "/resources";
 
         private RemoteRDBStoreClient rdbStoreClient;
 
@@ -96,8 +96,8 @@ public class UsageShareCalculator {
          * @param usageTable centralised table to store usage information
          * @param landUseTable table containing DLM land use data
          */
-        public void updateLandUse(String usageTable, String landUseTable) {
-                try (InputStream input = FileReader.getStream(LANDUSE_PATH)) {
+        public void updateLandUse(String usageTable, String landUseTable, String csv) {
+                try (InputStream input = FileReader.getStream(RESOURCES_PATH + "/" + csv)) {
                         InputStreamReader inputStreamReader = new InputStreamReader(input);
                         CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
                         String[] line;

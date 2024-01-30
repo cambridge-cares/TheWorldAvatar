@@ -6,21 +6,21 @@
         <!-- JS -->
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+        <script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
         <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="./dtvf/dtvf.min.js" charset="utf-8"></script>
+        <script src="./twa-vf/twa-vf.min.js" charset="utf-8"></script>
         <script src="./local.js"></script>
 
         <!-- CSS -->
-        <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+        <link href='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css' rel='stylesheet' />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="./dtvf/dtvf.min.css" rel="stylesheet" />
+        <link href="./twa-vf/twa-vf.min.css" rel="stylesheet" />
         <link href="./local.css" rel="stylesheet" />
 
     </head>
@@ -113,7 +113,7 @@
                 <ul>
                     <li><a href="#sidePanelGeneral">Info</a></li>
                     <li><a href="#sidePanelLegend">Legend</a></li>
-                    <li><a href="#sidePanelAcks">Acknowledgements</a></li>
+                    <li><a href="#sidePanelAcks">Attribution</a></li>
                     <li><a href="#sidePanelLinks">Links</a></li>
                 </ul>
                 <div id="sidePanelGeneral">
@@ -128,22 +128,27 @@
                 <div id="sidePanelLinks"></div>
                 <div id="sidePanelAcks">
                     <p>
-                        The following data sources have been used to populate the digital twin behind this UK Base World visualisation:
+                        The following data sources have been used to populate the digital twin powering this UK Base World visualisation:
                     </p>
                     <br/>
                     <div style="font-size: 10pt !important;">
-                        <p>
+                            <b>Regions:</b><br/>
+                            <a href="https://osdatahub.os.uk/downloads/open/BoundaryLine">OS Boundary-Line</a></li>
+                            <br/><br/>
+                            <b>UK Population Count:</b><br/>
+                            <a href="https://data.humdata.org/dataset/united-kingdom-high-resolution-population-density-maps-demographic-estimates?">Humanitarian Data Exchange</a></li>
+                            <br/><br/>
                             <b>Power Generation Sites:</b><br/>
-                            &#9;<a href="https://www.gov.uk/government/collections/digest-of-uk-energy-statistics-dukes">Digest of UK Energy Statistics (DUKES), 2023</a>
+                            <a href="https://www.gov.uk/government/collections/digest-of-uk-energy-statistics-dukes">Digest of UK Energy Statistics (DUKES), 2023</a>
                             <br><br>
                             <b>National Grid Lines and Substations:</b><br/>
-                            &#9;<a href="https://connecteddata.nationalgrid.co.uk/dataset/?groups=system-and-network&res_format=ZIP">National Grid, 2023</a>
+                            <a href="https://connecteddata.nationalgrid.co.uk/dataset/?groups=system-and-network&res_format=ZIP">National Grid, 2023</a>
                             <br><br>
                             <b>UK Power Networks (UKPN) lines:</b><br/>
-                            &#9;<a href="https://ukpowernetworks.opendatasoft.com/explore/?disjunctive.theme&disjunctive.keyword&sort=explore.popularity_score&q=overhead">UK Power Networks, 2023</a>
+                            <a href="https://ukpowernetworks.opendatasoft.com/explore/?disjunctive.theme&disjunctive.keyword&sort=explore.popularity_score&q=overhead">UK Power Networks, 2023</a>
                             <br><br>
                             <b>Forestry:</b><br/>
-                            &#9;<a href="https://data-forestry.opendata.arcgis.com/datasets/eb05bd0be3b449459b9ad0692a8fc203_0/explore?location=55.208415%2C-2.724655%2C6.90">Forestry Commission, 2023</a>
+                            <a href="https://data-forestry.opendata.arcgis.com/datasets/eb05bd0be3b449459b9ad0692a8fc203_0/explore?location=55.208415%2C-2.724655%2C6.90">Forestry Commission, 2023</a>
                         </p>
                     </div>
                 </div>
@@ -158,7 +163,7 @@
         <!-- Code entry point -->
         <script type="module">
             // Log the version of the DTVF being used.
-            getDTVFVersion().then(result => console.log("Using DTVF " + result));
+            getVisVersion().then(result => console.log("Using TWA-VF " + result));
 
             $("#sidePanelInner").tabs();
 
@@ -180,6 +185,9 @@
                     // Initialise the map object
                     manager.initialiseMap();
                 
+                    // Add controls custom to this UK Base World visualisation
+                    showCustomControls();
+                    
                     // Set the default content in the "General" tab of the side panel
                     manager.getPanelHandler().setTitle("<h1>UK Base World</h1>");
                     manager.getPanelHandler().setContent(`
@@ -193,7 +201,7 @@
                         <p>
                             Whilst The World Avatar supports data at all scopes, this visualisation provides a nation-wide view of a digital twin constructed to 
                             represent the real-world state of the United Kingdom (circa 2023). A number of real-world data sources have been used to populate the 
-                            digital twin (see the "Acknowledgements" tab for details), providing both static and live data.
+                            digital twin (see the "Attribution" tab for details), providing both static and live data.
                         </p>
                         <p>
                             Using this digital twin as a template, or base world, The World Avatar can then generate a number of hypothetical situations, or parallel 

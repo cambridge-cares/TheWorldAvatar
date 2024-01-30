@@ -15,9 +15,9 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 def initialise_triple_store():
     # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     blazegraph = DockerContainer(
-        'ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0')
-    # the port is set as 9999 to match with the value set in the docker image
-    blazegraph.with_exposed_ports(9999)
+        'ghcr.io/cambridge-cares/blazegraph:1.1.0')
+    # the port is set as 8080 to match with the value set in the docker image
+    blazegraph.with_exposed_ports(8080)
 
     with blazegraph as container:
         # Wait some arbitrary time until container is reachable
@@ -40,7 +40,7 @@ def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer
     # endpoint acts as both Query and Update endpoint
     endpoint = 'http://' + docker_container.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
-               + docker_container.get_exposed_port(9999)
+               + docker_container.get_exposed_port(8080)
     # 'kb' is default namespace in Blazegraph
     endpoint += '/blazegraph/namespace/kb/sparql'
     return endpoint

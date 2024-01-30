@@ -1,0 +1,25 @@
+[project]
+name = "marie"
+dynamic = ["dependencies"]
+version = "1.0.0"
+description = "KGQA system for chemistry."
+maintainers = [{name = "Dan Tran", email = "nmdt2@cam.ac.uk"}]
+
+[tool.setuptools.dynamic]
+dependencies = {file=["requirements.txt"]}
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.flit.sdist]
+include = [
+    "tests/",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["marie", "tests"]
