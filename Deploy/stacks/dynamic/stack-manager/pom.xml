@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-manager</artifactId>
-  <version>1.23</version>
+  <version>1.23.1-updated-dependencies-SNAPSHOT</version>
 
   <name>Stack Manager</name>
   <url>https://theworldavatar.io</url>
@@ -15,7 +15,7 @@
   <parent>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>jps-parent-pom</artifactId>
-    <version>2.2.0</version>
+    <version>2.2.1-updated-dependencies-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <version>1.23</version>
+      <version>1.23.1-updated-dependencies-SNAPSHOT</version>
     </dependency>
 
     <dependency>
