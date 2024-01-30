@@ -31,6 +31,9 @@ public class RouteManager {
             Expected<String, None> removeSourceSuccess = style.removeStyleSource("route");
             LOGGER.debug("Route: layer and source removed result " + (removeSourceSuccess.isError() && removeLayerSuccess.isError() ? removeSourceSuccess.getError() + "\n" + removeLayerSuccess.getError() : "success"));
 
+            if (data.isEmpty()) {
+                return;
+            }
             JSONObject sourceJson = new JSONObject();
             try {
                 sourceJson.put("type", "geojson");

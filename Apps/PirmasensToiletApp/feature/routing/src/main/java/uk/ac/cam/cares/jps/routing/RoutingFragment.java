@@ -54,8 +54,6 @@ public class RoutingFragment extends Fragment {
         routeManager = new RouteManager(mapView, this);
         toiletMarkerManager = new ToiletMarkerManager(mapView, this, toiletBottomSheet);
 
-
-
         return binding.getRoot();
     }
 

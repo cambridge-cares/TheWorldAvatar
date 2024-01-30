@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import uk.ac.cam.cares.jps.model.Toilet;
 import uk.ac.cam.cares.jps.routing.R;
+import uk.ac.cam.cares.jps.routing.viewmodel.RoutingViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.ToiletViewModel;
 import uk.ac.cam.cares.jps.routing.bottomsheet.ToiletBottomSheet;
 
@@ -30,19 +31,20 @@ public class ToiletMarkerManager {
     private Logger LOGGER = Logger.getLogger(ToiletMarkerManager.class);
     private PointAnnotationManager pointAnnotationManager;
     private ToiletViewModel toiletViewModel;
+    private RoutingViewModel routingViewModel;
     private Context context;
 
-    private ToiletBottomSheet toiletBottomSheet;
 
     public ToiletMarkerManager(MapView mapView, Fragment fragment, ToiletBottomSheet toiletBottomSheet) {
-        this.toiletBottomSheet = toiletBottomSheet;
 
         AnnotationPlugin annotationPlugin = mapView.getPlugin(Plugin.MAPBOX_ANNOTATION_PLUGIN_ID);
         pointAnnotationManager = (PointAnnotationManager) annotationPlugin.createAnnotationManager(AnnotationType.PointAnnotation, null);
         this.context = fragment.requireContext();
 
+        routingViewModel = new ViewModelProvider(fragment).get(RoutingViewModel.class);
+
         toiletViewModel = new ViewModelProvider(fragment).get(ToiletViewModel.class);
-        // set observer on the model, when data ready, display points
+
         toiletViewModel.getToiletsLiveData().observe(fragment, toilets -> {
             LOGGER.debug("Received toilets number: " + toilets.size());
 
@@ -55,6 +57,9 @@ public class ToiletMarkerManager {
         pointAnnotationManager.addClickListener(pointAnnotation -> {
             toiletViewModel.getToilet(pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
             toiletBottomSheet.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+            // clear current route
+            routingViewModel.routeGeoJsonData.setValue("");
             return true;
         });
     }
