@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.carpark;
 
 import org.json.JSONObject;
+
 import uk.ac.cam.cares.jps.agent.carpark.file.ConfigReader;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -8,6 +9,9 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
@@ -57,7 +61,7 @@ public class CarparkAgent extends JPSAgent {
     }
 
     /**
-     * An overloaded method to process all the different HTTP (GET/POST/PULL..) requests.
+     * A method to process all the different HTTP (GET/POST/PULL..) requests.
      * Do note all requests to JPS agents are processed similarly and will only return response objects.
      *
      * @return A response to the request called as a JSON Object.
@@ -86,14 +90,47 @@ public class CarparkAgent extends JPSAgent {
                 msg = statusRoute();
                 break;
             case "retrieve":
+                int delay = requestParams.getInt("delay");
+                int interval = requestParams.getInt("interval");
+                String timeunit = requestParams.getString("timeunit");
                 String[] args = new String[]{CARPARK_AGENT_PROPERTIES_KEY, CARPARK_CLIENT_PROPERTIES_KEY, CARPARK_API_PROPERTIES_KEY};
-                msg = retrieveRoute(args);
+                LOGGER.info("Executing retrieve route ...");
+                setSchedulerForRetrievedRoute(args, delay, interval, timeunit);
                 break;
             default:
                 LOGGER.fatal("{}{}", UNDEFINED_ROUTE_ERROR_MSG, route);
                 msg.put(JSON_ERROR_KEY, UNDEFINED_ROUTE_ERROR_MSG + route);
         }
         return msg;
+    }
+
+    /**
+     * Set up scheduler for the retrieve route
+     * @param args contains the environment variables that indicates the location of each config file
+     * @param delay time delay before first execution
+     * @param interval interval between successive executions
+     * @param timeunit the time unit for delay and interval
+     */
+    private void setSchedulerForRetrievedRoute(String[] args, int delay, int interval, String timeunit) {
+        // Create a ScheduledExecutorService with a single thread
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        // Define the task to be scheduled
+        Runnable task = () -> {
+            retrieveRoute(args);
+        };
+        TimeUnit timeUnit = null;
+        switch (timeunit) {
+            case "seconds":
+                timeUnit = TimeUnit.SECONDS;
+                break;
+            case "minutes":
+                timeUnit = TimeUnit.MINUTES;
+                break;
+            case "hours":
+                timeUnit = TimeUnit.HOURS;
+                break;
+        }
+        scheduler.scheduleAtFixedRate(task, delay, interval, timeUnit);
     }
 
     /**
@@ -112,7 +149,11 @@ public class CarparkAgent extends JPSAgent {
         return response;
     }
 
-    public JSONObject retrieveRoute(String[] args) {
+    /**
+     * Handle POST /retrieve route and return result message
+     * @param args contains the environment variables that indicates the location of each config file
+     */
+    private void retrieveRoute(String[] args) {
         if (args.length != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
@@ -193,15 +234,15 @@ public class CarparkAgent extends JPSAgent {
         }
 
         LOGGER.info("Retrieving carpark rates from the API...");
-        JSONObject pricingReadings;
+        JSONObject ratesReadings;
         try {
-            pricingReadings = connector.getCarparkRates();
+            ratesReadings = connector.getCarparkRates();
         } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
-        LOGGER.info("Retrieved carpark rates for {} carparks", pricingReadings.length());
-        jsonMessage.accumulate(JSON_RESULT_KEY, " Retrieved carpark rates for" + pricingReadings.getJSONObject("result").getJSONArray("records").length() + "carparks.");
+        LOGGER.info("Retrieved carpark rates for {} carparks", ratesReadings.length());
+        jsonMessage.accumulate(JSON_RESULT_KEY, " Retrieved carpark rates for " + ratesReadings.getJSONObject("result").getJSONArray("records").length() + " carparks.");
 
         LOGGER.info("Setting up the sparql handler...");
         SparqlHandler sparqlHandler;
@@ -211,8 +252,8 @@ public class CarparkAgent extends JPSAgent {
             LOGGER.error("Could not build the QueryBuilder ", e);
             throw new JPSRuntimeException("Could not successfully initialise the QueryBuilder Object", e);
         }
-        sparqlHandler.instantiateIfNotInstantiated(carparkReadings, pricingReadings);
+        sparqlHandler.instantiateIfNotInstantiated(carparkReadings, ratesReadings);
         jsonMessage.accumulate(JSON_RESULT_KEY, " Data has been successfully instantiated!");
-        return jsonMessage;
+        LOGGER.info(jsonMessage.toString());
     }
 }
