@@ -427,19 +427,46 @@ public class AssetKGInterface {
         String currencyIRI = "";
         String price = AssetDataRaw.getString("price");
         //generate pricing instance IRI
-        //TODO handle different currencies, currently default to SGD
         if(price != null && !price.isBlank()){
             MeasureIRI = genIRIString("Measure", P_ASSET);
             PriceDetailsIRI = genIRIString("PriceDetails", P_ASSET);
             priceIRI = genIRIString("Price", P_ASSET);
-            //Handle currency here later
-            //currencyIRI = SingaporeDollar.getQueryString(); #-- Generate saref:SingaporeDollar instead??
-            currencyIRI = SingaporeDollarString;
             //Handle device namepsace pricing
             amtMoneyIRI = genIRIString("AmountOfMoney", P_DEV);
+            //Handle currency here later
+            //currencyIRI = SingaporeDollarString;
+            if (AssetDataRaw.has("currency")){
+                String currency = AssetDataRaw.getString("currency").toUpperCase();
+                LOGGER.debug("Currency received:: " + currency);
+                switch (currency) {
+                    case "SGD":
+                        currencyIRI = SingaporeDollarString;
+                        break;
+                    case "GBP":
+                        currencyIRI = GreatBritishPoundSterlingString;
+                        break;
+                    case "EUR":
+                        currencyIRI = EuroString;
+                        break;
+                    case "JPY":
+                        currencyIRI = JapaneseYenString;
+                        break;
+                    case "CNY":
+                        currencyIRI = ChineseYuanString;
+                        break;
+                    case "USD":
+                        currencyIRI = UnitedStatesDollarString;
+                        break;
+                    default:
+                        throw new JPSRuntimeException("Currency unrecognized. currently supported currencies are: "+
+                            "SGD, GBP, EUR, JPY, CNY, USD"
+                        );
+                }
+            }
+            else{
+                currencyIRI = SingaporeDollarString;
+            }
         }
-
-
 
         AssetData.put("PriceDetailsIRI", PriceDetailsIRI);
         AssetData.put("priceIRI", priceIRI);

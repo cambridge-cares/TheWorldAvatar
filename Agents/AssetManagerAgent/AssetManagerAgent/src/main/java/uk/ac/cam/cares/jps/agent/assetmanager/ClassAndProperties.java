@@ -169,7 +169,11 @@ public class ClassAndProperties {
     public static final String CabinetString = P_ASSET + "Cabinet";
 
     public static final String SingaporeDollarString = P_OM + "SingaporeDollar";
-
+    public static final String JapaneseYenString = P_OM + "JapaneseYen";
+    public static final String UnitedStatesDollarString = P_OM + "UnitedStatesDollar";
+    public static final String ChineseYuanString = P_OM + "ChineseYuan";
+    public static final String GreatBritishPoundSterlingString = P_OM + "poundSterling";
+    public static final String EuroString = P_OM + "euro";
      
 
     public ClassAndProperties(){
