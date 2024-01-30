@@ -2,10 +2,7 @@
 <html lang="en" xml:lang="en">
 
 <head>
-    <!-- ===== CUSTOMISABLE ===== -->
     <title>Flood Routing Tool</title>
-    <!-- ===== CUSTOMISABLE ===== -->
-
 
     <!-- JS -->
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
@@ -19,11 +16,7 @@
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
     <script src="./twa-vf/twa-vf.min.js" charset="utf-8"></script>
-
-    <!-- ===== CUSTOMISABLE ===== -->
-    <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
     <script src="./local.js"></script>
-    <!-- ===== CUSTOMISABLE ===== -->
 
     <!-- CSS -->
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
@@ -32,11 +25,7 @@
         rel="stylesheet">
     <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
     <link href="./twa-vf/twa-vf.min.css" rel="stylesheet" />
-
-    <!-- ===== CUSTOMISABLE ===== -->
-    <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
     <link href="./local.css" rel="stylesheet" />
-    <!-- ===== CUSTOMISABLE ===== -->
 
 </head>
 
@@ -212,15 +201,15 @@
             <div id="sidePanelGeneral">
                 <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
                 <div id="contentContainer"></div>
-                <div id="footerContainer">
-                    <div id="footerContent"></div>
-                </div>
             </div>
             <div id="sidePanelLinks">
                 <p>Contains OS data &copy; Crown copyright and database rights 2022 (100025252)<br><br>
                     Contains public sector information licensed under the Open Government Licence v3.0.<br><br>
                     This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"
                 </p>
+            </div>
+            <div id="footerContainer">
+                <div id="footerContent"></div>
             </div>
         </div>
         <div id="returnContainer" style="display: none;">
@@ -259,9 +248,6 @@
             function start() {
                 // Initialise the map object
                 manager.initialiseMap();
-
-                // ===== CUSTOMISABLE =====
-                // Set the default content in the "General" tab of the side panel
                 manager.getPanelHandler().setTitle("<h1>Flood Routing tool</h1>");
                 manager.getPanelHandler().setContent(`
                 <p>
@@ -281,6 +267,7 @@
 
                 manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
                 manager.getPanelHandler().addWaveAnimation();
+
                 // Save general tab state as default
                 manager.getPanelHandler().storeDefault();
 
@@ -288,12 +275,6 @@
                 MapHandler.MAP.on("style.load", function () {
                     // Load registered images and linked files
                     manager.loadImagesAndLinks().then(() => {
-
-                        // TODO: This SHOULD only kick in after all images have bee loaded and added to the map,
-                        // but I cannot get the nest Promises to wait for each other properly. As it doesn't
-                        // seem to be causing any issues, I'm leaving it as is for the time being. - Michael
-
-                        // Plot the default visible data
                         manager.plotData();
                     });
                 });
@@ -369,7 +350,7 @@
 
                 sourceMarker.on("dragend", function (e) {
                     console.log('Start Point moved to', e.target.getLngLat());
-                    let selectedPoint = e.target.getLngLat();
+                    selectedPoint = e.target.getLngLat();
                     getVertex(selectedPoint);
 
                     removeLayer();
@@ -398,8 +379,8 @@
                 targetMarker.getElement().style.zIndex = 998; // Set a high z-index value
 
                 targetMarker.on("dragend", function (e) {
-                    console.log('Endpoint moved to', e.target.getLngLat());
-                    let selectedPoint = e.target.getLngLat();
+                    console.log('End Point moved to', e.target.getLngLat());
+                    selectedPoint = e.target.getLngLat();
                     getVertex(selectedPoint);
                     removeLayer();
                     let promise_90 = getRoute('my-data-90', 'my-layer-90', 'toggleRoutesCheckbox3', '#0B4452', 'kingslynn:shortest_paths_with_flood_90');
@@ -407,9 +388,9 @@
                     let promise_10 = getRoute('my-data-10', 'my-layer-10', 'toggleRoutesCheckbox1', '#e79b3d', 'kingslynn:shortest_paths_with_flood_10');
                     Promise.all([promise_10, promise_30, promise_90]).then(() => { populateDistanceContainer() });
                 });
-                // function to get nearest vertex to the passed point
+
                 function getVertex(selectedPoint) {
-                    var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn:routing_ways_vertices_pgr&outputformat=application/json&viewparams=lon:${selectedPoint.lng};lat:${selectedPoint.lat};`;
+                    var url = `https://theworldavatar.io/demos/flood-routing/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn:routing_ways_vertices_pgr&outputformat=application/json&viewparams=lon:${selectedPoint.lng};lat:${selectedPoint.lat};`;
 
                     $.ajax({
                         url: url,
@@ -432,10 +413,9 @@
                     }
                 }
 
-
                 // function to get TSP routes
                 function getRouteTSP(sourceName, layerId, checkboxId, lineColour, typeName) {
-                    var url = `http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}&outputFormat=application%2Fjson&viewparams=target:${source};`
+                    var url = `https://theworldavatar.io/demos/flood-routing/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}&outputFormat=application%2Fjson&viewparams=target:${source};`
 
                     // Retrieve the GeoJSON data from the URL
                     return fetch(url)
@@ -469,11 +449,10 @@
 
                 }
 
-
                 // function to get TSP routes
                 function getRouteTSP_seq(sourceName, layerId, checkboxId, lineColour, typeName) {
 
-                    var tspSeqUrl = `http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}_seq&outputFormat=application%2Fjson&viewparams=target:${source};`
+                    var tspSeqUrl = `https://theworldavatar.io/demos/flood-routing/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3A${typeName}_seq&outputFormat=application%2Fjson&viewparams=target:${source};`
                     // Add the TSP sequence layer
                     return fetch(tspSeqUrl)
                         .then(response => response.json())
@@ -523,10 +502,9 @@
 
                 }
 
-
                 // // function to get the shortest path from the give source and target nodes
                 function getRoute(sourceName, layerId, checkboxId, lineColour, typeName) {
-                    var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=${typeName}&outputformat=application/json&viewparams=source:${source};target:${target};`;
+                    var url = `https://theworldavatar.io/demos/flood-routing/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=${typeName}&outputformat=application/json&viewparams=source:${source};target:${target};`;
 
                     // Retrieve the GeoJSON data from the URL
                     return fetch(url)
