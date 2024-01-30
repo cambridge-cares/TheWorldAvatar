@@ -20,24 +20,87 @@
                 android:layout_marginTop="@dimen/component_margin_small"
                 />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginVertical="@dimen/component_margin_xs">
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/source_marker" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Test"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/component_margin"
-                    android:id="@+id/address_name_tv"/>
-            </LinearLayout>
+                    android:layout_marginStart="@dimen/component_margin_xs"
+                    android:id="@+id/address_name_tv"
+                    style="@style/TextAppearance.Material3.TitleLarge"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/icon_container"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:id="@+id/icon_container">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/baseline_accessible_24"
+                        android:id="@+id/wheelchair_icon"
+                        app:tint="@color/grey"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/dot_divider"/>
+
+
+                    <ImageView
+                        android:layout_width="5dp"
+                        android:layout_height="5dp"
+                        android:src="@drawable/baseline_circle_24"
+                        app:tint="@color/grey"
+                        android:id="@+id/dot_divider"
+                        app:layout_constraintTop_toTopOf="@id/has_males_icon"
+                        app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
+                        app:layout_constraintEnd_toStartOf="@id/has_males_icon"
+                        />
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/baseline_boy_24"
+                        android:id="@+id/has_males_icon"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/has_female_icon"
+                        app:tint="@color/grey"
+                        />
+
+                    <View
+                        android:layout_width="2dp"
+                        android:layout_height="0dp"
+                        android:background="@color/grey"
+                        android:layout_marginVertical="2dp"
+                        app:layout_constraintStart_toStartOf="@id/has_males_icon"
+                        app:layout_constraintEnd_toEndOf="@id/has_female_icon"
+                        app:layout_constraintTop_toTopOf="@id/has_males_icon"
+                        app:layout_constraintBottom_toBottomOf="@id/has_males_icon"/>
+
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/baseline_girl_24"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:id="@+id/has_female_icon"
+                        app:tint="@color/grey" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -47,12 +110,12 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/walk"
+                    android:src="@drawable/baseline_directions_walk_24"
                     android:foregroundTint="@color/white"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Test"
+                    android:text=""
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/component_margin"
                     android:id="@+id/distance_tv"/>
@@ -62,7 +125,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginVertical="@dimen/component_margin_xs">
+                android:layout_marginVertical="@dimen/component_margin_xs"
+                android:id="@+id/open_hour_container">
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
@@ -80,8 +144,43 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="@dimen/component_margin_xs"
+                android:id="@+id/price_container">
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/baseline_attach_money_24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/price"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/component_margin"
+                    android:id="@+id/price"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/other_info_container"
-                android:orientation="vertical"/>
+                android:orientation="vertical">
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@string/price"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    style="@style/TextAppearance.Material3.TitleMedium" />-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="@string/price"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    style="@style/TextAppearance.Material3.BodyMedium"-->
+<!--                    android:layout_marginStart="@dimen/component_margin"/>-->
+            </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

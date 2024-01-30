@@ -7,14 +7,14 @@ import java.util.Map;
 
 public class Toilet {
     Point location;
-    String operator;
     Boolean hasMale;
     Boolean hasFemale;
-    String access;
     String fee;
     String wheelchair;
     String name;
     Price price;
+    String openTime;
+    String endTime;
 
     Map<String, String> otherInfo = new HashMap<>();
 
@@ -28,14 +28,6 @@ public class Toilet {
 
     public void setLocation(Point location) {
         this.location = location;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
     }
 
     public Boolean getHasMale() {
@@ -52,14 +44,6 @@ public class Toilet {
 
     public void setHasFemale(Boolean hasFemale) {
         this.hasFemale = hasFemale;
-    }
-
-    public String getAccess() {
-        return access;
-    }
-
-    public void setAccess(String access) {
-        this.access = access;
     }
 
     public String getFee() {
@@ -100,5 +84,21 @@ public class Toilet {
 
     public void setPrice(Price price) {
         this.price = price;
+    }
+
+    public void setOpenTime(String opensOn) {
+        openTime = opensOn;
+    }
+
+    public void setEndTime(String endsOn) {
+        endTime = endsOn;
+    }
+
+    public String getOpenTime() {
+        return openTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
     }
 }

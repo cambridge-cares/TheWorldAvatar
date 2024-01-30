@@ -57,21 +57,24 @@ public class ToiletInfoNetworkSource {
 
                         // todo: the mapping need to be updated if ontology is refined
                         Toilet toilet = new Toilet(lng, lat);
-                        toilet.setAccess(toiletInfoJson.optString("access"));
                         toilet.setWheelchair(toiletInfoJson.optString("has wheelchair"));
-                        toilet.setOperator(toiletInfoJson.optString("has operator"));
                         toilet.setName(toiletInfoJson.optString("has name"));
 
                         // fee related
                         toilet.setFee(toiletInfoJson.optString("has fee"));
-                        toilet.setPrice(new Price(toiletInfoJson.optString("has amount"), toiletInfoJson.optString("has currency")));
+                        if (!toiletInfoJson.optString("has amount").isEmpty()) {
+                            toilet.setPrice(new Price(toiletInfoJson.optString("has amount"), toiletInfoJson.optString("has currency")));
+                        }
 
                         // time related
-                        toilet.addOtherInfo("opensOn", toiletInfoJson.optString("opens on"));
-                        toilet.addOtherInfo("closesOn", toiletInfoJson.optString("closes on"));
+                        toilet.setOpenTime(toiletInfoJson.optString("opens on"));
+                        toilet.setEndTime(toiletInfoJson.optString("closes on"));
 
                         toilet.setHasFemale(toiletInfoJson.optString("is for female").contains("yes"));
                         toilet.setHasMale(toiletInfoJson.optString("is for male").contains("yes"));
+
+                        toilet.addOtherInfo("access", toiletInfoJson.optString("access"));
+                        toilet.addOtherInfo("operator", toiletInfoJson.optString("has operator"));
 
                         onSuccessUpper.onResponse(toilet);
                     } catch (JSONException e) {
