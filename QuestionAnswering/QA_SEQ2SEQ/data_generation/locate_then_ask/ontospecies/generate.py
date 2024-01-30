@@ -117,23 +117,24 @@ class DatasetGenerator:
         else:
             raise ValueError("Unrecognized ask_strategy: " + ask_strategy)
 
-    def generate(self):
+    def generate(self, n_repeats: int):
         species_id = 0
 
         examples = []
         example_id = 0
 
-        with tqdm(total=len(self.seed_species)) as pbar:
-            while species_id < len(self.seed_species):
+        with tqdm(total=len(self.seed_species) * n_repeats) as pbar:
+            while species_id < len(self.seed_species) * n_repeats:
+                _species_id = species_id % len(self.seed_species)
                 locate_strategy = random.choice(list(self.LOCATE2ASK.keys()))
-                query_graph, verbalization, species_id_new = self._locate(
-                    locate_strategy=locate_strategy, species_id=species_id
+                query_graph, verbalization, _species_id_new = self._locate(
+                    locate_strategy=locate_strategy, species_id=_species_id
                 )
 
                 if query_graph is None:
                     print(
                         "Unable to locate a subgraph with the following entity: "
-                        + str(self.seed_species[species_id:species_id_new])
+                        + str(self.seed_species[_species_id:_species_id_new])
                     )
                     continue
 
@@ -160,8 +161,8 @@ class DatasetGenerator:
                 examples.append(example)
                 example_id += 1
 
-                pbar.update(species_id_new - species_id)
-                species_id = species_id_new
+                pbar.update(_species_id_new - _species_id)
+                species_id += _species_id_new - _species_id 
 
         return examples
 
@@ -169,10 +170,11 @@ class DatasetGenerator:
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--synthetic_abox", action="store_true")
+    parser.add_argument("--n_repeats", type=int, default=1)
     args = parser.parse_args()
 
     ds_gen = DatasetGenerator(args.synthetic_abox)
-    examples = ds_gen.generate()
+    examples = ds_gen.generate(args.n_repeats)
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")
     filename = "data/ontospecies_{timestamp}.json".format(timestamp=time_label)
