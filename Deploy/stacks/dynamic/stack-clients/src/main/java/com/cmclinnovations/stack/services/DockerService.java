@@ -229,7 +229,7 @@ public class DockerService extends AbstractService
         service.doPostStartUpConfiguration();
     }
 
-    public void writeEndpointConfigs(ContainerService service){
+    public void writeEndpointConfigs(ContainerService service) {
         service.writeEndpointConfigs();
     }
 
@@ -241,8 +241,6 @@ public class DockerService extends AbstractService
         boolean notAlreadyRunning = container.isEmpty() || !container.get().getState().equalsIgnoreCase("running");
         if (notAlreadyRunning) {
             // No container matching that config
-
-            pullImage(service);
 
             container = configureContainerWrapper(service);
         }
@@ -515,6 +513,11 @@ public class DockerService extends AbstractService
         }
     }
 
+    @Deprecated
+    /**
+     * @deprecated This probably isn't required as it makes more sense to use the
+     *             'run' 'pull policy' to control the pulling of images.
+     */
     protected void pullImage(ContainerService service) {
         String image = service.getImage();
         if (dockerClient.getInternalClient().listImagesCmd().withImageNameFilter(image).exec().isEmpty()) {
