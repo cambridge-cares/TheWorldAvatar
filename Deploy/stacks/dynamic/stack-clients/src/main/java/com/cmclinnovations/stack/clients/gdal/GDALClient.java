@@ -300,7 +300,6 @@ public class GDALClient extends ContainerClient {
         errorStream.reset();
     }
 
-
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
             String layerName, TempDir tempDir, GDALTranslateOptions options, MultidimSettings mdimSettings) {
 
@@ -308,11 +307,18 @@ public class GDALClient extends ContainerClient {
         Set<Path> createdDirectories = new HashSet<>();
         List<String> postgresFiles = new ArrayList<>();
 
+        String geoserverContainerId = getContainerId(GEOSERVER);
+        String postGISContainerId = getContainerId(POSTGIS);
+
         for (Map.Entry<String, Collection<String>> fileTypeEntry : foundRasterFiles.asMap().entrySet()) {
             String inputFormat = fileTypeEntry.getKey();
             for (String filePath : fileTypeEntry.getValue()) {
-                processFile(databaseName, schemaName, layerName, tempDir, options, mdimSettings, createdDirectories,
-                        postgresFiles, inputFormat, filePath);
+
+                addCustomCRStoPostGis(geoserverContainerId, postGISContainerId, gdalContainerId, filePath, databaseName,
+                        options.getSridOut());
+
+                postgresFiles.add(processFile(gdalContainerId, inputFormat, filePath, databaseName, schemaName,
+                        layerName, tempDir, options, mdimSettings, createdDirectories));
             }
         }
         createdDirectories.forEach(
@@ -320,23 +326,17 @@ public class GDALClient extends ContainerClient {
         return postgresFiles;
     }
 
-    private void processFile(String databaseName, String schemaName, String layerName, TempDir tempDir,
-            GDALTranslateOptions options, MultidimSettings mdimSettings, Set<Path> createdDirectories,
-            List<String> postgresFiles, String inputFormat, String filePath) {
+    private String processFile(String gdalContainerId, String inputFormat, String filePath,
+            String databaseName, String schemaName, String layerName, TempDir tempDir,
+            GDALTranslateOptions options, MultidimSettings mdimSettings, Set<Path> createdDirectories) {
 
         String postgresOutputPath;
-        String gdalContainerId = getContainerId(GDAL);
-        String geoserverContainerId = getContainerId(GEOSERVER);
-        String postGISContainerId = getContainerId(POSTGIS);
-        List<Path> directoryPaths = new ArrayList<>();
         String geotiffsOutputPath = generateOutFilePath(tempDir.toString(), databaseName, schemaName, layerName,
                 filePath, "geotiffs");
         Path geotiffsOutputDirectory = Paths.get(geotiffsOutputPath).getParent();
 
+        List<Path> directoryPaths = new ArrayList<>();
         directoryPaths.add(geotiffsOutputDirectory);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
         if (inputFormat.equals("netCDF")) {
             postgresOutputPath = generateOutFilePath(tempDir.toString(), databaseName, schemaName, layerName,
@@ -346,10 +346,6 @@ public class GDALClient extends ContainerClient {
         } else {
             postgresOutputPath = geotiffsOutputPath;
         }
-        postgresFiles.add(postgresOutputPath);
-
-        addCustomCRStoPostGis(geoserverContainerId, postGISContainerId, gdalContainerId, filePath, databaseName,
-                options.getSridOut());
 
         for (Path dirPath : directoryPaths) {
             if (!createdDirectories.contains(dirPath)) {
@@ -358,6 +354,10 @@ public class GDALClient extends ContainerClient {
                 createdDirectories.add(dirPath);
             }
         }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
         String execId;
         if (inputFormat.equals("netCDF")) {
             logger.info("netCDF found, uploading witt translate");
@@ -384,6 +384,8 @@ public class GDALClient extends ContainerClient {
                     .exec();
             handleErrors(errorStream, execId, logger);
         }
+
+        return postgresOutputPath;
     }
 
     private void ensurePostGISRasterSupportEnabled(String postGISContainerId, String database) {
