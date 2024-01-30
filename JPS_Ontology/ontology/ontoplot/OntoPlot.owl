@@ -9,8 +9,8 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplot/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">07 December 2023</dc:date>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlot is an ontology developed to describe the attributes of land plots and their buildable spaces.</rdfs:comment>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">30 January 2024</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlot is an ontology developed to describe the attributes of land plots.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
@@ -26,84 +26,6 @@
      -->
 
 
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedAbsoluteHeight -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedAbsoluteHeight">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AbsoluteHeight"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the allowed absolute height for the specified buildable space.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed absolute height </rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedFloorToFloorHeight -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedFloorToFloorHeight">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/FloorToFloorHeight"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the allowed floor to floor height for the specified buildable space.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed floor to floor height</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedGFA -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedGFA">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/GrossFloorArea"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the allowed  gross floor area for the specified buildable space.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed gross floor area</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedGPR -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedGPR">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/GrossPlotRatio"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the allowed gross plot ratio for the specified plot.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed gross plot ratio</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/hasAllowedSiteCoverage -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasAllowedSiteCoverage">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/SiteCoverage"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the allowed site coverage for the specified plot.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has allowed site coverage</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/hasBuildableSpace -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasBuildableSpace">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the buildable space for the specified plot.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has buildable space</rdfs:label>
-    </owl:ObjectProperty>
     
 
 
@@ -141,7 +63,7 @@
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the area of a plot</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has site area</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has plot area</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -155,32 +77,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the price of a specified plot.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has price</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/hasRequiredPartyWall -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasRequiredPartyWall">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PartyWall"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the required party wall for the specified buildable space from the plot boundary.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has required party wall</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/hasRequiredSetback -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplot/hasRequiredSetback">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/Setback"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the required setback for the specified buildable space from the plot boundary.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has required setback</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -247,66 +143,6 @@
 
 
     <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/AbsoluteHeight -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/AbsoluteHeight"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/FloorToFloorHeight -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/FloorToFloorHeight"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/GrossFloorArea -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/GrossFloorArea"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/GrossPlotRatio -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/GrossPlotRatio"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/PartyWall -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/PartyWall"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/Setback -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/Setback"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/SiteCoverage -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/SiteCoverage"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplot/BuildableSpace -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/BuildableSpace">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Buildable Space is an abstract concept that represents the maximum legally allowable space on a plot that can built up according to relevant planning regulations. The buildable space is the portion of the land that complies with these regulations and is designated for construction.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplot/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Buildable Space</rdfs:label>
-    </owl:Class>
     
 
 
