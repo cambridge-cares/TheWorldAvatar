@@ -71,7 +71,7 @@ class OBEPropertyUsageLocator(OBEAttrLocator):
                     verbn_numop = verbn_numop.replace(str(num), share_pctg_str)
                 operand = tuple(x / 100 for x in operand)
 
-                usageshare_node = clsname + "UsageShare"
+                usageshare_node = clsname.replace("-", "") + "UsageShare"
                 query_graph.add_literal_node(usageshare_node)
                 query_graph.add_triple(usage_node, "obe:hasUsageShare", usageshare_node)
                 query_graph.add_func(

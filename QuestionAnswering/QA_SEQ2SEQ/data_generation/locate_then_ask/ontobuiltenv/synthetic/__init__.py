@@ -1,3 +1,4 @@
+from decimal import Decimal
 import random
 from constants.namespaces import DABGEO, OBE, OM
 
@@ -27,7 +28,7 @@ class OBEPropertySynthesizer:
             ),
             energy_rating=random.choice("ABCDEFG"),
             latest_epc=random.choice([None, "placeholder"]),
-            number_of_habitable_rooms=random.randint(1, 69),
+            number_of_habitable_rooms=Decimal(str(random.randint(1, 69))),
             property_type=random.choice(
                 [OBE + "ParkHome", OBE + "Maisonette", OBE + "House", OBE + "Bungalow"]
             ),
