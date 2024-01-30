@@ -333,6 +333,28 @@ To also include a Feature Info Agent you should modify the stack config to somet
 
 Which specifies that the Feature Info Agent query files will be expected to be placed in the `stack-manager/inputs/data/fia-queries` directory.
 
+## Example - running without external dependencies
+
+This is a work in progress so some external calls may still be made.
+
+### Docker/Podman images
+
+TBC
+
+### GeoServer plugins
+
+The geoserver plugin(s) are now cached in a volume.
+This makes it easier to pre-downloaded them so that they are already present when the GeoServer container is started.
+To do this just copy the plugin `.zip` files into the `inputs\data\geoserver_plugins` directory and then add the following volume entry to the relevant stack config file:
+
+```json
+{
+    "volumes": {
+        "geoserver_plugins": "geoserver_plugins"
+    }
+}
+```
+
 ## Debugging the Stack Manager in VSCode
 
 1. Add the following entry into top level node the JSON file `stack-manager/.vscode/settings.json`, creating the file if it doesn't exist.
