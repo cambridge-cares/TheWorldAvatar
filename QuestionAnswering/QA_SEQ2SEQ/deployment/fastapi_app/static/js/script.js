@@ -351,25 +351,30 @@ const chatbotResponseCard = (function () {
                 return;
             }
             // Otherwise do something here to process current chunk
-            value = value.trim()
-            if (value.startsWith("data: ")) {
-                const msg = value.substring("data: ".length)
-                let datum = null
-                try {
-                    datum = JSON.parse(msg)
-                } catch (err) {
-                    console.log("Unexpected data received from streaming server:\n".concat(msg))
-                }
-
-                if (datum !== null) {
-                    chatbotResponsePara.innerHTML += datum["content"]
-                    if (/\s/.test(chatbotResponsePara.innerHTML.charAt(0))) {
-                        chatbotResponsePara.innerHTML = chatbotResponsePara.innerHTML.trimStart()
+            // format:
+            // data: {"content": "abc", "latency": 123}
+            // data: {"content": "def", "latency": 456}
+            value.split("\n").forEach(line => {
+                line = line.trim();
+                if (line.startsWith("data: ")) {
+                    const msg = line.substring("data: ".length)
+                    let datum = null
+                    try {
+                        datum = JSON.parse(msg)
+                    } catch (err) {
+                        console.log("Unexpected data received from streaming server:\n".concat(msg))
                     }
-                    globalState.set("chatbotLatency", datum["latency"])
+    
+                    if (datum !== null) {
+                        chatbotResponsePara.innerHTML += datum["content"]
+                        if (/\s/.test(chatbotResponsePara.innerHTML.charAt(0))) {
+                            chatbotResponsePara.innerHTML = chatbotResponsePara.innerHTML.trimStart()
+                        }
+                        globalState.set("chatbotLatency", datum["latency"])
+                    }
                 }
-            }
-
+            })
+            
             if (streamInterrupted) {
                 return reader.cancel()
             } else {
