@@ -1,6 +1,6 @@
 from collections import defaultdict
 from typing import Iterable
-from constants.functions import NumOp
+from constants.functions import NumOp, StrOp
 
 from locate_then_ask.query_graph import QueryGraph
 
@@ -12,7 +12,7 @@ def count_functions(query_graphs: Iterable[QueryGraph]):
             if p != "func":
                 continue
             op = query_graph.nodes[o]["operator"]
-            assert isinstance(op, NumOp) or isinstance(op, NumOp), op
+            assert isinstance(op, NumOp) or isinstance(op, StrOp), op
 
             stats[op.value] += 1
 

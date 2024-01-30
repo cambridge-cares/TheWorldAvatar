@@ -11,6 +11,7 @@ class OrderCond:
     var: str
     desc: int = False
 
+
 class QueryGraph(nx.DiGraph):
     _LITERAL_PREFIX = "Literal_"
     _BN_PREFIX = "BN_"
@@ -108,11 +109,11 @@ class QueryGraph(nx.DiGraph):
     @property
     def groupby(self):
         return tuple(self.graph.get(self._GROUPBY_KEY, []))
-    
+
     @property
     def orderby(self):
         return tuple(self.graph.get(self._ORDERBY_KEY, []))
-    
+
     @property
     def limit(self):
         return self.graph.get(self._LIMIT_KEY, None)
