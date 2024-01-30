@@ -14,6 +14,7 @@ from locate_then_ask.ontokin.mechanism import OKMechanismExampleMaker
 from locate_then_ask.ontokin.mock_entity_store import MockOKEntityStore
 from locate_then_ask.ontokin.rxn import OKReactionExampleMaker
 from locate_then_ask.ontokin.species import OKSpeciesExampleMaker
+from utils.json import EnumEncoder
 
 
 SEED_ENTITIES_FILEPATH = "data/seed_entities/ontokin.txt"
@@ -159,7 +160,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--user", default=None)
     parser.add_argument("--pw", default=None)
-    parser.add_argument("--repeats", type=int, default=1)
+    parser.add_argument("--n_repeats", type=int, default=1)
     parser.add_argument("--synthetic_abox", action="store_true")
     args = parser.parse_args()
 
@@ -169,10 +170,10 @@ if __name__ == "__main__":
         user=args.user,
         pw=args.pw,
     )
-    examples = ds_gen.generate(repeats=args.repeats)
+    examples = ds_gen.generate(repeats=args.n_repeats)
 
     time_label = time.strftime("%Y-%m-%d_%H.%M.%S")
     filename = "data/ontokin_{timestamp}.json".format(timestamp=time_label)
 
     with open(os.path.join(ROOTDIR, filename), "w") as f:
-        json.dump(examples, f, indent=4)
+        json.dump(examples, f, indent=4, cls=EnumEncoder)

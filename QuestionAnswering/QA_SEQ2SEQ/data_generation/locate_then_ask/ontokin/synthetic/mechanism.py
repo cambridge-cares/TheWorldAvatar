@@ -7,6 +7,7 @@ from locate_then_ask.ontokin.model import OKMechanism
 
 class OKMechanismSynthesizer:
     FILEPATH = os.path.join(ROOTDIR, "data/ontokin/Mechanism.json")
+
     def __init__(self):
         with open(self.FILEPATH, "r") as f:
             data = json.load(f)
@@ -18,5 +19,5 @@ class OKMechanismSynthesizer:
             iri="placeholder",
             doi=random.choice(self.dois),
             species_iris=["placeholder" for _ in range(random.randint(20, 22))],
-            reaction_iris=["placeholder" for _ in range(random.randint(19, 30))]
+            reaction_iris=["placeholder" for _ in range(random.randint(19, 30))],
         )
