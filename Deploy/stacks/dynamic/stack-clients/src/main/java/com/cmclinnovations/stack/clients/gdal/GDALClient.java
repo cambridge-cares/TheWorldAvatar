@@ -195,8 +195,9 @@ public class GDALClient extends ContainerClient {
                         wktString,
                         authName, srid);
                 GeoServerClient.getInstance().addProjectionsToGeoserver(geoserverContainerID, wktString, srid);
-            } catch (NullPointerException e) {
-                throw new RuntimeException("Custom CRS not specified, add \"sridOut\": \"<AUTH>:<123456>\" to gdalTranslateOptions", ex);
+            } catch (NullPointerException ex) {
+                throw new RuntimeException(
+                        "Custom CRS not specified, add \"sridOut\": \"<AUTH>:<123456>\" to gdalTranslateOptions", ex);
             }
         }
     }
@@ -272,7 +273,8 @@ public class GDALClient extends ContainerClient {
             String outputRasterFilePath = outputDirectory
                     .resolve(variableArrayName + "_" + arrayList.getString(index) + ".tif").toString();
 
-            // Convert the time from "dateTimeFormat" format to a format suitable for PostGIS
+            // Convert the time from "dateTimeFormat" format to a format suitable for
+            // PostGIS
             ZonedDateTime zonedDateTime = dateTimeParser.parse(arrayList.getString(index));
             dateTimes.add(zonedDateTime.toInstant().toString());
 
