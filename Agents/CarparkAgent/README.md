@@ -1,6 +1,6 @@
 # Carpark Input Agent
 
-This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the weather station located in the vicinity of the CARES Lab. Its only purpose is to retrieve new data (if available) from the API and download it into 
+This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the carparks located in Singapore. Its only purpose is to retrieve new data (if available) from the API and download it into 
 the corresponding database, as well as, instantiating KG instances and connection when called for the first time. The 
 agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and the [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java)
 from the JPS_BASE_LIB to interact with both the KG and database.
@@ -16,7 +16,7 @@ The second API allows the retrieval of carpark ratings. More information can be 
 For running the agent, three property files are required:
 - One [property file for the agent](#agent-properties) itself pointing to the mapping configuration.
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
-- One [property file for the carpark APIs](#api-properties) defining the api_key, stationId and the api_url.
+- One [property file for the carpark APIs](#api-properties) defining the properties needed to access the API.
 
 #### Agent properties
 The `agent.properties` file only needs to contain a single line:
@@ -68,7 +68,27 @@ Open stack-manager-input-config-service/carpark-agent.json and under the Mounts 
 Copy stack-manager-input-config-service/carpark-agent.json to the services folder under your stack-manager directory (By default it should be TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/) and start up the stack.
 
 #### Run the agent
-In curl syntax:
+
+The agent has two routes, a status route and a retrieve route. 
+
+##### Status route
+
+This request gets the status of the agent. The request has the following format:
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"Carpark_AGENTPROPERTIES\",\"apiProperties\":\"Carpark_APIPROPERTIES\",\"clientProperties\":\"Carpark_CLIENTPROPERTIES\"}" http://localhost:3838/carpark-agent/retrieve
+curl -X GET http://localhost:3838/carpark-agent/status
+```
+and it should return:
+
+{"Result":"Agent is ready to receive requests."}
+
+##### Retrieve route
+
+This request gets the latest timeseries for carpark available lots, instantiate the ABoxes for the carparks and it's attributes if it does not exist and updates the carpark rates in the knowledge graph. The request will also initiate a scheduler to constantly run the retrieve route at a set interval. In the request, the user can set the following parameters for the scheduler:
+- `delay` the time delay before the first execution of retrieve route
+- `interval` the interval between successive executions 
+- `timeunit` the time unit of delay and interval, this is currently limited to the following options: seconds, minutes, hours 
+
+An example of the request in curl syntax is shown below:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/carpark-agent/retrieve
 ```
