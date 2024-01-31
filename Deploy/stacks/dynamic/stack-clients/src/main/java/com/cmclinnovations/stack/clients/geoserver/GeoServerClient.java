@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.clients.geoserver;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -16,14 +18,15 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
@@ -97,6 +100,10 @@ public class GeoServerClient extends ContainerClient {
                 throw new RuntimeException("GeoServer workspace " + workspaceName + "' could not be deleted.");
             }
         }
+    }
+
+    public void reload() {
+        manager.getPublisher().reload();
     }
 
     public void loadStyle(GeoServerStyle style, String workspaceName) {
@@ -200,6 +207,8 @@ public class GeoServerClient extends ContainerClient {
                 fte.setMetadataVirtualTable(virtualTable);
             }
 
+            processDimensions(geoServerSettings, fte);
+
             if (manager.getPublisher().publishDBLayer(workspaceName,
                     storeName,
                     fte, geoServerSettings)) {
@@ -212,7 +221,7 @@ public class GeoServerClient extends ContainerClient {
     }
 
     public void createGeoTiffLayer(String workspaceName, String name, String database, String schema,
-            GeoServerRasterSettings geoServerSettings) {
+            GeoServerRasterSettings geoServerSettings, MultidimSettings mdimSettings) {
 
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
             logger.info("GeoServer coverage store '{}' already exists.", name);
@@ -237,13 +246,31 @@ public class GeoServerClient extends ContainerClient {
             datastoreProperties.putIfAbsent("preparedStatements", "true");
             StringWriter stringWriter = new StringWriter();
 
-            Path geotiffDir = GDALClient.generateRasterOutDirPath(database, schema, name);
+            Path geotiffDir = Path.of(StackClient.GEOTIFFS_DIR, database, schema, name);
             try {
-                datastoreProperties.store(stringWriter, "");
 
-                sendFilesContent(containerId, Map.of("datastore.properties", stringWriter.toString().getBytes(),
-                        "indexer.properties",
-                        "Schema=location:String,*the_geom:Polygon\nPropertyCollectors=".getBytes()),
+                Map<String, byte[]> files = new HashMap<>();
+
+                datastoreProperties.store(stringWriter, "");
+                files.put("datastore.properties", stringWriter.toString().getBytes());
+                String indexerProperties = "Schema=location:String,*the_geom:Polygon\nPropertyCollectors=";
+
+                if (null != mdimSettings) {
+                    TimeOptions timeOptions = mdimSettings.getTimeOptions();
+                    if (null != timeOptions) {
+                        String regex = timeOptions.getRegex();
+                        String format = timeOptions.getFormat();
+
+                        indexerProperties = "TimeAttribute=time\nSchema=location:String,time:java.util.Date,*the_geom:Polygon\nPropertyCollectors=TimestampFileNameExtractorSPI[timeregex](time)";
+                        files.put("timeregex.properties", ("regex=" + regex + ",format=" + format).getBytes());
+
+                    }
+                }
+
+                files.put("indexer.properties",
+                        indexerProperties.getBytes());
+
+                sendFilesContent(containerId, files,
                         geotiffDir.toString());
             } catch (IOException ex) {
                 throw new RuntimeException(
@@ -263,6 +290,8 @@ public class GeoServerClient extends ContainerClient {
                     // TODO Work out how to set the layer title/display name
                 }
 
+                processDimensions(geoServerSettings, storeEncoder);
+
                 if (manager.getPublisher().publishExternalMosaic(
                         workspaceName, name,
                         geotiffDir.toFile(),
@@ -278,5 +307,35 @@ public class GeoServerClient extends ContainerClient {
                         "GeoServer coverage datastore '" + name + "' does not exist and could not be created.", ex);
             }
         }
+    }
+
+    private void processDimensions(GeoServerDimensionSettings dimensionSettings, GSResourceEncoder resourceEncoder) {
+        Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions = dimensionSettings.getDimensions();
+         if (null != dimensions) {
+        dimensions.entrySet().forEach(entry -> resourceEncoder.setMetadataDimension(entry.getKey(), entry.getValue()));
+         }
+    }
+
+    public void addProjectionsToGeoserver(String geoserverContainerID, String wktString, String srid) {
+        String execId;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+        execId = createComplexCommand(geoserverContainerID, "mkdir", "-p",
+                "/opt/geoserver_data/user_projections")
+                .withErrorStream(errorStream)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+        outputStream.reset();
+        errorStream.reset();
+
+        execId = createComplexCommand(geoserverContainerID, "bash", "-c",
+                "echo > /opt/geoserver_data/user_projections/epsg.properties <<EOF " + srid + "=" + wktString
+                        + "\nEOF")
+                .withErrorStream(errorStream)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+
+        GeoServerClient.getInstance().reload();
+        handleErrors(errorStream, execId, logger);
     }
 }

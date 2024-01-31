@@ -21,6 +21,7 @@ public final class StackClient {
     public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
     public static final String SCRATCH_DIR = "/stack_scratch";
     public static final String GEOTIFFS_DIR = "/geotiffs";
+    public static final String MULTIDIM_GEOSPATIAL_DIR = "/multidim_geospatial";
     public static final Path STACK_CONFIG_DIR = Path.of("/inputs/config");
 
     private static final String stackName;
