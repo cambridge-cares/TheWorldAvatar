@@ -2,13 +2,10 @@ package uk.ac.cam.cares.jps.agent.carpark.file;
 
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
-import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Queue;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +37,6 @@ class ConfigReaderTest {
     private static final String SAMPLE_API_LOT_ENDPOINT = "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2";
     private static final String SAMPLE_API_LOT_TOKEN = "bjaga8f";
     private static final String SAMPLE_API_PRICING_ENDPOINT = "https://data.gov.sg/api/action/datastore_search";
-    private static final String SAMPLE_JSON_KEY = "TEST_JSON";
     private static final String TIMESERIES_IRI_PREFIX = TimeSeriesSparql.TIMESERIES_NAMESPACE + "carpark";
 
     @Test
