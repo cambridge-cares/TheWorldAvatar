@@ -18,14 +18,14 @@ class SelectDropdownComponent {
     // Create a button that can be clicked to reveal the list of dropdown options
     let dropdownButtonElement: HTMLElement = createHTMLElement("button", { classes: ["control-button"] });
     dropdownButtonElement.textContent = "Select " + parameterName;
-    // Add a dropdown option list for zone types
+    // Add a dropdown option list for land use types
     this.dropdown_options_container = createDiv({ classes: ["dropdown-box"] });
     this.dropdown_options_container.style.display = "none";
-    // Retrieve all available zone types
-    this.retrieveZoneTypes(stackUrl, plotNamespace)
-      .then((zoneTypes: string[]) => {
+    // Retrieve all available land use types
+    this.retrieveLandUseTypes(stackUrl, plotNamespace)
+      .then((sparqlValues: string[]) => {
         // Add the options to the container
-        zoneTypes.forEach((option: string) => {
+        sparqlValues.forEach((option: string) => {
           this.addOption(parameterName, option, option);
         });
       });
@@ -54,25 +54,25 @@ class SelectDropdownComponent {
   };
 
   /**
-    * Retrieve an array of zone types to populate as values.
+    * Retrieve an array of land use types to populate as values.
     * @param {string} stackUrl - The base url for the stack. Typically domain:port.
     * @param {string} plotNamespace - The SPARQL namespace containing the land plot triples.
- * @returns {Promise<string[]>} A Promise that resolves to an array of zone type string.
+ * @returns {Promise<string[]>} A Promise that resolves to an array of land use type string.
   */
-  private async retrieveZoneTypes(stackUrl: string, plotNamespace: string): Promise<string[]> {
+  private async retrieveLandUseTypes(stackUrl: string, plotNamespace: string): Promise<string[]> {
     let sparqlQuery: string = `
-    PREFIX ontozoning:<https://www.theworldavatar.com/kg/ontozoning/>
+    PREFIX opr:<https://www.theworldavatar.com/kg/ontoplanningregulation/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    SELECT ?zoneType
+    SELECT DISTINCT ?landUseType
     WHERE {
-      ?zone a ontozoning:Zone;
-        ontozoning:hasZoneType/rdfs:label ?zoneType.
+      ?regulation a opr:LandUseRegulation;
+        opr:appliesTo/rdfs:label ?landUseType.
     }`;
     let endpoint: string = stackUrl + "/blazegraph/namespace/" + plotNamespace + "/sparql";
     try {
-      // Retrieve the sparql results and process it for zone types
+      // Retrieve the sparql results and process it for land use types
       let bindings: SparqlResult[] = await execSparqlQuery(endpoint, sparqlQuery);
-      return bindings.map((binding: SparqlResult) => binding.zoneType.value)
+      return bindings.map((binding: SparqlResult) => binding.landUseType.value)
         .sort((a, b) => a.localeCompare(b)); // Sort the results
     } catch (error) {
       console.error("Error executing Sparql query:", error);

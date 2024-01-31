@@ -45,8 +45,8 @@ class SeachEntityComponent extends DynamicComponent {
     this.loader.render(this.container);
     this.overlay.render(this.container);
     let parentElement: HTMLElement = this.container_content;
-    // Create a dropdown component for zone types
-    new SelectDropdownComponent("Zone Type", this.options.stackUrl, options.plotNamespace).render(parentElement);
+    // Create a dropdown component for land use types
+    new SelectDropdownComponent("Land Use Type", this.options.stackUrl, options.plotNamespace).render(parentElement);
     // Create a text input component for site area
     let siteAreaTextInput: SearchTextInputComponent = new SearchTextInputComponent("Plot Area [m2]", this.numerical_placeholder_message, this.INVALID_INPUT_MESSAGE);
     siteAreaTextInput.render(parentElement);
@@ -111,12 +111,12 @@ class SeachEntityComponent extends DynamicComponent {
     // Reset the filters
     mapboxMapHandler.setFilter(layerId, null);
     // Retrieve the options for the zone type search parameter
-    let zoneTypes: string = this.retrieveSelectedOptions(this.container_content.firstElementChild);
+    let landUseTypes: string = this.retrieveSelectedOptions(this.container_content.firstElementChild);
     try {
       // Retrieve the option for site area search parameter
       let areaInputs: string[] = this.retrieveMinMaxInput(textComponentArray[0], true);
       let gfaInputs: string[] = this.retrieveMinMaxInput(textComponentArray[1], true);
-      if (zoneTypes === "''" && areaInputs[0] === "''" && gfaInputs[0] === "''") {
+      if (landUseTypes === "''" && areaInputs[0] === "''" && gfaInputs[0] === "''") {
         return;
       }
       // Show the loader and overlay in this order
@@ -125,7 +125,7 @@ class SeachEntityComponent extends DynamicComponent {
       // Define the request parameters
       let params: { subs: string, namespace: string } = {
         subs: `{"minarea":"${areaInputs[0]}", "maxarea":"${areaInputs[1]}", 
-        "mingfa":"${gfaInputs[0]}", "maxgfa":"${gfaInputs[1]}", "zonetype":"${zoneTypes}"}`,
+        "mingfa":"${gfaInputs[0]}", "maxgfa":"${gfaInputs[1]}", "landusetype":"${landUseTypes}"}`,
         namespace: this.options.plotNamespace
       };
       // Create a variable for this object context so that the fields are still accesible in ajax
