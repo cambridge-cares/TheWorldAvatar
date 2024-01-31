@@ -137,13 +137,19 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/appliesTo">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/LandUseRegulation"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that connects the planning regulation to their urban entity. Generally, all plots have general planning regulations, while area regulations applies to specific zones and land use regulations applies to specific land use types.</rdfs:comment>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This relationship serves as a link to signify the direct relevance and applicability of a land use regulation to that specific land use type.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This relationship serves as a link to signify the direct relevance and applicability of the planning regulation to that specific urban entity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">applies to</rdfs:label>
     </owl:ObjectProperty>
@@ -187,19 +193,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/isConstrainedBy -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/isConstrainedBy">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/LandUseRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship indicating that area regulations take precedence over type regulations.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is constrained by</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/isLegislatedBy -->
 
 
@@ -235,6 +228,19 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the land uses that may be allowed within a specific land use type, subject to the approval of the competent authority.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">may allow use</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/override -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/override">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This relationship denotes the prioritization of a specific planning regulation over others. It aims to accommodate the diverse hierarchy of regulations observed across different cities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">override</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -388,18 +394,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area regulation are special planning regulations that take precedence over other regulations in specific geographic areas. They are usually enforced using geospatial boundaries, denoting that their rules and provisions apply exclusively to entities within the specified geospatial boundary. The intent behind area regulations is often to address unique or localised needs, challenges, or opportunities, and they can vary significantly from standard zoning or land use regulations.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area Regulation</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/BuildingHeight -->
 
 
@@ -431,18 +425,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A competent authority is any public officer or statutory body established by written law with legislative power to make decisions and enforce regulations within their jurisdication.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Competent Authority</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/ConservationArea -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/ConservationArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation that is designated for the preservation and protection of its historical, architectural, cultural, or environmental heritage within specific areas or districts.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Conservation Area</rdfs:label>
     </owl:Class>
     
 
@@ -502,18 +484,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Plot Ratio is the ratio of maximum allowable Gross Floor Area to the Land Area.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Plot Ratio</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/HeightControlPlan -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/HeightControlPlan">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation that is designated to control the building heights of a specific area.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Height Control Plan</rdfs:label>
     </owl:Class>
     
 
@@ -616,18 +586,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Site Coverage defines the ratio of a land plot that can be occupied or covered by a building or structure. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Site Coverage</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/StreetBlockPlan -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/StreetBlockPlan">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of area regulation that guide the detailed setback, storey height and building height.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Street Block Plan</rdfs:label>
     </owl:Class>
     
 
