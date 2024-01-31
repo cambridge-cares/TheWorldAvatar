@@ -19,15 +19,15 @@ class BuildingIdentificationAgentTest {
         request.put("dbPassword", System.getenv("dbPassword"));
         JSONArray coordinates = new JSONArray();
 
-        JSONArray coord1 = new JSONArray(new double[] { 103.67455581177452, 1.2711156279472327 });
-        JSONArray coord2 = new JSONArray(new double[] { 103.68455581177452, 1.2611156279472327 });
+        JSONArray coord1 = new JSONArray(new double[] { 103.86009, 1.29251 });
+        JSONArray coord2 = new JSONArray(new double[] { 103.85728, 1.29115 });
         coordinates.put(coord1);
         coordinates.put(coord2);
 
         request.put("coordinates", coordinates);
         request.put("requestUrl", "/location");
 
-        JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
+        JSONObject result = new BuildingIdentificationAgentDebug().processRequestParameters(request);
 
         assertTrue(result.getInt("number_matched") > 0);
 
@@ -43,9 +43,10 @@ class BuildingIdentificationAgentTest {
         request.put("dbPassword", System.getenv("dbPassword"));
 
         request.put("requestUrl", "/postgis");
-        request.put("table", "industry.test");
+        request.put("table", "public.landplot");
+        request.put("column", "lod1Geometry");
 
-        JSONObject result = new BuildingIdentificationAgent().processRequestParameters(request);
+        JSONObject result = new BuildingIdentificationAgentDebug().processRequestParameters(request);
 
         assertTrue(result.getInt("number_matched") > 0);
 

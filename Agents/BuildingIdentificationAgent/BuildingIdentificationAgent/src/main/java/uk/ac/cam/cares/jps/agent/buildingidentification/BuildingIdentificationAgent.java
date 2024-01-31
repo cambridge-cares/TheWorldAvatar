@@ -29,6 +29,7 @@ public class BuildingIdentificationAgent extends JPSAgent {
     public static final String KEY_COLUMN = "column";
     public static final String KEY_SCHEMA = "schema";
     public static final String KEY_IRI_PREFIX = "iriPrefix";
+    public static final String KEY_ONE_MANY = "oneToMany";
     private static final String EPSG = "EPSG:";
 
     private static final Logger LOGGER = LogManager.getLogger(BuildingIdentificationAgent.class);
@@ -78,6 +79,13 @@ public class BuildingIdentificationAgent extends JPSAgent {
             if (requestParams.has(KEY_COLUMN))
                 columnName = requestParams.getString(KEY_COLUMN);
 
+            // Boolean variable which is true if there are multiple buildings associated
+            // with
+            // each user-specified geometry
+            boolean oneToMany = false;
+            if (requestParams.has(KEY_ONE_MANY))
+                oneToMany = Boolean.parseBoolean(requestParams.getString(KEY_ONE_MANY));
+
             // Reset all variables
             // List of coordinates for which the nearest building needs to be identified
             List<List<Double>> locations = new ArrayList<>();
@@ -97,15 +105,31 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     List<Double> pointLocation = Arrays.asList(xyTransformed[0], xyTransformed[1]);
                     locations.add(pointLocation);
                 }
+
+                LOGGER.info("{}, {}", locations.get(0).get(0), locations.get(0).get(1));
                 List<String> buildings = linkBuildingsArray(dbSrid, maxDistance, locations);
                 responseObject.put(COLUMN_NAME, new JSONArray(buildings));
                 numberBuildingsIdentified = buildings.size();
             } else if (requestParams.getString(KEY_REQ_URL).contains(ROUTE_POSTGIS)) {
                 String tableName = requestParams.getString(KEY_TABLE);
-                Map<Integer, String> buildings = linkBuildingsTable(maxDistance, tableName, columnName);
-                numberBuildingsIdentified = buildings.size();
-                updateBuildings(buildings, tableName);
-                responseObject.put(COLUMN_NAME, new JSONArray(buildings.values()));
+                if (!oneToMany) {
+                    Map<Integer, String> buildings = linkBuildingsTable(maxDistance, tableName, columnName, dbSrid);
+                    numberBuildingsIdentified = buildings.size();
+                    updateBuildings(buildings, tableName);
+                    responseObject.put(COLUMN_NAME, new JSONArray(buildings.values()));
+                } else {
+                    Map<Integer, List<String>> buildings = linkMultipleBuildings(tableName, columnName, dbSrid);
+                    numberBuildingsIdentified = buildings.values().stream().mapToInt(p -> p.size()).sum();
+                    updateMultipleBuildings(tableName, buildings);
+
+                    JSONArray responseArray = new JSONArray();
+
+                    buildings.values().stream().forEach(p -> {
+                        p.stream().forEach(iri -> responseArray.put(iri));
+                    });
+
+                    responseObject.put(COLUMN_NAME, responseArray);
+                }
             } else {
                 String route = requestParams.getString(KEY_REQ_URL);
                 LOGGER.fatal("{}{}", "The Building Identification Agent does not support the route ", route);
@@ -225,7 +249,8 @@ public class BuildingIdentificationAgent extends JPSAgent {
 
     }
 
-    private Map<Integer, String> linkBuildingsTable(double maxDistance, String tableName, String columnName) {
+    private Map<Integer, String> linkBuildingsTable(double maxDistance, String tableName, String columnName,
+            Integer srid) {
 
         Map<Integer, String> buildings = new HashMap<>();
 
@@ -233,17 +258,17 @@ public class BuildingIdentificationAgent extends JPSAgent {
                 Statement stmt = conn.createStatement();) {
 
             String sqlString = String.format("SELECT ogc_fid, iri, dist FROM " +
-                    "(SELECT ogc_fid, %s FROM %s) r1 " +
+                    "(SELECT ogc_fid, public.ST_TRANSFORM(\"%s\", %d) AS geometry FROM %s) r1 " +
                     "LEFT JOIN LATERAL ( " +
                     " SELECT cityobject_genericattrib.strval AS iri, " +
-                    " public.ST_DISTANCE(public.ST_TRANSFORM(r1.geometry, public.ST_SRID(citydb.cityobject.envelope)), citydb.cityobject.envelope) AS dist "
+                    " public.ST_DISTANCE(r1.geometry, citydb.cityobject.envelope) AS dist "
                     +
                     " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
                     " where citydb.cityobject_genericattrib.strval IS NOT NULL AND  citydb.cityobject.objectclass_id = 26 AND cityobject.id = cityobject_genericattrib.cityobject_id"
                     +
                     " ORDER BY dist " +
                     " LIMIT 1 " +
-                    " ) r2 ON true;", columnName, tableName);
+                    " ) r2 ON true;", columnName, srid, tableName);
             ResultSet result = stmt.executeQuery(sqlString);
 
             while (result.next()) {
@@ -256,6 +281,44 @@ public class BuildingIdentificationAgent extends JPSAgent {
                     LOGGER.warn(" The building with IRI {} has been matched to a point {} meters away",
                             buildingIri, dist);
 
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return buildings;
+
+    }
+
+    private Map<Integer, List<String>> linkMultipleBuildings(String tableName, String columnName,
+            Integer srid) {
+
+        Map<Integer, List<String>> buildings = new HashMap<>();
+
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement();) {
+
+            String sqlString = String.format("SELECT ogc_fid, iri FROM " +
+                    "(SELECT ogc_fid, public.ST_TRANSFORM(\"%s\", %d) AS geometry FROM %s) r1 " +
+                    "LEFT JOIN ( " +
+                    " SELECT cityobject_genericattrib.strval AS iri, " +
+                    " cityobject.envelope AS footprint "
+                    +
+                    " FROM citydb.cityobject, citydb.cityobject_genericattrib " +
+                    " where cityobject.objectclass_id = 26 AND cityobject.id = cityobject_genericattrib.cityobject_id"
+                    +
+                    " ) r2 ON public.ST_Intersects(r2.footprint, r1.geometry) " +
+                    " WHERE r2.iri IS NOT NULL; ", columnName, srid, tableName);
+            ResultSet result = stmt.executeQuery(sqlString);
+
+            while (result.next()) {
+                int ogcFid = result.getInt("ogc_fid");
+                String buildingIri = result.getString("iri");
+                if (buildings.containsKey(ogcFid)) {
+                    buildings.get(ogcFid).add(buildingIri);
+                } else
+                    buildings.put(ogcFid, Arrays.asList(buildingIri));
             }
 
         } catch (SQLException e) {
@@ -295,6 +358,51 @@ public class BuildingIdentificationAgent extends JPSAgent {
             update.append("END;");
 
             stmt.executeUpdate(update.toString());
+
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+    }
+
+    public void updateMultipleBuildings(String userTable, Map<Integer, List<String>> buildings) {
+
+        String tableName = "matched_buildings";
+
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement();) {
+
+            String sqlString = String.format(" DROP TABLE IF EXISTS %s ", tableName);
+            stmt.executeUpdate(sqlString);
+
+            sqlString = String.format("CREATE TABLE %s (" +
+                    " \"%s_ogc_fid\" bigint NOT NULL, " +
+                    " \"%s\" )", tableName, userTable, COLUMN_NAME);
+
+            stmt.executeUpdate(sqlString);
+
+            sqlString = String.format(" INSERT INTO %s (\"%s_ogc_fid\", \"%s\")  VALUES  ", tableName, userTable,
+                    COLUMN_NAME);
+
+            StringBuilder update = new StringBuilder(sqlString);
+
+            update.append(System.lineSeparator());
+
+            for (Map.Entry<Integer, List<String>> entry : buildings.entrySet()) {
+                List<String> iriList = entry.getValue();
+                iriList.stream().forEach(iri -> {
+                    String val = String.format("(%d, '%s'),", entry.getKey(), iri);
+                    update.append(val);
+                    update.append(System.lineSeparator());
+
+                });
+            }
+
+            String updateString = update.toString();
+            int lastIndex = updateString.lastIndexOf(",");
+            String finalString = updateString.substring(0, lastIndex);
+            finalString = finalString.concat(";");
+            stmt.executeUpdate(finalString);
 
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
