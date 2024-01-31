@@ -47,7 +47,7 @@ Outdated_Algorithms/*
 myenv/*
 cof_logic/subunit_builder/output*
 cof_logic/subunit_builder/old_files*
-*subunit_buildercopy.py
+cof_logic/subunit_builder/subunit_buildercopy.py
 cof_logic/subunit_builder/subunit_codes*
 *filtering.py
 # Ignore Excel files

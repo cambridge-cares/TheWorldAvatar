@@ -178,44 +178,61 @@ class COFProcessor:
         # Swap precursor_1 and precursor_2
             precursor_1, precursor_2 = precursor_2, precursor_1
         
-        list_1_assembly_models = ['ctn-[(4-tetrahedral)x3(L:3-planar)x4]n',
-                                'hcb-[(3-planar)x1(L:3-planar)x1]n',
+        list_0_assembly_models = ['hcb-[(2-linear)x3(L:3-planar)x2]n',
+                                'bcu-[(2-linear)x4(L:8-cube)x1]n',
                                 'dia-[(4-tetrahedral)x1(L:2-linear)x2]n',
                                 'sql-[(4-planar)x1(L:2-linear)x2]n',
-                                'bcu-[(2-linear)x4(L:8-cube)x1]n'
-                                ] 
+                                'kgm-[(4-planar)x1(L:2-linear)x2]n']
         
-        list_2_assembly_models = ['sql-[(4-planar)x1(4-planar)x1(L:2-linear)x4]n',
-                                  'hcb-[(3-planar)x2(2-linear)x3(L:2-linear)x6]n',
-                                  'hcb-[(3-pyramidal)x2(2-linear)x3(L:2-linear)x6]n',
-                                  'kgm-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n',
-                                  'sql-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n'] 
-        list_2a_assembly_models = ['bor-[(4-tetrahedral)x3(3-planar)x4(L:2-linear)x12]n']
-        list_3_assembly_models = ['hcb-[(3-planar)x1(3-planar)x1(L:2-linear)x3]n']                   
-        lfr_set_1 = ['LFR-20','LFR-21'] #symmetrical building unit
-        lfr_set_2 = ['LFR-10'] #symmetrical building unit, carbon carbon
-        lfr_set_3 = ['LFR-6','LFR-12','LFR-13'] #single bond
-        lfr_set_4 = ['LFR-3', 'LFR-8', 'LFR-1', 'LFR-7', 'LFR-4', 'LFR-5']
+        list_1_assembly_models = ['ctn-[(4-tetrahedral)x3(L:3-planar)x4]n',
+                                'hcb-[(3-planar)x1(L:3-planar)x1]n',
+                                'hnb-[(3-planar)x1(L:3-planar)x1]n'] 
+       
+        list_2_assembly_models = ['dia-[(4-tetrahedral)x1(2-linear)x2(L:2-linear)x4]n',
+                                'hxl-[(6-planar)x1(2-linear)x3(L:2-linear)x6]n',
+                                'hcb-[(3-planar)x2(2-linear)x3(L:2-linear)x6]n',
+                                'hcb-[(3-pyramidal)x2(2-linear)x3(L:2-linear)x6]n',
+                                'kgm-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n',
+                                'sql-[(4-planar)x1(2-linear)x2(L:2-linear)x4]n'] 
+        
+        list_3_assembly_models = ['acs-[(6-prism)x1(6-prism)x1(L:2-linear)x6]n',
+                                'stp-[(6-planar)x2(4-planar)x3(L:2-linear)x12]n',
+                                'ctn-[(4-tetrahedral)x3(3-planar)x4(L:2-linear)x12]n',
+                                'tbo-[(4-planar)x3(3-planar)x4(L:2-linear)x12]n',
+                                'bor-[(4-tetrahedral)x3(3-planar)x4(L:2-linear)x12]n',
+                                'ffc-[(4-planar)x3(3-planar)x4(L:2-linear)x12]n',
+                                'dia-[(4-tetrahedral)x1(4-tetrahedral)x1(L:2-linear)x4]n',
+                                'kgd-[(6-planar)x1(3-planar)x2(L:2-linear)x6]n',
+                                'pts-[(4-tetrahedral)x1(4-planar)x1(L:2-linear)x4]n', 
+                                'sql-[(4-planar)x1(4-planar)x1(L:2-linear)x4]n',
+                                'hcb-[(3-planar)x1(3-planar)x1(L:2-linear)x3]n']                   
+        
+        #'cpt-[(6-planar)x1(2-linear)x3(L:2-linear)x6]n',
+        #'ceq-[(6-prism)x1(3-planar)x2(L:2-linear)x6]n',
+                  
+        lfr_set_0 = ['LFR-16', 'LFR-17', 'LFR-19'] # branching linkages, reactions with one precursor
+        lfr_set_1 = ['LFR-20','LFR-21'] #symmetrical linear linages 
+        lfr_set_2 = ['LFR-6','LFR-12','LFR-13','LFR-18'] # single bond
+        lfr_set_3 = ['LFR-10', 'LFR-50'] #symmetrical building unit, carbon carbon
+        lfr_set_4 = ['LFR-3', 'LFR-8', 'LFR-1', 'LFR-7', 'LFR-4', 'LFR-5'] # , 'LFR-32' # symmetric-assymetric two atom bridges involved 
+        lfr_set_5 = ['LFR-2', 'LFR-11', 'LFR-24']  # , 'LFR-30', 'LFR-31'  assumetric linear linkages
+        
+        supplementary_sbu = 'dum_dum'
+        if assembly_model in list_0_assembly_models:
+            sbu_names = [linkage]
+            if linkage == 'LFR-21':
+                sbu_names.append('LFR-21_rev')
+            else:
+                pass
+        else:
+            pass
         
         if assembly_model in list_1_assembly_models:
-            sbu_names = [linkage]
-            if linkage not in lfr_set_1:    
-                supplementary_sbu = 'dum_dum'
-                sbu_names.append(supplementary_sbu)
-            else:
-                pass
-
-        if assembly_model in list_3_assembly_models:
-            if linkage in lfr_set_2:    
-                sbu_names = [linkage]  
-            elif linkage in lfr_set_4:
-                pass         
-            elif linkage in lfr_set_3: 
-                supplementary_sbu = 'dum_dum'
-                sbu_names.append(supplementary_sbu)
-            else:
-                pass
-                                   
+            sbu_names = [supplementary_sbu]
+            sbu_names.append(linkage) 
+        else:
+            pass
+            
         if precursor_1 is not None:
             matched_row = self.precursors_inp[self.precursors_inp['Precursor'] == precursor_1]
             for _, m_row in matched_row.iterrows():
@@ -232,47 +249,21 @@ class COFProcessor:
                 precursor_values['Precursor_2'] = values
 
         if assembly_model in list_2_assembly_models:
-            if linkage in lfr_set_3:
+            if linkage in lfr_set_2:
                 pass             
-            elif linkage in lfr_set_4:
-            #    print(sbu_names)
-                subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
-                subunit_result = subunit_operations.process()  # Assuming process() returns a string
-                # Replace the first element in sbu_names with the result
-                sbu_names[0] = subunit_result
-                #supplementary_sbu = 'dum_dum'
-               # sbu_names.append(supplementary_sbu)
-            #    sbu_names[1], sbu_names[2] = sbu_names[2], sbu_names[1]
             else:
-                pass    
-        
-        if assembly_model in list_2a_assembly_models:
-            if linkage in lfr_set_3:
-                pass             
-            elif linkage in lfr_set_4:
-            #    print(sbu_names)
                 subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
-                subunit_result = subunit_operations.process()  # Assuming process() returns a string
-                # Replace the first element in sbu_names with the result
+                subunit_result = subunit_operations.process()
                 sbu_names[0] = subunit_result
-                supplementary_sbu = 'dum_dum'
-                sbu_names.append(supplementary_sbu)
-            #    sbu_names[1], sbu_names[2] = sbu_names[2], sbu_names[1]
-            else:
-                pass 
-            
+                   
         if assembly_model in list_3_assembly_models:
-            if linkage in lfr_set_4:
-                print(sbu_names)
-                subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
-                subunit_result = subunit_operations.process()  # Assuming process() returns a string
-                # Replace the first element in sbu_names with the result
-                sbu_names[0] = subunit_result
-                supplementary_sbu = 'dum_dum'
+            if linkage in lfr_set_2:
                 sbu_names.append(supplementary_sbu)
-                
             else:
-                pass
+                subunit_operations = SubunitOperations(sbu_names[0], linkage, precursor_values['Precursor_1']['bindingSite'])
+                subunit_result = subunit_operations.process()
+                sbu_names[0] = subunit_result
+                sbu_names.append(supplementary_sbu)
 
         print('---------LOOK HERE----------')
         print(sbu_names)
