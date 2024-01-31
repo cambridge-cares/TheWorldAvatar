@@ -2,22 +2,9 @@ version: "3.8"
 
 services:
   sensorloggermobileapp_agent:
-    image: sensorloggermobileapp_agent:1.0.0
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: none
+    image: ghcr.io/cambridge-cares/sensorloggermobileapp_agent:1.0.0
     environment:
-      - STACK_NAME=${STACK_NAME}
-      - DATABASE=sensorlogger
-      - GEOSERVER_WORKSPACE=dispersion
-      - DISPERSION_LAYER=dispersion_layer
-      - SIMULATION_DIR=/root/aermod/simulations
-      - FILE_SERVER_URL=http://file-server:8080/FileServer/
-      - DISPERSION_STYLE_NAME=dispersion_style
-      - VIS_FOLDER=/vis_data
-      - GEOSERVER_URL=http://host.docker.internal:3838/geoserver # specifying here because WMS endpoint does not work with container name
+      - DATABASE=postgres
     configs:
       - postgis
       - blazegraph
@@ -28,14 +15,5 @@ services:
       - geoserver_password
     ports:
       - "10102:8080"
-    volumes:
-      - logs:/root/.jps
-      - vis_data:/vis_data
     networks:
       - stack
-
-volumes:
-  logs:
-    name: "logs"
-  vis_data:
-    name: "vis_data"

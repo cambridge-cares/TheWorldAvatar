@@ -23,11 +23,6 @@ public class StaticInstantiation {
        // Create context to work in, and also clear any old existing data
        ModelContext context = new ModelContext("http://sensorlogger-access-agent:8080/sensorlogger");
 
-//         /**
-//          * For local
-//          */
-//         ModelContext context = new ModelContext("http://localhost:48888/test");
-
         /**
          * Creating instances and randomUUID.
          */

@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>1.34.0</jps.base.version>
+        <jps.base.version>1.39.1</jps.base.version>
     </properties>
 
 
@@ -235,7 +235,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.8.0</version>
+            <version>1.14.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->

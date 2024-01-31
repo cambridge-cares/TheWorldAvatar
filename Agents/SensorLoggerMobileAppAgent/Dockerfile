@@ -22,8 +22,6 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn package
 FROM tomcat:9.0 as agent
 
 WORKDIR /root/sensorloggermobileapp_agent
-ADD https://jdbc.postgresql.org/download/postgresql-42.5.4.jar ./resources/
-
 
 # #==================================================================================================
 # Copy the compiled jar from the builder
