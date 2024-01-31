@@ -25,7 +25,11 @@ class ConfigReaderTest {
     private static final String API_LOT_TOKEN_KEY = "carpark.api.lot.token";
     private static final String API_PRICING_ENDPOINT_KEY = "carpark.api.pricing.endpoint";
     private static final String MAPPING_FOLDER_KEY = "carpark.mapping.folder";
+    private static final String BUILDING_IDENTIFICATION_AGENT_ENDPOINT_KEY = "building.identification.agent.endpoint";
+    private static final String BUILDING_PREFIX_KEY = "building.prefix";
     private static final String MAPPING_FOLDER_ENVIRONMENT_VAR = "CARPARK_AGENT_MAPPINGS";
+    private static final String BUILDING_IDENTIFICATION_AGENT_ENDPOINT = "http://testing";
+    private static final String BUILDING_PREFIX = "http://testing-prefix/";
     private static final String SAMPLE_RDB_DB = "jdbc:postgresql://host.docker.internal:5432/carpark";
     private static final String SAMPLE_RDB_USER = "postgres";
     private static final String SAMPLE_RDB_PASS = "postgis";
@@ -230,7 +234,7 @@ class ConfigReaderTest {
 
     @Test
     void testRetrieveKeyToIriMappings_MissingInputs() throws IOException {
-        File config = genSampleAgentProperties(true);
+        File config = genSampleAgentProperties("", BUILDING_IDENTIFICATION_AGENT_ENDPOINT, BUILDING_PREFIX);
         try {
             // Execute method and ensure right error is thrown
             IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class, () -> ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX));
@@ -242,13 +246,20 @@ class ConfigReaderTest {
     }
 
     @Test
-    void testRetrieveKeyToIriMappings_EmptyMappingFolder() throws IOException {
-        File config = genSampleAgentProperties(false);
+    void testBuildingMatchingConfig_NoConfigFile() {
+        String invalidFilePath = "invalid";
+        // Verify right exception is thrown
+        IOException thrownError = assertThrows(IOException.class, () -> ConfigReader.retrieveAPIConfig(invalidFilePath));
+        assertEquals("No file was found from the path " + invalidFilePath, thrownError.getMessage());
+    }
+
+    @Test
+    void testBuildingMatchingConfig_MissingKeys() throws IOException {
+        File config = genSampleRDBConfigFile("", "", "");
         try {
             // Execute method and ensure right error is thrown
-            IOException thrownError = assertThrows(IOException.class, () -> ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX));
-            assertEquals(String.format("Directory is empty. Please ensure there is at least one mapping in the %s directory.", System.getenv(MAPPING_FOLDER_ENVIRONMENT_VAR)),
-                    thrownError.getMessage());
+            IOException thrownError = assertThrows(IOException.class, () -> ConfigReader.retrieveBuildingMatchingConfig(config.getAbsolutePath()));
+            assertEquals(String.format("Missing property: %s in the file %s", BUILDING_IDENTIFICATION_AGENT_ENDPOINT_KEY, config.getAbsolutePath()), thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -256,43 +267,30 @@ class ConfigReaderTest {
     }
 
     @Test
-    void testRetrieveKeyToIriMappings_SuccessfulWithEmptyMappings() throws IOException {
-        File config = genSampleAgentProperties(false);
-        File sampleMappings = genSampleMappings("", "");
+    void testBuildingMatchingConfig_MissingInputs() throws IOException {
+        File config = genSampleAgentProperties(MAPPING_FOLDER_ENVIRONMENT_VAR, BUILDING_IDENTIFICATION_AGENT_ENDPOINT, "");
         try {
-            // Execute method
-            List<JSONKeyToIRIMapper> result = ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX);
-            // Verify results are expected
-            assertEquals(1, result.size());
-            JSONKeyToIRIMapper mapper = result.get(0);
-            assertEquals(0, mapper.getAllJSONKeys().size());
-            assertEquals(0, mapper.getAllIRIs().size());
+            // Execute method and ensure right error is thrown
+            IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class, () -> ConfigReader.retrieveBuildingMatchingConfig(config.getAbsolutePath()));
+            assertEquals(String.format("Property %s cannot be empty in the file %s", BUILDING_PREFIX_KEY, config.getAbsolutePath()), thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
-            sampleMappings.delete();
         }
     }
 
     @Test
-    void testRetrieveKeyToIriMappings_SuccessWithMappingValue() throws IOException {
-        File config = genSampleAgentProperties(false);
-        String sampleIRI = TIMESERIES_IRI_PREFIX + "/test_2318125";
-        File sampleMappings = genSampleMappings(SAMPLE_JSON_KEY, sampleIRI);
+    void testBuildingMatchingConfig_Success() throws IOException {
+        File config = genSampleAgentProperties(MAPPING_FOLDER_ENVIRONMENT_VAR, BUILDING_IDENTIFICATION_AGENT_ENDPOINT, BUILDING_PREFIX);
         try {
             // Execute method
-            List<JSONKeyToIRIMapper> result = ConfigReader.retrieveKeyToIriMappings(config.getAbsolutePath(), TIMESERIES_IRI_PREFIX);
+            Queue<String> result = ConfigReader.retrieveBuildingMatchingConfig(config.getAbsolutePath());
             // Verify results are expected
-            assertEquals(1, result.size());
-            JSONKeyToIRIMapper mapper = result.get(0);
-            assertEquals(1, mapper.getAllJSONKeys().size());
-            assertEquals(SAMPLE_JSON_KEY, mapper.getAllJSONKeys().get(0));
-            assertEquals(1, mapper.getAllIRIs().size());
-            assertEquals(sampleIRI, mapper.getAllIRIs().get(0));
+            assertEquals(BUILDING_IDENTIFICATION_AGENT_ENDPOINT, result.poll());
+            assertEquals(BUILDING_PREFIX, result.poll());
         } finally {
             // Always delete generated config file
             config.delete();
-            sampleMappings.delete();
         }
     }
 
@@ -334,15 +332,13 @@ class ConfigReaderTest {
         return file;
     }
 
-    public static File genSampleAgentProperties(boolean isEmpty) throws IOException {
+    public static File genSampleAgentProperties(String mappingFolderVal, String buildingIdentificationAgentEndpoint, String buildingPrefix) throws IOException {
         File agentPropertiesFile = new File(System.getProperty("user.dir") + "/config/agent.properties");
         createFileAndDirectoryIfUnavailable(agentPropertiesFile);
         PrintWriter writer = new PrintWriter(new FileWriter(agentPropertiesFile, true));
-        String mappingFolderVal = "";
-        if (!isEmpty) {
-            mappingFolderVal = MAPPING_FOLDER_ENVIRONMENT_VAR;
-        }
         writer.println(MAPPING_FOLDER_KEY + "=" + mappingFolderVal);
+        writer.println(BUILDING_IDENTIFICATION_AGENT_ENDPOINT_KEY + "=" + buildingIdentificationAgentEndpoint);
+        writer.println(BUILDING_PREFIX_KEY + "=" + buildingPrefix);
         writer.close();
         return agentPropertiesFile;
     }
