@@ -24,6 +24,8 @@ public class ConfigReader {
     private static final String API_LOT_TOKEN_KEY = "carpark.api.lot.token";
     private static final String API_PRICING_ENDPOINT_KEY = "carpark.api.pricing.endpoint";
     private static final String CARPARK_MAPPING_FOLDER_KEY = "carpark.mapping.folder";
+    private static final String BUILDING_IDENTIFICATION_AGENT_ENDPOINT_KEY = "building.identification.agent.endpoint";
+    private static final String BUILDING_PREFIX_KEY = "building.prefix";
 
     // Private constructor that should not be instantiated
     private ConfigReader() {}
@@ -64,6 +66,17 @@ public class ConfigReader {
      */
     public static Queue<String> retrieveAPIConfig(String filepath) throws IOException {
         String[] requiredProperties = new String[]{API_AVAILABLE_LOT_ENDPOINT_KEY, API_LOT_TOKEN_KEY, API_PRICING_ENDPOINT_KEY};
+        return retrieveFileContents(filepath, requiredProperties, true);
+    }
+
+    /**
+     * Retrieves the building matching configs from the agent.properties file from the specified file path.
+     *
+     * @param filepath Path to the config file for retrieval.
+     * @return The building identification agent endpoint, prefix for building IRI as a queue in this sequence.
+     */
+    public static Queue<String> retrieveBuildingMatchingConfig(String filepath) throws IOException {
+        String[] requiredProperties = new String[]{BUILDING_IDENTIFICATION_AGENT_ENDPOINT_KEY, BUILDING_PREFIX_KEY};
         return retrieveFileContents(filepath, requiredProperties, true);
     }
 
