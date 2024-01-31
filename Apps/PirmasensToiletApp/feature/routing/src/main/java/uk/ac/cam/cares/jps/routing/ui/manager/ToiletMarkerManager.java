@@ -21,8 +21,10 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 
 import org.apache.log4j.Logger;
 
+import uk.ac.cam.cares.jps.model.Route;
 import uk.ac.cam.cares.jps.model.Toilet;
 import uk.ac.cam.cares.jps.routing.R;
+import uk.ac.cam.cares.jps.routing.viewmodel.LocationViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.RoutingViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.ToiletViewModel;
 import uk.ac.cam.cares.jps.routing.bottomsheet.ToiletBottomSheet;
@@ -32,6 +34,7 @@ public class ToiletMarkerManager {
     private PointAnnotationManager pointAnnotationManager;
     private ToiletViewModel toiletViewModel;
     private RoutingViewModel routingViewModel;
+    private LocationViewModel locationViewModel;
     private Context context;
 
 
@@ -40,6 +43,8 @@ public class ToiletMarkerManager {
         AnnotationPlugin annotationPlugin = mapView.getPlugin(Plugin.MAPBOX_ANNOTATION_PLUGIN_ID);
         pointAnnotationManager = (PointAnnotationManager) annotationPlugin.createAnnotationManager(AnnotationType.PointAnnotation, null);
         this.context = fragment.requireContext();
+
+        locationViewModel = new ViewModelProvider(fragment).get(LocationViewModel.class);
 
         routingViewModel = new ViewModelProvider(fragment).get(RoutingViewModel.class);
 
@@ -58,8 +63,12 @@ public class ToiletMarkerManager {
             toiletViewModel.getToilet(pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
             toiletBottomSheet.bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
+            routingViewModel.getRouteData(locationViewModel.getCurrentLocationValue().longitude(),
+                    locationViewModel.getCurrentLocationValue().latitude(),
+                    pointAnnotation.getPoint().longitude(), pointAnnotation.getPoint().latitude());
+
             // clear current route
-            routingViewModel.routeGeoJsonData.setValue("");
+            routingViewModel.routeGeoJsonData.setValue(new Route("", 0));
             return true;
         });
     }

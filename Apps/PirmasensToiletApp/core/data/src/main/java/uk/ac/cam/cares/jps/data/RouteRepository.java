@@ -6,6 +6,7 @@ import io.reactivex.Completable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
+import uk.ac.cam.cares.jps.model.Route;
 import uk.ac.cam.cares.jps.network.route.RouteNetworkSource;
 import uk.ac.cam.cares.jps.network.route.VertexNetworkSource;
 
@@ -21,7 +22,7 @@ public class RouteRepository {
         this.routeNetworkSource = routeNetworkSource;
     }
 
-    public void getRouteGeoJsonUrl(double startLng, double startLat, double endLng, double endLat, RepositoryCallback<String> callback) {
+    public void getRouteGeoJsonUrl(double startLng, double startLat, double endLng, double endLat, RepositoryCallback<Route> callback) {
         RxJavaPlugins.setErrorHandler(throwable -> {
             if (throwable instanceof UndeliverableException) {
                 LOGGER.info("Both network call failed. Ignore this RxJava exception.");
@@ -59,7 +60,7 @@ public class RouteRepository {
         );
     }
 
-    public void getRouteGeoJsonUrl(double lng, double lat, boolean isStart, RepositoryCallback<String> callback) {
+    public void getRouteGeoJsonUrl(double lng, double lat, boolean isStart, RepositoryCallback<Route> callback) {
         vertexNetworkSource.getVertexId(lng, lat,
                 vertexId -> {
                     if (isStart) {

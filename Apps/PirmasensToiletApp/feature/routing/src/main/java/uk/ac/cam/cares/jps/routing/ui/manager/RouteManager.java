@@ -26,11 +26,12 @@ public class RouteManager {
     public RouteManager(MapView mapView, Fragment fragment) {
 
         routingViewModel = new ViewModelProvider(fragment).get(RoutingViewModel.class);
-        routingViewModel.getRouteGeoJsonData().observe(fragment, data -> mapView.getMapboxMap().getStyle(style -> {
+        routingViewModel.getRouteGeoJsonData().observe(fragment, route -> mapView.getMapboxMap().getStyle(style -> {
             Expected<String, None> removeLayerSuccess = style.removeStyleLayer("route_layer");
             Expected<String, None> removeSourceSuccess = style.removeStyleSource("route");
             LOGGER.debug("Route: layer and source removed result " + (removeSourceSuccess.isError() && removeLayerSuccess.isError() ? removeSourceSuccess.getError() + "\n" + removeLayerSuccess.getError() : "success"));
 
+            String data = route.getGeojsonString();
             if (data.isEmpty()) {
                 return;
             }

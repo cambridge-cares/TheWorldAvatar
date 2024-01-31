@@ -46,14 +46,14 @@ public class ToiletBottomSheet {
 
     private void init(Fragment hostFragment) {
         toiletViewModel.getSelectedToilet().observe(hostFragment.getViewLifecycleOwner(), toilet -> {
-            ((TextView) bottomSheetView.findViewById(R.id.address_name_tv)).setText(!toilet.getName().isEmpty() ? toilet.getName() : String.format("(%f, %f)", toilet.getLocation().longitude(), toilet.getLocation().latitude()));
+            ((TextView) bottomSheetView.findViewById(R.id.address_name_tv)).setText(!toilet.getName().isEmpty() ? toilet.getName() : String.format("(%f, %f)", toilet.getLocation().latitude(), toilet.getLocation().longitude()));
 
             ((ImageView) bottomSheetView.findViewById(R.id.has_female_icon))
                     .setColorFilter(toilet.getHasFemale() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.female_toilet) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
             ((ImageView) bottomSheetView.findViewById(R.id.has_males_icon))
                     .setColorFilter(toilet.getHasMale() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.male_toilet) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
             ((ImageView) bottomSheetView.findViewById(R.id.wheelchair_icon))
-                    .setColorFilter(!toilet.getWheelchair().isEmpty() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.black) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
+                    .setColorFilter(!toilet.getWheelchair().isEmpty() ? ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.dark_grey) : ContextCompat.getColor(hostFragment.requireContext(), uk.ac.cam.cares.jps.ui.R.color.grey));
 
             if (!toilet.getOpenTime().isEmpty() || !toilet.getEndTime().isEmpty()) {
                 ((TextView) bottomSheetView.findViewById(R.id.open_hour_tv)).setText(String.format("%s - %s", toilet.getOpenTime(), toilet.getEndTime()));
@@ -99,10 +99,16 @@ public class ToiletBottomSheet {
                 ((LinearLayout) bottomSheetView.findViewById(R.id.other_info_container)).addView(itemContainer);
             }
 
+            // todo: route retrieved when click the marker, show route when click on the button
             ((Button) bottomSheetView.findViewById(R.id.direction_bt)).setOnClickListener(view1 -> routingViewModel.getRouteData(locationViewModel.getCurrentLocationValue().longitude(),
                     locationViewModel.getCurrentLocationValue().latitude(),
                     toilet.getLocation().longitude(),
                     toilet.getLocation().latitude()));
+        });
+
+        routingViewModel.routeGeoJsonData.observe(hostFragment, route -> {
+            ((TextView) bottomSheetView.findViewById(R.id.distance_tv)).setText(route.getCostWithUnit());
+            ((TextView) bottomSheetView.findViewById(R.id.route_time_estimation_tv)).setText(route.getWalkingTime());
         });
     }
 }

@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
+import uk.ac.cam.cares.jps.model.Route;
 import uk.ac.cam.cares.jps.network.Connection;
 import uk.ac.cam.cares.jps.network.NetworkConfiguration;
 
@@ -33,7 +34,7 @@ public class RouteNetworkSource {
         this.connection = connection;
     }
 
-    public void getRouteGeoJsonData(String startId, String endId, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+    public void getRouteGeoJsonData(String startId, String endId, Response.Listener<Route> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String requestUri = NetworkConfiguration.constructUrlBuilder(path)
                 .addQueryParameter("service", service)
                 .addQueryParameter("version", version)
@@ -47,7 +48,21 @@ public class RouteNetworkSource {
         Response.Listener<String> onSuccess = response -> {
             try {
                 JSONObject rawResponse = new JSONObject(response);
-                onSuccessUpper.onResponse(rawResponse.toString());
+
+                // calculate the total cost
+                rawResponse.getJSONArray("features");
+                double cost = 0;
+                for (int i = 0; i < rawResponse.getJSONArray("features").length(); i++) {
+                    JSONObject feature = rawResponse.getJSONArray("features").getJSONObject(i);
+                    if (feature.getString("type").equals("Feature") &&
+                            feature.getJSONObject("geometry").getString("type").equals("MultiLineString")) {
+                        cost += feature.getJSONObject("properties").getDouble("length_m");
+                    }
+                }
+
+                LOGGER.info("total distance: " + cost);
+                Route route = new Route(rawResponse.toString(), cost);
+                onSuccessUpper.onResponse(route);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }

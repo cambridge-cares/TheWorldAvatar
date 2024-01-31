@@ -3,18 +3,23 @@ package uk.ac.cam.cares.jps.routing.viewmodel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import org.apache.log4j.Logger;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.RouteRepository;
+import uk.ac.cam.cares.jps.model.Route;
 
 @HiltViewModel
 public class RoutingViewModel extends ViewModel {
-    public MutableLiveData<String> routeGeoJsonData = new MutableLiveData<>();
-    RepositoryCallback<String> routeGeoJsonUrlCallback = new RepositoryCallback<String>() {
+    private static final Logger LOGGER = Logger.getLogger(RoutingViewModel.class);
+    public MutableLiveData<Route> routeGeoJsonData = new MutableLiveData<>();
+
+    RepositoryCallback<Route> routeGeoJsonUrlCallback = new RepositoryCallback<Route>() {
         @Override
-        public void onSuccess(String result) {
+        public void onSuccess(Route result) {
             routeGeoJsonData.postValue(result);
         }
 
@@ -39,7 +44,7 @@ public class RoutingViewModel extends ViewModel {
         routeRepository.getRouteGeoJsonUrl(lng, lat, isStart, routeGeoJsonUrlCallback);
     }
 
-    public MutableLiveData<String> getRouteGeoJsonData() {
+    public MutableLiveData<Route> getRouteGeoJsonData() {
         return routeGeoJsonData;
     }
 }

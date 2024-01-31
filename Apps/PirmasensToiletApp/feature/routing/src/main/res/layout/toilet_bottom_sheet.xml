@@ -14,6 +14,7 @@
         android:paddingHorizontal="@dimen/component_margin"
         android:paddingTop="@dimen/component_margin_xs"
         app:behavior_hideable="true"
+        app:behavior_peekHeight="80dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <com.google.android.material.bottomsheet.BottomSheetDragHandleView
@@ -22,82 +23,124 @@
             android:layout_height="30dp"
             android:layout_marginTop="@dimen/component_margin_small" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+
+        <TextView
+            android:id="@+id/address_name_tv"
+            android:layout_marginVertical="@dimen/component_margin_xs"
+            style="@style/TextAppearance.Material3.TitleLarge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/component_margin_xs"
-            android:orientation="horizontal">
+            android:layout_marginStart="@dimen/component_margin_xs"
+            android:text="Name" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/icon_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/wheelchair_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/baseline_accessible_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/dot_divider"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/grey" />
+
+
+            <ImageView
+                android:id="@+id/dot_divider"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:src="@drawable/baseline_circle_24"
+                app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
+                app:layout_constraintEnd_toStartOf="@id/has_males_icon"
+                app:layout_constraintTop_toTopOf="@id/has_males_icon"
+                app:tint="@color/grey" />
+
+            <ImageView
+                android:id="@+id/has_males_icon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/baseline_boy_24"
+                app:layout_constraintEnd_toStartOf="@id/has_female_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/grey" />
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_marginVertical="2dp"
+                android:background="@color/grey"
+                app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
+                app:layout_constraintEnd_toEndOf="@id/has_female_icon"
+                app:layout_constraintStart_toStartOf="@id/has_males_icon"
+                app:layout_constraintTop_toTopOf="@id/has_males_icon" />
+
+
+            <ImageView
+                android:id="@+id/has_female_icon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/baseline_girl_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/dot_divider1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/grey" />
+
+            <ImageView
+                android:id="@+id/dot_divider1"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:src="@drawable/baseline_circle_24"
+                app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
+                app:layout_constraintEnd_toStartOf="@id/transport_method_icon"
+                app:layout_constraintTop_toTopOf="@id/has_males_icon"
+                app:tint="@color/grey"
+                android:layout_marginEnd="@dimen/component_margin_xs"/>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="@dimen/component_margin_xs"
+                android:src="@drawable/baseline_directions_walk_24"
+                app:layout_constraintEnd_toStartOf="@id/route_time_estimation_tv"
+                app:tint="@color/dark_grey"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/transport_method_icon"/>
 
             <TextView
-                android:id="@+id/address_name_tv"
-                style="@style/TextAppearance.Material3.TitleLarge"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/component_margin_xs"
-                android:text="Test"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/icon_container"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/icon_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="time estimation"
+                app:layout_constraintEnd_toStartOf="@id/dot_divider2"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/route_time_estimation_tv"
+                android:layout_marginEnd="@dimen/component_margin_xs"/>
+
+            <ImageView
+                android:id="@+id/dot_divider2"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:src="@drawable/baseline_circle_24"
+                app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
+                app:layout_constraintEnd_toStartOf="@id/distance_tv"
+                app:layout_constraintTop_toTopOf="@id/has_males_icon"
+                app:tint="@color/grey"
+                android:layout_marginHorizontal="@dimen/component_margin_xs"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="200 m"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/wheelchair_icon"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/baseline_accessible_24"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/dot_divider"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/grey" />
-
-
-                <ImageView
-                    android:id="@+id/dot_divider"
-                    android:layout_width="5dp"
-                    android:layout_height="5dp"
-                    android:src="@drawable/baseline_circle_24"
-                    app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
-                    app:layout_constraintEnd_toStartOf="@id/has_males_icon"
-                    app:layout_constraintTop_toTopOf="@id/has_males_icon"
-                    app:tint="@color/grey" />
-
-                <ImageView
-                    android:id="@+id/has_males_icon"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/baseline_boy_24"
-                    app:layout_constraintEnd_toStartOf="@id/has_female_icon"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/grey" />
-
-                <View
-                    android:layout_width="2dp"
-                    android:layout_height="0dp"
-                    android:layout_marginVertical="2dp"
-                    android:background="@color/grey"
-                    app:layout_constraintBottom_toBottomOf="@id/has_males_icon"
-                    app:layout_constraintEnd_toEndOf="@id/has_female_icon"
-                    app:layout_constraintStart_toStartOf="@id/has_males_icon"
-                    app:layout_constraintTop_toTopOf="@id/has_males_icon" />
-
-
-                <ImageView
-                    android:id="@+id/has_female_icon"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/baseline_girl_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/grey" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
+                android:id="@+id/distance_tv"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -111,10 +154,10 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:foregroundTint="@color/white"
-                android:src="@drawable/baseline_directions_walk_24" />
+                android:src="@drawable/source_marker" />
 
             <TextView
-                android:id="@+id/distance_tv"
+                android:id="@+id/detailed_address_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
