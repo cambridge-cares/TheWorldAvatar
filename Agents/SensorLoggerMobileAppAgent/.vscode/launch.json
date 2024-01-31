@@ -9,29 +9,26 @@
             "name": "Debug",
             "request": "attach",
             "hostName": "localhost",
-            "port": "${input:debug.port}",
+            "port": "5005",
             "preLaunchTask": "compose-deploy",
             "projectName": "${workspaceFolderBasename}"
-            ,"jvmArgs": "-version:17.0.6"
         },
         {
             "type": "java",
             "name": "Build and Debug",
             "request": "attach",
             "hostName": "localhost",
-            "port": "${input:debug.port}",
+            "port": "5005",
             "preLaunchTask": "compose-build-deploy",
             "projectName": "${workspaceFolderBasename}"
-            ,"jvmArgs": "-version:17.0.6"
         },
         {
             "type": "java",
             "name": "Reattach and Debug",
             "request": "attach",
             "hostName": "localhost",
-            "port": "${input:debug.port.read}",
+            "port": "5005",
             "projectName": "${workspaceFolderBasename}"
-            ,"jvmArgs": "-version:17.0.6"
         }
     ],
     "inputs": [

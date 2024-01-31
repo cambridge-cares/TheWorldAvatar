@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 import org.postgis.Point;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -10,6 +9,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,7 +22,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.concurrent.locks.*;
+import java.util.List;
 
 @WebServlet(urlPatterns = "/update")
 
@@ -37,7 +37,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     }
 
 
-    private static final long serialVersionUID = 1L;
+    //private static final long serialVersionUID = 1L;
 
     private static HashMap smartphoneHashmap = new HashMap();
 

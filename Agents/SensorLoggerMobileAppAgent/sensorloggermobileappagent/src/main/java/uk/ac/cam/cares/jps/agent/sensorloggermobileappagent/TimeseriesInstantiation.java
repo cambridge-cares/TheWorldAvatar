@@ -143,10 +143,6 @@ public class TimeseriesInstantiation implements Cloneable  {
         //Readconfig
         readConfig();
 
-
-        //Create POSTGIS Database in the stack
-        PostGISClient postGISClient = PostGISClient.getInstance();
-        postGISClient.createDatabase(EnvConfig.DATABASE);
         
         //Initialiase timseries
         initSensorTimeseries();

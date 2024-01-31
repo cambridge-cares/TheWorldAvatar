@@ -22,9 +22,9 @@
             "command": "./stack.sh",
             "args": [
                 "start",
-                "${input:stackName}",
+                "singapore",
                 "--debug-port",
-                "${input:debug.port}"
+                "5005"
             ],
             "options": {
                 "shell": {
@@ -62,7 +62,7 @@
             "id": "stackName",
             "type": "promptString",
             "description": "Name your stack.",
-            "default": "TEST-STACK"
+            "default": "singapore"
         },
         {
             "id": "debug.port",

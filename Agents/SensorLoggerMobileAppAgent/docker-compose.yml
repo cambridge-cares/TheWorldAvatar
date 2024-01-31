@@ -1,19 +1,8 @@
 version: "3.8"
 
 services:
-  sensorloggermobileapp_agent:
-    image: ghcr.io/cambridge-cares/sensorloggermobileapp_agent:1.0.0
-    environment:
-      - DATABASE=postgres
-    configs:
-      - postgis
-      - blazegraph
-      - geoserver
-      - ontop
-    secrets:
-      - postgis_password
-      - geoserver_password
+  sensorloggermobileappagent:
+    image: sensorloggermobileappagent:1.0.0
+    build: .
     ports:
       - "10102:8080"
-    networks:
-      - stack

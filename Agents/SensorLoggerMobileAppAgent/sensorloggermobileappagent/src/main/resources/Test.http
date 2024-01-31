@@ -1,0 +1,18 @@
+POST http://10.0.101.186:3838/sensorloggermobileappagent/update
+Content-Type: application/json
+
+{"messageId": 21,
+  "sessionId": "7dc8a9c4-ccd4-4961-8b2b-568f414123b4",
+  "deviceId": "605a09c9-d6c5-4ba7-bc28-fe595d698b41",
+  "payload": [
+    {
+      "name": "barometer",
+      "values": {
+        "relativeAltitude": -0.28272247314453125,
+        "pressure": 1004.5036010742188
+      },
+      "accuracy": 3,
+      "time": 1676967401254931700
+    }
+  ]
+}

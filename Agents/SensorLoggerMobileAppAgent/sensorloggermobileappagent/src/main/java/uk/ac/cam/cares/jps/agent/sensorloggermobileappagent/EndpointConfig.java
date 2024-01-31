@@ -26,13 +26,9 @@ public class EndpointConfig {
 
         PostGISEndpointConfig postGISEndpointConfig = containerClient.readEndpointConfig("postgis",
                     PostGISEndpointConfig.class);
-        this.dburl = postGISEndpointConfig.getJdbcURL(EnvConfig.DATABASE);
+        this.dburl = postGISEndpointConfig.getJdbcURL("postgres");
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
-
-        OntopEndpointConfig ontopEndpointConfig = containerClient.readEndpointConfig("ontop", OntopEndpointConfig.class);
-        this.ontopurl = ontopEndpointConfig.getUrl();
-
     }
     public String getKgurl() {
         return this.kgurl;
