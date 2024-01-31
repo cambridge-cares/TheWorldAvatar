@@ -9,8 +9,8 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontozoning/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 October 2023</dc:date>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoZoning is an ontology developed to represent relationships between zones, their zone types and zone uses.</rdfs:comment>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">31 January 2024</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoZoning is an ontology developed to represent relationships between zones, their land use types and land uses.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
@@ -33,9 +33,9 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/allowsUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the allowable zone uses within a specific zone type.</rdfs:comment>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the allowable land uses within a specific land use type.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows use</rdfs:label>
     </owl:ObjectProperty>
@@ -46,11 +46,24 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/doesNotAllowUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the zone uses that are not permissible within a specific zone type.</rdfs:comment>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the land uses that are not permissible within a specific land use type.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">does not allow use</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/hasLandUseType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasLandUseType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship indicates that the zone has a specific zone type associated with it. This association may be established by the relevant competent authority.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has zone type</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -59,7 +72,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasMaxUseQuantum">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/UseQuantum"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has max use quantum</rdfs:label>
@@ -71,7 +84,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasMinUseQuantum">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/UseQuantum"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has min use quantum</rdfs:label>
@@ -111,19 +124,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/hasZoneType -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasZoneType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship indicates that the zone has a specific zone type associated with it. This association may be established by the relevant competent authority.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has zone type</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontozoning/isRelativeTo -->
 
 
@@ -133,7 +133,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -147,9 +147,9 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the zone uses that may be allowed within a specific zone type, subject to the approval of the competent authority.</rdfs:comment>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the land uses that may be allowed within a specific land use type, subject to the approval of the competent authority.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">may allow use</rdfs:label>
     </owl:ObjectProperty>
@@ -196,7 +196,7 @@
 
 
     <owl:Class rdf:about="http://ontology.eil.utoronto.ca/icity/LBCSv2/Activity">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://ontology.eil.utoronto.ca/icity/LBCSv2/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Activity</rdfs:label>
     </owl:Class>
@@ -231,14 +231,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/AgricultureZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Agriculture -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/AgricultureZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Agriculture">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used for agricultural purposes and includes plant nursery.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Agriculture Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Agriculture</rdfs:label>
     </owl:Class>
     
 
@@ -247,7 +247,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/AirportFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Airport Facility</rdfs:label>
     </owl:Class>
@@ -258,7 +258,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/AirportTerminal">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Airport Terminal</rdfs:label>
     </owl:Class>
@@ -269,7 +269,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/AncillaryDisplayArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ancillary Display Area </rdfs:label>
     </owl:Class>
@@ -280,7 +280,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/AncillaryOffice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ancillary Office</rdfs:label>
     </owl:Class>
@@ -291,7 +291,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtGallery">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Art Gallery</rdfs:label>
     </owl:Class>
@@ -302,7 +302,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArterialRoad">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Arterial Road</rdfs:label>
     </owl:Class>
@@ -313,7 +313,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ArtsCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Arts Centre</rdfs:label>
     </owl:Class>
@@ -324,7 +324,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Assembly">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Assembly</rdfs:label>
     </owl:Class>
@@ -335,7 +335,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Association">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Association</rdfs:label>
     </owl:Class>
@@ -368,7 +368,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Bakery">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bakery</rdfs:label>
     </owl:Class>
@@ -379,7 +379,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Bank">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bank</rdfs:label>
     </owl:Class>
@@ -390,18 +390,18 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Bar">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bar</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/BeachAreaZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/BeachArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeachAreaZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeachArea">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used for coastal recreational purposes for the enjoyment of the general public.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Beach Area</rdfs:label>
@@ -413,7 +413,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BeautySalon">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Beauty Salon</rdfs:label>
     </owl:Class>
@@ -457,7 +457,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BotanicGarden">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Botanic Garden</rdfs:label>
     </owl:Class>
@@ -468,7 +468,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BowlingAlley">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bowling Alley</rdfs:label>
     </owl:Class>
@@ -486,11 +486,23 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontozoning/BuildingUse -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BuildingUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building use defines the specific types of building-related uses that are permitted or prohibited within a particular plot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building Use</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontozoning/Bungalow -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Bungalow">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bungalow</rdfs:label>
     </owl:Class>
@@ -500,30 +512,11 @@
     <!-- https://www.theworldavatar.com/kg/ontozoning/Business1 -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Business1"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Business1WhiteZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Business1WhiteZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Business1"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for uses permissible under B1 zone and White zone as a mixed use development.</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Business1">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A land use type tailored to URA in Singapore. These are areas used or intended to be used mainly for clean industry, light industry, public utilities, and telecommunication uses and other public installations for which the relevant authority does not impose a nuisance buffer greater than 50m. General industrial uses that are able to meet the nuisance buffer requirements imposed by the relevant authority for general industries may be allowed in the B1 zones, subject to evaluation by the relevant authority and the competent authority.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Business 1 White Zone</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Business1Zone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Business1Zone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A zoning type tailored to URA in Singapore. These are areas used or intended to be used mainly for clean industry, light industry, public utilities, and telecommunication uses and other public installations for which the relevant authority does not impose a nuisance buffer greater than 50m. General industrial uses that are able to meet the nuisance buffer requirements imposed by the relevant authority for general industries may be allowed in the B1 zones, subject to evaluation by the relevant authority and the competent authority.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Business 1 Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Business 1</rdfs:label>
     </owl:Class>
     
 
@@ -531,30 +524,11 @@
     <!-- https://www.theworldavatar.com/kg/ontozoning/Business2 -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Business2"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Business2WhiteZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Business2WhiteZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Business2"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for uses permissible under B2 zone and White zone as a mixed use development.</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Business2">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A land use type tailored to URA in Singapore. There are areas used or intended to be used for clean industry, light industry, general industry, warehouse, public utilities and telecommunication uses and other public installations. Special industries such as manufacture of industrial machinery, shipbuilding and repairing, may be allowed in selected areas subject to evaluation by the relevant authority and the competent authority.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Business 2 White Zone</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/Business2Zone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Business2Zone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A zoning type tailored to URA in Singapore. There are areas used or intended to be used for clean industry, light industry, general industry, warehouse, public utilities and telecommunication uses and other public installations. Special industries such as manufacture of industrial machinery, shipbuilding and repairing, may be allowed in selected areas subject to evaluation by the relevant authority and the competent authority.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Business 2 Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Business 2</rdfs:label>
     </owl:Class>
     
 
@@ -562,30 +536,11 @@
     <!-- https://www.theworldavatar.com/kg/ontozoning/BusinessPark -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BusinessPark"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/BusinessParkWhiteZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BusinessParkWhiteZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BusinessPark"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for business park operations and other uses permissible under White zone as a mixed use development.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Business Park White Zone</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/BusinessParkZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BusinessParkZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/BusinessPark">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used for business park operations.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Business Park Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Business Park</rdfs:label>
     </owl:Class>
     
 
@@ -594,7 +549,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cafe">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cafe</rdfs:label>
     </owl:Class>
@@ -605,7 +560,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CallCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Call Centre</rdfs:label>
     </owl:Class>
@@ -616,7 +571,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarDealer">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Car Dealer</rdfs:label>
     </owl:Class>
@@ -627,7 +582,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarPark">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Car Park</rdfs:label>
     </owl:Class>
@@ -638,7 +593,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRental">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Car Rental</rdfs:label>
     </owl:Class>
@@ -649,7 +604,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarRepair">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Car Repair</rdfs:label>
     </owl:Class>
@@ -660,32 +615,32 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CarWash">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Car Wash</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/CemeteryZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Cemetery -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CemeteryZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cemetery">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used for burial grounds, crematoria and columbaria.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cemetery Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cemetery</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/CemeteryZoneUse -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/CemeteryLandUse -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CemeteryZoneUse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CemeteryLandUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cemetery ZoneUse</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cemetery LandUse</rdfs:label>
     </owl:Class>
     
 
@@ -694,7 +649,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CentralDistributionCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Central Distribution Centre</rdfs:label>
     </owl:Class>
@@ -716,7 +671,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ChildcareCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Childcare Centre</rdfs:label>
     </owl:Class>
@@ -727,21 +682,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Cinema">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cinema</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/CivicAndCommunityInstitutionZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/CivicAndCommunityInstitution -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CivicAndCommunityInstitutionZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CivicAndCommunityInstitution">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for civic, community or cultural facilities or other similar purposes.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Civic And Community Institution Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Civic And Community Institution</rdfs:label>
     </owl:Class>
     
 
@@ -750,7 +705,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Clinic">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Clinic</rdfs:label>
     </owl:Class>
@@ -761,7 +716,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ClinicalResearchFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Clinical Research Facility</rdfs:label>
     </owl:Class>
@@ -794,33 +749,45 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Columbarium">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Columbarium</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/CommercialAndResidentialZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Commercial -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialAndResidentialZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for mixed commercial and residential development.</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Commercial">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for commercial development.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Commercial And Residential Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Commercial</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/CommercialOrInstitutionZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/CommercialAndResidential -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialOrInstitutionZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialAndResidential">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for mixed commercial and residential development.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Commercial And Residential</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/CommercialOrInstitution -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialOrInstitution">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for commercial purpose, community institution facilities or other similar purposes.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Commercial Or Institution Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Commercial Or Institution</rdfs:label>
     </owl:Class>
     
 
@@ -829,21 +796,9 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialSchool">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Commercial School</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/CommercialZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommercialZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for commercial development.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Commercial Zone</rdfs:label>
     </owl:Class>
     
 
@@ -852,7 +807,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommunityCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Community Centre</rdfs:label>
     </owl:Class>
@@ -863,7 +818,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommunityHall">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Community Hall</rdfs:label>
     </owl:Class>
@@ -874,7 +829,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CommunityPark">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Community Park</rdfs:label>
     </owl:Class>
@@ -907,7 +862,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ConcertHall">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Concert Hall </rdfs:label>
     </owl:Class>
@@ -918,7 +873,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Condominium">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Condominium</rdfs:label>
     </owl:Class>
@@ -929,7 +884,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ConferenceRoom">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Conference Room</rdfs:label>
     </owl:Class>
@@ -951,7 +906,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ConventionCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Convention Centre</rdfs:label>
     </owl:Class>
@@ -962,7 +917,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CoreMedia">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Core Media </rdfs:label>
     </owl:Class>
@@ -973,7 +928,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Courts">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Courts</rdfs:label>
     </owl:Class>
@@ -984,7 +939,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CoveredAgriculture">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Covered Agriculture</rdfs:label>
     </owl:Class>
@@ -1006,7 +961,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Crematory">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Crematory</rdfs:label>
     </owl:Class>
@@ -1017,7 +972,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/CruiseCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cruise Centre</rdfs:label>
     </owl:Class>
@@ -1028,7 +983,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/DataFarmOrCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Ebusiness"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Data Farm Or Centre</rdfs:label>
     </owl:Class>
@@ -1050,7 +1005,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/DataProcessing">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Data Processing</rdfs:label>
     </owl:Class>
@@ -1061,7 +1016,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dentist">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dentist</rdfs:label>
     </owl:Class>
@@ -1083,7 +1038,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/DesalinationPlant">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Desalination Plant</rdfs:label>
     </owl:Class>
@@ -1094,7 +1049,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/DetachedHouse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Detached House</rdfs:label>
     </owl:Class>
@@ -1105,7 +1060,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/DieselAndPumpPoint">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Diesel And Pump Point</rdfs:label>
     </owl:Class>
@@ -1127,7 +1082,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Dispensary">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dispensary</rdfs:label>
     </owl:Class>
@@ -1138,7 +1093,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Doctor">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Doctor</rdfs:label>
     </owl:Class>
@@ -1160,7 +1115,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/DrivingTestCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Driving Test Centre</rdfs:label>
     </owl:Class>
@@ -1171,7 +1126,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/DrugRehabilitationCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Drug Rehabilitation Centre</rdfs:label>
     </owl:Class>
@@ -1193,7 +1148,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/EarthSatelliteStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Earth Satellite Station</rdfs:label>
     </owl:Class>
@@ -1204,7 +1159,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Ebusiness">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ebusiness</rdfs:label>
     </owl:Class>
@@ -1222,14 +1177,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/EducationalInstitutionZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/EducationalInstitution -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/EducationalInstitutionZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/EducationalInstitution">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for educational purposes including tertiary education.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Educational Institution Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Educational Institution</rdfs:label>
     </owl:Class>
     
 
@@ -1238,7 +1193,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ElectricalSubstation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrical Substation</rdfs:label>
     </owl:Class>
@@ -1271,7 +1226,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Embassy">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Embassy</rdfs:label>
     </owl:Class>
@@ -1282,7 +1237,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Entertainment">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Entertainment</rdfs:label>
     </owl:Class>
@@ -1293,7 +1248,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ExhibitionCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Exhibition Centre</rdfs:label>
     </owl:Class>
@@ -1304,7 +1259,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Expressway">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Expressway</rdfs:label>
     </owl:Class>
@@ -1337,7 +1292,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/FireStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fire Station</rdfs:label>
     </owl:Class>
@@ -1348,7 +1303,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/FishingPort">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fishing Port</rdfs:label>
     </owl:Class>
@@ -1359,7 +1314,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/FitnessCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fitness Centre</rdfs:label>
     </owl:Class>
@@ -1370,7 +1325,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Flat">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flat</rdfs:label>
     </owl:Class>
@@ -1392,7 +1347,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/FoodCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Food Centre</rdfs:label>
     </owl:Class>
@@ -1414,7 +1369,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/FoodPacking">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Food Packing</rdfs:label>
     </owl:Class>
@@ -1436,7 +1391,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/FuneralParlour">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Funeral Parlour</rdfs:label>
     </owl:Class>
@@ -1458,7 +1413,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/GasInstallation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gas Installation</rdfs:label>
     </owl:Class>
@@ -1469,7 +1424,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/GasTakeoffStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gas Takeoff Station</rdfs:label>
     </owl:Class>
@@ -1480,7 +1435,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/GeneralAdministrationSpace">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">General Administration Space</rdfs:label>
     </owl:Class>
@@ -1502,7 +1457,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Golf">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Golf</rdfs:label>
     </owl:Class>
@@ -1524,9 +1479,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/GoodClassBungalow">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Good Class Bungalow</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/GreeneryUse -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Greenery use defines the specific types of open green spaces that are permitted or prohibited within a particular plot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Greenery Use</rdfs:label>
     </owl:Class>
     
 
@@ -1535,7 +1502,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/GroceryStore">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Grocery Store</rdfs:label>
     </owl:Class>
@@ -1557,7 +1524,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Gym">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gym</rdfs:label>
     </owl:Class>
@@ -1568,7 +1535,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HairCare">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hair Care</rdfs:label>
     </owl:Class>
@@ -1586,14 +1553,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/HealthAndMedicalCareZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/HealthAndMedicalCare -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HealthAndMedicalCareZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HealthAndMedicalCare">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for medical services.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Health And Medical Care Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Health And Medical Care</rdfs:label>
     </owl:Class>
     
 
@@ -1602,7 +1569,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HeavyVehicleCarPark">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heavy Vehicle Car Park</rdfs:label>
     </owl:Class>
@@ -1613,7 +1580,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HighTechManufacturing">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">High Tech Manufacturing</rdfs:label>
     </owl:Class>
@@ -1624,7 +1591,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HomeForTheAged">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Home For The Aged</rdfs:label>
     </owl:Class>
@@ -1635,7 +1602,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HomeForTheDisabled">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Home For The Disabled</rdfs:label>
     </owl:Class>
@@ -1657,9 +1624,20 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HospitalVisitorsHostel">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hospital Visitors Hostel</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Hotel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Hotel">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel</rdfs:label>
     </owl:Class>
     
 
@@ -1668,7 +1646,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelAncillaryOffice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel Ancillary Office</rdfs:label>
     </owl:Class>
@@ -1679,10 +1657,17 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelBusinessCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel Business Centre</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/HotelLandUse -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
     
 
 
@@ -1690,7 +1675,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelLibrary">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel Library</rdfs:label>
     </owl:Class>
@@ -1701,7 +1686,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelRecreationalFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel Recreational Facility</rdfs:label>
     </owl:Class>
@@ -1712,32 +1697,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelRooms">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel Rooms</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/HotelZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/HotelType -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for hotel development</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelType">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for hotel development.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel Zone</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel ZoneUse</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hotel Type</rdfs:label>
     </owl:Class>
     
 
@@ -1746,7 +1720,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/HousekeepingRoom">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Housekeeping Room </rdfs:label>
     </owl:Class>
@@ -1768,7 +1742,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/IncinerationPlant">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Incineration Plant</rdfs:label>
     </owl:Class>
@@ -1779,7 +1753,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/IndustrialCanteen">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Industrial Canteen</rdfs:label>
     </owl:Class>
@@ -1790,7 +1764,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/IndustrialTraining">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Industrial Training</rdfs:label>
     </owl:Class>
@@ -1801,7 +1775,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/InpatientFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inpatient Facility</rdfs:label>
     </owl:Class>
@@ -1812,20 +1786,20 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/InstituteOfTechnicalEducation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Institute Of Technical Education</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/InterimZoneUse -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/InterimLandUse -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/InterimZoneUse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/InterimLandUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Interim ZoneUse</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Interim Land Use</rdfs:label>
     </owl:Class>
     
 
@@ -1856,7 +1830,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/JuniorCollege">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Junior College</rdfs:label>
     </owl:Class>
@@ -1867,7 +1841,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/KaraokeBar">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Karaoke Bar</rdfs:label>
     </owl:Class>
@@ -1878,7 +1852,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Kindergarten">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Kindergarten</rdfs:label>
     </owl:Class>
@@ -1889,7 +1863,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/KnittingMill">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Knitting Mill</rdfs:label>
     </owl:Class>
@@ -1900,7 +1874,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LRTDepotOrMarshallingYard">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LRTDepot Or Marshalling Yard</rdfs:label>
     </owl:Class>
@@ -1918,11 +1892,44 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontozoning/LandUse -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land use defines the specific types of activities or uses that are permitted or prohibited within a particular land use type.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land Use</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/LandUseManagement -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUseManagement">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/TVNetworkProgramming"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LandUse Management</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/LandUseType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUseType">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The land use type is a legally-binding description of the permittable �uses� and �developments� that are or may not be allowed to be constructed within a specific zone or area delineated. Land use types are defined by a competent authority and are usually tailored to specific contexts.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land Use Type</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontozoning/LandingSite -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandingSite">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Landing Site</rdfs:label>
     </owl:Class>
@@ -1933,7 +1940,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandscapedPlaza">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Landscaped Plaza</rdfs:label>
     </owl:Class>
@@ -1944,7 +1951,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundromat">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Laundromat</rdfs:label>
     </owl:Class>
@@ -1955,7 +1962,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Laundry">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Laundry</rdfs:label>
     </owl:Class>
@@ -1966,7 +1973,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Library">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Library</rdfs:label>
     </owl:Class>
@@ -1977,7 +1984,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LightIndustry">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Light Industry</rdfs:label>
     </owl:Class>
@@ -1988,7 +1995,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LinenAndLaundryRoom">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linen And Laundry Room</rdfs:label>
     </owl:Class>
@@ -2010,7 +2017,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LocalAccessRoad">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Local Access Road</rdfs:label>
     </owl:Class>
@@ -2043,7 +2050,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Lodging">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lodging</rdfs:label>
     </owl:Class>
@@ -2054,7 +2061,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Lounge">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lounge</rdfs:label>
     </owl:Class>
@@ -2065,7 +2072,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MRTDepotOrMarshallingYard">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MRTDepot Or Marshalling Yard</rdfs:label>
     </owl:Class>
@@ -2076,7 +2083,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MajorArterialRoad">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Major Arterial Road</rdfs:label>
     </owl:Class>
@@ -2087,7 +2094,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MajorDrain">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Major Drain</rdfs:label>
     </owl:Class>
@@ -2098,7 +2105,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Mall">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mall</rdfs:label>
     </owl:Class>
@@ -2120,7 +2127,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ManufacturingGeneral">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Manufacturing General</rdfs:label>
     </owl:Class>
@@ -2131,7 +2138,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Marina">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Marina</rdfs:label>
     </owl:Class>
@@ -2142,7 +2149,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Market">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Market</rdfs:label>
     </owl:Class>
@@ -2208,7 +2215,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MedicalAdministrationSpace">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical Administration Space</rdfs:label>
     </owl:Class>
@@ -2219,7 +2226,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MedicalStaffFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical Staff Facility</rdfs:label>
     </owl:Class>
@@ -2230,7 +2237,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MedicalSuite">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical Suite</rdfs:label>
     </owl:Class>
@@ -2241,7 +2248,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MeetingRoom">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Meeting Room</rdfs:label>
     </owl:Class>
@@ -2252,9 +2259,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MiniMart">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mini Mart</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/MixedUse -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MixedUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for commercial, hotel, residential, sports &amp; recreational and other compatible uses, or a combination of two or more such uses as a mixed development.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed Use</rdfs:label>
     </owl:Class>
     
 
@@ -2263,7 +2282,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MotorVehicleRenting">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Motor Vehicle Renting</rdfs:label>
     </owl:Class>
@@ -2274,7 +2293,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/MotorVehicleTrading">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Motor Vehicle Trading</rdfs:label>
     </owl:Class>
@@ -2296,7 +2315,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Museum">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Museum</rdfs:label>
     </owl:Class>
@@ -2307,7 +2326,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/NationalPark">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">National Park</rdfs:label>
     </owl:Class>
@@ -2318,7 +2337,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/NaturalGasReceivingTerminal">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Natural Gas Receiving Terminal</rdfs:label>
     </owl:Class>
@@ -2329,7 +2348,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/NaturalOpenSpace">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Natural Open Space</rdfs:label>
     </owl:Class>
@@ -2340,7 +2359,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/NeighbourhoodPark">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Neighbourhood Park</rdfs:label>
     </owl:Class>
@@ -2351,7 +2370,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Nightclub">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nightclub</rdfs:label>
     </owl:Class>
@@ -2362,7 +2381,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/NursingBedArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nursing Bed Area</rdfs:label>
     </owl:Class>
@@ -2373,7 +2392,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/NursingHome">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nursing Home</rdfs:label>
     </owl:Class>
@@ -2384,7 +2403,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Office">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Office</rdfs:label>
     </owl:Class>
@@ -2406,7 +2425,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/OpenAirAgriculture">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Open Air Agriculture</rdfs:label>
     </owl:Class>
@@ -2417,10 +2436,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/OpenSpaceZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used as open space.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Open Space Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Open Space</rdfs:label>
     </owl:Class>
     
 
@@ -2436,13 +2455,13 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/OtherZoneUse -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/OtherLandUse -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/OtherZoneUse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/OtherLandUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Other ZoneUse</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Other Land Use</rdfs:label>
     </owl:Class>
     
 
@@ -2451,7 +2470,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/OutdoorPedestrianMall">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Outdoor Pedestrian Mall</rdfs:label>
     </owl:Class>
@@ -2462,9 +2481,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/OutpatientFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Outpatient Facility</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Park -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Park">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for parks or gardens for the enjoyment of the general public and includes pedestrian linkages.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Park</rdfs:label>
     </owl:Class>
     
 
@@ -2473,21 +2504,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ParkConnector">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A linear pedestrianised green corridor connecting major parks and nature areas.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Park Connector</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ParkZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ParkZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for parks or gardens for the enjoyment of the general public and includes pedestrian linkages.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Park Zone</rdfs:label>
     </owl:Class>
     
 
@@ -2496,7 +2516,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PerformingArtsCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Performing Arts Centre</rdfs:label>
     </owl:Class>
@@ -2507,7 +2527,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PersonalServiceTrade">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Personal Service Trade</rdfs:label>
     </owl:Class>
@@ -2529,7 +2549,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PetrolStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Petrol Station</rdfs:label>
     </owl:Class>
@@ -2562,21 +2582,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Physiotherapist">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Physiotherapist</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/PlaceOfWorshipZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/PlaceOfWorship -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PlaceOfWorshipZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PlaceOfWorship">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for religious buildings.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Place Of Worship Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Place Of Worship</rdfs:label>
     </owl:Class>
     
 
@@ -2585,7 +2605,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PoliceStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Police Station</rdfs:label>
     </owl:Class>
@@ -2596,7 +2616,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Polytechnic">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polytechnic</rdfs:label>
     </owl:Class>
@@ -2607,7 +2627,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Pond">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pond</rdfs:label>
     </owl:Class>
@@ -2618,21 +2638,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PortFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Port Facility</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/PortOrAirportZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/PortOrAirport -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PortOrAirportZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PortOrAirport">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used for airport/ airfield or dock/port purposes.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Port Or Airport Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Port Or Airport</rdfs:label>
     </owl:Class>
     
 
@@ -2641,7 +2661,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PortTerminal">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Port Terminal</rdfs:label>
     </owl:Class>
@@ -2652,7 +2672,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PostOffice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Post Office</rdfs:label>
     </owl:Class>
@@ -2663,7 +2683,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PowerStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power Station</rdfs:label>
     </owl:Class>
@@ -2674,7 +2694,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PrayingArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Praying Area</rdfs:label>
     </owl:Class>
@@ -2685,7 +2705,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PriestRoom">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Priest Room</rdfs:label>
     </owl:Class>
@@ -2696,7 +2716,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PrimaryAccessRoad">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Primary Access Road</rdfs:label>
     </owl:Class>
@@ -2707,7 +2727,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PrimarySchool">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Primary School</rdfs:label>
     </owl:Class>
@@ -2718,7 +2738,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PrintingOrPublishing">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Printing Or Publishing</rdfs:label>
     </owl:Class>
@@ -2740,7 +2760,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Prison">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Prison</rdfs:label>
     </owl:Class>
@@ -2762,7 +2782,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ProductDesignOrDevelopment">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Product Design Or Development</rdfs:label>
     </owl:Class>
@@ -2773,7 +2793,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Production">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Production</rdfs:label>
     </owl:Class>
@@ -2795,9 +2815,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/PublicPromenade">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Public Promenade</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/RapidTransit -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/RapidTransit">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for Rapid Transit purposes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rapid Transit</rdfs:label>
     </owl:Class>
     
 
@@ -2806,21 +2838,9 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/RapidTransitStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rapid Transit Station</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/RapidTransitZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/RapidTransitZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for Rapid Transit purposes.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rapid Transit Zone</rdfs:label>
     </owl:Class>
     
 
@@ -2829,7 +2849,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/RecreationClub">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Recreation Club</rdfs:label>
     </owl:Class>
@@ -2851,7 +2871,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/RegionalPark">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Regional Park</rdfs:label>
     </owl:Class>
@@ -2862,7 +2882,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ReligiousClassroom">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Religious Classroom</rdfs:label>
     </owl:Class>
@@ -2873,7 +2893,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/RepairAndServicing">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Repair And Servicing</rdfs:label>
     </owl:Class>
@@ -2884,21 +2904,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ResearchAndDevelopment">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Research And Development</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ReserveSiteZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/ReserveSite -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ReserveSiteZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ReserveSite">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas the specific use of which has yet to be determined. Interim uses that are compatible with the uses in the locality may be allowed subject to evaluation by the competent authority.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reserve Site Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reserve Site</rdfs:label>
     </owl:Class>
     
 
@@ -2907,7 +2927,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Reservoir">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reservoir</rdfs:label>
     </owl:Class>
@@ -2917,42 +2937,35 @@
     <!-- https://www.theworldavatar.com/kg/ontozoning/Residential -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Residential"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ResidentialOrInstitutionZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ResidentialOrInstitutionZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Residential"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for residential purpose, community institution facilities or other similar purposes.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Residential Or Institution Zone</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ResidentialWithCommercialAtFirstStoreyZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ResidentialWithCommercialAtFirstStoreyZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Residential"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for residential development with commercial use at the first storey only.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Residential With Commercial At First Storey Zone</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ResidentialZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ResidentialZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Residential">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for residential development.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Residential Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Residential</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/ResidentialOrInstitution -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ResidentialOrInstitution">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for residential purpose, community institution facilities or other similar purposes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Residential Or Institution</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/ResidentialWithCommercialAtFirstStorey -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ResidentialWithCommercialAtFirstStorey">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for residential development with commercial use at the first storey only.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Residential With Commercial At First Storey</rdfs:label>
     </owl:Class>
     
 
@@ -2961,7 +2974,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Resort">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Resort</rdfs:label>
     </owl:Class>
@@ -2972,7 +2985,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Restaurant">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Restaurant</rdfs:label>
     </owl:Class>
@@ -2983,7 +2996,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/RetirementHousing">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Retirement Housing</rdfs:label>
     </owl:Class>
@@ -2994,21 +3007,33 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/River">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">River</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/RoadZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Road -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/RoadZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Road">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used for existing and proposed roads.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/RoadUse -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/RoadUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road use defines the specific road types that are permitted or prohibited within a particular plot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road Use</rdfs:label>
     </owl:Class>
     
 
@@ -3028,7 +3053,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/School">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">School</rdfs:label>
     </owl:Class>
@@ -3039,7 +3064,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ScienceCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Science Centre</rdfs:label>
     </owl:Class>
@@ -3061,7 +3086,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SecondarySchool">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Secondary School</rdfs:label>
     </owl:Class>
@@ -3083,7 +3108,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Semi-DetachedHouse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Semi-Detached House</rdfs:label>
     </owl:Class>
@@ -3094,7 +3119,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Semi-Expressway">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Semi-Expressway</rdfs:label>
     </owl:Class>
@@ -3105,7 +3130,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServiceReservoir">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Service Reservoir</rdfs:label>
     </owl:Class>
@@ -3116,7 +3141,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServiceRoadOrBacklane">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/RoadUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Service Road Or Backlane</rdfs:label>
     </owl:Class>
@@ -3127,7 +3152,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ServicedApartment">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Serviced Apartment</rdfs:label>
     </owl:Class>
@@ -3138,7 +3163,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SewagePumpingStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sewage Pumping Station</rdfs:label>
     </owl:Class>
@@ -3160,7 +3185,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Shop">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shop</rdfs:label>
     </owl:Class>
@@ -3171,7 +3196,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Showroom">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Showroom</rdfs:label>
     </owl:Class>
@@ -3182,7 +3207,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SickRoom">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sick Room</rdfs:label>
     </owl:Class>
@@ -3204,7 +3229,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Spa">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spa</rdfs:label>
     </owl:Class>
@@ -3215,7 +3240,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SpecialEducationAmbulatorySchool">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Special Education Ambulatory School</rdfs:label>
     </owl:Class>
@@ -3226,32 +3251,44 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SpecialEducationNonAmbulatorySchool">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Special Education Non Ambulatory School</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/SpecialUseZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/SpecialLandUse -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SpecialUseZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used for special purposes.</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SpecialLandUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Special Use Zone Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Special Land Use</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/SpecialZoneUse -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/SpecialUse -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SpecialZoneUse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SpecialUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used for special purposes.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Special ZoneUse</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Special Use</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/SportsAndRecreation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SportsAndRecreation">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for sports and recreational purposes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sports And Recreation</rdfs:label>
     </owl:Class>
     
 
@@ -3260,21 +3297,9 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SportsAndRecreationFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sports And Recreation Facility</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/SportsAndRecreationZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SportsAndRecreationZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for sports and recreational purposes.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sports And Recreation Zone</rdfs:label>
     </owl:Class>
     
 
@@ -3283,7 +3308,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SportsComplex">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sports Complex</rdfs:label>
     </owl:Class>
@@ -3294,7 +3319,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Stadium">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stadium</rdfs:label>
     </owl:Class>
@@ -3305,7 +3330,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/StaffCanteen">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Staff Canteen</rdfs:label>
     </owl:Class>
@@ -3316,7 +3341,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/StaffChangingRoom">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/HotelLandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Staff Changing Room</rdfs:label>
     </owl:Class>
@@ -3338,7 +3363,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/StorageOfChemicalsOils">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Storage Of Chemicals Oils</rdfs:label>
     </owl:Class>
@@ -3349,7 +3374,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Store">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Store</rdfs:label>
     </owl:Class>
@@ -3360,7 +3385,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Strata-LandedHousing">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Strata-Landed Housing</rdfs:label>
     </owl:Class>
@@ -3371,7 +3396,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/StudentHostel">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Student Hostel</rdfs:label>
     </owl:Class>
@@ -3382,7 +3407,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/StudentRunBusiness">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Student Run Business</rdfs:label>
     </owl:Class>
@@ -3426,7 +3451,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/SwampArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Swamp Area</rdfs:label>
     </owl:Class>
@@ -3470,7 +3495,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TelevisionOrFilmingStudioComplex">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Television Or Filming Studio Complex</rdfs:label>
     </owl:Class>
@@ -3481,7 +3506,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TerraceHouse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Terrace House</rdfs:label>
     </owl:Class>
@@ -3514,7 +3539,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TestLaboratory">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Test Laboratory</rdfs:label>
     </owl:Class>
@@ -3547,7 +3572,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Townhouse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Townhouse</rdfs:label>
     </owl:Class>
@@ -3558,7 +3583,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TradeMission">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Trade Mission</rdfs:label>
     </owl:Class>
@@ -3569,7 +3594,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TrailerPark">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Trailer Park</rdfs:label>
     </owl:Class>
@@ -3580,7 +3605,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TrainingInstitute">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Training Institute</rdfs:label>
     </owl:Class>
@@ -3602,7 +3627,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TransmittingStation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transmitting Station</rdfs:label>
     </owl:Class>
@@ -3613,21 +3638,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TransportDepot">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transport Depot</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/TransportFacilitiesZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/TransportFacilities -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TransportFacilitiesZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TransportFacilities">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for the parking of vehicles and transport facilities including garages and at-grade structure of underground road tunnel and rapid transit system.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transport Facilities Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transport Facilities</rdfs:label>
     </owl:Class>
     
 
@@ -3636,7 +3661,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TravelAgency">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Travel Agency</rdfs:label>
     </owl:Class>
@@ -3647,20 +3672,20 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/TreatmentFacility">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Treatment Facility</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/UndeterminedZoneUse -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/UndeterminedLandUse -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/UndeterminedZoneUse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/UndeterminedLandUse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Undetermined ZoneUse</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Undetermined Land Use</rdfs:label>
     </owl:Class>
     
 
@@ -3669,7 +3694,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/University">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University</rdfs:label>
     </owl:Class>
@@ -3687,14 +3712,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/UtilityZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Utility -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/UtilityZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Utility">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used mainly for public utilities and telecommunication infrastructure, including water works, sewage disposal works and other public installations such as electrical substations.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Utility Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Utility</rdfs:label>
     </owl:Class>
     
 
@@ -3714,7 +3739,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/VeterinaryCare">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Veterinary Care</rdfs:label>
     </owl:Class>
@@ -3747,7 +3772,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterPumpHouse">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water Pump House</rdfs:label>
     </owl:Class>
@@ -3758,7 +3783,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterReclamationPlant">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water Reclamation Plant</rdfs:label>
     </owl:Class>
@@ -3769,7 +3794,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterSportsCentre">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water Sports Centre</rdfs:label>
     </owl:Class>
@@ -3780,21 +3805,21 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterTreatmentPlant">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water Treatment Plant</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/WaterbodyZone -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Waterbody -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WaterbodyZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Waterbody">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">These are areas used or intended to be used for drainage purposes and water areas such as reservoirs, ponds, rivers and other water channels.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Waterbody Zone</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Waterbody</rdfs:label>
     </owl:Class>
     
 
@@ -3825,21 +3850,9 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WelfareHome">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Welfare Home</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/WhiteZone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WhiteZone">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A zoning type tailored to URA in Singapore. These are areas used or intended to be used mainly for commercial, hotel, residential, sports &amp; recreational and other compatible uses, or a combination of two or more such uses as a mixed development.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">White Zone</rdfs:label>
     </owl:Class>
     
 
@@ -3848,7 +3861,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WoodedArea">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wooded Area</rdfs:label>
     </owl:Class>
@@ -3859,7 +3872,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WorkersDormitory">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Workers Dormitory</rdfs:label>
     </owl:Class>
@@ -3870,7 +3883,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/WorkersQuarters">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Workers Quarters</rdfs:label>
     </owl:Class>
@@ -3889,44 +3902,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ZoneType -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoneType">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The zone type is a legally-binding description of the permittable �uses� and �developments� that are or may not be allowed to be constructed within a specific zone or area delineated. Zone types are defined by a competent authority and are usually tailored to specific contexts.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zone Type</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ZoneUse -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoneUse">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zone use defines the specific types of activities or land uses that are permitted or prohibited within a particular zone type.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ZoneUse</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ZoneUseManagement -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoneUseManagement">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/TVNetworkProgramming"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ZoneUse Management</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontozoning/ZoologicalGarden -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoologicalGarden">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/GreeneryUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zoological Garden</rdfs:label>
     </owl:Class>
@@ -3937,7 +3917,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/M&amp;EServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneUse"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">M&amp;EServices</rdfs:label>
     </owl:Class>

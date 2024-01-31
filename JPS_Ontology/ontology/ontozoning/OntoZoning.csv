@@ -1,83 +1,109 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoZoning,TBox,https://www.theworldavatar.com/kg/ontozoning/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoZoning,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
-OntoZoning,TBox,"OntoZoning is an ontology developed to represent relationships between zones, their zone types and zone uses.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoZoning,TBox,"OntoZoning is an ontology developed to represent relationships between zones, their land use types and land uses.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoZoning,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 Zone,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,A zone is a defined area or district within the physical world that has specific land use regulations and zoning ordinances. A zone generally is demarcated with a 3D spatial extent as its boundary.,https://www.theworldavatar.com/kg/ontozoning/,Zone
-ZoneType,Class,,,,,,The zone type is a legally-binding description of the permittable ‘uses’ and ‘developments’ that are or may not be allowed to be constructed within a specific zone or area delineated. Zone types are defined by a competent authority and are usually tailored to specific contexts.,https://www.theworldavatar.com/kg/ontozoning/,Zone Type
-AgricultureZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used for agricultural purposes and includes plant nursery.,https://www.theworldavatar.com/kg/ontozoning/,Agriculture Zone
-BeachAreaZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used for coastal recreational purposes for the enjoyment of the general public.,https://www.theworldavatar.com/kg/ontozoning/,Beach Area
-Business1Zone,Class,ZoneType,IS-A,,,,"A zoning type tailored to URA in Singapore. These are areas used or intended to be used mainly for clean industry, light industry, public utilities, and telecommunication uses and other public installations for which the relevant authority does not impose a nuisance buffer greater than 50m. General industrial uses that are able to meet the nuisance buffer requirements imposed by the relevant authority for general industries may be allowed in the B1 zones, subject to evaluation by the relevant authority and the competent authority.",https://www.theworldavatar.com/kg/ontozoning/,Business 1 Zone
-Business1WhiteZone,Class,Business1,IS-A,,,,These are areas used or intended to be used mainly for uses permissible under B1 zone and White zone as a mixed use development.,https://www.theworldavatar.com/kg/ontozoning/,Business 1 White Zone
-Business2Zone,Class,ZoneType,IS-A,,,,"A zoning type tailored to URA in Singapore. There are areas used or intended to be used for clean industry, light industry, general industry, warehouse, public utilities and telecommunication uses and other public installations. Special industries such as manufacture of industrial machinery, shipbuilding and repairing, may be allowed in selected areas subject to evaluation by the relevant authority and the competent authority.",https://www.theworldavatar.com/kg/ontozoning/,Business 2 Zone
-Business2WhiteZone,Class,Business2,IS-A,,,,These are areas used or intended to be used mainly for uses permissible under B2 zone and White zone as a mixed use development.,https://www.theworldavatar.com/kg/ontozoning/,Business 2 White Zone
-BusinessParkZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used for business park operations.,https://www.theworldavatar.com/kg/ontozoning/,Business Park Zone
-BusinessParkWhiteZone,Class,BusinessPark,IS-A,,,,These are areas used or intended to be used mainly for business park operations and other uses permissible under White zone as a mixed use development.,https://www.theworldavatar.com/kg/ontozoning/,Business Park White Zone
-CemeteryZone,Class,ZoneType,IS-A,,,,"These are areas used or intended to be used for burial grounds, crematoria and columbaria.",https://www.theworldavatar.com/kg/ontozoning/,Cemetery Zone
-CivicAndCommunityInstitutionZone,Class,ZoneType,IS-A,,,,"These are areas used or intended to be used mainly for civic, community or cultural facilities or other similar purposes.",https://www.theworldavatar.com/kg/ontozoning/,Civic And Community Institution Zone
-CommercialZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for commercial development.,https://www.theworldavatar.com/kg/ontozoning/,Commercial Zone
-CommercialAndResidentialZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for mixed commercial and residential development.,https://www.theworldavatar.com/kg/ontozoning/,Commercial And Residential Zone
-CommercialOrInstitutionZone,Class,ZoneType,IS-A,,,,"These are areas used or intended to be used mainly for commercial purpose, community institution facilities or other similar purposes.",https://www.theworldavatar.com/kg/ontozoning/,Commercial Or Institution Zone
-EducationalInstitutionZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for educational purposes including tertiary education.,https://www.theworldavatar.com/kg/ontozoning/,Educational Institution Zone
-HealthAndMedicalCareZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for medical services.,https://www.theworldavatar.com/kg/ontozoning/,Health And Medical Care Zone
-HotelZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for hotel development,https://www.theworldavatar.com/kg/ontozoning/,Hotel Zone
-OpenSpaceZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used as open space.,https://www.theworldavatar.com/kg/ontozoning/,Open Space Zone
-ParkZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for parks or gardens for the enjoyment of the general public and includes pedestrian linkages.,https://www.theworldavatar.com/kg/ontozoning/,Park Zone
-PlaceOfWorshipZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for religious buildings.,https://www.theworldavatar.com/kg/ontozoning/,Place Of Worship Zone
-PortOrAirportZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used for airport/ airfield or dock/port purposes.,https://www.theworldavatar.com/kg/ontozoning/,Port Or Airport Zone
-RapidTransitZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for Rapid Transit purposes.,https://www.theworldavatar.com/kg/ontozoning/,Rapid Transit Zone
-ReserveSiteZone,Class,ZoneType,IS-A,,,,These are areas the specific use of which has yet to be determined. Interim uses that are compatible with the uses in the locality may be allowed subject to evaluation by the competent authority.,https://www.theworldavatar.com/kg/ontozoning/,Reserve Site Zone
-ResidentialZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for residential development.,https://www.theworldavatar.com/kg/ontozoning/,Residential Zone
-ResidentialOrInstitutionZone,Class,Residential,IS-A,,,,"These are areas used or intended to be used mainly for residential purpose, community institution facilities or other similar purposes.",https://www.theworldavatar.com/kg/ontozoning/,Residential Or Institution Zone
-ResidentialWithCommercialAtFirstStoreyZone,Class,Residential,IS-A,,,,These are areas used or intended to be used mainly for residential development with commercial use at the first storey only.,https://www.theworldavatar.com/kg/ontozoning/,Residential With Commercial At First Storey Zone
-RoadZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used for existing and proposed roads.,https://www.theworldavatar.com/kg/ontozoning/,Road Zone
-SpecialUseZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used for special purposes.,https://www.theworldavatar.com/kg/ontozoning/,Special Use Zone Zone
-SportsAndRecreationZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for sports and recreational purposes.,https://www.theworldavatar.com/kg/ontozoning/,Sports And Recreation Zone
-TransportFacilitiesZone,Class,ZoneType,IS-A,,,,These are areas used or intended to be used mainly for the parking of vehicles and transport facilities including garages and at-grade structure of underground road tunnel and rapid transit system.,https://www.theworldavatar.com/kg/ontozoning/,Transport Facilities Zone
-UtilityZone,Class,ZoneType,IS-A,,,,"These are areas used or intended to be used mainly for public utilities and telecommunication infrastructure, including water works, sewage disposal works and other public installations such as electrical substations.",https://www.theworldavatar.com/kg/ontozoning/,Utility Zone
-WaterbodyZone,Class,ZoneType,IS-A,,,,"These are areas used or intended to be used for drainage purposes and water areas such as reservoirs, ponds, rivers and other water channels.",https://www.theworldavatar.com/kg/ontozoning/,Waterbody Zone
-WhiteZone,Class,ZoneType,IS-A,,,,"A zoning type tailored to URA in Singapore. These are areas used or intended to be used mainly for commercial, hotel, residential, sports & recreational and other compatible uses, or a combination of two or more such uses as a mixed development.",https://www.theworldavatar.com/kg/ontozoning/,White Zone
-ZoneUse,Class,,,,,,Zone use defines the specific types of activities or land uses that are permitted or prohibited within a particular zone type.,https://www.theworldavatar.com/kg/ontozoning/,ZoneUse
-http://ontology.eil.utoronto.ca/icity/LBCSv2/Activity,Class,ZoneUse,IS-A,,,,,http://ontology.eil.utoronto.ca/icity/LBCSv2/,Activity
-AirportFacility,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Airport Facility
-AirportTerminal,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Airport Terminal
-AncillaryDisplayArea ,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Ancillary Display Area 
-AncillaryOffice,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Ancillary Office
-ArterialRoad,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Arterial Road
-ArtGallery,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Art Gallery
-ArtsCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Arts Centre
-Assembly,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Assembly
-Association,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Association
-Bakery,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bakery
-Bank,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bank
-Bar,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bar
-BeautySalon,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Beauty Salon
-BotanicGarden,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Botanic Garden
-BowlingAlley,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bowling Alley
-Bungalow,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bungalow
-Cafe,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Cafe
-CallCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Call Centre
-CarDealer,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Dealer
-CarPark,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Park
-CarRental,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Rental
-CarRepair,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Repair
-CarWash,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Wash
-CemeteryZoneUse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Cemetery ZoneUse
-CentralDistributionCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Central Distribution Centre
-ChildcareCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Childcare Centre
-Cinema,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Cinema
-Clinic,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Clinic
-ClinicalResearchFacility,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Clinical Research Facility
-Columbarium,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Columbarium
-CommercialSchool,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Commercial School
-CommunityCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Community Centre
-CommunityHall,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Community Hall
-CommunityPark,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Community Park
-ConcertHall ,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Concert Hall 
-Condominium,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Condominium
-ConferenceRoom,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Conference Room
-ConventionCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Convention Centre
-CoreMedia ,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Core Media 
+LandUseType,Class,,,,,,The land use type is a legally-binding description of the permittable ‘uses’ and ‘developments’ that are or may not be allowed to be constructed within a specific zone or area delineated. Land use types are defined by a competent authority and are usually tailored to specific contexts.,https://www.theworldavatar.com/kg/ontozoning/,Land Use Type
+Agriculture,Class,LandUseType,IS-A,,,,These are areas used or intended to be used for agricultural purposes and includes plant nursery.,https://www.theworldavatar.com/kg/ontozoning/,Agriculture
+BeachArea,Class,LandUseType,IS-A,,,,These are areas used or intended to be used for coastal recreational purposes for the enjoyment of the general public.,https://www.theworldavatar.com/kg/ontozoning/,Beach Area
+Business1,Class,LandUseType,IS-A,,,,"A land use type tailored to URA in Singapore. These are areas used or intended to be used mainly for clean industry, light industry, public utilities, and telecommunication uses and other public installations for which the relevant authority does not impose a nuisance buffer greater than 50m. General industrial uses that are able to meet the nuisance buffer requirements imposed by the relevant authority for general industries may be allowed in the B1 zones, subject to evaluation by the relevant authority and the competent authority.",https://www.theworldavatar.com/kg/ontozoning/,Business 1
+Business2,Class,LandUseType,IS-A,,,,"A land use type tailored to URA in Singapore. There are areas used or intended to be used for clean industry, light industry, general industry, warehouse, public utilities and telecommunication uses and other public installations. Special industries such as manufacture of industrial machinery, shipbuilding and repairing, may be allowed in selected areas subject to evaluation by the relevant authority and the competent authority.",https://www.theworldavatar.com/kg/ontozoning/,Business 2
+BusinessPark,Class,LandUseType,IS-A,,,,These are areas used or intended to be used for business park operations.,https://www.theworldavatar.com/kg/ontozoning/,Business Park
+Cemetery,Class,LandUseType,IS-A,,,,"These are areas used or intended to be used for burial grounds, crematoria and columbaria.",https://www.theworldavatar.com/kg/ontozoning/,Cemetery
+CivicAndCommunityInstitution,Class,LandUseType,IS-A,,,,"These are areas used or intended to be used mainly for civic, community or cultural facilities or other similar purposes.",https://www.theworldavatar.com/kg/ontozoning/,Civic And Community Institution
+Commercial,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for commercial development.,https://www.theworldavatar.com/kg/ontozoning/,Commercial
+CommercialAndResidential,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for mixed commercial and residential development.,https://www.theworldavatar.com/kg/ontozoning/,Commercial And Residential
+CommercialOrInstitution,Class,LandUseType,IS-A,,,,"These are areas used or intended to be used mainly for commercial purpose, community institution facilities or other similar purposes.",https://www.theworldavatar.com/kg/ontozoning/,Commercial Or Institution
+EducationalInstitution,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for educational purposes including tertiary education.,https://www.theworldavatar.com/kg/ontozoning/,Educational Institution
+HealthAndMedicalCare,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for medical services.,https://www.theworldavatar.com/kg/ontozoning/,Health And Medical Care
+HotelType,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for hotel development.,https://www.theworldavatar.com/kg/ontozoning/,Hotel Type
+MixedUse,Class,LandUseType,IS-A,,,,"These are areas used or intended to be used mainly for commercial, hotel, residential, sports & recreational and other compatible uses, or a combination of two or more such uses as a mixed development.",https://www.theworldavatar.com/kg/ontozoning/,Mixed Use
+OpenSpaceZone,Class,LandUseType,IS-A,,,,These are areas used or intended to be used as open space.,https://www.theworldavatar.com/kg/ontozoning/,Open Space
+Park,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for parks or gardens for the enjoyment of the general public and includes pedestrian linkages.,https://www.theworldavatar.com/kg/ontozoning/,Park
+PlaceOfWorship,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for religious buildings.,https://www.theworldavatar.com/kg/ontozoning/,Place Of Worship
+PortOrAirport,Class,LandUseType,IS-A,,,,These are areas used or intended to be used for airport/ airfield or dock/port purposes.,https://www.theworldavatar.com/kg/ontozoning/,Port Or Airport
+RapidTransit,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for Rapid Transit purposes.,https://www.theworldavatar.com/kg/ontozoning/,Rapid Transit
+ReserveSite,Class,LandUseType,IS-A,,,,These are areas the specific use of which has yet to be determined. Interim uses that are compatible with the uses in the locality may be allowed subject to evaluation by the competent authority.,https://www.theworldavatar.com/kg/ontozoning/,Reserve Site
+Residential,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for residential development.,https://www.theworldavatar.com/kg/ontozoning/,Residential
+ResidentialOrInstitution,Class,LandUseType,IS-A,,,,"These are areas used or intended to be used mainly for residential purpose, community institution facilities or other similar purposes.",https://www.theworldavatar.com/kg/ontozoning/,Residential Or Institution
+ResidentialWithCommercialAtFirstStorey,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for residential development with commercial use at the first storey only.,https://www.theworldavatar.com/kg/ontozoning/,Residential With Commercial At First Storey
+Road,Class,LandUseType,IS-A,,,,These are areas used or intended to be used for existing and proposed roads.,https://www.theworldavatar.com/kg/ontozoning/,Road
+SpecialUse,Class,LandUseType,IS-A,,,,These are areas used or intended to be used for special purposes.,https://www.theworldavatar.com/kg/ontozoning/,Special Use
+SportsAndRecreation,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for sports and recreational purposes.,https://www.theworldavatar.com/kg/ontozoning/,Sports And Recreation
+TransportFacilities,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for the parking of vehicles and transport facilities including garages and at-grade structure of underground road tunnel and rapid transit system.,https://www.theworldavatar.com/kg/ontozoning/,Transport Facilities
+Utility,Class,LandUseType,IS-A,,,,"These are areas used or intended to be used mainly for public utilities and telecommunication infrastructure, including water works, sewage disposal works and other public installations such as electrical substations.",https://www.theworldavatar.com/kg/ontozoning/,Utility
+Waterbody,Class,LandUseType,IS-A,,,,"These are areas used or intended to be used for drainage purposes and water areas such as reservoirs, ponds, rivers and other water channels.",https://www.theworldavatar.com/kg/ontozoning/,Waterbody
+LandUse,Class,,,,,,Land use defines the specific types of activities or uses that are permitted or prohibited within a particular land use type.,https://www.theworldavatar.com/kg/ontozoning/,Land Use
+http://ontology.eil.utoronto.ca/icity/LBCSv2/Activity,Class,LandUse,IS-A,,,,,http://ontology.eil.utoronto.ca/icity/LBCSv2/,Activity
+CoveredAgriculture,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Covered Agriculture
+InterimLandUse,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Interim Land Use
+MajorDrain,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Major Drain
+OpenAirAgriculture,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Open Air Agriculture
+OtherLandUse,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Other Land Use
+Pond,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Pond
+PublicPromenade,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Public Promenade
+Reservoir,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Reservoir
+River,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,River
+ServiceReservoir,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Service Reservoir
+SpecialLandUse,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Special Land Use
+UndeterminedLandUse,Class,LandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Undetermined Land Use
+GreeneryUse,Class,LandUse,IS-A,,,,Greenery use defines the specific types of open green spaces that are permitted or prohibited within a particular plot.,https://www.theworldavatar.com/kg/ontozoning/,Greenery Use
+BotanicGarden,Class,GreeneryUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Botanic Garden
+CommunityPark,Class,GreeneryUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Community Park
+NationalPark,Class,GreeneryUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,National Park
+NaturalOpenSpace,Class,GreeneryUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Natural Open Space
+NeighbourhoodPark,Class,GreeneryUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Neighbourhood Park
+ParkConnector,Class,GreeneryUse,IS-A,,,,A linear pedestrianised green corridor connecting major parks and nature areas.,https://www.theworldavatar.com/kg/ontozoning/,Park Connector
+RegionalPark,Class,GreeneryUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Regional Park
+SwampArea,Class,GreeneryUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Swamp Area
+WoodedArea,Class,GreeneryUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Wooded Area
+ZoologicalGarden,Class,GreeneryUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Zoological Garden
+RoadUse,Class,LandUse,IS-A,,,,Road use defines the specific road types that are permitted or prohibited within a particular plot.,https://www.theworldavatar.com/kg/ontozoning/,Road Use
+ArterialRoad,Class,RoadUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Arterial Road
+Expressway,Class,RoadUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Expressway
+LocalAccessRoad,Class,RoadUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Local Access Road
+MajorArterialRoad,Class,RoadUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Major Arterial Road
+PrimaryAccessRoad,Class,RoadUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Primary Access Road
+Semi-Expressway,Class,RoadUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Semi-Expressway
+ServiceRoadOrBacklane,Class,RoadUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Service Road Or Backlane
+BuildingUse,Class,LandUse,IS-A,,,,Building use defines the specific types of building-related uses that are permitted or prohibited within a particular plot.,https://www.theworldavatar.com/kg/ontozoning/,Building Use
+AirportFacility,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Airport Facility
+AirportTerminal,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Airport Terminal
+AncillaryDisplayArea ,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Ancillary Display Area 
+AncillaryOffice,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Ancillary Office
+ArtGallery,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Art Gallery
+ArtsCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Arts Centre
+Assembly,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Assembly
+Association,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Association
+Bakery,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bakery
+Bank,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bank
+Bar,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bar
+BeautySalon,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Beauty Salon
+BowlingAlley,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bowling Alley
+Bungalow,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bungalow
+Cafe,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Cafe
+CallCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Call Centre
+CarDealer,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Dealer
+CarPark,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Park
+CarRental,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Rental
+CarRepair,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Repair
+CarWash,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Car Wash
+CemeteryLandUse,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Cemetery LandUse
+CentralDistributionCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Central Distribution Centre
+ChildcareCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Childcare Centre
+Cinema,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Cinema
+Clinic,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Clinic
+ClinicalResearchFacility,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Clinical Research Facility
+Columbarium,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Columbarium
+CommercialSchool,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Commercial School
+CommunityCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Community Centre
+CommunityHall,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Community Hall
+ConcertHall ,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Concert Hall 
+Condominium,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Condominium
+ConferenceRoom,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Conference Room
+ConventionCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Convention Centre
+CoreMedia ,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Core Media 
 MediaPostProductionAndDistribution,Class,CoreMedia ,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Media Post Production And Distribution
 MediaPreProduction,Class,CoreMedia ,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Media Pre Production
 MediaProduction,Class,CoreMedia ,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Media Production
@@ -103,14 +129,13 @@ LocationProductio,Class,MediaPreProduction,IS-A,,,,,https://www.theworldavatar.c
 Scripting,Class,MediaPreProduction,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Scripting
 TextLayout,Class,MediaPreProduction,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Text Layout
 OriginationPlayback,Class,TVNetworkProgramming,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Origination Playback
-ZoneUseManagement,Class,TVNetworkProgramming,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,ZoneUse Management
+LandUseManagement,Class,TVNetworkProgramming,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,LandUse Management
 Scheduling ,Class,TVNetworkProgramming,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Scheduling 
 TransmissionServices,Class,TVNetworkProgramming,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Transmission Services
-Courts,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Courts
-CoveredAgriculture,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Covered Agriculture
-Crematory,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Crematory
-CruiseCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Cruise Centre
-DataProcessing,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Data Processing
+Courts,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Courts
+Crematory,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Crematory
+CruiseCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Cruise Centre
+DataProcessing,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Data Processing
 ComputerReservationSystems ,Class,DataProcessing,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Computer Reservation Systems 
 FinancialBackEndProcessingCentre,Class,DataProcessing,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Financial Back End Processing Centre
 ManufacturingBackEndProcessingCentre,Class,DataProcessing,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Manufacturing Back End Processing Centre
@@ -119,17 +144,17 @@ RegionalMarketingCentre,Class,DataProcessing,IS-A,,,,,https://www.theworldavatar
 SeismicDataAnalysisCentre,Class,DataProcessing,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Seismic Data Analysis Centre
 SupercomputingCentre ,Class,DataProcessing,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Supercomputing Centre 
 ValueAddedNetwork,Class,DataProcessing,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Value Added Network
-Dentist,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Dentist
-DesalinationPlant,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Desalination Plant
-DetachedHouse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Detached House
-DieselAndPumpPoint,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Diesel And Pump Point
-Dispensary,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Dispensary
-Doctor,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Doctor
-DrivingTestCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Driving Test Centre
-DrugRehabilitationCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Drug Rehabilitation Centre
-EarthSatelliteStation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Earth Satellite Station
-Ebusiness,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Ebusiness
-DataFarmOrCentre,Class,Ebusiness,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Data Farm Or Centre
+Dentist,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Dentist
+DesalinationPlant,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Desalination Plant
+DetachedHouse,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Detached House
+DieselAndPumpPoint,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Diesel And Pump Point
+Dispensary,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Dispensary
+Doctor,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Doctor
+DrivingTestCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Driving Test Centre
+DrugRehabilitationCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Drug Rehabilitation Centre
+EarthSatelliteStation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Earth Satellite Station
+Ebusiness,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Ebusiness
+DataFarmOrCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Data Farm Or Centre
 InternetServiceProvider,Class,Ebusiness,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Internet Service Provider
 WebHosting,Class,InternetServiceProvider,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Web Hosting
 WebSiteBuilding,Class,InternetServiceProvider,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Web Site Building
@@ -139,150 +164,129 @@ DataOrInformationTransmission,Class,Telecommunications,IS-A,,,,,https://www.thew
 ElectronicMessageSending,Class,Telecommunications,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Electronic Message Sending
 VoiceCallServices,Class,Telecommunications,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Voice Call Services
 SoftwareDevelopment,Class,Ebusiness,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Software Development
-ElectricalSubstation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Electrical Substation
-Embassy,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Embassy
-Entertainment,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Entertainment
-ExhibitionCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Exhibition Centre
-Expressway,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Expressway
-FireStation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Fire Station
-FishingPort,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Fishing Port
-FitnessCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Fitness Centre
-Flat,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Flat
-FoodCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Food Centre
-FoodPacking,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Food Packing
-FuneralParlour,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Funeral Parlour
-GasInstallation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Gas Installation
-GasTakeoffStation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Gas Takeoff Station
-GeneralAdministrationSpace,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,General Administration Space
-Golf,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Golf
+ElectricalSubstation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Electrical Substation
+Embassy,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Embassy
+Entertainment,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Entertainment
+ExhibitionCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Exhibition Centre
+FireStation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Fire Station
+FishingPort,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Fishing Port
+FitnessCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Fitness Centre
+Flat,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Flat
+FoodCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Food Centre
+FoodPacking,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Food Packing
+FuneralParlour,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Funeral Parlour
+GasInstallation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Gas Installation
+GasTakeoffStation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Gas Takeoff Station
+GeneralAdministrationSpace,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,General Administration Space
+Golf,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Golf
 Chalet,Class,Golf,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Chalet
 ClubHouse,Class,Golf,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Club House
 DrivingRange,Class,Golf,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Driving Range
 GolfCourse,Class,Golf,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Golf Course
 Guesthouse,Class,Golf,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Guesthouse
 ProShop,Class,Golf,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Pro Shop
-GoodClassBungalow,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Good Class Bungalow
-GroceryStore,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Grocery Store
-Gym,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Gym
-HairCare,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hair Care
-HeavyVehicleCarPark,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Heavy Vehicle Car Park
-HighTechManufacturing,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,High Tech Manufacturing
-HomeForTheAged,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Home For The Aged
-HomeForTheDisabled,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Home For The Disabled
-HospitalVisitorsHostel,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hospital Visitors Hostel
-HotelZoneUse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel ZoneUse
-HotelAncillaryOffice,Class,HotelZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Ancillary Office
-HotelBusinessCentre,Class,HotelZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Business Centre
-HotelLibrary,Class,HotelZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Library
-HotelRecreationalFacility,Class,HotelZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Recreational Facility
-HotelRooms,Class,HotelZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Rooms
-HousekeepingRoom ,Class,HotelZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Housekeeping Room 
-LinenAndLaundryRoom,Class,HotelZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Linen And Laundry Room
-StaffCanteen,Class,HotelZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Staff Canteen
-StaffChangingRoom,Class,HotelZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Staff Changing Room
-IncinerationPlant,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Incineration Plant
-IndustrialCanteen,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Industrial Canteen
-IndustrialTraining,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Industrial Training
-InpatientFacility,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Inpatient Facility
-InstituteOfTechnicalEducation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Institute Of Technical Education
-InterimZoneUse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Interim ZoneUse
-JuniorCollege,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Junior College
-KaraokeBar,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Karaoke Bar
-Kindergarten,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Kindergarten
-KnittingMill,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Knitting Mill
-LandingSite,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Landing Site
-LandscapedPlaza,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Landscaped Plaza
-Laundromat,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Laundromat
-Laundry,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Laundry
-Library,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Library
-LightIndustry,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Light Industry
-LocalAccessRoad,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Local Access Road
-Lodging,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Lodging
-Lounge,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Lounge
-LRTDepotOrMarshallingYard,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,LRTDepot Or Marshalling Yard
-M&EServices,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,M&EServices
-MajorArterialRoad,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Major Arterial Road
-MajorDrain,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Major Drain
-Mall,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Mall
-ManufacturingGeneral,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Manufacturing General
-Marina,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Marina
-Market,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Market
-MedicalAdministrationSpace,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Medical Administration Space
-MedicalStaffFacility,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Medical Staff Facility
-MedicalSuite,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Medical Suite
-MeetingRoom,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Meeting Room
-MiniMart,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Mini Mart
-MotorVehicleRenting,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Motor Vehicle Renting
-MotorVehicleTrading,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Motor Vehicle Trading
-MRTDepotOrMarshallingYard,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,MRTDepot Or Marshalling Yard
-Museum,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Museum
-NationalPark,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,National Park
-NaturalGasReceivingTerminal,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Natural Gas Receiving Terminal
-NaturalOpenSpace,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Natural Open Space
-NeighbourhoodPark,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Neighbourhood Park
-Nightclub,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Nightclub
-NursingBedArea,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Nursing Bed Area
-NursingHome,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Nursing Home
-Office,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Office
-OpenAirAgriculture,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Open Air Agriculture
-OtherZoneUse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Other ZoneUse
-OutdoorPedestrianMall,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Outdoor Pedestrian Mall
-OutpatientFacility,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Outpatient Facility
-ParkConnector,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Park Connector
-PerformingArtsCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Performing Arts Centre
-PersonalServiceTrade,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Personal Service Trade
-PetrolStation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Petrol Station
-Physiotherapist,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Physiotherapist
-PoliceStation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Police Station
-Polytechnic,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Polytechnic
-Pond,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Pond
-PortFacility,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Port Facility
-PortTerminal,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Port Terminal
-PostOffice,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Post Office
-PowerStation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Power Station
-PrayingArea,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Praying Area
-PriestRoom,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Priest Room
-PrimaryAccessRoad,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Primary Access Road
-PrimarySchool,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Primary School
-PrintingOrPublishing,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Printing Or Publishing
-Prison,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Prison
-ProductDesignOrDevelopment,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Product Design Or Development
-Production,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Production
-PublicPromenade,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Public Promenade
-RapidTransitStation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Rapid Transit Station
-RecreationClub,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Recreation Club
-RegionalPark,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Regional Park
-ReligiousClassroom,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Religious Classroom
-RepairAndServicing,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Repair And Servicing
-ResearchAndDevelopment,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Research And Development
+GoodClassBungalow,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Good Class Bungalow
+GroceryStore,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Grocery Store
+Gym,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Gym
+HairCare,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hair Care
+HeavyVehicleCarPark,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Heavy Vehicle Car Park
+HighTechManufacturing,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,High Tech Manufacturing
+HomeForTheAged,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Home For The Aged
+HomeForTheDisabled,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Home For The Disabled
+HospitalVisitorsHostel,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hospital Visitors Hostel
+Hotel,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel
+HotelAncillaryOffice,Class,HotelLandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Ancillary Office
+HotelBusinessCentre,Class,HotelLandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Business Centre
+HotelLibrary,Class,HotelLandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Library
+HotelRecreationalFacility,Class,HotelLandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Recreational Facility
+HotelRooms,Class,HotelLandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Hotel Rooms
+HousekeepingRoom ,Class,HotelLandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Housekeeping Room 
+LinenAndLaundryRoom,Class,HotelLandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Linen And Laundry Room
+StaffCanteen,Class,HotelLandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Staff Canteen
+StaffChangingRoom,Class,HotelLandUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Staff Changing Room
+IncinerationPlant,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Incineration Plant
+IndustrialCanteen,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Industrial Canteen
+IndustrialTraining,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Industrial Training
+InpatientFacility,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Inpatient Facility
+InstituteOfTechnicalEducation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Institute Of Technical Education
+JuniorCollege,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Junior College
+KaraokeBar,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Karaoke Bar
+Kindergarten,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Kindergarten
+KnittingMill,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Knitting Mill
+LandingSite,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Landing Site
+LandscapedPlaza,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Landscaped Plaza
+Laundromat,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Laundromat
+Laundry,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Laundry
+Library,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Library
+LightIndustry,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Light Industry
+Lodging,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Lodging
+Lounge,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Lounge
+LRTDepotOrMarshallingYard,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,LRTDepot Or Marshalling Yard
+M&EServices,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,M&EServices
+Mall,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Mall
+ManufacturingGeneral,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Manufacturing General
+Marina,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Marina
+Market,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Market
+MedicalAdministrationSpace,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Medical Administration Space
+MedicalStaffFacility,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Medical Staff Facility
+MedicalSuite,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Medical Suite
+MeetingRoom,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Meeting Room
+MiniMart,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Mini Mart
+MotorVehicleRenting,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Motor Vehicle Renting
+MotorVehicleTrading,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Motor Vehicle Trading
+MRTDepotOrMarshallingYard,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,MRTDepot Or Marshalling Yard
+Museum,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Museum
+NaturalGasReceivingTerminal,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Natural Gas Receiving Terminal
+Nightclub,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Nightclub
+NursingBedArea,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Nursing Bed Area
+NursingHome,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Nursing Home
+Office,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Office
+OutdoorPedestrianMall,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Outdoor Pedestrian Mall
+OutpatientFacility,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Outpatient Facility
+PerformingArtsCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Performing Arts Centre
+PersonalServiceTrade,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Personal Service Trade
+PetrolStation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Petrol Station
+Physiotherapist,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Physiotherapist
+PoliceStation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Police Station
+Polytechnic,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Polytechnic
+PortFacility,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Port Facility
+PortTerminal,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Port Terminal
+PostOffice,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Post Office
+PowerStation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Power Station
+PrayingArea,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Praying Area
+PriestRoom,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Priest Room
+PrimarySchool,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Primary School
+PrintingOrPublishing,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Printing Or Publishing
+Prison,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Prison
+ProductDesignOrDevelopment,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Product Design Or Development
+Production,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Production
+RapidTransitStation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Rapid Transit Station
+RecreationClub,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Recreation Club
+ReligiousClassroom,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Religious Classroom
+RepairAndServicing,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Repair And Servicing
+ResearchAndDevelopment,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Research And Development
 LaboratoryTesting,Class,ResearchAndDevelopment,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Laboratory Testing
 PrototypeProduction,Class,ResearchAndDevelopment,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Prototype Production
-Reservoir,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Reservoir
-Resort,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Resort
-Restaurant,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Restaurant
-RetirementHousing,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Retirement Housing
-River,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,River
-School,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,School
-ScienceCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Science Centre
-SecondarySchool,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Secondary School
-Semi-DetachedHouse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Semi-Detached House
-Semi-Expressway,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Semi-Expressway
-ServicedApartment,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Serviced Apartment
-ServiceReservoir,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Service Reservoir
-ServiceRoadOrBacklane,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Service Road Or Backlane
-SewagePumpingStation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Sewage Pumping Station
-Shop,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Shop
-Showroom,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Showroom
-SickRoom,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Sick Room
-Spa,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Spa
-SpecialEducationAmbulatorySchool,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Special Education Ambulatory School
-SpecialEducationNonAmbulatorySchool,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Special Education Non Ambulatory School
-SpecialZoneUse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Special ZoneUse
-SportsAndRecreationFacility,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Sports And Recreation Facility
-SportsComplex,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Sports Complex
-Stadium,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Stadium
-StorageOfChemicalsOils,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Storage Of Chemicals Oils
-Store,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Store
+Resort,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Resort
+Restaurant,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Restaurant
+RetirementHousing,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Retirement Housing
+School,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,School
+ScienceCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Science Centre
+SecondarySchool,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Secondary School
+Semi-DetachedHouse,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Semi-Detached House
+ServicedApartment,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Serviced Apartment
+SewagePumpingStation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Sewage Pumping Station
+Shop,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Shop
+Showroom,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Showroom
+SickRoom,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Sick Room
+Spa,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Spa
+SpecialEducationAmbulatorySchool,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Special Education Ambulatory School
+SpecialEducationNonAmbulatorySchool,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Special Education Non Ambulatory School
+SportsAndRecreationFacility,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Sports And Recreation Facility
+SportsComplex,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Sports Complex
+Stadium,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Stadium
+StorageOfChemicalsOils,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Storage Of Chemicals Oils
+Store,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Store
 BicycleStore,Class,Store,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Bicycle Store
 BookStore,Class,Store,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Book Store
 ClothingStore ,Class,Store,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Clothing Store 
@@ -301,48 +305,44 @@ Pharmacy,Class,Store,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Phar
 PetStore,Class,Store,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Pet Store
 ShoeStore,Class,Store,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Shoe Store
 Supermarket,Class,Store,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Supermarket
-Strata-LandedHousing,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Strata-Landed Housing
-StudentHostel,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Student Hostel
-StudentRunBusiness,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Student Run Business
-SwampArea,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Swamp Area
-TelevisionOrFilmingStudioComplex,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Television Or Filming Studio Complex
-TerraceHouse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Terrace House
+Strata-LandedHousing,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Strata-Landed Housing
+StudentHostel,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Student Hostel
+StudentRunBusiness,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Student Run Business
+TelevisionOrFilmingStudioComplex,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Television Or Filming Studio Complex
+TerraceHouse,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Terrace House
 TerraceType1,Class,TerraceHouse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Terrace Type 1
 TerraceType2,Class,TerraceHouse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Terrace Type 2
-TestLaboratory,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Test Laboratory
+TestLaboratory,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Test Laboratory
 BiotechLaboratory,Class,TestLaboratory,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Biotech Laboratory
 FoodLaboratory ,Class,TestLaboratory,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Food Laboratory 
 GeologyLaboratory,Class,TestLaboratory,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Geology Laboratory
 PharmaceuticalLaboratory,Class,TestLaboratory,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Pharmaceutical Laboratory
 TextileLaboratory,Class,TestLaboratory,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Textile Laboratory
-Townhouse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Townhouse
-TradeMission,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Trade Mission
-TrailerPark,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Trailer Park
-TrainingInstitute,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Training Institute
-TransmittingStation,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Transmitting Station
-TransportDepot,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Transport Depot
-TravelAgency,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Travel Agency
-TreatmentFacility,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Treatment Facility
-UndeterminedZoneUse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Undetermined ZoneUse
-University,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,University
-VeterinaryCare,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Veterinary Care
-WaterPumpHouse,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Water Pump House
-WaterReclamationPlant,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Water Reclamation Plant
-WaterSportsCentre,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Water Sports Centre
-WaterTreatmentPlant,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Water Treatment Plant
-WelfareHome,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Welfare Home
-WoodedArea,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Wooded Area
-WorkersDormitory,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Workers Dormitory
-WorkersQuarters,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Workers Quarters
-ZoologicalGarden,Class,ZoneUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Zoological Garden
+Townhouse,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Townhouse
+TradeMission,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Trade Mission
+TrailerPark,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Trailer Park
+TrainingInstitute,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Training Institute
+TransmittingStation,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Transmitting Station
+TransportDepot,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Transport Depot
+TravelAgency,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Travel Agency
+TreatmentFacility,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Treatment Facility
+University,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,University
+VeterinaryCare,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Veterinary Care
+WaterPumpHouse,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Water Pump House
+WaterReclamationPlant,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Water Reclamation Plant
+WaterSportsCentre,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Water Sports Centre
+WaterTreatmentPlant,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Water Treatment Plant
+WelfareHome,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Welfare Home
+WorkersDormitory,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Workers Dormitory
+WorkersQuarters,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Workers Quarters
 UseQuantum ,Class,,,,,,"A ratio between the predominant allowed uses and the ancillary allowed uses by the zoning type expressed in percentage. For instance, Business 2 zoning type allows at least 60% of the floor area to be dedicated for industrial purpose uses and the remaining 40% may be dedicated for ancillary uses such as Showroom, Industrial Canteen, Ancillary Office, etc.",https://www.theworldavatar.com/kg/ontozoning/,Use Quantum 
-allowsUse,Object Property,,,ZoneType,ZoneUse,,A relationship that denotes the allowable zone uses within a specific zone type.,https://www.theworldavatar.com/kg/ontozoning/,allows use
-doesNotAllowUse,Object Property,,,ZoneType,ZoneUse,,A relationship that denotes the zone uses that are not permissible within a specific zone type.,https://www.theworldavatar.com/kg/ontozoning/,does not allow use
-hasMaxUseQuantum,Object Property,,,ZoneUse,UseQuantum,,,https://www.theworldavatar.com/kg/ontozoning/,has max use quantum
-hasMinUseQuantum,Object Property,,,ZoneUse,UseQuantum,,,https://www.theworldavatar.com/kg/ontozoning/,has min use quantum
+allowsUse,Object Property,,,LandUseType,LandUse,,A relationship that denotes the allowable land uses within a specific land use type.,https://www.theworldavatar.com/kg/ontozoning/,allows use
+doesNotAllowUse,Object Property,,,LandUseType,LandUse,,A relationship that denotes the land uses that are not permissible within a specific land use type.,https://www.theworldavatar.com/kg/ontozoning/,does not allow use
+mayAllowUse,Object Property,,,LandUseType,LandUse,,"A relationship that denotes the land uses that may be allowed within a specific land use type, subject to the approval of the competent authority.",https://www.theworldavatar.com/kg/ontozoning/,may allow use
+hasMaxUseQuantum,Object Property,,,LandUse,UseQuantum,,,https://www.theworldavatar.com/kg/ontozoning/,has max use quantum
+hasMinUseQuantum,Object Property,,,LandUse,UseQuantum,,,https://www.theworldavatar.com/kg/ontozoning/,has min use quantum
 hasPlot,Object Property,,,Zone,https://www.theworldavatar.com/kg/ontoplot/Plot,,A relationship that indicates the plots that are within the boundaries of the specified zone.,https://www.theworldavatar.com/kg/ontozoning/,has plot
 hasUnit,Object Property,,,UseQuantum,https://www.ontology-of-units-of-measure.org/resource/om-2/Percentage UNION https://www.ontology-of-units-of-measure.org/resource/om-2/squareMetre,,,https://www.theworldavatar.com/kg/ontozoning/,has unit
-hasZoneType,Object Property,,,Zone,ZoneType,,A relationship indicates that the zone has a specific zone type associated with it. This association may be established by the relevant competent authority.,https://www.theworldavatar.com/kg/ontozoning/,has zone type
-isRelativeTo,Object Property,,,UseQuantum,ZoneUse UNION https://www.theworldavatar.com/kg/ontoplot/Plot,,,https://www.theworldavatar.com/kg/ontozoning/,is relative to
-mayAllowUse,Object Property,,,ZoneType,ZoneUse,,"A relationship that denotes the zone uses that may be allowed within a specific zone type, subject to the approval of the competent authority.",https://www.theworldavatar.com/kg/ontozoning/,may allow use
+hasLandUseType,Object Property,,,Zone,LandUseType,,A relationship indicates that the zone has a specific zone type associated with it. This association may be established by the relevant competent authority.,https://www.theworldavatar.com/kg/ontozoning/,has zone type
+isRelativeTo,Object Property,,,UseQuantum,LandUse UNION https://www.theworldavatar.com/kg/ontoplot/Plot,,,https://www.theworldavatar.com/kg/ontozoning/,is relative to
 hasValue ,Data Property,,,UseQuantum,decimal,,,https://www.theworldavatar.com/kg/ontozoning/,has value 
