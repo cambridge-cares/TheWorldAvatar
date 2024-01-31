@@ -16,14 +16,14 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.io.*;
 import java.util.Queue;
 
-public class APIConnector {
+public class CarparkAPIConnector {
     private String lotApiEndpoint;
     private String lotApiToken;
     private String pricingApiEndpoint;
 
     private static final String RATES_DATA_RETRIEVAL_ERROR = "Carpark rates data could not be retrieved";
     private static final String AVAILABLE_LOTS_DATA_RETRIEVAL_ERROR = "Carpark available lots data could not be retrieved";
-    private static final Logger LOGGER = LogManager.getLogger(APIConnector.class);
+    private static final Logger LOGGER = LogManager.getLogger(CarparkAPIConnector.class);
 
     /**
      * Standard Constructor for APIConnector
@@ -31,7 +31,7 @@ public class APIConnector {
      * @param availableLotsAPIToken API token for accessing the endpoint
      * @param ratesUrl endpoint URL to retrieve the carpark rates data
      */
-    public APIConnector(String availableLotsUrl, String availableLotsAPIToken, String ratesUrl) {
+    public CarparkAPIConnector(String availableLotsUrl, String availableLotsAPIToken, String ratesUrl) {
         lotApiEndpoint = availableLotsUrl ;
         lotApiToken = availableLotsAPIToken;
         pricingApiEndpoint = ratesUrl;
@@ -42,7 +42,7 @@ public class APIConnector {
      * @param filepath filepath to file that contains properties for connecting to the APIs
      * @throws IOException
      */
-    public APIConnector(String filepath) throws IOException {
+    public CarparkAPIConnector(String filepath) throws IOException {
         Queue<String> apiConfigs = ConfigReader.retrieveAPIConfig(filepath);
         this.lotApiEndpoint = apiConfigs.poll();
         this.lotApiToken = apiConfigs.poll();
