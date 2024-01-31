@@ -29,65 +29,15 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/allowsUse -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/allowsUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the allowable land uses within a specific land use type.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows use</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/doesNotAllowUse -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/doesNotAllowUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the land uses that are not permissible within a specific land use type.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">does not allow use</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontozoning/hasLandUseType -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasLandUseType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship indicates that the zone has a specific zone type associated with it. This association may be established by the relevant competent authority.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship indicating the plot and its associated land use type. This association may be established by the relevant competent authority.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has zone type</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/hasMaxUseQuantum -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasMaxUseQuantum">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/UseQuantum"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has max use quantum</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/hasMinUseQuantum -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasMinUseQuantum">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/UseQuantum"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has min use quantum</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has land use type</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -105,78 +55,15 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontozoning/hasUnit -->
+    <!-- https://www.theworldavatar.com/kg/ontozoning/subcategoryOf -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasUnit">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/UseQuantum"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.ontology-of-units-of-measure.org/resource/om-2/Percentage"/>
-                    <rdf:Description rdf:about="https://www.ontology-of-units-of-measure.org/resource/om-2/squareMetre"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has unit</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/isRelativeTo -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/isRelativeTo">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/UseQuantum"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is relative to</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/mayAllowUse -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/mayAllowUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/subcategoryOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the land uses that may be allowed within a specific land use type, subject to the approval of the competent authority.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">may allow use</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">subcategory of</rdfs:label>
     </owl:ObjectProperty>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Data properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/hasValue -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontozoning/hasValue">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/UseQuantum"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has value </rdfs:label>
-    </owl:DatatypeProperty>
     
 
 
@@ -207,20 +94,6 @@
 
 
     <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
-    
-
-
-    <!-- https://www.ontology-of-units-of-measure.org/resource/om-2/Percentage -->
-
-
-    <owl:Class rdf:about="https://www.ontology-of-units-of-measure.org/resource/om-2/Percentage"/>
-    
-
-
-    <!-- https://www.ontology-of-units-of-measure.org/resource/om-2/squareMetre -->
-
-
-    <owl:Class rdf:about="https://www.ontology-of-units-of-measure.org/resource/om-2/squareMetre"/>
     
 
 
@@ -2601,6 +2474,13 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontozoning/Plot -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Plot"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontozoning/PoliceStation -->
 
 
@@ -3697,17 +3577,6 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontozoning/BuildingUse"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">University</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/UseQuantum -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/UseQuantum">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ratio between the predominant allowed uses and the ancillary allowed uses by the zoning type expressed in percentage. For instance, Business 2 zoning type allows at least 60% of the floor area to be dedicated for industrial purpose uses and the remaining 40% may be dedicated for ancillary uses such as Showroom, Industrial Canteen, Ancillary Office, etc.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontozoning/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Use Quantum </rdfs:label>
     </owl:Class>
     
 

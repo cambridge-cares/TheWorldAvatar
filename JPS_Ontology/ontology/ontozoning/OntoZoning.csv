@@ -335,14 +335,6 @@ WaterTreatmentPlant,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg
 WelfareHome,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Welfare Home
 WorkersDormitory,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Workers Dormitory
 WorkersQuarters,Class,BuildingUse,IS-A,,,,,https://www.theworldavatar.com/kg/ontozoning/,Workers Quarters
-UseQuantum ,Class,,,,,,"A ratio between the predominant allowed uses and the ancillary allowed uses by the zoning type expressed in percentage. For instance, Business 2 zoning type allows at least 60% of the floor area to be dedicated for industrial purpose uses and the remaining 40% may be dedicated for ancillary uses such as Showroom, Industrial Canteen, Ancillary Office, etc.",https://www.theworldavatar.com/kg/ontozoning/,Use Quantum 
-allowsUse,Object Property,,,LandUseType,LandUse,,A relationship that denotes the allowable land uses within a specific land use type.,https://www.theworldavatar.com/kg/ontozoning/,allows use
-doesNotAllowUse,Object Property,,,LandUseType,LandUse,,A relationship that denotes the land uses that are not permissible within a specific land use type.,https://www.theworldavatar.com/kg/ontozoning/,does not allow use
-mayAllowUse,Object Property,,,LandUseType,LandUse,,"A relationship that denotes the land uses that may be allowed within a specific land use type, subject to the approval of the competent authority.",https://www.theworldavatar.com/kg/ontozoning/,may allow use
-hasMaxUseQuantum,Object Property,,,LandUse,UseQuantum,,,https://www.theworldavatar.com/kg/ontozoning/,has max use quantum
-hasMinUseQuantum,Object Property,,,LandUse,UseQuantum,,,https://www.theworldavatar.com/kg/ontozoning/,has min use quantum
 hasPlot,Object Property,,,Zone,https://www.theworldavatar.com/kg/ontoplot/Plot,,A relationship that indicates the plots that are within the boundaries of the specified zone.,https://www.theworldavatar.com/kg/ontozoning/,has plot
-hasUnit,Object Property,,,UseQuantum,https://www.ontology-of-units-of-measure.org/resource/om-2/Percentage UNION https://www.ontology-of-units-of-measure.org/resource/om-2/squareMetre,,,https://www.theworldavatar.com/kg/ontozoning/,has unit
-hasLandUseType,Object Property,,,Zone,LandUseType,,A relationship indicates that the zone has a specific zone type associated with it. This association may be established by the relevant competent authority.,https://www.theworldavatar.com/kg/ontozoning/,has zone type
-isRelativeTo,Object Property,,,UseQuantum,LandUse UNION https://www.theworldavatar.com/kg/ontoplot/Plot,,,https://www.theworldavatar.com/kg/ontozoning/,is relative to
-hasValue ,Data Property,,,UseQuantum,decimal,,,https://www.theworldavatar.com/kg/ontozoning/,has value 
+hasLandUseType,Object Property,,,Plot,LandUseType,,A relationship indicating the plot and its associated land use type. This association may be established by the relevant competent authority.,https://www.theworldavatar.com/kg/ontozoning/,has land use type
+subcategoryOf,Object Property,,,LandUse,LandUse,,,https://www.theworldavatar.com/kg/ontozoning/,subcategory of
