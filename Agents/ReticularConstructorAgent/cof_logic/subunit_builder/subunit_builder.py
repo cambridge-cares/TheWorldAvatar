@@ -87,7 +87,7 @@ class SubunitBuilder:
         neighboor__atom_uuid_1 = neighboor_atoms[0]
         neighboor__atom_uuid_2 = neighboor_atoms[1]
         core_atoms = self.read_json_file(core_json_path)
-
+     
         old_coordinates = np.array([
             lfr_atoms[x_atom_uuid_to_remove]['coordinate_x'],
             lfr_atoms[x_atom_uuid_to_remove]['coordinate_y'],
@@ -122,6 +122,43 @@ class SubunitBuilder:
                 rotated_coords = rotation_matrix.dot(atom_coords - new_coordinates) + new_coordinates
                 atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z'] = rotated_coords
         
+        #################
+        mid_point_coords = (np.array([
+            lfr_atoms[target_atom_uuid_1]['coordinate_x'],
+            lfr_atoms[target_atom_uuid_1]['coordinate_y'],
+            lfr_atoms[target_atom_uuid_1]['coordinate_z']]) + np.array([
+            lfr_atoms[target_atom_uuid_2]['coordinate_x'],
+            lfr_atoms[target_atom_uuid_2]['coordinate_y'],
+            lfr_atoms[target_atom_uuid_2]['coordinate_z']])) / 2
+
+        # Define the triangles
+        tri_1_coord_1 = np.array([core_atoms[neighboor__atom_uuid_1]['coordinate_x'], core_atoms[neighboor__atom_uuid_1]['coordinate_y'], core_atoms[neighboor__atom_uuid_1]['coordinate_z']])
+        tri_1_coord_2 = np.array([core_atoms[neighboor__atom_uuid_2]['coordinate_x'], core_atoms[neighboor__atom_uuid_2]['coordinate_y'], core_atoms[neighboor__atom_uuid_2]['coordinate_z']])
+        tri_1_coord_3 = np.array([reference_atom_data['coordinate_x'], reference_atom_data['coordinate_y'], reference_atom_data['coordinate_z']])
+
+        tri_2_coord_1 = np.array([lfr_atoms[target_atom_uuid_1]['coordinate_x'], lfr_atoms[target_atom_uuid_1]['coordinate_y'], lfr_atoms[target_atom_uuid_1]['coordinate_z']])
+        tri_2_coord_2 = np.array([lfr_atoms[target_atom_uuid_2]['coordinate_x'], lfr_atoms[target_atom_uuid_2]['coordinate_y'], lfr_atoms[target_atom_uuid_2]['coordinate_z']])
+        tri_2_coord_3 = tri_1_coord_3  # Same as reference_atom_data
+
+        # Calculate normals of both triangles
+        normal_tri_1 = self.find_normal(tri_1_coord_1, tri_1_coord_2, tri_1_coord_3)
+        normal_tri_2 = self.find_normal(tri_2_coord_1, tri_2_coord_2, tri_2_coord_3)
+
+        # Find rotation axis and angle
+        axis = np.cross(normal_tri_2, normal_tri_1)
+        axis = axis / np.linalg.norm(axis)
+        angle = np.arccos(np.dot(normal_tri_2, normal_tri_1))
+
+        # Create and apply rotation matrix
+        rotation_mat = self.rotation_matrix(axis, angle)
+        for uuid, atom_data in lfr_atoms.items():
+            if uuid not in [x_atom_uuid_to_remove, target_atom_uuid_1, target_atom_uuid_2]:  # Exclude these atoms
+                atom_coords = np.array([atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']])
+                rotated_coords = rotation_mat.dot(atom_coords - mid_point_coords) + mid_point_coords
+                atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z'] = rotated_coords
+
+        ##########################
+
         # 4. Substitute the properties of the target atom with those of the reference atom
         for key, value in reference_atom_data.items():
             if key not in ['atom', 'uuid', 'bond']:
@@ -196,7 +233,19 @@ class SubunitBuilder:
         self.write_json_file(core_json_path, core_atoms)
         
         return lfr_atoms
-    
+
+    def find_normal(self, p1, p2, p3):
+        """Find the normal of the plane defined by points p1, p2, and p3."""
+        v1 = p2 - p1
+        v2 = p3 - p1
+        normal = np.cross(v1, v2)
+        return normal / np.linalg.norm(normal)
+
+    def rotation_matrix(self, axis, theta):
+        """Create a rotation matrix to rotate theta radians around axis."""
+        K = np.array([[0, -axis[2], axis[1]], [axis[2], 0, -axis[0]], [-axis[1], axis[0], 0]])
+        return np.eye(3) + np.sin(theta) * K + (1 - np.cos(theta)) * K.dot(K)
+
     def find_bs_and_update(self, json_file_path, ref_atom_uuid, ref_atom_data, bs_type, core_json_path):
         target_atoms_scenario_1 = {
             "MDNH2": "N", "MDCO": "C", "NHOH": "N", "C3X3CH3": "C",
@@ -343,8 +392,6 @@ class SubunitBuilder:
                             x_outer_uuid = uuid
 
         return x_atom_uuid_to_remove, target_atom_uuid_1, target_atom_uuid_2, x_outer_uuid
-
-
 
     def read_json_file(self, filepath):
         with open(filepath, 'r') as file:
