@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">07 December 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">31 January 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoPlanningRegulations is an ontology developed to describe the regulations imposed for urban planning purposes.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -107,19 +107,82 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/allowsUse -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/allowsUse">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the allowable land uses within a specific land use type.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows use</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/applicableFor -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/applicableFor">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/UseQuantum"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the use quantum retriction to its applicable land use.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">applicable for</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/appliesTo -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/appliesTo">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/LandUseRegulation"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/TypeRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that connects the planning regulation to their urban entity. Generally, all plots have general planning regulations, while area regulations applies to specific zones and type regulations applies to specific zone types.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that connects the planning regulation to their urban entity. Generally, all plots have general planning regulations, while area regulations applies to specific zones and land use regulations applies to specific land use types.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">applies to</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/doesNotAllowUse -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/doesNotAllowUse">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the land uses that are not permissible within a specific land use type.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">does not allow use</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/hasMaxUseQuantum -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/hasMaxUseQuantum">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/LandUseRegulation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/UseQuantum"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has max use quantum</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/hasMinUseQuantum -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/hasMinUseQuantum">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/LandUseRegulation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/UseQuantum"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has min use quantum</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -128,7 +191,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/isConstrainedBy">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/TypeRegulation"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/LandUseRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/AreaRegulation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship indicating that area regulations take precedence over type regulations.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
@@ -159,6 +222,19 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the datum or reference point that underpins any building height restrictions.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is relative to</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/mayAllowUse -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/mayAllowUse">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the land uses that may be allowed within a specific land use type, subject to the approval of the competent authority.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">may allow use</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -283,6 +359,13 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Percent -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Percent"/>
     
 
 
@@ -435,6 +518,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/LandUseRegulation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/LandUseRegulation">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land use regulation is a form of specialised planning regulations that provide guidelines to any urban entities based on their land use type. For instance, a Commercial development control plan will apply to zones with commercial zone type. These regulations are designed to address specific land use or development needs associated with their zone uses. Note that these regulations might only provide a range of guidelines for specific restrictions, but individual plots may differ from these guidelines. For instance, Commercial Land Use Type might have a maximum floor-to-floor height of 5m in the type regulation, but specific plots might have a lower maximum number.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land Use Regulation</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/PartyWall -->
 
 
@@ -537,14 +632,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/TypeRegulation -->
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulations/UseQuantum -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/TypeRegulation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulations/PlanningRegulation"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type regulation is a form of specialised planning regulations that provide guidelines to any urban entities based on their type. For instance, a Commercial development control plan will apply to zones with commercial zone type. These regulations are designed to address specific land use or development needs associated with their zone uses. Note that these regulations might only provide a range of guidelines for specific restrictions, but individual plots may differ from these guidelines. For instance, Commercial Zone Type might have a maximum floor-to-floor height of 5m in the type regulation, but specific plots might have a lower maximum number.</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulations/UseQuantum">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Percent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ratio between the predominant and ancillary allowed land uses within specific land use types, expressed in percentages. For instance, Business 2 land use type allows at least 60% of the floor area to be dedicated for industrial purpose uses and the remaining 40% may be dedicated for ancillary uses such as Showroom, Industrial Canteen, Ancillary Office, etc.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulations/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type Regulation</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Use Quantum </rdfs:label>
     </owl:Class>
     
 
@@ -556,17 +651,24 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontozoning/LandUse -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontozoning/LandUseType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontozoning/Zone -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/Zone"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontozoning/ZoneType -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontozoning/ZoneType"/>
 </rdf:RDF>
 
 
