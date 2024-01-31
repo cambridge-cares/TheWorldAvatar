@@ -1,0 +1,1366 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/OntoCOF.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/OntoCOF.owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#has"/>
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#forms -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#forms"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#formsByproduct -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#formsByproduct">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#forms"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Byproduct"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#formsCOFmer -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#formsCOFmer">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#forms"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmerFormingReaction"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueFrameworkConstruction"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmer"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#formsLinkage -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#formsLinkage">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#uses"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Linkage"/>
+        <rdfs:label>usesBindingSite</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#functionsAs -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#functionsAs"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#functionsAsGenericBuildingUnit -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#functionsAsGenericBuildingUnit">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#functionsAs"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericBuildingUnit"/>
+        <rdfs:label>functionsAsGBU</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#functionsAsGenericLinkage -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#functionsAsGenericLinkage">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#functionsAs"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Linkage"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericLinkage"/>
+        <rdfs:label>functionsAsGL</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#has -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#has"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasAssemblyModelConstraint -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasAssemblyModelConstraint">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasConstraint"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueFrameworkConstruction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel"/>
+        <rdfs:label>hasAMConstraint</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSite -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSite">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBuildingUnit"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSite"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSiteNumber -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSiteNumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumber"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSiteNumber"/>
+        <rdfs:label>hasBindingSiteNumber</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBuildingUnit -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBuildingUnit">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasByproduct -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasByproduct">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#has"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Byproduct"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasByproductNumber -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasByproductNumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumber"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmerFormingReaction"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ByproductNumber"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCOFProvenance -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCOFProvenance">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Provenance"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCharge -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCharge">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#has"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmer"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Core"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#FormalCharge"/>
+        <rdfs:label>hasFormalCharge</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalElement -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalElement">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#has"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ChemicalElement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasConstraint -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasConstraint">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCrystalStructure -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCrystalStructure">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#has"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#CrystalStructure"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasDensity -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasDensity">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#has"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Density"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasGBUNumber -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasGBUNumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumber"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GBUNumber"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasGLNumber -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasGLNumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumber"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GLNumber"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasGenericBuildingUnit -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasGenericBuildingUnit">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBuildingUnit"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericBuildingUnit"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasGenericLinkage -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasGenericLinkage">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBuildingUnit"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericLinkage"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLFRConstraint -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLFRConstraint">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasConstraint"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueFrameworkConstruction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkage -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkage">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBuildingUnit"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Linkage"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasMolecularMass -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasMolecularMass">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#has"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSite"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Byproduct"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Core"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#MolecularMass"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumber -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:label>hasNumber</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasOuterCoordinationNumber -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasOuterCoordinationNumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumber"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSite"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Core"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#OuterCoordinationNumber"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPorosity -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPorosity">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#has"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#PorosityProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPrecursorConstraint -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPrecursorConstraint">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasConstraint"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueFrameworkConstruction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasProductNumber -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasProductNumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumber"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmerFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#PrecursorNumber"/>
+        <rdfs:label>hasPrecursorNumber</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasProvenance -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasProvenance">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#CrystalStructure"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#PorosityProperty"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Provenance"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#isBasedOnCore -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#isBasedOnCore">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBuildingUnit"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Core"/>
+        <rdfs:label>hasCore</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#isBindingSiteNumberOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#isBindingSiteNumberOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#isNumberOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSiteNumber"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSite"/>
+        <rdfs:label>isBindingSiteNumberOf</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#isByproductNumberOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#isByproductNumberOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#isNumberOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ByproductNumber"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Byproduct"/>
+        <rdfs:label>isByproductNumberOf</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#isGBUNumberOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#isGBUNumberOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#isNumberOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GBUNumber"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericBuildingUnit"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#isGenericLinkageNumberOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#isGenericLinkageNumberOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#isNumberOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GLNumber"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericLinkage"/>
+        <rdfs:label>isGLNumberOf</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#isNumberOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#isNumberOf"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#isPorosityPropertyOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#isPorosityPropertyOf">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#PorosityProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#CrystalStructure"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#isPrecursorNumberOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#isPrecursorNumberOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#isNumberOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#PrecursorNumber"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#isReactionBasedOn -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#isReactionBasedOn">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmerFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueFrameworkConstruction"/>
+        <rdfs:label>isBasedOnUFC</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#resemblesFramework -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#resemblesFramework">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Framework"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#uses -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#uses"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#usesPrecursor -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#usesPrecursor">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#uses"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmerFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasAssemblyModelFormula -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasAssemblyModelFormula">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>relates an entity to its generic formula in an assembly model.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasAssemblyModelID -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasAssemblyModelID">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its unique identifier in an assembly model.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSiteFormula -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSiteFormula">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSite"/>
+        <rdfs:comment>relates an entity to its chemical formula of a binding site.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSiteID -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSiteID">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSite"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its unique identifier of a binding site.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSiteName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasBindingSiteName">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasName"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSite"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A data property that associates a binding site with its name.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasByproductFormula -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasByproductFormula">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Byproduct"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its chemical formula of a byproduct.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasByproductName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasByproductName">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasName"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Byproduct"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A data property that associates a byproduct with its name.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCCDCNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCCDCNumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#CrystalStructure"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its Cambridge Crystallographic Data Centre (CCDC) identifier.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCOFID -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCOFID">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>an entity to its unique Covalent Organic Framework (COF) identifier as proposed in the primary literature.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCOFmerFormula -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCOFmerFormula">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A data property that associates a COFmer with its formula.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalElementFormula -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalElementFormula">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ChemicalElement"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its chemical formula of a chemical element.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalElementName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalElementName">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasName"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ChemicalElement"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A data property that associates a chemical element with its name.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCoreCBUFormula -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCoreCBUFormula">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Core"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>An data property that associates a core building unit with its formula.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCuratedCOFID -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasCuratedCOFID">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its unique identifier as given in the CURATED COF Dataset (see DOI: 10.1021/acscentsci.9b00619).</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFrameworkName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFrameworkName">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasName"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Framework"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its framework name as gien in the Reticular Chemistry Structure Resource.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFrameworkSymbol -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFrameworkSymbol">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Framework"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its framework symbol as given in the Reticular Chemistry Structure Resource.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageFormationReactionID -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageFormationReactionID">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its unique identifier of a linkage formation reaction.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageFormingReactionName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageFormingReactionName">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasName"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A data property that associates a linkage forming reaction with its name.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageFormula -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageFormula">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Linkage"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>An data property that associates a linkage with its formula.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageID -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageID">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Linkage"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its unique identifier of a linkage.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasLinkageName">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasName"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Linkage"/>
+        <rdfs:comment>A data property that associates a linkage with its name.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasModularity -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasModularity">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericBuildingUnit"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericLinkage"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The number of generic building units that connect to a selected generic building.</rdfs:comment>
+        <rdfs:isDefinedBy>http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasName"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumberValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasNumberValue">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ConstructionDescriptor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPlanarity -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPlanarity">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericBuildingUnit"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericLinkage"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Description of how the other beneric building units are spatially oriented arround the building unit of interst. (e.g. linear, bent, off-set, pyramidal, planar).</rdfs:comment>
+        <rdfs:isDefinedBy>http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPrecursorFormula -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPrecursorFormula">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasFormula"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>An data property that associates a precursor with its formula.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPrecursorID -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPrecursorID">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its unique identifier of a precursor.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPrecursorName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasPrecursorName">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasName"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A data property that associates a precursor with its name.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasRCSRLink -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasRCSRLink">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasChemicalID"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Framework"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>relates an entity to its unique identifier of the Reticular Chemistry Structure Resource (RCSR) link.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasReference -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasReference">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A data property that associates an entity with its reference (e.g. J. Am. Chem. Soc. 2022, 144, 26, 11713–11728).</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasReferenceDOI -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasReferenceDOI">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A data property that associates a reference with its Digital Object Identifier (DOI).</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#hasReferenceTitle -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#hasReferenceTitle">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A data property that associates a reference with its title.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species -->
+
+    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Substance"/>
+        <rdfs:comment>A specific type of molecule or compound that is defined by its composition and characteristic properties and behavior.</rdfs:comment>
+        <rdfs:label xml:lang="en">ChemicalSpecies</rdfs:label>
+        <skos:altLabel xml:lang="en">Species</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#AssemblyModel">
+        <rdfs:comment>An assembly model represent a spatial constract (i.e. skeleton) of discrete and well-defined interacting generic building units. Many chemical structures may share same assembly model.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSite -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSite">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Fragment"/>
+        <rdfs:comment>A binding site is the segment of the building unit that involves in chemical reactivity and enhances the interlocking between different building blocks</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSiteNumber -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#BindingSiteNumber">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ConstructionDescriptor"/>
+        <rdfs:comment>A stochiometric coefficient describing how many binding sites involve in a linkage forming reaction. </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#BuildingUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#BuildingUnit">
+        <rdfs:comment>Chemical building units refer to the fundamental chemical entities that form the basic building blocks for constructing larger and more complex molecules. Examples of chemical building units include atoms, ions, functional groups, synthons, monomers, and linkers.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Byproduct -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Byproduct">
+        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:comment>An unavoidable side product of a chemical reaction.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#ByproductNumber -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#ByproductNumber">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ConstructionDescriptor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Fragment"/>
+        <rdfs:comment>Minimal repetitive unit of a COF, equivalent to a monomer. </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmerFormingReaction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#COFmerFormingReaction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ChemicalModelReaction"/>
+        <rdfs:comment>A specific chemical reaction or process that is used to form or synthesize a covalent organic framework (COF).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#ChemicalElement -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#ChemicalElement">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Substance"/>
+        <rdfs:comment>A specific type of atom or element that is defined by its atomic number and characteristic properties and behavior.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#ChemicalModelReaction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#ChemicalModelReaction"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#ConstructionDescriptor -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#ConstructionDescriptor">
+        <rdfs:comment>Descriptors of assembly modeling refer to a set of attributes or characteristics that are used to define and describe the process of creating an assembly model. These descriptors are typically used to help define the behavior, properties, and other aspects of an assembly model, and they may include information on geometry (e.g. spatial propagation of the model), types and numbers of involved generic building units.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Core -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Core">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Fragment"/>
+        <rdfs:comment>A specific chemical building unit that is essential to the core structure or backbone of a molecule (e.g. a COF precursor).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#CovalentOrganicFramework">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Polymer"/>
+        <rdfs:comment>A covalent organic framework (COF) is a porous, crystalline material composed of organic molecules linked by strong covalent bonds. </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#CrystalStructure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#CrystalStructure">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#SubstanceProperty"/>
+        <rdfs:comment>The arrangement of atoms or molecules in a crystalline material.
+Density: The mass of a substance per unit volume.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Density -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Density">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#SubstanceProperty"/>
+        <rdfs:comment>The mass of a substance per unit volume.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#ExtendedMaterial -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#ExtendedMaterial">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Substance"/>
+        <rdfs:comment>A material that is composed of multiple parts or components that interact with one another to give the material its properties and characteristics.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#FormalCharge -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#FormalCharge">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#SubstanceProperty"/>
+        <rdfs:comment>The electric charge on an atom in a molecule, calculated as the difference between the number of valence electrons and the number of electrons in the molecule.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Fragment -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Fragment">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BuildingUnit"/>
+        <rdfs:comment>A specific type of chemical building unit that represents a fragment or portion of a larger molecule or structure.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Framework -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Framework">
+        <rdfs:comment>A specific type of material or structure that consists of interconnected chemical building units or other components and possesses specific properties and characteristics.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#FreeVolume -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#FreeVolume">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#PorosityProperty"/>
+        <rdfs:comment>The amount of space between molecules in a material that is not occupied by the molecules themselves.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#GBUNumber -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#GBUNumber">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ConstructionDescriptor"/>
+        <rdfs:comment>A generic building unit number provides the number of copies of generic units present in a particular assembly model.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#GLNumber -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#GLNumber">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ConstructionDescriptor"/>
+        <rdfs:comment>A generic linkage number provides the number of copies of generic linkages present in a particular assembly model.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericBuildingUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericBuildingUnit">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BuildingUnit"/>
+        <rdfs:comment>Generic Building Unit is a modular entity that is able to connect to other generic units, leading to a variety of assembly models. The generic building unit has a unique modularity and spatial connectivity.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericLinkage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#GenericLinkage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BuildingUnit"/>
+        <rdfs:comment>Is a generic representation of linkage units in assembly models.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#LargestCavityDiameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#LargestCavityDiameter">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#PorosityProperty"/>
+        <rdfs:comment>The diameter of the largest cavity or pore in a material.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Linkage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Linkage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#Fragment"/>
+        <rdfs:comment>A specific connection or linkage between two or more chemical building units or other components in a molecule or material.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#LinkageFormingReaction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ChemicalModelReaction"/>
+        <rdfs:comment>i) A specific chemical reaction or process that is used to form or synthesize a linkage between two or more chemical building units or other components in a molecule or material. ii) A linkage formation reaction refers to a chemical model reaction that forms the covalent bonds between the organic building units in covalent organic frameworks. Some common examples of linkage reactions used in the synthesis of COFs include imine condensation, boronate esterification, and acylhydrazone formation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#MolecularMass -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#MolecularMass">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#SubstanceProperty"/>
+        <rdfs:comment>The sum of the masses of the atoms in a molecule.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#OuterCoordinationNumber -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#OuterCoordinationNumber">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ConstructionDescriptor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Polymer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Polymer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ExtendedMaterial"/>
+        <rdfs:comment>A material composed of large molecules made up of repeating subunits.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#PorosityProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#PorosityProperty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#SubstanceProperty"/>
+        <rdfs:comment>Porosity of reticular materials refers to the presence of void spaces or pores within the material&apos;s structure that can be used to store or transport gases, liquids, or other substances. </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Precursor">
+        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#BuildingUnit"/>
+        <rdfs:comment>A substance that precedes another substance in a chemical reaction and is transformed into it.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#PrecursorNumber -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#PrecursorNumber">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#ConstructionDescriptor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#PressureSwingAdsorption -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#PressureSwingAdsorption">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#PorosityProperty"/>
+        <rdfs:comment>A process for separating gases based on their ability to be adsorbed by a material under pressure.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Provenance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Provenance">
+        <rdfs:comment>i) A specific type of metadata that describes the origin, source, or history of a given object or entity, such as a data set or material sample. ii) A provenance refers to the journal article where a particular COF crystal has been reported.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#Substance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#Substance">
+        <rdfs:comment>A specific type of material or entity that has mass and occupies space, and can be classified as a solid, liquid, or gas.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#SubstanceProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#SubstanceProperty">
+        <rdfs:comment>A characteristic or quality of a substance that can be measured or observed, such as density or melting point.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#SurfaceAccessibleArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#SurfaceAccessibleArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#PorosityProperty"/>
+        <rdfs:comment>The surface area of a material that is accessible to other molecules.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueConstruction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueConstruction">
+        <rdfs:comment>A unique construction refers to the process in which a material can be conceptually constructed at least in silico based on a unique combination of precursors, assembly models and linkage formation reactions.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueFrameworkConstruction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueFrameworkConstruction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/OntoCOF.owl#UniqueConstruction"/>
+        <rdfs:comment>A unique framework construction refers to the creation of a framework structure based on (combination of precursors) precurosrs, linkage formation reaction and assembly model.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/gramPerCubicCentimetre -->
+
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/gramPerCubicCentimetre">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#FreeVolume"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#LargestCavityDiameter"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#PressureSwingAdsorption"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/OntoCOF.owl#SurfaceAccessibleArea"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.13) https://github.com/owlcs/owlapi -->
+
