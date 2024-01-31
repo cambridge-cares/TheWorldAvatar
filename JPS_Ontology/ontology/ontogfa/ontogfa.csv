@@ -1,0 +1,9 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoGFA,TBox,http://www.theworldavatar.com/ontology/ontogfa/OntoGFA.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoGFA,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoGFA,TBox,Calculation of gross floors area,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoGFA,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+GFA,Class,,,,,,,,
+reference GFA,Class,,,,,,,,
+belongs To Building,Data Property,,,GFA UNION reference GFA,String,,,,
+has Value Of,Data Property,,,GFA UNION reference GFA,Float,,,,
