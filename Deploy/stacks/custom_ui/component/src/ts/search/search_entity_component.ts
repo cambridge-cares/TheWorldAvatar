@@ -25,6 +25,7 @@ interface ConfigurationOptions {
 class SeachEntityComponent extends DynamicComponent {
   private options: ConfigurationOptions;
   private numerical_placeholder_message: string = "Type a number";
+  private search_container_id: string = "searchContainer";
   private loader: Loader;
   private overlay: Overlay;
   private INVALID_INPUT_MESSAGE: string = "Invalid input. Please enter a numerical value.";
@@ -72,10 +73,13 @@ class SeachEntityComponent extends DynamicComponent {
    * @param {HTMLElement} htmlElement - The specified HTML element.
   */
   public override render(htmlElement: HTMLElement): void {
-    this.container.appendChild(this.container_title);
-    this.container.appendChild(this.container_content);
-    // Override this part of the method
-    htmlElement.parentNode.insertBefore(this.container, htmlElement);
+    // Only renders the element if it does not exist
+    if (!htmlElement.parentNode?.querySelector(this.search_container_id)) {
+      this.container.appendChild(this.container_title);
+      this.container.appendChild(this.container_content);
+      // Override this part of the method
+      htmlElement.parentNode.insertBefore(this.container, htmlElement);
+    }
   };
 
   /**
@@ -84,7 +88,7 @@ class SeachEntityComponent extends DynamicComponent {
   */
   private initContainerAttributes(): void {
     // Follows the convention of the other control elements
-    this.container.id = "searchContainer";
+    this.container.id = this.search_container_id;
     this.container.classList.add("controlBlock");
     this.container_title.id = "controlTitle";
     this.container_title.classList.add("controlTitle");
