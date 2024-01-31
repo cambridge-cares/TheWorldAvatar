@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  gfaagent:
+    image: ghcr.io/cambridge-cares/gfaagent:1.0.0
+    build: .
+    ports:
+      - "10104:8080"
+    volumes:
+      - ./gfaagent/src/main/resources:/resources
