@@ -1,11 +1,11 @@
-package main.java.uk.ac.cam.cares.jps.agent.gfaagent;
+package uk.ac.cam.cares.jps.agent.gfaagent;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -51,10 +51,10 @@ public class GFAAgent extends JPSAgent{
     public JSONObject processRequestParameters(JSONObject requestParams) {
         try {
             if(requestParams.equals("gfa")){            
-                //calculate GFA
+                //calculate GFA 1. query footpring 2. query height (if no height, estimate 3.2m/floor) 3. calculate 4. store
             }else if(requestParams.equals("floors")){
                //integrate floors data
-               
+                IntegrateFloors integrateFloors = new IntegrateFloors(floorsCsv, dbUrl, dbUser, dbPassword);
             }
 
 

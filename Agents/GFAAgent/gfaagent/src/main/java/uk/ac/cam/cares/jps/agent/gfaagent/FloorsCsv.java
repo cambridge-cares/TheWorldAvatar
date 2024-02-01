@@ -1,0 +1,17 @@
+package uk.ac.cam.cares.jps.agent.gfaagent;
+
+import com.opencsv.bean.CsvBindByName;
+
+public class FloorsCsv {
+
+    @CsvBindByName(column = "blk_no")
+    private String blk;
+
+    @CsvBindByName(column = "street")
+    private String street;
+
+    @CsvBindByName(column = "max_floor_lvl")
+    private int floors;
+
+    
+}
