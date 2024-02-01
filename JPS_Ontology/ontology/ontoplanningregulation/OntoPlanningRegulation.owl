@@ -68,19 +68,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulation/allowsGrossFloorArea -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/allowsGrossFloorArea">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/PlanningRegulation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/GrossFloorArea"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the allowable gross floor area that a given planning regulation has provided.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allows gross floor area</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoplanningregulation/allowsGrossPlotRatio -->
 
 
@@ -111,7 +98,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/allowsUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/LandUseRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the allowable land uses within a specific land use type.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
@@ -160,7 +147,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/doesNotAllowUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/LandUseRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the land uses that are not permissible within a specific land use type.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
@@ -223,7 +210,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/mayAllowUse">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUseType"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplanningregulation/LandUseRegulation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontozoning/LandUse"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that denotes the land uses that may be allowed within a specific land use type, subject to the approval of the competent authority.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
@@ -335,6 +322,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoplanningregulation/isAwaitingDetailedGPREvaluation -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/isAwaitingDetailedGPREvaluation">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A boolean indicating if the plot is currently awaiting detailed evaluation for gross plot ratio.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is awaiting detailed gross plot ratio evaluation</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -344,13 +344,6 @@
      -->
 
 
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Area -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
     
 
 
@@ -460,18 +453,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Front Setback applies to the side of the plot that has the main entrance facing the road.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Front Setback</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoplanningregulation/GrossFloorArea -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplanningregulation/GrossFloorArea">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Floor Area is the total floor area of an urban entity such as a land plot or building, typically measured in square feet or square meters. This measurement only considers the floor or footprint of each storey and their area, and does not include their walls or ceiling.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoplanningregulation/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gross Floor Area</rdfs:label>
     </owl:Class>
     
 
