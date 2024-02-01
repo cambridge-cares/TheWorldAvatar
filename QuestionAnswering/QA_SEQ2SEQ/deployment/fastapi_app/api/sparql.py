@@ -1,11 +1,12 @@
 import logging
 import time
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 
-from services.kg_execute import KgExecutor, UnexpectedDomainError
+from services.kg_execute import IKgExecutor, KgExecutor, UnexpectedDomainError
 
 
 class SparqlRequest(BaseModel):
@@ -23,11 +24,15 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-kg_executor = KgExecutor()
+def get_kg_executor() -> IKgExecutor:
+    return KgExecutor()
 
 
 @router.post("")
-async def query(req: SparqlRequest):
+def query(
+    req: SparqlRequest,
+    kg_executor: Annotated[IKgExecutor, Depends(get_kg_executor)],
+):
     logger.info(
         "Received request to KG execution endpoint with the following request body"
     )
