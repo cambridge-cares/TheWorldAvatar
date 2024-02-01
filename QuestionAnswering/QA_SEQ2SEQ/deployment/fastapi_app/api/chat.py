@@ -1,15 +1,18 @@
+from functools import lru_cache
 from importlib import resources
 import json
 import logging
 import os
 import time
-from typing import Callable
+from typing import Annotated, Callable
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
 from pydantic import BaseModel
 import sentencepiece as spm
+
+from services.chatbot import ChatbotClient
 
 
 class ChatRequest(BaseModel):
@@ -21,93 +24,44 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-CHATBOT_ENDPOINT = os.getenv("CHATBOT_ENDPOINT", "http://localhost:8001/v1")
-logger.info("Connecting to chatbot at endpoint: " + CHATBOT_ENDPOINT)
-chatbot_client = OpenAI(base_url=CHATBOT_ENDPOINT, api_key=os.getenv("OPENAI_API_KEY"))
 
-with resources.as_file(
-    resources.files("resources.common").joinpath("tokenizer.model")
-) as path:
-    sp = spm.SentencePieceProcessor(model_file=str(path))
-
-prompt_template = json.loads(
-    resources.files("resources.common").joinpath("prompt_template.json").read_text()
-)
-
-CHARS_PER_TOKEN = 4
-TOKENS_LIMIT = int(os.getenv("CHAT_TOKENS_LIMIT", 500))
+def get_openai_client():
+    OPENAI_ENDPOINT = os.getenv("OPENAI_ENDPOINT", "http://localhost:8001/v1")
+    logger.info("Connecting to chatbot at endpoint: " + OPENAI_ENDPOINT)
+    return OpenAI(base_url=OPENAI_ENDPOINT, api_key=os.getenv("OPENAI_API_KEY"))
 
 
-def get_tokens_num(text: str):
-    return len(sp.encode(text))
+def get_tokens_counter():
+    with resources.as_file(
+        resources.files("resources.common").joinpath("tokenizer.model")
+    ) as path:
+        sp = spm.SentencePieceProcessor(model_file=str(path))
+
+    def get_tokens_num(text: str):
+        return len(sp.encode(text))
+
+    return get_tokens_num
 
 
-def binary_search(low: int, high: int, fn: Callable[[int], int], target: int):
-    """Performs binary search over the integer space.
-    Args:
-        low: lower bound of the search space
-        high: upper bound of the search space
-        fn: a monotonic function over integer domain and range
-    """
-    if fn(high) <= target:
-        return high
-    if fn(low) >= target:
-        return low
-
-    while low < high - 1:
-        mid = (low + high) // 2
-        val = fn(mid)
-        if val == target:
-            return mid
-        elif val < target:
-            low = mid
-        else:
-            high = mid
-    return low
-
-
-def make_chatbot_response_stream(question: str, data: str):
-    content = prompt_template["user"].format(question=question, data=data)
-
-    if get_tokens_num(content) > TOKENS_LIMIT:
-        logger.info(
-            "The supplied data exceeds the token limit of {num} tokens. The data will be truncated.".format(
-                num=TOKENS_LIMIT
-            )
-        )
-        content = prompt_template["user"].format(question=question, data=data)
-        truncate_idx = binary_search(
-            low=0,
-            high=len(content),
-            fn=lambda idx: get_tokens_num(content[:idx]),
-            target=TOKENS_LIMIT,
-        )
-        content = content[:truncate_idx]
-
-    return chatbot_client.chat.completions.create(
-        model=os.getenv("CHATBOT_MODEL"),
-        messages=[
-            {
-                "role": "system",
-                "content": prompt_template["system"],
-            },
-            {
-                "role": "user",
-                "content": content,
-            },
-        ],
-        stream=True,
-    )
+@lru_cache
+def get_chatbot_client(
+    openai_client: Annotated[OpenAI, Depends(get_openai_client)],
+    tokens_counter: Annotated[Callable[[str], int], Depends(get_tokens_counter)],
+):
+    return ChatbotClient(openai_client, tokens_counter)
 
 
 @router.post("")
-async def chat(req: ChatRequest):
+async def chat(
+    req: ChatRequest,
+    chatbot_client: Annotated[ChatbotClient, Depends(get_chatbot_client)],
+):
     logger.info("Request received to chat endpoint with the following request body")
     logger.info(req)
 
     def generate():
         start = time.time()
-        for chunk in make_chatbot_response_stream(req.question, req.data):
+        for chunk in chatbot_client.request_stream(req.question, req.data):
             content = chunk.choices[0].delta.content
             if content is not None:
                 yield "data: {data}\n\n".format(

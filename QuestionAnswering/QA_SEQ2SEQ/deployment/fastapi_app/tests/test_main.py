@@ -1,11 +1,20 @@
-from collections import defaultdict
+import json
 from typing import List
 
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
 import numpy as np
+from openai import OpenAI, resources
+from openai.types.chat.chat_completion_chunk import (
+    ChatCompletionChunk,
+    Choice,
+    ChoiceDelta,
+)
+import pytest
 
 from api.sparql import get_domain2endpoint, get_kg_client_factory
 from api.translate import get_feature_extraction_client, get_seq2seq_client
+from api.chat import get_openai_client, get_tokens_counter
 from services.kg_execute.kg_client import KgClient
 from services.translate.triton_client.feature_extraction_client import (
     IFeatureExtractionClient,
@@ -93,3 +102,68 @@ def test_sparql():
     assert isinstance(actual_json, dict)
     assert expected_json.items() <= actual_json.items()
     assert "latency" in actual_json and isinstance(actual_json["latency"], float)
+
+
+@pytest.mark.asyncio
+async def test_chat():
+    # arrange
+    def mock_openai_client():
+        class MockCompletions(resources.Completions):
+            def __init__(self):
+                pass
+
+            def create(self, stream: bool, **kwargs):
+                assert stream
+                for c in "This is chatbot's response":
+                    yield ChatCompletionChunk(
+                        id="test_id",
+                        choices=[
+                            Choice(
+                                delta=ChoiceDelta(content=c),
+                                finish_reason=None,
+                                index=0,
+                            )
+                        ],
+                        created=0,
+                        model="test_model",
+                        object="chat.completion.chunk",
+                    )
+
+        class MockChat(resources.Chat):
+            def __init__(self):
+                self.completions = MockCompletions()
+
+        class MockOpenAI(OpenAI):
+            def __init__(self):
+                self.chat = MockChat()
+
+        return MockOpenAI()
+
+    app.dependency_overrides[get_openai_client] = mock_openai_client
+
+    def mock_tokens_counter():
+        def count(text: str):
+            return len(text.split()) * 4 // 3
+
+        return count
+
+    app.dependency_overrides[get_tokens_counter] = mock_tokens_counter
+
+    # act
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        res = await client.post(
+            "/chat",
+            json={
+                "question": "What is the charge of benzene?",
+                "data": '[{"Charge":"0.0"}]',
+            },
+        )
+
+    # assert
+    assert res.status_code == 200
+    content = res.content.decode("utf-8")
+    lines = [line for line in content.split("\n") if line]
+    assert all(line.startswith("data: ") for line in lines)
+    lines = [json.loads(line[len("data: ") :]) for line in lines]
+    assert all("content" in line and "latency" in line for line in lines)
+    assert "".join([line["content"] for line in lines]) == "This is chatbot's response"
