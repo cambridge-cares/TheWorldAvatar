@@ -1,0 +1,30 @@
+{
+    "name": "elevation",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "dgm1",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "Raster",
+            "name": "Elevation",
+            "subdirectory": "elevation",
+            "skip": false,
+            "gdalTranslateOptions": {
+                "sridIn": "EPSG:32632",
+                "sridOut": "EPSG:4326"
+            },
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "twa:dgm1_elevation"
+                }
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "dgm1_elevation",
+            "file": "dgm1_elevation.sld"
+        }
+    ]
+}
