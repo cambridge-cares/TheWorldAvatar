@@ -1,46 +1,46 @@
 # OntoZoning
 ## 1. Introduction
-OntoZoning is an ontology developed to represent relationships between zones and their associated zone types and uses. A simple overview of the data model is illustrated in Figure 1. The detailed zoning types and uses is available within the ontology itself. Do note that the list is non-exhaustive.
+OntoZoning is an ontology developed to represent relationships between zones and their associated land use types and land uses, that is applicable across different planning contexts. A simple overview of the data model is illustrated in Figure 1. The detailed land use types and land uses is available within the ontology itself. Do note that the list is non-exhaustive.
+
+The namespace for this ontology is:
+
+<p align="center"><i>https://www.theworldavatar.com/kg/ontozoning/</i></p>
 
 *Figure 1. Data model for OntoZoning*
 ```mermaid
     erDiagram 
     "Zone" ||--o{ "geo:Feature" : "rdfs:subClassOf"
     "Zone" ||--o{ "ontoplot:Plot" : hasPlot
-    "Zone" ||--o{ "ZoneType" : hasZoneType
-    "ZoneType" ||--o{ "ZoneUse" : allowsUse
-    "ZoneType" ||--o{ "ZoneUse" : mayAllowUse
-    "ZoneType" ||--o{ "ZoneUse" : doesNotAllowUse
-    "ZoneUse" ||--o{ "UseQuantum" : hasMaxUseQuantum
-    "ZoneUse" ||--o{ "UseQuantum" : hasMinUseQuantum    
-    "UseQuantum" {
-        hasValue decimal
+    "ontoplot:Plot" ||--o{ "geo:Feature" : "rdfs:subClassOf"
+    "ontoplot:Plot" ||--o{ "LandUseType" : hasLandUseType
+    "LandUseType" {
+        rdfs:label name
+        rdfs:comment description
     }
+    "opr:LandUseRegulation" ||--o{ "LandUseType" : "opr:appliesTo"
+    "opr:LandUseRegulation" ||--o{ "LandUse" : "opr:allowsUse"
+    "opr:LandUseRegulation" ||--o{ "LandUse" : "opr:mayAllowUse"
+    "opr:LandUseRegulation" ||--o{ "LandUse" : "opr:doesNotAllowUse"
+    "LandUse" ||--o{ "LandUse" : "subcategoryOf"
 ```
-## 2. Modelling Decisions
->ZoneType
 
-- As defined in Singapore's Master Plan 2019, there are 32 unique zoning types, which have been incorporated into this ontology. These zones may host multiple uses. 
-- All zone types have a 'Zone' suffix in their class names to bring clarity, especially given the presence of a 'SpecialUse' zone type.
-- Certain zone types are subsets of another zone type, and have been reflected as such in the ontology. As subsets, these zone types include their parent's uses and have additional uses based on their legal definitions. Examples are:
-
-Zone Type | Zone Type Subset
+## 2. Legend
+Prefix | Namespace
 --- | ---
-Business1 | Business1White
-Business2 | Business2White
-BusinessPark | BusinessParkWhite
-Residential | ResidentialOrInstitution
-Residential | ResidentialWithCommercialAtFirstStorey
+[ontoplot](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoplot) | `https://www.theworldavatar.com/kg/ontoplot/`
+[opr](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoplanningregulation) | `https://www.theworldavatar.com/kg/ontoplanningregulation/`
 
->ZoneUse
+## 3. Modelling Decisions
+>LandUseType
 
-- The term 'zone use' is interpreted to refer to specific land uses, activities, programmes, built structures, or building parts that have implications on legal status and exhaustivity within the zone. 
-- Zone uses are universal concepts that may be found in any country; our current list is non-exhaustive, and the class set is infinite by definition. This universal and non-exhaustive class allows the exhaustively defined regulatory framework to function (i.e. it removes the need to regulate use exhaustively). 
-- In the first iteration, the list of zone uses have been extracted from the following sources:
+- The ontology utilises the zoning categories defined in Singapore's Master Plan to formulate preliminary land use types that can be extrapolated to various planning contexts. In cases where a land use type does not align with existing concepts, it can be instantiated as part of the existing concepts. Notably, the `rdfs:label` and `rdfs:comment` properties can be employed to incorporate the name and description of the land use type. For instance, the 'White' land use in Singapore can be instantiated under the `MixedUse` concept, assigned a label of `White` and a corresponding description. Should the existing types prove insufficient, you are encouraged to extend the ontology. 
+- A 'Type' suffix is appended to specific types like `Hotel` to distinguish them from their land use counterparts.
+- Please be aware that the land use type has exclusively been assigned to `ontoplot:Plot`. We acknowledge the possibility that various planning departments may store the land use type either within a zone (containing the plot) or directly associated with the plot. However, at present, there is no imperative reason or application necessitating the instantiation of the land use zone in the Abox. Directly assignment to plots streamlines the retrieval process and reduces the cognitive complexity of this concept.
+
+>LandUse
+
+- The term 'land use' is interpreted to refer to specific land uses, green spaces, roads, activities, programmes, built structures, or building parts that have implications on legal status and exhaustivity within the land. At this moment, land uses can include `GreeneryUse`, `RoadUse`, `BuildingUse`, `Activities`, and several other categories. 
+- In the first iteration, the list of land uses have been extracted from the following sources:
     - URA Written Statement
     - Google Places data
     - Activities from the [Land Based Classification Standards (LBCS)](https://enterpriseintegrationlab.github.io/icity/LBCSv2/doc/index-en.html) ontology.
-
->UseQuantum
-
-- Use quantums are detailed regulations attached only to land uses. They describes the ratio of allowed uses, if multiple uses are allowed within the specific zoning type.
