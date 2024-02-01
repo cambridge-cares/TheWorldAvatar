@@ -1,15 +1,16 @@
+from collections import defaultdict
 from typing import List
 
 from fastapi.testclient import TestClient
 import numpy as np
 
-from api.sparql import get_kg_executor
+from api.sparql import get_domain2endpoint, get_kg_client_factory
 from api.translate import get_feature_extraction_client, get_seq2seq_client
+from services.kg_execute.kg_client import KgClient
 from services.translate.triton_client.feature_extraction_client import (
     IFeatureExtractionClient,
 )
 from services.translate.triton_client.seq2seq_client import ISeq2SeqClient
-from services.kg_execute import IKgExecutor
 from main import app
 
 
@@ -18,7 +19,7 @@ client = TestClient(app)
 
 def test_translate():
     # arrange
-    def mock_seq2seq() -> ISeq2SeqClient:
+    def mock_seq2seq():
         class Mock(ISeq2SeqClient):
             def forward(self, text: str):
                 if text.startswith("translate to SPARQL: "):
@@ -32,7 +33,7 @@ def test_translate():
 
     app.dependency_overrides[get_seq2seq_client] = mock_seq2seq
 
-    def mock_feature_extraction() -> IFeatureExtractionClient:
+    def mock_feature_extraction():
         class Mock(IFeatureExtractionClient):
             def forward(self, texts: List[str]):
                 return np.random.random((len(texts), 4))
@@ -63,22 +64,30 @@ def test_translate():
 
 def test_sparql():
     # arrange
-    def mock_kg() -> IKgExecutor:
-        class MockKgExecutor(IKgExecutor):
-            def query(self, domain: str, query: str):
+    def mock_domain2endpoint():
+        return {"test_domain": "test_endpoint"}
+
+    app.dependency_overrides[get_domain2endpoint] = mock_domain2endpoint
+
+    def mock_kg_client_factory():
+        class Mock(KgClient):
+            def __init__(self, endpoint):
+                pass
+
+            def query(self, query: str):
                 return {"results": {"bindings": [{"var1": {"value": "1"}}]}}
 
-        return MockKgExecutor()
+        return Mock
 
-    app.dependency_overrides[get_kg_executor] = mock_kg
+    app.dependency_overrides[get_kg_client_factory] = mock_kg_client_factory
 
     # act
     res = client.post(
-        "/sparql", json={"query": "SELECT * WHERE {}", "domain": "chemistry"}
+        "/sparql", json={"query": "SELECT * WHERE {}", "domain": "test_domain"}
     )
 
     # assert
-    assert res.status_code == 200
+    assert res.status_code == 200, res
     expected_json = {"data": {"results": {"bindings": [{"var1": {"value": "1"}}]}}}
     actual_json = res.json()
     assert isinstance(actual_json, dict)
