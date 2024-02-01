@@ -8,6 +8,10 @@ from .sparql_base import SparqlBase
 class GroupClause(SparqlBase):
     vars: Tuple[str, ...]
 
+    def __post_init__(self):
+        if not isinstance(self.vars, tuple):
+            object.__setattr__(self, "vars", tuple(self.vars))
+
     def __str__(self):
         return "GROUP BY {vars}".format(vars=" ".join(self.vars))
 
@@ -15,6 +19,10 @@ class GroupClause(SparqlBase):
 @dataclass
 class OrderClause(SparqlBase):
     vars: Tuple[str, ...]
+
+    def __post_init__(self):
+        if not isinstance(self.vars, tuple):
+            object.__setattr__(self, "vars", tuple(self.vars))
 
     def __str__(self):
         return "ORDER BY {vars}".format(vars=" ".join(self.vars))

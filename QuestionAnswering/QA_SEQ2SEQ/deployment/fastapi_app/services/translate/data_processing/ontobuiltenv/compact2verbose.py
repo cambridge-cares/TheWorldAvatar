@@ -1,5 +1,11 @@
 from services.translate.sparql import SparqlQuery
-from services.translate.sparql.graph_pattern import GraphPattern, OptionalClause, TriplePattern
+from services.translate.sparql.graph_pattern import (
+    BindClause,
+    GraphPattern,
+    OptionalClause,
+    TriplePattern,
+)
+from services.translate.sparql.solution_modifier import GroupClause, SolutionModifier
 from services.translate.sparql.query_form import SelectClause
 from services.translate.sparql.where_clause import WhereClause
 
@@ -224,7 +230,10 @@ class OBECompact2VerboseConverter:
     def convert(self, sparql_compact: SparqlQuery):
         select_vars_verbose = list(sparql_compact.select_clause.vars)
 
-        if "?Property" in select_vars_verbose and "?Address" not in select_vars_verbose:
+        if (
+            "?Property" in sparql_compact.select_clause.vars
+            and "?Address" not in sparql_compact.select_clause.vars
+        ):
             graph_patterns_verbose, select_vars = self._expand_for_property()
             select_vars_verbose.extend(select_vars)
         else:
@@ -254,10 +263,38 @@ class OBECompact2VerboseConverter:
 
             graph_patterns_verbose.append(pattern)
 
+        for attrtype in ["?BuiltFormType", "?PropertyUsageType", "?PropertyTypeType"]:
+            if attrtype in sparql_compact.select_clause.vars:
+                attrtype_name = attrtype + "Name"
+                select_vars_verbose.append(attrtype_name)
+                graph_patterns_verbose.append(
+                    BindClause(
+                        exprn='REPLACE(STR({var}), "^.*/([^/]*)$", "$1")'.format(
+                            var=attrtype
+                        ),
+                        var=attrtype_name,
+                    )
+                )
+
+        soln_mod = sparql_compact.solultion_modifier
+        if soln_mod and soln_mod.group_clause:
+            addn_vars = set(select_vars_verbose) - set(
+                sparql_compact.select_clause.vars
+            )
+            soln_mod_verbose = SolutionModifier(
+                group_clause=GroupClause(
+                    vars=soln_mod.group_clause.vars + tuple(addn_vars)
+                ),
+                order_clause=soln_mod.order_clause,
+                limit_clause=soln_mod.limit_clause,
+            )
+        else:
+            soln_mod_verbose = soln_mod
+
         return SparqlQuery(
             select_clause=SelectClause(
                 solution_modifier="DISTINCT", vars=select_vars_verbose
             ),
             where_clause=WhereClause(graph_patterns_verbose),
-            solultion_modifier=sparql_compact.solultion_modifier,
+            solultion_modifier=soln_mod_verbose,
         )
