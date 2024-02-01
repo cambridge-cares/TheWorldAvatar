@@ -19,7 +19,7 @@ EducationalInstitution,Class,LandUseType,IS-A,,,,These are areas used or intende
 HealthAndMedicalCare,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for medical services.,https://www.theworldavatar.com/kg/ontozoning/,Health And Medical Care
 HotelType,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for hotel development.,https://www.theworldavatar.com/kg/ontozoning/,Hotel Type
 MixedUse,Class,LandUseType,IS-A,,,,"These are areas used or intended to be used mainly for commercial, hotel, residential, sports & recreational and other compatible uses, or a combination of two or more such uses as a mixed development.",https://www.theworldavatar.com/kg/ontozoning/,Mixed Use
-OpenSpaceZone,Class,LandUseType,IS-A,,,,These are areas used or intended to be used as open space.,https://www.theworldavatar.com/kg/ontozoning/,Open Space
+OpenSpace,Class,LandUseType,IS-A,,,,These are areas used or intended to be used as open space.,https://www.theworldavatar.com/kg/ontozoning/,Open Space
 Park,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for parks or gardens for the enjoyment of the general public and includes pedestrian linkages.,https://www.theworldavatar.com/kg/ontozoning/,Park
 PlaceOfWorship,Class,LandUseType,IS-A,,,,These are areas used or intended to be used mainly for religious buildings.,https://www.theworldavatar.com/kg/ontozoning/,Place Of Worship
 PortOrAirport,Class,LandUseType,IS-A,,,,These are areas used or intended to be used for airport/ airfield or dock/port purposes.,https://www.theworldavatar.com/kg/ontozoning/,Port Or Airport
