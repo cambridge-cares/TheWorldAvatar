@@ -2,10 +2,10 @@ from unit_parse import parser
 from pint import Quantity
 
 from services.preprocess import PreprocessedText
-from services.preprocess import Preprocessor
+from services.preprocess import IPreprocessor
 
 
-class ChemistryPreprocessor(Preprocessor):
+class ChemistryPreprocessor(IPreprocessor):
     def _startswith_magnitude(self, text: str, start: int = 0):
         return (
             text[start].isdigit()

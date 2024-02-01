@@ -1,14 +1,15 @@
 import logging
 import os
 import time
-from typing import Optional
+from typing import Annotated, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from services.preprocess import IPreprocessor
 from services.preprocess.identity import IdentityPreprocessor
 from services.preprocess.chemistry import ChemistryPreprocessor
-from services.translate import Translator
+from services.translate import ITranslator, Translator
 
 
 class TranslateRequest(BaseModel):
@@ -33,17 +34,23 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-translator = Translator()
+def get_translator() -> ITranslator:
+    return Translator()
 
-superdomain = os.getenv("QA_SUPERDOMAIN", "chemistry")
-if superdomain == "chemistry":
-    preprocessor = ChemistryPreprocessor()
-else:
-    preprocessor = IdentityPreprocessor()
+
+def get_preprocessor() -> IPreprocessor:
+    if os.getenv("QA_SUPERDOMAIN") == "chemistry":
+        return ChemistryPreprocessor()
+    else:
+        return IdentityPreprocessor()
 
 
 @router.post("")
-def translate(req: TranslateRequest):
+def translate(
+    req: TranslateRequest,
+    translator: Annotated[ITranslator, Depends(get_translator)],
+    preprocessor: Annotated[IPreprocessor, Depends(get_preprocessor)],
+):
     logger.info(
         "Received request to translation endpoint with the following request body"
     )

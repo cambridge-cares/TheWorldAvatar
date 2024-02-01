@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from dataclasses import dataclass
 import logging
 import os
@@ -31,7 +32,13 @@ class TranslateResult:
 logger = logging.getLogger(__name__)
 
 
-class Translator:
+class ITranslator:
+    @abstractmethod
+    def nl2sparql(self, question: str) -> TranslateResult:
+        pass
+
+
+class Translator(ITranslator):
     def __init__(self):
         self.domain = os.getenv("QA_DOMAIN")
         self.model = Seq2SeqClient()
@@ -39,10 +46,10 @@ class Translator:
             ontospecies=OSPostProcessor(),
             ontokin=OKPostProcessor(),
             ontocompchem=OCCPostProcessor(),
-            kingslynn=OBEPostProcessor()
+            kingslynn=OBEPostProcessor(),
         )
 
-    def get_domain(self, question: str):
+    def _get_domain(self, question: str):
         if self.domain:
             return self.domain
         return self.model.forward(T5_PREFIX_DOMAINCLS + question)
@@ -50,7 +57,7 @@ class Translator:
     def nl2sparql(self, question: str):
         question_encoded = preprocess_nl(question)
 
-        domain = self.get_domain(question_encoded)
+        domain = self._get_domain(question_encoded)
         pred_raw = self.model.forward(T5_PREFIX_NL2SPARQL + question_encoded)
         pred_decoded = postprocess_sparql(pred_raw)
 

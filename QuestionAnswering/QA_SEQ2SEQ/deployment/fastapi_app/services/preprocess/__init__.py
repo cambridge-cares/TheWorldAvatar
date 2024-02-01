@@ -8,6 +8,6 @@ class PreprocessedText:
     for_trans: str
 
 
-class Preprocessor(ABC):
+class IPreprocessor(ABC):
     def preprocess(self, text: str) -> PreprocessedText:
         pass
